@@ -41,6 +41,7 @@
 ?>
 <?php if ($results->getResultTotal() > 0 || $hasVisibleCheckboxes): ?>
   <h2><?=$this->transEsc($this->slot('side-facet-caption')->get('Refine Results')) ?></h2>
+  <span class="sr-only"><?=$this->transEscAttr('page_reload_on_select_hint') ?></span>
 <?php endif; ?>
 <?php if ($hasVisibleCheckboxes): ?>
   <div class="checkboxFilter">

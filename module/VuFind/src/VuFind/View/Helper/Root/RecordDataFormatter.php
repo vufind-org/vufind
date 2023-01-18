@@ -22,6 +22,7 @@
  * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:architecture:record_data_formatter
  * Wiki
@@ -37,6 +38,7 @@ use VuFind\RecordDriver\AbstractBase as RecordDriver;
  * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:architecture:record_data_formatter
  * Wiki
@@ -49,6 +51,27 @@ class RecordDataFormatter extends AbstractHelper
      * @var array
      */
     protected $defaults = [];
+
+    /**
+     * Record driver object.
+     *
+     * @var RecordDriver
+     */
+    protected $driver = null;
+
+    /**
+     * Store a record driver object and return this object so that the appropriate
+     * data can be rendered.
+     *
+     * @param RecordDriver $driver Record driver object.
+     *
+     * @return RecordDataFormatter
+     */
+    public function __invoke(RecordDriver $driver = null): RecordDataFormatter
+    {
+        $this->driver = $driver;
+        return $this;
+    }
 
     /**
      * Sort callback for field specification.
@@ -87,14 +110,13 @@ class RecordDataFormatter extends AbstractHelper
     /**
      * Return rendered text (or null if nothing to render).
      *
-     * @param RecordDriver $driver  Record driver object
-     * @param string       $field   Field being rendered (i.e. default label)
-     * @param mixed        $data    Data to render
-     * @param array        $options Rendering options
+     * @param string $field   Field being rendered (i.e. default label)
+     * @param mixed  $data    Data to render
+     * @param array  $options Rendering options
      *
      * @return array
      */
-    protected function render($driver, $field, $data, $options)
+    protected function render($field, $data, $options)
     {
         // Check whether the data is worth rendering.
         if (!$this->allowValue($data, $options)) {
@@ -109,7 +131,7 @@ class RecordDataFormatter extends AbstractHelper
         }
 
         // If the value evaluates false, we should double-check our zero handling:
-        $value = $this->$method($driver, $data, $options);
+        $value = $this->$method($data, $options);
         if (!$this->allowValue($value, $options)) {
             return null;
         }
@@ -122,7 +144,7 @@ class RecordDataFormatter extends AbstractHelper
 
         // Allow dynamic label override:
         $label = is_callable($options['labelFunction'] ?? null)
-            ? call_user_func($options['labelFunction'], $data, $driver)
+            ? call_user_func($options['labelFunction'], $data, $this->driver)
             : $field;
         $context = $options['context'] ?? [];
         $pos = $options['pos'] ?? 0;
@@ -131,20 +153,35 @@ class RecordDataFormatter extends AbstractHelper
 
     /**
      * Create formatted key/value data based on a record driver and field spec.
+     * The first argument can be a descendant of RecordDriver.
+     * If omitted, then invoke this class with the desired driver.
+     * The second or first argument is an array containing formatting specifications.
      *
-     * @param RecordDriver $driver Record driver object.
-     * @param array        $spec   Formatting specification
+     * @param array ...$args Record driver object and/or formatting specifications.
      *
      * @return array
      */
-    public function getData(RecordDriver $driver, array $spec)
+    public function getData(...$args)
     {
+        if ($args[0] instanceof RecordDriver) {
+            $this->driver = $args[0];
+            array_shift($args);
+        }
+        if (empty($args[0])) {
+            return [];
+        }
+        if (null === $this->driver) {
+            throw new \Exception('No driver set in RecordDataFormatter');
+        }
+        if (!is_array($args[0])) {
+            throw new \Exception('Argument 0 must be an array');
+        }
         // Apply the spec:
         $result = [];
-        foreach ($spec as $field => $current) {
+        foreach ($args[0] as $field => $current) {
             // Extract the relevant data from the driver and try to render it.
-            $data = $this->extractData($driver, $current);
-            $value = $this->render($driver, $field, $data, $current);
+            $data = $this->extractData($current);
+            $value = $this->render($field, $data, $current);
             if ($value !== null) {
                 $result = array_merge($result, $value);
             }
@@ -198,12 +235,11 @@ class RecordDataFormatter extends AbstractHelper
     /**
      * Extract data (usually from the record driver).
      *
-     * @param RecordDriver $driver  Record driver
-     * @param array        $options Incoming options
+     * @param array $options Incoming options
      *
      * @return mixed
      */
-    protected function extractData(RecordDriver $driver, array $options)
+    protected function extractData(array $options)
     {
         // Static cache for persisting data.
         static $cache = [];
@@ -217,15 +253,15 @@ class RecordDataFormatter extends AbstractHelper
         }
 
         if ($useCache = ($options['useCache'] ?? false)) {
-            $cacheKey = $driver->getUniqueID() . '|'
-                . $driver->getSourceIdentifier() . '|' . $method;
+            $cacheKey = $this->driver->getUniqueID() . '|'
+                . $this->driver->getSourceIdentifier() . '|' . $method;
             if (isset($cache[$cacheKey])) {
                 return $cache[$cacheKey];
             }
         }
 
         // Default action: try to extract data from the record driver:
-        $data = $driver->tryMethod($method);
+        $data = $this->driver->tryMethod($method);
 
         if ($useCache) {
             $cache[$cacheKey] = $data;
@@ -237,14 +273,12 @@ class RecordDataFormatter extends AbstractHelper
     /**
      * Render multiple lines for a single set of data.
      *
-     * @param RecordDriver $driver  Reoord driver object.
-     * @param mixed        $data    Data to render
-     * @param array        $options Rendering options.
+     * @param mixed $data    Data to render
+     * @param array $options Rendering options.
      *
      * @return array
      */
     protected function renderMulti(
-        RecordDriver $driver,
         $data,
         array $options
     ) {
@@ -261,12 +295,12 @@ class RecordDataFormatter extends AbstractHelper
 
         // Collect the results:
         $results = [];
-        $input = $callback($data, $options, $driver);
+        $input = $callback($data, $options, $this->driver);
         foreach (is_array($input) ? $input : [] as $current) {
             $label = $current['label'] ?? '';
             $values = $current['values'] ?? null;
             $currentOptions = ($current['options'] ?? []) + $defaultOptions;
-            $next = $this->render($driver, $label, $values, $currentOptions);
+            $next = $this->render($label, $values, $currentOptions);
             if ($next !== null) {
                 $results = array_merge($results, $next);
             }
@@ -277,14 +311,12 @@ class RecordDataFormatter extends AbstractHelper
     /**
      * Render using the record view helper.
      *
-     * @param RecordDriver $driver  Reoord driver object.
-     * @param mixed        $data    Data to render
-     * @param array        $options Rendering options.
+     * @param mixed $data    Data to render
+     * @param array $options Rendering options.
      *
      * @return string
      */
     protected function renderRecordHelper(
-        RecordDriver $driver,
         $data,
         array $options
     ) {
@@ -293,20 +325,18 @@ class RecordDataFormatter extends AbstractHelper
         if (empty($method) || !is_callable([$plugin, $method])) {
             throw new \Exception('Cannot call "' . $method . '" on helper.');
         }
-        return $plugin($driver)->$method($data);
+        return $plugin($this->driver)->$method($data);
     }
 
     /**
      * Render a record driver template.
      *
-     * @param RecordDriver $driver  Reoord driver object.
-     * @param mixed        $data    Data to render
-     * @param array        $options Rendering options.
+     * @param mixed $data    Data to render
+     * @param array $options Rendering options.
      *
      * @return string
      */
     protected function renderRecordDriverTemplate(
-        RecordDriver $driver,
         $data,
         array $options
     ) {
@@ -315,10 +345,10 @@ class RecordDataFormatter extends AbstractHelper
         }
         $helper = $this->getView()->plugin('record');
         $context = $options['context'] ?? [];
-        $context['driver'] = $driver;
+        $context['driver'] = $this->driver;
         $context['data'] = $data;
         return trim(
-            $helper($driver)->renderTemplate($options['template'], $context)
+            $helper($this->driver)->renderTemplate($options['template'], $context)
         );
     }
 
@@ -343,15 +373,14 @@ class RecordDataFormatter extends AbstractHelper
     /**
      * Simple rendering method.
      *
-     * @param RecordDriver $driver  Reoord driver object.
-     * @param mixed        $data    Data to render
-     * @param array        $options Rendering options.
+     * @param mixed $data    Data to render
+     * @param array $options Rendering options.
      *
      * @return string
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function renderSimple(RecordDriver $driver, $data, array $options)
+    protected function renderSimple($data, array $options)
     {
         $view = $this->getView();
         $escaper = ($options['translate'] ?? false)

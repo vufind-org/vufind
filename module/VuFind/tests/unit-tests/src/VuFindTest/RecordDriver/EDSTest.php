@@ -23,6 +23,7 @@
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Sravanthi Adusumilli <vufind-tech@lists.sourceforge.net>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
@@ -37,6 +38,7 @@ use VuFind\RecordDriver\EDS;
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Sravanthi Adusumilli <vufind-tech@lists.sourceforge.net>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
@@ -47,7 +49,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetUniqueID()
+    public function testGetUniqueID(): void
     {
         $overrides = [
             'Header' => ['DbId' => 'TDB123', 'An' => 'TAn456']
@@ -61,7 +63,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetShortTitle()
+    public function testGetShortTitle(): void
     {
         $this->assertEquals('', $this->getDriver()->getShortTitle());
     }
@@ -71,7 +73,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetItemsAbstract()
+    public function testGetItemsAbstract(): void
     {
         $this->assertEquals('', $this->getDriver()->getItemsAbstract());
     }
@@ -81,7 +83,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetAccessLevel()
+    public function testGetAccessLevel(): void
     {
         $this->assertEquals('', $this->getDriver()->getAccessLevel());
     }
@@ -91,7 +93,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetItemsAuthors()
+    public function testGetItemsAuthors(): void
     {
         $this->assertEquals('', $this->getDriver()->getItemsAuthors());
     }
@@ -101,7 +103,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetCustomLinks()
+    public function testGetCustomLinks(): void
     {
         $this->assertEquals([], $this->getDriver()->getCustomLinks());
     }
@@ -111,7 +113,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetFTCustomLinks()
+    public function testGetFTCustomLinks(): void
     {
         $this->assertEquals([], $this->getDriver()->getFTCustomLinks());
     }
@@ -121,7 +123,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetDbLabel()
+    public function testGetDbLabel(): void
     {
         $this->assertEquals('', $this->getDriver()->getDbLabel());
     }
@@ -131,7 +133,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetHTMLFullText()
+    public function testGetHTMLFullText(): void
     {
         $this->assertEquals('', $this->getDriver()->getHTMLFullText());
     }
@@ -141,7 +143,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHasHTMLFullTextAvailable()
+    public function testHasHTMLFullTextAvailable(): void
     {
         $this->assertEquals(false, $this->getDriver()->hasHTMLFullTextAvailable());
     }
@@ -151,7 +153,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetItems()
+    public function testGetItems(): void
     {
         $this->assertEquals([], $this->getDriver()->getItems());
     }
@@ -161,7 +163,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetPLink()
+    public function testGetPLink(): void
     {
         $this->assertEquals('', $this->getDriver()->getPLink());
     }
@@ -171,7 +173,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetPubType()
+    public function testGetPubType(): void
     {
         $this->assertEquals('', $this->getDriver()->getPubType());
     }
@@ -181,7 +183,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetPubTypeId()
+    public function testGetPubTypeId(): void
     {
         $this->assertEquals('', $this->getDriver()->getPubTypeId());
     }
@@ -191,7 +193,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testHasPdfAvailable()
+    public function testHasPdfAvailable(): void
     {
         $this->assertEquals(false, $this->getDriver()->hasPdfAvailable());
     }
@@ -201,7 +203,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetPdfLink()
+    public function testGetPdfLink(): void
     {
         $this->assertEquals(false, $this->getDriver()->getPdfLink());
     }
@@ -211,7 +213,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetItemsSubjects()
+    public function testGetItemsSubjects(): void
     {
         $this->assertEquals('', $this->getDriver()->getItemsSubjects());
     }
@@ -221,7 +223,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetThumbnail()
+    public function testGetThumbnail(): void
     {
         $this->assertEquals(false, $this->getDriver()->getThumbnail());
     }
@@ -231,7 +233,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetItemsTitle()
+    public function testGetItemsTitle(): void
     {
         $this->assertEquals('', $this->getDriver()->getItemsTitle());
     }
@@ -241,7 +243,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetTitle()
+    public function testGetTitle(): void
     {
         $this->assertEquals('', $this->getDriver()->getTitle());
     }
@@ -251,7 +253,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetPrimaryAuthors()
+    public function testGetPrimaryAuthors(): void
     {
         $this->assertEquals([], $this->getDriver()->getPrimaryAuthors());
     }
@@ -261,20 +263,39 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetItemsTitleSource()
+    public function testGetItemsTitleSource(): void
     {
         $this->assertEquals('', $this->getDriver()->getItemsTitleSource());
     }
 
     /**
+     * Data provider for testLinkUrls
+     */
+    public function getLinkUrlsProvider(): array
+    {
+        return [
+            [
+                'http://localhost/sample1',
+                '<a href=\'http://localhost/sample1\'>http://localhost/sample1</a>',
+            ],
+            [
+                '<link linkTarget="URL" linkTerm="https://localhost/sample"'
+                    . ' linkWindow="_blank">https://localhost/sample</link>',
+                '<a href=\'https://localhost/sample\'>https://localhost/sample</a>',
+            ],
+        ];
+    }
+
+    /**
      * Test linkUrls for a record.
+     *
+     * @dataProvider getLinkUrlsProvider
      *
      * @return void
      */
-    public function testLinkUrls()
+    public function testLinkUrls(string $url, string $expected): void
     {
-        $str = "http://fictional.com/sample/url";
-        $this->assertEquals("<a href='" . $str . "'>" . $str . "</a>", $this->getDriver()->linkUrls($str));
+        $this->assertEquals($expected, $this->getDriver()->linkUrls($url));
     }
 
     /**
@@ -282,7 +303,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetISSNs()
+    public function testGetISSNs(): void
     {
         $driver = $this->getDriverWithIdentifierData();
         $this->assertEquals(
@@ -296,7 +317,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetISBNs()
+    public function testGetISBNs(): void
     {
         $driver = $this->getDriverWithIdentifierData();
         $this->assertEquals(
@@ -310,7 +331,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return EDS
      */
-    protected function getDriverWithIdentifierData()
+    protected function getDriverWithIdentifierData(): EDS
     {
         return $this->getDriver(
             [
@@ -359,7 +380,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @return EDS
      */
-    protected function getDriver($overrides = [])
+    protected function getDriver($overrides = []): EDS
     {
         $record = new EDS();
         $record->setRawData($overrides);

@@ -69,6 +69,15 @@ label { cursor: pointer; }
 .nav > li > a {
   @extend .icon-link;
   text-decoration: none;
+
+  &:hover,
+  &:focus {
+    /* borrowed from a11y accessibility */
+    color: $dropdown-bg;
+    text-decoration: none;
+    background-color: #333;
+    outline: dotted 1px #000;
+  }
 }
 .nav .dropdown-toggle {
   padding-right: 8px;
@@ -123,6 +132,14 @@ h3 { font-size: 16px; }
   }
   .form-control { max-width: 400px; }
   #modal .form-control { max-width: none; }
+}
+
+button.dropdown-toggle {
+  @include button-variant($btn-default-color, $btn-default-bg, $btn-default-border);
+  appearance: none;
+  padding: 15px;
+  border: 0;
+  color: $brand-primary;
 }
 
 /* ------ Layout ------ */
