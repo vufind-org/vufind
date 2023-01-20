@@ -693,13 +693,13 @@ class Options extends \VuFind\Search\Base\Options
             $this->getApiProperty('limiterOptions')
         );
         // No setting = use all available values
-        if (!($advancedLimiters = $this->getApiProperty('advancedLimiters'))) {
+        if (!$this->advancedLimiters) {
             return $labeledLimiters;
         }
         // If we got this far, let's create a list of enabled limiters in the
         // requested order:
         $enabledLimiters = [];
-        foreach ($advancedLimiters as $limiter) {
+        foreach ($this->advancedLimiters as $limiter) {
             if (isset($labeledLimiters[$limiter])) {
                 $enabledLimiters[$limiter] = $labeledLimiters[$limiter];
             }
