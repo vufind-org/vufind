@@ -105,13 +105,6 @@ class Options extends \VuFind\Search\Base\Options
     protected $advancedLimiters = [];
 
     /**
-     * Whether or not to return available facets with the search response
-     *
-     * @var array
-     */
-    protected $includeFacets = 'y';
-
-    /**
      * Available Search Options from the API or null if not yet initialized
      *
      * @var ?array
@@ -482,11 +475,6 @@ class Options extends \VuFind\Search\Base\Options
         // Set up highlighting preference
         if (isset($this->searchSettings->General->highlighting)) {
             $this->highlight = $this->searchSettings->General->highlighting;
-        }
-
-        // Set up facet preferences
-        if (isset($this->searchSettings->General->include_facets)) {
-            $this->includeFacets = $this->searchSettings->General->include_facets;
         }
 
         // Load search preferences:
