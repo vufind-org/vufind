@@ -900,7 +900,7 @@ class MyResearchController extends AbstractBase
             $this->params()->fromQuery('source', DEFAULT_SEARCH_BACKEND)
         );
         $driver = $this->getRecordLoader()->load($id, $source, true);
-        $listID = $this->params()->fromPost(
+        $listID = $listFilter = $this->params()->fromPost(
             'list_id',
             $this->params()->fromQuery('list_id', null)
         );
@@ -943,9 +943,7 @@ class MyResearchController extends AbstractBase
         }
 
         return $this->createViewModel(
-            [
-                'driver' => $driver, 'lists' => $lists, 'savedData' => $savedData
-            ]
+            compact('driver', 'lists', 'savedData', 'listFilter')
         );
     }
 
