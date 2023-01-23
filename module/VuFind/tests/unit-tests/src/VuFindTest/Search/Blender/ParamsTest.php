@@ -855,7 +855,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     null,
                 ],
                 'view' => [
-                    'list',
+                    'brief',
                 ],
                 'filters' => [
                     'building:main',

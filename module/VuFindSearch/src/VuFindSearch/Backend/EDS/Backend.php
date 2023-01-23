@@ -194,11 +194,6 @@ class Backend extends AbstractBackend
             "Authentication Token: $authenticationToken, SessionToken: $sessionToken"
         );
 
-        // check to see if there is a parameter to only process this call as a setup
-        if (null !== $params && true == $params->get('setuponly')) {
-            return false;
-        }
-
         // create query parameters from VuFind data
         $queryString = $query->getAllTerms();
         $paramsStr = implode('&', null !== $params ? $params->request() : []);
