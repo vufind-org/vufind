@@ -77,16 +77,20 @@
       <tbody>
       <?php for ($row = 0; $row < $rowCount; $row++): ?>
         <tr>
-          <?php foreach ($columns as $column): ?>
-            <td><?=$tableData[$column][$row]?></td>
+          <?php foreach ($columns as $header => $column): ?>
+            <?php if ('Title' == $header): ?>
+              <th scope="row"><?=$tableData[$column][$row]?></th>
+            <?php else: ?>
+              <td><?=$tableData[$column][$row]?></td>
+            <?php endif; ?>
           <?php endforeach; ?>
         </tr>
       <?php endfor; ?>
       </tbody>
       <tfoot>
       <tr>
-        <th colspan="<?=count($columns) - 1?>"><?=$this->transEsc('Total Balance Due')?></th>
-        <th><?=$this->safeMoneyFormat($totalDue / 100.00) ?></th>
+        <th colspan="<?=count($columns) - 1?>" scope="row"><?=$this->transEsc('Total Balance Due')?></th>
+        <th scope="col"><?=$this->safeMoneyFormat($totalDue / 100.00) ?></th>
       </tr>
       </tfoot>
     </table>
