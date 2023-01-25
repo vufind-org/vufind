@@ -1,6 +1,6 @@
 <?php
 /**
- * Entity model for access_token table
+ * Entity model for ratings table
  *
  * PHP version 7
  *
@@ -30,7 +30,7 @@ namespace VuFind\Db\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Entity model for access_token table
+ * Entity model for ratings table
  *
  * @category VuFind
  * @package  Database
@@ -38,28 +38,19 @@ use Doctrine\ORM\Mapping as ORM;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  *
- * @ORM\Table(name="access_token")
+ * @ORM\Table(name="ratings")
  * @ORM\Entity
  */
-class AccessToken implements EntityInterface
+class Ratings implements EntityInterface
 {
     /**
-     * @var string
+     * @var int
      *
-     * @ORM\Column(name="id", type="string", length=255, nullable=false)
+     * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="NONE")
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     protected $id;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="type", type="string", length=128, nullable=false)
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="NONE")
-     */
-    protected $type;
 
     /**
      * @var \VuFind\Db\Entity\User
@@ -72,23 +63,26 @@ class AccessToken implements EntityInterface
     protected $user;
 
     /**
+     * @var \VuFind\Db\Entity\Resource
+     *
+     * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\Resource")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="resource_id", referencedColumnName="id")
+     * })
+     */
+    protected $resource;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="rating", type="integer", nullable=false)
+     */
+    protected $rating;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="created", type="datetime", nullable=false, options={"default"="2000-01-01 00:00:00"})
      */
     protected $created = '2000-01-01 00:00:00';
-
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="data", type="text", length=16777215, nullable=true)
-     */
-    protected $data;
-
-    /**
-     * @var bool
-     *
-     * @ORM\Column(name="revoked", type="boolean", nullable=false)
-     */
-    protected $revoked = '0';
 }
