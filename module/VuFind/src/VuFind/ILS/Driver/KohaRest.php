@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2016-2020.
+ * Copyright (C) The National Library of Finland 2016-2023.
  * Copyright (C) Moravian Library 2019.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -108,7 +108,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @var bool
      */
-    protected $allowCancelInTransit;
+    protected $allowCancelInTransit = false;
 
     /**
      * Item status rankings. The lower the value, the more important the status.
@@ -220,7 +220,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @var bool
      */
-    protected $sortItemsBySerialIssue;
+    protected $sortItemsBySerialIssue = true;
 
     /**
      * Constructor
