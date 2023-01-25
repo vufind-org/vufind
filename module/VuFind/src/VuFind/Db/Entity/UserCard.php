@@ -83,7 +83,7 @@ class UserCard implements EntityInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="home_library", type="string", length=100, nullable=false)
+     * @ORM\Column(name="home_library", type="string", length=100, nullable=true)
      */
     protected $homeLibrary = '';
 
