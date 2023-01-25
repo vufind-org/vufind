@@ -68,6 +68,10 @@ class SocialstatsControllerTest extends \PHPUnit\Framework\TestCase
         $userresource->expects($this->once())->method('getStatistics')
             ->will($this->returnValue('userresource-data'));
         $tables->set('userresource', $userresource);
+        $ratings = $this->getMockBuilder(\VuFind\Db\Table\Ratings::class)
+            ->disableOriginalConstructor()->onlyMethods(['getStatistics'])->getMock();
+        $ratings->expects($this->once())->method('getStatistics')->will($this->returnValue(['ratings-data']));
+        $tables->set('ratings', $ratings);
 
         // Create and register mock tag service
         $tagService = $this->getMockBuilder(TagService::class)
@@ -88,5 +92,6 @@ class SocialstatsControllerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('comments-data', $view->comments);
         $this->assertEquals('userresource-data', $view->favorites);
         $this->assertEquals($mockTagStats, $view->tags);
+        $this->assertEquals(['ratings-data'], $view->ratings);
     }
 }

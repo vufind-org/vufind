@@ -1,10 +1,10 @@
 <?php
 /**
- * Factory for CommentRecord AJAX handler.
+ * Factory for GetRecordRating AJAX handler.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) The National Library of Finland 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,7 +21,7 @@
  *
  * @category VuFind
  * @package  AJAX
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -33,15 +33,15 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for CommentRecord AJAX handler.
+ * Factory for GetRecordRating AJAX handler.
  *
  * @category VuFind
  * @package  AJAX
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class CommentRecordFactory
+class GetRecordRatingFactory
     implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
@@ -68,17 +68,9 @@ class CommentRecordFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $tablePluginManager = $container->get(\VuFind\Db\Table\PluginManager::class);
-        $controllerPluginManager = $container->get('ControllerPluginManager');
-        $capabilities = $container->get(\VuFind\Config\AccountCapabilities::class);
         return new $requestedName(
-            $tablePluginManager->get(\VuFind\Db\Table\Resource::class),
-            $controllerPluginManager
-                ->get(\VuFind\Controller\Plugin\Captcha::class),
-            $container->get(\VuFind\Auth\Manager::class)->isLoggedIn(),
-            $capabilities->getCommentSetting() !== 'disabled',
             $container->get(\VuFind\Record\Loader::class),
-            $container->get(\VuFind\Config\AccountCapabilities::class)
+            $container->get('ViewRenderer')->plugin('record')
         );
     }
 }
