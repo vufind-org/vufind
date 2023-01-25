@@ -374,6 +374,18 @@ class RecordCollection
                 }
             }
         }
+
+        foreach ($settings['Mappings'] as $backendId => $mappings) {
+            $ignore = $mappings['Ignore'] ?? false;
+            if ($ignore && ($collections[$backendId] ?? false)) {
+                $ignoredKeys = is_array($ignore) ? $ignore : array_keys($result);
+                foreach ($ignoredKeys as $ignoredValue) {
+                    $result[$ignoredValue] = ($result[$ignoredValue] ?? 0)
+                        + $collections[$backendId]->getTotal();
+                }
+            }
+        }
+
         return $result;
     }
 

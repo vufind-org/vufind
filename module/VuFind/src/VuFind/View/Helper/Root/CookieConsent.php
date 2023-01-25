@@ -410,7 +410,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper
                 $section['cookieTable']['body'][] = [
                     'name' => $name,
                     'domain' => $cookie['Domain'],
-                    'desc' => $this->translate($cookie['Description']),
+                    'desc' => $this->translate($cookie['Description'] ?? ''),
                     'exp' => $expiration
                 ];
             }

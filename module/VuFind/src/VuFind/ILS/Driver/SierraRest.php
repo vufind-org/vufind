@@ -607,6 +607,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                     'Y-m-d',
                     $entry['dueDate']
                 ),
+                'dueStatus' => $this->getDueStatus($entry),
                 'renew' => $entry['numberOfRenewals'],
                 'renewable' => true // assumption, who knows?
             ];
@@ -1846,6 +1847,32 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 $this->config['CallNumber']['bib_fields']
             );
         return is_array($result) ? reset($result) : $result;
+    }
+
+    /**
+     * Get due status for a checkout
+     *
+     * @param array $checkout Checkout
+     *
+     * @return string
+     */
+    protected function getDueStatus(array $checkout): string
+    {
+        try {
+            $dueDateTime = $this->dateConverter
+                ->convertToDateTime('Y-m-d', $checkout['dueDate']);
+            $dueDateTime->setTime(23, 59, 59, 999);
+            $now = new \DateTime();
+            if ($now > $dueDateTime) {
+                return 'overdue';
+            }
+            if ($dueDateTime->diff($now)->days < 1) {
+                return 'due';
+            }
+        } catch (\VuFind\Date\DateException $e) {
+            // Due date not parseable, do nothing...
+        }
+        return '';
     }
 
     /**

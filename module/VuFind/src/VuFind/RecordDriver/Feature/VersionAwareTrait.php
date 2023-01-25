@@ -4,6 +4,7 @@
  *
  * PHP version 7
  *
+ * Copyright (C) Villanova University 2022.
  * Copyright (C) The National Library of Finland 2020.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -22,10 +23,13 @@
  * @category VuFind
  * @package  RecordDrivers
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 namespace VuFind\RecordDriver\Feature;
+
+use VuFindSearch\Command\WorkExpressionsCommand;
 
 /**
  * Logic for record versions support.
@@ -75,12 +79,13 @@ trait VersionAwareTrait
 
             $params = new \VuFindSearch\ParamBag();
             $params->add('rows', 0);
-            $results = $this->searchService->workExpressions(
+            $command = new WorkExpressionsCommand(
                 $this->getSourceIdentifier(),
                 $this->getUniqueID(),
                 $workKeys,
                 $params
             );
+            $results = $this->searchService->invoke($command)->getResult();
             $this->otherVersionsCount = $results->getTotal();
         }
         return $this->otherVersionsCount;
@@ -109,12 +114,15 @@ trait VersionAwareTrait
             $params = new \VuFindSearch\ParamBag();
             $params->add('rows', $count);
             $params->add('start', $offset);
-            $this->otherVersions = $this->searchService->workExpressions(
+            $command = new WorkExpressionsCommand(
                 $this->getSourceIdentifier(),
                 $includeSelf ? '' : $this->getUniqueID(),
                 $workKeys,
                 $params
             );
+            $this->otherVersions = $this->searchService->invoke(
+                $command
+            )->getResult();
         }
         return $this->otherVersions;
     }

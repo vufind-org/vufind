@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -30,6 +30,7 @@ namespace VuFind\Controller;
 use Laminas\Crypt\Password\Bcrypt;
 use Laminas\Mvc\MvcEvent;
 use VuFind\Config\Writer as ConfigWriter;
+use VuFindSearch\Command\RetrieveCommand;
 
 /**
  * Class controls VuFind auto-configuration.
@@ -604,7 +605,8 @@ class InstallController extends AbstractBase
     {
         // Try to retrieve an arbitrary ID -- this will fail if Solr is down:
         $searchService = $this->serviceLocator->get(\VuFindSearch\Service::class);
-        $searchService->retrieve('Solr', '1');
+        $command = new RetrieveCommand('Solr', '1');
+        $searchService->invoke($command)->getResult();
     }
 
     /**

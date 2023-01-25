@@ -137,6 +137,7 @@ $config = [
             'VuFind\Controller\AlphabrowseController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\AuthorController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\AuthorityController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFind\Controller\AuthorityRecordController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\BrowseController' => 'VuFind\Controller\AbstractBaseWithConfigFactory',
             'VuFind\Controller\BrowZineController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\CartController' => 'VuFind\Controller\CartControllerFactory',
@@ -201,6 +202,8 @@ $config = [
             'author' => 'VuFind\Controller\AuthorController',
             'Authority' => 'VuFind\Controller\AuthorityController',
             'authority' => 'VuFind\Controller\AuthorityController',
+            'AuthorityRecord' => 'VuFind\Controller\AuthorityRecordController',
+            'authorityrecord' => 'VuFind\Controller\AuthorityRecordController',
             'Browse' => 'VuFind\Controller\BrowseController',
             'browse' => 'VuFind\Controller\BrowseController',
             'BrowZine' => 'VuFind\Controller\BrowZineController',
@@ -400,6 +403,7 @@ $config = [
             'VuFind\Hierarchy\TreeDataFormatter\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Hierarchy\TreeDataSource\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Hierarchy\TreeRenderer\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\Http\CachingDownloader' => 'VuFind\Http\CachingDownloaderFactory',
             'VuFind\Http\PhpEnvironment\Request' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\I18n\Locale\LocaleSettings' => 'VuFind\Service\ServiceWithConfigIniFactory',
             'VuFind\I18n\Sorter' => 'VuFind\I18n\SorterFactory',
@@ -705,12 +709,14 @@ $recordRoutes = [
     'eitrecord' => 'EITRecord',
     'missingrecord' => 'MissingRecord',
     'primorecord' => 'PrimoRecord',
-    'solrauthrecord' => 'Authority',
+    'solrauthrecord' => 'AuthorityRecord',
     'summonrecord' => 'SummonRecord',
     'worldcatrecord' => 'WorldcatRecord',
     'search2record' => 'Search2Record',
     'search2collection' => 'Search2Collection',
     'search2collectionrecord' => 'Search2Record',
+    // For backward compatibility with pre-9.0 versions:
+    'legacy-solrauthrecord' => 'Authority',
 ];
 
 // Define non tab record actions
@@ -730,7 +736,7 @@ $dynamicRoutes = [
 // Define static routes -- Controller/Action strings
 $staticRoutes = [
     'Alphabrowse/Home', 'Author/FacetList', 'Author/Home', 'Author/Search',
-    'Authority/FacetList', 'Authority/Home', 'Authority/Record', 'Authority/Search',
+    'Authority/FacetList', 'Authority/Home', 'Authority/Search',
     'Browse/Author', 'Browse/Dewey', 'Browse/Era', 'Browse/Genre', 'Browse/Home',
     'Browse/LCC', 'Browse/Region', 'Browse/Tag', 'Browse/Topic', 'Cart/doExport',
     'BrowZine/Home', 'BrowZine/Search',

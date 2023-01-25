@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2021.
+ * Copyright (C) Villanova University 2021, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -28,6 +28,7 @@
 namespace VuFind\Sitemap\Plugin\Index;
 
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
+use VuFindSearch\Command\GetIdsCommand;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
 
@@ -138,13 +139,15 @@ class CursorMarkIdFetcher extends AbstractIdFetcher
         foreach ($filters as $filter) {
             $params->add('fq', $filter);
         }
-        $results = $this->searchService->getIds(
+        $command = new GetIdsCommand(
             $backend,
             new Query('*:*'),
             0,
             $countPerPage,
             $params
         );
+
+        $results = $this->searchService->invoke($command)->getResult();
         $ids = [];
         foreach ($results->getRecords() as $doc) {
             $ids[] = $doc->get($key);

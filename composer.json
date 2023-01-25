@@ -26,7 +26,6 @@
     "require": {
         "php": ">=7.4.1",
         "ahand/mobileesp": "dev-master",
-        "pcrov/jsonreader": "1.0.2",
         "cap60552/php-sip2": "1.0.0",
         "colinmollenhour/credis": "1.13.0",
         "composer/package-versions-deprecated": "1.11.99.5",
@@ -90,12 +89,12 @@
         "symfony/yaml": "5.4.3",
         "vstelmakh/url-highlight": "3.0.1",
         "vufind-org/vufindcode": "1.2",
-        "vufind-org/vufinddate": "1.1.0",
+        "vufind-org/vufinddate": "1.2.0",
         "vufind-org/vufindharvest": "4.1.0",
         "vufind-org/vufindhttp": "3.2.0",
+        "vufind-org/vufind-marc": "1.0.0",
         "webfontkit/open-sans": "^1.0",
         "wikimedia/composer-merge-plugin": "2.0.1",
-        "wikimedia/less.php": "3.1.0",
         "yajra/laravel-pdo-via-oci8": "2.4.0 || 3.0.0"
     },
     "require-dev": {
@@ -104,7 +103,6 @@
         "dmore/chrome-mink-driver": "2.8.1",
         "firebase/php-jwt": "6.3.0",
         "friendsofphp/php-cs-fixer": "3.8.0",
-        "opis/json-schema": "2.3.0",
         "phploc/phploc": "7.0.2",
         "phpmd/phpmd": "2.12.0",
         "phpstan/phpstan": "1.6.8",
