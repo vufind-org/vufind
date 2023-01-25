@@ -104,6 +104,13 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected $defaultPickUpLocation;
 
     /**
+     * Whether to allow canceling holds in transit. Default is false.
+     *
+     * @var bool
+     */
+    protected $allowCancelInTransit;
+
+    /**
      * Item status rankings. The lower the value, the more important the status.
      *
      * @var array
@@ -257,6 +264,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         if ($this->defaultPickUpLocation === 'user-selected') {
             $this->defaultPickUpLocation = false;
         }
+
+        $this->allowCancelInTransit
+            = !empty($this->config['Holds']['allowCancelInTransit']);
 
         if (!empty($this->config['StatusRankings'])) {
             $this->statusRankings = array_merge(
@@ -752,6 +762,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             $available = !empty($entry['waiting_date']);
             $inTransit = !empty($entry['status']) && $entry['status'] == 'T';
             $requestId = $entry['hold_id'];
+            $cancelDetails
+                = ($available || ($inTransit && !$this->allowCancelInTransit))
+                ? ''
+                : $requestId;
             $updateDetails = ($available || $inTransit) ? '' : $requestId;
             $holds[] = [
                 'id' => $entry['biblio_id'],
@@ -774,7 +788,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 'publication_year' => $biblio['copyright_date']
                     ?? $biblio['publication_year'] ?? '',
                 'volume' => $volume,
-                'cancel_details' => $updateDetails,
+                'cancel_details' => $cancelDetails,
                 'updateDetails' => $updateDetails,
             ];
         }
