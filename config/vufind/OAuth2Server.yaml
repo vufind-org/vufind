@@ -1,4 +1,6 @@
-# OAuth2 Server Configuration
+# OAuth2 Server Configuration.
+#
+# See https://vufind.org/wiki/configuration:oauth2_oidc for more information.
 #
 # An example for generating the private/public key pair:
 #
@@ -23,6 +25,9 @@ Server:
   # Salt for hashes (e.g. library_user_id claim). Make sure it is random and long
   # enough (at least 32 characters).
   hashSalt: ""
+  # Uncomment to disable key permission checks. Only meant for testing, so avoid in
+  # any production-like environment if possible.
+  #keyPermissionChecks: false
 
 # Known clients configuration
 Clients:
@@ -105,6 +110,11 @@ Scopes:
       - name
       - given_name
       - family_name
+  age:
+    description: external_auth_scope_age
+    ils: true
+    claims:
+      - age
   birthdate:
     description: external_auth_scope_birthdate
     ils: true
@@ -141,6 +151,7 @@ ClaimMappings:
   given_name: firstname
   family_name: lastname
   email: email
+  age: age
   birthdate: birthdate
   locale: last_language
   phone: phone

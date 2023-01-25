@@ -30,6 +30,7 @@ namespace VuFind\Controller;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use League\OAuth2\Server\AuthorizationServer;
+use League\OAuth2\Server\CryptKey;
 use League\OAuth2\Server\Grant\AuthCodeGrant;
 use League\OAuth2\Server\Grant\RefreshTokenGrant;
 use League\OAuth2\Server\ResourceServer;
@@ -153,7 +154,7 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
                 $this->container->get(ClientRepository::class),
                 $this->container->get(AccessTokenRepository::class),
                 $this->container->get(ScopeRepository::class),
-                $this->getKeyPath('privateKeyPath'),
+                $this->getKeyFromConfigPath('privateKeyPath'),
                 $this->getOAuth2ServerSetting('encryptionKey'),
                 $this->getResponseType()
             );
@@ -174,7 +175,7 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
         return function (): ResourceServer {
             return new ResourceServer(
                 $this->container->get(AccessTokenRepository::class),
-                $this->getKeyPath('publicKeyPath')
+                $this->getKeyFromConfigPath('publicKeyPath')
             );
         };
     }
@@ -311,17 +312,21 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
      *
      * @param string $key Key path to return
      *
-     * @return string
+     * @return CryptKey
      *
      * @throws \Exception if the setting doesn't exist or is empty.
      */
-    protected function getKeyPath(string $key): string
+    protected function getKeyFromConfigPath(string $key): CryptKey
     {
         $keyPath = $this->getOAuth2ServerSetting($key);
         if (strncmp($keyPath, '/', 1) !== 0) {
             // Convert relative path:
             $keyPath = Locator::getConfigPath($keyPath);
         }
-        return $keyPath;
+        return new CryptKey(
+            $keyPath,
+            null,
+            $this->oauth2Config['Server']['keyPermissionChecks'] ?? true
+        );
     }
 }

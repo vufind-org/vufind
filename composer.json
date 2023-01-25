@@ -20,7 +20,8 @@
     },
     "provide": {
         "ext-memcached": "*",
-        "ext-soap": "*"
+        "ext-soap": "*",
+        "ext-sodium": "*"
     },
     "require": {
         "php": ">=7.4.1",
@@ -44,7 +45,7 @@
         "laminas/laminas-config": "3.7.0",
         "laminas/laminas-crypt": "3.8.0",
         "laminas/laminas-db": "2.15.0",
-        "laminas/laminas-diactoros": "2.11.0",
+        "laminas/laminas-diactoros": "2.11.1",
         "laminas/laminas-dom": "2.12.0",
         "laminas/laminas-escaper": "2.10.0",
         "laminas/laminas-eventmanager": "3.5.0",
@@ -91,7 +92,7 @@
         "vufind-org/vufindcode": "1.2",
         "vufind-org/vufinddate": "1.1.0",
         "vufind-org/vufindharvest": "4.1.0",
-        "vufind-org/vufindhttp": "3.1.0",
+        "vufind-org/vufindhttp": "3.2.0",
         "webfontkit/open-sans": "^1.0",
         "wikimedia/composer-merge-plugin": "2.0.1",
         "wikimedia/less.php": "3.1.0",
@@ -129,6 +130,7 @@
         "phing-install-dependencies": ["phing patch-dependencies", "phing installsolr installswaggerui"],
         "post-install-cmd": "@phing-install-dependencies",
         "post-update-cmd": "@phing-install-dependencies",
-        "qa": "phing qa-console -Ddefaultconfigs=true"
+        "qa": "phing qa-console -Ddefaultconfigs=true",
+        "install-npm-dependencies": "npm install && phing copynodemodules"
     }
 }

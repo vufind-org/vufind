@@ -289,19 +289,20 @@ class GeneratorTools
             $this->generateFactory($factory, $module);
         }
         $factoryPath = array_merge($configPath, ['factories', $class]);
-        $this->writeNewConfig($factoryPath, $factory, $module);
         $aliasPath = array_merge($configPath, ['aliases', $shortName]);
-        // Don't back up the config twice -- the first backup from the previous
-        // write operation is sufficient.
-        $this->writeNewConfig($aliasPath, $class, $module, false);
+        $newConfigs = [
+            ['path' => $factoryPath, 'setting' => $factory],
+            ['path' => $aliasPath, 'setting' => $class],
+        ];
         // Add extra lowercase alias if necessary:
         if (strtolower($shortName) != $shortName) {
             $lowerAliasPath = array_merge(
                 $configPath,
                 ['aliases', strtolower($shortName)]
             );
-            $this->writeNewConfig($lowerAliasPath, $class, $module, false);
+            $newConfigs[] = ['path' => $lowerAliasPath, 'setting' => $class];
         }
+        $this->writeNewConfigs($newConfigs, $module, false);
 
         return true;
     }
@@ -408,11 +409,11 @@ class GeneratorTools
         // Finalize the local module configuration -- create a factory for the
         // new class, and set up the new class as an alias for the old class.
         $factoryPath = array_merge($configPath, ['factories', $newClass]);
-        $this->writeNewConfig($factoryPath, $newFactory, $target);
         $aliasPath = array_merge($configPath, ['aliases', $class]);
-        // Don't back up the config twice -- the first backup from the previous
-        // write operation is sufficient.
-        $this->writeNewConfig($aliasPath, $newClass, $target, false);
+        $newConfigs = [
+            ['path' => $factoryPath, 'setting' => $newFactory],
+            ['path' => $aliasPath, 'setting' => $newClass],
+        ];
 
         // Clone/configure delegator factories as needed.
         if (!empty($delegators)) {
@@ -422,8 +423,9 @@ class GeneratorTools
                     ? $this->cloneFactory($delegator, $target) : $delegator;
             }
             $delegatorPath = array_merge($configPath, ['delegators', $newClass]);
-            $this->writeNewConfig($delegatorPath, $newDelegators, $target, false);
+            $newConfigs[] = ['path' => $delegatorPath, 'setting' => $newDelegators];
         }
+        $this->writeNewConfigs($newConfigs, $target, false);
 
         return true;
     }
@@ -873,25 +875,19 @@ class GeneratorTools
     }
 
     /**
-     * Update the configuration of a target module.
+     * Apply a single setting to a configuration array.
      *
-     * @param array  $path    Representation of path in config array
-     * @param string $setting New setting to write into config
-     * @param string $module  Module in which to write the configuration
-     * @param bool   $backup  Should we back up the existing config?
+     * @param array        $path    Representation of path in config array
+     * @param string|array $setting New setting to write into config
+     * @param array        $config  Configuration array (passed by reference)
      *
      * @return void
-     * @throws \Exception
      */
-    protected function writeNewConfig($path, $setting, $module, $backup  = true)
-    {
-        // Create backup of configuration
-        $configPath = $this->getModuleConfigPath($module);
-        if ($backup) {
-            $this->backUpFile($configPath);
-        }
-
-        $config = include $configPath;
+    protected function applySettingToConfig(
+        array $path,
+        $setting,
+        array & $config
+    ) {
         $current = & $config;
         $finalStep = array_pop($path);
         foreach ($path as $step) {
@@ -907,9 +903,57 @@ class GeneratorTools
             throw new \Exception('Unexpected non-array: ' . $current);
         }
         $current[$finalStep] = $setting;
+    }
+
+    /**
+     * Update the configuration of a target module with multiple settings.
+     *
+     * @param array  $newValues An array of arrays containing 'path' and 'setting'
+     * keys to specify changes to the configuration.
+     * @param string $module    Module in which to write the configuration
+     * @param bool   $backup    Should we back up the existing config?
+     *
+     * @return void
+     * @throws \Exception
+     */
+    protected function writeNewConfigs(
+        array $newValues,
+        string $module,
+        bool $backup  = true
+    ) {
+        // Create backup of configuration
+        $configPath = $this->getModuleConfigPath($module);
+        if ($backup) {
+            $this->backUpFile($configPath);
+        }
+
+        $config = include $configPath;
+        foreach ($newValues as $current) {
+            $this->applySettingToConfig(
+                $current['path'],
+                $current['setting'],
+                $config
+            );
+        }
 
         // Write updated configuration
         $this->writeModuleConfig($configPath, $config);
+    }
+
+    /**
+     * Update the configuration of a target module with a single setting.
+     *
+     * @param array        $path    Representation of path in config array
+     * @param string|array $setting New setting to write into config
+     * @param string       $module  Module in which to write the configuration
+     * @param bool         $backup  Should we back up the existing config?
+     *
+     * @return void
+     * @throws \Exception
+     */
+    protected function writeNewConfig($path, $setting, $module, $backup  = true)
+    {
+        $this->writeNewConfigs([compact('path', 'setting')], $module, $backup);
     }
 
     /**
