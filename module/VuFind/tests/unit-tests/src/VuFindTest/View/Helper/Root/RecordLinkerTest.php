@@ -90,9 +90,9 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a RecordLink object ready for testing.
+     * Get a RecordLinker object ready for testing.
      *
-     * @return RecordLink
+     * @return RecordLinker
      */
     protected function getRecordLinker(): RecordLinker
     {

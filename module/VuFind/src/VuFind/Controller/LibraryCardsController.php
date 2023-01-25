@@ -294,6 +294,14 @@ class LibraryCardsController extends AbstractBase
         if ($card->cat_username !== $username || trim($password)) {
             // Connect to the ILS and check that the credentials are correct:
             $loginMethod = $this->getILSLoginMethod($target);
+            if ('password' === $loginMethod
+                && !$this->getAuthManager()->allowsUserIlsLogin()
+            ) {
+                throw new \Exception(
+                    "Illegal configuration: "
+                    . "password-based library cards and disabled user login"
+                );
+            }
             $catalog = $this->getILS();
             try {
                 $patron = $catalog->patronLogin($username, $password);

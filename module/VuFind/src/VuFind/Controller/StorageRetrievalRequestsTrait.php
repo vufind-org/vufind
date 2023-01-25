@@ -94,6 +94,14 @@ trait StorageRetrievalRequestsTrait
         $extraFields = isset($checkRequests['extraFields'])
             ? explode(":", $checkRequests['extraFields']) : [];
 
+        // Check that there are pick up locations to choose from if the field is
+        // required:
+        if (in_array('pickUpLocation', $extraFields) && !$pickup) {
+            $this->flashMessenger()
+                ->addErrorMessage('No pickup locations available');
+            return $this->redirectToRecord('#top');
+        }
+
         // Process form submissions if necessary:
         if (null !== $this->params()->fromPost('placeStorageRetrievalRequest')) {
             // If we made it this far, we're ready to place the hold;

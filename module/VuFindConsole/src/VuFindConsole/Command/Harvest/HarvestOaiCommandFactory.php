@@ -89,6 +89,10 @@ class HarvestOaiCommandFactory implements FactoryInterface
         return new $requestedName(
             $container->get(\VuFindHttp\HttpService::class)->createClient(),
             $this->getHarvestRoot(),
+            null,
+            false,
+            null,
+            $container->get(\VuFind\Config\PathResolver::class),
             ...($options ?? [])
         );
     }

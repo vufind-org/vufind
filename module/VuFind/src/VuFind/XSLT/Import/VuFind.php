@@ -28,7 +28,6 @@
 namespace VuFind\XSLT\Import;
 
 use DOMDocument;
-use VuFind\Config\Locator as ConfigLocator;
 
 /**
  * XSLT support class -- all methods of this class must be public and static;
@@ -348,9 +347,9 @@ class VuFind
         // that PHP's parse_ini_file() function is not compatible with SolrMarc's
         // style of properties map, so we are parsing this manually.
         $map = [];
-        $mapFile
-            = ConfigLocator::getConfigPath($filename, 'import/translation_maps');
-        foreach (file($mapFile) as $line) {
+        $resolver = static::$serviceLocator->get(\VuFind\Config\PathResolver::class);
+        $mapFile = $resolver->getConfigPath($filename, 'import/translation_maps');
+        foreach ($mapFile ? file($mapFile) : [] as $line) {
             $parts = explode('=', $line, 2);
             if (isset($parts[1])) {
                 $key = trim($parts[0]);

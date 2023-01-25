@@ -114,6 +114,14 @@ trait HoldsTrait
         }
         $pickup = $catalog->getPickUpLocations($patron, $pickupDetails);
 
+        // Check that there are pick up locations to choose from if the field is
+        // required:
+        if (in_array('pickUpLocation', $extraHoldFields) && !$pickup) {
+            $this->flashMessenger()
+                ->addErrorMessage('No pickup locations available');
+            return $this->redirectToRecord('#top');
+        }
+
         // Process form submissions if necessary:
         if (null !== $this->params()->fromPost('placeHold')) {
             // If the form contained a pickup location, request group, start date or

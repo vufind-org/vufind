@@ -227,9 +227,6 @@ class Folio extends AbstractAPI implements
             'password' => $this->config['API']['password'],
         ];
         $response = $this->makeRequest('POST', '/authn/login', json_encode($auth));
-        if ($response->getStatusCode() >= 400) {
-            throw new ILSException($response->getBody());
-        }
         $this->token = $response->getHeaders()->get('X-Okapi-Token')
             ->getFieldValue();
         $this->sessionCache->folio_token = $this->token;
@@ -248,7 +245,7 @@ class Folio extends AbstractAPI implements
      */
     protected function checkTenantToken()
     {
-        $response = $this->makeRequest('GET', '/users');
+        $response = $this->makeRequest('GET', '/users', [], [], [401, 403]);
         if ($response->getStatusCode() >= 400) {
             $this->token = null;
             $this->renewTenantToken();
@@ -713,9 +710,6 @@ class Folio extends AbstractAPI implements
             '/authn/login',
             json_encode($credentials)
         );
-        if ($response->getStatusCode() >= 400) {
-            throw new ILSException($response->getBody());
-        }
         $debugMsg = 'User logged in. User: ' . $username . '.';
         // We've authenticated the user with Okapi, but we only have their
         // username; set up a query to retrieve full info below.
@@ -774,7 +768,7 @@ class Folio extends AbstractAPI implements
     {
         $response = $this->makeRequest('GET', '/users', compact('query'));
         $json = json_decode($response->getBody());
-        return count($json->users) === 1 ? $json->users[0] : null;
+        return count($json->users ?? []) === 1 ? $json->users[0] : null;
     }
 
     /**
@@ -1022,7 +1016,7 @@ class Folio extends AbstractAPI implements
     public function renewMyItems($renewDetails)
     {
         $renewalResults = ['details' => []];
-        foreach ($renewDetails['details'] as $loanId) {
+        foreach ($renewDetails['details'] ?? [] as $loanId) {
             $requestbody = [
                 'itemId' => $loanId,
                 'userId' => $renewDetails['patron']['id']
@@ -1031,7 +1025,9 @@ class Folio extends AbstractAPI implements
                 $response = $this->makeRequest(
                     'POST',
                     '/circulation/renew-by-id',
-                    json_encode($requestbody)
+                    json_encode($requestbody),
+                    [],
+                    true
                 );
                 if ($response->isSuccess()) {
                     $json = json_decode($response->getBody());
@@ -1213,7 +1209,9 @@ class Folio extends AbstractAPI implements
         $response = $this->makeRequest(
             'POST',
             '/circulation/requests',
-            json_encode($requestBody)
+            json_encode($requestBody),
+            [],
+            true
         );
         if ($response->isSuccess()) {
             $json = json_decode($response->getBody());
@@ -1282,24 +1280,26 @@ class Folio extends AbstractAPI implements
             // Change status to Closed and add cancellationID
             $request_json->status = 'Closed - Cancelled';
             $request_json->cancellationReasonId
-                = $this->config['Holds']['cancellation_reason'];
-            $cancel_response = $this->makeRequest(
-                'PUT',
-                '/circulation/requests/' . $requestId,
-                json_encode($request_json)
-            );
-            if ($cancel_response->getStatusCode() == 204) {
-                $count++;
-                $cancelResult['items'][$request_json->itemId] = [
-                    'success' => true,
-                    'status' => 'hold_cancel_success'
-                ];
-            } else {
-                $cancelResult['items'][$request_json->itemId] = [
-                    'success' => false,
-                    'status' => 'hold_cancel_fail'
-                ];
+                = $this->config['Holds']['cancellation_reason']
+                ?? '75187e8d-e25a-47a7-89ad-23ba612338de';
+            $success = false;
+            try {
+                $cancel_response = $this->makeRequest(
+                    'PUT',
+                    '/circulation/requests/' . $requestId,
+                    json_encode($request_json),
+                    [],
+                    true
+                );
+                $success = $cancel_response->getStatusCode() === 204;
+            } catch (\Exception $e) {
+                // Do nothing; the $success flag is already false by default.
             }
+            $count += $success ? 1 : 0;
+            $cancelResult['items'][$request_json->itemId] = [
+                'success' => $success,
+                'status' => $success ? 'hold_cancel_success' : 'hold_cancel_fail',
+            ];
         }
         $cancelResult['count'] = $count;
         return $cancelResult;
