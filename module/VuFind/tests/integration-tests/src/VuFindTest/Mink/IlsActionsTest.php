@@ -104,25 +104,6 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Fill in and submit the catalog login form with the provided credentials.
-     *
-     * @param Element $page     Page element.
-     * @param string  $username Username
-     * @param string  $password Password
-     *
-     * @return void
-     */
-    protected function submitCatalogLoginForm(
-        Element $page,
-        string $username,
-        string $password
-    ): void {
-        $this->findCss($page, '#profile_cat_username')->setValue($username);
-        $this->findCss($page, '#profile_cat_password')->setValue($password);
-        $this->clickCss($page, 'input.btn.btn-primary');
-    }
-
-    /**
      * Support method to place an ILL request and end up on the ILL screen.
      *
      * @param Element $page Page element.

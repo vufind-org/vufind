@@ -28,7 +28,6 @@
 declare(strict_types=1);
 namespace VuFindTest\Mink;
 
-use Behat\Mink\Element\Element;
 use const PHP_MAJOR_VERSION;
 use VuFind\Config\Locator;
 
@@ -141,25 +140,6 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         $this->changeYamlConfigs(
             ['OAuth2Server' => $this->getOauth2ConfigOverrides($redirectUri)]
         );
-    }
-
-    /**
-     * Fill in and submit the catalog login form with the provided credentials.
-     *
-     * @param Element $page     Page element.
-     * @param string  $username Username
-     * @param string  $password Password
-     *
-     * @return void
-     */
-    protected function submitCatalogLoginForm(
-        Element $page,
-        string $username,
-        string $password
-    ): void {
-        $this->findCss($page, '#profile_cat_username')->setValue($username);
-        $this->findCss($page, '#profile_cat_password')->setValue($password);
-        $this->clickCss($page, 'input.btn.btn-primary');
     }
 
     /**
