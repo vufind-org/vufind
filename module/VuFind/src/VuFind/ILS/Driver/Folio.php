@@ -1279,6 +1279,9 @@ class Folio extends AbstractAPI implements
             'requestExpirationDate' => $requiredBy,
             'pickupServicePointId' => $holdDetails['pickUpLocation']
         ];
+        if (!empty($holdDetails['comment'])) {
+            $requestBody['patronComments'] = $holdDetails['comment'];
+        }
         $response = $this->makeRequest(
             'POST',
             '/circulation/requests',
