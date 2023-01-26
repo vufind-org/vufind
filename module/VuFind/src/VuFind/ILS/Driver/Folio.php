@@ -1569,6 +1569,50 @@ class Folio extends AbstractAPI implements
         return $retVal;
     }
 
+    /**
+     * Get list of users for whom the provided patron is a proxy.
+     *
+     * @param array $patron The patron array with username and password
+     *
+     * @return array
+     */
+    public function getProxiedUsers(array $patron): array
+    {
+        // requires proxiesfor.collection.get
+        /* Example response:
+        {
+            "proxiesFor": [
+                {
+                    "userId": "uuid",
+                    "proxyUserId": "uuid",
+                    "id": "uuid",
+                    "requestForSponsor": "Yes",
+                    "notificationsTo": "Sponsor",
+                    "accrueTo": "Sponsor",
+                    "status": "Active",
+                    "expirationDate": "2024-01-26T05:00:00.000+00:00",
+                    "metadata": {
+                        "createdDate": "2023-01-26T14:18:08.013+00:00",
+                        "createdByUserId": "uuid",
+                        "updatedDate": "2023-01-26T14:18:08.013+00:00",
+                        "updatedByUserId": "uuid"
+                    }
+                }
+            ],
+            "totalRecords": 1
+        }
+        */
+        $query = [
+            'query' => '(proxyUserId=="' . $patron['id'] . '")'
+        ];
+        $results = [];
+        foreach ($this->getPagedResults('proxiesFor', '/proxiesfor', $query) as $current) {
+            // TODO: filter based on attributes (see example above)
+            $results[] = $current;
+        }
+        return $results;
+    }
+
     // @codingStandardsIgnoreStart
     /** NOT FINISHED BELOW THIS LINE **/
 
