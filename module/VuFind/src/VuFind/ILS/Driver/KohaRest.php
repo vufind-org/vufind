@@ -886,7 +886,6 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                         'query' => [
                             'patron_id' => (int)$patron['id'],
                             'query_pickup_locations' => 1,
-                            'ignore_patron_holds' => $requestId ? 1 : 0,
                         ]
                     ]
                 );
