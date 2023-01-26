@@ -940,7 +940,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(ParamBag::class, $primoParams);
         $this->assertInstanceOf(ParamBag::class, $edsParams);
 
-        $this->assertEquals(['publishDateSort desc,id asc'], $solrParams->get('sort'));
+        $this->assertEquals(['publishDateSort desc'], $solrParams->get('sort'));
         $this->assertEquals(['scdate'], $primoParams->get('sort'));
         $this->assertEquals(['date'], $edsParams->get('sort'));
     }
@@ -1069,12 +1069,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      */
     protected function getParamsClassesArray(): array
     {
-        $solrConfigMgr = new \VuFindTest\Container\MockConfigPluginManager($this);
-        $solrConfigMgr->set('facets', new \Laminas\Config\Config([]));
-        $solrConfigMgr->set(
-            'searches',
-            new \Laminas\Config\Config(['General' => ['tie_breaker_sort' => 'id']])
-        );
+        $solrConfigMgr = $this->createMock(\VuFind\Config\PluginManager::class);
         $configMgr = $this->getConfigManager();
         $result = [];
         $result[] = new \VuFind\Search\Solr\Params(

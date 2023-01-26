@@ -43,6 +43,7 @@ use VuFind\Search\Solr\Params;
 class ParamsTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ReflectionTrait;
 
     /**
      * Test that filters work as expected.
@@ -153,6 +154,25 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
             $params->getCheckboxFacets()
+        );
+    }
+
+    /**
+     * Test normalize sort parameters.
+     *
+     * @return void
+     */
+    public function testconfigureSummonResults(): void
+    {
+        $options = $this->getMockBuilder(\VuFind\Search\Solr\Options::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $options->expects($this->once())->method('getSortTieBreaker')
+            ->will($this->returnValue('id'));
+        $params = $this->getParams($options);
+        $this->assertEquals(
+            'publishDateSort desc,id asc',
+            $this->callMethod($params, 'normalizeSort', ['year'])
         );
     }
 
