@@ -104,6 +104,8 @@ class Google extends \VuFind\Content\AbstractCover
                     $response->getBody()
                 );
             }
+
+            return $json;
         };
 
         $json = $this->cachingDownloader->download($url, [], $decodeCallback);
