@@ -1071,6 +1071,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     {
         $solrConfigMgr = $this->createMock(\VuFind\Config\PluginManager::class);
         $configMgr = $this->getConfigManager();
+
         $result = [];
         $result[] = new \VuFind\Search\Solr\Params(
             new \VuFind\Search\Solr\Options($solrConfigMgr),
