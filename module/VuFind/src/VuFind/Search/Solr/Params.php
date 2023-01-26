@@ -470,6 +470,11 @@ class Params extends \VuFind\Search\Base\Params
             'relevance' => ['field' => 'score', 'order' => 'desc'],
             'callnumber' => ['field' => 'callnumber-sort', 'order' => 'asc'],
         ];
+        $tieBreaker = $this->getOptions()->getSortTieBreaker();
+        if ($tieBreaker) {
+            $sort .= ',' . $tieBreaker;
+        }
+
         $normalized = [];
         foreach (explode(',', $sort) as $component) {
             $parts = explode(' ', trim($component));
@@ -482,24 +487,15 @@ class Params extends \VuFind\Search\Base\Params
                     $order ?: $table[$field]['order']
                 );
             } else {
-                $normalized[] = sprintf(
+                $sortValue = sprintf(
                     '%s %s',
                     $field,
                     $order ?: 'asc'
                 );
+                if (!in_array($sortValue, $normalized)) {
+                    $normalized[] = $sortValue;
+                }
             }
-        }
-        $tieBreaker = $this->getOptions()->getSortTieBreaker();
-
-        if (!empty($tieBreaker)
-            && !(in_array($tieBreaker . " asc", $normalized)
-            || in_array($tieBreaker . " desc", $normalized))
-        ) {
-            $normalized[] = sprintf(
-                '%s %s',
-                $tieBreaker,
-                'asc'
-            );
         }
         return implode(',', $normalized);
     }

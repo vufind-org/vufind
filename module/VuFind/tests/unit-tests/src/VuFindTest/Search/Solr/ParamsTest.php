@@ -158,21 +158,43 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Data provider for testSortTieBreakerParameter.
+     *
+     * @return array
+     */
+    public function sortValueProvider(): array
+    {
+        return ['Test1' => ["year", "id", "publishDateSort desc,id asc"],
+                'Test2' => ["year", "id desc", "publishDateSort desc,id desc"],
+                'Test3' => ["year", "", "publishDateSort desc"],
+            ];
+    }
+
+    /**
      * Test sort tie-breaker parameter.
      *
+     * @param string $sort Sort parameter of normalizeSort method
+     * @param string $tieBreaker Sort tie breaker form Searches.ini
+     * @param string $expectedResult Expected return value from normalizeSort
+     *
      * @return void
+     *
+     * @dataProvider sortValueProvider
      */
-    public function testSortTieBreakerParameter(): void
-    {
+    public function testSortTieBreakerParameter(
+        string $sort,
+        string $tieBreaker,
+        string $expectedResult
+    ): void {
         $options = $this->getMockBuilder(\VuFind\Search\Solr\Options::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+                ->disableOriginalConstructor()
+                ->getMock();
         $options->expects($this->once())->method('getSortTieBreaker')
-            ->will($this->returnValue('id'));
+                ->will($this->returnValue($tieBreaker));
         $params = $this->getParams($options);
         $this->assertEquals(
-            'publishDateSort desc,id asc',
-            $this->callMethod($params, 'normalizeSort', ['year'])
+            $expectedResult,
+            $this->callMethod($params, 'normalizeSort', [$sort])
         );
     }
 
