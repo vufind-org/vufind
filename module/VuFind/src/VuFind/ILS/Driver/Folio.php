@@ -463,14 +463,13 @@ class Folio extends AbstractAPI implements
      */
     protected function isHoldable($locationName)
     {
-        $setSubSt = (bool)$this->config['Holds']['excludeHoldLocationsBySubString']
-                    ?? false;
+        $mode = $this->config['Holds']['excludeHoldLocationsCompareMode'] ?? 'exact';
         $excludeLocs = (array)$this->config['Holds']['excludeHoldLocations'] ?? [];
 
-        // Exclude Checking by substring match
-        if ($setSubSt) {
-            foreach ($excludeLocs as $exclude) {
-                if (strpos($locationName, $exclude) !== false) {
+        // Exclude checking by regex match
+        if ($mode == "regex") {
+            foreach ($excludeLocs as $pattern) {
+                if (preg_match($pattern, $locationName) === 1) {
                     return false;
                 }
             }
