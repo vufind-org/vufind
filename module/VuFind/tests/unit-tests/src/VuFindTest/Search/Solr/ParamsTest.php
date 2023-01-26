@@ -158,11 +158,11 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test normalize sort parameters.
+     * Test sort tie-breaker parameter.
      *
      * @return void
      */
-    public function testconfigureSummonResults(): void
+    public function testSortTieBreakerParameter(): void
     {
         $options = $this->getMockBuilder(\VuFind\Search\Solr\Options::class)
             ->disableOriginalConstructor()
