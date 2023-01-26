@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d705a9aa089626506bbeb6c016f2d8a6",
+    "content-hash": "c47bdf83a3bcba682ce7352ea6a352f3",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -8311,31 +8311,31 @@
         },
         {
             "name": "vufind-org/vufinddate",
-            "version": "v1.1.0",
+            "version": "v1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vufind-org/vufinddate.git",
-                "reference": "bd1a58b0b29ab388700c090f90f2faea112c5277"
+                "reference": "319b862c5a8a1352ff6cb93095fface6b40bc2e1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vufind-org/vufinddate/zipball/bd1a58b0b29ab388700c090f90f2faea112c5277",
-                "reference": "bd1a58b0b29ab388700c090f90f2faea112c5277",
+                "url": "https://api.github.com/repos/vufind-org/vufinddate/zipball/319b862c5a8a1352ff6cb93095fface6b40bc2e1",
+                "reference": "319b862c5a8a1352ff6cb93095fface6b40bc2e1",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.3"
+                "php": ">=7.4.1"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "2.19.0",
+                "friendsofphp/php-cs-fixer": "3.8.0",
                 "pear/http_request2": "2.4.2",
                 "phing/phing": "2.17.3",
                 "phploc/phploc": "7.0.2",
-                "phpmd/phpmd": "2.10.0",
-                "phpstan/phpstan": "0.12.85",
-                "phpunit/phpunit": "9.5.4",
+                "phpmd/phpmd": "2.12.0",
+                "phpstan/phpstan": "1.6.8",
+                "phpunit/phpunit": "9.5.20",
                 "sebastian/phpcpd": "6.0.3",
-                "squizlabs/php_codesniffer": "3.6.0"
+                "squizlabs/php_codesniffer": "3.6.2"
             },
             "type": "library",
             "autoload": {
@@ -8357,9 +8357,9 @@
             "homepage": "https://vufind.org/",
             "support": {
                 "issues": "https://vufind.org/jira",
-                "source": "https://github.com/vufind-org/vufinddate/tree/v1.1.0"
+                "source": "https://github.com/vufind-org/vufinddate/tree/v1.2.0"
             },
-            "time": "2022-05-16T15:33:26+00:00"
+            "time": "2023-01-17T14:25:21+00:00"
         },
         {
             "name": "vufind-org/vufindharvest",

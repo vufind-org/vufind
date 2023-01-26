@@ -207,10 +207,8 @@ class Options extends \VuFind\Search\Base\Options
 
         // Turn on highlighting if the user has requested highlighting or snippet
         // functionality:
-        $highlight = !isset($searchSettings->General->highlighting)
-            ? false : $searchSettings->General->highlighting;
-        $snippet = !isset($searchSettings->General->snippets)
-            ? false : $searchSettings->General->snippets;
+        $highlight = $searchSettings->General->highlighting ?? false;
+        $snippet = $searchSettings->General->snippets ?? false;
         if ($highlight || $snippet) {
             $this->highlight = true;
         }

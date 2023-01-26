@@ -75,18 +75,15 @@
     <?php endif; ?>
 
     <?php /* Display Main Details */ ?>
-    <?php
-      $formatter = $this->recordDataFormatter();
-      $coreFields = $formatter->getData($driver, $formatter->getDefaults('core'));
+    <?=
+      $this->record($this->driver)->renderTemplate(
+          'core-fields.phtml',
+          [
+            'driver' => $this->driver,
+            'defaults' => 'core'
+          ]
+      );
     ?>
-    <?php if (!empty($coreFields)): ?>
-      <table class="table table-striped">
-        <caption class="sr-only"><?=$this->transEsc('Bibliographic Details')?></caption>
-        <?php foreach ($coreFields as $current): ?>
-          <tr><th><?=$this->transEsc($current['label'])?>:</th><td><?=$current['value']?></td></tr>
-        <?php endforeach; ?>
-      </table>
-    <?php endif; ?>
     <?php /* End Main Details */ ?>
   </div>
 </div>
