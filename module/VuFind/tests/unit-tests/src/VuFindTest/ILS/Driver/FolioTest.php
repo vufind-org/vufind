@@ -502,7 +502,6 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expected, $result);
     }
 
-
     /**
      * Test calls to isHoldable with various config settings
      * for the exclude holds properties
