@@ -476,6 +476,7 @@ class Params extends \VuFind\Search\Base\Params
         }
 
         $normalized = [];
+        $fields = [];
         foreach (explode(',', $sort) as $component) {
             $parts = explode(' ', trim($component));
             $field = reset($parts);
@@ -486,14 +487,16 @@ class Params extends \VuFind\Search\Base\Params
                     $table[$field]['field'],
                     $order ?: $table[$field]['order']
                 );
+                $fields[] = $field;
             } else {
-                $sortValue = sprintf(
-                    '%s %s',
-                    $field,
-                    $order ?: 'asc'
-                );
-                if (!in_array($sortValue, $normalized)) {
-                    $normalized[] = $sortValue;
+
+                if (!in_array($field, $fields)) {
+                    $normalized[] = sprintf(
+                        '%s %s',
+                        $field,
+                        $order ?: 'asc'
+                    );
+                    $fields[] = $field;
                 }
             }
         }

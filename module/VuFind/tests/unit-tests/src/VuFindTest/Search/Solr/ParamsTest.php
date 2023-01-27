@@ -167,6 +167,9 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         return ['Test1' => ["year", "id", "publishDateSort desc,id asc"],
                 'Test2' => ["year", "id desc", "publishDateSort desc,id desc"],
                 'Test3' => ["year", "", "publishDateSort desc"],
+                'Test4' => ["year", "title desc,id asc", "publishDateSort desc,title_sort desc,id asc"],
+                'Test5' => ["year", "title desc,id", "publishDateSort desc,title_sort desc,id asc"],
+                'Test6' => ["year,id", "id desc", "publishDateSort desc,id asc"],
             ];
     }
 
