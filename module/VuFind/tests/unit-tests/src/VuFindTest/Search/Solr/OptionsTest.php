@@ -51,7 +51,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
      *
      * @return Options
      */
-    protected function getOptions($configManager = null)
+    protected function getOptions(PluginManager $configManager = null): Options
     {
         return new Options($configManager ?? $this->getMockConfigPluginManager([]));
     }
@@ -61,8 +61,30 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetSearchClassId()
+    public function testGetSearchClassId(): void
     {
         $this->assertEquals('Solr', $this->getOptions()->getSearchClassId());
+    }
+
+    /**
+     * Test default sort tie-breaker behavior.
+     *
+     * @return void
+     */
+    public function testDefaultSortTieBreaker(): void
+    {
+        $this->assertNull($this->getOptions()->getSortTieBreaker());
+    }
+
+    /**
+     * Test configuration of sort tie-breaker setting.
+     *
+     * @return void
+     */
+    public function testSortTieBreakerConfiguration(): void
+    {
+        $configs = ['searches' => ['General' => ['tie_breaker_sort' => 'foo']]];
+        $options = $this->getOptions($this->getMockConfigPluginManager($configs));
+        $this->assertEquals('foo', $options->getSortTieBreaker());
     }
 }
