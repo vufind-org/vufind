@@ -43,6 +43,7 @@ use VuFind\ILS\Driver\Folio;
 class FolioTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\ReflectionTrait;
 
     /**
      * Default test configuration
@@ -499,5 +500,71 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'position' => 3
         ];
         $this->assertEquals($expected, $result);
+    }
+
+
+    /**
+     * Test calls to isHoldable with various config settings
+     * for the exclude holds properties
+     *
+     * @return void
+     */
+    public function testIsHoldable(): void
+    {
+        $driverConfig = $this->defaultDriverConfig;
+
+        // Positive test for exact compare mode
+        $driverConfig['Holds']['excludeHoldLocations'] = ['reserve'];
+        $driverConfig['Holds']['excludeHoldLocationsCompareMode'] = 'exact';
+        $this->createConnector("empty", $driverConfig);
+
+        $this->assertEquals($this->callMethod($this->driver, "isHoldable", ["reserve"]), false);
+        $this->assertEquals($this->callMethod($this->driver, "isHoldable", ["Reserve"]), true);
+        $this->assertEquals($this->callMethod($this->driver, "isHoldable", ["library"]), true);
+
+        // Test default mode is exact
+        unset($driverConfig['Holds']['excludeHoldLocationsCompareMode']);
+        $this->createConnector("empty", $driverConfig);
+        $this->assertEquals($this->callMethod($this->driver, "isHoldable", ["reserve"]), false);
+
+        // Test that compare mode for exact is case insensitive
+        $driverConfig['Holds']['excludeHoldLocationsCompareMode'] = 'Exact';
+        $this->createConnector("empty", $driverConfig);
+        $this->assertEquals($this->callMethod($this->driver, "isHoldable", ["reserve"]), false);
+
+        // Negative test for exact compare mode (non-string setting and parameter used)
+        $driverConfig['Holds']['excludeHoldLocations'] = [1];
+        $this->createConnector("empty", $driverConfig);
+        $this->assertEquals($this->callMethod($this->driver, "isHoldable", [1]), false);
+        $this->assertEquals($this->callMethod($this->driver, "isHoldable", [0]), true);
+        $this->assertEquals($this->callMethod($this->driver, "isHoldable", ["1"]), false);
+
+        // Positive test for regex compare mode
+        $driverConfig['Holds']['excludeHoldLocations'] = ['/RESERVE/i'];
+        $driverConfig['Holds']['excludeHoldLocationsCompareMode'] = 'regex';
+        $this->createConnector("empty", $driverConfig);
+        $this->assertEquals($this->callMethod($this->driver, "isHoldable", ["reserve"]), false);
+        $this->assertEquals($this->callMethod($this->driver, "isHoldable", ["Reserve"]), false);
+        $this->assertEquals($this->callMethod($this->driver, "isHoldable", ["library"]), true);
+        $this->assertEquals($this->callMethod($this->driver, "isHoldable", ["24 hour reserve desk"]), false);
+
+        // Negative test for regex compare mode (invalid regex)
+        $driverConfig['Holds']['excludeHoldLocations'] = ['RESERVE'];
+        $this->createConnector("empty", $driverConfig);
+        $this->assertEquals($this->callMethod($this->driver, "isHoldable", ["reserve"]), true);
+
+        // Negative test for regex compare mode (non-string setting and parameter used)
+        $driverConfig['Holds']['excludeHoldLocations'] = [true];
+        $this->createConnector("empty", $driverConfig);
+        $this->assertEquals($this->callMethod($this->driver, "isHoldable", ["library"]), true);
+        $this->assertEquals($this->callMethod($this->driver, "isHoldable", ["true"]), true);
+        $this->assertEquals($this->callMethod($this->driver, "isHoldable", [true]), true);
+
+        // Test that compare mode for regex is case insensitive
+        $driverConfig['Holds']['excludeHoldLocations'] = ['/RESERVE/i'];
+        $driverConfig['Holds']['excludeHoldLocationsCompareMode'] = ' ReGeX ';
+        $this->createConnector("empty", $driverConfig);
+        $this->assertEquals($this->callMethod($this->driver, "isHoldable", ["Library of Stuff"]), true);
+        $this->assertEquals($this->callMethod($this->driver, "isHoldable", ["Library of reservED Stuff"]), false);
     }
 }

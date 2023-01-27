@@ -467,19 +467,25 @@ class Folio extends AbstractAPI implements
         $excludeLocs = (array)$this->config['Holds']['excludeHoldLocations'] ?? [];
 
         // Exclude checking by regex match
-        if ($mode == "regex") {
+        if (trim(strtolower($mode)) == "regex") {
             foreach ($excludeLocs as $pattern) {
-                if (preg_match($pattern, $locationName) === 1) {
+                $match = @preg_match($pattern, $locationName);
+                // Invalid regex, skip this pattern
+                if ($match === false) {
+                    $this->logWarning(
+                        'Invalid regex found in excludeHoldLocations: ' .
+                        $pattern
+                    );
+                    continue;
+                }
+                if ($match === 1) {
                     return false;
                 }
             }
             return true;
         } else {
             // Otherwise exclude checking by exact match
-            return !in_array(
-                $locationName,
-                $excludeLocs
-            );
+            return !in_array($locationName, $excludeLocs);
         }
     }
 
