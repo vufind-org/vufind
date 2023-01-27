@@ -3,7 +3,7 @@ VuFind.register('channels', function Channels() {
   function addLinkButtons(elem) {
     var links;
     try {
-      var links = JSON.parse(elem.dataset.linkJson);
+      links = JSON.parse(elem.dataset.linkJson);
     } catch (e) {
       console.error("Error parsing " + elem.dataset.linkJson);
       return;
