@@ -489,7 +489,6 @@ class Params extends \VuFind\Search\Base\Params
                 );
                 $fields[] = $field;
             } else {
-
                 if (!in_array($field, $fields)) {
                     $normalized[] = sprintf(
                         '%s %s',
