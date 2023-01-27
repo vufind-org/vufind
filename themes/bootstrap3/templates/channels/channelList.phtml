@@ -57,7 +57,7 @@
       </div>
     <?php endif; ?>
 
-    <div id="<?=$channelID ?>" class="channel" data-group="<?=$groupId ?>" data-link-json='<?=empty($channel['links']) ? '[]' : str_replace("'", '&#39;', json_encode($channel['links'])) ?>'>
+    <div id="<?=$channelID ?>" class="channel" data-group="<?=$groupId ?>" data-link-json='<?=empty($channel['links']) ? '[]' : json_encode($channel['links'], JSON_HEX_APOS) ?>'>
       <!-- Wrapper for slides -->
       <?php foreach ($channel['contents'] as $index => $item): ?>
         <?php $url = empty($item['routeDetails']) ? $this->recordLinker()->getUrl("{$item['source']}|{$item['id']}") : $this->url($item['routeDetails']['route'], $item['routeDetails']['params']); ?>
