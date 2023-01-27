@@ -16,11 +16,8 @@
   <form class="form-list-edit" method="post" name="editForm">
   <?php if (empty($this->savedData)): ?>
     <p class="alert alert-info">
-      <?php if (isset($listFilter)): ?>
-        <?=$this->transEsc('The record you selected is not part of the selected list.') ?>
-      <?php else: ?>
-        <?=$this->transEsc('The record you selected is not part of any of your lists.') ?>
-      <?php endif; ?>
+      <?php $listType = isset($listID) ? 'the selected list' : 'any of your lists' ?>
+      <?=$this->transEsc("The record you selected is not part of $listType.") ?>
     </p>
   <?php else: ?>
     <div class="list-edit-container">
@@ -65,5 +62,5 @@
   </form>
 </div>
 <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
-  <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => empty($listFilter) ? 'favorites' : 'list' . $listFilter])?>
+  <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => empty($listID) ? 'favorites' : 'list' . $listID])?>
 </div>
