@@ -21,8 +21,11 @@
   <form class="form-list-edit" method="post" name="editForm">
   <?php if (empty($this->savedData)): ?>
     <p class="alert alert-info">
-      <?php $listType = isset($listID) ? 'the selected list' : 'any of your lists' ?>
-      <?=$this->transEsc("The record you selected is not part of $listType.") ?>
+      <?php if (isset($listID)): ?>
+        <?=$this->transEsc('The record you selected is not part of the selected list.') ?>
+      <?php else: ?>
+        <?=$this->transEsc('The record you selected is not part of any of your lists.') ?>
+      <?php endif; ?>
     </p>
   <?php else: ?>
     <div class="list-edit-container">
