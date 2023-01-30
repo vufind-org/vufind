@@ -3,15 +3,25 @@
   $this->headTitle($this->translate('Edit') . ' : ' . $this->driver->getBreadcrumb());
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Edit') . '</li>';
+  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
+    . (
+        isset($listID)
+          ? '<li><a href="' . $this->url('userList', ['id' => $listID]) . '">' . $this->transEsc('List') . '</a></li>'
+          : '<li><a href="' . $this->url('myresearch-favorites') . '">' . $this->transEsc('Favorites') . '</a></li>'
+    ) . '<li class="active">' . $this->transEsc('Edit') . '</li>';
 ?>
-<div class="record">
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <a class="search-filter-toggle visible-xs" href="#myresearch-sidebar"
+    data-toggle="offcanvas" aria-label="<?=$this->transEsc('sidebar_expand')?>">
+    <?=$this->transEsc('Your Account') ?>
+  </a>
+
   <h2><?=$this->escapeHtml($this->driver->getBreadcrumb())?></h2>
 
   <form class="form-list-edit" method="post" name="editForm">
   <?php if (empty($this->savedData)): ?>
     <p class="alert alert-info">
-      <?php if (isset($listFilter)): ?>
+      <?php if (isset($listID)): ?>
         <?=$this->transEsc('The record you selected is not part of the selected list.') ?>
       <?php else: ?>
         <?=$this->transEsc('The record you selected is not part of any of your lists.') ?>
@@ -59,4 +69,7 @@
     </div>
   <?php endif; ?>
   </form>
+</div>
+<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
+  <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => empty($listID) ? 'favorites' : 'list' . $listID])?>
 </div>
