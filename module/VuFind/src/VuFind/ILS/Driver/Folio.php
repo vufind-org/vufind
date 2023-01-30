@@ -1569,61 +1569,12 @@ class Folio extends AbstractAPI implements
         return $retVal;
     }
 
-    // @codingStandardsIgnoreStart
-    /** NOT FINISHED BELOW THIS LINE **/
-
-    /**
-     * Check for request blocks.
-     *
-     * @param array $patron The patron array with username and password
-     *
-     * @return array|boolean    An array of block messages or false if there are no
-     *                          blocks
-     * @author Michael Birkner
-     */
-    public function getRequestBlocks($patron)
-    {
-        return false;
-    }
-
-    /**
-     * This method returns information on recently received issues of a serial.
-     *
-     *     Input: Bibliographic record ID
-     *     Output: Array of associative arrays, each with a single key:
-     *         issue - String describing the issue
-     *
-     * Currently, most drivers do not implement this method, instead always returning
-     * an empty array. It is only necessary to implement this in more detail if you
-     * want to populate the “Most Recent Received Issues” section of the record
-     * holdings tab.
-     */
-    public function getPurchaseHistory($bibID)
-    {
-        return [];
-    }
-
     /**
      * This method queries the ILS for a patron's current fines
      *
-     *     Input: Patron array returned by patronLogin method
-     *     Output: Returns an array of associative arrays, one for each fine
-     * associated with the specified account. Each associative array contains
-     * these keys:
-     *         amount - The total amount of the fine IN PENNIES. Be sure to adjust
-     * decimal points appropriately (i.e. for a $1.00 fine, amount should be 100).
-     *         checkout - A string representing the date when the item was
-     * checked out.
-     *         fine - A string describing the reason for the fine
-     * (i.e. “Overdue”, “Long Overdue”).
-     *         balance - The unpaid portion of the fine IN PENNIES.
-     *         createdate – A string representing the date when the fine was accrued
-     * (optional)
-     *         duedate - A string representing the date when the item was due.
-     *         id - The bibliographic ID of the record involved in the fine.
-     *         source - The search backend from which the record may be retrieved
-     * (optional - defaults to Solr). Introduced in VuFind 2.4.
+     * @param array $patron The patron array from patronLogin
      *
+     * @return array
      */
     public function getMyFines($patron)
     {
@@ -1650,6 +1601,39 @@ class Folio extends AbstractAPI implements
             ];
         }
         return $fines;
+    }
+
+    // @codingStandardsIgnoreStart
+    /** NOT FINISHED BELOW THIS LINE **/
+
+    /**
+     * Check for request blocks.
+     *
+     * @param array $patron The patron array with username and password
+     *
+     * @return array|boolean    An array of block messages or false if there are no
+     *                          blocks
+     */
+    public function getRequestBlocks($patron)
+    {
+        return false;
+    }
+
+    /**
+     * This method returns information on recently received issues of a serial.
+     *
+     *     Input: Bibliographic record ID
+     *     Output: Array of associative arrays, each with a single key:
+     *         issue - String describing the issue
+     *
+     * Currently, most drivers do not implement this method, instead always returning
+     * an empty array. It is only necessary to implement this in more detail if you
+     * want to populate the “Most Recent Received Issues” section of the record
+     * holdings tab.
+     */
+    public function getPurchaseHistory($bibID)
+    {
+        return [];
     }
 
     /**
