@@ -1584,24 +1584,9 @@ class Folio extends AbstractAPI implements
     /**
      * This method queries the ILS for a patron's current fines
      *
-     *     Input: Patron array returned by patronLogin method
-     *     Output: Returns an array of associative arrays, one for each fine
-     * associated with the specified account. Each associative array contains
-     * these keys:
-     *         amount - The total amount of the fine IN PENNIES. Be sure to adjust
-     * decimal points appropriately (i.e. for a $1.00 fine, amount should be 100).
-     *         checkout - A string representing the date when the item was
-     * checked out.
-     *         fine - A string describing the reason for the fine
-     * (i.e. “Overdue”, “Long Overdue”).
-     *         balance - The unpaid portion of the fine IN PENNIES.
-     *         createdate – A string representing the date when the fine was accrued
-     * (optional)
-     *         duedate - A string representing the date when the item was due.
-     *         id - The bibliographic ID of the record involved in the fine.
-     *         source - The search backend from which the record may be retrieved
-     * (optional - defaults to Solr). Introduced in VuFind 2.4.
+     * @param array $patron The patron array from patronLogin
      *
+     * @return array
      */
     public function getMyFines($patron)
     {
@@ -1685,7 +1670,6 @@ class Folio extends AbstractAPI implements
      *
      * @return array|boolean    An array of block messages or false if there are no
      *                          blocks
-     * @author Michael Birkner
      */
     public function getRequestBlocks($patron)
     {
