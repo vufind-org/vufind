@@ -904,6 +904,21 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Given a user UUID, return the user's profile object (null if not found).
+     *
+     * @param string $id User UUID
+     *
+     * @return ?object
+     */
+    protected function getUserById(string $id): ?object
+    {
+        $query = ['query' => 'id == "' . $id . '"'];
+        $response = $this->makeRequest('GET', '/users', $query);
+        $users = json_decode($response->getBody());
+        return $users->users[0] ?? null;
+    }
+
+    /**
      * This method queries the ILS for a patron's current profile information
      *
      * @param array $patron Patron login information from $this->patronLogin
@@ -912,10 +927,7 @@ class Folio extends AbstractAPI implements
      */
     public function getMyProfile($patron)
     {
-        $query = ['query' => 'id == "' . $patron['id'] . '"'];
-        $response = $this->makeRequest('GET', '/users', $query);
-        $users = json_decode($response->getBody());
-        $profile = $users->users[0];
+        $profile = $this->getUserById($patron['id']);
         $expiration = isset($profile->expirationDate)
             ? $this->dateConverter->convertToDisplayDate(
                 "Y-m-d H:i",
@@ -1570,84 +1582,6 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Get list of users for whom the provided patron is a proxy.
-     *
-     * @param array $patron The patron array with username and password
-     *
-     * @return array
-     */
-    public function getProxiedUsers(array $patron): array
-    {
-        // requires proxiesfor.collection.get
-        /* Example response:
-        {
-            "proxiesFor": [
-                {
-                    "userId": "uuid",
-                    "proxyUserId": "uuid",
-                    "id": "uuid",
-                    "requestForSponsor": "Yes",
-                    "notificationsTo": "Sponsor",
-                    "accrueTo": "Sponsor",
-                    "status": "Active",
-                    "expirationDate": "2024-01-26T05:00:00.000+00:00",
-                    "metadata": {
-                        "createdDate": "2023-01-26T14:18:08.013+00:00",
-                        "createdByUserId": "uuid",
-                        "updatedDate": "2023-01-26T14:18:08.013+00:00",
-                        "updatedByUserId": "uuid"
-                    }
-                }
-            ],
-            "totalRecords": 1
-        }
-        */
-        $query = [
-            'query' => '(proxyUserId=="' . $patron['id'] . '")'
-        ];
-        $results = [];
-        foreach ($this->getPagedResults('proxiesFor', '/proxiesfor', $query) as $current) {
-            // TODO: filter based on attributes (see example above)
-            $results[] = $current;
-        }
-        return $results;
-    }
-
-    // @codingStandardsIgnoreStart
-    /** NOT FINISHED BELOW THIS LINE **/
-
-    /**
-     * Check for request blocks.
-     *
-     * @param array $patron The patron array with username and password
-     *
-     * @return array|boolean    An array of block messages or false if there are no
-     *                          blocks
-     * @author Michael Birkner
-     */
-    public function getRequestBlocks($patron)
-    {
-        return false;
-    }
-
-    /**
-     * This method returns information on recently received issues of a serial.
-     *
-     *     Input: Bibliographic record ID
-     *     Output: Array of associative arrays, each with a single key:
-     *         issue - String describing the issue
-     *
-     * Currently, most drivers do not implement this method, instead always returning
-     * an empty array. It is only necessary to implement this in more detail if you
-     * want to populate the “Most Recent Received Issues” section of the record
-     * holdings tab.
-     */
-    public function getPurchaseHistory($bibID)
-    {
-        return [];
-    }
-
-    /**
      * This method queries the ILS for a patron's current fines
      *
      *     Input: Patron array returned by patronLogin method
@@ -1694,6 +1628,85 @@ class Folio extends AbstractAPI implements
             ];
         }
         return $fines;
+    }
+
+    /**
+     * Given a user object returned by getUserById(), return a string representing
+     * the user's name.
+     */
+    protected function formatUserNameForProxyList(object $proxy): string
+    {
+        $firstParts = ($proxy->personal->firstName ?? '')
+            . ' ' . ($proxy->personal->middleName ?? '');
+        $parts = [
+            trim($proxy->personal->lastName ?? ''),
+            trim($firstParts)
+        ];
+        return implode(', ', array_filter($parts));
+    }
+
+    /**
+     * Get list of users for whom the provided patron is a proxy.
+     *
+     * This requires the FOLIO user configured in Folio.ini to have the permission:
+     * proxiesfor.collection.get
+     *
+     * @param array $patron The patron array with username and password
+     *
+     * @return array
+     */
+    public function getProxiedUsers(array $patron): array
+    {
+        $query = [
+            'query' => '(proxyUserId=="' . $patron['id'] . '")'
+        ];
+        $results = [];
+        $proxies = $this->getPagedResults('proxiesFor', '/proxiesfor', $query);
+        foreach ($proxies as $current) {
+            if ($current->status ?? '' === 'Active'
+                && $current->requestForSponsor ?? '' === 'Yes'
+                && isset($current->userId)
+            ) {
+                if ($proxy = $this->getUserById($current->userId)) {
+                    $results[$proxy->id] = $this->formatUserNameForProxyList($proxy);
+                }
+            }
+        }
+        return $results;
+    }
+
+    // @codingStandardsIgnoreStart
+    /** NOT FINISHED BELOW THIS LINE **/
+
+    /**
+     * Check for request blocks.
+     *
+     * @param array $patron The patron array with username and password
+     *
+     * @return array|boolean    An array of block messages or false if there are no
+     *                          blocks
+     * @author Michael Birkner
+     */
+    public function getRequestBlocks($patron)
+    {
+        return false;
+    }
+
+    /**
+     * This method returns information on recently received issues of a serial.
+     *
+     *     Input: Bibliographic record ID
+     *     Output: Array of associative arrays, each with a single key:
+     *         issue - String describing the issue
+     *
+     * Currently, most drivers do not implement this method, instead always returning
+     * an empty array. It is only necessary to implement this in more detail if you
+     * want to populate the “Most Recent Received Issues” section of the record
+     * holdings tab.
+     */
+    public function getPurchaseHistory($bibID)
+    {
+        return [];
     }
 
     /**
