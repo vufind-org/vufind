@@ -1618,6 +1618,10 @@ class Folio extends AbstractAPI implements
     /**
      * Given a user object returned by getUserById(), return a string representing
      * the user's name.
+     *
+     * @param object $proxy User object from FOLIO
+     *
+     * @return string
      */
     protected function formatUserNameForProxyList(object $proxy): string
     {
