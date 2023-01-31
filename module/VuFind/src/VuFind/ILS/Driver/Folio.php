@@ -483,10 +483,9 @@ class Folio extends AbstractAPI implements
                 }
             }
             return true;
-        } else {
-            // Otherwise exclude checking by exact match
-            return !in_array($locationName, $excludeLocs);
         }
+        // Otherwise exclude checking by exact match
+        return !in_array($locationName, $excludeLocs);
     }
 
     /**
