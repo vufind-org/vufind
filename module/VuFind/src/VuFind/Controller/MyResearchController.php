@@ -943,9 +943,7 @@ class MyResearchController extends AbstractBase
         }
 
         return $this->createViewModel(
-            [
-                'driver' => $driver, 'lists' => $lists, 'savedData' => $savedData
-            ]
+            compact('driver', 'lists', 'savedData', 'listID')
         );
     }
 

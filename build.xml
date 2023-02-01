@@ -45,11 +45,11 @@
   <property name="snooze_multiplier" value="1" /><!-- can be used to slow down tests (selenium only) -->
   <property name="solr_startup_sleep" value="0" />
   <property name="solr_additional_jvm_options" value="-Dlog4j2.formatMsgNoLookups=true" />
-  <property name="solr_version" value="8.11.2" />
+  <property name="solr_version" value="9.1.0" />
   <property name="skip_phpdoc" value="false" />
   <property name="phpdoc_version" value="3.3.1" />
 
-  <property name="version" value="8.1.1" />
+  <property name="version" value="8.1.2" />
 
   <!-- We only need the -p switch if the password is non-blank -->
   <if>
@@ -271,7 +271,7 @@
           <not><available file="${srcdir}/downloads/solr-${solr_version}.tgz" /></not>
            <then>
             <mkdir dir="${srcdir}/downloads" />
-            <httpget url="http://archive.apache.org/dist/lucene/solr/${solr_version}/solr-${solr_version}.tgz" dir="${srcdir}/downloads" />
+            <httpget url="http://archive.apache.org/dist/solr/solr/${solr_version}/solr-${solr_version}.tgz" dir="${srcdir}/downloads" />
           </then>
         </if>
         <!-- unpack the archive into solr/vendor -->

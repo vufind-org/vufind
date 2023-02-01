@@ -349,7 +349,7 @@ class Form extends \Laminas\Form\Form implements
     {
         return !empty($this->formConfig['response'])
             ? $this->formConfig['response']
-            : 'Thank you for your feedback.';
+            : 'feedback_response';
     }
 
     /**

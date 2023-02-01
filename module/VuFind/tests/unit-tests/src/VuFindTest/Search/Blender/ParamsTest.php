@@ -130,6 +130,19 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                         ],
                     ],
                 ],
+                'publish_date' => [
+                    'Mappings' => [
+                        'Solr' => [
+                            'Field' => 'publishDate',
+                        ],
+                        'Primo' => [
+                            'Field' => 'creationdate',
+                        ],
+                        'EDS' => [
+                            'Field' => 'PublishDate',
+                        ],
+                    ],
+                ],
             ],
         ],
         'Search' => [
@@ -208,6 +221,19 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             'relevance' => 'relevance',
             'scdate' => 'year'
         ]
+    ];
+
+    /**
+     * Blender configuration
+     *
+     * @var array
+     */
+    protected $blenderConfig = [
+        'SpecialFacets' => [
+            'dateRange' => [
+                'publish_date',
+            ],
+        ],
     ];
 
     /**
@@ -512,6 +538,37 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             ],
             $backendParams->get('fq')
         );
+
+        // Test a daterange filter:
+        $params = $this->getParams();
+        $params->addFilter('publish_date:[2020 TO 2022]');
+        $backendParams = $params->getBackendParameters();
+        $this->assertEquals(
+            ['publish_date:[2020 TO 2022]'],
+            $backendParams->get('fq')
+        );
+
+        $solrParams = $backendParams->get('params_Solr')[0];
+        $primoParams = $backendParams->get('params_Primo')[0];
+        $edsParams = $backendParams->get('params_EDS')[0];
+        $this->assertEquals(['publishDate:[2020 TO 2022]'], $solrParams->get('fq'));
+        $this->assertEquals(
+            [
+                'creationdate' => [
+                    'facetOp' => 'AND',
+                    'values' => ['[2020 TO 2022]']
+                ],
+                'pcAvailability' => [
+                    'facetOp' => 'AND',
+                    'values' => ['true']
+                ],
+            ],
+            $primoParams->get('filterList')
+        );
+        $this->assertEquals(
+            ['PublishDate:[2020 TO 2022]'],
+            $edsParams->get('filters')
+        );
     }
 
     /**
@@ -798,7 +855,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     null,
                 ],
                 'view' => [
-                    'list',
+                    'brief',
                 ],
                 'filters' => [
                     'building:main',
@@ -986,7 +1043,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     {
         $configs = [
             'EDS' => new Config($this->edsConfig),
-            'Primo' => new Config($this->primoConfig)
+            'Primo' => new Config($this->primoConfig),
+            'Blender' => new Config($this->blenderConfig),
         ];
 
         $callback = function (string $configName) use ($configs) {

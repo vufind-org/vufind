@@ -400,6 +400,7 @@ $config = [
             'VuFind\Hierarchy\TreeDataFormatter\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Hierarchy\TreeDataSource\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Hierarchy\TreeRenderer\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\Http\CachingDownloader' => 'VuFind\Http\CachingDownloaderFactory',
             'VuFind\Http\PhpEnvironment\Request' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\I18n\Locale\LocaleSettings' => 'VuFind\Service\ServiceWithConfigIniFactory',
             'VuFind\I18n\Sorter' => 'VuFind\I18n\SorterFactory',

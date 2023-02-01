@@ -1061,6 +1061,12 @@ class Params
      */
     public function getFilterList($excludeCheckboxFilters = false)
     {
+        // If we don't have any filters, return right away to avoid further
+        // processing:
+        if (!$this->filterList) {
+            return [];
+        }
+
         // Get a list of checkbox filters to skip if necessary:
         $skipList = $excludeCheckboxFilters
             ? $this->getCheckboxFacetValues() : [];
@@ -1088,6 +1094,18 @@ class Params
             }
         }
         return $list;
+    }
+
+    /**
+     * Get the filter list as a query parameter array.
+     *
+     * Returns an array of strings that parseFilter can parse.
+     *
+     * @return array
+     */
+    public function getFiltersAsQueryParams(): array
+    {
+        return $this->formatFilterArrayAsQueryParams($this->getRawFilters());
     }
 
     /**
@@ -1185,7 +1203,7 @@ class Params
     protected function getCheckboxFacetValues()
     {
         $list = [];
-        foreach ($this->checkboxFacets as $facets) {
+        foreach ($this->getRawCheckboxFacets() as $facets) {
             foreach ($facets as $current) {
                 [$field, $value] = $this->parseFilter($current['filter']);
                 if (!isset($list[$field])) {
@@ -1213,7 +1231,7 @@ class Params
         // Build up an array of checkbox facets with status booleans and
         // toggle URLs.
         $result = [];
-        foreach ($this->checkboxFacets as $facets) {
+        foreach ($this->getRawCheckboxFacets() as $facets) {
             foreach ($facets as $facet) {
                 // If the current filter is not on the include list, skip it (but
                 // accept everything if the include list is null).
@@ -1228,6 +1246,36 @@ class Params
                 // child classes).
                 $facet['alwaysVisible'] = false;
                 $result[] = $facet;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Return checkbox facets without any processing
+     *
+     * @return array
+     */
+    protected function getRawCheckboxFacets(): array
+    {
+        return $this->checkboxFacets;
+    }
+
+    /**
+     * Format a raw filter array as a query parameter array.
+     *
+     * Returns an array of strings that parseFilter can parse.
+     *
+     * @param array $filterArray Filter array
+     *
+     * @return array
+     */
+    protected function formatFilterArrayAsQueryParams(array $filterArray): array
+    {
+        $result = [];
+        foreach ($filterArray as $field => $values) {
+            foreach ($values as $current) {
+                $result[] = "$field:\"$current\"";
             }
         }
         return $result;
@@ -1571,6 +1619,18 @@ class Params
     }
 
     /**
+     * Get the hidden filter list as a query parameter array.
+     *
+     * Returns an array of strings that parseFilter can parse.
+     *
+     * @return array
+     */
+    public function getHiddenFiltersAsQueryParams(): array
+    {
+        return $this->formatFilterArrayAsQueryParams($this->getHiddenFilters());
+    }
+
+    /**
      * Does the object already contain the specified hidden filter?
      *
      * @param string $filter A filter string from url : "field:value"
@@ -1608,6 +1668,20 @@ class Params
                 $this->hiddenFilters[$field][] = $value;
             }
         }
+    }
+
+    /**
+     * Take a filter string and add it into the protected hidden filters
+     *   array checking for duplicates.
+     *
+     * @param string $field Field
+     * @param string $value Filter value
+     *
+     * @return void
+     */
+    public function addHiddenFilterForField(string $field, string $value): void
+    {
+        $this->addHiddenFilter("$field:\"$value\"");
     }
 
     /**

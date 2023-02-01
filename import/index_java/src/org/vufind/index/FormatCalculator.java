@@ -545,12 +545,26 @@ public class FormatCalculator
         return false;
     }
 
+    /**
+     * Return the contents of the specified subfield, or a default value if missing/empty
+     *
+     * @param DataField field
+     * @param char subfieldCode
+     * @param String defaultValue
+     * @return String
+     */
     protected String getSubfieldOrDefault(DataField field, char subfieldCode, String defaultValue) {
         Subfield subfield = field.getSubfield(subfieldCode);
-        String data = subfield.getData();
-        return data == null ? defaultValue : data;
+        String data = subfield != null ? subfield.getData() : null;
+        return (data == null || data.isEmpty()) ? defaultValue : data;
     }
 
+    /**
+     * Return true if this is an online record according to the contents of 338.
+     *
+     * @param Record record
+     * @return boolean
+     */
     protected boolean isOnlineAccordingTo338(Record record) {
         // Does the RDA carrier indicate that this is online?
         for (VariableField variableField : record.getVariableFields("338")) {
