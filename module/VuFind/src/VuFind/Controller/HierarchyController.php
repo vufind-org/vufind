@@ -177,7 +177,8 @@ class HierarchyController extends AbstractBase
         }
 
         // If we got this far, something went wrong:
-        return $this->outputJSON('error', 503); // Service Unavailable
+        return $this->outputJSON('{"error": {"code": 503, "message": "Service Unavailable"}}', 503); 
+        // Service Unavailable
     }
 
     /**
