@@ -246,11 +246,17 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
         }
 
         // Perform encryption:
-        $algo = $configAuth->ils_encryption_algo ?? 'aes';
+        $algo = $configAuth->ils_encryption_algo ?? 'blowfish';
 
         // Check if OpenSSL error is caused by blowfish support
         try {
             $cipher = new BlockCipher(new Openssl(['algorithm' => $algo]));
+            if ($algo == 'blowfish') {
+                trigger_error(
+                    'Deprecated encryption algorithm (blowfish) detected',
+                    E_USER_DEPRECATED
+                );
+            }
         } catch (\InvalidArgumentException $e) {
             if ($algo == 'blowfish') {
                 throw new \VuFind\Exception\PasswordSecurity(
