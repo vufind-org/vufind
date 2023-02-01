@@ -39,6 +39,20 @@ namespace VuFind\Controller\Feature;
 trait SecureDatabaseTrait
 {
     /**
+     * Get an array containing an ILS encryption algorithm and a randomly generated
+     * key.
+     *
+     * @return array
+     */
+    protected function getSecureAlgorithmAndKey()
+    {
+        // Make example hash for AES
+        $alpha = 'abcdefghijklmnopqrstuvwxyz';
+        $chars = str_repeat($alpha . strtoupper($alpha) . '0123456789,.@#$%^&*', 4);
+        return ['aes', substr(str_shuffle($chars), 0, 32)];
+    }
+
+    /**
      * Does the instance have secure database configuration and contents?
      *
      * @return bool

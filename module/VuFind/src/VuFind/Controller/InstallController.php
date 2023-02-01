@@ -707,8 +707,9 @@ class InstallController extends AbstractBase
         if (!isset($config->Authentication->ils_encryption_key)
             || empty($config->Authentication->ils_encryption_key)
         ) {
-            $enc_key = sha1(microtime(true) . mt_rand(10000, 90000));
-            $writer->set('Authentication', 'ils_encryption_key', $enc_key);
+            [$algorithm, $key] = $this->getSecureAlgorithmAndKey();
+            $writer->set('Authentication', 'ils_encryption_algo', $algorithm);
+            $writer->set('Authentication', 'ils_encryption_key', $key);
             $changed = true;
         }
 

@@ -1019,13 +1019,10 @@ class UpgradeController extends AbstractBase
             $blowfishIsWorking = false;
         }
 
-        // Make example hash for AES-256
-        $alpha = 'abcdefghijklmnopqrstuvwxyz';
-        $chars = str_repeat($alpha . strtoupper($alpha) . '0123456789,.@#$%^&*', 4);
-        $exampleKey = substr(str_shuffle($chars), 0, 32);
-
+        // Get new settings
+        [$newAlgorithm, $exampleKey] = $this->getSecureAlgorithmAndKey();
         return $this->createViewModel(
-            compact('exampleKey', 'blowfishIsWorking')
+            compact('newAlgorithm', 'exampleKey', 'blowfishIsWorking')
         );
     }
 }

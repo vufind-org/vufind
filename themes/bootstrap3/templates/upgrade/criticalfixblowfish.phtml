@@ -86,8 +86,8 @@ activate = 1</pre>
 
 <h3 id="conversion">2. Convert existing data to a new encryption method</h3>
 
-<p>You can use VuFind's CLI tool <kbd>switch_db_hash</kbd> to convert all passwords from blowfish to another encryption method. Below, you can find a pre-filled example command that will convert your encryption to AES (the new default VuFind encryption method) with a random 32 character string. You can use <kbd>openssl_get_cipher_methods()</kbd> to see all encryption methods available on your system.</p>
+<p>You can use VuFind's CLI tool <kbd>switch_db_hash</kbd> to convert all passwords from blowfish to another encryption method. Below, you can find a pre-filled example command that will convert your encryption to <?=$this->escapeHtml($newAlgorithm)?> (the new recommended VuFind encryption method) with a random key. You can use <kbd>openssl_get_cipher_methods()</kbd> to see all encryption methods available on your system.</p>
 
-<pre id="example-cmd">php $VUFIND_HOME/public/index.php util switch_db_hash aes <?=$this->exampleKey ?></pre>
+<pre id="example-cmd">php $VUFIND_HOME/public/index.php util switch_db_hash <?=$this->escapeHtml($newAlgorithm)?> "<?=$this->escapeHtml($exampleKey) ?>"</pre>
 
 <?=$this->copyToClipboardButton('#example-cmd') ?>
