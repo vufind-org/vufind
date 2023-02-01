@@ -44,6 +44,7 @@ use VuFindSearch\Command\RetrieveCommand;
 class InstallController extends AbstractBase
 {
     use Feature\ConfigPathTrait;
+    use Feature\SecureDatabaseTrait;
 
     /**
      * Use preDispatch event to block access when appropriate.
@@ -673,31 +674,10 @@ class InstallController extends AbstractBase
      */
     protected function checkSecurity()
     {
-        // Are configuration settings missing?
-        $config = $this->getConfig();
-        if (!isset($config->Authentication->hash_passwords)
-            || !$config->Authentication->hash_passwords
-            || !isset($config->Authentication->encrypt_ils_password)
-            || !$config->Authentication->encrypt_ils_password
-        ) {
-            $status = false;
-        } else {
-            $status = true;
-        }
-
-        // If we're correctly configured, check that the data in the database is ok:
-        if ($status) {
-            try {
-                $rows = $this->getTable('user')->getInsecureRows();
-                $status = (count($rows) == 0);
-            } catch (\Exception $e) {
-                // Any exception means we have a problem!
-                $status = false;
-            }
-        }
-
         return [
-            'title' => 'Security', 'status' => $status, 'fix' => 'fixsecurity'
+            'title' => 'Security',
+            'status' => $this->hasSecureDatabase(),
+            'fix' => 'fixsecurity'
         ];
     }
 

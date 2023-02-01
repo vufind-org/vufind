@@ -63,6 +63,7 @@ use VuFind\Search\Results\PluginManager as ResultsManager;
 class UpgradeController extends AbstractBase
 {
     use Feature\ConfigPathTrait;
+    use Feature\SecureDatabaseTrait;
 
     /**
      * Cookie container
@@ -830,8 +831,10 @@ class UpgradeController extends AbstractBase
      */
     protected function performCriticalChecks()
     {
-        // Prevent the use of the deprecated blowfish cipher algo
-        return $this->criticalCheckForBlowfishEncryption() ?? null;
+        // Run through a series of checks to be sure there are no critical issues.
+        return $this->criticalCheckForInsecureDatabase()
+            ?? $this->criticalCheckForBlowfishEncryption()
+            ?? null;
     }
 
     /**
@@ -959,6 +962,19 @@ class UpgradeController extends AbstractBase
     }
 
     /**
+     * Check for insecure database settings
+     *
+     * @return string|null
+     */
+    protected function criticalCheckForInsecureDatabase()
+    {
+        if (!empty($this->cookie->ignoreInsecureDb)) {
+            return null;
+        }
+        return $this->hasSecureDatabase() ? null : 'CriticalFixInsecureDatabase';
+    }
+
+    /**
      * Check for deprecated and insecure use of blowfish encryption
      *
      * @return string|null
@@ -966,14 +982,24 @@ class UpgradeController extends AbstractBase
     protected function criticalCheckForBlowfishEncryption()
     {
         $config = $this->getConfig();
+        $encryptionEnabled = $config->Authentication->encrypt_ils_password ?? false;
+        $algo = $config->Authentication->ils_encryption_algo ?? 'blowfish';
+        return ($encryptionEnabled && $algo === 'blowfish')
+            ? 'CriticalFixBlowfish' : null;
+    }
 
-        if (isset($config->Authentication->ils_encryption_algo)
-            && $config->Authentication->ils_encryption_algo == "blowfish"
-        ) {
-            return 'CriticalFixBlowfish';
+    /**
+     * Lead users through the steps required to fix an insecure database
+     *
+     * @return mixed
+     */
+    public function criticalFixInsecureDatabaseAction()
+    {
+        if ($this->params()->fromQuery('ignore')) {
+            $this->cookie->ignoreInsecureDb = 1;
+            return $this->redirect()->toRoute('upgrade-home');
         }
-
-        return null;
+        return $this->createViewModel();
     }
 
     /**
