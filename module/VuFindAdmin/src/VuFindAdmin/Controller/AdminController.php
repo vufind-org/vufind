@@ -65,8 +65,7 @@ class AdminController extends AbstractAdmin
         $view = $this->createViewModel();
         $view->xml = $xml ? simplexml_load_string($xml) : false;
 
-        if (
-            !isset($config->Authentication->ils_encryption_algo)
+        if (!isset($config->Authentication->ils_encryption_algo)
             || $config->Authentication->ils_encryption_algo == "blowfish"
         ) {
             $this->flashMessenger()->addMessage(
