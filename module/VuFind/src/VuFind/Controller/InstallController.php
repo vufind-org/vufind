@@ -694,19 +694,15 @@ class InstallController extends AbstractBase
     {
         $changed = false;
 
-        if (!isset($config->Authentication->hash_passwords)
-            || !$config->Authentication->hash_passwords
-            || !isset($config->Authentication->encrypt_ils_password)
-            || !$config->Authentication->encrypt_ils_password
+        if (!($config->Authentication->hash_passwords ?? false)
+            || !($config->Authentication->encrypt_ils_password ?? false)
         ) {
             $writer->set('Authentication', 'hash_passwords', true);
             $writer->set('Authentication', 'encrypt_ils_password', true);
             $changed = true;
         }
         // Only rewrite encryption key if we don't already have one:
-        if (!isset($config->Authentication->ils_encryption_key)
-            || empty($config->Authentication->ils_encryption_key)
-        ) {
+        if (empty($config->Authentication->ils_encryption_key)) {
             [$algorithm, $key] = $this->getSecureAlgorithmAndKey();
             $writer->set('Authentication', 'ils_encryption_algo', $algorithm);
             $writer->set('Authentication', 'ils_encryption_key', $key);
