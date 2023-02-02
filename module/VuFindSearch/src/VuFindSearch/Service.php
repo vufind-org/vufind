@@ -5,7 +5,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010, 2022.
  * Copyright (C) The National Library of Finland 2019.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -36,14 +36,6 @@ use Laminas\EventManager\EventManagerInterface;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Command\CommandInterface;
-use VuFindSearch\Command\GetIdsCommand;
-use VuFindSearch\Command\RandomCommand;
-use VuFindSearch\Command\RetrieveBatchCommand;
-use VuFindSearch\Command\RetrieveCommand;
-use VuFindSearch\Command\SearchCommand;
-use VuFindSearch\Command\SimilarCommand;
-use VuFindSearch\Command\WorkExpressionsCommand;
-use VuFindSearch\Response\RecordCollectionInterface;
 
 /**
  * Search service.
@@ -126,165 +118,6 @@ class Service
     }
 
     /**
-     * Perform a search and return a wrapped response.
-     *
-     * @param string              $backendId Search backend identifier
-     * @param Query\AbstractQuery $query     Search query
-     * @param int                 $offset    Search offset
-     * @param int                 $limit     Search limit
-     * @param ?ParamBag           $params    Search backend parameters
-     *
-     * @return RecordCollectionInterface
-     *
-     * @deprecated Use Service::invoke(SearchCommand $command) instead
-     */
-    public function search(
-        string $backendId,
-        Query\AbstractQuery $query,
-        int $offset = 0,
-        int $limit = 20,
-        ParamBag $params = null
-    ) {
-        $command = new SearchCommand($backendId, $query, $offset, $limit, $params);
-        return $this->legacyInvoke(
-            $command,
-            ['query' => $query, 'offset' => $offset, 'limit' => $limit]
-        );
-    }
-
-    /**
-     * Perform a search that returns record IDs and return a wrapped response.
-     *
-     * @param string              $backendId Search backend identifier
-     * @param Query\AbstractQuery $query     Search query
-     * @param int                 $offset    Search offset
-     * @param int                 $limit     Search limit
-     * @param ?ParamBag           $params    Search backend parameters
-     *
-     * @return RecordCollectionInterface
-     *
-     * @deprecated Use Service::invoke(GetIdsCommand $command) instead
-     */
-    public function getIds(
-        string $backendId,
-        Query\AbstractQuery $query,
-        int $offset = 0,
-        int $limit = 20,
-        ParamBag $params = null
-    ) {
-        $command = new GetIdsCommand($backendId, $query, $offset, $limit, $params);
-        return $this->legacyInvoke(
-            $command,
-            ['query' => $query, 'offset' => $offset, 'limit' => $limit]
-        );
-    }
-
-    /**
-     * Retrieve a single record.
-     *
-     * @param string    $backendId Search backend identifier
-     * @param string    $id        Record identifier
-     * @param ?ParamBag $params    Search backend parameters
-     *
-     * @return RecordCollectionInterface
-     *
-     * @deprecated Use Service::invoke(RetrieveCommand $command) instead
-     */
-    public function retrieve(
-        string $backendId,
-        string $id,
-        ParamBag $params = null
-    ) {
-        $command = new RetrieveCommand($backendId, $id, $params);
-        return $this->legacyInvoke($command, ['id' => $id]);
-    }
-
-    /**
-     * Retrieve a batch of records.
-     *
-     * @param string    $backendId Search backend identifier
-     * @param array     $ids       Record identifier
-     * @param ?ParamBag $params    Search backend parameters
-     *
-     * @return RecordCollectionInterface
-     *
-     * @deprecated Use Service::invoke(RetrieveBatchCommand $command) instead
-     */
-    public function retrieveBatch(
-        string $backendId,
-        array $ids,
-        ParamBag $params = null
-    ) {
-        $command = new RetrieveBatchCommand($backendId, $ids, $params);
-        return $this->legacyInvoke($command, ['ids' => $ids]);
-    }
-
-    /**
-     * Retrieve a random batch of records.
-     *
-     * @param string              $backendId Search backend identifier
-     * @param Query\AbstractQuery $query     Search query
-     * @param int                 $limit     Search limit
-     * @param ?ParamBag           $params    Search backend parameters
-     *
-     * @return RecordCollectionInterface
-     *
-     * @deprecated Use Service::invoke(RandomCommand $command) instead
-     */
-    public function random(
-        string $backendId,
-        Query\AbstractQuery $query,
-        int $limit = 20,
-        ParamBag $params = null
-    ) {
-        $command = new RandomCommand($backendId, $query, $limit, $params);
-        return $this->legacyInvoke($command, ['query' => $query, 'limit' => $limit]);
-    }
-
-    /**
-     * Return similar records.
-     *
-     * @param string    $backendId Search backend identifier
-     * @param string    $id        Id of record to compare with
-     * @param ?ParamBag $params    Search backend parameters
-     *
-     * @return RecordCollectionInterface
-     *
-     * @deprecated Use Service::invoke(SimilarCommand $command) instead
-     */
-    public function similar(
-        string $backendId,
-        string $id,
-        ParamBag $params = null
-    ) {
-        $command = new SimilarCommand($backendId, $id, $params);
-        return $this->legacyInvoke($command, ['id' => $id]);
-    }
-
-    /**
-     * Return records for work expressions.
-     *
-     * @param string    $backendId Search backend identifier
-     * @param string    $id        Id of record to compare with
-     * @param ?array    $workKeys  Work identification keys (optional; retrieved
-     * from the record to compare with if not specified)
-     * @param ?ParamBag $params    Search backend parameters
-     *
-     * @return RecordCollectionInterface
-     *
-     * @deprecated Use Service::invoke(WorkExpressionsCommand $command) instead
-     */
-    public function workExpressions(
-        string $backendId,
-        string $id,
-        array $workKeys = null,
-        ParamBag $params = null
-    ) {
-        $command = new WorkExpressionsCommand($backendId, $id, $workKeys, $params);
-        return $this->legacyInvoke($command, ['id' => $id, 'workKeys' => $workKeys]);
-    }
-
-    /**
      * Set EventManager instance.
      *
      * @param EventManagerInterface $events Event manager
@@ -311,43 +144,6 @@ class Service
             $this->setEventManager(new EventManager());
         }
         return $this->events;
-    }
-
-    /// Internal API
-
-    /**
-     * Invoke a command triggering deprecated legacy events and return the result.
-     *
-     * @param CommandInterface $command Command
-     * @param array            $args    Additional event parameters
-     *
-     * @return mixed
-     */
-    protected function legacyInvoke(CommandInterface $command, array $args = [])
-    {
-        $backendId = $command->getTargetIdentifier();
-        $params = $command->getSearchParameters();
-        $context = $command->getContext();
-        $args = array_merge(
-            ['backend' => $backendId],
-            compact('params', 'context', 'command'),
-            $args
-        );
-
-        $backend = $this->resolve($backendId, $args);
-        $args['backend_instance'] = $backend;
-
-        $this->triggerPre($backend, $args);
-        try {
-            $response = $command->execute($backend)->getResult();
-        } catch (BackendException $e) {
-            $args['error'] = $e;
-            $this->triggerError($e, $args);
-            throw $e;
-        }
-        $this->triggerPost($response, $args);
-
-        return $response;
     }
 
     /**

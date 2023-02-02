@@ -135,10 +135,12 @@ class RouteGeneratorTest extends \PHPUnit\Framework\TestCase
      */
     public function testAddRecordRoutes(): void
     {
-        $generator = new RouteGenerator(['NonTabAction']);
+        $generator = new RouteGenerator();
         $config = [];
         $routeConfig = ['route1' => 'Controller1', 'route2' => 'Controller2'];
         $generator->addRecordRoutes($config, $routeConfig);
+        $generator->addNonTabRecordActions($config, ['NonTabAction']);
+
         $expected = [
             'route1' => [
                 'type' => 'Laminas\Router\Http\Segment',
@@ -199,6 +201,121 @@ class RouteGeneratorTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
         ];
+
+        $this->assertEquals(
+            ['router' => ['routes' => $expected]],
+            $config
+        );
+    }
+
+    /**
+     * Test addRecordRoutes() using a subclass
+     *
+     * @return void
+     */
+    public function testAddRecordRoutesWithSubclass(): void
+    {
+        $generator = new RouteGenerator();
+        $config = [];
+        $routeConfig = ['route1' => 'Controller1', 'route2' => 'Controller2'];
+        $generator->addRecordRoutes($config, $routeConfig);
+        $generator->addNonTabRecordActions($config, ['NonTabAction']);
+        $extendedGenerator = new class extends RouteGenerator {
+        };
+        $extendedGenerator->addNonTabRecordActions(
+            $config,
+            ['NonTabActionExtended']
+        );
+
+        $expected = [
+            'route1' => [
+                'type' => 'Laminas\Router\Http\Segment',
+                'options' => [
+                    'route' => '/Controller1/[:id[/[:tab]]]',
+                    'constraints' => [
+                        'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'tab' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                    ],
+                    'defaults' => [
+                        'controller' => 'Controller1',
+                        'action' => 'Home',
+                    ],
+                ],
+            ],
+            'route1-nontabaction' => [
+                'type' => 'Laminas\Router\Http\Segment',
+                'options' => [
+                    'route' => '/Controller1/[:id]/NonTabAction',
+                    'constraints' => [
+                        'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                    ],
+                    'defaults' => [
+                        'controller' => 'Controller1',
+                        'action' => 'NonTabAction',
+                    ],
+                ],
+            ],
+            'route1-nontabactionextended' => [
+                'type' => 'Laminas\Router\Http\Segment',
+                'options' => [
+                    'route' => '/Controller1/[:id]/NonTabActionExtended',
+                    'constraints' => [
+                        'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                    ],
+                    'defaults' => [
+                        'controller' => 'Controller1',
+                        'action' => 'NonTabActionExtended',
+                    ],
+                ],
+            ],
+            'route2' => [
+                'type' => 'Laminas\Router\Http\Segment',
+                'options' => [
+                    'route' => '/Controller2/[:id[/[:tab]]]',
+                    'constraints' => [
+                        'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'tab' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                    ],
+                    'defaults' => [
+                        'controller' => 'Controller2',
+                        'action' => 'Home',
+                    ],
+                ],
+            ],
+            'route2-nontabaction' => [
+                'type' => 'Laminas\Router\Http\Segment',
+                'options' => [
+                    'route' => '/Controller2/[:id]/NonTabAction',
+                    'constraints' => [
+                        'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                    ],
+                    'defaults' => [
+                        'controller' => 'Controller2',
+                        'action' => 'NonTabAction',
+                    ],
+                ],
+            ],
+            'route2-nontabactionextended' => [
+                'type' => 'Laminas\Router\Http\Segment',
+                'options' => [
+                    'route' => '/Controller2/[:id]/NonTabActionExtended',
+                    'constraints' => [
+                        'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                    ],
+                    'defaults' => [
+                        'controller' => 'Controller2',
+                        'action' => 'NonTabActionExtended',
+                    ],
+                ],
+            ],
+        ];
+
         $this->assertEquals(
             ['router' => ['routes' => $expected]],
             $config

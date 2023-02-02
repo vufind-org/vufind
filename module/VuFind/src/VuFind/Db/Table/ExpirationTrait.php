@@ -46,29 +46,31 @@ trait ExpirationTrait
     /**
      * Update the select statement to find records to delete.
      *
-     * @param Select $select  Select clause
-     * @param int    $daysOld Age in days of an "expired" record.
+     * @param Select $select    Select clause
+     * @param string $dateLimit Date threshold of an "expired" record in format
+     * 'Y-m-d H:i:s'.
      *
      * @return void
      */
-    abstract protected function expirationCallback($select, $daysOld);
+    abstract protected function expirationCallback($select, $dateLimit);
 
     /**
      * Delete expired records. Allows setting of 'from' and 'to' ID's so that rows
      * can be deleted in small batches.
      *
-     * @param int      $daysOld Age in days of an "expired" record.
-     * @param int|null $limit   Maximum number of rows to delete or null for no
+     * @param string   $dateLimit Date threshold of an "expired" record in format
+     * 'Y-m-d H:i:s'.
+     * @param int|null $limit     Maximum number of rows to delete or null for no
      * limit.
      *
      * @return int Number of rows deleted
      */
-    public function deleteExpired($daysOld, $limit = null)
+    public function deleteExpired($dateLimit, $limit = null)
     {
         // Determine the expiration parameters:
-        $lastId = $limit ? $this->getExpiredBatchLastId($daysOld, $limit) : null;
-        $callback = function ($select) use ($daysOld, $lastId) {
-            $this->expirationCallback($select, $daysOld);
+        $lastId = $limit ? $this->getExpiredBatchLastId($dateLimit, $limit) : null;
+        $callback = function ($select) use ($dateLimit, $lastId) {
+            $this->expirationCallback($select, $dateLimit);
             if (null !== $lastId) {
                 $select->where->and->lessThanOrEqualTo('id', $lastId);
             }
@@ -79,17 +81,18 @@ trait ExpirationTrait
     /**
      * Get the highest id to delete in a batch.
      *
-     * @param int $daysOld Age in days of an "expired" record.
-     * @param int $limit   Maximum number of rows to delete.
+     * @param string $dateLimit Date threshold of an "expired" record in format
+     * 'Y-m-d H:i:s'.
+     * @param int    $limit     Maximum number of rows to delete.
      *
      * @return int|null Highest id value to delete or null if a limiting id is not
      * available
      */
-    protected function getExpiredBatchLastId($daysOld, $limit)
+    protected function getExpiredBatchLastId($dateLimit, $limit)
     {
         // Determine the expiration date:
-        $callback = function ($select) use ($daysOld, $limit) {
-            $this->expirationCallback($select, $daysOld);
+        $callback = function ($select) use ($dateLimit, $limit) {
+            $this->expirationCallback($select, $dateLimit);
             $select->columns(['id'])->order('id')->offset($limit - 1)->limit(1);
         };
         $result = $this->select($callback)->current();

@@ -31,7 +31,8 @@
           <input type="hidden" name="sort" value="<?=$this->escapeHtmlAttr($params->getSort()) ?>" />
           <span class="input-group-btn">
             <button class="btn btn-primary" type="submit" name="submit">
-              <span class="sr-only"><?=$this->transEsc('Search')?></span><i class="fa fa-search"></i>
+              <span class="sr-only"><?=$this->transEsc('Search')?></span>
+              <?=$this->icon('search') ?>
             </button>
           </span>
         </div>

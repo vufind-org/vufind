@@ -3,7 +3,8 @@
     $this->headTitle($this->translate('Staff View') . ': ' . $this->driver->getBreadcrumb());
 ?>
 <table class="citation table table-striped">
-  <?php foreach ($this->driver->getRawData() as $field => $values): ?>
+  <?php $rawData = $this->driver->getRawData(); ksort($rawData); ?>
+  <?php foreach ($rawData as $field => $values): ?>
     <tr>
       <th><?=$this->escapeHtml($field)?></th>
       <td>

@@ -33,6 +33,12 @@
     && ($this->showBulkOptions || !$this->cart()->isActiveInSearch());
   // Enable bulk options if appropriate:
   $this->showCheckboxes = $this->showCartControls || $this->showBulkOptions;
+  // Create a css class for results from the search class:
+  $searchClass = $this->params->getSearchClassId();
+  if (!ctype_upper($searchClass)) {
+    $searchClass = preg_replace('/([a-zA-Z])(?=[A-Z])/', '$1-', $searchClass);
+  }
+  $this->resultsClass = 'search-results-' . strtolower($searchClass);
 
   $this->render('search/results-scripts.phtml', ['displayVersions' => !empty($this->params->getOptions()->getVersionsAction())]);
 
@@ -51,7 +57,7 @@
   <?php endif; ?>
   <?=$this->flashmessages()?>
   <div class="search-header hidden-print">
-    <div class="search-stats">
+    <div class="search-stats" data-record-total="<?=$this->escapeHtmlAttr($recordTotal)?>">
       <?php if ($recordTotal > 0): ?>
         <?=$this->context()->renderInContext('search/controls/showing.phtml', ['lookfor' => $lookfor, 'recordTotal' => $recordTotal]) ?>
         <a class="search-filter-toggle visible-xs" href="#search-sidebar" data-toggle="offcanvas" title="<?=$this->transEscAttr('sidebar_expand') ?>">

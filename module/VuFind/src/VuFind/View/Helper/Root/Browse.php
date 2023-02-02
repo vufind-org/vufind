@@ -51,7 +51,7 @@ class Browse extends AbstractHelper
     public function getSolrField($action, $backup = null)
     {
         $action = strtolower($action);
-        $backup = strtolower($backup);
+        $backup = strtolower($backup ?? '');
         switch ($action) {
         case 'dewey':
             return 'dewey-hundreds';
@@ -68,7 +68,7 @@ class Browse extends AbstractHelper
         case 'era':
             return 'era_facet';
         }
-        if ($backup == null) {
+        if (empty($backup)) {
             return $action;
         }
         return $this->getSolrField($backup);

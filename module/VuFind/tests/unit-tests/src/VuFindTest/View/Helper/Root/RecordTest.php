@@ -503,6 +503,40 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test getLinkDetails with duplicate URLs
+     *
+     * @return void
+     */
+    public function testGetLinkDetailsWithDuplicateURLs()
+    {
+        $driver = new \VuFindTest\RecordDriver\TestHarness();
+        $driver->setRawData(
+            [
+                'URLs' => [
+                    ['desc' => 'link 1', 'url' => 'http://foo/baz1'],
+                    ['desc' => 'link 2', 'url' => 'http://foo/baz2'],
+                    ['desc' => 'link 1', 'url' => 'http://foo/baz1'],
+                    ['desc' => 'link 1 (alternate description)',
+                        'url' => 'http://foo/baz1'],
+                    ['url' => 'http://foo/baz3'],
+                    ['url' => 'http://foo/baz3']
+                ]
+            ]
+        );
+        $record = $this->getRecord($driver);
+        $this->assertEquals(
+            [
+                ['desc' => 'link 1', 'url' => 'http://foo/baz1'],
+                ['desc' => 'link 2', 'url' => 'http://foo/baz2'],
+                ['desc' => 'link 1 (alternate description)',
+                    'url' => 'http://foo/baz1'],
+                ['desc' => 'http://foo/baz3', 'url' => 'http://foo/baz3']
+            ],
+            $record->getLinkDetails()
+        );
+    }
+
+    /**
      * Test getUrlList
      *
      * @return void

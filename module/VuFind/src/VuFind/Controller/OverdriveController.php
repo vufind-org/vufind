@@ -218,7 +218,8 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
                 $action = "holdConfirm";
             }
         }
-
+        $result = null;
+        $actionTitleCode = '';
         if ($action == "checkoutConfirm") {
             $result = $this->connector->getResultObject();
             //check to make sure they don't already have this checked out

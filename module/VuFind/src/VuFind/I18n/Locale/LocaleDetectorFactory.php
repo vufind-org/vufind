@@ -29,12 +29,12 @@
  */
 namespace VuFind\I18n\Locale;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\EventManager\EventInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\DelegatorFactoryInterface;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 use SlmLocale\LocaleEvent;
 use SlmLocale\Strategy\QueryStrategy;
 use VuFind\Cookie\CookieManager;

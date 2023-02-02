@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010, 2022.
  * Copyright (C) The National Library of Finland 2015.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -33,6 +33,8 @@ use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\Record\FallbackLoader\PluginManager as FallbackLoader;
 use VuFind\RecordDriver\PluginManager as RecordFactory;
 use VuFindSearch\Backend\Exception\BackendException;
+use VuFindSearch\Command\RetrieveBatchCommand;
+use VuFindSearch\Command\RetrieveCommand;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Service as SearchService;
 
@@ -125,8 +127,9 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
             }
             if (empty($results)) {
                 try {
-                    $results = $this->searchService->retrieve($source, $id, $params)
-                        ->getRecords();
+                    $command = new RetrieveCommand($source, $id, $params);
+                    $results = $this->searchService->invoke($command)
+                        ->getResult()->getRecords();
                 } catch (BackendException $e) {
                     if (!$tolerateMissing) {
                         throw $e;
@@ -164,7 +167,7 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
         if ($tolerateMissing) {
             $record = $this->recordFactory->get('Missing');
             $record->setRawData(['id' => $id]);
-            $record->setSourceIdentifier($source);
+            $record->setSourceIdentifiers($source);
             return $record;
         }
         throw new RecordMissingException(
@@ -207,9 +210,13 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
         $genuineRecords = [];
         if ($list->hasUnchecked()) {
             try {
+                $command = new RetrieveBatchCommand(
+                    $source,
+                    $list->getUnchecked(),
+                    $params
+                );
                 $genuineRecords = $this->searchService
-                    ->retrieveBatch($source, $list->getUnchecked(), $params)
-                    ->getRecords();
+                    ->invoke($command)->getResult()->getRecords();
             } catch (BackendException $e) {
                 if (!$tolerateBackendExceptions) {
                     throw $e;
@@ -280,7 +287,7 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
         $fields['id'] = $details['id'];
         $record = $this->recordFactory->get('Missing');
         $record->setRawData($fields);
-        $record->setSourceIdentifier($details['source']);
+        $record->setSourceIdentifiers($details['source']);
         return $record;
     }
 

@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2012.
+ * Copyright (C) Villanova University 2012, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -26,6 +26,8 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Recommend;
+
+use VuFindSearch\Command\RandomCommand;
 
 /**
  * RandomRecommend Module
@@ -59,7 +61,7 @@ class RandomRecommend implements RecommendInterface
     /**
      * Results Limit
      *
-     * @var number
+     * @var int
      */
     protected $limit = 10;
 
@@ -180,12 +182,14 @@ class RandomRecommend implements RecommendInterface
         }
         $query = $randomParams->getQuery();
         $paramBag = $randomParams->getBackendParameters();
-        $this->results = $this->searchService->random(
+        $command = new RandomCommand(
             $this->backend,
             $query,
             $this->limit,
             $paramBag
-        )->getRecords();
+        );
+        $this->results = $this->searchService->invoke($command)
+            ->getResult()->getRecords();
     }
 
     /**

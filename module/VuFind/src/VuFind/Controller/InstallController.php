@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -29,8 +29,8 @@ namespace VuFind\Controller;
 
 use Laminas\Crypt\Password\Bcrypt;
 use Laminas\Mvc\MvcEvent;
-use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Config\Writer as ConfigWriter;
+use VuFindSearch\Command\RetrieveCommand;
 
 /**
  * Class controls VuFind auto-configuration.
@@ -43,6 +43,8 @@ use VuFind\Config\Writer as ConfigWriter;
  */
 class InstallController extends AbstractBase
 {
+    use Feature\ConfigPathTrait;
+
     /**
      * Use preDispatch event to block access when appropriate.
      *
@@ -97,9 +99,9 @@ class InstallController extends AbstractBase
      */
     protected function installBasicConfig()
     {
-        $config = ConfigLocator::getLocalConfigPath('config.ini', null, true);
+        $config = $this->getForcedLocalConfigPath('config.ini');
         if (!file_exists($config)) {
-            return copy(ConfigLocator::getBaseConfigPath('config.ini'), $config);
+            return copy($this->getBaseConfigFilePath('config.ini'), $config);
         }
         return true;        // report success if file already exists
     }
@@ -137,7 +139,7 @@ class InstallController extends AbstractBase
     public function fixbasicconfigAction()
     {
         $view = $this->createViewModel();
-        $config = ConfigLocator::getLocalConfigPath('config.ini', null, true);
+        $config = $this->getForcedLocalConfigPath('config.ini');
         try {
             if (!$this->installBasicConfig()) {
                 throw new \Exception('Cannot copy file into position.');
@@ -227,8 +229,8 @@ class InstallController extends AbstractBase
             return false;
         }
 
-        // We need at least PHP v7.3.0:
-        return PHP_VERSION_ID >= 70300;
+        // We need at least PHP version as defined in composer.json file:
+        return PHP_VERSION_ID >= $this->getMinimalPhpVersionId();
     }
 
     /**
@@ -241,7 +243,8 @@ class InstallController extends AbstractBase
         $requiredFunctionsExist
             = function_exists('mb_substr') && is_callable('imagecreatefromstring')
               && function_exists('openssl_encrypt')
-              && class_exists('XSLTProcessor');
+              && class_exists('XSLTProcessor')
+              && defined('SODIUM_LIBRARY_VERSION');
 
         return [
             'title' => 'Dependencies',
@@ -261,8 +264,9 @@ class InstallController extends AbstractBase
 
         // Is our version new enough?
         if (!$this->phpVersionIsNewEnough()) {
-            $msg = "VuFind requires PHP version 7.3 or newer; you are running "
-                . phpversion() . ".  Please upgrade.";
+            $msg = "VuFind requires PHP version " . $this->getMinimalPhpVersion()
+                . " or newer; you are running " . phpversion()
+                . ".  Please upgrade.";
             $this->flashMessenger()->addMessage($msg, 'error');
             $problems++;
         }
@@ -307,6 +311,17 @@ class InstallController extends AbstractBase
         if (!class_exists('XSLTProcessor')) {
             $msg
                 = "Your PHP installation appears to be missing the XSL plug-in."
+                . " For details on how to do this, see "
+                . "https://vufind.org/wiki/installation "
+                . "and look at the PHP installation instructions for your platform.";
+            $this->flashMessenger()->addMessage($msg, 'error');
+            $problems++;
+        }
+
+        // Is the sodium extension missing?
+        if (!defined('SODIUM_LIBRARY_VERSION')) {
+            $msg
+                = "Your PHP installation appears to be missing the sodium plug-in."
                 . " For details on how to do this, see "
                 . "https://vufind.org/wiki/installation "
                 . "and look at the PHP installation instructions for your platform.";
@@ -415,11 +430,7 @@ class InstallController extends AbstractBase
                         // forward back to the home action!
                         $string = "{$view->driver}://{$view->dbuser}:{$newpass}@"
                             . $view->dbhost . '/' . $view->dbname;
-                        $config = ConfigLocator::getLocalConfigPath(
-                            'config.ini',
-                            null,
-                            true
-                        );
+                        $config = $this->getForcedLocalConfigPath('config.ini');
                         $writer = new ConfigWriter($config);
                         $writer->set('Database', 'database', $string);
                         if (!$writer->save()) {
@@ -534,17 +545,15 @@ class InstallController extends AbstractBase
         // Process incoming parameter -- user may have selected a new driver:
         $newDriver = $this->params()->fromPost('driver');
         if (!empty($newDriver)) {
-            $configPath
-                = ConfigLocator::getLocalConfigPath('config.ini', null, true);
+            $configPath = $this->getForcedLocalConfigPath('config.ini');
             $writer = new ConfigWriter($configPath);
             $writer->set('Catalog', 'driver', $newDriver);
             if (!$writer->save()) {
                 return $this->forwardTo('Install', 'fixbasicconfig');
             }
             // Copy configuration, if applicable:
-            $ilsIni = ConfigLocator::getBaseConfigPath($newDriver . '.ini');
-            $localIlsIni
-                = ConfigLocator::getLocalConfigPath("{$newDriver}.ini", null, true);
+            $ilsIni = $this->getBaseConfigFilePath("{$newDriver}.ini");
+            $localIlsIni = $this->getForcedLocalConfigPath("{$newDriver}.ini");
             if (file_exists($ilsIni) && !file_exists($localIlsIni)) {
                 if (!copy($ilsIni, $localIlsIni)) {
                     return $this->forwardTo('Install', 'fixbasicconfig');
@@ -579,10 +588,8 @@ class InstallController extends AbstractBase
             sort($drivers);
             $view->drivers = $drivers;
         } else {
-            $view->configPath = ConfigLocator::getLocalConfigPath(
-                "{$config->Catalog->driver}.ini",
-                null,
-                true
+            $view->configPath = $this->getForcedLocalConfigPath(
+                "{$config->Catalog->driver}.ini"
             );
         }
         return $view;
@@ -598,7 +605,8 @@ class InstallController extends AbstractBase
     {
         // Try to retrieve an arbitrary ID -- this will fail if Solr is down:
         $searchService = $this->serviceLocator->get(\VuFindSearch\Service::class);
-        $searchService->retrieve('Solr', '1');
+        $command = new RetrieveCommand('Solr', '1');
+        $searchService->invoke($command)->getResult();
     }
 
     /**
@@ -626,7 +634,7 @@ class InstallController extends AbstractBase
     {
         // In Windows, localhost may fail -- see if switching to 127.0.0.1 helps:
         $config = $this->getConfig();
-        $configFile = ConfigLocator::getLocalConfigPath('config.ini', null, true);
+        $configFile = $this->getForcedLocalConfigPath('config.ini');
         if (stristr($config->Index->url, 'localhost')) {
             $newUrl = str_replace('localhost', '127.0.0.1', $config->Index->url);
             try {
@@ -766,7 +774,7 @@ class InstallController extends AbstractBase
 
         // First, set encryption/hashing to true, and set the key
         $config = $this->getConfig();
-        $configPath = ConfigLocator::getLocalConfigPath('config.ini', null, true);
+        $configPath = $this->getForcedLocalConfigPath('config.ini');
         $writer = new ConfigWriter($configPath);
         if ($this->fixSecurityConfiguration($config, $writer)) {
             // Problem writing? Show the user an error:
@@ -867,7 +875,7 @@ class InstallController extends AbstractBase
      */
     protected function testSslCertConfig($config, $try)
     {
-        $file = ConfigLocator::getLocalConfigPath('config.ini', null, true);
+        $file = $this->getForcedLocalConfigPath('config.ini');
         $writer = new ConfigWriter($file);
         // Reset old settings
         $writer->clear('Http', 'sslcapath');
@@ -896,7 +904,7 @@ class InstallController extends AbstractBase
      */
     public function doneAction()
     {
-        $config = ConfigLocator::getLocalConfigPath('config.ini', null, true);
+        $config = $this->getForcedLocalConfigPath('config.ini');
         $writer = new ConfigWriter($config);
         $writer->set('System', 'autoConfigure', 0);
         if (!$writer->save()) {
@@ -921,5 +929,57 @@ class InstallController extends AbstractBase
             }
         }
         return $this->createViewModel(['checks' => $checks]);
+    }
+
+    /**
+     * Get minimal PHP version required for VuFind to run.
+     *
+     * @return string
+     */
+    protected function getMinimalPhpVersion(): string
+    {
+        $composer = $this->getComposerJson();
+        if (empty($composer)) {
+            throw new \Exception('Cannot find composer.json');
+        }
+        $rawVersion = $composer['require']['php']
+            ?? $composer['config']['platform']['php']
+            ?? '';
+        $version = preg_replace('/[^0-9. ]/', '', $rawVersion);
+        if (empty($version) || !preg_match('/^[0-9]/', $version)) {
+            throw new \Exception('Cannot parse PHP version from composer.json');
+        }
+        $versionParts = preg_split('/[. ]/', $version);
+        $versionParts = array_pad($versionParts, 3, '0');
+        return sprintf('%d.%d.%d', ...$versionParts);
+    }
+
+    /**
+     * Get minimal PHP version ID required for VuFind to run.
+     *
+     * @return int
+     */
+    protected function getMinimalPhpVersionId(): int
+    {
+        $version = explode('.', $this->getMinimalPhpVersion());
+        return $version[0] * 10000 + $version[1] * 100 + $version[2];
+    }
+
+    /**
+     * Get composer.json data as array
+     *
+     * @return array
+     */
+    protected function getComposerJson(): array
+    {
+        try {
+            $composerJsonFileName = APPLICATION_PATH . '/composer.json';
+            if (file_exists($composerJsonFileName)) {
+                return json_decode(file_get_contents($composerJsonFileName), true);
+            }
+        } catch (\Throwable $exception) {
+            return [];
+        }
+        return [];
     }
 }

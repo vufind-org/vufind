@@ -52,9 +52,11 @@ use VuFind\Session\Settings as SessionSettings;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
+class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface,
+    \VuFind\I18n\HasSorterInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
+    use \VuFind\I18n\HasSorterTrait;
 
     /**
      * Top-level configuration
@@ -219,7 +221,7 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
             return strtolower(preg_replace('/[^A-Za-z]/', '', $in));
         };
         $services = array_map($normalize, array_unique($rawServices));
-        sort($services);
+        $this->getSorter()->sort($services);
 
         // Do we need to deal with a preferred service?
         $preferred = isset($this->config->Item_Status->preferred_service)
@@ -375,7 +377,7 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface
             }
             // Store call number/location info:
             $locations[$info['location']]['callnumbers'][] = $this->formatCallNo(
-                $info['callnumber_prefix'],
+                $info['callnumber_prefix'] ?? '',
                 $info['callnumber']
             );
         }

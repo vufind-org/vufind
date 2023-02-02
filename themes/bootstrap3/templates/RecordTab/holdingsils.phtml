@@ -49,7 +49,7 @@
   <?php endif; ?>
 <?php endif; ?>
 <?php $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); if (!empty($holdingTitleHold)): ?>
-  <a class="placehold" data-lightbox title="<?=$this->transEscAttr('request_place_text')?>" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holdingTitleHold))?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc('title_hold_place')?></a>
+  <a class="placehold" data-lightbox title="<?=$this->transEscAttr('request_place_text')?>" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holdingTitleHold))?>"><?=$this->icon('place-hold') ?>&nbsp;<?=$this->transEsc('title_hold_place')?></a>
 <?php endif; ?>
 <?php if (!empty($urls) || $openUrlActive || $doiActive): ?>
   <h3><?=$this->transEsc("Internet")?></h3>

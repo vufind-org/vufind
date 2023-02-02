@@ -63,6 +63,26 @@ CREATE INDEX resource_tags_list_id_idx ON resource_tags (list_id);
 -- --------------------------------------------------------
 
 --
+-- Table structure for table ratings
+--
+
+DROP TABLE IF EXISTS "ratings";
+
+CREATE TABLE ratings (
+id SERIAL,
+user_id int DEFAULT NULL,
+resource_id int DEFAULT NULL,
+rating int NOT NULL,
+created timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY (id)
+);
+CREATE INDEX ratings_user_id_idx ON ratings (user_id);
+CREATE INDEX ratings_resource_id_idx ON ratings (resource_id);
+
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table search. Than fixed created column default value. Old value is 0000-00-00.
 --
 
@@ -88,6 +108,7 @@ CREATE INDEX search_folder_id_idx ON search (folder_id);
 CREATE INDEX session_id_idx ON search (session_id);
 CREATE INDEX notification_frequency_idx ON search (notification_frequency);
 CREATE INDEX notification_base_url_idx ON search (notification_base_url);
+CREATE INDEX search_created_saved_idx ON search (created, saved);
 
 -- --------------------------------------------------------
 
@@ -145,7 +166,7 @@ cat_password varchar(70) DEFAULT NULL,
 cat_pass_enc varchar(170) DEFAULT NULL,
 college varchar(100) NOT NULL DEFAULT '',
 major varchar(100) NOT NULL DEFAULT '',
-home_library varchar(100) NOT NULL DEFAULT '',
+home_library varchar(100) DEFAULT '',
 created timestamp NOT NULL DEFAULT '1970-01-01 00:00:00',
 verify_hash varchar(42) NOT NULL DEFAULT '',
 last_login timestamp NOT NULL DEFAULT '1970-01-01 00:00:00',
@@ -298,7 +319,7 @@ card_name varchar(255) NOT NULL DEFAULT '',
 cat_username varchar(50) NOT NULL DEFAULT '',
 cat_password varchar(50) DEFAULT NULL,
 cat_pass_enc varchar(110) DEFAULT NULL,
-home_library varchar(100) NOT NULL DEFAULT '',
+home_library varchar(100) DEFAULT '',
 created timestamp NOT NULL DEFAULT '1970-01-01 00:00:00',
 saved timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 PRIMARY KEY (id),
@@ -325,6 +346,42 @@ UNIQUE (hash, type)
 );
 CREATE INDEX auth_hash_created_idx on auth_hash(created);
 
+--
+-- Table structure for table `feedback`
+--
+
+DROP TABLE IF EXISTS "feedback";
+
+CREATE TABLE feedback (
+id SERIAL,
+user_id int DEFAULT NULL,
+message text,
+form_data json DEFAULT '{}'::jsonb,
+form_name varchar(255) NOT NULL,
+created timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+updated timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+updated_by int DEFAULT NULL,
+status varchar(255) NOT NULL DEFAULT 'open',
+site_url varchar(255) NOT NULL,
+PRIMARY KEY (id)
+);
+
+--
+-- Table structure for table `access_token`
+--
+
+DROP TABLE IF EXISTS "access_token";
+
+CREATE TABLE access_token (
+id varchar(255) NOT NULL,
+type varchar(128) NOT NULL,
+user_id int DEFAULT NULL,
+created timestamp NOT NULL default '1970-01-01 00:00:00',
+data text,
+revoked boolean NOT NULL DEFAULT '0',
+PRIMARY KEY (id, type)
+);
+
 -- --------------------------------------------------------
 
 --
@@ -350,6 +407,14 @@ ADD CONSTRAINT resource_tags_ibfk_17 FOREIGN KEY (user_id) REFERENCES "user" (id
 
 
 --
+-- Constraints for table ratings
+--
+ALTER TABLE ratings
+ADD CONSTRAINT ratings_ibfk_1 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE SET NULL,
+ADD CONSTRAINT ratings_ibfk_2 FOREIGN KEY (resource_id) REFERENCES resource (id) ON DELETE CASCADE;
+
+
+--
 -- Constraints for table user_list
 --
 ALTER TABLE user_list
@@ -363,3 +428,22 @@ ALTER TABLE user_resource
 ADD CONSTRAINT user_resource_ibfk_3 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE,
 ADD CONSTRAINT user_resource_ibfk_4 FOREIGN KEY (resource_id) REFERENCES resource (id) ON DELETE CASCADE,
 ADD CONSTRAINT user_resource_ibfk_5 FOREIGN KEY (list_id) REFERENCES user_list (id) ON DELETE CASCADE;
+
+
+--
+-- Constraints for table `feedback`
+--
+ALTER TABLE feedback
+ADD CONSTRAINT feedback_ibfk_1 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE SET NULL,
+ADD CONSTRAINT feedback_ibfk_2 FOREIGN KEY (updated_by) REFERENCES "user" (id) ON DELETE SET NULL;
+
+CREATE INDEX feedback_created_idx ON feedback (created);
+CREATE INDEX feedback_status_idx ON feedback (status);
+CREATE INDEX feedback_form_name_idx ON feedback (form_name);
+
+-- Constraints for table access_token
+--
+ALTER TABLE access_token
+ADD CONSTRAINT access_token_ibfk_1 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE;
+
+-- --------------------------------------------------------

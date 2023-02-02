@@ -27,7 +27,7 @@
  */
 namespace VuFind\ILS\Driver;
 
-use VuFind\Config\Locator as ConfigLocator;
+use VuFind\Config\PathResolver;
 use VuFind\Date\DateException;
 use VuFind\Exception\AuthToken as AuthTokenException;
 use VuFind\Exception\ILS as ILSException;
@@ -84,6 +84,13 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @var \VuFind\Date\Converter
      */
     protected $dateConverter;
+
+    /**
+     * Config file path resolver
+     *
+     * @var PathResolver
+     */
+    protected $pathResolver;
 
     /**
      * From agency id
@@ -284,10 +291,14 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
+     * @param PathResolver           $pathResolver  Config file path resolver
      */
-    public function __construct(\VuFind\Date\Converter $dateConverter)
-    {
+    public function __construct(
+        \VuFind\Date\Converter $dateConverter,
+        PathResolver $pathResolver = null
+    ) {
         $this->dateConverter = $dateConverter;
+        $this->pathResolver = $pathResolver;
     }
 
     /**
@@ -392,8 +403,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected function loadPickUpLocationsFromFile($filename)
     {
         // Load pickup locations file:
-        $pickupLocationsFile
-            = ConfigLocator::getConfigPath($filename, 'config/vufind');
+        $pickupLocationsFile = $this->pathResolver
+            ? $this->pathResolver->getConfigPath($filename)
+            : \VuFind\Config\Locator::getConfigPath($filename);
         if (!file_exists($pickupLocationsFile)) {
             throw new ILSException(
                 "Cannot load pickup locations file: {$pickupLocationsFile}."
@@ -1568,28 +1580,32 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = null)
+    public function getConfig($function, $params = [])
     {
         if ($function == 'Holds') {
+            $holdsConfig = $this->config['Holds'] ?? [];
             $extraHoldFields = empty($this->getPickUpLocations(null))
                 ? 'comments:requiredByDate'
                 : 'comments:pickUpLocation:requiredByDate';
-            return [
+            $defaults =  [
                 'HMACKeys' => 'item_id:holdtype:item_agency_id:id:bib_id',
                 'extraHoldFields' => $extraHoldFields,
                 'defaultRequiredDate' => '0:2:0',
                 'consortium' => $this->consortium,
             ];
+            return $holdsConfig + $defaults;
         }
         if ($function == 'StorageRetrievalRequests') {
+            $config = $this->config['StorageRetrievalRequests'] ?? [];
             $extraFields = empty($this->getPickUpLocations(null))
                 ? 'comments:requiredByDate:item-issue'
                 : 'comments:pickUpLocation:requiredByDate:item-issue';
-            return [
+            $defaults =  [
                 'HMACKeys' => 'id:item_id:item_agency_id:id:bib_id',
                 'extraFields' => $extraFields,
                 'defaultRequiredDate' => '0:2:0',
             ];
+            return $config + $defaults;
         }
         return [];
     }
@@ -1900,7 +1916,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 'ns1:CancelRequestItemResponse/' .
                 'ns1:UserId/ns1:UserIdentifierValue'
             );
-            $itemId = $itemId ?? $requestId;
+            $itemId = $itemId ?: $requestId;
             try {
                 $this->checkResponseForError($cancelRequestResponse);
             } catch (ILSException $exception) {
@@ -2812,7 +2828,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         $location = $collection = null;
         $initialLevel = 0;
-        foreach ($locations ?? [] as $loc) {
+        foreach ($locations as $loc) {
             $this->registerNamespaceFor($loc);
             $name = $loc->xpath('ns1:LocationNameValue');
             $name = (string)($name[0] ?? '');

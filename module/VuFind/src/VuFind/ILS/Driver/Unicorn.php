@@ -26,8 +26,9 @@
  */
 namespace VuFind\ILS\Driver;
 
-use File_MARC;
 use VuFind\Exception\ILS as ILSException;
+use VuFind\Marc\MarcCollection;
+use VuFind\Marc\MarcReader;
 
 /**
  * SirsiDynix Unicorn ILS Driver (VuFind side)
@@ -44,9 +45,11 @@ use VuFind\Exception\ILS as ILSException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://code.google.com/p/vufind-unicorn/ vufind-unicorn project
  **/
-class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
+class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface,
+    \VuFind\I18n\HasSorterInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
+    use \VuFind\I18n\HasSorterTrait;
 
     /**
      * Host
@@ -133,7 +136,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = null)
+    public function getConfig($function, $params = [])
     {
         if (isset($this->config[$function])) {
             $functionConfig = $this->config[$function];
@@ -319,17 +322,16 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $items[] = $item;
         }
 
-        if (!empty($items)) {
-            // sort the items by shelving key in descending order, then ascending by
-            // copy number
-            $cmp = function ($a, $b) {
-                if ($a['shelving_key'] == $b['shelving_key']) {
-                    return $a['number'] - $b['number'];
-                }
-                return $a['shelving_key'] < $b['shelving_key'] ? 1 : -1;
-            };
-            usort($items, $cmp);
-        }
+        // sort the items by shelving key in descending order, then ascending by
+        // copy number
+        $cmp = function ($a, $b) {
+            if ($a['shelving_key'] == $b['shelving_key']) {
+                return $a['number'] - $b['number'];
+            }
+            return $a['shelving_key'] < $b['shelving_key'] ? 1 : -1;
+        };
+        usort($items, $cmp);
+
         return $items;
     }
 
@@ -823,16 +825,14 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             ];
         }
 
-        if (!empty($items)) {
-            // sort the items by due date
-            $cmp = function ($a, $b) {
-                if ($a['duedate_raw'] == $b['duedate_raw']) {
-                    return $a['id'] < $b['id'] ? -1 : 1;
-                }
-                return $a['duedate_raw'] < $b['duedate_raw'] ? -1 : 1;
-            };
-            usort($items, $cmp);
-        }
+        // sort the items by due date
+        $cmp = function ($a, $b) {
+            if ($a['duedate_raw'] == $b['duedate_raw']) {
+                return $a['id'] < $b['id'] ? -1 : 1;
+            }
+            return $a['duedate_raw'] < $b['duedate_raw'] ? -1 : 1;
+        };
+        usort($items, $cmp);
 
         return $items;
     }
@@ -860,7 +860,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $name = ($code == $name) ? $name : $code . ' - ' . $name;
             $courses[$id] = $name;
         }
-        asort($courses);
+        $this->getSorter()->asort($courses);
         return $courses;
     }
 
@@ -886,7 +886,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             [$id, $name] = explode('|', $user);
             $users[$id] = $name;
         }
-        asort($users);
+        $this->getSorter()->asort($users);
         return $users;
     }
 
@@ -912,7 +912,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             [$id, $name] = explode('|', $dept);
             $depts[$id] = $name;
         }
-        asort($depts);
+        $this->getSorter()->asort($depts);
         return $depts;
     }
 
@@ -1288,32 +1288,30 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * reflect local policies regarding interpretation of the a, b and
      * c subfields of  852.
      *
-     * @param File_Marc_Field $field Location field to be processed.
+     * @param MarcReader $record MARC record.
+     * @param array      $field  Location field to be processed.
      *
      * @return array Location information.
      */
-    protected function processMarcHoldingLocation($field)
+    protected function processMarcHoldingLocation(MarcReader $record, $field)
     {
-        $library_code  = $field->getSubfield('b')->getData();
-        $location_code = $field->getSubfield('c')->getData();
+        $library_code  = $record->getSubfield($field, 'b');
+        $location_code = $record->getSubfield($field, 'c');
         $location = [
             'library_code'  => $library_code,
             'library'       => $this->mapLibrary($library_code),
             'location_code' => $location_code,
             'location'      => $this->mapLocation($location_code),
-            'notes'   => [],
-            'marc852' => $field
+            'notes'         => $record->getSubfields($field, 'z'),
+            'marc852'       => $field
         ];
-        foreach ($field->getSubfields('z') as $note) {
-            $location['notes'][] = $note->getData();
-        }
         return $location;
     }
 
     /**
      * Decode a MARC holding record.
      *
-     * @param File_MARC_Record $record Holding record to decode..
+     * @param MarcReader $record Holding record to decode..
      *
      * @return array Has two elements: the first is the list of
      *               locations found in the record, the second are the
@@ -1322,7 +1320,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @todo Check if is OK to print multiple times textual holdings
      *       that had more than one $8.
      */
-    protected function decodeMarcHoldingRecord($record)
+    protected function decodeMarcHoldingRecord(MarcReader $record)
     {
         $locations = [];
         $holdings = [];
@@ -1333,19 +1331,20 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         //    able to easily check later what fields from enumeration
         //    and chronology they override.
         $textuals = [];
-        foreach ($record->getFields('852|866', true) as $field) {
-            switch ($field->getTag()) {
+        $fields = array_merge($record->getFields('852'), $record->getFields('866'));
+        foreach ($fields as $field) {
+            switch ($field['tag']) {
             case '852':
-                $locations[] = $this->processMarcHoldingLocation($field);
+                $locations[] = $this->processMarcHoldingLocation($record, $field);
                 break;
             case '866':
-                $linking_fields = $field->getSubfields('8');
+                $linking_fields = $record->getSubfields($field, '8');
                 if ($linking_fields === false) {
                     // Skip textual holdings fields with no linking
                     continue 2;
                 }
                 foreach ($linking_fields as $linking_field) {
-                    $linking = explode('.', $linking_field->getData());
+                    $linking = explode('.', $linking_field);
                     // Only the linking part is used in textual
                     // holdings...
                     $linking = $linking[0];
@@ -1367,14 +1366,14 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                   ? []
                   : $record->getFields('863'))
                  as $field) {
-            $linking_field = $field->getSubfield('8');
+            $linking_field = $record->getSubfield($field, '8');
 
             if ($linking_field === false) {
                 // Skip record if there is no linking number
                 continue;
             }
 
-            $linking = explode('.', $linking_field->getData());
+            $linking = explode('.', $linking_field);
             if (1 < count($linking)) {
                 $sequence = explode('\\', $linking[1]);
                 // Lets ignore the link type, as we only care for \x
@@ -1391,11 +1390,11 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             }
 
             $decoded_holding = '';
-            foreach ($field->getSubfields() as $subfield) {
-                if (strpos('68x', (string)$subfield->getCode()) !== false) {
+            foreach ($field['subfields'] as $subfield) {
+                if (strpos('68x', $subfield['code']) !== false) {
                     continue;
                 }
-                $decoded_holding .= ' ' . $subfield->getData();
+                $decoded_holding .= ' ' . $subfield['data'];
             }
 
             $ndx = (int)($linking
@@ -1404,9 +1403,9 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         }
 
         foreach ($textuals as $linking => $field) {
-            $textual_holding = $field->getSubfield('a')->getData();
-            foreach ($field->getSubfields('z') as $note) {
-                $textual_holding .= ' ' . $note->getData();
+            $textual_holding = $record->getSubfield($field, 'a');
+            foreach ($record->getSubfields($field, 'z') as $note) {
+                $textual_holding .= ' ' . $note;
             }
 
             $ndx = (int)($linking . sprintf("%0{$link_digits}u", 0));
@@ -1427,10 +1426,10 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected function getMarcHoldings($marc)
     {
         $holdings = [];
-        $file = new File_MARC($marc, File_MARC::SOURCE_STRING);
-        while ($marc = $file->next()) {
+        $collection = new MarcCollection($marc);
+        foreach ($collection as $record) {
             [$locations, $record_holdings]
-                = $this->decodeMarcHoldingRecord($marc);
+                = $this->decodeMarcHoldingRecord($record);
             // Flatten locations with corresponding holdings as VuFind
             // expects it.
             foreach ($locations as $location) {

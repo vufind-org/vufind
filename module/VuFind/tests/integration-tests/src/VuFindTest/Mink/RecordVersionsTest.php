@@ -40,20 +40,6 @@ namespace VuFindTest\Mink;
 class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
-     * Standard setup method.
-     *
-     * @return void
-     */
-    public function setUp(): void
-    {
-        // Give up if we're not running in CI:
-        if (!$this->continuousIntegrationRunning()) {
-            $this->markTestSkipped('Continuous integration not running.');
-            return;
-        }
-    }
-
-    /**
      * Run test procedure for record versions.
      *
      * @param string $path Path to search from.

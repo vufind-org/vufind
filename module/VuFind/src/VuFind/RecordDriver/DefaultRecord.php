@@ -66,8 +66,7 @@ class DefaultRecord extends AbstractBase
         $searchSettings = null
     ) {
         // Turn on highlighting as needed:
-        $this->highlight = !isset($searchSettings->General->highlighting)
-            ? false : $searchSettings->General->highlighting;
+        $this->highlight = $searchSettings->General->highlighting ?? false;
 
         parent::__construct($mainConfig, $recordConfig);
     }
@@ -886,7 +885,14 @@ class DefaultRecord extends AbstractBase
         }
 
         // Assemble the URL:
-        return http_build_query($params);
+        $query = [];
+        foreach ($params as $key => $value) {
+            $value = (array)$value;
+            foreach ($value as $sub) {
+                $query[] = urlencode($key) . '=' . urlencode($sub);
+            }
+        }
+        return implode("&", $query);
     }
 
     /**

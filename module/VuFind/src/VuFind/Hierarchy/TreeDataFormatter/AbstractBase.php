@@ -36,8 +36,10 @@ namespace VuFind\Hierarchy\TreeDataFormatter;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
-abstract class AbstractBase
+abstract class AbstractBase implements \VuFind\I18n\HasSorterInterface
 {
+    use \VuFind\I18n\HasSorterTrait;
+
     /**
      * Top-level record from index
      *
@@ -144,7 +146,7 @@ abstract class AbstractBase
             && is_array($fields->title_in_hierarchy)
         ) {
             $titles = $fields->title_in_hierarchy;
-            $parentIDs = $fields->hierarchy_parent_id;
+            $parentIDs = (array)($fields->hierarchy_parent_id ?? []);
             if (count($titles) === count($parentIDs)) {
                 foreach ($parentIDs as $key => $val) {
                     $retVal[$val] = $titles[$key];
@@ -190,11 +192,14 @@ abstract class AbstractBase
      */
     protected function pickTitle($record, $parentID)
     {
-        $titles = $this->getTitlesInHierarchy($record);
+        if (null !== $parentID) {
+            $titles = $this->getTitlesInHierarchy($record);
+            if (isset($titles[$parentID])) {
+                return $titles[$parentID];
+            }
+        }
         // TODO: handle missing titles more gracefully (title not available?)
-        $title = $record->title ?? $record->id;
-        return null != $parentID && isset($titles[$parentID])
-            ? $titles[$parentID] : $title;
+        return $record->title ?? $record->id;
     }
 
     /**
@@ -210,7 +215,7 @@ abstract class AbstractBase
     {
         // Sort arrays based on first element
         $sorter = function ($a, $b) {
-            return strcmp($a[0], $b[0]);
+            return $this->getSorter()->compare($a[0], $b[0]);
         };
         usort($array, $sorter);
 

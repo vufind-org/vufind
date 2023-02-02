@@ -50,7 +50,7 @@ class Pazpar2recordController extends AbstractRecord
         throw new \Exception('Pazpar2 record view not supported.');
 
         // Override some defaults:
-        $this->searchClassId = 'Pazpar2';
+        $this->sourceId = 'Pazpar2';
 
         // Call standard record controller initialization:
         parent::__construct($sm);

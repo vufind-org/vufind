@@ -13,25 +13,6 @@
   // of the suppressed query:
   $extraUrlFields = $this->results->getUrlQuery()->getParamsWithConfiguredDefaults();
 ?>
-<?php if (!in_array($this->title, $this->collapsedFacets)): ?>
-  <?php
-    $script = <<<JS
-$(document).ready(function() {
-  initFacetTree($('#facet_{$this->escapeHtml($this->title)}'), true);
-});
-JS;
-  ?>
-  <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
-<?php else: ?>
-  <?php
-  $script = <<<JS
-$('#side-collapse-{$this->escapeHtmlAttr($this->title)}').on('show.bs.collapse', function() {
-  initFacetTree($('#facet_{$this->escapeHtml($this->title)}'), true);
-});
-JS;
-  ?>
-  <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
-<?php endif; ?>
 <?php
   $truncateSettings = $this->facets_before_more < 1 ? false : [
     'rows' => $this->facets_before_more,
@@ -54,3 +35,11 @@ JS;
     data-extra-fields="<?=$this->escapeHtml(implode(',', $extraUrlFields))?>">
   </div>
 </div>
+<?php
+  $script = <<<JS
+$(document).ready(function () {
+  initFacetTree($('#facet_{$this->escapeHtml($this->title)}'), true);
+});
+JS;
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>

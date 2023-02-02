@@ -1873,7 +1873,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($func, $params = null)
+    public function getConfig($func, $params = [])
     {
         if ($func == "Holds") {
             $holdsConfig = $this->config['Holds'] ?? [];

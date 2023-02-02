@@ -1,4 +1,6 @@
-<?php $this->metadata()->generateMetatags($this->driver);?>
+<?php
+  $this->metadata()->generateMetatags($this->driver);
+?>
 <div class="media" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
   <?php
     $QRCode = $this->record($this->driver)->getQRCode("core");
@@ -6,8 +8,9 @@
     $cover = $coverDetails['html'];
     $preview = ($this->previewOverride ?? false)
       ? $this->previewOverride : $this->record($this->driver)->getPreviews();
+    $rating = $this->driver->isRatingAllowed();
   ?>
-  <?php if ($QRCode || $cover || $preview): ?>
+  <?php if ($QRCode || $cover || $preview || $rating): ?>
     <div class="media-left <?=$this->escapeHtmlAttr($coverDetails['size'])?> img-col">
       <?php /* Display thumbnail if appropriate: */ ?>
       <?php if($cover): ?>
@@ -19,6 +22,11 @@
         <span class="hidden-xs">
           <br/><img alt="<?=$this->transEscAttr('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
         </span>
+      <?php endif; ?>
+
+      <?php /* Display rating if enabled: */ ?>
+      <?php if ($rating): ?>
+        <?=$this->record($this->driver)->renderTemplate('rating.phtml')?>
       <?php endif; ?>
 
       <?php // if you have a preview tab but want to move or remove the preview link
@@ -67,18 +75,15 @@
     <?php endif; ?>
 
     <?php /* Display Main Details */ ?>
-    <?php
-      $formatter = $this->recordDataFormatter();
-      $coreFields = $formatter->getData($driver, $formatter->getDefaults('core'));
+    <?=
+      $this->record($this->driver)->renderTemplate(
+          'core-fields.phtml',
+          [
+            'driver' => $this->driver,
+            'defaults' => 'core'
+          ]
+      );
     ?>
-    <?php if (!empty($coreFields)): ?>
-      <table class="table table-striped">
-        <caption class="sr-only"><?=$this->transEsc('Bibliographic Details')?></caption>
-        <?php foreach ($coreFields as $current): ?>
-          <tr><th><?=$this->transEsc($current['label'])?>:</th><td><?=$current['value']?></td></tr>
-        <?php endforeach; ?>
-      </table>
-    <?php endif; ?>
     <?php /* End Main Details */ ?>
   </div>
 </div>

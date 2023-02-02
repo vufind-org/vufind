@@ -57,17 +57,25 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Standard setup method.
+     * Click on the "Save Search" link in a search result set (or fail trying).
+     *
+     * @param Element $page Current page
      *
      * @return void
      */
-    public function setUp(): void
+    protected function clickSaveLink(Element $page): void
     {
-        // Give up if we're not running in CI:
-        if (!$this->continuousIntegrationRunning()) {
-            $this->markTestSkipped('Continuous integration not running.');
-            return;
+        $links = $page->findAll('css', '.searchtools a');
+        foreach ($links as $link) {
+            if ($this->checkVisibility($link)
+                && str_contains($link->getHtml(), 'Save Search')
+            ) {
+                $link->click();
+                return;
+            }
         }
+
+        $this->fail('Could not find save link.');
     }
 
     /**
@@ -80,15 +88,74 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
     public function testSaveSearch(): void
     {
         $page = $this->performSearch('test');
-        $this->clickCss($page, '.fa.fa-save');
+        $this->clickSaveLink($page);
         $this->waitForPageLoad($page);
+
         $this->clickCss($page, '.createAccountLink');
         $this->fillInAccountForm($page);
         $this->clickCss($page, 'input.btn.btn-primary');
+
         $this->assertEquals(
             'Search saved successfully.',
             $this->findCss($page, '.alert.alert-success')->getText()
         );
+    }
+
+    /**
+     * Assert that the search history contains the provided list of searches (and
+     * nothing else).
+     *
+     * @param string[] $expected Array of search strings
+     * @param Element  $page     Page object to check
+     *
+     * @return void
+     */
+    protected function assertSavedSearchList(array $expected, Element $page): void
+    {
+        // Pull all the links from the search history table and format them into
+        // a string:
+        $saved = $page->findAll('css', '#saved-searches td a');
+        $callback = function ($link) {
+            return trim($link->getText());
+        };
+        $linkText = implode("\n", array_map($callback, $saved));
+
+        // Each expected search link should have a corresponding Delete link; create
+        // an expectation accordingly:
+        $expectedCallback = function ($link) {
+            return "$link\nDelete";
+        };
+        $expectedLinkText = implode("\n", array_map($expectedCallback, $expected));
+
+        // Compare the expected and actual strings:
+        $this->assertEquals($expectedLinkText, $linkText);
+    }
+
+    /**
+     * Test that saving a search while logging in does not create a duplicate.
+     *
+     * @depends testSaveSearch
+     *
+     * @return void
+     */
+    public function testSavedSearchDeduplication(): void
+    {
+        // Perform the same search that was already done in testSaveSearch above,
+        // prior to logging in...
+        $page = $this->performSearch('test');
+        $this->clickSaveLink($page);
+        $this->waitForPageLoad($page);
+
+        // When we hit save, we'll be prompted to log in...
+        $this->fillInLoginForm($page, 'username1', 'test', false);
+        $this->submitLoginForm($page, false);
+        $this->waitForPageLoad($page);
+
+        // We want to be sure that this does not create two copies of the same search
+        // in our search history.
+        $this->findAndAssertLink($page, 'Search History')->click();
+        $this->waitForPageLoad($page);
+        $this->assertSavedSearchList(["test"], $page);
     }
 
     /**
@@ -310,6 +377,93 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch('employment');
         $link = $this->findCss($page, '.searchtools .manageSchedule');
         $this->assertEquals("Alert schedule: Weekly", $link->getText());
+    }
+
+    /**
+     * Test that accessing the "manage schedule" screen properly deduplicates
+     * existing saved searches if clicked prior to user login.
+     *
+     * @depends testNotificationsInSearchToolbar
+     *
+     * @return void
+     */
+    public function testNotificationsInSearchToolbarDeduplication()
+    {
+        // Perform the same search as the previous test, and turn on notifications.
+        $this->performSearch('employment');
+        $page = $this->activateNotifications();
+
+        // We are not logged in, so we won't see the appropriate alert schedule yet
+        // (it's always "None" for logged-out users).
+        $link = $this->findCss($page, '.searchtools .manageSchedule');
+        $this->assertEquals("Alert schedule: None", $link->getText());
+        $link->click();
+        $this->waitForPageLoad($page);
+
+        // We should now be prompted to log in:
+        $this->fillInLoginForm($page, 'username1', 'test', false);
+        $this->submitLoginForm($page, false);
+        $this->waitForPageLoad($page);
+
+        // We should now be on a page with a schedule selector; because of the
+        // setting we set in the previous test, and with login deduplication, we
+        // should now see the "7" option already selected:
+        $scheduleSelector = 'select[name="schedule"]';
+        $this->assertEquals(7, $this->findCss($page, $scheduleSelector)->getValue());
+    }
+
+    /**
+     * Test that scheduling a search from the history screen properly deduplicates
+     * existing saved searches if clicked prior to user login.
+     *
+     * @depends testNotificationsInSearchToolbar
+     *
+     * @return void
+     */
+    public function testNotificationsInSearchHistoryDeduplication()
+    {
+        // Perform the same search as the previous test, and turn on notifications.
+        $this->performSearch('employment');
+        $page = $this->activateNotifications();
+
+        // Now go to search history.
+        $this->findAndAssertLink($page, 'Search History')->click();
+        $this->waitForPageLoad($page);
+
+        // Now there should be one alert option visible (in unsaved):
+        $scheduleSelector = 'select[name="schedule"]';
+        $this->assertEquals(1, count($page->findAll('css', $scheduleSelector)));
+        $this->assertEquals(
+            1,
+            count($page->findAll('css', '#recent-searches ' . $scheduleSelector))
+        );
+        $this->assertEquals(
+            0,
+            count($page->findAll('css', '#saved-searches ' . $scheduleSelector))
+        );
+
+        // Let's set up our search for alerts and make sure it's handled correctly:
+        $select = $this->findCss($page, '#recent-searches ' . $scheduleSelector);
+        $select->selectOption(1);
+        $this->waitForPageLoad($page);
+
+        // We should now be prompted to log in:
+        $this->fillInLoginForm($page, 'username1', 'test', false);
+        $this->submitLoginForm($page, false);
+        $this->waitForPageLoad($page);
+
+        // Verify that the search is now saved, and that our notification setting (1)
+        // has overridden the previously saved value from the earlier test (7).
+        // Note that we want to make sure we're looking at the search we expect to
+        // look at! From previous tests, we expect to have two in our history, but
+        // the important one ("employment") should be first, which enables us to
+        // safely rely on the final assertion below.
+        $this->assertSavedSearchList(["employment", "test"], $page);
+        $this->assertEquals(
+            2,
+            count($page->findAll('css', '#saved-searches ' . $scheduleSelector))
+        );
+        $this->assertEquals(1, $this->findCss($page, $scheduleSelector)->getValue());
     }
 
     /**
