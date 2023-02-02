@@ -34,7 +34,7 @@
             <?php if ($account->isLoggedIn()): ?>
               <li class="logoutOptions<?php if ($account->dropdownEnabled()): ?> with-dropdown<?php endif ?>">
                 <a href="<?=$this->url('myresearch-home', [], ['query' => ['redirect' => 0]])?>" class="icon-link">
-                  <span id="account-icon icon-link__icon"><?=$this->icon('my-account') ?></span>
+                  <span id="account-icon" class="icon-link__icon"><?=$this->icon('my-account') ?></span>
                   <span class="icon-link__label"><?=$this->transEsc("Your Account")?></span>
                 </a>
               </li>
