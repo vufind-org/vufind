@@ -11,7 +11,7 @@
         <filter class="solr.PatternReplaceFilterFactory" pattern="(?&lt;!\b[A-Z])[.\s]*$" replacement="" replace="first"/>
       </analyzer>
     </fieldType>
-    <fieldType name="text" class="solr.TextField" positionIncrementGap="100">
+    <fieldType name="text" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
       <analyzer type="index">
         <tokenizer class="solr.ICUTokenizerFactory"/>
         <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="1" catenateNumbers="1" catenateAll="0" splitOnCaseChange="1"/>
@@ -33,7 +33,7 @@
       </analyzer>
     </fieldType>
     <!-- Text Field without Stemming and Synonyms -->
-    <fieldType name="textProper" class="solr.TextField" positionIncrementGap="100">
+    <fieldType name="textProper" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
       <analyzer type="index">
         <tokenizer class="solr.ICUTokenizerFactory"/>
         <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="1" catenateNumbers="1" catenateAll="0"/>
@@ -50,7 +50,7 @@
       </analyzer>
     </fieldType>
     <!-- Basic Text Field for use with Spell Correction -->
-    <fieldType name="textSpell" class="solr.TextField" positionIncrementGap="100">
+    <fieldType name="textSpell" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
       <analyzer>
         <tokenizer class="solr.ICUTokenizerFactory"/>
         <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="0" catenateNumbers="0" catenateAll="0"/>
@@ -60,7 +60,7 @@
       </analyzer>
     </fieldType>
     <!-- More advanced spell checking field. -->
-    <fieldType name="textSpellShingle" class="solr.TextField" positionIncrementGap="100">
+    <fieldType name="textSpellShingle" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
       <analyzer type="index">
         <tokenizer class="solr.ICUTokenizerFactory"/>
         <filter class="solr.ICUFoldingFilterFactory"/>
