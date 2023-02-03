@@ -50,7 +50,7 @@ class AuthorSearchTest extends \VuFindTest\Integration\MinkTestCase
         $facets = $this->findCss($page, '#side-collapse-building a')->getText();
         // We'll check for a known count from a known MARC file to confirm that
         // results came back.
-        $this->assertTrue(strpos($facets, "author_relators.mrc 10") !== false);
+        $this->assertStringContainsString("author_relators.mrc 10", $facets);
     }
 
     /**
@@ -64,6 +64,6 @@ class AuthorSearchTest extends \VuFindTest\Integration\MinkTestCase
         $facets = $this->findCss($page, '#side-collapse-building a')->getText();
         // We'll check for a known count from a known MARC file to confirm that
         // results came back.
-        $this->assertTrue(strpos($facets, "author_relators.mrc 11") !== false);
+        $this->assertStringContainsString("author_relators.mrc 11", $facets);
     }
 }
