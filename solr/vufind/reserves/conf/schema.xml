@@ -6,7 +6,7 @@
     <fieldtype name="string" class="solr.StrField" sortMissingLast="true" omitNorms="true"/>
     <fieldtype name="boolean" class="solr.BoolField" sortMissingLast="true" omitNorms="true"/>
     <fieldtype name="date" class="solr.DatePointField" sortMissingLast="true" omitNorms="true"/>
-    <fieldType name="text" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
+    <fieldType name="text" class="solr.TextField" positionIncrementGap="100">
       <analyzer type="index">
         <tokenizer class="solr.ICUTokenizerFactory"/>
         <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="1" catenateNumbers="1" catenateAll="0" splitOnCaseChange="1"/>
