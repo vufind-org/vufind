@@ -11,7 +11,7 @@
         <filter class="solr.PatternReplaceFilterFactory" pattern="(?&lt;!\b[A-Z])[.\s]*$" replacement="" replace="first"/>
       </analyzer>
     </fieldType>
-    <fieldType name="text" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
+    <fieldType name="text" class="solr.TextField" positionIncrementGap="100">
       <analyzer type="index">
         <tokenizer class="solr.ICUTokenizerFactory"/>
         <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="1" catenateNumbers="1" catenateAll="0" splitOnCaseChange="1"/>
@@ -33,7 +33,7 @@
       </analyzer>
     </fieldType>
     <!-- Text Field without Stemming and Synonyms -->
-    <fieldType name="textProper" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
+    <fieldType name="textProper" class="solr.TextField" positionIncrementGap="100">
       <analyzer type="index">
         <tokenizer class="solr.ICUTokenizerFactory"/>
         <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="1" catenateNumbers="1" catenateAll="0"/>
@@ -50,7 +50,7 @@
       </analyzer>
     </fieldType>
     <!-- Basic Text Field for use with Spell Correction -->
-    <fieldType name="textSpell" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
+    <fieldType name="textSpell" class="solr.TextField" positionIncrementGap="100">
       <analyzer>
         <tokenizer class="solr.ICUTokenizerFactory"/>
         <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="0" catenateNumbers="0" catenateAll="0"/>
@@ -60,7 +60,7 @@
       </analyzer>
     </fieldType>
     <!-- More advanced spell checking field. -->
-    <fieldType name="textSpellShingle" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
+    <fieldType name="textSpellShingle" class="solr.TextField" positionIncrementGap="100">
       <analyzer type="index">
         <tokenizer class="solr.ICUTokenizerFactory"/>
         <filter class="solr.ICUFoldingFilterFactory"/>
@@ -133,8 +133,8 @@
    <!-- Generic Fields -->
    <field name="language" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="format" type="string" indexed="true" stored="true" multiValued="true"/>
-   <field name="author" type="textProper" indexed="true" stored="true" multiValued="true" termVectors="true"/>
-   <field name="author_variant" type="text" indexed="true" stored="true" multiValued="true" termVectors="true"/>
+   <field name="author" type="textProper" indexed="true" stored="true" multiValued="true" termVectors="true" storeOffsetsWithPositions="true"/>
+   <field name="author_variant" type="text" indexed="true" stored="true" multiValued="true" termVectors="true" storeOffsetsWithPositions="true"/>
    <field name="author_role" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="author_facet" type="textFacet" indexed="true" stored="true" multiValued="true"/>
    <field name="author_sort" type="string" indexed="true" stored="true"/>
