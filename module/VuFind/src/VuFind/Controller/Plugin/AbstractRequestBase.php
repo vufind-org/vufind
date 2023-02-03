@@ -145,7 +145,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
      */
     public function validateIds($ids): bool
     {
-        return (bool)array_diff($ids, $this->getValidIds());
+        return !(bool)array_diff($ids, $this->getValidIds());
     }
 
     /**
