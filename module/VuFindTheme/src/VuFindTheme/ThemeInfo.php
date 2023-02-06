@@ -232,44 +232,49 @@ class ThemeInfo
      * Using the string-keyed array format of theme config info,
      * recursively walk the array, capturing unique or missing values.
      *
-     * @param array|string $merged  Merged theme info, overrides parent theme
-     * @param array|string $current Theme info to be merged
+     * @param array|string $children  Merged theme info, overrides parent theme
+     * @param array|string $parent Theme info to be merged
      *
      * @return array|string merged theme info, favoring child themes (merged)
      */
-    protected function mergeWithoutOverride($merged, $current)
+    protected function mergeWithoutOverride($children, $parent)
     {
-        if (empty($merged)) {
-            return $current;
+        if (empty($children)) {
+            return $parent;
         }
 
         // Early escape for string, number, etc. values
-        if (!is_array($merged) && !is_array($current)) {
-            return $merged;
+        if (!is_array($children) && !is_array($parent)) {
+            return $children;
         }
 
-        if ($this->isStringKeyedArray($merged)) {
-            foreach ($current as $key => $val) {
-                if (!array_key_exists($key, $merged)) {
+        if ($this->isStringKeyedArray($children)) {
+            if (!$this->isStringKeyedArray($parent)) {
+                // don't override if incompatible
+                return $children;
+            }
+
+            foreach ($parent as $key => $val) {
+                if (!array_key_exists($key, $children)) {
                     // capture missing string keys
-                    $merged[$key] = $val;
+                    $children[$key] = $val;
                 } elseif ($this->isStringKeyedArray($val)) {
                     // recurse
-                    $merged[$key] = $this->mergeWithoutOverride($merged[$key], $val);
+                    $children[$key] = $this->mergeWithoutOverride($children[$key], $val);
                 } elseif (is_array($val)) {
                     // capture unique or missing array items
-                    $merged[$key] = array_merge($val, (array)$merged[$key]);
-                } elseif (is_array($merged[$key])) {
+                    $children[$key] = array_merge($val, (array)$children[$key]);
+                } elseif (is_array($children[$key])) {
                     // string -> array
-                    $merged[$key] = array_merge((array)$val, $merged[$key]);
+                    $children[$key] = array_merge((array)$val, $children[$key]);
                 }
             }
 
-            return $merged;
+            return $children;
         }
 
         // capture unique or missing array items
-        return array_merge((array)$current, (array)$merged);
+        return array_merge((array)$parent, (array)$children);
     }
 
     /**
@@ -303,6 +308,7 @@ class ThemeInfo
                 $allThemeInfo[$currentTheme]['mixins'] ?? [],
             );
 
+            // from child to parent
             foreach ($currentThemeSet as $theme) {
                 if (isset($allThemeInfo[$theme])
                     && (empty($key) || isset($allThemeInfo[$theme][$key]))

@@ -378,6 +378,18 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
                 ],
                 ['mixed' => ['array', 'string']],
             ],
+
+            // arrays and strings
+            [
+                [
+                    ['mixed' => ['array']],
+                    'not an array',
+                ],
+                [
+                    'mixed' => ['array'],
+                    // 0 => 'not an array'
+                ],
+            ],
         ];
     }
 
