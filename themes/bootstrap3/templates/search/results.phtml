@@ -1,26 +1,8 @@
 <?php
   // Set up page title:
   $lookfor = $this->results->getUrlQuery()->isQuerySuppressed() ? '' : $this->params->getDisplayQuery();
-  
-  if (isset($this->parseError)):
-    $headTitleText = $this->transEsc('nohit_parse_error');
-  elseif ($recordTotal < 1):
-    $headTitleText = $this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->escapeHtml($lookfor)]);
-  else:
-    $transParams = [
-      '%%start%%' => $this->localizedNumber($this->results->getStartRecord()),
-      '%%end%%' => $this->localizedNumber($this->results->getEndRecord()),
-      '%%total%%' => $this->localizedNumber($this->recordTotal),
-      '%%lookfor%%' => $this->escapeHtml($this->lookfor)
-    ];
-    $headTitleText = $this->translate(
-      isset($this->skipTotalCount) ? 'showing_results_for_title' : 'showing_results_of_for_title',
-      $transParams
-    );
-  endif;
-  
   $headTitle = $this->slot('head-title')
-        ->get( strip_tags($headTitleText) );
+        ->get($this->translate('Search Results') . (empty($lookfor) ? '' : " - {$lookfor}"));
   $this->headTitle($headTitle);
 
   // Set up search box:
