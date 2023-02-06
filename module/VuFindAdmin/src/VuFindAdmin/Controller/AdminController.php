@@ -64,6 +64,20 @@ class AdminController extends AbstractAdmin
         }
         $view = $this->createViewModel();
         $view->xml = $xml ? simplexml_load_string($xml) : false;
+
+        if (!isset($config->Authentication->ils_encryption_algo)
+            || $config->Authentication->ils_encryption_algo == "blowfish"
+        ) {
+            $this->flashMessenger()->addMessage(
+                'Database encryption method is set to blowfish or is set unset ' .
+                    '(defaulting to blowfish). This lay cause security ' .
+                    'vulnerabilities. <a href="' .
+                    $this->url()->fromRoute('Upgrade', 'CriticalFixBlowfish') .
+                    '">Go to this upgrade pagefor more information.</a> ',
+                'warning'
+            );
+        }
+
         return $view;
     }
 }
