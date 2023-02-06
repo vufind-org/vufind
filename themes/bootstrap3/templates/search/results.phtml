@@ -1,9 +1,8 @@
 <?php
   // Set up page title:
   $lookfor = $this->results->getUrlQuery()->isQuerySuppressed() ? '' : $this->params->getDisplayQuery();
-  $headTitle = $this->slot('head-title')
-        ->get($this->translate('Search Results') . (empty($lookfor) ? '' : " - {$lookfor}"));
-  $this->headTitle($headTitle);
+
+  // Normally we would set up page title here, but we'll set it at the end instead so we can grab the number of results efficiently
 
   // Set up search box:
   $this->layout()->searchbox = $this->context($this)->renderInContext(
@@ -117,3 +116,17 @@
   <?php endforeach; ?>
 </div>
 <?php /* End Refine Search Options */ ?>
+
+<?php 
+
+/* Set up the page title now that we know the number of results */
+
+/* $this->layout()->srmessage was initialized when showing.phtml was rendered, 
+ * and it might have been altered if results were empty. However, it contains 
+ * HTML tags like <strong> as well as encoded entities that we need to tidy.
+/**/
+
+$headTitle = html_entity_decode( strip_tags( $this->layout()->srmessage ), ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+$headTitle = $this->slot('head-title')->get( $headTitle );
+$this->headTitle( $headTitle );
+?>
