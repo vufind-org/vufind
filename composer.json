@@ -87,7 +87,7 @@
         "symfony/yaml": "5.4.3",
         "vstelmakh/url-highlight": "3.0.1",
         "vufind-org/vufindcode": "1.2",
-        "vufind-org/vufinddate": "1.1.0",
+        "vufind-org/vufinddate": "1.2.0",
         "vufind-org/vufindharvest": "4.1.0",
         "vufind-org/vufindhttp": "3.2.0",
         "vufind-org/vufind-marc": "1.0.0",

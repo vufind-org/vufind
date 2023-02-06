@@ -196,7 +196,8 @@
         <?php endforeach; ?>
       <?php endif; ?>
       <h2><?=$this->transEsc("Search Tips")?></h2>
-      <div class="facet-group">
+      <?php // Data-title attribute is for analytics use.  Do not remove. ?>
+      <div class="facet-group" data-title="<?=$this->escapeHtmlAttr("Search Tips") ?>">
         <a class="facet help-link" data-lightbox href="<?=$this->url('help-home')?>?topic=advsearch&amp;_=<?=time() ?>"><?=$this->transEsc("Help with Advanced Search")?></a>
         <a class="facet help-link" data-lightbox href="<?=$this->url('help-home')?>?topic=search&amp;_=<?=time() ?>"><?=$this->transEsc("Help with Search Operators")?></a>
       </div>

@@ -1,10 +1,10 @@
 <?php
 /**
- * DOI linker interface
+ * Demo (fake data) DOI linker
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,21 +23,28 @@
  * @package  DOI
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:doi_linkers Wiki
  */
 namespace VuFind\DoiLinker;
 
 /**
- * DOI linker interface
+ * Demo (fake data) DOI linker
  *
  * @category VuFind
  * @package  DOI
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development:plugins:doi_linkers Wiki
  */
-interface DoiLinkerInterface
+class Demo implements DoiLinkerInterface
 {
+    /**
+     * Possible icon values
+     *
+     * @var array
+     */
+    protected $icons = ['browzine-issue', 'browzine-pdf', null];
+
     /**
      * Given an array of DOIs, perform a lookup and return an associative array
      * of arrays, keyed by DOI. Each array contains one or more associative arrays
@@ -49,5 +56,18 @@ interface DoiLinkerInterface
      *
      * @return array
      */
-    public function getLinks(array $doiArray);
+    public function getLinks(array $doiArray)
+    {
+        $response = [];
+        foreach ($doiArray as $doi) {
+            $icon = $this->icons[rand(0, count($this->icons) - 1)];
+            $response[$doi][] = [
+                'link' => "https://vufind.org",
+                'label' => "Demonstrating DOI link for $doi with icon "
+                    . ($icon ?? "[null]"),
+                'localIcon' => $icon,
+            ];
+        }
+        return $response;
+    }
 }

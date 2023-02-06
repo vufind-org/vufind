@@ -43,6 +43,7 @@ use VuFind\ILS\Driver\Folio;
 class FolioTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\ReflectionTrait;
 
     /**
      * Default test configuration
@@ -399,5 +400,226 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             '{"itemId":"record1","userId":"foo"}',
             $this->testRequestLog[1]['params']
         );
+    }
+
+    /**
+     * Test successful call to holds, no items
+     *
+     * @return void
+     */
+    public function testNoItemsGetMyHolds(): void
+    {
+        $this->createConnector('get-my-holds-none');
+        $patron = [
+            'id' => 'foo'
+        ];
+        $result = $this->driver->getMyHolds($patron);
+        $expected = [];
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Test successful call to holds, one available item
+     *
+     * @return void
+     */
+    public function testAvailbleItemGetMyHolds(): void
+    {
+        $this->createConnector('get-my-holds-available');
+        $patron = [
+            'id' => 'foo'
+        ];
+        $result = $this->driver->getMyHolds($patron);
+        $expected[0] = [
+            'type' => 'Page',
+            'create' => '12-20-2022',
+            'expire' => '',
+            'id' => '3311d5df-731f-4e2c-8000-00960a9d8bf7',
+            'item_id' => 'fc0064b4-e2e4-4be0-8251-7ca93282c9b4',
+            'reqnum' => 'c5a8af9d-9877-453c-bbcb-f63cb5ccb3b4',
+            'title' => 'Presentation secrets : do what you never thought possible with your presentations ',
+            'available' => true,
+            'in_transit' => false,
+            'last_pickup_date' => '12-29-2022',
+            'position' => 1
+        ];
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Test successful call to holds, one in_transit item
+     *
+     * @return void
+     */
+    public function testInTransitItemGetMyHolds(): void
+    {
+        $this->createConnector('get-my-holds-in_transit');
+        $patron = [
+            'id' => 'foo'
+        ];
+        $result = $this->driver->getMyHolds($patron);
+        $expected[0] = [
+            'type' => 'Page',
+            'create' => '11-07-2022',
+            'expire' => '',
+            'id' => 'c112b154-720c-486c-890d-81e1c288c097',
+            'item_id' => '795759ad-0b33-41dd-a658-947405261360',
+            'reqnum' => '074c0f3d-e8a0-47b5-b598-74a45c29d3d7',
+            'title' => 'Basic economics : a common sense guide to the economy ',
+            'available' => false,
+            'in_transit' => true,
+            'last_pickup_date' => null,
+            'position' => 1
+        ];
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Test successful call to holds, item in queue, position x
+     *
+     * @return void
+     */
+    public function testSingleItemGetMyHolds(): void
+    {
+        $this->createConnector('get-my-holds-single');
+        $patron = [
+            'id' => 'foo'
+        ];
+        $result = $this->driver->getMyHolds($patron);
+        $expected[0] = [
+            'type' => 'Hold',
+            'create' => '12-20-2022',
+            'expire' => '12-28-2022',
+            'id' => 'c7a7df0d-36a2-486c-85f5-008191e6b32d',
+            'item_id' => '26532648-67a3-4459-a97f-9b54b4c5ebd9',
+            'reqnum' => 'bb07eb2c-bf3a-449f-8e8b-a114ce410c7f',
+            'title' => 'Organic farming : everything you need to know ',
+            'available' => false,
+            'in_transit' => false,
+            'last_pickup_date' => null,
+            'position' => 3
+        ];
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Test calls to isHoldable when no excludeHoldLocationsCompareMode
+     * config value is set
+     *
+     * @return void
+     */
+    public function testIsHoldableDefaultConfig(): void
+    {
+        $driverConfig = $this->defaultDriverConfig;
+        $driverConfig['Holds']['excludeHoldLocations'] = ['reserve'];
+
+        // Test default mode is exact
+        $this->createConnector("empty", $driverConfig);
+        $this->assertFalse($this->callMethod($this->driver, "isHoldable", ["reserve"]));
+    }
+
+    /**
+     * Test calls to isHoldable with the exact compare mode
+     *
+     * @return void
+     */
+    public function testIsHoldableExactMode(): void
+    {
+        $driverConfig = $this->defaultDriverConfig;
+
+        // Positive test for exact compare mode
+        $driverConfig['Holds']['excludeHoldLocations'] = ['reserve'];
+        $driverConfig['Holds']['excludeHoldLocationsCompareMode'] = 'exact';
+        $this->createConnector("empty", $driverConfig);
+
+        $this->assertFalse($this->callMethod($this->driver, "isHoldable", ["reserve"]));
+        $this->assertTrue($this->callMethod($this->driver, "isHoldable", ["Reserve"]));
+        $this->assertTrue($this->callMethod($this->driver, "isHoldable", ["library"]));
+    }
+
+    /**
+     * Test calls to isHoldable when using regex mode
+     *
+     * @return void
+     */
+    public function testIsHoldableRegexMode(): void
+    {
+        $driverConfig = $this->defaultDriverConfig;
+
+        // Positive test for regex compare mode
+        $driverConfig['Holds']['excludeHoldLocations'] = ['/RESERVE/i'];
+        $driverConfig['Holds']['excludeHoldLocationsCompareMode'] = 'regex';
+        $this->createConnector("empty", $driverConfig);
+        $this->assertFalse($this->callMethod($this->driver, "isHoldable", ["reserve"]));
+        $this->assertFalse($this->callMethod($this->driver, "isHoldable", ["Reserve"]));
+        $this->assertTrue($this->callMethod($this->driver, "isHoldable", ["library"]));
+        $this->assertFalse($this->callMethod($this->driver, "isHoldable", ["24 hour reserve desk"]));
+    }
+
+    /**
+     * Test calls to isHoldable to verify handling of invalid regex
+     * when in regex compare mode
+     *
+     * @return void
+     */
+    public function testIsHoldableInvalidRegex(): void
+    {
+        $driverConfig = $this->defaultDriverConfig;
+
+        // Negative test for regex compare mode (invalid regex)
+        $driverConfig['Holds']['excludeHoldLocations'] = ['RESERVE'];
+        $driverConfig['Holds']['excludeHoldLocationsCompareMode'] = 'regex';
+        $this->createConnector("empty", $driverConfig);
+        $this->assertTrue($this->callMethod($this->driver, "isHoldable", ["reserve"]));
+
+        // Negative test for regex compare mode (non-string setting and parameter used)
+        $driverConfig['Holds']['excludeHoldLocations'] = [true];
+        $this->createConnector("empty", $driverConfig);
+        $this->assertTrue($this->callMethod($this->driver, "isHoldable", ["library"]));
+        $this->assertTrue($this->callMethod($this->driver, "isHoldable", ["true"]));
+        $this->assertTrue($this->callMethod($this->driver, "isHoldable", [true]));
+    }
+
+    /**
+     * Test calls to isHoldable that verify that the excludeHoldLocationsCompareMode
+     * config is case insensitive
+     *
+     * @return void
+     */
+    public function testIsHoldableCaseSensitivityConfig(): void
+    {
+        $driverConfig = $this->defaultDriverConfig;
+
+        // Test that compare mode for exact is case insensitive
+        $driverConfig['Holds']['excludeHoldLocationsCompareMode'] = 'Exact';
+        $driverConfig['Holds']['excludeHoldLocations'] = ['reserve'];
+        $this->createConnector("empty", $driverConfig);
+        $this->assertFalse($this->callMethod($this->driver, "isHoldable", ["reserve"]));
+
+        // Test that compare mode for regex is case insensitive
+        $driverConfig['Holds']['excludeHoldLocations'] = ['/RESERVE/i'];
+        $driverConfig['Holds']['excludeHoldLocationsCompareMode'] = ' ReGeX ';
+        $this->createConnector("empty", $driverConfig);
+        $this->assertTrue($this->callMethod($this->driver, "isHoldable", ["Library of Stuff"]));
+        $this->assertFalse($this->callMethod($this->driver, "isHoldable", ["Library of reservED Stuff"]));
+    }
+
+    /**
+     * Test calls to isHoldable using exact mode with invalid
+     * location values and paramter values to isHoldable
+     *
+     * @return void
+     */
+    public function testIsHoldableExactModeInvalidInput(): void
+    {
+        $driverConfig = $this->defaultDriverConfig;
+
+        // Negative test for exact compare mode (non-string setting and parameter used)
+        $driverConfig['Holds']['excludeHoldLocations'] = [1];
+        $driverConfig['Holds']['excludeHoldLocationsCompareMode'] = 'exact';
+        $this->createConnector("empty", $driverConfig);
+        $this->assertFalse($this->callMethod($this->driver, "isHoldable", [1]));
+        $this->assertTrue($this->callMethod($this->driver, "isHoldable", [0]));
+        $this->assertFalse($this->callMethod($this->driver, "isHoldable", ["1"]));
     }
 }
