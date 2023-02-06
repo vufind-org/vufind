@@ -152,6 +152,8 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
         $this->closeLightbox($page);
         // Check saved items status
         // Not visible, but still exists
+        $this->clickCss($page, '#information_cd588d8723d65ca0ce9439e79755fa0a');
+        $this->snooze();
         $this->findCss($page, '#information_cd588d8723d65ca0ce9439e79755fa0a-content .savedLists ul');
     }
 
