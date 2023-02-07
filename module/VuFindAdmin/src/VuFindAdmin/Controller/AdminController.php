@@ -64,7 +64,6 @@ class AdminController extends AbstractAdmin
         }
         $view = $this->createViewModel();
         $view->xml = $xml ? simplexml_load_string($xml) : false;
-
         return $view;
     }
 }
