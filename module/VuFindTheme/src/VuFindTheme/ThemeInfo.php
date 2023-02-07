@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010-2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -232,8 +232,8 @@ class ThemeInfo
      * Using the string-keyed array format of theme config info,
      * recursively walk the array, capturing unique or missing values.
      *
-     * @param array|string $children  Merged theme info, overrides parent theme
-     * @param array|string $parent Theme info to be merged
+     * @param array|string $children Merged theme info, overrides parent theme
+     * @param array|string $parent   Theme info to be merged
      *
      * @return array|string merged theme info, favoring child themes (merged)
      */
@@ -260,7 +260,8 @@ class ThemeInfo
                     $children[$key] = $val;
                 } elseif ($this->isStringKeyedArray($val)) {
                     // recurse
-                    $children[$key] = $this->mergeWithoutOverride($children[$key], $val);
+                    $children[$key]
+                        = $this->mergeWithoutOverride($children[$key], $val);
                 } elseif (is_array($val)) {
                     // capture unique or missing array items
                     $children[$key] = array_merge($val, (array)$children[$key]);
