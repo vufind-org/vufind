@@ -173,7 +173,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         // different problems in a single test.
         $page = $this->performSearch('foo \ bar');
         $this->findAndAssertLink($page, 'Search History')->click();
-        // We should see our "foo \ bar" search in the history, but a login link
+        // We should see our "foo \ bar" search in the history, and a login link
         // under saved searches because we are logged out:
         $this->assertEquals(
             'foo \ bar',
