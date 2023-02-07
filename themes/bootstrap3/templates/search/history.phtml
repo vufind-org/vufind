@@ -28,12 +28,16 @@
     </div>
   <?php endif; ?>
   <?=$this->flashmessages()?>
-  <?php if ($saveSupported && (!$loggedInUser || !empty($this->saved))): ?>
+  <?php if ($saveSupported): ?>
     <h2><?=$this->transEsc("history_saved_searches")?></h2>
-    <?php if ($loggedInUser): ?>
+    <?php if (!empty($this->saved)): ?>
       <?=$this->context()->renderInContext('search/history-table.phtml', ['showSaved' => true]);?>
     <?php else: ?>
-      <?=$this->translate('history_login_html', ['%%url%%' => '?require_login']) ?>
+      <?=
+        $loggedInUser
+          ? $this->transEsc('history_no_saved_searches')
+          : $this->translate('history_login_html', ['%%url%%' => '?require_login'])
+      ?>
     <?php endif; ?>
   <?php endif; ?>
 
