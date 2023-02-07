@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2021.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -38,21 +38,30 @@ use Doctrine\ORM\Mapping as ORM;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  *
- * @ORM\Table(name="resource", indexes={@ORM\Index(name="record_id", columns={"record_id"})})
+ * @ORM\Table(name="resource",
+ * indexes={@ORM\Index(name="record_id", columns={"record_id"})}
+ * )
  * @ORM\Entity
  */
 class Resource implements EntityInterface
 {
     /**
+     * Unique ID.
+     *
      * @var int
      *
-     * @ORM\Column(name="id", type="integer", nullable=false)
+     * @ORM\Column(name="id",
+     *          type="integer",
+     *          nullable=false
+     * )
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     protected $id;
 
     /**
+     * Record ID.
+     *
      * @var string
      *
      * @ORM\Column(name="record_id", type="string", length=255, nullable=false)
@@ -60,6 +69,8 @@ class Resource implements EntityInterface
     protected $recordId = '';
 
     /**
+     * Record title.
+     *
      * @var string
      *
      * @ORM\Column(name="title", type="string", length=255, nullable=false)
@@ -67,6 +78,8 @@ class Resource implements EntityInterface
     protected $title = '';
 
     /**
+     * Primary author.
+     *
      * @var string|null
      *
      * @ORM\Column(name="author", type="string", length=255, nullable=true)
@@ -74,6 +87,8 @@ class Resource implements EntityInterface
     protected $author;
 
     /**
+     * Published year.
+     *
      * @var int|null
      *
      * @ORM\Column(name="year", type="integer", nullable=true)
@@ -81,16 +96,29 @@ class Resource implements EntityInterface
     protected $year;
 
     /**
+     * Record source.
+     *
      * @var string
      *
-     * @ORM\Column(name="source", type="string", length=50, nullable=false, options={"default"="Solr"})
+     * @ORM\Column(name="source",
+     *          type="string",
+     *          length=50,
+     *          nullable=false,
+     *          options={"default"="Solr"}
+     * )
      */
     protected $source = 'Solr';
 
     /**
+     * Record Metadata
+     *
      * @var string|null
      *
-     * @ORM\Column(name="extra_metadata", type="text", length=16777215, nullable=true)
+     * @ORM\Column(name="extra_metadata",
+     *          type="text",
+     *          length=16777215,
+     *          nullable=true
+     * )
      */
     protected $extraMetadata;
 }

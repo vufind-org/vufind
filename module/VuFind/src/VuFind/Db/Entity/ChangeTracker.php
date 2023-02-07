@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2021.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -38,30 +38,44 @@ use Doctrine\ORM\Mapping as ORM;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  *
- * @ORM\Table(name="change_tracker", indexes={@ORM\Index(name="deleted_index", columns={"deleted"})})
+ * @ORM\Table(name="change_tracker",
+ * indexes={@ORM\Index(name="deleted_index", columns={"deleted"})}
+ * )
  * @ORM\Entity
  */
 class ChangeTracker implements EntityInterface
 {
     /**
+     * Solr core containing record.
+     *
      * @var string
      *
-     * @ORM\Column(name="core", type="string", length=30, nullable=false)
+     * @ORM\Column(name="core",
+     *          type="string",
+     *          length=30,
+     *          nullable=false
+     * )
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="NONE")
      */
     protected $core;
 
     /**
+     * Id of record within core.
+     *
      * @var string
      *
-     * @ORM\Column(name="id", type="string", length=120, nullable=false)
+     * @ORM\Column(name="id",
+     *          type="string",
+     *          length=120,
+     *          nullable=false
+     * )
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="NONE")
      */
     protected $id;
 
     /**
+     * First time added to index
+     *
      * @var \DateTime|null
      *
      * @ORM\Column(name="first_indexed", type="datetime", nullable=true)
@@ -69,6 +83,8 @@ class ChangeTracker implements EntityInterface
     protected $firstIndexed;
 
     /**
+     * Last time changed in index.
+     *
      * @var \DateTime|null
      *
      * @ORM\Column(name="last_indexed", type="datetime", nullable=true)
@@ -76,6 +92,8 @@ class ChangeTracker implements EntityInterface
     protected $lastIndexed;
 
     /**
+     * Last time original record was edited.
+     *
      * @var \DateTime|null
      *
      * @ORM\Column(name="last_record_change", type="datetime", nullable=true)
@@ -83,6 +101,8 @@ class ChangeTracker implements EntityInterface
     protected $lastRecordChange;
 
     /**
+     * Time record was removed from index.
+     *
      * @var \DateTime|null
      *
      * @ORM\Column(name="deleted", type="datetime", nullable=true)

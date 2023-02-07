@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2021.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -38,21 +38,33 @@ use Doctrine\ORM\Mapping as ORM;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  *
- * @ORM\Table(name="external_session", uniqueConstraints={@ORM\UniqueConstraint(name="session_id", columns={"session_id"})}, indexes={@ORM\Index(name="external_session_id", columns={"external_session_id"})})
+ * @ORM\Table(name="external_session",
+ * uniqueConstraints={@ORM\UniqueConstraint(name="session_id",
+ *                  columns={"session_id"})},
+ * indexes={@ORM\Index(name="external_session_id", columns={"external_session_id"})}
+ * )
  * @ORM\Entity
  */
 class ExternalSession implements EntityInterface
 {
     /**
+     * Unique ID.
+     *
      * @var int
      *
-     * @ORM\Column(name="id", type="bigint", nullable=false, options={"unsigned"=true})
+     * @ORM\Column(name="id",
+     *          type="bigint",
+     *          nullable=false,
+     *          options={"unsigned"=true}
+     * )
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     protected $id;
 
     /**
+     * Session ID.
+     *
      * @var string
      *
      * @ORM\Column(name="session_id", type="string", length=128, nullable=false)
@@ -60,16 +72,28 @@ class ExternalSession implements EntityInterface
     protected $sessionId;
 
     /**
+     * External session ID.
+     *
      * @var string
      *
-     * @ORM\Column(name="external_session_id", type="string", length=255, nullable=false)
+     * @ORM\Column(name="external_session_id",
+     *          type="string",
+     *          length=255,
+     *          nullable=false
+     * )
      */
     protected $externalSessionId;
 
     /**
+     * Creation date.
+     *
      * @var \DateTime
      *
-     * @ORM\Column(name="created", type="datetime", nullable=false, options={"default"="2000-01-01 00:00:00"})
+     * @ORM\Column(name="created",
+     *          type="datetime",
+     *          nullable=false,
+     *          options={"default"="2000-01-01 00:00:00"}
+     * )
      */
     protected $created = '2000-01-01 00:00:00';
 }

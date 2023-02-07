@@ -44,41 +44,64 @@ use Doctrine\ORM\Mapping as ORM;
 class AccessToken implements EntityInterface
 {
     /**
+     * Unique ID.
+     *
      * @var string
      *
-     * @ORM\Column(name="id", type="string", length=255, nullable=false)
+     * @ORM\Column(name="id",
+     *          type="string",
+     *          length=255,
+     *          nullable=false
+     * )
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="NONE")
      */
     protected $id;
 
     /**
+     * Token type.
+     *
      * @var string
      *
-     * @ORM\Column(name="type", type="string", length=128, nullable=false)
+     * @ORM\Column(name="type",
+     *          type="string",
+     *          length=128,
+     *          nullable=false
+     * )
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="NONE")
      */
     protected $type;
 
     /**
+     * User ID.
+     *
      * @var \VuFind\Db\Entity\User
      *
      * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\User")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="user_id",
+     *              referencedColumnName="id")
      * })
      */
     protected $user;
 
     /**
+     * Creation date.
+     *
      * @var \DateTime
      *
-     * @ORM\Column(name="created", type="datetime", nullable=false, options={"default"="2000-01-01 00:00:00"})
+     * @ORM\Column(name="created",
+     *          type="datetime",
+     *          nullable=false,
+     *          options={"default"="2000-01-01 00:00:00"}
+     * )
      */
     protected $created = '2000-01-01 00:00:00';
 
     /**
+     * Data.
+     *
      * @var string|null
      *
      * @ORM\Column(name="data", type="text", length=16777215, nullable=true)
@@ -86,6 +109,8 @@ class AccessToken implements EntityInterface
     protected $data;
 
     /**
+     * Flag indicating status of the token.
+     *
      * @var bool
      *
      * @ORM\Column(name="revoked", type="boolean", nullable=false)

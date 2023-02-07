@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2021.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -38,21 +38,30 @@ use Doctrine\ORM\Mapping as ORM;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  *
- * @ORM\Table(name="user_list", indexes={@ORM\Index(name="user_id", columns={"user_id"})})
+ * @ORM\Table(name="user_list",
+ *          indexes={@ORM\Index(name="user_id", columns={"user_id"})}
+ * )
  * @ORM\Entity
  */
 class UserList implements EntityInterface
 {
     /**
+     * Unique ID.
+     *
      * @var int
      *
-     * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
+     * @ORM\Column(name="id",
+     *          type="integer",
+     *          nullable=false
+     * )
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     protected $id;
 
     /**
+     * Title of the list.
+     *
      * @var string
      *
      * @ORM\Column(name="title", type="string", length=200, nullable=false)
@@ -60,6 +69,8 @@ class UserList implements EntityInterface
     protected $title;
 
     /**
+     * Description of the list.
+     *
      * @var string|null
      *
      * @ORM\Column(name="description", type="text", length=65535, nullable=true)
@@ -67,13 +78,21 @@ class UserList implements EntityInterface
     protected $description;
 
     /**
+     * Creation date.
+     *
      * @var \DateTime
      *
-     * @ORM\Column(name="created", type="datetime", nullable=false, options={"default"="2000-01-01 00:00:00"})
+     * @ORM\Column(name="created",
+     *          type="datetime",
+     *          nullable=false,
+     *          options={"default"="2000-01-01 00:00:00"}
+     * )
      */
     protected $created = '2000-01-01 00:00:00';
 
     /**
+     * Flag to indicate whether or not the list is public.
+     *
      * @var int
      *
      * @ORM\Column(name="public", type="integer", nullable=false)
@@ -81,12 +100,15 @@ class UserList implements EntityInterface
     protected $public = '0';
 
     /**
+     * User ID.
+     *
      * @var \VuFind\Db\Entity\User
      *
      * @ORM\ManyToOne(targetEntity="VuFind\Db\Entity\User")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="user_id", referencedColumnName="id")
-     * })
+     * @ORM\JoinColumn(name="user_id",
+     *              referencedColumnName="id"
+     * )})
      */
     protected $user;
 }

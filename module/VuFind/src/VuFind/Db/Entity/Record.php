@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2021.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -38,21 +38,30 @@ use Doctrine\ORM\Mapping as ORM;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  *
- * @ORM\Table(name="record", uniqueConstraints={@ORM\UniqueConstraint(name="record_id_source", columns={"record_id", "source"})})
+ * @ORM\Table(name="record",
+ *          uniqueConstraints={@ORM\UniqueConstraint(name="record_id_source",
+ *                          columns={"record_id", "source"})})
  * @ORM\Entity
  */
 class Record implements EntityInterface
 {
     /**
+     * Unique ID.
+     *
      * @var int
      *
-     * @ORM\Column(name="id", type="integer", nullable=false)
+     * @ORM\Column(name="id",
+     *          type="integer",
+     *          nullable=false
+     * )
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     protected $id;
 
     /**
+     * Record ID.
+     *
      * @var string|null
      *
      * @ORM\Column(name="record_id", type="string", length=255, nullable=true)
@@ -60,6 +69,8 @@ class Record implements EntityInterface
     protected $recordId;
 
     /**
+     * Record source.
+     *
      * @var string|null
      *
      * @ORM\Column(name="source", type="string", length=50, nullable=true)
@@ -67,6 +78,8 @@ class Record implements EntityInterface
     protected $source;
 
     /**
+     * Record version.
+     *
      * @var string
      *
      * @ORM\Column(name="version", type="string", length=20, nullable=false)
@@ -74,6 +87,8 @@ class Record implements EntityInterface
     protected $version;
 
     /**
+     * Record Data.
+     *
      * @var string|null
      *
      * @ORM\Column(name="data", type="text", length=0, nullable=true)
@@ -81,9 +96,15 @@ class Record implements EntityInterface
     protected $data;
 
     /**
+     * Updated date.
+     *
      * @var \DateTime
      *
-     * @ORM\Column(name="updated", type="datetime", nullable=false, options={"default"="2000-01-01 00:00:00"})
+     * @ORM\Column(name="updated",
+     *          type="datetime",
+     *          nullable=false,
+     *          options={"default"="2000-01-01 00:00:00"}
+     * )
      */
     protected $updated = '2000-01-01 00:00:00';
 }

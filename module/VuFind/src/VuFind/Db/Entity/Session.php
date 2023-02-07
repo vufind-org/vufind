@@ -38,21 +38,32 @@ use Doctrine\ORM\Mapping as ORM;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  *
- * @ORM\Table(name="session", uniqueConstraints={@ORM\UniqueConstraint(name="session_id", columns={"session_id"})}, indexes={@ORM\Index(name="last_used", columns={"last_used"})})
+ * @ORM\Table(name="session",
+ *          uniqueConstraints={@ORM\UniqueConstraint(name="session_id",
+ *                          columns={"session_id"})},
+ * indexes={@ORM\Index(name="last_used", columns={"last_used"})})
  * @ORM\Entity
  */
 class Session implements EntityInterface
 {
     /**
+     * Unique ID.
+     *
      * @var int
      *
-     * @ORM\Column(name="id", type="bigint", nullable=false, options={"unsigned"=true})
+     * @ORM\Column(name="id",
+     *          type="bigint",
+     *          nullable=false,
+     *          options={"unsigned"=true}
+     * )
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     protected $id;
 
     /**
+     * Session ID.
+     *
      * @var string|null
      *
      * @ORM\Column(name="session_id", type="string", length=128, nullable=true)
@@ -60,6 +71,8 @@ class Session implements EntityInterface
     protected $sessionId;
 
     /**
+     * Session data.
+     *
      * @var string|null
      *
      * @ORM\Column(name="data", type="text", length=16777215, nullable=true)
@@ -67,6 +80,8 @@ class Session implements EntityInterface
     protected $data;
 
     /**
+     * Time session last used.
+     *
      * @var int
      *
      * @ORM\Column(name="last_used", type="integer", nullable=false)
@@ -74,9 +89,15 @@ class Session implements EntityInterface
     protected $lastUsed = '0';
 
     /**
+     * Time session is created.
+     *
      * @var \DateTime
      *
-     * @ORM\Column(name="created", type="datetime", nullable=false, options={"default"="2000-01-01 00:00:00"})
+     * @ORM\Column(name="created",
+     *          type="datetime",
+     *          nullable=false,
+     *          options={"default"="2000-01-01 00:00:00"}
+     * )
      */
     protected $created = '2000-01-01 00:00:00';
 }

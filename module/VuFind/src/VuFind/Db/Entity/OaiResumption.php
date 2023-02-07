@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2021.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -44,15 +44,22 @@ use Doctrine\ORM\Mapping as ORM;
 class OaiResumption implements EntityInterface
 {
     /**
+     * Unique ID.
+     *
      * @var int
      *
-     * @ORM\Column(name="id", type="integer", nullable=false)
+     * @ORM\Column(name="id",
+     *          type="integer",
+     *          nullable=false
+     * )
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     protected $id;
 
     /**
+     * Resumption parameters.
+     *
      * @var string|null
      *
      * @ORM\Column(name="params", type="text", length=65535, nullable=true)
@@ -60,9 +67,15 @@ class OaiResumption implements EntityInterface
     protected $params;
 
     /**
+     * Expiry date.
+     *
      * @var \DateTime
      *
-     * @ORM\Column(name="expires", type="datetime", nullable=false, options={"default"="2000-01-01 00:00:00"})
+     * @ORM\Column(name="expires",
+     *          type="datetime",
+     *          nullable=false,
+     *          options={"default"="2000-01-01 00:00:00"}
+     * )
      */
     protected $expires = '2000-01-01 00:00:00';
 }

@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2021.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -38,21 +38,31 @@ use Doctrine\ORM\Mapping as ORM;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  *
- * @ORM\Table(name="shortlinks", uniqueConstraints={@ORM\UniqueConstraint(name="shortlinks_hash_IDX", columns={"hash"})})
  * @ORM\Entity
+ * @ORM\Table(name="shortlinks",
+ *          uniqueConstraints={@ORM\UniqueConstraint(name="shortlinks_hash_IDX",
+ *                          columns={"hash"})}
+ * )
  */
 class Shortlinks implements EntityInterface
 {
     /**
+     * Unique ID.
+     *
      * @var int
      *
-     * @ORM\Column(name="id", type="integer", nullable=false)
+     * @ORM\Column(name="id",
+     *          type="integer",
+     *          nullable=false
+     * )
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     protected $id;
 
     /**
+     * Shortened URL.
+     *
      * @var string
      *
      * @ORM\Column(name="path", type="text", length=16777215, nullable=false)
@@ -60,6 +70,8 @@ class Shortlinks implements EntityInterface
     protected $path;
 
     /**
+     * Shortlinks hash.
+     *
      * @var string|null
      *
      * @ORM\Column(name="hash", type="string", length=32, nullable=true)
@@ -67,9 +79,15 @@ class Shortlinks implements EntityInterface
     protected $hash;
 
     /**
+     * Creation timestamp.
+     *
      * @var \DateTime
      *
-     * @ORM\Column(name="created", type="datetime", nullable=false, options={"default"="CURRENT_TIMESTAMP"})
+     * @ORM\Column(name="created",
+     *          type="datetime",
+     *          nullable=false,
+     *          options={"default"="CURRENT_TIMESTAMP"}
+     * )
      */
     protected $created = 'CURRENT_TIMESTAMP';
 }

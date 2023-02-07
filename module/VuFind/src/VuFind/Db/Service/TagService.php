@@ -97,6 +97,7 @@ class TagService extends AbstractService
         $stats = current($query->getResult());
         return $stats['total'];
     }
+
     /**
      * Given an array for sorting database results, make sure the tag field is
      * sorted in a case-insensitive fashion and that no illegal fields are
