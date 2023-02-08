@@ -41,7 +41,6 @@ use VuFind\Crypt\HMAC;
  * @property int     $id
  * @property int     $user_id
  * @property ?string $session_id
- * @property ?int    $folder_id
  * @property string  $created
  * @property ?string $title
  * @property int     $saved
