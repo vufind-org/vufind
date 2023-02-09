@@ -28,6 +28,8 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
+use VuFind\Db\Table\Search;
+use VuFind\Http\PhpEnvironment\Request;
 use VuFind\Search\Memory;
 
 /**
@@ -49,13 +51,24 @@ class SearchMemory extends AbstractHelper
     protected $memory;
 
     /**
+     * Search table
+     *
+     * @var Search
+     */
+    protected $searchTable;
+
+    /**
      * Constructor
      *
      * @param Memory $memory Search memory
      */
-    public function __construct(Memory $memory)
+    public function __construct(Memory $memory, Search $search, string $sessionId,
+        \VuFind\Search\Results\PluginManager $resultsManager)
     {
         $this->memory = $memory;
+        $this->searchTable = $search;
+        $this->sessionId = $sessionId;
+        $this->resultsManager = $resultsManager;
     }
 
     /**
@@ -158,5 +171,45 @@ class SearchMemory extends AbstractHelper
             }
         }
         return $params;
+    }
+
+    /**
+     * Get current search id
+     *
+     * @return ?int
+     */
+    public function getCurrentSearchId(): ?int
+    {
+        return $this->memory->getCurrentSearchId();
+    }
+
+    /**
+     * Get current search
+     *
+     * @return ?\VuFind\Search\Base\Results
+     */
+    public function getCurrentSearch(): ?\VuFind\Search\Base\Results
+    {
+        return $this->memory->getCurrentSearch();
+    }
+
+    /**
+     * Get last search id
+     *
+     * @return ?int
+     */
+    public function getLastSearchId(): ?int
+    {
+        return $this->memory->getLastSearchId();
+    }
+
+    /**
+     * Get last search
+     *
+     * @return ?\VuFind\Search\Base\Results
+     */
+    public function getLastSearch(): ?\VuFind\Search\Base\Results
+    {
+        return $this->memory->getLastSearch();
     }
 }

@@ -172,7 +172,8 @@ class AbstractSearch extends AbstractBase
             $searchUrl = $this->url()->fromRoute(
                 $results->getOptions()->getSearchAction()
             ) . $results->getUrlQuery()->getParams(false);
-            $this->getSearchMemory()->rememberSearch($searchUrl);
+            $this->getSearchMemory()
+                ->rememberSearch($searchUrl, $results->getSearchId());
         }
 
         // Always save search parameters, since these are namespaced by search
@@ -376,17 +377,17 @@ class AbstractSearch extends AbstractBase
         if ($results instanceof \VuFind\Search\EmptySet\Results) {
             $view->parseError = true;
         } else {
-            // If a "jumpto" parameter is set, deal with that now:
-            if ($jump = $this->processJumpTo($results)) {
-                return $jump;
-            }
-
             // Remember the current URL as the last search.
             $this->rememberSearch($results);
 
             // Add to search history:
             if ($this->saveToHistory) {
                 $this->saveSearchToHistory($results);
+            }
+
+            // If a "jumpto" parameter is set, deal with that now:
+            if ($jump = $this->processJumpTo($results)) {
+                return $jump;
             }
 
             // Set up results scroller:
@@ -451,7 +452,11 @@ class AbstractSearch extends AbstractBase
         // and report success:
         $details = $this->getRecordRouter()
             ->getTabRouteDetails($recordList[$jumpto - 1]);
-        return $this->redirect()->toRoute($details['route'], $details['params']);
+        return $this->redirect()->toRoute(
+            $details['route'],
+            $details['params'],
+            ['query' => ['sid' => $results->getSearchId()]]
+        );
     }
 
     /**

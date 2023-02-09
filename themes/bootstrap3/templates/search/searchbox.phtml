@@ -1,12 +1,27 @@
 <?php
     // Set default value if necessary:
-    if (!isset($this->searchClassId)) {
-        $config = $this->config()->get('config');
-        $this->searchClassId = $config->Site->defaultSearchBackend ?? 'Solr';
+    $options = null;
+    $hiddenFilters = [];
+    $lastSort = null;
+    $lastLimit = null;
+    $params = null;
+    if ($results = $this->results ?? $this->searchMemory()->getCurrentSearch()) {
+      $params = $results->getParams();
+      $this->searchClassId = $params->getSearchClassId();
+      $hiddenFilters = $params->getHiddenFilters();
+      $options = $results->getOptions();
+      $lastSort = $params->getSort();
+      $lastLimit = $params->getLimit();
+    } else {
+      if (!isset($this->searchClassId)) {
+          $config = $this->config()->get('config');
+          $this->searchClassId = $config->Site->defaultSearchBackend ?? 'Solr';
+      }
+      $options = $this->searchOptions($this->searchClassId);
+      $hiddenFilters = $this->searchTabs()->getHiddenFilters($this->searchClassId, true, $this->ignoreHiddenFiltersInRequest ?? false);
     }
 
     // Load search actions and settings (if any):
-    $options = $this->searchOptions($this->searchClassId);
     $handlers = $this->searchbox()->getHandlers(
         $this->searchClassId,
         $this->searchIndex ?? null
@@ -15,21 +30,9 @@
     $basicSearch = $this->searchbox()->combinedHandlersActive() ? 'combined-searchbox' : $options->getSearchAction();
     $searchHome = $options->getSearchHomeAction();
     $advSearch = $options->getAdvancedSearchAction();
-    $lastSort = $this->searchMemory()->getLastSort($this->searchClassId);
-    $lastLimit = $this->searchMemory()->getLastLimit($this->searchClassId);
-    $ignoreHiddenFilterMemory = $this->ignoreHiddenFilterMemory ?? false;
-    $ignoreHiddenFiltersInRequest = $this->ignoreHiddenFiltersInRequest ?? false;
-    $hiddenFilters = $this->searchTabs()->getHiddenFilters($this->searchClassId, $ignoreHiddenFilterMemory, $ignoreHiddenFiltersInRequest);
-    if (empty($hiddenFilters) && !$ignoreHiddenFilterMemory) {
-        $hiddenFilters = $this->searchMemory()->getLastHiddenFilters($this->searchClassId);
-        if (empty($hiddenFilters)) {
-            $hiddenFilters = $this->searchTabs()->getHiddenFilters($this->searchClassId);
-        }
-    }
-    $hiddenFilterParams = $this->searchTabs()->getCurrentHiddenFilterParams($this->searchClassId, $ignoreHiddenFilterMemory, '?');
 
     if (!isset($this->filterList) || !isset($this->checkboxFilters)) {
-        $params = $this->searchMemory()->getLastSearchParams($this->searchClassId);
+        $params = $params ?? $this->searchMemory()->getLastSearchParams($this->searchClassId);
         $filterList = $params->getFilterList(true);
         $checkboxFilters = $params->getCheckboxFacets();
     } else {
@@ -37,7 +40,7 @@
         $checkboxFilters = is_array($this->checkboxFilters) ? $this->checkboxFilters : [];
     }
     $filterDetails = $this->searchbox()->getFilterDetails($filterList, $checkboxFilters);
-    $showFilters = $filterDetails && (isset($results) || $options->getRetainFilterSetting());
+    $showFilters = $filterDetails && ($results || $options->getRetainFilterSetting());
 ?>
 <?php $tabConfig = $this->searchTabs()->getTabConfig($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $hiddenFilters); ?>
 <?php if ($this->searchType == 'advanced'): ?>
@@ -47,8 +50,8 @@
       <p class="adv_search_terms"><?=$this->transEsc("Your search terms")?>: "<strong><?=$this->escapeHtml($this->lookfor)?></strong>"</p>
       <p class="adv_search_links">
         <a href="<?=$this->url($advSearch)?>?edit=<?=$this->escapeHtmlAttr($this->searchId)?>"><?=$this->transEsc("Edit this Advanced Search")?></a> |
-        <a href="<?=$this->url($advSearch) . $hiddenFilterParams?>"><?=$this->transEsc("Start a new Advanced Search")?></a> |
-        <a href="<?=$this->url($searchHome) . $hiddenFilterParams?>"><?=$this->transEsc("Start a new Basic Search")?></a>
+        <a href="<?=$this->url($advSearch, [], ['query' => $hiddenFilters])?>"><?=$this->transEsc("Start a new Advanced Search")?></a> |
+        <a href="<?=$this->url($searchHome, [], ['query' => $hiddenFilters])?>"><?=$this->transEsc("Start a new Basic Search")?></a>
       </p>
       <?=
         $this->context($this)->renderInContext(
@@ -99,7 +102,14 @@
     <?php endif; ?>
     <button type="submit" class="btn btn-primary"><?=$this->icon('search') ?> <?=$this->transEsc("Find")?></button>
     <?php if ($advSearch): ?>
-      <a href="<?=$this->url($advSearch) . (($this->searchId ?? false) ? '?edit=' . $this->escapeHtmlAttr($this->searchId) : $hiddenFilterParams) ?>" class="btn btn-link" rel="nofollow"><?=$this->transEsc("Advanced")?></a>
+      <?php
+        if ($results) {
+          $advSearchLink = $this->url($advSearch, [], ['query' => ['edit' => $results->getSearchId()]]);
+        } else {
+          $advSearchLink = $this->url($advSearch, [], ['query' => $hiddenFilters]);
+        }
+      ?>
+      <a href="<?=$advSearchLink?>" class="btn btn-link" rel="nofollow"><?=$this->transEsc("Advanced")?></a>
     <?php endif; ?>
     <?php if ($geoUrl = $this->geocoords()->getSearchUrl($options)) : ?>
         <a href="<?=$geoUrl ?>" class="btn btn-link"><?=$this->transEsc('Geographic Search')?></a>

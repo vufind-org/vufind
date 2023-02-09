@@ -5,6 +5,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +23,7 @@
  * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -33,6 +35,7 @@ namespace VuFind\View\Helper\Root;
  * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -46,13 +49,59 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
     protected $router;
 
     /**
+     * Search results (optional)
+     *
+     * @var \VuFind\Search\Base\Results
+     */
+    protected $results = null;
+
+    /**
+     * Request
+     *
+     * @var \Laminas\Http\Request
+     */
+    protected $request;
+
+    /**
+     * Cached record driver
+     *
+     * @var \VuFind\RecordDriver\DefaultRecord
+     */
+    protected $cachedDriver = null;
+
+    /**
+     * URL for the cached record driver
+     *
+     * @var string
+     */
+    protected $cachedDriverUrl = '';
+
+    /**
      * Constructor
      *
-     * @param \VuFind\Record\Router $router Record router
+     * @param \VuFind\Record\Router $router  Record router
+     * @param \Laminas\Http\Request $request Request
      */
-    public function __construct(\VuFind\Record\Router $router)
-    {
+    public function __construct(
+        \VuFind\Record\Router $router,
+        \Laminas\Http\Request $request
+    ) {
         $this->router = $router;
+        $this->request = $request;
+    }
+
+    /**
+     * Store an optional results object and return this object so that the
+     * appropriate link can be rendered.
+     *
+     * @param ?\VuFind\Search\Base\Results $results Results object.
+     *
+     * @return RecordLinker
+     */
+    public function __invoke($results = null)
+    {
+        $this->results = $results;
+        return $this;
     }
 
     /**
@@ -111,7 +160,11 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
         // Build the URL:
         $urlHelper = $this->getView()->plugin('url');
         $details = $this->router->getActionRouteDetails($driver, $action);
-        return $urlHelper($details['route'], $details['params'] ?: []);
+        return $urlHelper(
+            $details['route'],
+            $details['params'] ?: [],
+            ['query' => $this->getRecordUrlParams()]
+        );
     }
 
     /**
@@ -166,7 +219,10 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
         return $urlHelper(
             $details['route'],
             $details['params'],
-            $details['options'] ?? []
+            array_merge_recursive(
+                $details['options'] ?? [],
+                ['query' => $this->getRecordUrlParams()]
+            )
         );
     }
 
@@ -181,7 +237,11 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
     public function getUrl($driver)
     {
         // Display default tab by default:
-        return $this->getTabUrl($driver);
+        if ($this->cachedDriver !== $driver) {
+            $this->cachedDriver = $driver;
+            $this->cachedDriverUrl = $this->getTabUrl($driver);
+        }
+        return $this->cachedDriverUrl;
     }
 
     /**
@@ -265,5 +325,17 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
     {
         $optionsHelper = $this->getView()->plugin('searchOptions');
         return $optionsHelper($source)->getVersionsAction();
+    }
+
+    /**
+     * Get query parameters for a record URL
+     *
+     * @return array
+     */
+    protected function getRecordUrlParams(): array
+    {
+        $sid = ($this->results ? $this->results->getSearchId() : null)
+            ?? $this->getView()->plugin('searchMemory')->getLastSearchId();
+        return $sid ? compact('sid') : [];
     }
 }

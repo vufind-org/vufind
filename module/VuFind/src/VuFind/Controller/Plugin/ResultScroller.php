@@ -29,6 +29,9 @@ namespace VuFind\Controller\Plugin;
 
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use Laminas\Session\Container as SessionContainer;
+use VuFind\RecordDriver\AbstractBase as BaseRecord;
+use VuFind\Search\Base\Results;
+use Vufind\Search\memory as SearchMemory;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 
 /**
@@ -43,6 +46,13 @@ use VuFind\Search\Results\PluginManager as ResultsManager;
 class ResultScroller extends AbstractPlugin
 {
     /**
+     * Maximum number of last searches to track
+     *
+     * @var int
+     */
+    public const LAST_SEARCH_LIMIT = 10;
+
+    /**
      * Is scroller enabled?
      *
      * @var bool
@@ -54,7 +64,7 @@ class ResultScroller extends AbstractPlugin
      *
      * @var SessionContainer
      */
-    protected $data;
+    protected $session;
 
     /**
      * Results manager
@@ -64,31 +74,48 @@ class ResultScroller extends AbstractPlugin
     protected $resultsManager;
 
     /**
+     * Search memory
+     *
+     * @var SearchMemory
+     */
+    protected $searchMemory;
+
+    /**
+     * Currently active scroll data
+     *
+     * @var \StdClass
+     */
+    protected $data = null;
+
+    /**
      * Constructor. Create a new search result scroller.
      *
      * @param SessionContainer $session Session container
      * @param ResultsManager   $rm      Results manager
      * @param bool             $enabled Is the scroller enabled?
+     * @param SearchMemory     $sm      Search memory
      */
     public function __construct(
         SessionContainer $session,
         ResultsManager $rm,
-        $enabled = true
+        $enabled = true,
+        SearchMemory $sm = null
     ) {
         $this->enabled = $enabled;
 
         // Set up session namespace for the class.
-        $this->data = $session;
+        $this->session = $session;
 
         $this->resultsManager = $rm;
+        $this->searchMemory = $sm;
     }
 
     /**
      * Initialize this result set scroller. This should only be called
      * prior to displaying the results of a new search.
      *
-     * @param \VuFind\Search\Base\Results $searchObject The search object that was
-     * used to execute the last search.
+     * @param Results $searchObject The search object that was used to execute the
+     * last search.
      *
      * @return bool
      */
@@ -99,27 +126,55 @@ class ResultScroller extends AbstractPlugin
             return false;
         }
 
-        // Save the details of this search in the session
-        $this->data->searchId = $searchObject->getSearchId();
-        $this->data->page = $searchObject->getParams()->getPage();
-        $this->data->limit = $searchObject->getParams()->getLimit();
-        $this->data->sort = $searchObject->getParams()->getSort();
-        $this->data->total = $searchObject->getResultTotal();
-        $this->data->firstlast = $searchObject->getOptions()
+        // Save the details of this search in the session:
+        $this->addData($searchObject);
+        return (bool)$this->session->s[$searchObject->getSearchId()]->currIds;
+    }
+
+    /**
+     * Add data to session for a search
+     *
+     * @param Results $searchObject Search object
+     *
+     * @return void
+     */
+    protected function addData(Results $searchObject): void
+    {
+        $data = new \StdClass();
+        $data->page = $searchObject->getParams()->getPage();
+        $data->limit = $searchObject->getParams()->getLimit();
+        $data->sort = $searchObject->getParams()->getSort();
+        $data->total = $searchObject->getResultTotal();
+        $data->firstlast = $searchObject->getOptions()
             ->supportsFirstLastNavigation();
 
         // save the IDs of records on the current page to the session
         // so we can "slide" from one record to the next/previous records
         // spanning 2 consecutive pages
-        $this->data->currIds = $this->fetchPage($searchObject);
+        $data->currIds = $this->fetchPage($searchObject);
 
-        // clear the previous/next page
-        unset($this->data->prevIds);
-        unset($this->data->nextIds);
-        unset($this->data->firstId);
-        unset($this->data->lastId);
+        // Store last access time for eviction
+        $data->lastAccessTime = time();
 
-        return (bool)$this->data->currIds;
+        if (!isset($this->session->s)) {
+            $this->session->s = [];
+        }
+
+        // Evict oldest entry if storage is full:
+        while (count($this->session->s) > static::LAST_SEARCH_LIMIT) {
+            $oldest = null;
+            $oldestTime = null;
+            foreach ($this->session->searches as $id => $search) {
+                if (null === $oldest || $search->lastAccessTime < $oldestTime) {
+                    $oldest = $id;
+                    $oldestTime = $search->lastAccessTime;
+                }
+            }
+            unset($this->session->searches[$oldest]);
+        }
+
+        $searchId = $searchObject->getSearchId();
+        $this->session->s[$searchId] = $data;
     }
 
     /**
@@ -143,11 +198,11 @@ class ResultScroller extends AbstractPlugin
      * Return a modified results array for the case where the user is on the cusp of
      * the previous page of results
      *
-     * @param array                       $retVal     Return values (in progress)
-     * @param \VuFind\Search\Base\Results $lastSearch Representation of last search
-     * @param int                         $pos        Current position within current
+     * @param array   $retVal     Return values (in progress)
+     * @param Results $lastSearch Representation of last search
+     * @param int     $pos        Current position within current
      * page
-     * @param int                         $count      Size of current page of results
+     * @param int     $count      Size of current page of results
      *
      * @return array
      */
@@ -184,9 +239,9 @@ class ResultScroller extends AbstractPlugin
      * Return a modified results array for the case where the user is on the cusp of
      * the next page of results
      *
-     * @param array                       $retVal     Return values (in progress)
-     * @param \VuFind\Search\Base\Results $lastSearch Representation of last search
-     * @param int                         $pos        Current position within current
+     * @param array   $retVal     Return values (in progress)
+     * @param Results $lastSearch Representation of last search
+     * @param int     $pos        Current position within current
      * page
      *
      * @return array
@@ -224,9 +279,9 @@ class ResultScroller extends AbstractPlugin
      * Return a modified results array for the case where we need to retrieve data
      * from the previous page of results
      *
-     * @param array                       $retVal     Return values (in progress)
-     * @param \VuFind\Search\Base\Results $lastSearch Representation of last search
-     * @param int                         $pos        Current position within
+     * @param array   $retVal     Return values (in progress)
+     * @param Results $lastSearch Representation of last search
+     * @param int     $pos        Current position within
      * previous page
      *
      * @return array
@@ -268,9 +323,9 @@ class ResultScroller extends AbstractPlugin
      * Return a modified results array for the case where we need to retrieve data
      * from the next page of results
      *
-     * @param array                       $retVal     Return values (in progress)
-     * @param \VuFind\Search\Base\Results $lastSearch Representation of last search
-     * @param int                         $pos        Current position within next
+     * @param array   $retVal     Return values (in progress)
+     * @param Results $lastSearch Representation of last search
+     * @param int     $pos        Current position within next
      * page
      *
      * @return array
@@ -312,8 +367,8 @@ class ResultScroller extends AbstractPlugin
      * Return a modified results array for the case where we need to retrieve data
      * from the the first page of results
      *
-     * @param array                       $retVal     Return values (in progress)
-     * @param \VuFind\Search\Base\Results $lastSearch Representation of last search
+     * @param array   $retVal     Return values (in progress)
+     * @param Results $lastSearch Representation of last search
      *
      * @return array
      */
@@ -349,8 +404,8 @@ class ResultScroller extends AbstractPlugin
      * Return a modified results array for the case where we need to retrieve data
      * from the the last page of results
      *
-     * @param array                       $retVal     Return values (in progress)
-     * @param \VuFind\Search\Base\Results $lastSearch Representation of last search
+     * @param array   $retVal     Return values (in progress)
+     * @param Results $lastSearch Representation of last search
      *
      * @return array
      */
@@ -387,7 +442,7 @@ class ResultScroller extends AbstractPlugin
     /**
      * Get the ID of the first record in the result set.
      *
-     * @param \VuFind\Search\Base\Results $lastSearch Representation of last search
+     * @param Results $lastSearch Representation of last search
      *
      * @return string
      */
@@ -413,7 +468,7 @@ class ResultScroller extends AbstractPlugin
     /**
      * Get the ID of the last record in the result set.
      *
-     * @param \VuFind\Search\Base\Results $lastSearch Representation of last search
+     * @param Results $lastSearch Representation of last search
      *
      * @return string
      */
@@ -433,8 +488,7 @@ class ResultScroller extends AbstractPlugin
      * Return array('previousRecord'=>previd, 'nextRecord'=>nextid,
      * 'currentPosition'=>number, 'resultTotal'=>number).
      *
-     * @param \VuFind\RecordDriver\AbstractBase $driver Driver for the record
-     * currently being displayed
+     * @param BaseRecord $driver   Driver for the record currently being displayed
      *
      * @return array
      */
@@ -446,86 +500,111 @@ class ResultScroller extends AbstractPlugin
             'currentPosition' => null, 'resultTotal' => null
         ];
 
-        // Do nothing if disabled or data missing:
-        if ($this->enabled
-            && isset($this->data->currIds) && isset($this->data->searchId)
-            && ($lastSearch = $this->restoreLastSearch())
+        $searchId = $this->searchMemory
+            ? $this->searchMemory->getLastSearchId() : null;
+        // Process scroll data only if enabled and data exists:
+        if (!$this->enabled || !$searchId || !isset($this->session->s[$searchId])
+            || !($lastSearch = $this->restoreSearch($searchId))
         ) {
-            // Make sure expected data elements are populated:
-            if (!isset($this->data->prevIds)) {
-                $this->data->prevIds = null;
+            return $retVal;
+        }
+        $this->data = $this->session->s[$searchId];
+        // Get results:
+        $result = $this->buildScrollDataArray($retVal, $driver, $lastSearch);
+        // Touch and update session with any changes:
+        $this->data->lastAccessTime = time();
+        $this->session->s[$searchId] = $this->data;
+
+        return $result;
+    }
+
+    /**
+     * Build and return the scroll data array
+     *
+     * @param array      $retVal     Return values (in progress)
+     * @param BaseRecord $driver     Driver for the record currently being displayed
+     * @param Results    $lastSearch Representation of last search
+     */
+    protected function buildScrollDataArray(
+        array $retVal,
+        BaseRecord $driver,
+        Results $lastSearch
+    ): array {
+        // Make sure expected data elements are populated:
+        if (!isset($this->data->prevIds)) {
+            $this->data->prevIds = null;
+        }
+        if (!isset($this->data->nextIds)) {
+            $this->data->nextIds = null;
+        }
+
+        // Store total result set size:
+        $retVal['resultTotal'] = $this->data->total ?? 0;
+
+        // Set first and last record IDs
+        if ($this->data->firstlast) {
+            $retVal['firstRecord'] = $this->getFirstRecordId($lastSearch);
+            $retVal['lastRecord'] = $this->getLastRecordId($lastSearch);
+        }
+
+        // build a full ID string using the driver:
+        $id = $driver->getSourceIdentifier() . '|' . $driver->getUniqueId();
+
+        // find where this record is in the current result page
+        $pos = is_array($this->data->currIds)
+            ? array_search($id, $this->data->currIds)
+            : false;
+        if ($pos !== false) {
+            // OK, found this record in the current result page
+            // calculate its position relative to the result set
+            $retVal['currentPosition']
+                = ($this->data->page - 1) * $this->data->limit + $pos + 1;
+
+            // count how many records in the current result page
+            $count = count($this->data->currIds);
+            if ($pos > 0 && $pos < $count - 1) {
+                // the current record is somewhere in the middle of the current
+                // page, ie: not first or last
+                return $this->scrollOnCurrentPage($retVal, $pos);
+            } elseif ($pos == 0) {
+                // this record is first record on the current page
+                return $this
+                    ->fetchPreviousPage($retVal, $lastSearch, $pos, $count);
+            } elseif ($pos == $count - 1) {
+                // this record is last record on the current page
+                return $this->fetchNextPage($retVal, $lastSearch, $pos);
             }
-            if (!isset($this->data->nextIds)) {
-                $this->data->nextIds = null;
-            }
-
-            // Store total result set size:
-            $retVal['resultTotal'] = $this->data->total ?? 0;
-
-            // Set first and last record IDs
-            if ($this->data->firstlast) {
-                $retVal['firstRecord'] = $this->getFirstRecordId($lastSearch);
-                $retVal['lastRecord'] = $this->getLastRecordId($lastSearch);
-            }
-
-            // build a full ID string using the driver:
-            $id = $driver->getSourceIdentifier() . '|' . $driver->getUniqueId();
-
-            // find where this record is in the current result page
-            $pos = is_array($this->data->currIds)
-                ? array_search($id, $this->data->currIds)
-                : false;
-            if ($pos !== false) {
-                // OK, found this record in the current result page
-                // calculate its position relative to the result set
-                $retVal['currentPosition']
-                    = ($this->data->page - 1) * $this->data->limit + $pos + 1;
-
-                // count how many records in the current result page
-                $count = count($this->data->currIds);
-                if ($pos > 0 && $pos < $count - 1) {
-                    // the current record is somewhere in the middle of the current
-                    // page, ie: not first or last
-                    return $this->scrollOnCurrentPage($retVal, $pos);
-                } elseif ($pos == 0) {
-                    // this record is first record on the current page
+        } else {
+            // the current record is not on the current page
+            // if there is something on the previous page
+            if (!empty($this->data->prevIds)) {
+                // check if current record is on the previous page
+                $pos = is_array($this->data->prevIds)
+                    ? array_search($id, $this->data->prevIds) : false;
+                if ($pos !== false) {
                     return $this
-                        ->fetchPreviousPage($retVal, $lastSearch, $pos, $count);
-                } elseif ($pos == $count - 1) {
-                    // this record is last record on the current page
-                    return $this->fetchNextPage($retVal, $lastSearch, $pos);
+                        ->scrollToPreviousPage($retVal, $lastSearch, $pos);
                 }
-            } else {
-                // the current record is not on the current page
-                // if there is something on the previous page
-                if (!empty($this->data->prevIds)) {
-                    // check if current record is on the previous page
-                    $pos = is_array($this->data->prevIds)
-                        ? array_search($id, $this->data->prevIds) : false;
-                    if ($pos !== false) {
-                        return $this
-                            ->scrollToPreviousPage($retVal, $lastSearch, $pos);
-                    }
+            }
+            // if there is something on the next page
+            if (!empty($this->data->nextIds)) {
+                // check if current record is on the next page
+                $pos = is_array($this->data->nextIds)
+                    ? array_search($id, $this->data->nextIds) : false;
+                if ($pos !== false) {
+                    return $this->scrollToNextPage($retVal, $lastSearch, $pos);
                 }
-                // if there is something on the next page
-                if (!empty($this->data->nextIds)) {
-                    // check if current record is on the next page
-                    $pos = is_array($this->data->nextIds)
-                        ? array_search($id, $this->data->nextIds) : false;
-                    if ($pos !== false) {
-                        return $this->scrollToNextPage($retVal, $lastSearch, $pos);
-                    }
+            }
+            if ($this->data->firstlast) {
+                if ($id == $retVal['firstRecord']) {
+                    return $this->scrollToFirstRecord($retVal, $lastSearch);
                 }
-                if ($this->data->firstlast) {
-                    if ($id == $retVal['firstRecord']) {
-                        return $this->scrollToFirstRecord($retVal, $lastSearch);
-                    }
-                    if ($id == $retVal['lastRecord']) {
-                        return $this->scrollToLastRecord($retVal, $lastSearch);
-                    }
+                if ($id == $retVal['lastRecord']) {
+                    return $this->scrollToLastRecord($retVal, $lastSearch);
                 }
             }
         }
+
         return $retVal;
     }
 
@@ -547,7 +626,7 @@ class ResultScroller extends AbstractPlugin
 
         $retVal = [];
         foreach ($searchObject->getResults() as $record) {
-            if (!($record instanceof \VuFind\RecordDriver\AbstractBase)) {
+            if (!($record instanceof BaseRecord)) {
                 return false;
             }
             $retVal[]
@@ -557,32 +636,51 @@ class ResultScroller extends AbstractPlugin
     }
 
     /**
-     * Restore the last saved search.
+     * Restore a saved search.
      *
-     * @return \VuFind\Search\Base\Results
+     * @param int $searchId Search ID
+     *
+     * @return ?Results
      */
-    protected function restoreLastSearch()
+    protected function restoreSearch(int $searchId): ?Results
     {
-        if (isset($this->data->searchId)) {
-            $searchTable = $this->getController()->getTable('Search');
-            $row = $searchTable->getRowById($this->data->searchId, false);
-            if (!empty($row)) {
-                $minSO = $row->getSearchObject();
-                $search = $minSO->deminify($this->resultsManager);
-                // The saved search does not remember its original limit or sort;
-                // we should reapply them from the session data:
-                $search->getParams()->setLimit($this->data->limit);
-                $search->getParams()->setSort($this->data->sort);
-                return $search;
-            }
+        $searchTable = $this->getController()->getTable('Search');
+        $row = $searchTable->getOwnedRowById(
+            $searchId,
+            $this->session->getManager()->getId(),
+            null
+        );
+        if (!empty($row)) {
+            $minSO = $row->getSearchObject();
+            $search = $minSO->deminify($this->resultsManager);
+            // The saved search does not remember its original limit or sort;
+            // we should reapply them from the session data:
+            $search->getParams()->setLimit(
+                $this->session->s[$searchId]->limit ?? null
+            );
+            $search->getParams()->setSort(
+                $this->session->s[$searchId]->sort ?? null
+            );
+            return $search;
         }
         return null;
     }
 
     /**
+     * Restore the last saved search.
+     *
+     * @return ?Results
+     */
+    protected function restoreLastSearch(): ?Results
+    {
+        return isset($this->data->searchId)
+            ? $this->restoreSearch($this->data->searchId) : null;
+    }
+
+    /**
      * Update the remembered "last search" in the session.
      *
-     * @param \VuFind\Search\Base\Results $search Search object to remember.
+     * @param Results $search Search object to remember.
      *
      * @return void
      */
@@ -591,8 +689,11 @@ class ResultScroller extends AbstractPlugin
         $baseUrl = $this->getController()->url()->fromRoute(
             $search->getOptions()->getSearchAction()
         );
-        $this->getController()->getSearchMemory()->rememberSearch(
-            $baseUrl . $search->getUrlQuery()->getParams(false)
-        );
+        if ($this->searchMemory) {
+            $this->searchMemory->rememberSearch(
+                $baseUrl . $search->getUrlQuery()->getParams(false),
+                $search->getSearchId()
+            );
+        }
     }
 }

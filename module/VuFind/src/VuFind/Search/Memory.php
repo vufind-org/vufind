@@ -28,6 +28,8 @@
 namespace VuFind\Search;
 
 use Laminas\Session\Container;
+use Laminas\Http\Request;
+use VuFind\Db\Table\Search;
 
 /**
  * Wrapper class to handle search memory
@@ -55,13 +57,57 @@ class Memory
     protected $session;
 
     /**
+     * Session ID
+     *
+     * @var string
+     */
+    protected $sessionId;
+
+    /**
+     * Current request
+     *
+     * @var Request
+     */
+    protected $request;
+
+    /**
+     * Search table
+     *
+     * @var Search
+     */
+    protected $searchTable;
+
+    /**
+     * Results plugin manager
+     *
+     * @var \VuFind\Search\Results\PluginManager $resultsManager
+     */
+    protected $resultsManager;
+
+    /**
+     * Cached searches
+     *
+     * @var array
+     */
+    protected $searchCache = [];
+
+    /**
      * Constructor
      *
      * @param Container $session Session container for storing URLs (optional)
      */
-    public function __construct(Container $session)
-    {
+    public function __construct(
+        Container $session,
+        string $sessionId,
+        Request $request,
+        Search $searchTable,
+        \VuFind\Search\Results\PluginManager $resultsManager
+    ) {
         $this->session = $session;
+        $this->sessionId = $sessionId;
+        $this->request = $request;
+        $this->searchTable = $searchTable;
+        $this->resultsManager = $resultsManager;
     }
 
     /**
@@ -83,6 +129,7 @@ class Memory
     public function forgetSearch()
     {
         unset($this->session->last);
+        unset($this->session->lastId);
     }
 
     /**
@@ -136,10 +183,11 @@ class Memory
      * Store the last accessed search URL in the session for future reference.
      *
      * @param string $url URL to remember
+     * @param int    $id  Search ID to remember
      *
      * @return void
      */
-    public function rememberSearch($url)
+    public function rememberSearch($url, $id)
     {
         // Do nothing if disabled.
         if (!$this->active) {
@@ -149,6 +197,7 @@ class Memory
         // Only remember URL if string is non-empty... otherwise clear the memory.
         if (strlen(trim($url)) > 0) {
             $this->session->last = $url;
+            $this->session->lastId = $id;
         } else {
             $this->forgetSearch();
         }
@@ -178,5 +227,77 @@ class Memory
     public function retrieveSearch()
     {
         return $this->session->last ?? null;
+    }
+
+    /**
+     * Get current search id
+     *
+     * @return ?int
+     */
+    public function getCurrentSearchId(): ?int
+    {
+        return $this->request->getQuery('sid')
+            ?? $this->request->getPost('sid');
+    }
+
+    /**
+     * Get current search
+     *
+     * return ?\VuFind\Search\Base\Results
+     */
+    public function getCurrentSearch(): ?\VuFind\Search\Base\Results
+    {
+        if (!($id = $this->getCurrentSearchId())) {
+            return null;
+        }
+        return $this->getSearchById($id);
+    }
+
+    /**
+     * Get last search id
+     *
+     * @return ?int
+     */
+    public function getLastSearchId(): ?int
+    {
+        $id = $this->request->getQuery('sid')
+            ?? $this->request->getPost('sid')
+            ?? $this->session->lastId;
+        return $id ? (int)$id : null;
+    }
+
+    /**
+     * Get last search
+     *
+     * return ?\VuFind\Search\Base\Results
+     */
+    public function getLastSearch(): ?\VuFind\Search\Base\Results
+    {
+        if (!($id = $this->getLastSearchId())) {
+            return null;
+        }
+        return $this->getSearchById($id);
+    }
+
+    /**
+     * Get a search by id
+     *
+     * @param int $id Search ID
+     *
+     * @return ?\VuFind\Search\Base\Results
+     */
+    protected function getSearchById(int $id): ?\VuFind\Search\Base\Results
+    {
+        if (!array_key_exists($id, $this->searchCache)) {
+            $search
+                = $this->searchTable->getOwnedRowById($id, $this->sessionId, null);
+            if ($search) {
+                $minSO = $search->getSearchObject();
+                $this->searchCache[$id] = $minSO->deminify($this->resultsManager);
+            } else {
+                $this->searchCache[$id] = null;
+            }
+        }
+        return $this->searchCache[$id];
     }
 }
