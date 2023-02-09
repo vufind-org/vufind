@@ -119,8 +119,8 @@ class Redis extends AbstractBase
 
         // Perform Redis-specific cleanup
         $unlinkMethod = ($this->redisVersion >= 4) ? 'unlink' : 'del';
-        $return = $this->connection->$unlinkMethod("vufind_sessions/{$sessId}");
+        $this->connection->$unlinkMethod("vufind_sessions/{$sessId}");
 
-        return $return > 0;
+        return true;
     }
 }
