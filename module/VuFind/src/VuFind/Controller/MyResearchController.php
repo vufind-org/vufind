@@ -541,7 +541,9 @@ class MyResearchController extends AbstractBase
             $userId
         );
         foreach ($matches as $current) {
-            if ($current->saved === 1 && $current->id !== $rowToCheck->id) {
+            // $current->saved may be 1 (MySQL) or true (PostgreSQL), so we should
+            // avoid a strict === comparison here:
+            if ($current->saved == 1 && $current->id !== $rowToCheck->id) {
                 return $current->id;
             }
         }
