@@ -31,7 +31,7 @@ use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use Laminas\Session\Container as SessionContainer;
 use VuFind\RecordDriver\AbstractBase as BaseRecord;
 use VuFind\Search\Base\Results;
-use Vufind\Search\memory as SearchMemory;
+use Vufind\Search\Memory as SearchMemory;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 
 /**

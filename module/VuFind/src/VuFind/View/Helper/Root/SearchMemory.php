@@ -62,13 +62,10 @@ class SearchMemory extends AbstractHelper
      *
      * @param Memory $memory Search memory
      */
-    public function __construct(Memory $memory, Search $search, string $sessionId,
-        \VuFind\Search\Results\PluginManager $resultsManager)
+    public function __construct(Memory $memory, Search $search)
     {
         $this->memory = $memory;
         $this->searchTable = $search;
-        $this->sessionId = $sessionId;
-        $this->resultsManager = $resultsManager;
     }
 
     /**

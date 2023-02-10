@@ -421,7 +421,7 @@ class ResultScrollerMock extends \VuFind\Controller\Plugin\ResultScroller
     /**
      * Stubbed
      *
-     * @return \VuFind\Search\Base\Results
+     * @return ?\VuFind\Search\Base\Results
      */
     protected function restoreLastSearch(): ?\VuFind\Search\Base\Results
     {

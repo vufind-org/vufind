@@ -68,9 +68,7 @@ class SearchMemoryFactory implements FactoryInterface
         }
         return new $requestedName(
             $container->get(\VuFind\Search\Memory::class),
-            $container->get(\VuFind\Db\Table\PluginManager::class)->get('Search'),
-            $container->get(\Laminas\Session\SessionManager::class)->getId(),
-            $container->get(\VuFind\Search\Results\PluginManager::class)
+            $container->get(\VuFind\Db\Table\PluginManager::class)->get('Search')
         );
     }
 }
