@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2016-2022.
+ * Copyright (C) The National Library of Finland 2016-2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -203,6 +203,14 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     protected $allowCancelingAvailableRequests = false;
 
     /**
+     * Whether to check hold freezability up front. Not enabled by default since
+     * Sierra versions prior to 5.6 return holds slowly if canFreeze is requested.
+     *
+     * @var bool
+     */
+    protected $checkFreezability = false;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
@@ -277,6 +285,9 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         if ($this->defaultPickUpLocation === 'user-selected') {
             $this->defaultPickUpLocation = false;
         }
+
+        $this->checkFreezability
+            = !empty($this->config['Holds']['checkFreezability']);
 
         if (!empty($this->config['ItemStatusMappings'])) {
             $this->itemStatusMappings = array_merge(
@@ -792,6 +803,14 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         if ($this->apiVersion >= 5) {
             $fields .= ',pickupByDate';
         }
+        $freezeEnabled = in_array(
+            'frozen',
+            explode(':', $this->config['Holds']['updateFields'] ?? '')
+        );
+        if ($useCanFreeze = $freezeEnabled && $this->checkFreezability) {
+            $fields .= ',canFreeze';
+        }
+
         $result = $this->makeRequest(
             [$this->apiBase, 'patrons', $patron['id'], 'holds'],
             [
@@ -804,10 +823,6 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         if (!isset($result['entries'])) {
             return [];
         }
-        $freezeEnabled = in_array(
-            'frozen',
-            explode(':', $this->config['Holds']['updateFields'] ?? '')
-        );
         $holds = [];
         foreach ($result['entries'] as $entry) {
             $bibId = null;
@@ -855,10 +870,14 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                     $entry['pickupByDate']
                 ) : '';
             $requestId = $this->extractId($entry['id']);
-            // Allow the user to attempt update if freezing is enabled or the hold
-            // is not available or in transit. Checking if the hold can be freezed
-            // up front is slow, so defer it to when update is requested.
-            $updateDetails = ($freezeEnabled || (!$available && !$inTransit))
+            // Allow the user to attempt update if frozen status is togglable or the
+            // hold is not available or in transit.
+            // Checking if the hold can be frozen is optional since it's slow on
+            // Sierra versions prior to 5.6.
+            $frozenTogglable = $useCanFreeze
+                ? !empty($entry['frozen']) || !empty($entry['canFreeze'])
+                : $freezeEnabled;
+            $updateDetails = ($frozenTogglable || (!$available && !$inTransit))
                 ? $requestId : '';
             $cancelDetails = $this->allowCancelingAvailableRequests
                 || (!$available && !$inTransit) ? $requestId : '';

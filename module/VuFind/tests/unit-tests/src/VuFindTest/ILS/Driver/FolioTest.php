@@ -43,6 +43,7 @@ use VuFind\ILS\Driver\Folio;
 class FolioTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\ReflectionTrait;
 
     /**
      * Default test configuration
@@ -499,5 +500,126 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'position' => 3
         ];
         $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Test calls to isHoldable when no excludeHoldLocationsCompareMode
+     * config value is set
+     *
+     * @return void
+     */
+    public function testIsHoldableDefaultConfig(): void
+    {
+        $driverConfig = $this->defaultDriverConfig;
+        $driverConfig['Holds']['excludeHoldLocations'] = ['reserve'];
+
+        // Test default mode is exact
+        $this->createConnector("empty", $driverConfig);
+        $this->assertFalse($this->callMethod($this->driver, "isHoldable", ["reserve"]));
+    }
+
+    /**
+     * Test calls to isHoldable with the exact compare mode
+     *
+     * @return void
+     */
+    public function testIsHoldableExactMode(): void
+    {
+        $driverConfig = $this->defaultDriverConfig;
+
+        // Positive test for exact compare mode
+        $driverConfig['Holds']['excludeHoldLocations'] = ['reserve'];
+        $driverConfig['Holds']['excludeHoldLocationsCompareMode'] = 'exact';
+        $this->createConnector("empty", $driverConfig);
+
+        $this->assertFalse($this->callMethod($this->driver, "isHoldable", ["reserve"]));
+        $this->assertTrue($this->callMethod($this->driver, "isHoldable", ["Reserve"]));
+        $this->assertTrue($this->callMethod($this->driver, "isHoldable", ["library"]));
+    }
+
+    /**
+     * Test calls to isHoldable when using regex mode
+     *
+     * @return void
+     */
+    public function testIsHoldableRegexMode(): void
+    {
+        $driverConfig = $this->defaultDriverConfig;
+
+        // Positive test for regex compare mode
+        $driverConfig['Holds']['excludeHoldLocations'] = ['/RESERVE/i'];
+        $driverConfig['Holds']['excludeHoldLocationsCompareMode'] = 'regex';
+        $this->createConnector("empty", $driverConfig);
+        $this->assertFalse($this->callMethod($this->driver, "isHoldable", ["reserve"]));
+        $this->assertFalse($this->callMethod($this->driver, "isHoldable", ["Reserve"]));
+        $this->assertTrue($this->callMethod($this->driver, "isHoldable", ["library"]));
+        $this->assertFalse($this->callMethod($this->driver, "isHoldable", ["24 hour reserve desk"]));
+    }
+
+    /**
+     * Test calls to isHoldable to verify handling of invalid regex
+     * when in regex compare mode
+     *
+     * @return void
+     */
+    public function testIsHoldableInvalidRegex(): void
+    {
+        $driverConfig = $this->defaultDriverConfig;
+
+        // Negative test for regex compare mode (invalid regex)
+        $driverConfig['Holds']['excludeHoldLocations'] = ['RESERVE'];
+        $driverConfig['Holds']['excludeHoldLocationsCompareMode'] = 'regex';
+        $this->createConnector("empty", $driverConfig);
+        $this->assertTrue($this->callMethod($this->driver, "isHoldable", ["reserve"]));
+
+        // Negative test for regex compare mode (non-string setting and parameter used)
+        $driverConfig['Holds']['excludeHoldLocations'] = [true];
+        $this->createConnector("empty", $driverConfig);
+        $this->assertTrue($this->callMethod($this->driver, "isHoldable", ["library"]));
+        $this->assertTrue($this->callMethod($this->driver, "isHoldable", ["true"]));
+        $this->assertTrue($this->callMethod($this->driver, "isHoldable", [true]));
+    }
+
+    /**
+     * Test calls to isHoldable that verify that the excludeHoldLocationsCompareMode
+     * config is case insensitive
+     *
+     * @return void
+     */
+    public function testIsHoldableCaseSensitivityConfig(): void
+    {
+        $driverConfig = $this->defaultDriverConfig;
+
+        // Test that compare mode for exact is case insensitive
+        $driverConfig['Holds']['excludeHoldLocationsCompareMode'] = 'Exact';
+        $driverConfig['Holds']['excludeHoldLocations'] = ['reserve'];
+        $this->createConnector("empty", $driverConfig);
+        $this->assertFalse($this->callMethod($this->driver, "isHoldable", ["reserve"]));
+
+        // Test that compare mode for regex is case insensitive
+        $driverConfig['Holds']['excludeHoldLocations'] = ['/RESERVE/i'];
+        $driverConfig['Holds']['excludeHoldLocationsCompareMode'] = ' ReGeX ';
+        $this->createConnector("empty", $driverConfig);
+        $this->assertTrue($this->callMethod($this->driver, "isHoldable", ["Library of Stuff"]));
+        $this->assertFalse($this->callMethod($this->driver, "isHoldable", ["Library of reservED Stuff"]));
+    }
+
+    /**
+     * Test calls to isHoldable using exact mode with invalid
+     * location values and paramter values to isHoldable
+     *
+     * @return void
+     */
+    public function testIsHoldableExactModeInvalidInput(): void
+    {
+        $driverConfig = $this->defaultDriverConfig;
+
+        // Negative test for exact compare mode (non-string setting and parameter used)
+        $driverConfig['Holds']['excludeHoldLocations'] = [1];
+        $driverConfig['Holds']['excludeHoldLocationsCompareMode'] = 'exact';
+        $this->createConnector("empty", $driverConfig);
+        $this->assertFalse($this->callMethod($this->driver, "isHoldable", [1]));
+        $this->assertTrue($this->callMethod($this->driver, "isHoldable", [0]));
+        $this->assertFalse($this->callMethod($this->driver, "isHoldable", ["1"]));
     }
 }
