@@ -1,8 +1,9 @@
 <?php
   // Set up page title:
   $lookfor = $this->results->getUrlQuery()->isQuerySuppressed() ? '' : $this->params->getDisplayQuery();
-
-  // Normally we would set up page title here, but we'll set it at the end instead so we can grab the number of results efficiently
+  $headTitle = $this->translate('Search Results') . (empty($lookfor) ? '' : " - {$lookfor}");
+  // Normally we would assign the title to its slot and set $this->headTitle here
+  // Instead we will do so at the end of the file so we can capture errors and no result messages
 
   // Set up search box:
   $this->layout()->searchbox = $this->context($this)->renderInContext(
@@ -46,10 +47,10 @@
       $this->headScript()->appendFile("record.js");
       $this->headScript()->appendFile("embedded_record.js");
   }
-?>
+  ?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <?php if (($recordTotal = $this->results->getResultTotal()) > 0): // only display these at very top if we have results ?>
+    <?php if (($recordTotal = $this->results->getResultTotal()) > 0): // only display these at very top if we have results?>
     <?php foreach ($this->results->getRecommendations('top') as $index => $current): ?>
       <?=$this->recommend($current, 'top', $index)?>
     <?php endforeach; ?>
@@ -121,12 +122,12 @@
 
 /* Set up the page title now that we know the number of results */
 
-/* $this->layout()->srmessage was initialized when showing.phtml was rendered, 
- * and it might have been altered if results were empty. However, it contains 
- * HTML tags like <strong> as well as encoded entities that we need to tidy.
+/* $this->layout()->srmessage was initialized when showing.phtml was rendered,
+   and it might have been altered if results were empty. However, it contains
+   HTML tags like <strong> as well as encoded entities that we need to tidy.
 /**/
 
-$headTitle = html_entity_decode( strip_tags( $this->layout()->srmessage ), ENT_QUOTES | ENT_HTML5, 'UTF-8' );
-$headTitle = $this->slot('head-title')->get( $headTitle );
-$this->headTitle( $headTitle );
-?>
+$headTitle = html_entity_decode(strip_tags($this->layout()->srmessage), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+  $headTitle = $this->slot('head-title')->get($headTitle);
+  $this->headTitle($headTitle);
+  ?>
