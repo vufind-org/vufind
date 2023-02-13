@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2018-2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -463,10 +463,29 @@ class Folio extends AbstractAPI implements
      */
     protected function isHoldable($locationName)
     {
-        return !in_array(
-            $locationName,
-            (array)($this->config['Holds']['excludeHoldLocations'] ?? [])
-        );
+        $mode = $this->config['Holds']['excludeHoldLocationsCompareMode'] ?? 'exact';
+        $excludeLocs = (array)($this->config['Holds']['excludeHoldLocations'] ?? []);
+
+        // Exclude checking by regex match
+        if (trim(strtolower($mode)) == "regex") {
+            foreach ($excludeLocs as $pattern) {
+                $match = @preg_match($pattern, $locationName);
+                // Invalid regex, skip this pattern
+                if ($match === false) {
+                    $this->logWarning(
+                        'Invalid regex found in excludeHoldLocations: ' .
+                        $pattern
+                    );
+                    continue;
+                }
+                if ($match === 1) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        // Otherwise exclude checking by exact match
+        return !in_array($locationName, $excludeLocs);
     }
 
     /**
