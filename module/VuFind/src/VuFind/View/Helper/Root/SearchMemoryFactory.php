@@ -66,9 +66,6 @@ class SearchMemoryFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        return new $requestedName(
-            $container->get(\VuFind\Search\Memory::class),
-            $container->get(\VuFind\Db\Table\PluginManager::class)->get('Search')
-        );
+        return new $requestedName($container->get(\VuFind\Search\Memory::class));
     }
 }

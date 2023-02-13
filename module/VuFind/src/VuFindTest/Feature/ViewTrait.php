@@ -101,11 +101,6 @@ trait ViewTrait
                 ->method('getLastSearchId')
                 ->willReturn(-123);
         }
-        return new \VuFind\View\Helper\Root\SearchMemory(
-            $memory,
-            $this->getMockBuilder(
-                \VuFind\Db\Table\Search::class
-            )->disableOriginalConstructor()->getMock()
-        );
+        return new \VuFind\View\Helper\Root\SearchMemory($memory);
     }
 }

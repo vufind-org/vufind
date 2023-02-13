@@ -50,22 +50,13 @@ class SearchMemory extends AbstractHelper
     protected $memory;
 
     /**
-     * Search table
-     *
-     * @var Search
-     */
-    protected $searchTable;
-
-    /**
      * Constructor
      *
      * @param Memory $memory Search memory
-     * @param Search $search Search table
      */
-    public function __construct(Memory $memory, Search $search)
+    public function __construct(Memory $memory)
     {
         $this->memory = $memory;
-        $this->searchTable = $search;
     }
 
     /**
