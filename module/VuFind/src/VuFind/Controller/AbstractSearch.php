@@ -475,8 +475,8 @@ class AbstractSearch extends AbstractBase
     /**
      * Get a redirection response to a single record
      *
-     * @param \VuFind\RecordDriver\AbstractBase $record Record driver
-     * @param array  $queryParams Any query parameters
+     * @param \VuFind\RecordDriver\AbstractBase $record      Record driver
+     * @param array                             $queryParams Any query parameters
      *
      * @return ViewModel
      */

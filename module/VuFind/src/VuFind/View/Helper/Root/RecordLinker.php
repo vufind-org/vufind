@@ -185,11 +185,11 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
     /**
      * Given a record driver, get a URL for that record.
      *
-     * @param \VuFind\RecordDriver\AbstractBase|string $driver Record driver
+     * @param \VuFind\RecordDriver\AbstractBase|string $driver  Record driver
      * representing record to link to, or source|id pipe-delimited string
-     * @param ?string                                  $tab    Optional record
+     * @param ?string                                  $tab     Optional record
      * tab to access
-     * @param array                                    $query  Optional query params
+     * @param array                                    $query   Optional query params
      * @param array                                    $options Any additional
      * options:
      * - excludeSearchId (default: false)
