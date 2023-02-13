@@ -42,6 +42,7 @@ use VuFindTheme\ThemeInfo;
 class ThemeInfoTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\ReflectionTrait;
 
     /**
      * Path to theme fixtures
@@ -248,26 +249,6 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
         // recursive
         $childHelpers = $ti->getMergedConfig('helpers');
         $this->assertEquals(
-            ['fooFactory', 'fooOverrideFactory'],
-            $childHelpers['factories']['foo']
-        );
-    }
-
-    /**
-     * Test getMergedConfig() using a child theme and flattening
-     *
-     * @return void
-     */
-    public function testGetMergedConfigChildFlattened()
-    {
-        // Use array_replace_recursive
-        $ti = $this->getThemeInfo();
-        $ti->setTheme('child');
-        $childJS = $ti->getMergedConfig('js', true);
-        $this->assertEquals(['extra.js'], $childJS);
-        // recursive
-        $childHelpers = $ti->getMergedConfig('helpers', true);
-        $this->assertEquals(
             'fooOverrideFactory',
             $childHelpers['factories']['foo']
         );
@@ -287,25 +268,6 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(['hello.js', 'extra.js', 'mixin.js'], $mixinJS);
         $mixinHelpers = $ti->getMergedConfig('helpers');
         $this->assertEquals(
-            ['fooFactory', 'fooOverrideFactory', 'fooMixinFactory'],
-            $mixinHelpers['factories']['foo']
-        );
-    }
-
-    /**
-     * Test getMergedConfig() using a mixin and flattening
-     *
-     * @return void
-     */
-    public function testGetMergedConfigMixinWithFlattening()
-    {
-        // Theme using a mixin
-        $ti = $this->getThemeInfo();
-        $ti->setTheme('mixin_user');
-        $mixinJS = $ti->getMergedConfig('js', true);
-        $this->assertEquals(['mixin.js'], $mixinJS);
-        $mixinHelpers = $ti->getMergedConfig('helpers', true);
-        $this->assertEquals(
             'fooMixinFactory',
             $mixinHelpers['factories']['foo']
         );
@@ -320,7 +282,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     {
         $ti = $this->getThemeInfo();
         $doctype = $ti->getMergedConfig('doctype');
-        $this->assertEquals(['HTML5'], $doctype);
+        $this->assertEquals('HTML5', $doctype);
     }
 
     /**
@@ -340,14 +302,105 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Stress-test our merging algorithm
+     *
+     * @dataProvider mergeEdgeCasesProvider
+     *
+     * @return void
+     */
+    public function testMergeWithoutOverrideEdgeCases($test, $expected)
+    {
+        $ti = $this->getThemeInfo();
+
+        $merged = $this->callMethod($ti, 'mergeWithoutOverride', $test);
+
+        $this->assertEquals($expected, $merged);
+    }
+
+    /**
+     * Test cases for mergeWithoutOverride
+     *
+     * @return array
+     */
+    public static function mergeEdgeCasesProvider(): array
+    {
+        return [
+            // string
+            [
+                [
+                    'original',
+                    'override',
+                ],
+                'original',
+            ],
+
+            // array
+            [
+                [
+                    ['original'],
+                    ['override'],
+                ],
+                ['override', 'original'],
+            ],
+
+            // string-keyed arrays
+            [
+                [
+                    ['array' => [1], 'string' => 'original', 'sub' => ['a' => 1]],
+                    ['array' => [2], 'string' => 'override', 'sub' => ['a' => 2]],
+                ],
+                ['array' => [2, 1], 'string' => 'original', 'sub' => ['a' => 1]],
+            ],
+
+            // string-keyed arrays: missing
+            [
+                [
+                    ['shared' => [1], 'parent' => 'only'],
+                    ['shared' => [1], 'child' => 'only'],
+                ],
+                ['shared' => [1, 1], 'parent' => 'only', 'child' => 'only'],
+            ],
+
+            // string-keyed string -> array
+            [
+                [
+                    ['mixed' => ['array']],
+                    ['mixed' => 'string'],
+                ],
+                ['mixed' => ['string', 'array']],
+            ],
+
+            // string-keyed array -> string
+            [
+                [
+                    ['mixed' => 'string'],
+                    ['mixed' => ['array']],
+                ],
+                ['mixed' => ['array', 'string']],
+            ],
+
+            // arrays and strings
+            [
+                [
+                    ['mixed' => ['array']],
+                    'not an array',
+                ],
+                [
+                    'mixed' => ['array']
+                ],
+            ],
+        ];
+    }
+
+    /**
      * Test that caching works correctly.
      *
      * @return void
      */
     public function testCaching(): void
     {
-        $key = '0_parent_doctype';
-        $expected = ['HTML5'];
+        $key = 'parent_doctype';
+        $expected = 'HTML5';
 
         // Create a mock cache that simulates normal cache functionality;
         // the first call to getItem returns null, then it expects a call
