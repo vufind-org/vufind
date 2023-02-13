@@ -50,7 +50,7 @@
 ?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <?php if (($recordTotal = $this->results->getResultTotal()) > 0): // only display these at very top if we have results?>
+  <?php if (($recordTotal = $this->results->getResultTotal()) > 0): // only display these at very top if we have results ?>
     <?php foreach ($this->results->getRecommendations('top') as $index => $current): ?>
       <?=$this->recommend($current, 'top', $index)?>
     <?php endforeach; ?>
