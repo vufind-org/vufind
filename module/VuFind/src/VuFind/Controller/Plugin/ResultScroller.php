@@ -31,7 +31,7 @@ use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use Laminas\Session\Container as SessionContainer;
 use VuFind\RecordDriver\AbstractBase as BaseRecord;
 use VuFind\Search\Base\Results;
-use Vufind\Search\Memory as SearchMemory;
+use VuFind\Search\Memory as SearchMemory;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 
 /**
@@ -164,13 +164,13 @@ class ResultScroller extends AbstractPlugin
         while (count($this->session->s) > static::LAST_SEARCH_LIMIT) {
             $oldest = null;
             $oldestTime = null;
-            foreach ($this->session->searches as $id => $search) {
+            foreach ($this->session->s as $id => $search) {
                 if (null === $oldest || $search->lastAccessTime < $oldestTime) {
                     $oldest = $id;
                     $oldestTime = $search->lastAccessTime;
                 }
             }
-            unset($this->session->searches[$oldest]);
+            unset($this->session->s[$oldest]);
         }
 
         $searchId = $searchObject->getSearchId();
@@ -488,7 +488,7 @@ class ResultScroller extends AbstractPlugin
      * Return array('previousRecord'=>previd, 'nextRecord'=>nextid,
      * 'currentPosition'=>number, 'resultTotal'=>number).
      *
-     * @param BaseRecord $driver   Driver for the record currently being displayed
+     * @param BaseRecord $driver Driver for the record currently being displayed
      *
      * @return array
      */
@@ -524,6 +524,8 @@ class ResultScroller extends AbstractPlugin
      * @param array      $retVal     Return values (in progress)
      * @param BaseRecord $driver     Driver for the record currently being displayed
      * @param Results    $lastSearch Representation of last search
+     *
+     * @return array
      */
     protected function buildScrollDataArray(
         array $retVal,
