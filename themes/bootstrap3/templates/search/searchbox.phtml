@@ -5,13 +5,13 @@
     $lastSort = null;
     $lastLimit = null;
     $params = null;
-    if ($results = $this->results ?? $this->searchMemory()->getCurrentSearch()) {
+    if ($results = ($this->results ?? $this->searchMemory()->getCurrentSearch())) {
       $params = $results->getParams();
       $this->searchClassId = $params->getSearchClassId();
       $hiddenFilters = $params->getHiddenFilters();
-      $options = $results->getOptions();
       $lastSort = $params->getSort();
       $lastLimit = $params->getLimit();
+      $options = $results->getOptions();
     } else {
       if (!isset($this->searchClassId)) {
           $config = $this->config()->get('config');

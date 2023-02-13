@@ -259,20 +259,18 @@ class Memory
     }
 
     /**
-     * Get last search id
+     * Get latest search id from current request or session
      *
      * @return ?int
      */
     public function getLastSearchId(): ?int
     {
-        $id = $this->request->getQuery('sid')
-            ?? $this->request->getPost('sid')
-            ?? $this->session->lastId;
+        $id = $this->getCurrentSearchId() ?? $this->session->lastId;
         return $id ? (int)$id : null;
     }
 
     /**
-     * Get last search
+     * Get latest search from current request or session
      *
      * @return ?\VuFind\Search\Base\Results
      */
