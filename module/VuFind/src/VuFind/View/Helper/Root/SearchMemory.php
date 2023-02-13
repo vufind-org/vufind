@@ -29,7 +29,6 @@ namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
 use VuFind\Db\Table\Search;
-use VuFind\Http\PhpEnvironment\Request;
 use VuFind\Search\Memory;
 
 /**
@@ -61,6 +60,7 @@ class SearchMemory extends AbstractHelper
      * Constructor
      *
      * @param Memory $memory Search memory
+     * @param Search $search Search table
      */
     public function __construct(Memory $memory, Search $search)
     {

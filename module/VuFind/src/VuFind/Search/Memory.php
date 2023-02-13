@@ -27,9 +27,10 @@
  */
 namespace VuFind\Search;
 
-use Laminas\Session\Container;
 use Laminas\Http\Request;
+use Laminas\Session\Container;
 use VuFind\Db\Table\Search;
+use VuFind\Search\Results\PluginManager as ResultsManager;
 
 /**
  * Wrapper class to handle search memory
@@ -80,7 +81,7 @@ class Memory
     /**
      * Results plugin manager
      *
-     * @var \VuFind\Search\Results\PluginManager $resultsManager
+     * @var ResultsManager $resultsManager
      */
     protected $resultsManager;
 
@@ -94,14 +95,18 @@ class Memory
     /**
      * Constructor
      *
-     * @param Container $session Session container for storing URLs (optional)
+     * @param Container      $session        Session container for storing URLs
+     * @param string         $sessionId      Current session ID
+     * @param Request        $request        Request
+     * @param Search         $searchTable    Search table
+     * @param ResultsManager $resultsManager Results plugin manager
      */
     public function __construct(
         Container $session,
         string $sessionId,
         Request $request,
         Search $searchTable,
-        \VuFind\Search\Results\PluginManager $resultsManager
+        ResultsManager $resultsManager
     ) {
         $this->session = $session;
         $this->sessionId = $sessionId;
@@ -243,7 +248,7 @@ class Memory
     /**
      * Get current search
      *
-     * return ?\VuFind\Search\Base\Results
+     * @return ?\VuFind\Search\Base\Results
      */
     public function getCurrentSearch(): ?\VuFind\Search\Base\Results
     {
@@ -269,7 +274,7 @@ class Memory
     /**
      * Get last search
      *
-     * return ?\VuFind\Search\Base\Results
+     * @return ?\VuFind\Search\Base\Results
      */
     public function getLastSearch(): ?\VuFind\Search\Base\Results
     {
