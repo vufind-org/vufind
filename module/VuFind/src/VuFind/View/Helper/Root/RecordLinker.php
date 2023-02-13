@@ -56,38 +56,20 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
     protected $results = null;
 
     /**
-     * Request
+     * Cached record URLs
      *
-     * @var \Laminas\Http\Request
+     * @var array
      */
-    protected $request;
-
-    /**
-     * Cached record driver
-     *
-     * @var \VuFind\RecordDriver\DefaultRecord
-     */
-    protected $cachedDriver = null;
-
-    /**
-     * URL for the cached record driver
-     *
-     * @var string
-     */
-    protected $cachedDriverUrl = '';
+    protected $cachedDriverUrls = [];
 
     /**
      * Constructor
      *
-     * @param \VuFind\Record\Router $router  Record router
-     * @param \Laminas\Http\Request $request Request
+     * @param \VuFind\Record\Router $router Record router
      */
-    public function __construct(
-        \VuFind\Record\Router $router,
-        \Laminas\Http\Request $request
-    ) {
+    public function __construct(\VuFind\Record\Router $router)
+    {
         $this->router = $router;
-        $this->request = $request;
     }
 
     /**
@@ -205,43 +187,54 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
      *
      * @param \VuFind\RecordDriver\AbstractBase|string $driver Record driver
      * representing record to link to, or source|id pipe-delimited string
-     * @param string                                   $tab    Optional record
+     * @param ?string                                  $tab    Optional record
      * tab to access
      * @param array                                    $query  Optional query params
+     * @param array                                    $options Any additional
+     * options:
+     * - excludeSearchId (default: false)
      *
      * @return string
      */
-    public function getTabUrl($driver, $tab = null, $query = [])
+    public function getTabUrl($driver, $tab = null, $query = [], $options = [])
     {
-        // Build the URL:
-        $urlHelper = $this->getView()->plugin('url');
-        $details = $this->router->getTabRouteDetails($driver, $tab, $query);
-        return $urlHelper(
-            $details['route'],
-            $details['params'],
-            array_merge_recursive(
-                $details['options'] ?? [],
-                ['query' => $this->getRecordUrlParams()]
-            )
+        $driverId = is_string($driver)
+            ? $driver
+            : ($driver->getSourceIdentifier() . '|' . $driver->getUniqueID());
+        $cacheKey = md5(
+            $driverId . '|' . ($tab ?? '-') . '|' . var_export($query, true)
+            . var_export($options, true)
         );
+        if (!isset($this->cachedDriverUrls[$cacheKey])) {
+            // Build the URL:
+            $urlHelper = $this->getView()->plugin('url');
+            $details = $this->router->getTabRouteDetails($driver, $tab, $query);
+            $this->cachedDriverUrls[$cacheKey] = $urlHelper(
+                $details['route'],
+                $details['params'],
+                array_merge_recursive(
+                    $details['options'] ?? [],
+                    ['query' => $this->getRecordUrlParams($options)]
+                )
+            );
+        }
+        return $this->cachedDriverUrls[$cacheKey];
     }
 
     /**
      * Get the default URL for a record.
      *
-     * @param \VuFind\RecordDriver\AbstractBase|string $driver Record driver
+     * @param \VuFind\RecordDriver\AbstractBase|string $driver  Record driver
      * representing record to link to, or source|id pipe-delimited string
+     * @param array                                    $options Any additional
+     * options:
+     * - excludeSearchId (default: false)
      *
      * @return string
      */
-    public function getUrl($driver)
+    public function getUrl($driver, $options = [])
     {
-        // Display default tab by default:
-        if ($this->cachedDriver !== $driver) {
-            $this->cachedDriver = $driver;
-            $this->cachedDriverUrl = $this->getTabUrl($driver);
-        }
-        return $this->cachedDriverUrl;
+        return $this->getTabUrl($driver, null, [], $options);
     }
 
     /**
@@ -330,10 +323,16 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
     /**
      * Get query parameters for a record URL
      *
+     * @param array $options Any additional options:
+     * - excludeSearchId (default: false)
+     *
      * @return array
      */
-    protected function getRecordUrlParams(): array
+    protected function getRecordUrlParams(array $options = []): array
     {
+        if (!empty($options['excludeSearchId'])) {
+            return [];
+        }
         $sid = ($this->results ? $this->results->getSearchId() : null)
             ?? $this->getView()->plugin('searchMemory')->getLastSearchId();
         return $sid ? compact('sid') : [];
