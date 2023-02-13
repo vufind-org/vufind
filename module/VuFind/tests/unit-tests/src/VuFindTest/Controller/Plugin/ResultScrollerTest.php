@@ -394,9 +394,15 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockResultScroller($results): ResultScrollerMock
     {
-        $mockManager = $this->getMockBuilder(\VuFind\Search\Results\PluginManager::class)
+        $mockManager = $this->getMockBuilder(
+            \VuFind\Search\Results\PluginManager::class
+        )->disableOriginalConstructor()->getMock();
+        $mockMemory = $this->getMockBuilder(\VuFind\Search\Memory::class)
             ->disableOriginalConstructor()->getMock();
-        return new ResultScrollerMock($mockManager, $results);
+        $mockMemory->expects($this->any())
+            ->method('getLastSearchId')
+            ->willReturn(-123);
+        return new ResultScrollerMock($mockManager, $results, $mockMemory);
     }
 }
 
@@ -412,18 +418,20 @@ class ResultScrollerMock extends \VuFind\Controller\Plugin\ResultScroller
      */
     protected $testResults;
 
-    public function __construct($mockManager, $testResults)
+    public function __construct($mockManager, $testResults, $memory)
     {
-        parent::__construct(new Container('test'), $mockManager);
+        parent::__construct(new Container('test'), $mockManager, true, $memory);
         $this->testResults = $testResults;
     }
 
     /**
      * Stubbed
      *
+     * @param int $searchId Search ID
+     *
      * @return ?\VuFind\Search\Base\Results
      */
-    protected function restoreLastSearch(): ?\VuFind\Search\Base\Results
+    protected function restoreSearch(int $searchId): ?\VuFind\Search\Base\Results
     {
         return $this->testResults;
     }

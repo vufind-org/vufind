@@ -28,6 +28,8 @@
  */
 namespace VuFindTest\Feature;
 
+use VuFind\View\Helper\Root\SearchMemory;
+
 /**
  * Trait for tests involving Laminas Views.
  *
@@ -81,5 +83,29 @@ trait ViewTrait
     protected function getPathForTheme($theme)
     {
         return APPLICATION_PATH . '/themes/' . $theme . '/templates';
+    }
+
+    /**
+     * Get mock SearchMemory view helper
+     *
+     * @param ?\VuFind\Search\Memory $memory Optional search memory
+     *
+     * @return SearchMemory
+     */
+    protected function getSearchMemoryViewHelper($memory = null): SearchMemory
+    {
+        if (null === $memory) {
+            $memory = $this->getMockBuilder(\VuFind\Search\Memory::class)
+                ->disableOriginalConstructor()->getMock();
+            $memory->expects($this->any())
+                ->method('getLastSearchId')
+                ->willReturn(-123);
+        }
+        return new \VuFind\View\Helper\Root\SearchMemory(
+            $memory,
+            $this->getMockBuilder(
+                \VuFind\Db\Table\Search::class
+            )->disableOriginalConstructor()->getMock()
+        );
     }
 }
