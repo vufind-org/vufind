@@ -93,9 +93,9 @@ class UserList implements EntityInterface
     /**
      * Flag to indicate whether or not the list is public.
      *
-     * @var int
+     * @var bool
      *
-     * @ORM\Column(name="public", type="integer", nullable=false)
+     * @ORM\Column(name="public", type="boolean", nullable=false)
      */
     protected $public = '0';
 

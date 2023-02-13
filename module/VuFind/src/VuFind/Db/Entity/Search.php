@@ -115,9 +115,9 @@ class Search implements EntityInterface
     /**
      * Saved.
      *
-     * @var int
+     * @var bool
      *
-     * @ORM\Column(name="saved", type="integer", nullable=false)
+     * @ORM\Column(name="saved", type="boolean", nullable=false)
      */
     protected $saved = '0';
 
