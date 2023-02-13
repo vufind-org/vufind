@@ -57,6 +57,7 @@
   <?php endif; ?>
   <?=$this->flashmessages()?>
   <div class="search-header hidden-print">
+    <?php // Data-record-total attribute is for analytics use.  Do not remove. ?>
     <div class="search-stats" data-record-total="<?=$this->escapeHtmlAttr($recordTotal)?>">
       <?php if ($recordTotal > 0): ?>
         <?=$this->context()->renderInContext('search/controls/showing.phtml', ['lookfor' => $lookfor, 'recordTotal' => $recordTotal]) ?>

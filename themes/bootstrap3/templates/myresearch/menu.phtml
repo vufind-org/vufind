@@ -85,9 +85,9 @@
     </a>
   <?php endif; ?>
   <?php if ($this->accountCapabilities()->getSavedSearchSetting() === 'enabled'): ?>
-    <a href="<?=$this->url('search-history')?>?require_login"<?=$this->active == 'history' ? ' class="active"' : ''?>>
+    <a href="<?=$this->url('search-history')?>"<?=$this->active == 'history' ? ' class="active"' : ''?>>
       <?=$this->icon('search') ?>
-      <?=$this->transEsc('history_saved_searches')?>
+      <?=$this->transEsc('Search History')?>
     </a>
   <?php endif; ?>
   <?php if ($user): ?>

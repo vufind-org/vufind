@@ -716,6 +716,24 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Get the search history data.
+     *
+     * @return array
+     */
+    protected function getSearchHistory()
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/History');
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+        $matches = $page->findAll('css', '#recent-searches td:nth-child(2) a');
+        $callback = function ($match) {
+            return $match->getText();
+        };
+        return array_map($callback, $matches);
+    }
+
+    /**
      * Test that the print control works.
      *
      * @return void
@@ -734,6 +752,13 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEqualsWithTimeout(
             'print=true&id[]=Solr|testsample1&id[]=Solr|testsample2',
             [$this, 'getCurrentQueryString']
+        );
+
+        // Printing should not have added anything to the search history beyond
+        // the initial search that set everything up.
+        $this->assertEquals(
+            ['id:(testsample1 OR testsample2)'],
+            $this->getSearchHistory()
         );
     }
 
