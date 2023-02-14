@@ -320,10 +320,9 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     {
         $this->getMinkSession();
         $url = $this->getMinkSession()->getCurrentUrl();
-        $url = preg_replace('/\?sid=\d+/', '?', $url);
-        $url = preg_replace('/&sid=\d+/', '', $url);
+        $url = preg_replace('/([\?&])sid=\d+/', '$1', $url);
         $url = str_replace('?&', '?', $url);
-        $url = rtrim($url, '?');
+        $url = rtrim($url, '?&');
         return $url;
     }
 
