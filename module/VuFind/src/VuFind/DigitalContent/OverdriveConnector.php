@@ -1094,16 +1094,14 @@ class OverdriveConnector implements LoggerAwareInterface,
                 return false;
             }
             if ($headers === null) {
-                if (!isset($tokenData->token_type)) {
-                    throw new \Exception('Missing token type');
+                $headers = [];
+                if (isset($tokenData->token_type)
+                    && isset($tokenData->access_token)
+                ) {
+                    $headers[] = "Authorization: {$tokenData->token_type} "
+                        . $tokenData->access_token;
                 }
-                if (!isset($tokenData->access_token)) {
-                    throw new \Exception('Missing access token');
-                }
-                $headers = [
-                    "Authorization: {$tokenData->token_type} " .
-                    "{$tokenData->access_token}", "User-Agent: VuFind"
-                ];
+                $headers[] = "User-Agent: VuFind";
             }
             $client->setHeaders($headers);
             $client->setMethod($requestType);
