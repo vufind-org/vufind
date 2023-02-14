@@ -6,25 +6,25 @@ $data = [];
 $isError = false;
 $loginForAvail = false;
 $noshow = false;
-error_log(print_r($this->result, true));
 
-if($this->result->code == 'od_code_login_for_avail'){
+$code = $this->result->code ?? null;
+if ($code == 'od_code_login_for_avail'){
     $loginForAvail = true;
-}elseif($this->result->code == 'od_account_noaccess'){
+} elseif($code == 'od_account_noaccess'){
     $noshow = true;
-}elseif (!$this->result->status) {
+} elseif (empty($this->result->status)) {
     //we must have had a connection error.
     $isError = true;
 }
 
-foreach($ids as $id):
+foreach($ids as $id) {
     $current['status'] = "OK";
     $current['id'] = $id;
-    $avail = $this->result->data[$id];
+    $avail = $this->result->data[$id] ?? new \stdClass;
 
-    if($noshow) {
+    if ($noshow) {
         $current['full_status'] = "";
-    } elseif($isError || $avail->code == 'od_code_resource_not_found') {
+    } elseif ($isError || $avail->code == 'od_code_resource_not_found') {
         $current['error'] = $this->transEsc('status_unknown_message');
         $current['full_status'] = "";
     } elseif ($loginForAvail || $avail->code == 'od_code_login_for_avail') {
@@ -40,7 +40,8 @@ foreach($ids as $id):
             . $avail->numberOfHolds . "</div></p>";
     }
   $data[] = $current;
-endforeach;
+}
+$jsonResult->data = new \stdClass;
 $jsonResult->data->statuses = $data;
 echo json_encode($jsonResult);
 ?>

@@ -77,18 +77,14 @@ class OverdriveConnector implements LoggerAwareInterface,
     protected $sessionContainer;
 
     /**
-     * Record Config
-     *
-     * Main configurations
+     * Overdrive-specific configuration
      *
      * @var Config
      */
     protected $recordConfig;
 
     /**
-     * Record Config
-     *
-     * Overdrive configurations
+     * Main VuFind configuration
      *
      * @var Config
      */
@@ -1098,6 +1094,12 @@ class OverdriveConnector implements LoggerAwareInterface,
                 return false;
             }
             if ($headers === null) {
+                if (!isset($tokenData->token_type)) {
+                    throw new \Exception('Missing token type');
+                }
+                if (!isset($tokenData->access_token)) {
+                    throw new \Exception('Missing access token');
+                }
                 $headers = [
                     "Authorization: {$tokenData->token_type} " .
                     "{$tokenData->access_token}", "User-Agent: VuFind"
@@ -1215,7 +1217,7 @@ class OverdriveConnector implements LoggerAwareInterface,
                     return false;
                 } else {
                     $tokenData->expirationTime = time()
-                        + $tokenData->expires_in;
+                        + ($tokenData->expires_in ?? 0);
                     $this->getSessionContainer()->tokenData = $tokenData;
                     return $tokenData;
                 }
@@ -1487,10 +1489,10 @@ class OverdriveConnector implements LoggerAwareInterface,
         $conf = $this->getConfig();
         $fullKey = $this->getCacheKey($key);
         $item = $this->cache->getItem($fullKey);
-        $this->debug(
-            "pulling item from cache for key $key : " . $item['entry']
-        );
         if (null !== $item) {
+            $this->debug(
+                "pulling item from cache for key $key : " . $item['entry']
+            );
             // Return value if still valid:
             if (time() - $item['time'] < $conf->tokenCacheLifetime) {
                 return $item['entry'];
