@@ -192,7 +192,7 @@ class Memory
      *
      * @return void
      */
-    public function rememberSearch($url, $id)
+    public function rememberSearch($url, $id = null)
     {
         // Do nothing if disabled.
         if (!$this->active) {
@@ -202,7 +202,9 @@ class Memory
         // Only remember URL if string is non-empty... otherwise clear the memory.
         if (strlen(trim($url)) > 0) {
             $this->session->last = $url;
-            $this->session->lastId = $id;
+            if ($id) {
+                $this->session->lastId = $id;
+            }
         } else {
             $this->forgetSearch();
         }
