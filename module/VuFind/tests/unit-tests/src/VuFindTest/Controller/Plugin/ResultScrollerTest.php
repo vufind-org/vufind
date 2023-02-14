@@ -386,8 +386,8 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
     /**
      * Get mock result scroller
      *
-     * @param \VuFind\Search\Base\Results $results restoreLastSearch results
-     * (null to ignore)
+     * @param \VuFind\Search\Base\Results $results restoreSearch results (null to
+     * ignore)
      * @param array                       $methods Methods to mock
      *
      * @return ResultScrollerMock
@@ -402,7 +402,14 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         $mockMemory->expects($this->any())
             ->method('getLastSearchId')
             ->willReturn(-123);
-        return new ResultScrollerMock($mockManager, $results, $mockMemory);
+        $resultScroller = new ResultScrollerMock(
+            new Container('test'),
+            $mockManager,
+            true,
+            $mockMemory
+        );
+        $resultScroller->setResults($results);
+        return $resultScroller;
     }
 }
 
@@ -418,9 +425,15 @@ class ResultScrollerMock extends \VuFind\Controller\Plugin\ResultScroller
      */
     protected $testResults;
 
-    public function __construct($mockManager, $testResults, $memory)
+    /**
+     * Set results to remember for restoreSearch
+     *
+     * @param \VuFind\Search\Base\Results $testResults Results
+     *
+     * @return void
+     */
+    public function setResults(?\VuFind\Search\Base\Results $testResults): void
     {
-        parent::__construct(new Container('test'), $mockManager, true, $memory);
         $this->testResults = $testResults;
     }
 
@@ -433,7 +446,8 @@ class ResultScrollerMock extends \VuFind\Controller\Plugin\ResultScroller
      */
     protected function restoreSearch(int $searchId): ?\VuFind\Search\Base\Results
     {
-        return $this->testResults;
+        return $this->testResults->getSearchId() === $searchId
+            ? $this->testResults : null;
     }
 
     /**
@@ -445,6 +459,6 @@ class ResultScrollerMock extends \VuFind\Controller\Plugin\ResultScroller
      */
     protected function rememberSearch($search)
     {
-        return null;
+        // Do nothing
     }
 }

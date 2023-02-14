@@ -439,15 +439,9 @@ class AbstractSearch extends AbstractBase
             return false;
         }
 
-        // Parameter out of range?  Ignore it:
         $recordList = $results->getResults();
-        if (!isset($recordList[$jumpto - 1])) {
-            return false;
-        }
-
-        // If we got this far, we have a valid parameter so we should redirect
-        // and report success:
-        return $this->getRedirectForRecord($recordList[$jumpto - 1]);
+        return isset($recordList[$jumpto - 1])
+            ? $this->getRedirectForRecord($recordList[$jumpto - 1]) : false;
     }
 
     /**

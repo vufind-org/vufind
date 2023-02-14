@@ -669,17 +669,6 @@ class ResultScroller extends AbstractPlugin
     }
 
     /**
-     * Restore the last saved search.
-     *
-     * @return ?Results
-     */
-    protected function restoreLastSearch(): ?Results
-    {
-        return isset($this->data->searchId)
-            ? $this->restoreSearch($this->data->searchId) : null;
-    }
-
-    /**
      * Update the remembered "last search" in the session.
      *
      * @param Results $search Search object to remember.

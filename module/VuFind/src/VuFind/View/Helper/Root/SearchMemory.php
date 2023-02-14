@@ -28,7 +28,6 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
-use VuFind\Db\Table\Search;
 use VuFind\Search\Memory;
 
 /**

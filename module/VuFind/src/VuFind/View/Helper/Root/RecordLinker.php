@@ -29,6 +29,8 @@
  */
 namespace VuFind\View\Helper\Root;
 
+use VuFind\RecordDriver\AbstractBase as AbstractRecord;
+
 /**
  * Record linker view helper
  *
@@ -130,9 +132,9 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
     /**
      * Given a record driver, get a URL for that record.
      *
-     * @param \VuFind\RecordDriver\AbstractBase|string $driver Record driver
-     * representing record to link to, or source|id pipe-delimited string
-     * @param string                                   $action Record
+     * @param AbstractRecord|string $driver Record driver representing record to link
+     * to, or source|id pipe-delimited string
+     * @param string                $action Record
      * action to access
      *
      * @return string
@@ -185,13 +187,11 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
     /**
      * Given a record driver, get a URL for that record.
      *
-     * @param \VuFind\RecordDriver\AbstractBase|string $driver  Record driver
-     * representing record to link to, or source|id pipe-delimited string
-     * @param ?string                                  $tab     Optional record
-     * tab to access
-     * @param array                                    $query   Optional query params
-     * @param array                                    $options Any additional
-     * options:
+     * @param AbstractRecord|string $driver  Record driver representing record to
+     * link to, or source|id pipe-delimited string
+     * @param ?string               $tab     Optional record tab to access
+     * @param array                 $query   Optional query params
+     * @param array                 $options Any additional options:
      * - excludeSearchId (default: false)
      *
      * @return string
@@ -224,10 +224,9 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
     /**
      * Get the default URL for a record.
      *
-     * @param \VuFind\RecordDriver\AbstractBase|string $driver  Record driver
-     * representing record to link to, or source|id pipe-delimited string
-     * @param array                                    $options Any additional
-     * options:
+     * @param AbstractRecord|string $driver  Record driver representing record to
+     * link to, or source|id pipe-delimited string
+     * @param array                 $options Any additional options:
      * - excludeSearchId (default: false)
      *
      * @return string
@@ -240,7 +239,7 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
     /**
      * Given a record driver, generate HTML to link to the record from breadcrumbs.
      *
-     * @param \VuFind\RecordDriver\AbstractBase $driver Record to link to.
+     * @param AbstractRecord $driver Record to link to.
      *
      * @return string
      */
@@ -256,7 +255,7 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
     /**
      * Given a record driver, generate a URL to fetch all child records for it.
      *
-     * @param \VuFind\RecordDriver\AbstractBase $driver Host Record.
+     * @param AbstractRecord $driver Host Record.
      *
      * @return string
      */
@@ -273,7 +272,7 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
     /**
      * Return search URL for all versions
      *
-     * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
+     * @param AbstractRecord $driver Record driver
      *
      * @return string
      */

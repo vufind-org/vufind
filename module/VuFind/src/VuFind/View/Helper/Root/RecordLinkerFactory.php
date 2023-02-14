@@ -66,9 +66,6 @@ class RecordLinkerFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        return new $requestedName(
-            $container->get(\VuFind\Record\Router::class),
-            $container->get('Request')
-        );
+        return new $requestedName($container->get(\VuFind\Record\Router::class));
     }
 }
