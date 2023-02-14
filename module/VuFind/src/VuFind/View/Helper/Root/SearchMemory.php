@@ -70,10 +70,25 @@ class SearchMemory extends AbstractHelper
      */
     public function getLastSearchLink($link, $prefix = '', $suffix = '')
     {
-        $last = $this->memory->retrieveSearch();
-        if (!empty($last)) {
+        if ($lastSearch = $this->getLastSearch()) {
+            $searchClassId = $lastSearch->getBackendId();
+            $params = $lastSearch->getParams();
+            // Use last settings for params that are not stored in the search:
+            foreach (['limit', 'view', 'sort'] as $setting) {
+                $value
+                    = $this->memory->retrieveLastSetting($searchClassId, $setting);
+                if ($value) {
+                    $method = 'set' . ucfirst($setting);
+                    $params->$method($value);
+                }
+            }
+
+            $urlHelper = $this->getView()->plugin('url');
+            $url = $urlHelper($lastSearch->getOptions()->getSearchAction())
+                . $lastSearch->getUrlQuery()->getParams(false);
+
             $escaper = $this->getView()->plugin('escapeHtml');
-            return $prefix . '<a href="' . $escaper($last) . '">' . $link . '</a>'
+            return $prefix . '<a href="' . $escaper($url) . '">' . $link . '</a>'
                 . $suffix;
         }
         return '';
