@@ -87,7 +87,9 @@ class FakeOverdriveConnector extends OverdriveConnector
      */
     public function getAccess($refresh = false)
     {
-        return null;
+        return (object)[
+            'status' => true,
+        ];
     }
 
     /**
@@ -279,7 +281,16 @@ class FakeOverdriveConnector extends OverdriveConnector
      */
     public function getCheckouts($refresh = true)
     {
-        return new \stdClass;
+        return (object)[
+            'status' => true,
+            'data' => [
+                (object)[
+                    'reserveId' => 'overdrive1',
+                    'expires' => date('Y-m-d'),
+                    'isReturnable' => true
+                ],
+            ]
+        ];
     }
 
     /**
@@ -291,6 +302,24 @@ class FakeOverdriveConnector extends OverdriveConnector
      */
     public function getHolds($refresh = true)
     {
-        return new \stdClass;
+        return (object)[
+            'status' => true,
+            'data' => [
+                (object)[
+                    'reserveId' => 'overdrive2',
+                    'holdPlacedDate' => date('Y-m-d'),
+                    'holdListPosition' => 6,
+                    'numberOfHolds' => 23,
+                    'emailAddress' => 'foo@example.com',
+                ],
+                (object)[
+                    'reserveId' => 'overdrive3',
+                    'holdPlacedDate' => date('Y-m-d'),
+                    'holdListPosition' => 1,
+                    'numberOfHolds' => 1,
+                    'emailAddress' => 'foo@example.com',
+                ],
+            ]
+        ];
     }
 }
