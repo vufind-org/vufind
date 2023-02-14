@@ -55,7 +55,7 @@ class FakeOverdriveConnector extends OverdriveConnector
      */
     public function __construct(
         Config $mainConfig,
-        Config $recordConfig,
+        Config $recordConfig
     ) {
         $this->mainConfig = $mainConfig;
         $this->recordConfig = $recordConfig;
