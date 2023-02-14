@@ -73,19 +73,17 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         //check on this patrons's access to Overdrive
         $odAccessResult = $this->connector->getAccess();
 
-        if (!$odAccessResult->status) {
+        if (!($odAccessResult->status ?? false)) {
             $this->debug("result:" . print_r($odAccessResult, true));
             $this->flashMessenger()->addErrorMessage(
                 $this->translate(
-                    $odAccessResult->code,
-                    ["%%message%%" => $odAccessResult->msg]
+                    $odAccessResult->code ?? 'An error has occurred',
+                    ["%%message%%" => $odAccessResult->msg ?? '']
                 )
             );
             $checkoutsUnavailable = true;
             $holdsUnavailable = true;
-        }
-
-        if ($odAccessResult->status) {
+        } else {
             //get the current Overdrive checkouts
             //for this user and add to our array of IDS
             $checkoutResults = $this->connector->getCheckouts(true);
