@@ -83,7 +83,7 @@ class ResultScroller extends AbstractPlugin
     /**
      * Currently active scroll data
      *
-     * @var \StdClass
+     * @var \stdClass
      */
     protected $data = null;
 
@@ -102,10 +102,7 @@ class ResultScroller extends AbstractPlugin
         SearchMemory $sm = null
     ) {
         $this->enabled = $enabled;
-
-        // Set up session namespace for the class.
         $this->session = $session;
-
         $this->resultsManager = $rm;
         $this->searchMemory = $sm;
     }
@@ -117,7 +114,7 @@ class ResultScroller extends AbstractPlugin
      * @param Results $searchObject The search object that was used to execute the
      * last search.
      *
-     * @return bool
+     * @return bool True if enabled and initialized with results, false otherwise.
      */
     public function init($searchObject)
     {
@@ -140,7 +137,7 @@ class ResultScroller extends AbstractPlugin
      */
     protected function addData(Results $searchObject): void
     {
-        $data = new \StdClass();
+        $data = new \stdClass();
         $data->page = $searchObject->getParams()->getPage();
         $data->limit = $searchObject->getParams()->getLimit();
         $data->sort = $searchObject->getParams()->getSort();
@@ -160,8 +157,19 @@ class ResultScroller extends AbstractPlugin
             $this->session->s = [];
         }
 
+        $this->ensureRoomInSessionStorage();
+        $this->session->s[$searchObject->getSearchId()] = $data;
+    }
+
+    /**
+     * Make room for a new entry in the session storage as necessary
+     *
+     * @return void
+     */
+    protected function ensureRoomInSessionStorage(): void
+    {
         // Evict oldest entry if storage is full:
-        while (count($this->session->s) > static::LAST_SEARCH_LIMIT) {
+        while (count($this->session->s) >= static::LAST_SEARCH_LIMIT) {
             $oldest = null;
             $oldestTime = null;
             foreach ($this->session->s as $id => $search) {
@@ -172,9 +180,6 @@ class ResultScroller extends AbstractPlugin
             }
             unset($this->session->s[$oldest]);
         }
-
-        $searchId = $searchObject->getSearchId();
-        $this->session->s[$searchId] = $data;
     }
 
     /**

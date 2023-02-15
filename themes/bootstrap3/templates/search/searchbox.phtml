@@ -14,8 +14,8 @@
       }
       $options = $this->searchOptions($this->searchClassId);
       $hiddenFilters = $this->searchTabs()->getHiddenFilters($this->searchClassId, true, $this->ignoreHiddenFiltersInRequest ?? false);
-      $lastSort = null;
-      $lastLimit = null;
+      $lastSort = $this->searchMemory()->getLastSort($this->searchClassId);
+      $lastLimit = $this->searchMemory()->getLastLimit($this->searchClassId);
       $params = null;
     }
 
@@ -101,11 +101,8 @@
     <button type="submit" class="btn btn-primary"><?=$this->icon('search') ?> <?=$this->transEsc("Find")?></button>
     <?php if ($advSearch): ?>
       <?php
-        if ($results) {
-          $advSearchLink = $this->url($advSearch, [], ['query' => ['edit' => $results->getSearchId()]]);
-        } else {
-          $advSearchLink = $this->url($advSearch, [], ['query' => $hiddenFilters]);
-        }
+        $advSearchQuery = $results ? ['edit' => $results->getSearchId()] : $hiddenFilters;
+        $advSearchLink = $this->url($advSearch, [], ['query' => $advSearchQuery]);
       ?>
       <a href="<?=$advSearchLink?>" class="btn btn-link" rel="nofollow"><?=$this->transEsc("Advanced")?></a>
     <?php endif; ?>
