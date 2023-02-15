@@ -30,11 +30,13 @@ foreach ($ids as $id) {
     } else {
         $current['full_status'] = "<p><div class='copies'><strong>"
             . $this->transEsc('od_avail_total') . "</strong> "
-            . $avail->copiesOwned . "</div><div class='avail'><strong>"
+            . $this->escapeHtml($avail->copiesOwned)
+            . "</div><div class='avail'><strong>"
             . $this->transEsc('od_avail_avail') . "</strong> "
-            . $avail->copiesAvailable . "</div><div class='holds'><strong>"
+            . $this->escapeHtml($avail->copiesAvailable)
+            . "</div><div class='holds'><strong>"
             . $this->transEsc('od_avail_holds') . "</strong> "
-            . $avail->numberOfHolds . "</div></p>";
+            . $this->escapeHtml($avail->numberOfHolds) . "</div></p>";
     }
     $data[] = $current;
 }
