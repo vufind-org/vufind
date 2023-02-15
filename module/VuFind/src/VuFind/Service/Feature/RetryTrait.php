@@ -58,7 +58,8 @@ trait RetryTrait
      *
      * @param callable  $callback       Method to call
      * @param ?callable $statusCallback Status callback called before retry and after
-     * a successful retry. The callback gets the number of
+     * a successful retry. The callback gets the attempt number and either an
+     * exception if an error occurred or null if the request succeeded after retries.
      * @param array     $options        Optional options to override defaults in
      * $this->retryOptions. Options can also include a retryableExceptionCallback
      * for a callback that gets the attempt number and exception as parameters and
