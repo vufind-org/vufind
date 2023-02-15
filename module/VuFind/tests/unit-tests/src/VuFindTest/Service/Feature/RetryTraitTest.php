@@ -72,33 +72,99 @@ class RetryTraitTest extends \PHPUnit\Framework\TestCase
         $testClass = new MockRetryTestClass();
 
         $counter = 0;
-        $startTime = microtime(true);
         $this->expectExceptionMessage('Fail attempt 1');
         $testClass->call(
-            function () use (&$counter, $startTime) {
+            function () use (&$counter) {
                 ++$counter;
-                // Check timing:
-                if ($counter > 1) {
-                    $backoff = 0.050 * ($counter - 2);
-                    $this->assertGreaterThanOrEqual(
-                        $backoff,
-                        microtime(true) - $startTime
-                    );
-                    $this->assertLessThan(
-                        $backoff + 0.2, // given some slack
-                        microtime(true) - $startTime
-                    );
-                }
                 throw new \Exception("Fail attempt $counter");
             },
-            function ($attempt, $success) use (&$counter) {
+            function ($attempt, $exception) use (&$counter) {
                 $this->assertEquals($counter + 1, $attempt);
-                $this->assertFalse($success);
+                $this->assertInstanceOf(\Exception::class, $exception);
             },
             [
-                'subsequentBackoff' => 50
+                'firstRetryBackoff' => 0,
+                'subsequentBackoff' => 0,
             ]
         );
+    }
+
+    /**
+     * Test the trait with retryableExceptionCallback
+     *
+     * @return void
+     */
+    public function testRetryableExceptionCallback()
+    {
+        $testClass = new MockRetryTestClass();
+
+        $counter = 0;
+        $retries = 0;
+        try {
+            $testClass->call(
+                function () use (&$counter) {
+                    ++$counter;
+                    throw new \Exception("Fail attempt $counter");
+                },
+                function ($attempt, $exception) use (&$counter, &$retries) {
+                    $this->assertEquals($counter + 1, $attempt);
+                    $this->assertInstanceOf(\Exception::class, $exception);
+                    ++$retries;
+                },
+                [
+                    'firstRetryBackoff' => 0,
+                    'subsequentBackoff' => 0,
+                    'retryableExceptionCallback' => function ($attempt, $exception) {
+                        $this->assertInstanceOf(\Exception::class, $exception);
+                        return $exception->getMessage() !== 'Fail attempt 3';
+                    }
+                ]
+            );
+        } catch (\Exception $e) {
+            // Do nothing
+        }
+        $this->assertEquals(2, $retries);
+    }
+
+    /**
+     * Data provider for testBackoff
+     *
+     * @return array
+     */
+    public function backoffDataProvider(): array
+    {
+        return [
+            [0, 0],
+            [0, 1],
+            [0, 2],
+            [200, 3],
+            [400, 4],
+            [800, 5],
+            [1000, 6],
+            [1000, 7],
+            [1600, 6, ['maximumBackoff' => 2000]],
+            [1500, 6, ['maximumBackoff' => 1500]],
+            [200, 2, ['firstBackoff' => 200]],
+            [300, 3, ['subsequentBackoff' => 300]],
+            [200, 7, ['exponentialBackoff' => false]],
+        ];
+    }
+
+    /**
+     * Test the backoff duration handling
+     *
+     * @param int   $attempt Attempt number
+     * @param array $options Current options
+     *
+     * @dataProvider backoffDataProvider
+     *
+     * @return void
+     */
+    public function testBackoff(int $expected, int $attempt, array $options = [])
+    {
+        $testClass = new MockRetryTestClass();
+
+        $this->assertEquals($expected, $testClass->getBackoff($attempt, $options));
     }
 }
 
@@ -126,5 +192,19 @@ class MockRetryTestClass
         array $options = []
     ) {
         return $this->callWithRetry($callback, $statusCallback, $options);
+    }
+
+    /**
+     * Get the delay before a try
+     *
+     * @param int   $attempt Attempt number
+     * @param array $options Current options
+     *
+     * @return int milliseconds
+     */
+    public function getBackoff(int $attempt, array $options): int
+    {
+        $options = array_merge($this->retryOptions, $options);
+        return $this->getBackoffDuration($attempt, $options);
     }
 }

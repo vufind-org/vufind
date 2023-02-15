@@ -58,9 +58,11 @@ trait RetryTrait
      *
      * @param callable  $callback       Method to call
      * @param ?callable $statusCallback Status callback called before retry and after
-     * a successful retry
+     * a successful retry. The callback gets the number of
      * @param array     $options        Optional options to override defaults in
-     * $this->retryOptions
+     * $this->retryOptions. Options can also include a retryableExceptionCallback
+     * for a callback that gets the attempt number and exception as parameters and
+     * returns true if the call can be retried or false if not.
      *
      * @return mixed
      */
@@ -70,58 +72,75 @@ trait RetryTrait
         array $options = []
     ) {
         $attempt = 0;
-        $exception = null;
+        $firstException = null;
+        $lastException = null;
         $options = array_merge($this->retryOptions, $options);
         do {
-            if (++$attempt > 1 && $statusCallback) {
-                $statusCallback($attempt, false);
+            ++$attempt;
+            if ($delay = $this->getBackoffDuration($attempt, $options)) {
+                usleep($delay * 1000);
+            }
+            if ($lastException && $statusCallback) {
+                $statusCallback($attempt, $lastException);
             }
             try {
                 $result = $callback();
                 if ($attempt > 1 && $statusCallback) {
-                    $statusCallback($attempt, true);
+                    $statusCallback($attempt, null);
                 }
                 return $result;
             } catch (\Exception $e) {
-                if (null === $exception) {
-                    $exception = $e;
+                $lastException = $e;
+                if (null === $firstException) {
+                    $firstException = $e;
                 }
                 if ($checkCallback = $options['retryableExceptionCallback'] ?? '') {
-                    if (!$checkCallback($e)) {
+                    if (!$checkCallback($attempt, $e)) {
                         break;
                     }
                 }
             }
-        } while ($this->checkRetryAndSleep($attempt, $options));
-        // No success, re-throw the original exception:
-        throw $exception;
+        } while ($this->shouldRetry($attempt, $options));
+        // No success, re-throw the first exception:
+        throw $firstException;
     }
 
     /**
-     * Check if the call needs to be retried and sleep before the retry
+     * Check if the call needs to be retried
      *
      * @param int   $attempt Failed attempt number
      * @param array $options Current options
      *
      * @return bool
      */
-    protected function checkRetryAndSleep(int $attempt, array $options): bool
+    protected function shouldRetry(int $attempt, array $options): bool
     {
-        if ($attempt > $options['retryCount']) {
-            return false;
+        return $attempt <= $options['retryCount'];
+    }
+
+    /**
+     * Get the delay before a try
+     *
+     * @param int   $attempt Attempt number
+     * @param array $options Current options
+     *
+     * @return int milliseconds
+     */
+    protected function getBackoffDuration(int $attempt, array $options): int
+    {
+        if ($attempt < 2) {
+            return 0;
         }
-        if (1 === $attempt) {
-            usleep($options['firstBackoff'] * 1000);
-        } else {
-            $backoff = $options['subsequentBackoff'];
-            if ($options['exponentialBackoff']) {
-                $backoff = min(
-                    2 ** ($attempt - 2) * $backoff,
-                    $options['maximumBackoff']
-                );
-            }
-            usleep($backoff * 1000);
+        if (2 === $attempt) {
+            return $options['firstBackoff'];
         }
-        return true;
+        $backoff = $options['subsequentBackoff'];
+        if ($options['exponentialBackoff']) {
+            $backoff = min(
+                2 ** ($attempt - 3) * $backoff,
+                $options['maximumBackoff']
+            );
+        }
+        return $backoff;
     }
 }
