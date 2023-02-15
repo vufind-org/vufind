@@ -8,16 +8,16 @@ $loginForAvail = false;
 $noshow = false;
 
 $code = $this->result->code ?? null;
-if ($code == 'od_code_login_for_avail'){
+if ($code == 'od_code_login_for_avail') {
     $loginForAvail = true;
-} elseif($code == 'od_account_noaccess'){
+} elseif ($code == 'od_account_noaccess') {
     $noshow = true;
 } elseif (empty($this->result->status)) {
     //we must have had a connection error.
     $isError = true;
 }
 
-foreach($ids as $id) {
+foreach ($ids as $id) {
     $current['status'] = "OK";
     $current['id'] = $id;
     $avail = $this->result->data[$id] ?? new \stdClass;
