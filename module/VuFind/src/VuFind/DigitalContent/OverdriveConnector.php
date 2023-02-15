@@ -354,7 +354,7 @@ class OverdriveConnector implements LoggerAwareInterface,
     }
 
     /**
-     * Get Colllection Token
+     * Get Collection Token
      *
      * Gets the colleciton token for the Overdrive collection. The collection
      * token doesn't change much but according to
