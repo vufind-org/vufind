@@ -19,9 +19,9 @@
 
   <h3><?=$this->transEsc('od_loans')?></h3>
 
-  <?php if($this->checkoutsUnavailable): ?>
+  <?php if ($this->checkoutsUnavailable): ?>
       <div class="well"> <?=$this->transEsc('od_info_unavail')?></div>
-  <?php elseif(count($this->checkouts) == 0): ?>
+  <?php elseif (count($this->checkouts) == 0): ?>
       <div class="well"> <?=$this->transEsc('od_none_found')?></div>
   <?php else:
       $i = 0; foreach ($this->checkouts as $resource):
@@ -65,7 +65,7 @@
 
           <div><?=$this->transEsc('od_expires_on', ['%%due_date%%' => $resource['checkout']->expires])?></div>
           <div class="pull-right">
-            <?php if($resource['checkout']->isReturnable): ?>
+            <?php if ($resource['checkout']->isReturnable): ?>
               <a
                 class="btn btn-primary returnTitle"
                 data-lightbox title="<?=$this->transEsc('od_but_return')?>"
@@ -94,9 +94,9 @@
 
 
   <h3><?=$this->transEsc('od_holds')?></h3>
-  <?php if($this->holdsUnavailable): ?>
+  <?php if ($this->holdsUnavailable): ?>
       <div class="well"> <?=$this->transEsc('od_info_unavail')?></div>
-  <?php elseif(count($this->holds) == 0): ?>
+  <?php elseif (count($this->holds) == 0): ?>
       <div class="well"> <?=$this->transEsc('od_none_found')?></div>
   <?php else: ?>
     <ul class="record-list">
