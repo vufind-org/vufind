@@ -356,7 +356,7 @@ class OverdriveConnector implements LoggerAwareInterface,
     /**
      * Get Collection Token
      *
-     * Gets the colleciton token for the Overdrive collection. The collection
+     * Gets the collection token for the Overdrive collection. The collection
      * token doesn't change much but according to
      * the OD API docs it could change and should be retrieved each session.
      * Also, the collection token depends on the user if the user is in a
