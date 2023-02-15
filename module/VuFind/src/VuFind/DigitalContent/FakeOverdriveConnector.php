@@ -118,11 +118,32 @@ class FakeOverdriveConnector extends OverdriveConnector
      * @param array $overDriveIds The Overdrive ID (reserve IDs) of the
      *                            eResources
      *
-     * @return array|bool see getAvailability
+     * @return object|bool see getAvailability
      */
     public function getAvailabilityBulk($overDriveIds = [])
     {
-        return [];
+        $data = [];
+        $statuses = ['od_code_resource_not_found', 'od_code_login_for_avail'];
+        foreach ($overDriveIds as $i => $id) {
+            $code = $statuses[$i] ?? '';
+            if (empty($code)) {
+                $total = rand(1, 3);
+                $avail = rand(0, $total);
+                $holds = $avail === 0 ? rand(1, 100) : 0;
+                $data[$id] = (object)[
+                    'code' => '',
+                    'copiesOwned' => $total,
+                    'copiesAvailable' => $avail,
+                    'numberOfHolds' => $holds,
+                ];
+            } else {
+                $data[$id] = (object)compact('code');
+            }
+        }
+        return (object)[
+            'status' => true,
+            'data' => $data,
+        ];
     }
 
     /**

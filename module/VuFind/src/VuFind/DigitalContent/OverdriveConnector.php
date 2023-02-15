@@ -283,7 +283,7 @@ class OverdriveConnector implements LoggerAwareInterface,
      * @param array $overDriveIds The Overdrive ID (reserve IDs) of the
      *                            eResources
      *
-     * @return array|bool see getAvailability
+     * @return object|bool see getAvailability
      *
      * @todo if more tan 25 passed in, make multiple calls
      */
