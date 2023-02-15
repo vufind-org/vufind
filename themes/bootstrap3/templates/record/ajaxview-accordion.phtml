@@ -17,7 +17,7 @@
           </a>
         </h4>
       </div>
-      <div id="information_<?=$idSuffixEsc?>-content" class="panel-collapse collapse<?php if($this->defaultTab === 'information'): ?> in<?php endif; ?>">
+      <div id="information_<?=$idSuffixEsc?>-content" class="panel-collapse collapse<?php if ($this->defaultTab === 'information'): ?> in<?php endif; ?>">
         <div class="list-tab-content record panel-body">
           <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id_<?=$idSuffixEsc?>" />
           <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier()) ?>" class="hiddenSource" />
@@ -37,7 +37,7 @@
           </a>
         </h4>
       </div>
-      <div id="tools_<?=$idSuffixEsc?>-content" class="panel-collapse collapse<?php if($this->defaultTab === 'tools'): ?> in<?php endif; ?>">
+      <div id="tools_<?=$idSuffixEsc?>-content" class="panel-collapse collapse<?php if ($this->defaultTab === 'tools'): ?> in<?php endif; ?>">
         <div class="list-tab-content panel-body">
           <?=$toolbar ?>
         </div>
@@ -55,7 +55,7 @@
           </a>
         </h4>
       </div>
-      <div id="related_<?=$idSuffixEsc?>-content" class="panel-collapse collapse<?php if($this->defaultTab === 'related'): ?> in<?php endif; ?>">
+      <div id="related_<?=$idSuffixEsc?>-content" class="panel-collapse collapse<?php if ($this->defaultTab === 'related'): ?> in<?php endif; ?>">
         <div class="list-tab-content panel-body">
           <?php foreach ($relatedList as $current): ?>
             <?=$this->related()->render($current)?>
@@ -79,7 +79,7 @@
             <a class="accordion-toggle" data-href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, $tab))?>#tabnav"><?=$this->transEsc($desc) ?></a>
           </h4>
         </div>
-        <div id="<?=$this->escapeHtmlAttr(strtolower($tab))?>_<?=$idSuffixEsc?>-content" class="list-tab-content panel-collapse collapse<?php if($this->defaultTab === strtolower($tab)): ?> in<?php endif; ?>"></div>
+        <div id="<?=$this->escapeHtmlAttr(strtolower($tab))?>_<?=$idSuffixEsc?>-content" class="list-tab-content panel-collapse collapse<?php if ($this->defaultTab === strtolower($tab)): ?> in<?php endif; ?>"></div>
       </div>
     <?php endforeach; ?>
   <?php endif; ?>

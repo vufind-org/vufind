@@ -11,7 +11,7 @@
     </span>
 
     <ul class="nav navbar-nav">
-      <?php foreach($this->themeConfig(['home-content', 'links']) as $label => $route): ?>
+      <?php foreach ($this->themeConfig(['home-content', 'links']) as $label => $route): ?>
         <?php
           try {
             $url = $this->url($route);
@@ -29,7 +29,7 @@
     </ul>
 
     <ul class="nav navbar-nav navbar-right flip">
-      <?php foreach($this->themeConfig(['header-nav']) as $section => $links): ?>
+      <?php foreach ($this->themeConfig(['header-nav']) as $section => $links): ?>
         <?php
           $currentItems = [];
           foreach ($links as $label => $route) {

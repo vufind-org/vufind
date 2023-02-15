@@ -28,7 +28,7 @@
     <label><?=$this->translate('Sort') ?></label>
     <div class="btn-group">
       <?php foreach ($this->sortOptions as $key => $sort): ?>
-        <a href="<?=$urlBase . '&amp;facetpage=1&amp;facetsort=' . urlencode($key) ?>" class="btn btn-default js-facet-sort<?php if($this->sort == $key): ?> active<?php endif; ?>" data-sort="<?=$key ?>" data-lightbox-ignore><?=$this->translate($sort) ?></a>
+        <a href="<?=$urlBase . '&amp;facetpage=1&amp;facetsort=' . urlencode($key) ?>" class="btn btn-default js-facet-sort<?php if ($this->sort == $key): ?> active<?php endif; ?>" data-sort="<?=$key ?>" data-lightbox-ignore><?=$this->translate($sort) ?></a>
       <?php endforeach; ?>
     </div>
   </div>
@@ -36,7 +36,7 @@
 <div class="lightbox-scroll full-facets">
   <?php foreach ($this->sortOptions as $key => $sort): ?>
     <?php $active = $this->sort == $key; ?>
-    <div class="full-facet-list facet-group<?php if(!$active): ?> hidden<?php endif; ?>" id="facet-list-<?=$this->escapeHtmlAttr($key) ?>">
+    <div class="full-facet-list facet-group<?php if (!$active): ?> hidden<?php endif; ?>" id="facet-list-<?=$this->escapeHtmlAttr($key) ?>">
       <?php if ($active): ?>
         <?php if ($this->page > 1): ?>
           <a href="<?=$urlBase . '&amp;facetpage=' . ($this->page - 1) . '&amp;facetsort=' . urlencode($this->sort) ?>" class="facet js-facet-prev-page" data-page="<?=($this->page + 1) ?>" data-sort="<?=$this->sort ?>" data-limit="<?=count($this->data) ?>" data-lightbox-ignore><?=$this->translate('prev_ellipsis') ?></a>

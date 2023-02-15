@@ -31,7 +31,7 @@
       </div>
 
       <div>
-        <?php if($this->driver->isCollection()): ?>
+        <?php if ($this->driver->isCollection()): ?>
           <?=implode('<br>', array_map([$this, 'escapeHtml'], $this->driver->getSummary())); ?>
         <?php else: ?>
           <?php $summAuthors = $this->driver->getPrimaryAuthorsWithHighlighting(); if (!empty($summAuthors)): ?>
@@ -67,7 +67,7 @@
         <?php endif; ?>
       </div>
 
-      <?php if(!$this->driver->isCollection()): ?>
+      <?php if (!$this->driver->isCollection()): ?>
         <?php if ($snippet = $this->driver->getHighlightedSnippet()): ?>
           <?php if (!empty($snippet['caption'])): ?>
             <strong><?=$this->transEsc($snippet['caption']) ?>:</strong>
@@ -143,7 +143,7 @@
           <?=$doi->renderTemplate()?>
         <?php endif; ?>
         <?php if (!is_array($urls)) $urls = [];
-          if(!$this->driver->isCollection()):
+          if (!$this->driver->isCollection()):
             foreach ($urls as $current): ?>
               <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new">
                 <?=$this->icon('external-link') ?> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a><br/>
