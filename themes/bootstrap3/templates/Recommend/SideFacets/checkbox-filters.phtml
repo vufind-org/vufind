@@ -1,6 +1,6 @@
 <?php foreach ($checkboxFilters as $current): ?>
   <div class="facet" >
-    <a class="checkbox-filter<?php if(!($results->getResultTotal() > 0 || $current['selected'] || $current['alwaysVisible'])): ?> hidden<?php endif; ?>" href="<?=$current['selected'] ? $results->getUrlQuery()->removeFilter($current['filter']) : $results->getUrlQuery()->addFilter($current['filter']);?>" data-facet="<?=$this->escapeHtmlAttr($current['filter'])?>">
+    <a class="checkbox-filter<?php if (!($results->getResultTotal() > 0 || $current['selected'] || $current['alwaysVisible'])): ?> hidden<?php endif; ?>" href="<?=$current['selected'] ? $results->getUrlQuery()->removeFilter($current['filter']) : $results->getUrlQuery()->addFilter($current['filter']);?>" data-facet="<?=$this->escapeHtmlAttr($current['filter'])?>">
       <?php if ($current['selected']): ?>
         <span class="sr-only"><?=$this->transEsc('clear_tag_filter') ?></span>
       <?php endif; ?>
