@@ -5,6 +5,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2010
+ * Copyright (C) The National Library of Finland 2023
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +23,7 @@
  * @category VuFind
  * @package  Controller_Plugins
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -40,6 +42,7 @@ use VuFind\Search\Results\PluginManager as ResultsManager;
  * @category VuFind
  * @package  Controller_Plugins
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -92,14 +95,14 @@ class ResultScroller extends AbstractPlugin
      *
      * @param SessionContainer $session Session container
      * @param ResultsManager   $rm      Results manager
-     * @param bool             $enabled Is the scroller enabled?
      * @param SearchMemory     $sm      Search memory
+     * @param bool             $enabled Is the scroller enabled?
      */
     public function __construct(
         SessionContainer $session,
         ResultsManager $rm,
-        $enabled = true,
-        SearchMemory $sm = null
+        SearchMemory $sm,
+        $enabled = true
     ) {
         $this->enabled = $enabled;
         $this->session = $session;
@@ -505,8 +508,7 @@ class ResultScroller extends AbstractPlugin
             'currentPosition' => null, 'resultTotal' => null
         ];
 
-        $searchId = $this->searchMemory
-            ? $this->searchMemory->getLastSearchId() : null;
+        $searchId = $this->searchMemory->getLastSearchId();
         // Process scroll data only if enabled and data exists:
         if (!$this->enabled || !$searchId || !isset($this->session->s[$searchId])
             || !($lastSearch = $this->restoreSearch($searchId))
@@ -685,11 +687,9 @@ class ResultScroller extends AbstractPlugin
         $baseUrl = $this->getController()->url()->fromRoute(
             $search->getOptions()->getSearchAction()
         );
-        if ($this->searchMemory) {
-            $this->searchMemory->rememberSearch(
-                $baseUrl . $search->getUrlQuery()->getParams(false),
-                $search->getSearchId()
-            );
-        }
+        $this->searchMemory->rememberSearch(
+            $baseUrl . $search->getUrlQuery()->getParams(false),
+            $search->getSearchId()
+        );
     }
 }

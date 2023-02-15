@@ -72,8 +72,8 @@ class ResultScrollerFactory implements FactoryInterface
                 $container->get(\Laminas\Session\SessionManager::class)
             ),
             $container->get(\VuFind\Search\Results\PluginManager::class),
-            true,
-            $container->get(\VuFind\Search\Memory::class)
+            $container->get(\VuFind\Search\Memory::class),
+            true
         );
     }
 }
