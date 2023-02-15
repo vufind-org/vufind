@@ -3,7 +3,7 @@
   <div class="alert alert-info">
     <?=$this->transEsc('recommend_links_text')?>
     <ul>
-      <?php foreach($links as $title => $href): ?>
+      <?php foreach ($links as $title => $href): ?>
         <li>
           <a href="<?=$this->escapeHtmlAttr($href)?>"><?=$this->transEsc($title)?></a>
         </li>

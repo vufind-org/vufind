@@ -28,7 +28,7 @@
             <strong><?=$this->transEsc($field)?></strong>: <?=$this->escapeHtml($filter['displayText'])?><br/>
           <?php endforeach; ?>
         <?php endforeach; ?>
-        <?php foreach($info->getParams()->getCheckboxFacets() as $facet): ?>
+        <?php foreach ($info->getParams()->getCheckboxFacets() as $facet): ?>
           <?php if ($facet['selected']): ?>
             <strong><?=$this->transEsc($facet['desc'])?></strong><br/>
           <?php endif; ?>

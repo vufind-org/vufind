@@ -94,7 +94,7 @@
           <?=$doi->renderTemplate()?>
         <?php endif; ?>
         <?php if (!is_array($urls)) $urls = [];
-          if(!$this->driver->isCollection()):
+          if (!$this->driver->isCollection()):
             foreach ($urls as $current): ?>
               <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new">
                 <?=$this->icon('external-link') ?>
