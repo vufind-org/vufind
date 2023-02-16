@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2022.
+ * Copyright (C) The National Library of Finland 2022-2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -50,6 +50,15 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
             'Backends' => [
                 'Solr' => 'Items in Library',
                 'SolrAuth' => 'Authors',
+            ],
+            'Blending' => [
+                'initialResults' => [
+                    'Solr',
+                    'Solr',
+                    'SolrAuth',
+                    'SolrAuth',
+                ],
+                'blockSize' => 7,
             ],
             'CheckboxFacets' => [
                 'blender_backend:Solr' => 'Items in Library',
@@ -114,7 +123,15 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
     public function testSearch(array $queryParams, array $expectedLabels): void
     {
         $this->changeConfigs(
-            ['Blender' => $this->getBlenderIniOverrides()],
+            [
+                'config' => [
+                    'SearchTabs' => [
+                        'Solr' => 'Catalog',
+                        'Blender' => 'Blended',
+                    ]
+                ],
+                'Blender' => $this->getBlenderIniOverrides()
+            ],
             ['Blender']
         );
 
@@ -131,10 +148,13 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals(1 + $offset, intval($start));
         $this->assertEquals(20 + $offset, intval($limit));
 
-        $i = 0;
-        foreach ($this->findCss($page, '.result span.label-source') as $label) {
-            $this->assertEquals($expectedLabels[$i], $label->getText(), $i);
-            ++$i;
+        for ($i = 0; $i < count($expectedLabels); $i++) {
+            $this->assertEquals(
+                $expectedLabels[$i],
+                $this->findCss($page, '.result span.label-source', null, $i)
+                    ->getText(),
+                "Result index $i"
+            );
         }
     }
 
