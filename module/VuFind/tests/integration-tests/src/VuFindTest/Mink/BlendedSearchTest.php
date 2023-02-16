@@ -123,15 +123,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
     public function testSearch(array $queryParams, array $expectedLabels): void
     {
         $this->changeConfigs(
-            [
-                'config' => [
-                    'SearchTabs' => [
-                        'Solr' => 'Catalog',
-                        'Blender' => 'Blended',
-                    ]
-                ],
-                'Blender' => $this->getBlenderIniOverrides()
-            ],
+            ['Blender' => $this->getBlenderIniOverrides()],
             ['Blender']
         );
 
