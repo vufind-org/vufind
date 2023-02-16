@@ -220,14 +220,15 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
         bool $fallback = true
     ) {
         $fallbackPath = $this->getIndexConfigFallbackPath();
-        $configToUse = $configName ?? $fallbackPath[0] ?? $this->mainConfig;
+        $configToUse = $configName ?? $fallbackPath[0];
         $config = $this->config->get($configToUse);
         // Return setting if found:
         if (isset($config->Index->$setting)) {
             return $config->Index->$setting;
         }
         // Fall back to the next config in line, if appropriate:
-        $fallbackIndex = array_search($configToUse, $fallback ? $fallbackPath : []);
+        $fallbackIndex
+            = $fallback ? array_search($configToUse, $fallbackPath) : false;
         if ($fallbackIndex !== false && isset($fallbackPath[$fallbackIndex + 1])) {
             return $this->getIndexConfig(
                 $setting,
