@@ -108,6 +108,13 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     protected $config;
 
     /**
+     * Name of index configuration setting to use for Solr core setting.
+     *
+     * @var string
+     */
+    protected $coreSetting = 'default_core';
+
+    /**
      * Solr core (used as default if default_core is unset in the config)
      *
      * @var string
@@ -390,14 +397,12 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     /**
      * Get the Solr core.
      *
-     * @param string $coreSetting The index config setting to look up for core name
-     *
      * @return string
      */
-    protected function getSolrCore($coreSetting = 'default_core')
+    protected function getSolrCore()
     {
         return $this->getIndexConfig(
-            $coreSetting,
+            $this->coreSetting,
             $this->solrCore,
             $this->allowFallbackForSolrCore
         );
