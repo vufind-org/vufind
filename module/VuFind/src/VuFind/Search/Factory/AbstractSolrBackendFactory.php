@@ -265,7 +265,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
         bool $fallback = true
     ) {
         $config = $fallback
-            ? $this->getMergedIndexConfig(): $this->getFlatIndexConfig();
+            ? $this->getMergedIndexConfig() : $this->getFlatIndexConfig();
         return $config[$setting] ?? $default;
     }
 
