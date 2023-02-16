@@ -15,7 +15,7 @@
   $thumbnail = false;
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('list');
 ?>
-<li class="result<?php if($this->driver->supportsAjaxStatus()): ?> ajaxItem<?php endif ?>">
+<li class="result<?php if ($this->driver->supportsAjaxStatus()): ?> ajaxItem<?php endif ?>">
   <?php if ($cover):
     ob_start(); ?>
     <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
@@ -46,7 +46,7 @@
         </div>
 
         <div class="resultItemLine2">
-          <?php if($this->driver->isCollection()): ?>
+          <?php if ($this->driver->isCollection()): ?>
             <?=implode('<br>', array_map([$this, 'escapeHtml'], $this->driver->getSummary())); ?>
           <?php else: ?>
             <?php $summAuthors = $this->driver->getPrimaryAuthors(); if (!empty($summAuthors)): ?>
@@ -79,7 +79,7 @@
         </div>
 
         <div class="last">
-          <?php if(!$this->driver->isCollection()) {
+          <?php if (!$this->driver->isCollection()) {
               if ($snippet = $this->driver->getHighlightedSnippet()) {
                 if (!empty($snippet['caption'])) {
                   echo '<strong>' . $this->transEsc($snippet['caption']) . ':</strong> ';
@@ -118,8 +118,8 @@
 
           <?php if (count($this->lists ?? []) > 0): ?>
               <strong><?=$this->transEsc('Saved in')?>:</strong>
-              <?php $i = 0;foreach($this->lists as $current): ?>
-                  <a href="<?=$this->url('userList', ['id' => $current->id])?>"><?=$this->escapeHtml($current->title)?></a><?php if($i++ < count($this->lists) - 1): ?>,<?php endif; ?>
+              <?php $i = 0;foreach ($this->lists as $current): ?>
+                  <a href="<?=$this->url('userList', ['id' => $current->id])?>"><?=$this->escapeHtml($current->title)?></a><?php if ($i++ < count($this->lists) - 1): ?>,<?php endif; ?>
               <?php endforeach; ?>
               <br/>
           <?php endif; ?>
@@ -166,7 +166,7 @@
             <?php endif; ?>
 
             <?php if (!is_array($urls)) { $urls = []; }
-              if(!$this->driver->isCollection()):
+              if (!$this->driver->isCollection()):
                 foreach ($urls as $current): ?>
                   <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><?=$this->icon('external-link') ?> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a>
                 <?php endforeach; ?>
@@ -222,7 +222,7 @@ $('#confirm_delete_item_${escId}').click(function(e) {
                 'source':'${escSource}',
                 'confirm':true
             },
-            function(){
+            function() {
                 location.reload()
             }
         );
