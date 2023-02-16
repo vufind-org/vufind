@@ -108,11 +108,20 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     protected $config;
 
     /**
-     * Solr core name
+     * Solr core (used as default if default_core is unset in the config)
      *
      * @var string
      */
     protected $solrCore = '';
+
+    /**
+     * When looking up the Solr core config setting, should we allow fallback
+     * into the main configuration (true), or limit ourselves to the search
+     * config (false)?
+     *
+     * @var bool
+     */
+    protected $allowFallbackForSolrCore = false;
 
     /**
      * Solr field used to store unique identifiers
@@ -183,6 +192,49 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
         return $backend;
     }
 
+    protected function getIndexConfigFallbackPath()
+    {
+        return array_unique([$this->searchConfig, $this->mainConfig]);
+    }
+
+    /**
+     * Get an index-related configuration setting.
+     *
+     * @param string $setting    Name of setting
+     * @param mixed  $default    Default value if unset
+     * @param string $configName Name of config to look in
+     * @param bool   $fallback   Should we fall back to main config if the
+     * setting is absent from the specified config file?
+     *
+     * @return mixed
+     */
+    protected function getIndexConfig(
+        string $setting,
+        $default = null,
+        string $configName = null,
+        bool $fallback = true
+    ) {
+        $fallbackPath = $this->getIndexConfigFallbackPath();
+        $configToUse = $configName ?? $fallbackPath[0] ?? $this->mainConfig;
+        $config = $this->config->get($configToUse);
+        // Return setting if found:
+        if (isset($config->Index->$setting)) {
+            return $config->Index->$setting;
+        }
+        // Fall back to the next config in line, if appropriate:
+        $fallbackIndex = array_search($configToUse, $fallback ? $fallbackPath : []);
+        if ($fallbackIndex !== false && isset($fallbackPath[$fallbackIndex + 1])) {
+            return $this->getIndexConfig(
+                $setting,
+                $default,
+                $fallbackPath[$fallbackIndex + 1],
+                $fallback
+            );
+        }
+        // If we got this far, we should return the default.
+        return $default;
+    }
+
     /**
      * Create the SOLR backend.
      *
@@ -193,13 +245,10 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     protected function createBackend(Connector $connector)
     {
         $backend = new $this->backendClass($connector);
-        $config = $this->config->get($this->mainConfig);
-        $pageSize = $config->Index->record_batch_size ?? 100;
-        if ($pageSize > $config->Index->maxBooleanClauses ?? $pageSize) {
-            $pageSize = $config->Index->maxBooleanClauses;
-        }
-        if ($pageSize > 0) {
-            $backend->setPageSize($pageSize);
+        $pageSize = $this->getIndexConfig('record_batch_size', 100);
+        $maxClauses = $this->getIndexConfig('maxBooleanClauses', $pageSize);
+        if ($pageSize > 0 && $maxClauses > 0) {
+            $backend->setPageSize(min($pageSize, $maxClauses));
         }
         $backend->setQueryBuilder($this->createQueryBuilder());
         $backend->setSimilarBuilder($this->createSimilarBuilder());
@@ -313,15 +362,35 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     /**
      * Get the Solr core.
      *
+     * @param string $coreSetting The index config setting to look up for core name
+     *
      * @return string
      */
-    protected function getSolrCore()
+    protected function getSolrCore($coreSetting = 'default_core')
     {
-        return $this->solrCore;
+        return $this->getIndexConfig(
+            $coreSetting,
+            $this->solrCore,
+            null,
+            $this->allowFallbackForSolrCore
+        );
     }
 
     /**
-     * Get the Solr URL.
+     * Get the Solr base URL(s) (without the core path)
+     *
+     * @param string $config name of configuration file (null for default)
+     *
+     * @return string[]
+     */
+    protected function getSolrBaseUrls($config = null): array
+    {
+        $urls = $this->getIndexConfig('url', [], $config);
+        return is_object($urls) ? $urls->toArray() : (array)$urls;
+    }
+
+    /**
+     * Get the full Solr URL(s) (including core path).
      *
      * @param string $config name of configuration file (null for default)
      *
@@ -329,17 +398,14 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      */
     protected function getSolrUrl($config = null)
     {
-        $url = $this->config->get($config ?? $this->mainConfig)->Index->url;
         $core = $this->getSolrCore();
-        if (is_object($url)) {
-            return array_map(
-                function ($value) use ($core) {
-                    return "$value/$core";
-                },
-                $url->toArray()
-            );
-        }
-        return "$url/$core";
+        $urls = array_map(
+            function ($value) use ($core) {
+                return "$value/$core";
+            },
+            $this->getSolrBaseUrls($config)
+        );
+        return count($urls) === 1 ? $urls[0] : $urls;
     }
 
     /**
@@ -376,7 +442,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      */
     protected function createConnector()
     {
-        $config = $this->config->get($this->mainConfig);
+        $timeout = $this->getIndexConfig('timeout', 30);
         $searchConfig = $this->config->get($this->searchConfig);
         $defaultFields = $searchConfig->General->default_record_fields ?? '*';
 
@@ -398,9 +464,9 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
         $connector = new $this->connectorClass(
             $this->getSolrUrl(),
             new HandlerMap($handlers),
-            function (string $url) use ($config) {
+            function (string $url) use ($timeout) {
                 return $this->createHttpClient(
-                    $config->Index->timeout ?? 30,
+                    $timeout,
                     $this->getHttpOptions($url),
                     $url
                 );
@@ -441,8 +507,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     protected function createQueryBuilder()
     {
         $specs   = $this->loadSpecs();
-        $config = $this->config->get($this->mainConfig);
-        $defaultDismax = $config->Index->default_dismax_handler ?? 'dismax';
+        $defaultDismax = $this->getIndexConfig('default_dismax_handler', 'dismax');
         $builder = new QueryBuilder($specs, $defaultDismax);
 
         // Configure builder:
