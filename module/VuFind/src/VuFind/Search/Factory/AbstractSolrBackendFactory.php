@@ -108,7 +108,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     protected $config;
 
     /**
-     * Name of index configuration setting to use for Solr core setting.
+     * Name of index configuration setting to use to retrieve Solr core name.
      *
      * @var string
      */
