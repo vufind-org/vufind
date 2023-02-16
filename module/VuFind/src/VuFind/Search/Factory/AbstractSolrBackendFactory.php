@@ -244,8 +244,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     protected function getFlatIndexConfig(): array
     {
         $fallbackPath = $this->getIndexConfigFallbackPath();
-        $configToUse = $configName ?? $fallbackPath[0];
-        $configObj = $this->config->get($configToUse);
+        $configObj = $this->config->get($fallbackPath[0]);
         return isset($configObj->Index)
             ? $configObj->Index->toArray() : [];
     }
