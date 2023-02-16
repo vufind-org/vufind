@@ -192,7 +192,12 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
         return $backend;
     }
 
-    protected function getIndexConfigFallbackPath()
+    /**
+     * Return an ordered array of configurations to check for index configurations.
+     *
+     * @return string[]
+     */
+    protected function getIndexConfigFallbackPath(): array
     {
         return array_unique([$this->searchConfig, $this->mainConfig]);
     }
