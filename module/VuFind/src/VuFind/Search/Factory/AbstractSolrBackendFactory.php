@@ -159,6 +159,13 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     protected $recordCollectionFactoryClass = RecordCollectionFactory::class;
 
     /**
+     * Merged index configuration
+     *
+     * @var ?array
+     */
+    protected $mergedIndexConfig = null;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -203,42 +210,57 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     }
 
     /**
+     * Merge together the Index sections of all eligible configuration files and
+     * return the result as an array.
+     *
+     * @return array
+     */
+    protected function getMergedIndexConfig(): array
+    {
+        if (null === $this->mergedIndexConfig) {
+            $this->mergedIndexConfig = [];
+            foreach ($this->getIndexConfigFallbackPath() as $configName) {
+                $config = $this->config->get($configName);
+                $this->mergedIndexConfig += isset($config->Index)
+                    ? $config->Index->toArray() : [];
+            }
+        }
+        return $this->mergedIndexConfig;
+    }
+
+    /**
+     * Get the Index section of the highest-priority configuration file (for use
+     * in cases where fallback is not desired).
+     *
+     * @return array
+     */
+    protected function getFlatIndexConfig(): array
+    {
+        $fallbackPath = $this->getIndexConfigFallbackPath();
+        $configToUse = $configName ?? $fallbackPath[0];
+        $configObj = $this->config->get($configToUse);
+        return isset($configObj->Index)
+            ? $configObj->Index->toArray() : [];
+    }
+
+    /**
      * Get an index-related configuration setting.
      *
-     * @param string $setting    Name of setting
-     * @param mixed  $default    Default value if unset
-     * @param string $configName Name of config to look in
-     * @param bool   $fallback   Should we fall back to main config if the
-     * setting is absent from the specified config file?
+     * @param string $setting  Name of setting
+     * @param mixed  $default  Default value if unset
+     * @param bool   $fallback Should we fall back to main config if the
+     * setting is absent from the search config file?
      *
      * @return mixed
      */
     protected function getIndexConfig(
         string $setting,
         $default = null,
-        string $configName = null,
         bool $fallback = true
     ) {
-        $fallbackPath = $this->getIndexConfigFallbackPath();
-        $configToUse = $configName ?? $fallbackPath[0];
-        $config = $this->config->get($configToUse);
-        // Return setting if found:
-        if (isset($config->Index->$setting)) {
-            return $config->Index->$setting;
-        }
-        // Fall back to the next config in line, if appropriate:
-        $fallbackIndex
-            = $fallback ? array_search($configToUse, $fallbackPath) : false;
-        if ($fallbackIndex !== false && isset($fallbackPath[$fallbackIndex + 1])) {
-            return $this->getIndexConfig(
-                $setting,
-                $default,
-                $fallbackPath[$fallbackIndex + 1],
-                $fallback
-            );
-        }
-        // If we got this far, we should return the default.
-        return $default;
+        $config = $fallback
+            ? $this->getMergedIndexConfig(): $this->getFlatIndexConfig();
+        return $config[$setting] ?? $default;
     }
 
     /**
@@ -377,7 +399,6 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
         return $this->getIndexConfig(
             $coreSetting,
             $this->solrCore,
-            null,
             $this->allowFallbackForSolrCore
         );
     }
@@ -385,31 +406,27 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     /**
      * Get the Solr base URL(s) (without the core path)
      *
-     * @param string $config name of configuration file (null for default)
-     *
      * @return string[]
      */
-    protected function getSolrBaseUrls($config = null): array
+    protected function getSolrBaseUrls(): array
     {
-        $urls = $this->getIndexConfig('url', [], $config);
+        $urls = $this->getIndexConfig('url', []);
         return is_object($urls) ? $urls->toArray() : (array)$urls;
     }
 
     /**
      * Get the full Solr URL(s) (including core path).
      *
-     * @param string $config name of configuration file (null for default)
-     *
      * @return string|array
      */
-    protected function getSolrUrl($config = null)
+    protected function getSolrUrl()
     {
         $core = $this->getSolrCore();
         $urls = array_map(
             function ($value) use ($core) {
                 return "$value/$core";
             },
-            $this->getSolrBaseUrls($config)
+            $this->getSolrBaseUrls()
         );
         return count($urls) === 1 ? $urls[0] : $urls;
     }
