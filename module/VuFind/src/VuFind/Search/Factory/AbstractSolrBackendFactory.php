@@ -211,7 +211,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      *
      * @return string[]
      */
-    protected function getIndexConfigFallbackPath(): array
+    protected function getPrioritizedConfigsForIndexSettings(): array
     {
         return array_unique([$this->searchConfig, $this->mainConfig]);
     }
@@ -226,7 +226,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     {
         if (null === $this->mergedIndexConfig) {
             $this->mergedIndexConfig = [];
-            foreach ($this->getIndexConfigFallbackPath() as $configName) {
+            foreach ($this->getPrioritizedConfigsForIndexSettings() as $configName) {
                 $config = $this->config->get($configName);
                 $this->mergedIndexConfig += isset($config->Index)
                     ? $config->Index->toArray() : [];
@@ -243,8 +243,8 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      */
     protected function getFlatIndexConfig(): array
     {
-        $fallbackPath = $this->getIndexConfigFallbackPath();
-        $configObj = $this->config->get($fallbackPath[0]);
+        $configList = $this->getPrioritizedConfigsForIndexSettings();
+        $configObj = $this->config->get($configList[0]);
         return isset($configObj->Index)
             ? $configObj->Index->toArray() : [];
     }
