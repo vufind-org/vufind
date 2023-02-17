@@ -1310,6 +1310,10 @@ class Folio extends AbstractAPI implements
             'requestExpirationDate' => $requiredBy,
             'pickupServicePointId' => $holdDetails['pickUpLocation']
         ];
+        if (!empty($holdDetails['proxiedUser'])) {
+            $requestBody['requesterId'] = $holdDetails['proxiedUser'];
+            $requestBody['proxyUserId'] = $holdDetails['patron']['id'];
+        }
         if (!empty($holdDetails['comment'])) {
             $requestBody['patronComments'] = $holdDetails['comment'];
         }
