@@ -2025,6 +2025,11 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             ];
         }
 
+        // Proxy requests don't show up in the user's account, so if they're
+        // using a proxy, we should stop before we add anything to the session.
+        if (!empty($holdDetails['proxiedUser'])) {
+            return ['success' => true];
+        }
         $session = $this->getSession($holdDetails['patron']['id'] ?? null);
         if (!isset($session->holds)) {
             $session->holds = new ArrayObject();
