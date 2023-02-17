@@ -48,7 +48,7 @@ class SolrWebBackendFactory extends AbstractSolrBackendFactory
         $this->searchConfig = 'website';
         $this->searchYaml = 'websearchspecs.yaml';
         $this->facetConfig = 'website';
-        $this->solrCore = 'website';
+        $this->defaultIndexName = 'website';
     }
 
     /**

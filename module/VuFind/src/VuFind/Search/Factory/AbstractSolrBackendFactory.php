@@ -108,27 +108,29 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     protected $config;
 
     /**
-     * Name of index configuration setting to use to retrieve Solr core name.
+     * Name of index configuration setting to use to retrieve Solr index name
+     * (core or collection).
      *
      * @var string
      */
-    protected $coreSetting = 'default_core';
+    protected $indexNameSetting = 'default_core';
 
     /**
-     * Solr core (used as default if default_core is unset in the config)
+     * Solr index name (used as default if $this->indexNameSetting is unset in
+     * the config).
      *
      * @var string
      */
-    protected $solrCore = '';
+    protected $defaultIndexName = '';
 
     /**
-     * When looking up the Solr core config setting, should we allow fallback
+     * When looking up the Solr index name config setting, should we allow fallback
      * into the main configuration (true), or limit ourselves to the search
      * config (false)?
      *
      * @var bool
      */
-    protected $allowFallbackForSolrCore = false;
+    protected $allowFallbackForIndexName = false;
 
     /**
      * Solr field used to store unique identifiers
@@ -394,21 +396,21 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Get the Solr core.
+     * Get the name of the Solr index (core or collection).
      *
      * @return string
      */
-    protected function getSolrCore()
+    protected function getIndexName()
     {
         return $this->getIndexConfig(
-            $this->coreSetting,
-            $this->solrCore,
-            $this->allowFallbackForSolrCore
+            $this->indexNameSetting,
+            $this->defaultIndexName,
+            $this->allowFallbackForIndexName
         );
     }
 
     /**
-     * Get the Solr base URL(s) (without the core path)
+     * Get the Solr base URL(s) (without the path to the specific index)
      *
      * @return string[]
      */
@@ -419,16 +421,16 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Get the full Solr URL(s) (including core path).
+     * Get the full Solr URL(s) (including index path part).
      *
      * @return string|array
      */
     protected function getSolrUrl()
     {
-        $core = $this->getSolrCore();
+        $indexName = $this->getIndexName();
         $urls = array_map(
-            function ($value) use ($core) {
-                return "$value/$core";
+            function ($value) use ($indexName) {
+                return "$value/$indexName";
             },
             $this->getSolrBaseUrls()
         );

@@ -48,8 +48,8 @@ class SolrDefaultBackendFactory extends AbstractSolrBackendFactory
         $this->searchConfig = 'searches';
         $this->searchYaml = 'searchspecs.yaml';
         $this->facetConfig = 'facets';
-        $this->solrCore = 'biblio';
-        $this->allowFallbackForSolrCore = true;
+        $this->defaultIndexName = 'biblio';
+        $this->allowFallbackForIndexName = true;
     }
 
     /**

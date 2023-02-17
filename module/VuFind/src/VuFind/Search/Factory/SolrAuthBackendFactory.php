@@ -48,9 +48,9 @@ class SolrAuthBackendFactory extends AbstractSolrBackendFactory
         $this->searchConfig = 'authority';
         $this->searchYaml = 'authsearchspecs.yaml';
         $this->facetConfig = 'authority';
-        $this->coreSetting = 'default_authority_core';
-        $this->solrCore = 'authority';
-        $this->allowFallbackForSolrCore = true;
+        $this->indexNameSetting = 'default_authority_core';
+        $this->defaultIndexName = 'authority';
+        $this->allowFallbackForIndexName = true;
     }
 
     /**
