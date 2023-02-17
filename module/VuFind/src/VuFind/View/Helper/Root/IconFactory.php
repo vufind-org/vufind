@@ -69,7 +69,8 @@ class IconFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $config = $container->get(\VuFindTheme\ThemeInfo::class)
-            ->getMergedConfig('icons', true);
+            ->getMergedConfig('icons');
+
         // As of release 1.1.0, the memory storage adapter has a flaw which can cause
         // unnecessary out of memory exceptions when a memory limit is enabled; we
         // can disable these problematic checks by setting memory_limit to -1.

@@ -128,7 +128,7 @@
         if ($.isReady) {
             setUpHoldRequestForm("{$this->escapeHtml($this->driver->getUniqueId())}");
         } else {
-            $(document).ready(function(){
+            $(document).ready(function() {
                 setUpHoldRequestForm("{$this->escapeHtml($this->driver->getUniqueId())}");
             });
         }

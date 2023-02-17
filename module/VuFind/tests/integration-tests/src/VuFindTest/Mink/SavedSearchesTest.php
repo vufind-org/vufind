@@ -173,14 +173,14 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         // different problems in a single test.
         $page = $this->performSearch('foo \ bar');
         $this->findAndAssertLink($page, 'Search History')->click();
-        // We should see our "foo \ bar" search in the history, but no saved
-        // searches because we are logged out:
+        // We should see our "foo \ bar" search in the history, and a login link
+        // under saved searches because we are logged out:
         $this->assertEquals(
             'foo \ bar',
             $this->findAndAssertLink($page, 'foo \ bar')->getText()
         );
-        $this->assertFalse(
-            $this->hasElementsMatchingText($page, 'h2', 'Saved Searches')
+        $this->assertTrue(
+            $this->hasElementsMatchingText($page, 'a', 'log in')
         );
         $this->waitForPageLoad($page);
         $this->assertNull($page->findLink('test'));
@@ -194,6 +194,11 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals(
             'foo \ bar',
             $this->findAndAssertLink($page, 'foo \ bar')->getText()
+        );
+        // Make sure we see a Saved Searches header WITHOUT a log in link to ensure
+        // saved searches are actually displaying:
+        $this->assertFalse(
+            $this->hasElementsMatchingText($page, 'a', 'log in')
         );
         $this->assertTrue(
             $this->hasElementsMatchingText($page, 'h2', 'Saved Searches')
@@ -254,6 +259,11 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->submitLoginForm($page);
         $this->waitForPageLoad($page);
+        // Make sure we see a Saved Searches header WITHOUT a log in link to ensure
+        // saved searches are actually displaying:
+        $this->assertFalse(
+            $this->hasElementsMatchingText($page, 'a', 'log in')
+        );
         $this->assertTrue(
             $this->hasElementsMatchingText($page, 'h2', 'Saved Searches')
         );
