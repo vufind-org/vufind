@@ -423,11 +423,11 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testAvailbleItemGetMyHolds(): void
+    public function testAvailableItemGetMyHolds(): void
     {
         $this->createConnector('get-my-holds-available');
         $patron = [
-            'id' => 'foo'
+            'id' => '162c474e-ca1f-4310-b233-7ad3a2ad8c34'
         ];
         $result = $this->driver->getMyHolds($patron);
         $expected[0] = [
@@ -455,7 +455,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     {
         $this->createConnector('get-my-holds-in_transit');
         $patron = [
-            'id' => 'foo'
+            'id' => '162c474e-ca1f-4310-b233-7ad3a2ad8c34'
         ];
         $result = $this->driver->getMyHolds($patron);
         $expected[0] = [
@@ -483,7 +483,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     {
         $this->createConnector('get-my-holds-single');
         $patron = [
-            'id' => 'foo'
+            'id' => '162c474e-ca1f-4310-b233-7ad3a2ad8c34'
         ];
         $result = $this->driver->getMyHolds($patron);
         $expected[0] = [

@@ -1398,7 +1398,7 @@ class Folio extends AbstractAPI implements
 
             // confirm request belongs to signed in patron
             if ($request_json->requesterId != $patron['id']
-                && $request_json->proxyUserId != $patron['id']
+                && ($request_json->proxyUserId ?? null) != $patron['id']
             ) {
                 throw new ILSException("Invalid Request");
             }
