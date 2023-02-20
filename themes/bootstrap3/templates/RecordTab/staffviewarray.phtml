@@ -7,11 +7,7 @@
   <?php foreach ($rawData as $field => $values): ?>
     <tr>
       <th><?=$this->escapeHtml($field)?></th>
-      <td>
-        <?php foreach ((array)$values as $value): ?>
-          <?=$this->escapeHtml(is_array($value) ? print_r($value, true) : $value)?><br />
-        <?php endforeach; ?>
-      </td>
+      <td><?=$this->printArrayHtml($values)?></td>
     </tr>
   <?php endforeach; ?>
 </table>
