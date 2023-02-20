@@ -1400,7 +1400,9 @@ class Folio extends AbstractAPI implements
             $request_json = json_decode($response->getBody());
 
             // confirm request belongs to signed in patron
-            if ($request_json->requesterId != $patron['id']) {
+            if ($request_json->requesterId != $patron['id']
+                && $request_json->proxyUserId != $patron['id']
+            ) {
                 throw new ILSException("Invalid Request");
             }
             // Change status to Closed and add cancellationID

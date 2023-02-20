@@ -186,13 +186,15 @@ trait HoldsTrait
 
                 // Success: Go to Display Holds
                 if (isset($results['success']) && $results['success'] == true) {
-                    $msg = empty($gatheredDetails['proxiedUser']) ? [
+                    $msg = [
                         'html' => true,
-                        'msg' => 'hold_place_success_html',
+                        'msg' => empty($gatheredDetails['proxiedUser'])
+                            ? 'hold_place_success_html'
+                            : 'proxy_hold_place_success_html',
                         'tokens' => [
                             '%%url%%' => $this->url()->fromRoute('holds-list')
                         ],
-                    ] : 'proxy_hold_place_success';
+                    ];
                     $this->flashMessenger()->addMessage($msg, 'success');
                     if (!empty($results['warningMessage'])) {
                         $this->flashMessenger()
