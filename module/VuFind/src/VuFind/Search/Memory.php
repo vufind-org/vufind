@@ -245,7 +245,7 @@ class Memory
     {
         $sid = $this->request->getQuery('sid')
             ?? $this->request->getPost('sid');
-        return $sid ?: null;
+        return intval($sid) ?: null;
     }
 
     /**
