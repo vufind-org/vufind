@@ -260,10 +260,23 @@ footer {
 }
 
 /* ------ Cart ------ */
-.cart-controls .checkbox {
-  line-height: 2.5rem;
-  padding-right: 1rem;
+.cart-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  align-items: center;
 }
+.cart-controls .checkbox {
+  padding-right: 1rem;
+  padding-bottom: 0.25rem;
+}
+.cart-controls .toolbar-btn {
+  &:extend(.toolbar-btn);
+  &:extend(.icon-link);
+
+  margin: 0;
+}
+
 .nav .btn-bookbag-toggle { float: left; }
 .nav .btn-bookbag-toggle a {
   display: block;
