@@ -145,6 +145,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         'd' => 'In Process',
         '-' => 'On Shelf',
         'Charged' => 'Charged',
+        'Ordered' => 'Ordered',
     ];
 
     /**
@@ -1908,10 +1909,22 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      */
     protected function getItemStatusesForBib($id, $checkHoldings)
     {
+        $bibFields = 'bibLevel';
         // If we need to look at bib call numbers, retrieve varFields:
-        $bibFields = empty($this->config['CallNumber']['bib_fields'])
-            ? 'bibLevel' : 'bibLevel,varFields';
+        if (!empty($this->config['CallNumber']['bib_fields'])) {
+            $bibFields .= ',varFields';
+        }
+        // Retrieve orders if needed:
+        if (!empty($this->config['Holdings']['display_orders'])) {
+            $bibFields .= ',orders';
+        }
         $bib = $this->getBibRecord($id, $bibFields);
+        $bibCallNumber = $this->getBibCallNumber($bib);
+        $orders = [];
+        foreach ($bib['orders'] ?? [] as $order) {
+            $location = $order['location']['code'];
+            $orders[$location][] = $order;
+        }
         $holdingsData = [];
         if ($checkHoldings && $this->apiVersion >= 5.1) {
             $holdingsResult = $this->makeRequest(
@@ -1924,22 +1937,20 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 ],
                 'GET'
             );
-            if (!empty($holdingsResult['entries'])) {
-                foreach ($holdingsResult['entries'] as $entry) {
-                    $location = '';
-                    foreach ($entry['fixedFields'] as $code => $field) {
-                        if ($code === static::HOLDINGS_LINE_NUMBER
-                            || $field['label'] === 'LOCATION'
-                        ) {
-                            $location = $field['value'];
-                            break;
-                        }
+            foreach ($holdingsResult['entries'] ?? [] as $entry) {
+                $location = '';
+                foreach ($entry['fixedFields'] as $code => $field) {
+                    if ($code === static::HOLDINGS_LINE_NUMBER
+                        || $field['label'] === 'LOCATION'
+                    ) {
+                        $location = $field['value'];
+                        break;
                     }
-                    if ('' === $location) {
-                        continue;
-                    }
-                    $holdingsData[$location][] = $entry;
                 }
+                if ('' === $location) {
+                    continue;
+                }
+                $holdingsData[$location][] = $entry;
             }
         }
 
@@ -1970,7 +1981,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                     }
                     throw new ILSException($msg);
                 }
-                return $statuses;
+                break;
             }
 
             foreach ($result['entries'] as $item) {
@@ -1999,7 +2010,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                     'reserve' => 'N',
                     'callnumber' => isset($item['callNumber'])
                         ? preg_replace('/^\|a/', '', $item['callNumber'])
-                        : $this->getBibCallNumber($bib),
+                        : $bibCallNumber,
                     'duedate' => $duedate,
                     'number' => $volume,
                     'barcode' => $item['barcode'],
@@ -2060,8 +2071,55 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             $statuses[] = $entry;
         }
 
+        // Add orders
+        foreach ($orders as $locationCode => $orderSet) {
+            $location = $this->translateLocation($orderSet[0]['location']);
+            $statuses[] = [
+                'id' => $id,
+                'item_id' => "ORDER_{$id}_$locationCode",
+                'location' => $location,
+                'callnumber' => $bibCallNumber,
+                'number' => '',
+                'status' => $this->mapStatusCode('Ordered'),
+                'reserve' => 'N',
+                'item_notes' => $this->getOrderMessages($orderSet),
+                'availability' => false,
+                'duedate' => '',
+                'barcode' => '',
+                'sort' => $sort--
+            ];
+        }
+
         usort($statuses, [$this, 'statusSortFunction']);
         return $statuses;
+    }
+
+    /**
+     * Get textual messages for orders
+     *
+     * @param array $orders Orders
+     *
+     * @return array
+     */
+    protected function getOrderMessages(array $orders): array
+    {
+        $messages = [];
+        foreach ($orders as $order) {
+            $messages[] = $this->translate(
+                [
+                    'HoldingStatus',
+                    ($order['copies'] === 1 ? 'copy' : 'copies') . '_ordered_on_date'
+                ],
+                [
+                    '%%copies%%' => $order['copies'],
+                    '%%date%%' => $this->dateConverter->convertToDisplayDate(
+                        'Y-m-d',
+                        $order['date']
+                    ),
+                ]
+            );
+        }
+        return $messages;
     }
 
     /**
@@ -2305,7 +2363,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         // item is out. Use duedate to check if it's actually checked out.
         if (isset($item['status']['duedate'])) {
             $duedate = $this->dateConverter->convertToDisplayDate(
-                \DateTime::ISO8601,
+                \DateTime::ATOM,
                 $item['status']['duedate']
             );
             $status = $this->mapStatusCode('Charged');
@@ -2324,7 +2382,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             $today = $this->dateConverter->convertToDisplayDate('U', time());
             if (isset($item['fixedFields']['68'])) {
                 $checkedIn = $this->dateConverter->convertToDisplayDate(
-                    \DateTime::ISO8601,
+                    \DateTime::ATOM,
                     $item['fixedFields']['68']['value']
                 );
                 if ($checkedIn == $today) {
@@ -2501,7 +2559,9 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     }
 
     /**
-     * Fetch a bib record from Sierra
+     * Fetch fields for a bib record from Sierra
+     *
+     * Note: This method can return cached data
      *
      * @param int    $id     Bib record id
      * @param string $fields Fields to request
@@ -2511,12 +2571,34 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      */
     protected function getBibRecord($id, $fields, $patron = false)
     {
-        return $this->makeRequest(
+        $cacheId = "bib|$id";
+        $fieldsArray = explode(',', $fields);
+        if ($cached = $this->getCachedData($cacheId)) {
+            if (!array_diff($fieldsArray, $cached['fields'])) {
+                // We already have all required fields cached:
+                return $cached['data'];
+            }
+        } else {
+            $cached = [
+                'fields' => [],
+                'data' => [],
+            ];
+        }
+        // Fetch requested fields as well as any cached fields to keep everything in
+        // sync:
+        $allFields = [...$fieldsArray, ...$cached['fields']];
+        $result = $this->makeRequest(
             [$this->apiBase, 'bibs', $this->extractBibId($id)],
-            ['fields' => $fields],
+            ['fields' => implode(',', $allFields)],
             'GET',
             $patron
         );
+        if (null !== $result) {
+            $cached['fields'] = $allFields;
+            $cached['data'] = $result;
+            $this->putCachedData($cacheId, $cached, 300);
+        }
+        return $result;
     }
 
     /**
