@@ -167,7 +167,8 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
             $finalUrl
                 = $this->getActionUrl("{$source}|" . $url['record'], $url['action']);
             if (isset($url['query'])) {
-                $finalUrl .= '?' . $url['query'];
+                $connector = strpos($finalUrl, '?') !== false ? '&' : '?';
+                $finalUrl .= $connector . $url['query'];
             }
             if (isset($url['anchor']) && $includeAnchor) {
                 $finalUrl .= $url['anchor'];
