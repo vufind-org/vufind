@@ -168,6 +168,12 @@
                 <strong><?=$this->transEsc('hold_expires') ?>:</strong> <?=$this->escapeHtml($ilsDetails['expire']) ?>
               <?php endif; ?>
               <br />
+              <?php if (!empty($ilsDetails['proxiedBy'])): ?>
+                <strong><?=$this->transEsc('hold_proxied_by')?>:</strong> <?=$this->escapeHtml($ilsDetails['proxiedBy'])?><br />
+              <?php endif; ?>
+              <?php if (!empty($ilsDetails['proxiedFor'])): ?>
+                <strong><?=$this->transEsc('hold_proxied_for')?>:</strong> <?=$this->escapeHtml($ilsDetails['proxiedFor'])?><br />
+              <?php endif; ?>
 
               <?php if (isset($ilsDetails['available']) && $ilsDetails['available'] == true): ?>
                 <div class="text-success">

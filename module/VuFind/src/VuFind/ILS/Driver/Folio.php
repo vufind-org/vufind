@@ -1205,8 +1205,10 @@ class Folio extends AbstractAPI implements
      */
     public function getMyHolds($patron)
     {
+        $baseCondition = '(requesterId == "' . $patron['id'] . '"'
+            . 'or proxyUserId == "' . $patron['id'] . '")';
         $query = [
-            'query' => '(requesterId == "' . $patron['id'] . '"  ' .
+            'query' => '(' . $baseCondition . ' ' .
             'and status == Open*)'
         ];
         $holds = [];
@@ -1233,8 +1235,7 @@ class Folio extends AbstractAPI implements
                     $hold->holdShelfExpirationDate
                 )
                 : null;
-
-            $holds[] = [
+            $currentHold = [
                 'type' => $hold->requestType,
                 'create' => $requestDate,
                 'expire' => $expireDate ?? "",
@@ -1260,6 +1261,20 @@ class Folio extends AbstractAPI implements
                 'last_pickup_date' => $lastPickup,
                 'position' => $hold->position ?? null,
             ];
+            // Set proxy user information
+            if (($hold->proxyUserId ?? null) !== $patron['id']
+                && isset($hold->proxy)
+            ) {
+                $currentHold['proxiedBy']
+                    = $this->userObjectToNameString($hold->proxy);
+            }
+            if (($hold->requesterId ?? null) !== $patron['id']
+                && isset($hold->requester)
+            ) {
+                $currentHold['proxiedFor']
+                    = $this->userObjectToNameString($hold->requester);
+            }
+            $holds[] = $currentHold;
         }
         return $holds;
     }
@@ -1639,6 +1654,24 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Given a user object from the FOLIO API, return a name string.
+     *
+     * @param object $user User object
+     *
+     * @return string
+     */
+    protected function userObjectToNameString(object $user): string
+    {
+        $firstParts = ($user->firstName ?? '')
+            . ' ' . ($user->middleName ?? '');
+        $parts = [
+            trim($user->lastName ?? ''),
+            trim($firstParts)
+        ];
+        return implode(', ', array_filter($parts));
+    }
+
+    /**
      * Given a user object returned by getUserById(), return a string representing
      * the user's name.
      *
@@ -1648,13 +1681,7 @@ class Folio extends AbstractAPI implements
      */
     protected function formatUserNameForProxyList(object $proxy): string
     {
-        $firstParts = ($proxy->personal->firstName ?? '')
-            . ' ' . ($proxy->personal->middleName ?? '');
-        $parts = [
-            trim($proxy->personal->lastName ?? ''),
-            trim($firstParts)
-        ];
-        return implode(', ', array_filter($parts));
+        return $this->userObjectToNameString($proxy->personal);
     }
 
     /**
