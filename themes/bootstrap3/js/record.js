@@ -211,6 +211,7 @@ ajaxLoadTab = function ajaxLoadTabReal($newTab, tabid, setHash, tabUrl) {
   } else {
     url = VuFind.path + getUrlRoot(document.URL) + '/AjaxTab';
     postData.tab = tabid;
+    postData.sid = VuFind.getCurrentSearchId();
   }
   $.ajax({
     url: url,

@@ -294,15 +294,35 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Get query string for the current page
      *
+     * @param bool $excludeSid Whether to remove any sid from the query string
+     *
      * @return string
      */
-    protected function getCurrentQueryString(): string
+    protected function getCurrentQueryString(bool $excludeSid = false): string
     {
         return str_replace(
             ['%5B', '%5D', '%7C'],
             ['[', ']', '|'],
-            parse_url($this->getMinkSession()->getCurrentUrl(), PHP_URL_QUERY)
+            parse_url(
+                $excludeSid ? $this->getCurrentUrlWithoutSid()
+                    : $this->getMinkSession()->getCurrentUrl(),
+                PHP_URL_QUERY
+            )
         );
+    }
+
+    /**
+     * Get current URL without any sid parameter in the query string
+     *
+     * @return string
+     */
+    protected function getCurrentUrlWithoutSid(): string
+    {
+        $this->getMinkSession();
+        $url = $this->getMinkSession()->getCurrentUrl();
+        $url = preg_replace('/([&?])sid=[^&]*&?/', '$1', $url);
+        $url = rtrim($url, '?&');
+        return $url;
     }
 
     /**

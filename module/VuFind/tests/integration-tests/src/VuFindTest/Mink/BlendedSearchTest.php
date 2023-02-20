@@ -123,7 +123,15 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
     public function testSearch(array $queryParams, array $expectedLabels): void
     {
         $this->changeConfigs(
-            ['Blender' => $this->getBlenderIniOverrides()],
+            [
+                'config' => [
+                    'SearchTabs' => [
+                        'Solr' => 'Catalog',
+                        'Blender' => 'Blended',
+                    ]
+                ],
+                'Blender' => $this->getBlenderIniOverrides()
+            ],
             ['Blender']
         );
 
@@ -148,6 +156,14 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
                 "Result index $i"
             );
         }
+
+        // Go to record screen and check active tab:
+        $this->clickCss($page, '#result0 .title');
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            'Blended',
+            $this->findCss($page, '.searchbox li.active')->getText()
+        );
     }
 
     /**
