@@ -2108,7 +2108,9 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             $messages[] = $this->translate(
                 [
                     'HoldingStatus',
-                    ($order['copies'] === 1 ? 'copy' : 'copies') . '_ordered_on_date'
+                    1 === $order['copies']
+                        ? 'copy_ordered_on_date'
+                        : 'copies_ordered_on_date'
                 ],
                 [
                     '%%copies%%' => $order['copies'],
@@ -2586,7 +2588,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         }
         // Fetch requested fields as well as any cached fields to keep everything in
         // sync:
-        $allFields = [...$fieldsArray, ...$cached['fields']];
+        $allFields = array_unique([...$fieldsArray, ...$cached['fields']]);
         $result = $this->makeRequest(
             [$this->apiBase, 'bibs', $this->extractBibId($id)],
             ['fields' => implode(',', $allFields)],
