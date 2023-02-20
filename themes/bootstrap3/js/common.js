@@ -245,6 +245,11 @@ var VuFind = (function VuFind() {
     return Boolean(window.location.search.match(/[?&]print=/));
   };
 
+  var getCurrentSearchId = function getCurrentSearchId() {
+    var match = location.href.match(/[&?]sid=(\d+)/);
+    return match ? match[1] : '';
+  };
+
   //Reveal
   return {
     defaultSearchBackend: defaultSearchBackend,
@@ -266,7 +271,8 @@ var VuFind = (function VuFind() {
     loadHtml: loadHtml,
     loading: loading,
     translate: translate,
-    updateCspNonce: updateCspNonce
+    updateCspNonce: updateCspNonce,
+    getCurrentSearchId: getCurrentSearchId
   };
 })();
 

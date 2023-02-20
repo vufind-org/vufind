@@ -12,7 +12,7 @@
       <div class="record-number">
         <?=$recordNumber ?>
       </div>
-      <?=$this->record($current)->getSearchResult('list')?>
+      <?=$this->record($current)->getSearchResult('list', $this->results)?>
     </li>
   <?php endforeach; ?>
 </ol>
