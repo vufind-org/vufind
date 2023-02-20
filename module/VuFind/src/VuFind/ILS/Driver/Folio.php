@@ -1205,12 +1205,9 @@ class Folio extends AbstractAPI implements
      */
     public function getMyHolds($patron)
     {
-        $baseCondition = '(requesterId == "' . $patron['id'] . '"'
+        $userQuery = '(requesterId == "' . $patron['id'] . '"'
             . 'or proxyUserId == "' . $patron['id'] . '")';
-        $query = [
-            'query' => '(' . $baseCondition . ' ' .
-            'and status == Open*)'
-        ];
+        $query = ['query' => '(' . $userQuery . ' and status == Open*)'];
         $holds = [];
         foreach ($this->getPagedResults(
             'requests',
