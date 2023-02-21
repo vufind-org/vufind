@@ -58,14 +58,14 @@
         <?php if ($saveSupported): ?>
           <td class="history_actions">
             <?php if ($this->showSaved): ?>
-              <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($info->getSearchId())?>&amp;mode=history" class="text-danger">
-                <?=$this->icon('search-delete') ?>
-                <?=$this->transEsc("history_delete_link")?>
+              <a class="icon-link text-danger" href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($info->getSearchId())?>&amp;mode=history">
+                <?=$this->icon('search-delete', 'icon-link__icon') ?>
+                <span class="icon-link__label"><?=$this->transEsc("history_delete_link")?></span>
               </a>
             <?php else: ?>
-              <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($info->getSearchId())?>&amp;mode=history">
-                <?=$this->icon('search-save') ?>
-                <?=$this->transEsc("history_save_link")?>
+              <a class="icon-link" href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($info->getSearchId())?>&amp;mode=history">
+                <?=$this->icon('search-save', 'icon-link__icon') ?>
+                <span class="icon-link__label"><?=$this->transEsc("history_save_link")?></span>
               </a>
             <?php endif; ?>
           </td>
