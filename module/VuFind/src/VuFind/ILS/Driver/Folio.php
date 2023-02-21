@@ -1260,7 +1260,7 @@ class Folio extends AbstractAPI implements
             ];
             // If this request was created by a proxy user, and the proxy user
             // is not the current user, we need to indicate their name.
-            if (($hold->proxyUserId ?? null) !== $patron['id']
+            if (($hold->proxyUserId ?? $patron['id']) !== $patron['id']
                 && isset($hold->proxy)
             ) {
                 $currentHold['proxiedBy']
@@ -1268,7 +1268,7 @@ class Folio extends AbstractAPI implements
             }
             // If this request was not created for the current user, it must be
             // a proxy request created by the current user. We should indicate this.
-            if (($hold->requesterId ?? null) !== $patron['id']
+            if (($hold->requesterId ?? $patron['id']) !== $patron['id']
                 && isset($hold->requester)
             ) {
                 $currentHold['proxiedFor']
