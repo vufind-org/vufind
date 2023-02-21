@@ -1258,13 +1258,16 @@ class Folio extends AbstractAPI implements
                 'last_pickup_date' => $lastPickup,
                 'position' => $hold->position ?? null,
             ];
-            // Set proxy user information
+            // If this request was created by a proxy user, and the proxy user
+            // is not the current user, we need to indicate their name.
             if (($hold->proxyUserId ?? null) !== $patron['id']
                 && isset($hold->proxy)
             ) {
                 $currentHold['proxiedBy']
                     = $this->userObjectToNameString($hold->proxy);
             }
+            // If this request was not created for the current user, it must be
+            // a proxy request created by the current user. We should indicate this.
             if (($hold->requesterId ?? null) !== $patron['id']
                 && isset($hold->requester)
             ) {
