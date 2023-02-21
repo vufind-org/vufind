@@ -156,7 +156,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     public function testTokens(): void
     {
         $this->createConnector('get-tokens'); // saves to $this->driver
-        $profile = $this->driver->getMyProfile(['id' => 'whatever']);
+        $this->driver->getMyProfile(['id' => 'whatever']);
         // Get token
         // - Right URL
         $this->assertEquals('/authn/login', $this->testRequestLog[0]['path']);
@@ -442,6 +442,35 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'in_transit' => false,
             'last_pickup_date' => '12-29-2022',
             'position' => 1
+        ];
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Test successful call to holds, one available item placed for a proxy
+     *
+     * @return void
+     */
+    public function testAvailableProxyItemGetMyHolds(): void
+    {
+        $this->createConnector('get-my-holds-available');
+        $patron = [
+            'id' => 'foo'
+        ];
+        $result = $this->driver->getMyHolds($patron);
+        $expected[0] = [
+            'type' => 'Page',
+            'create' => '12-20-2022',
+            'expire' => '',
+            'id' => '3311d5df-731f-4e2c-8000-00960a9d8bf7',
+            'item_id' => 'fc0064b4-e2e4-4be0-8251-7ca93282c9b4',
+            'reqnum' => 'c5a8af9d-9877-453c-bbcb-f63cb5ccb3b4',
+            'title' => 'Presentation secrets : do what you never thought possible with your presentations ',
+            'available' => true,
+            'in_transit' => false,
+            'last_pickup_date' => '12-29-2022',
+            'position' => 1,
+            'proxiedFor' => 'TestuserJohn, John',
         ];
         $this->assertEquals($expected, $result);
     }
