@@ -464,6 +464,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         $locationhref = ($location === 'Campus A') ? 'http://campus-a' : false;
         $result = [
             'id'           => $id,
+            'record_id'    => $id, // for hold links to not rely on id from route
             'source'       => $this->getRecordSource(),
             'item_id'      => $number,
             'number'       => $number,
@@ -2070,7 +2071,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         }
         $session->holds->append(
             [
-                'id'       => $holdDetails['id'],
+                'id'       => $holdDetails['record_id'],
                 'source'   => $this->getRecordSource(),
                 'location' => $holdDetails['pickUpLocation'],
                 'expire'   =>
@@ -2549,7 +2550,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         if ($function == 'Holds') {
             return $this->config['Holds']
                 ?? [
-                    'HMACKeys' => 'id:item_id:level',
+                    'HMACKeys' => 'record_id:item_id:level',
                     'extraHoldFields' =>
                         'comments:requestGroup:pickUpLocation:requiredByDate',
                     'defaultRequiredDate' => 'driver:0:2:0',

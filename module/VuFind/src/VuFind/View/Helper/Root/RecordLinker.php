@@ -134,12 +134,13 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
      *
      * @param AbstractRecord|string $driver Record driver representing record to link
      * to, or source|id pipe-delimited string
-     * @param string                $action Record
-     * action to access
+     * @param string                $action Record action to access
+     * @param array                 $query  Optional query parameters
+     * @param string                $anchor Optional anchor
      *
      * @return string
      */
-    public function getActionUrl($driver, $action)
+    public function getActionUrl($driver, $action, $query = [], $anchor = '')
     {
         // Build the URL:
         $urlHelper = $this->getView()->plugin('url');
@@ -147,7 +148,11 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
         return $urlHelper(
             $details['route'],
             $details['params'] ?: [],
-            ['query' => $this->getRecordUrlParams()]
+            [
+                'query' => $this->getRecordUrlParams() + $query,
+                'fragment' => ltrim('#', $anchor),
+                'normalize_path' => false, // required to keep slashes encoded
+            ]
         );
     }
 
@@ -164,14 +169,13 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
         if (is_array($url)) {
             // Assemble URL string from array parts:
             $source = $url['source'] ?? DEFAULT_SEARCH_BACKEND;
-            $finalUrl
-                = $this->getActionUrl("{$source}|" . $url['record'], $url['action']);
-            if (isset($url['query'])) {
-                $finalUrl .= '?' . $url['query'];
-            }
-            if (isset($url['anchor']) && $includeAnchor) {
-                $finalUrl .= $url['anchor'];
-            }
+            parse_str($url['query'] ?? '', $query);
+            $finalUrl = $this->getActionUrl(
+                "{$source}|" . $url['record'],
+                $url['action'],
+                $query,
+                $includeAnchor ? ($url['anchor'] ?? '') : ''
+            );
         } else {
             // If URL is already a string but we don't want anchors, strip
             // the anchor now:

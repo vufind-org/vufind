@@ -104,7 +104,7 @@
         $advSearchQuery = $results ? ['edit' => $results->getSearchId()] : $hiddenFilters;
         $advSearchLink = $this->url($advSearch, [], ['query' => $advSearchQuery]);
       ?>
-      <a href="<?=$advSearchLink?>" class="btn btn-link" rel="nofollow"><?=$this->transEsc("Advanced")?></a>
+      <a href="<?=$advSearchLink?>" class="advanced-search-link btn btn-link" rel="nofollow"><?=$this->transEsc("Advanced")?></a>
     <?php endif; ?>
     <?php if ($geoUrl = $this->geocoords()->getSearchUrl($options)) : ?>
         <a href="<?=$geoUrl ?>" class="btn btn-link"><?=$this->transEsc('Geographic Search')?></a>
