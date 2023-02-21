@@ -213,6 +213,14 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     protected $checkFreezability = false;
 
     /**
+     * Number of retries in case an API request fails with a retryable error (see
+     * $retryableRequestExceptionPatterns below).
+     *
+     * @var int
+     */
+    protected $httpRetryCount = 2;
+
+    /**
      * Exception message regexp patterns for request errors that can be retried
      *
      * @var array
@@ -316,6 +324,10 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             if ($this->apiVersion < 5) {
                 $this->apiBase = 'v' . floor($this->apiVersion);
             }
+        }
+
+        if (null !== ($retries = $this->config['Catalog']['http_retries'] ?? null)) {
+            $this->httpRetryCount = (int)$retries;
         }
 
         $this->sortItemsByEnumChron
@@ -1524,10 +1536,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             $params,
             $method
         ): void {
-            $apiUrl = $this->config['Catalog']['host'];
-            foreach ($hierarchy as $value) {
-                $apiUrl .= '/' . urlencode($value);
-            }
+            $apiUrl = $this->getApiUrlFromHierarchy($hierarchy);
             $status = $exception
                 ? (' failed (' . $exception->getMessage() . ')')
                 : ' succeeded';
@@ -1559,7 +1568,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             },
             $statusCallback,
             [
-                'retryCount' => 2,
+                'retryCount' => $this->httpRetryCount,
                 'retryableExceptionCallback' => $retryableCallback,
             ]
         );
@@ -1603,12 +1612,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         }
 
         // Set up the request
-        $apiUrl = $this->config['Catalog']['host'];
-
-        // Add hierarchy
-        foreach ($hierarchy as $value) {
-            $apiUrl .= '/' . urlencode($value);
-        }
+        $apiUrl = $this->getApiUrlFromHierarchy($hierarchy);
 
         // Create proxy request
         $client = $this->createHttpClient($apiUrl);
@@ -1695,6 +1699,22 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 'statusCode' => $response->getStatusCode(),
                 'response' => $decodedResult
             ] : $decodedResult;
+    }
+
+    /**
+     * Build an API URL from a hierarchy array
+     *
+     * @param array $hierarchy Hierarchy
+     *
+     * @return string
+     */
+    protected function getApiUrlFromHierarchy(array $hierarchy): string
+    {
+        $url = $this->config['Catalog']['host'];
+        foreach ($hierarchy as $value) {
+            $url .= '/' . urlencode($value);
+        }
+        return $url;
     }
 
     /**
