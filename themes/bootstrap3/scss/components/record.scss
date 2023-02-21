@@ -17,6 +17,23 @@
   font-size: 14px;
 }
 
+.record__biblio-value a:not(.icon-link),
+.related__title {
+  display: inline-block;
+}
+.related__title .related__icon {
+  float: left;
+  margin-right: 0.25rem;
+  text-align: left;
+  line-height: 1.4;
+  background-position-x: left;
+
+  .rtl & {
+    margin-left: 0;
+    margin-right: 0.25rem;
+  }
+}
+
 .media-body h1 { margin-top: 0; }
 @media (max-width: 767px) {
   .record .media-left,

@@ -24,7 +24,7 @@ function checkRequestIsValid(element, requestType, icon = 'place-hold') {
       if (response.data.status) {
         $(element).removeClass('disabled')
           .attr('title', response.data.msg)
-          .html(VuFind.icon(icon) + VuFind.updateCspNonce(response.data.msg));
+          .html(VuFind.icon(icon) + '<span class="icon-link__label">' + VuFind.updateCspNonce(response.data.msg) + "</span>");
       } else {
         $(element).remove();
       }

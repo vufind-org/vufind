@@ -67,22 +67,22 @@
           <div class="pull-right">
             <?php if ($resource['checkout']->isReturnable): ?>
               <a
-                class="btn btn-primary returnTitle"
+                class="btn btn-primary icon-link returnTitle"
                 data-lightbox title="<?=$this->transEsc('od_but_return')?>"
                 href="<?=$this->url('overdrive-hold') . "?od_id=$od_id&rec_id=$rec_id&action=returnTitleConfirm"; ?>"
               >
-                <?=$this->icon('overdrive-return') ?>
-                <?=$this->transEsc('od_but_return')?>
+                <?=$this->icon('overdrive-return', 'icon-link__icon') ?>
+                <span class="icon-link__label"><?=$this->transEsc('od_but_return')?></span>
               </a>
             <?php endif;?>
 
             <a
-              class="btn btn-primary getTitle"
+              class="btn btn-primary icon-link getTitle"
               data-lightbox title="<?=$this->transEsc('od_but_gettitle')?>"
               href="<?=$this->url('overdrive-hold') . "?od_id=$od_id&rec_id=$rec_id&action=getTitleConfirm"; ?>"
             >
-              <?=$this->icon('overdrive-download') ?>
-              <?=$this->transEsc('od_but_gettitle')?>
+              <?=$this->icon('overdrive-download', 'icon-link__icon') ?>
+              <span class="icon-link__label"><?=$this->transEsc('od_but_gettitle')?></span>
             </a>
 
           </div>
@@ -142,12 +142,12 @@
 
                 <div class="pull-right">
                   <a
-                    class="btn btn-primary placehold"
+                    class="btn btn-primary icon-link placehold"
                     data-lightbox title="<?=$this->transEsc('request_place_text')?>"
                     href="<?=$this->url('overdrive-hold') . "?od_id=$od_id&rec_id=$rec_id&action=cancelHoldConfirm"; ?>"
                   >
-                    <?=$this->icon('ui-cancel') ?>
-                    <?=$this->transEsc('od_but_cancel_hold')?>
+                    <?=$this->icon('ui-cancel', 'icon-link__icon') ?>
+                    <span class="icon-link__label"><?=$this->transEsc('od_but_cancel_hold')?></span>
                   </a>
                 </div>
               </div>

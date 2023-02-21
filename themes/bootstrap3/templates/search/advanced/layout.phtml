@@ -88,10 +88,10 @@
           </select>
         </div>
       </div>
-      <span id="groupPlaceHolder" class="hidden">
-        <?=$this->icon('ui-add') ?>
-        <a href="#" role="button"><?= $this->transEsc('add_search_group') ?></a>
-      </span>
+      <a role="button" class="icon-link hidden" id="groupPlaceHolder" href="#">
+        <?=$this->icon('ui-add', 'icon-link__icon') ?>
+        <span class="icon-link__label"><?= $this->transEsc('add_search_group') ?></span>
+      </a>
       <?php /* fallback to a fixed set of search groups/fields if JavaScript is turned off */ ?>
       <div class="no-js">
         <?php if (!empty($this->formOverride)): ?>
@@ -122,10 +122,13 @@
                   </div>
                   <?php if ($group == 0 && $search == 0): ?>
                     </div>
-                    <span class="float-left">
-                      <?=$this->icon('ui-add', 'search_place_holder hidden') ?>
-                      <a href="#" class="add_search_link hidden" role="button"><?=$this->transEsc("add_search")?></a>
-                    </span>
+                    <div class="float-left">
+                      <span class="search_place_holder hidden"></span>
+                      <a href="#" class="add_search_link icon-link hidden" role="button">
+                        <?=$this->icon('ui-add', 'icon-link__icon') ?>
+                        <span class="icon-link__label"><?=$this->transEsc("add_search")?></span>
+                      </a>
+                    </div>
                   <?php endif; ?>
                 <?php endfor; ?>
               </div>
@@ -206,7 +209,7 @@
 </div>
 <?php
 $script = <<<JS
-$('#groupPlaceHolder a').click(function(e) {
+$('#groupPlaceHolder').click(function(e) {
   addGroup(null, null, null, true);
   return false;
 })
