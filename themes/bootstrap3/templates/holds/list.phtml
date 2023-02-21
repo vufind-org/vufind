@@ -169,10 +169,10 @@
               <?php endif; ?>
               <br />
               <?php if (!empty($ilsDetails['proxiedBy'])): ?>
-                <strong><?=$this->transEsc('hold_proxied_by')?>:</strong> <?=$this->escapeHtml($ilsDetails['proxiedBy'])?><br />
+                <strong><?=$this->transEsc('hold_proxied_by')?>:</strong> <span class="hold-proxied-by"><?=$this->escapeHtml($ilsDetails['proxiedBy'])?></span><br />
               <?php endif; ?>
               <?php if (!empty($ilsDetails['proxiedFor'])): ?>
-                <strong><?=$this->transEsc('hold_proxied_for')?>:</strong> <?=$this->escapeHtml($ilsDetails['proxiedFor'])?><br />
+                <strong><?=$this->transEsc('hold_proxied_for')?>:</strong> <span class="hold-proxied-for"><?=$this->escapeHtml($ilsDetails['proxiedFor'])?></span><br />
               <?php endif; ?>
 
               <?php if (isset($ilsDetails['available']) && $ilsDetails['available'] == true): ?>
