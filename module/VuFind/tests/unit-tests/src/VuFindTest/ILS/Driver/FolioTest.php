@@ -678,4 +678,20 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         ];
         $this->assertEquals($expected, $result);
     }
+
+    /**
+     * Test the getProxiedUsers method.
+     *
+     * @return void
+     */
+    public function testGetProxiedUsers(): void
+    {
+        $this->createConnector('get-proxied-users');
+        $patron = [
+            'id' => 'foo'
+        ];
+        $result = $this->driver->getProxiedUsers($patron);
+        $expected = ['fakeid' => 'Lastname, Proxity P.'];
+        $this->assertEquals($expected, $result);
+    }
 }
