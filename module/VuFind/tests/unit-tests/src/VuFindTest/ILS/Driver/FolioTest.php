@@ -651,4 +651,31 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($this->callMethod($this->driver, "isHoldable", [0]));
         $this->assertFalse($this->callMethod($this->driver, "isHoldable", ["1"]));
     }
+
+    /**
+     * Test the getMyProfile method.
+     *
+     * @return void
+     */
+    public function testGetMyProfile(): void
+    {
+        $this->createConnector('get-my-profile');
+        $patron = [
+            'id' => 'foo'
+        ];
+        $result = $this->driver->getMyProfile($patron);
+        $expected = [
+            'id' => 'foo',
+            'firstname' => 'Test',
+            'lastname' => 'User',
+            'address1' => 'street',
+            'city' => 'city',
+            'country' => 'country',
+            'zip' => '12345',
+            'phone' => '0123456789',
+            'mobile_phone' => '1234567890',
+            'expiration_date' => '05-29-2030',
+        ];
+        $this->assertEquals($expected, $result);
+    }
 }
