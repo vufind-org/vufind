@@ -1,5 +1,6 @@
 <?php
-  $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $this->recordLinker()->getUrl($this->driver));
+  $recordLinker = $this->recordLinker($this->results);
+  $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $recordLinker->getUrl($this->driver));
   $cover = $coverDetails['html'];
   $thumbnail = false;
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
@@ -20,7 +21,7 @@
   <div class="media-body">
     <div class="result-body">
       <div>
-        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->driver))?>" class="title getFull" data-view="<?=isset($this->params) ? $this->params->getOptions()->getListViewOption() : 'list' ?>">
+        <a href="<?=$this->escapeHtmlAttr($recordLinker->getUrl($this->driver))?>" class="title getFull" data-view="<?=isset($this->params) ? $this->params->getOptions()->getListViewOption() : 'list' ?>">
           <?=$this->record($this->driver)->getTitleHtml()?>
         </a>
         <?php foreach ($this->driver->tryMethod('getTitlesAltScript', [], []) as $altTitle): ?>
@@ -37,7 +38,7 @@
           <?php $summAuthors = $this->driver->getPrimaryAuthorsWithHighlighting(); if (!empty($summAuthors)): ?>
             <?=$this->transEsc('by')?>
             <?php $authorCount = count($summAuthors); foreach ($summAuthors as $i => $summAuthor): ?>
-              <a href="<?=$this->record($this->driver)->getLink('author', $this->highlight($summAuthor, null, true, false))?>"><?=$this->highlight(rtrim($summAuthor, ','))?></a><?=$i + 1 < $authorCount ? ',' : ''?>
+              <a href="<?=$this->record($this->driver)->getLink('author', $this->highlight($summAuthor, null, true, false))?>" class="result-author"><?=$this->highlight(rtrim($summAuthor, ','))?></a><?=$i + 1 < $authorCount ? ',' : ''?>
             <?php endforeach; ?>
           <?php endif; ?>
 
@@ -48,7 +49,7 @@
             <?php $containerSource = $this->driver->getSourceIdentifier(); ?>
             <?php $containerID = $this->driver->getContainerRecordID(); ?>
             <?php /* TODO: handle highlighting more elegantly here: */?>
-            <a href="<?=($containerID ? $this->escapeHtmlAttr($this->recordLinker()->getUrl("$containerSource|$containerID")) : $this->record($this->driver)->getLink('journaltitle', str_replace(['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'], '', $journalTitle)))?>"><?=$this->highlight($journalTitle) ?></a>
+            <a href="<?=($containerID ? $this->escapeHtmlAttr($recordLinker->getUrl("$containerSource|$containerID")) : $this->record($this->driver)->getLink('journaltitle', str_replace(['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'], '', $journalTitle)))?>"><?=$this->highlight($journalTitle) ?></a>
             <?=!empty($summDate) ? ' (' . $this->escapeHtml($summDate[0]) . ')' : ''?>
           <?php elseif (!empty($summDate)): ?>
             <?=!empty($summAuthor) ? '<br />' : ''?>
@@ -86,14 +87,14 @@
           $i = 0;
           foreach ($dedupData as $source => $current) {
             if (++$i == 1) {
-              ?><span class="currentSource"><a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->driver))?>"><?=$this->transEsc("source_$source", [], $source)?></a></span><?php
+              ?><span class="currentSource"><a href="<?=$this->escapeHtmlAttr($recordLinker->getUrl($this->driver))?>"><?=$this->transEsc("source_$source", [], $source)?></a></span><?php
             } else {
               if ($i == 2) {
                 ?> <span class="otherSources">(<?=$this->transEsc('Other Sources')?>: <?php
               } else {
                 ?>, <?php
               }
-              ?><a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($current['id']))?>"><?=$this->transEsc("source_$source", [], $source)?></a><?php
+              ?><a href="<?=$this->escapeHtmlAttr($recordLinker->getUrl($current['id']))?>"><?=$this->transEsc("source_$source", [], $source)?></a><?php
             }
           }
           if ($i > 1) {
@@ -145,8 +146,10 @@
         <?php if (!is_array($urls)) $urls = [];
           if (!$this->driver->isCollection()):
             foreach ($urls as $current): ?>
-              <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new">
-                <?=$this->icon('external-link') ?> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a><br/>
+              <a class="fulltext icon-link" href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" target="new">
+                <?=$this->icon('external-link', 'icon-link__icon') ?>
+                <span class="icon-link__label"><?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></span>
+              </a><br/>
           <?php endforeach; ?>
         <?php endif; ?>
       <?php endif; ?>
@@ -174,7 +177,10 @@
           $this->jsTranslations()->addStrings(['qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show']);
         ?>
         <div class="hidden-xs">
-          <?=$this->icon('qrcode') ?> <a href="<?=$this->escapeHtmlAttr($QRCode);?>" class="qrcodeLink"><?=$this->transEsc('qrcode_show')?></a>
+          <a href="<?=$this->escapeHtmlAttr($QRCode);?>" class="qrcodeLink result-link icon-link">
+            <?=$this->icon('qrcode', 'icon-link__icon') ?>
+            <span class="icon-link__label"><?=$this->transEsc('qrcode_show')?></span>
+          </a>
           <div class="qrcode hidden">
             <script type="text/template" class="qrCodeImgTag">
               <img alt="<?=$this->transEscAttr('QR Code')?>" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
@@ -190,9 +196,9 @@
       <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
         <?php if ($this->permission()->allowDisplay('feature.Favorites')): ?>
           <?php /* Add to favorites */ ?>
-          <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Save'))?>" data-lightbox class="save-record" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>">
-            <?=$this->icon('user-favorites') ?>
-            <span class="result-link-label"><?=$this->transEsc('Add to favorites')?></span>
+          <a href="<?=$this->escapeHtmlAttr($recordLinker->getActionUrl($this->driver, 'Save'))?>" data-lightbox class="save-record result-link icon-link" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>">
+            <?=$this->icon('user-favorites', 'icon-link__icon') ?>
+            <span class="result-link-label icon-link__label"><?=$this->transEsc('Add to favorites')?></span>
           </a><br/>
         <?php elseif ($block = $this->permission()->getAlternateContent('feature.Favorites')): ?>
           <?=$block?>
@@ -208,9 +214,9 @@
         <?php foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
           <div class="hierarchyTreeLink">
             <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId" />
-            <?=$this->icon('tree-context') ?>
-            <a class="hierarchyTreeLinkText result-link-label" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, 'HierarchyTree', ['hierarchy' => $hierarchyID]))?>#tabnav" title="<?=$this->transEscAttr('hierarchy_tree')?>" data-lightbox-href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, 'AjaxTab', ['hierarchy' => $hierarchyID]))?>" data-lightbox-post="tab=hierarchytree">
-              <?=$this->transEsc('hierarchy_view_context')?><?php if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><?php endif; ?>
+            <a class="hierarchyTreeLinkText result-link-label icon-link" data-lightbox href="<?=$this->escapeHtmlAttr($recordLinker->getTabUrl($this->driver, 'HierarchyTree', ['hierarchy' => $hierarchyID]))?>#tabnav" title="<?=$this->transEscAttr('hierarchy_tree')?>" data-lightbox-href="<?=$this->escapeHtmlAttr($recordLinker->getTabUrl($this->driver, 'AjaxTab', ['hierarchy' => $hierarchyID]))?>" data-lightbox-post="tab=hierarchytree">
+              <?=$this->icon('tree-context', 'icon-link__icon') ?>
+              <span class="icon-link__label"><?=$this->transEsc('hierarchy_view_context')?><?php if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><?php endif; ?></span>
             </a>
           </div>
         <?php endforeach; ?>

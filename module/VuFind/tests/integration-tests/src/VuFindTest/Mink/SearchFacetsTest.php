@@ -473,6 +473,24 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test retaining filters on home page
+     *
+     * @return void
+     */
+    public function testRetainFiltersOnHomePageBehavior()
+    {
+        $page = $this->getFilteredSearch();
+        // Back to home spage:
+        $this->clickCss($page, '.navbar-brand');
+        $this->assertFilterIsStillThere($page);
+        // Remove the filter and confirm that filters are gone and that the
+        // "reset filters" button disappears when no longer needed.
+        $this->clickCss($page, $this->activeFilterSelector);
+        $this->assertNoFilters($page);
+        $this->assertNoResetFiltersButton($page);
+    }
+
+    /**
      * Test that filters carry over to selected records and are retained
      * from there.
      *
