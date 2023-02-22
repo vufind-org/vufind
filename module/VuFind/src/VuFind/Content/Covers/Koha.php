@@ -46,6 +46,14 @@ class Koha extends \VuFind\Content\AbstractCover
     protected $url;
 
     /**
+     * List of sizes for which we should return the thumbnail. Since Koha only has
+     * two sizes, this helps us control mapping between VuFind and Koha sizes.
+     *
+     * @var string[]
+     */
+    protected $thumbnailSizes = ['small', 'medium'];
+
+    /**
      * Constructor
      *
      * @param string $url Base URL for Koha covers
@@ -76,7 +84,7 @@ class Koha extends \VuFind\Content\AbstractCover
             return false;
         }
         $url = $this->url . '?';
-        if ($size == 'small' || $size == 'medium') {
+        if (in_array($size, $this->thumbnailSizes)) {
             $url .= "thumbnail=1&";
         }
         $url .= 'biblionumber=' . urlencode($ids['recordid']);
