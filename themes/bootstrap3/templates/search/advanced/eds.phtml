@@ -27,7 +27,7 @@
   <fieldset class="eds">
     <legend><?=$this->transEsc('Limit To')?></legend>
     <?php foreach ($this->limiterList as $field => $facet): ?>
-      <?php switch($facet['Type']){
+      <?php switch($facet['Type']) {
           case 'multiselectvalue': ?>
             <label for="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>"><?=$this->transEsc($facet['Label'])?></label><br/>
             <select id="limit_<?=$this->escapeHtmlAttr($field)?>" name="filter[]" multiple="multiple" size="10" class="form-control">

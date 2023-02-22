@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2018-2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -91,6 +91,23 @@ class Folio extends AbstractAPI implements
      * @var \VuFind\Date\Converter
      */
     protected $dateConverter;
+
+    /**
+     * Default availability messages, in case they are not defined in Folio.ini
+     *
+     * @var string[]
+     */
+    protected $defaultAvailabilityStatuses = ['Open - Awaiting pickup'];
+
+    /**
+     * Default in_transit messages, in case they are not defined in Folio.ini
+     *
+     * @var string[]
+     */
+    protected $defaultInTransitStatuses = [
+        'Open - In transit',
+        'Open - Awaiting delivery'
+    ];
 
     /**
      * Constructor
@@ -446,10 +463,29 @@ class Folio extends AbstractAPI implements
      */
     protected function isHoldable($locationName)
     {
-        return !in_array(
-            $locationName,
-            (array)($this->config['Holds']['excludeHoldLocations'] ?? [])
-        );
+        $mode = $this->config['Holds']['excludeHoldLocationsCompareMode'] ?? 'exact';
+        $excludeLocs = (array)($this->config['Holds']['excludeHoldLocations'] ?? []);
+
+        // Exclude checking by regex match
+        if (trim(strtolower($mode)) == "regex") {
+            foreach ($excludeLocs as $pattern) {
+                $match = @preg_match($pattern, $locationName);
+                // Invalid regex, skip this pattern
+                if ($match === false) {
+                    $this->logWarning(
+                        'Invalid regex found in excludeHoldLocations: ' .
+                        $pattern
+                    );
+                    continue;
+                }
+                if ($match === 1) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        // Otherwise exclude checking by exact match
+        return !in_array($locationName, $excludeLocs);
     }
 
     /**
@@ -1167,20 +1203,50 @@ class Folio extends AbstractAPI implements
             '/request-storage/requests',
             $query
         ) as $hold) {
-            $requestDate = date_create($hold->requestDate);
+            $requestDate = $this->dateConverter->convertToDisplayDate(
+                "Y-m-d H:i",
+                $hold->requestDate
+            );
             // Set expire date if it was included in the response
             $expireDate = isset($hold->requestExpirationDate)
-                ? date_create($hold->requestExpirationDate) : null;
+                ? $this->dateConverter->convertToDisplayDate(
+                    "Y-m-d H:i",
+                    $hold->requestExpirationDate
+                )
+                : null;
+            // Set lastPickup Date if provided, format to j M Y
+            $lastPickup = isset($hold->holdShelfExpirationDate)
+                ? $this->dateConverter->convertToDisplayDate(
+                    "Y-m-d H:i",
+                    $hold->holdShelfExpirationDate
+                )
+                : null;
+
             $holds[] = [
                 'type' => $hold->requestType,
-                'create' => date_format($requestDate, "j M Y"),
-                'expire' => isset($expireDate)
-                    ? date_format($expireDate, "j M Y") : "",
-                'id' => $this->getBibId(null, null, $hold->itemId),
+                'create' => $requestDate,
+                'expire' => $expireDate ?? "",
+                'id' => $this->getBibId(
+                    $hold->instanceId,
+                    $hold->holdingsRecordId,
+                    $hold->itemId
+                ),
                 'item_id' => $hold->itemId,
                 'reqnum' => $hold->id,
                 // Title moved from item to instance in Lotus release:
                 'title' => $hold->instance->title ?? $hold->item->title ?? '',
+                'available' => in_array(
+                    $hold->status,
+                    $this->config['Holds']['available']
+                    ?? $this->defaultAvailabilityStatuses
+                ),
+                'in_transit' => in_array(
+                    $hold->status,
+                    $this->config['Holds']['in_transit']
+                    ?? $this->defaultInTransitStatuses
+                ),
+                'last_pickup_date' => $lastPickup,
+                'position' => $hold->position ?? null,
             ];
         }
         return $holds;
@@ -1232,6 +1298,9 @@ class Folio extends AbstractAPI implements
             'requestExpirationDate' => $requiredBy,
             'pickupServicePointId' => $holdDetails['pickUpLocation']
         ];
+        if (!empty($holdDetails['comment'])) {
+            $requestBody['patronComments'] = $holdDetails['comment'];
+        }
         $response = $this->makeRequest(
             'POST',
             '/circulation/requests',
@@ -1519,61 +1588,12 @@ class Folio extends AbstractAPI implements
         return $retVal;
     }
 
-    // @codingStandardsIgnoreStart
-    /** NOT FINISHED BELOW THIS LINE **/
-
-    /**
-     * Check for request blocks.
-     *
-     * @param array $patron The patron array with username and password
-     *
-     * @return array|boolean    An array of block messages or false if there are no
-     *                          blocks
-     * @author Michael Birkner
-     */
-    public function getRequestBlocks($patron)
-    {
-        return false;
-    }
-
-    /**
-     * This method returns information on recently received issues of a serial.
-     *
-     *     Input: Bibliographic record ID
-     *     Output: Array of associative arrays, each with a single key:
-     *         issue - String describing the issue
-     *
-     * Currently, most drivers do not implement this method, instead always returning
-     * an empty array. It is only necessary to implement this in more detail if you
-     * want to populate the “Most Recent Received Issues” section of the record
-     * holdings tab.
-     */
-    public function getPurchaseHistory($bibID)
-    {
-        return [];
-    }
-
     /**
      * This method queries the ILS for a patron's current fines
      *
-     *     Input: Patron array returned by patronLogin method
-     *     Output: Returns an array of associative arrays, one for each fine
-     * associated with the specified account. Each associative array contains
-     * these keys:
-     *         amount - The total amount of the fine IN PENNIES. Be sure to adjust
-     * decimal points appropriately (i.e. for a $1.00 fine, amount should be 100).
-     *         checkout - A string representing the date when the item was
-     * checked out.
-     *         fine - A string describing the reason for the fine
-     * (i.e. “Overdue”, “Long Overdue”).
-     *         balance - The unpaid portion of the fine IN PENNIES.
-     *         createdate – A string representing the date when the fine was accrued
-     * (optional)
-     *         duedate - A string representing the date when the item was due.
-     *         id - The bibliographic ID of the record involved in the fine.
-     *         source - The search backend from which the record may be retrieved
-     * (optional - defaults to Solr). Introduced in VuFind 2.4.
+     * @param array $patron The patron array from patronLogin
      *
+     * @return array
      */
     public function getMyFines($patron)
     {
@@ -1600,6 +1620,39 @@ class Folio extends AbstractAPI implements
             ];
         }
         return $fines;
+    }
+
+    // @codingStandardsIgnoreStart
+    /** NOT FINISHED BELOW THIS LINE **/
+
+    /**
+     * Check for request blocks.
+     *
+     * @param array $patron The patron array with username and password
+     *
+     * @return array|boolean    An array of block messages or false if there are no
+     *                          blocks
+     */
+    public function getRequestBlocks($patron)
+    {
+        return false;
+    }
+
+    /**
+     * This method returns information on recently received issues of a serial.
+     *
+     *     Input: Bibliographic record ID
+     *     Output: Array of associative arrays, each with a single key:
+     *         issue - String describing the issue
+     *
+     * Currently, most drivers do not implement this method, instead always returning
+     * an empty array. It is only necessary to implement this in more detail if you
+     * want to populate the “Most Recent Received Issues” section of the record
+     * holdings tab.
+     */
+    public function getPurchaseHistory($bibID)
+    {
+        return [];
     }
 
     /**

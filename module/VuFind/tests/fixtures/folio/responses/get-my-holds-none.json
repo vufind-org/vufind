@@ -1,0 +1,8 @@
+[
+  { "comment": "Initial request for token" },
+  {
+    "comment": "User with 0 holds, will return an empty requests array",
+    "status": 200,
+    "body": "{\"requests\": [],\"totalRecords\": 0}"
+  }
+]

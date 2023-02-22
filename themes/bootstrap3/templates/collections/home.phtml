@@ -17,14 +17,34 @@
   <form class="form-inline" method="GET" action="<?=$this->url('collections-home')?>">
     <ul class="pager">
       <?php if (isset($prevpage)): ?>
-        <li><a href="<?=$this->url('collections-home')?>?from=<?=urlencode($from)?>&amp;page=<?=urlencode($prevpage)?><?=$this->escapeHtmlAttr($filterString)?>" aria-label="<?=$this->transEscAttr('page_prev')?>"><?=$this->icon('page-prev') ?> <?=$this->transEsc('Prev')?></a></li>
+        <li>
+          <a class="icon-link" href="<?=$this->url('collections-home')?>?from=<?=urlencode($from)?>&amp;page=<?=urlencode($prevpage)?><?=$this->escapeHtmlAttr($filterString)?>" aria-label="<?=$this->transEscAttr('page_prev')?>">
+            <?=$this->icon('page-prev', 'icon-link__icon') ?>
+            <span class="icon-link__label"><?=$this->transEsc('Prev')?></span>
+          </a>
+        </li>
       <?php else: ?>
-        <li class="disabled" aria-hidden="true"><a disabled><?=$this->icon('page-prev') ?> <?=$this->transEsc('Prev')?></a></li>
+        <li class="disabled" aria-hidden="true">
+          <a class="icon-link" disabled>
+            <?=$this->icon('page-prev', 'icon-link__icon') ?>
+            <span class="icon-link__label"><?=$this->transEsc('Prev')?></span>
+          </a>
+        </li>
       <?php endif; ?>
       <?php if (isset($nextpage)): ?>
-        <li><a href="<?=$this->url('collections-home')?>?from=<?=urlencode($from)?>&amp;page=<?=urlencode($nextpage)?><?=$this->escapeHtmlAttr($filterString)?>" aria-label="<?=$this->transEscAttr('page_next')?>"><?=$this->transEsc('Next')?> <?=$this->icon('page-next') ?></a></li>
+        <li>
+          <a class="icon-link" href="<?=$this->url('collections-home')?>?from=<?=urlencode($from)?>&amp;page=<?=urlencode($nextpage)?><?=$this->escapeHtmlAttr($filterString)?>" aria-label="<?=$this->transEscAttr('page_next')?>">
+            <span class="icon-link__label"><?=$this->transEsc('Next')?></span>
+            <?=$this->icon('page-next', 'icon-link__icon') ?>
+          </a>
+        </li>
       <?php else: ?>
-        <li class="disabled"><a disabled><?=$this->transEsc('Next')?> <?=$this->icon('page-next') ?></a></li>
+        <li class="disabled">
+          <a class="icon-link" disabled>
+            <span class="icon-link__label"><?=$this->transEsc('Next')?></span>
+            <?=$this->icon('page-next', 'icon-link__icon') ?>
+          </a>
+        </li>
       <?php endif; ?>
       <input type="submit" class="btn btn-default" value="<?=$this->transEscAttr('Jump to')?>" />
       <input type="text" name="from" value="<?=$this->escapeHtmlAttr($from)?>" class="form-control" />
@@ -48,7 +68,7 @@
           }
         }
       ?>
-      <a href="<?=$this->escapeHtmlAttr($removalUrl)?>">
+      <a class="icon-link" href="<?=$this->escapeHtmlAttr($removalUrl)?>">
         <?=$this->icon('ui-remove') ?>
         <?=$this->escapeHtml($filter['displayText'])?>
       </a>

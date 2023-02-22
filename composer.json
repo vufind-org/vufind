@@ -87,7 +87,7 @@
         "symfony/yaml": "5.4.3",
         "vstelmakh/url-highlight": "3.0.1",
         "vufind-org/vufindcode": "1.2",
-        "vufind-org/vufinddate": "1.1.0",
+        "vufind-org/vufinddate": "1.2.0",
         "vufind-org/vufindharvest": "4.1.0",
         "vufind-org/vufindhttp": "3.2.0",
         "vufind-org/vufind-marc": "1.0.0",
@@ -103,7 +103,7 @@
         "friendsofphp/php-cs-fixer": "3.8.0",
         "phploc/phploc": "7.0.2",
         "phpmd/phpmd": "2.12.0",
-        "phpstan/phpstan": "1.6.8",
+        "phpstan/phpstan": "1.9.17",
         "phpunit/phpunit": "9.5.20",
         "sebastian/phpcpd": "6.0.3",
         "squizlabs/php_codesniffer": "3.6.2"
