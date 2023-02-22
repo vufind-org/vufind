@@ -149,20 +149,21 @@ class Form extends \Laminas\Form\Form implements
     /**
      * Set form id
      *
-     * @param string $formId Form id
-     * @param array  $params Additional form parameters.
+     * @param string $formId  Form id
+     * @param array  $params  Additional form parameters.
+     * @param array  $prefill Prefill form with these values.
      *
      * @return void
      * @throws Exception
      */
-    public function setFormId($formId, $params = [])
+    public function setFormId($formId, $params = [], $prefill = [])
     {
         if (!$config = $this->getFormConfig($formId)) {
             throw new \VuFind\Exception\RecordMissing("Form '$formId' not found");
         }
 
         $this->formElementConfig
-            = $this->parseConfig($formId, $config, $params);
+            = $this->parseConfig($formId, $config, $params, $prefill);
 
         $this->buildForm();
     }
@@ -596,13 +597,14 @@ class Form extends \Laminas\Form\Form implements
     /**
      * Parse form configuration.
      *
-     * @param string $formId Form id
-     * @param array  $config Configuration
-     * @param array  $params Additional form parameters.
+     * @param string $formId  Form id
+     * @param array  $config  Configuration
+     * @param array  $params  Additional form parameters.
+     * @param array  $prefill Prefill form with these values.
      *
      * @return array
      */
-    protected function parseConfig($formId, $config, $params)
+    protected function parseConfig($formId, $config, $params, $prefill)
     {
         $formConfig = [
            'id' => $formId,
@@ -721,6 +723,11 @@ class Form extends \Laminas\Form\Form implements
                 if (!isset($element['settings']['rows'])) {
                     $element['settings']['rows'] = 8;
                 }
+            }
+
+            $prefill = $this->sanitizePrefill($prefill);
+            if (!empty($prefill[$element['name']])) {
+                $element['settings']['value'] = $prefill[$element['name']];
             }
 
             $elements[] = $element;
@@ -868,6 +875,7 @@ class Form extends \Laminas\Form\Form implements
             'useCaptcha',
             'primaryHandler',
             'secondaryHandlers',
+            'prefillFields',
         ];
     }
 
@@ -889,6 +897,20 @@ class Form extends \Laminas\Form\Form implements
             'required',
             'requireOne',
             'value',
+        ];
+    }
+
+    /**
+     * Return field names that should not be prefilled.
+     *
+     * @return array
+     */
+    protected function getProtectedFieldNames(): array
+    {
+        return [
+            'referrer',
+            'submit',
+            'userAgent',
         ];
     }
 
@@ -1134,5 +1156,30 @@ class Form extends \Laminas\Form\Form implements
     public function getFormId(): string
     {
         return $this->formConfig['id'] ?? '';
+    }
+
+    /**
+     * Validates prefill data and returns only the prefill values for enabled fields
+     *
+     * @param array $prefill Prefill data
+     *
+     * @return array
+     */
+    protected function sanitizePrefill(array $prefill): array
+    {
+        foreach ($this->getProtectedFieldNames() as $fieldName) {
+            if (isset($prefill[$fieldName])) {
+                unset($prefill[$fieldName]);
+            }
+        }
+        $prefillFields = $this->formConfig['prefillFields'] ?? [];
+        $prefill = array_filter(
+            $prefill,
+            function ($key) use ($prefillFields) {
+                return in_array($key, $prefillFields);
+            },
+            ARRAY_FILTER_USE_KEY
+        );
+        return $prefill;
     }
 }

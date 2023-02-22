@@ -65,14 +65,15 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
         $user = $this->getUser();
 
         $form = $this->serviceLocator->get($this->formClass);
-        $params = $this->params()->fromQuery();
+        $prefill = $this->params()->fromQuery();
+        $params = [];
         if ($refererHeader = $this->getRequest()->getHeader('Referer')) {
             $params['referrer'] = $refererHeader->getFieldValue();
         }
         if ($userAgentHeader = $this->getRequest()->getHeader('User-Agent')) {
             $params['userAgent'] = $userAgentHeader->getFieldValue();
         }
-        $form->setFormId($formId, $params);
+        $form->setFormId($formId, $params, $prefill);
 
         if (!$form->isEnabled()) {
             throw new \VuFind\Exception\Forbidden("Form '$formId' is disabled");
