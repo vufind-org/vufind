@@ -76,7 +76,7 @@ class Koha extends \VuFind\Content\AbstractCover
             return false;
         }
         $url = $this->url . '?';
-        if ($size == 'small') {
+        if ($size == 'small' || $size == 'medium') {
             $url .= "thumbnail=1&";
         }
         $url .= 'biblionumber=' . urlencode($ids['recordid']);
