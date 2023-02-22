@@ -8,7 +8,7 @@
 <ul class="list-tabs nav nav-tabs">
   <?php $coreMetadata = trim($this->record($this->driver)->getCoreMetadata()); ?>
   <?php if (!empty($coreMetadata)): ?>
-    <li<?php if($this->defaultTab === 'information'): ?> class="active"<?php endif; ?>>
+    <li<?php if ($this->defaultTab === 'information'): ?> class="active"<?php endif; ?>>
       <a id="information_<?=$idSuffixEsc?>" class="list-tab-toggle loaded" data-toggle="tab" data-target="#information_<?=$idSuffixEsc?>-content" class="noajax">
         <?=$this->translate('ajaxview_label_information') ?>
       </a>
@@ -17,7 +17,7 @@
 
   <?php $toolbar = trim($this->record($this->driver)->getToolbar()); ?>
   <?php if (!empty($toolbar)): ?>
-    <li<?php if($this->defaultTab === 'tools'): ?> class="active"<?php endif; ?>>
+    <li<?php if ($this->defaultTab === 'tools'): ?> class="active"<?php endif; ?>>
       <a id="tools_<?=$idSuffixEsc?>" class="list-tab-toggle loaded" data-toggle="tab" data-target="#tools_<?=$idSuffixEsc?>-content" class="noajax">
       <?=$this->translate('ajaxview_label_tools') ?>
       </a>
@@ -26,7 +26,7 @@
 
   <?php $list = $this->related()->getList($this->driver); ?>
   <?php if (!empty($list)): ?>
-    <li<?php if($this->defaultTab === 'related'): ?> class="active"<?php endif; ?>>
+    <li<?php if ($this->defaultTab === 'related'): ?> class="active"<?php endif; ?>>
       <a id="related_<?=$idSuffixEsc?>" class="list-tab-toggle loaded" data-toggle="tab" data-target="#related_<?=$idSuffixEsc?>-content" class="noajax">
         <?=$this->transEsc("Related Items")?>
       </a>
@@ -52,25 +52,25 @@
 </ul>
 <div class="tab-content">
   <?php if (!empty($coreMetadata)): ?>
-    <div class="list-tab-content record tab-pane<?php if($this->defaultTab === 'information'): ?> active<?php endif; ?>" id="information_<?=$idSuffixEsc?>-content">
+    <div class="list-tab-content record tab-pane<?php if ($this->defaultTab === 'information'): ?> active<?php endif; ?>" id="information_<?=$idSuffixEsc?>-content">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id_<?=$idSuffixEsc?>" />
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier()) ?>" class="hiddenSource" />
       <?=$coreMetadata ?>
     </div>
   <?php endif; ?>
   <?php if (!empty($toolbar)): ?>
-    <div class="list-tab-content tab-pane<?php if($this->defaultTab === 'tools'): ?> active<?php endif; ?>" id="tools_<?=$idSuffixEsc?>-content">
+    <div class="list-tab-content tab-pane<?php if ($this->defaultTab === 'tools'): ?> active<?php endif; ?>" id="tools_<?=$idSuffixEsc?>-content">
       <?=$toolbar ?>
     </div>
   <?php endif; ?>
   <?php if (!empty($list)): ?>
-    <div class="list-tab-content tab-pane<?php if($this->defaultTab === 'related'): ?> active<?php endif; ?>" id="related_<?=$idSuffixEsc?>-content">
+    <div class="list-tab-content tab-pane<?php if ($this->defaultTab === 'related'): ?> active<?php endif; ?>" id="related_<?=$idSuffixEsc?>-content">
       <?php foreach ($list as $current): ?>
         <?=$this->related()->render($current)?>
       <?php endforeach; ?>
     </div>
   <?php endif; ?>
   <?php foreach ($this->tabs as $tab => $obj): ?>
-    <div class="list-tab-content tab-pane<?php if($this->defaultTab === strtolower($tab)): ?> active<?php endif; ?>" id="<?=strtolower($tab)?>_<?=$idSuffixEsc?>-content"></div>
+    <div class="list-tab-content tab-pane<?php if ($this->defaultTab === strtolower($tab)): ?> active<?php endif; ?>" id="<?=strtolower($tab)?>_<?=$idSuffixEsc?>-content"></div>
   <?php endforeach; ?>
 </div>

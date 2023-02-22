@@ -16,8 +16,8 @@
         </a>
       <?php endforeach; ?>
     <?php endif; ?>
-    <?php foreach($sideFacetSet['tags']['list'] as $thisFacet): ?>
-      <?php if(!$thisFacet['isApplied']): ?>
+    <?php foreach ($sideFacetSet['tags']['list'] as $thisFacet): ?>
+      <?php if (!$thisFacet['isApplied']): ?>
         <a class="list-group-item" href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet('tags', $thisFacet['value'])?>">
           <span class="badge"><?=$this->escapeHtml($thisFacet['count'])?></span>
           <?=$this->escapeHtml($thisFacet['displayText'])?>
