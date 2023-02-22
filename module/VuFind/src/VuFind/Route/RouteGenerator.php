@@ -46,24 +46,15 @@ class RouteGenerator
      *
      * @var array
      */
-    protected $nonTabRecordActions = [
-        'AddComment', 'DeleteComment', 'AddTag', 'DeleteTag', 'Save', 'Email', 'SMS',
-        'Cite', 'Export', 'RDF', 'Hold', 'Home', 'StorageRetrievalRequest',
-        'AjaxTab', 'ILLRequest', 'PDF', 'Epub', 'LinkedText', 'Permalink',
-    ];
+    protected static $nonTabRecordActions = [];
 
     /**
-     * Constructor
+     * Cache for already added recordActions which need to be used again
+     * if additional nonTabRecordActions will be added later.
      *
-     * @param array $nonTabRecordActions List of non-tab record actions (null
-     * for default).
+     * @var array
      */
-    public function __construct(array $nonTabRecordActions = null)
-    {
-        if (null !== $nonTabRecordActions) {
-            $this->nonTabRecordActions = $nonTabRecordActions;
-        }
-    }
+    protected static $recordRoutes = [];
 
     /**
      * Add a dynamic route to the configuration.
@@ -114,6 +105,41 @@ class RouteGenerator
     }
 
     /**
+     * Add non tab record action & re-register all record routes to support it.
+     *
+     * @param array  $config Configuration array to update
+     * @param string $action Action to add
+     *
+     * @return void
+     */
+    public function addNonTabRecordAction(& $config, $action)
+    {
+        self::$nonTabRecordActions[$action] = $action;
+        foreach (self::$recordRoutes as $recordRoute) {
+            $this->addRecordRoute(
+                $config,
+                $recordRoute['routeBase'],
+                $recordRoute['controller']
+            );
+        }
+    }
+
+    /**
+     * Add non tab record actions & re-register all record routes to support it.
+     *
+     * @param array $config  Configuration array to update
+     * @param array $actions Action to add
+     *
+     * @return void
+     */
+    public function addNonTabRecordActions(& $config, $actions)
+    {
+        foreach ($actions as $action) {
+            $this->addNonTabRecordAction($config, $action);
+        }
+    }
+
+    /**
      * Add record route to the configuration.
      *
      * @param array  $config     Configuration array to update
@@ -141,7 +167,7 @@ class RouteGenerator
             ]
         ];
         // special non-tab actions that each need their own route:
-        foreach ($this->nonTabRecordActions as $action) {
+        foreach (self::$nonTabRecordActions as $action) {
             $config['router']['routes'][$routeBase . '-' . strtolower($action)] = [
                 'type'    => 'Laminas\Router\Http\Segment',
                 'options' => [
@@ -157,6 +183,13 @@ class RouteGenerator
                 ]
             ];
         }
+
+        // Store the added route in case we need to add
+        // more nonTabRecordActions later
+        self::$recordRoutes["$controller::$routeBase"] = [
+            'routeBase' => $routeBase,
+            'controller' => $controller,
+        ];
     }
 
     /**

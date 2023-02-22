@@ -19,8 +19,14 @@
             <a class="hover-overlay record-cover-link" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($data))?>">
               <?=$this->record($data)->getCoverDetails('similar-items', 'large')['html']?>
               <div class="content">
-                <?php $formats = $data->getFormats(); ?>
-                <i class="fa fa-x<?php if (count($formats) > 0): ?> fa-<?=preg_replace('/[^a-z0-9]/', '', strtolower($formats[0]))?>" title="<?=$formats[0] ?><?php endif; ?>"></i>
+                <?php
+                  $formats = $data->getFormats();
+                  $format = $formats[0] ?? null;
+                  $icon = $format
+                    ? preg_replace('/[^a-z0-9]/', '', strtolower($format))
+                    : 'default';
+                ?>
+                <?=$this->icon('format-' . $icon, $format ? ['title' => $format] : []) ?>
                 <b><?=$this->escapeHtml($data->getTitle())?></b>
                 <?php $authors = $data->getPrimaryAuthors(); if (!empty($authors)): ?>
                   <br/><?=$this->transEsc('by')?>: <?=$this->escapeHtml($authors[0]);?><?php if (count($authors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?>
@@ -31,7 +37,7 @@
               </div>
             </a>
           </div>
-          <?php if(($index + 1) % $perPage == 0 && $index < count($similarRecords) - 1): ?>
+          <?php if (($index + 1) % $perPage == 0 && $index < count($similarRecords) - 1): ?>
       </div>
       <div class="item">
           <?php endif; ?>
@@ -40,11 +46,13 @@
     </div>
 
     <!-- Controls -->
-    <a class="left carousel-control" href="#similar-items-carousel" role="button" data-slide="prev" aria-label="<?=$this->transEscAttr('Prev') ?>">
-      <span class="fa fa-chevron-left glyphicon-chevron-left" title="<?=$this->transEscAttr('Prev') ?>"></span>
+    <a class="left carousel-control" href="#similar-items-carousel" role="button" data-slide="prev">
+      <?=$this->icon('page-prev') ?>
+      <span class="sr-only"><?=$this->transEscAttr('Prev') ?></span>
     </a>
-    <a class="right carousel-control" href="#similar-items-carousel" role="button" data-slide="next" aria-label="<?=$this->transEscAttr('Next') ?>">
-      <span class="fa fa-chevron-right glyphicon-chevron-right" title="<?=$this->transEscAttr('Next') ?>"></span>
+    <a class="right carousel-control" href="#similar-items-carousel" role="button" data-slide="next">
+      <span class="sr-only"><?=$this->transEscAttr('Next') ?></span>
+      <?=$this->icon('page-next') ?>
     </a>
   </div>
 <?php else: ?>
@@ -55,11 +63,11 @@
   $script .= <<<JS
 var normalizeHeightCount = $('#similar-items-carousel img').length;
 function normalizeHeights() {
-  if(--normalizeHeightCount > 0) return;
+  if (--normalizeHeightCount > 0) return;
   var tallest = 0;
   var items = $('#similar-items-carousel .hover-overlay');
   items.each(function() { //add heights to array
-    if(tallest < $(this).height()) {
+    if (tallest < $(this).height()) {
       tallest = $(this).height();
     }
   });

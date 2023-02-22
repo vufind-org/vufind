@@ -28,10 +28,6 @@
  */
 namespace VuFind\Search\Factory;
 
-use VuFindSearch\Backend\Solr\Backend;
-use VuFindSearch\Backend\Solr\Connector;
-use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
-
 /**
  * Factory for the default SOLR backend.
  *
@@ -44,13 +40,6 @@ use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
 class SolrDefaultBackendFactory extends AbstractSolrBackendFactory
 {
     /**
-     * Method for creating a record driver.
-     *
-     * @var string
-     */
-    protected $createRecordMethod = 'getSolrRecord';
-
-    /**
      * Constructor
      */
     public function __construct()
@@ -59,34 +48,21 @@ class SolrDefaultBackendFactory extends AbstractSolrBackendFactory
         $this->searchConfig = 'searches';
         $this->searchYaml = 'searchspecs.yaml';
         $this->facetConfig = 'facets';
+        $this->defaultIndexName = 'biblio';
+        $this->allowFallbackForIndexName = true;
     }
 
     /**
-     * Get the Solr core.
+     * Get the callback for creating a record.
      *
-     * @return string
+     * Returns a callable or null to use RecordCollectionFactory's default method.
+     *
+     * @return callable|null
      */
-    protected function getSolrCore()
+    protected function getCreateRecordCallback(): ?callable
     {
-        $config = $this->config->get($this->mainConfig);
-        return $config->Index->default_core ?? 'biblio';
-    }
-
-    /**
-     * Create the SOLR backend.
-     *
-     * @param Connector $connector Connector
-     *
-     * @return Backend
-     */
-    protected function createBackend(Connector $connector)
-    {
-        $backend = parent::createBackend($connector);
         $manager = $this->serviceLocator
             ->get(\VuFind\RecordDriver\PluginManager::class);
-        $factory
-            = new RecordCollectionFactory([$manager, $this->createRecordMethod]);
-        $backend->setRecordCollectionFactory($factory);
-        return $backend;
+        return [$manager, 'getSolrRecord'];
     }
 }

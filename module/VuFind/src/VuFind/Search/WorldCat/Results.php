@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2011.
+ * Copyright (C) Villanova University 2011, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -26,6 +26,8 @@
  * @link     https://vufind.org Main Page
  */
 namespace VuFind\Search\WorldCat;
+
+use VuFindSearch\Command\SearchCommand;
 
 /**
  * WorldCat Search Parameters
@@ -57,8 +59,15 @@ class Results extends \VuFind\Search\Base\Results
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord();
         $params = $this->getParams()->getBackendParameters();
+        $command = new SearchCommand(
+            $this->backendId,
+            $query,
+            $offset,
+            $limit,
+            $params
+        );
         $collection = $this->getSearchService()
-            ->search($this->backendId, $query, $offset, $limit, $params);
+            ->invoke($command)->getResult();
 
         $this->resultTotal = $collection->getTotal();
         $this->results = $collection->getRecords();

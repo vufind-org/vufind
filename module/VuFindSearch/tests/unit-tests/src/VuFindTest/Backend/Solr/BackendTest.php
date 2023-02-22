@@ -51,6 +51,7 @@ use VuFindSearch\Query\Query;
 class BackendTest extends TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\ReflectionTrait;
 
     /**
      * Test retrieving a record.
@@ -176,6 +177,198 @@ class BackendTest extends TestCase
         $terms = $back->terms('author', '', -1);
         $this->assertTrue($terms->hasFieldTerms('author'));
         $this->assertCount(10, $terms->getFieldTerms('author'));
+    }
+
+    /**
+     * Test facets.
+     *
+     * @return void
+     */
+    public function testFacets()
+    {
+        $resp = $this->loadResponse('facet');
+        $conn = $this->getConnectorMock(['query']);
+        $conn->expects($this->once())
+            ->method('query')
+            ->will($this->returnValue($resp->getBody()));
+        $back = new Backend($conn);
+        $response = $back->search(new Query(), 0, 0);
+        $facets = $response->getFacets();
+        $this->assertIsArray($facets);
+        $this->assertEquals(
+            [
+                'topic_facet' => [
+                    'Research' => 16,
+                    'Psychotherapy' => 8,
+                    'Adult children of aging parents' => 7,
+                    'Automobile drivers\' tests' => 7,
+                    'Fathers and daughters' => 7,
+                ]
+            ],
+            $facets
+        );
+    }
+
+    /**
+     * Test pivot facets.
+     *
+     * @return void
+     */
+    public function testPivotFacets()
+    {
+        $resp = $this->loadResponse('pivot-facet');
+        $conn = $this->getConnectorMock(['query']);
+        $conn->expects($this->once())
+            ->method('query')
+            ->will($this->returnValue($resp->getBody()));
+        $back = new Backend($conn);
+        $response = $back->search(new Query(), 0, 0);
+        $facets = $response->getPivotFacets();
+        $this->assertIsArray($facets);
+
+        $this->assertEquals(
+            [
+                'A - General Works' => [
+                    'field' => 'callnumber-first',
+                    'value' => 'A - General Works',
+                    'count' => 40,
+                    'pivot' => [
+                        [
+                            'field' => 'topic_facet',
+                            'value' => 'Research',
+                            'count' => 16,
+                        ],
+                        [
+                            'field' => 'topic_facet',
+                            'value' => 'Psychotherapy',
+                            'count' => 8,
+                        ],
+                        [
+                            'field' => 'topic_facet',
+                            'value' => 'Cognitive therapy',
+                            'count' => 4,
+                        ],
+                        [
+                            'field' => 'topic_facet',
+                            'value' => 'Crime',
+                            'count' => 4,
+                        ],
+                        [
+                            'field' => 'topic_facet',
+                            'value' => 'Criminal justice, Administration of',
+                            'count' => 4,
+                        ],
+                    ],
+                ],
+                'P - Language and Literature' => [
+                    'field' => 'callnumber-first',
+                    'value' => 'P - Language and Literature',
+                    'count' => 7,
+                    'pivot' => [
+                        [
+                            'field' => 'topic_facet',
+                            'value' => 'Adult children of aging parents',
+                            'count' => 7,
+                        ],
+                        [
+                            'field' => 'topic_facet',
+                            'value' => 'Automobile drivers\' tests',
+                            'count' => 7,
+                        ],
+                        [
+                            'field' => 'topic_facet',
+                            'value' => 'Fathers and daughters',
+                            'count' => 7,
+                        ],
+                        [
+                            'field' => 'topic_facet',
+                            'value' => 'Middle aged women',
+                            'count' => 7,
+                        ],
+                        [
+                            'field' => 'topic_facet',
+                            'value' => 'Older men',
+                            'count' => 7,
+                        ],
+                    ],
+                ],
+                'D - World History' => [
+                    'field' => 'callnumber-first',
+                    'value' => 'D - World History',
+                    'count' => 3,
+                    'pivot' => [
+                        [
+                            'field' => 'topic_facet',
+                            'value' => 'History',
+                            'count' => 2,
+                        ],
+                    ],
+                ],
+                'B - Philosophy, Psychology, Religion' => [
+                    'field' => 'callnumber-first',
+                    'value' => 'B - Philosophy, Psychology, Religion',
+                    'count' => 2,
+                ],
+                'H - Social Science' => [
+                    'field' => 'callnumber-first',
+                    'value' => 'H - Social Science',
+                    'count' => 1,
+                    'pivot' => [
+                        [
+                            'field' => 'topic_facet',
+                            'value' => 'Bank employees',
+                            'count' => 1,
+                        ],
+                        [
+                            'field' => 'topic_facet',
+                            'value' => 'Bank management',
+                            'count' => 1,
+                        ],
+                        [
+                            'field' => 'topic_facet',
+                            'value' => 'Globalization',
+                            'count' => 1,
+                        ],
+                        [
+                            'field' => 'topic_facet',
+                            'value' => 'Industrial relations',
+                            'count' => 1,
+                        ],
+                        [
+                            'field' => 'topic_facet',
+                            'value' => 'Labor unions',
+                            'count' => 1,
+                        ],
+                    ],
+                ],
+            ],
+            $facets
+        );
+    }
+
+    /**
+     * Test query facets.
+     *
+     * @return void
+     */
+    public function testQueryFacets()
+    {
+        $resp = $this->loadResponse('query-facet');
+        $conn = $this->getConnectorMock(['query']);
+        $conn->expects($this->once())
+            ->method('query')
+            ->will($this->returnValue($resp->getBody()));
+        $back = new Backend($conn);
+        $response = $back->search(new Query(), 0, 0);
+        $facets = $response->getQueryFacets();
+        $this->assertIsArray($facets);
+        $this->assertEquals(
+            [
+                'publishDate:[* TO 2000]' => 45,
+                'publishDate:[2001 TO 2010]' => 11,
+            ],
+            $facets
+        );
     }
 
     /**
@@ -384,21 +577,30 @@ class BackendTest extends TestCase
     public function testWriteDocument()
     {
         $doc = new CommitDocument();
-        $connector = $this->getConnectorMock(
-            ['write', 'getUrl', 'getTimeout', 'setTimeout']
-        );
+        $client = $this->getMockBuilder(\Laminas\Http\Client::class)
+            ->onlyMethods(['setOptions'])
+            ->getMock();
+        $client->expects($this->exactly(1))->method('setOptions')
+            ->with(['timeout' => 60]);
+        $connector = $this->getConnectorMock(['getUrl', 'write'], $client);
         $connector->expects($this->once())->method('write')
             ->with(
                 $this->equalTo($doc),
                 $this->equalTo('update'),
                 $this->isNull()
+            )
+            ->will(
+                $this->returnCallback(
+                    function () use ($connector) {
+                        // Call client factory for expectations to be met:
+                        $factory = $this->getProperty($connector, 'clientFactory');
+                        $factory('');
+                        return true;
+                    }
+                )
             );
         $connector->expects($this->once())->method('getUrl')
             ->will($this->returnValue('http://localhost:8983/solr/core/biblio'));
-        $connector->expects($this->once())->method('getTimeout')
-            ->will($this->returnValue(30));
-        $connector->expects($this->exactly(2))->method('setTimeout')
-            ->withConsecutive([60], [30]);
         $backend = new Backend($connector);
         $this->assertEquals(
             ['core' => 'biblio'],
@@ -445,16 +647,27 @@ class BackendTest extends TestCase
     /**
      * Return connector mock.
      *
-     * @param array $mock Functions to mock
+     * @param array      $mock   Functions to mock
+     * @param HttpClient $client HTTP Client (optional)
      *
      * @return Connector
      */
-    protected function getConnectorMock(array $mock = [])
+    protected function getConnectorMock(array $mock = [], $client = null)
     {
         $map = new HandlerMap(['select' => ['fallback' => true]]);
         return $this->getMockBuilder(\VuFindSearch\Backend\Solr\Connector::class)
             ->onlyMethods($mock)
-            ->setConstructorArgs(['http://example.org/', $map])
+            ->setConstructorArgs(
+                [
+                    'http://localhost/',
+                    $map,
+                    function () use ($client) {
+                        // If client is provided, return it since it may have test
+                        // expectations:
+                        return $client ?? new \Laminas\Http\Client();
+                    }
+                ]
+            )
             ->getMock();
     }
 }

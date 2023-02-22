@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010-2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -211,34 +211,87 @@ class ThemeInfo
     }
 
     /**
+     * Determine if a variable is a string-keyed array
+     *
+     * @param mixed $op Variable to test
+     *
+     * @return boolean
+     */
+    protected function isStringKeyedArray($op)
+    {
+        if (!is_array($op)) {
+            return false;
+        }
+
+        reset($op);
+        return is_string(key($op));
+    }
+
+    /**
+     * Add parent theme information to a collection of merged theme info.
+     * Using the string-keyed array format of theme config info,
+     * recursively walk the array, capturing unique or missing values.
+     *
+     * @param array|string $children Merged theme info, overrides parent theme
+     * @param array|string $parent   Theme info to be merged
+     *
+     * @return array|string merged theme info, favoring child themes (merged)
+     */
+    protected function mergeWithoutOverride($children, $parent)
+    {
+        if (empty($children)) {
+            return $parent;
+        }
+
+        // Early escape for string, number, etc. values
+        if (!is_array($children) && !is_array($parent)) {
+            return $children;
+        }
+
+        if ($this->isStringKeyedArray($children)) {
+            if (!$this->isStringKeyedArray($parent)) {
+                // don't override if incompatible
+                return $children;
+            }
+
+            foreach ($parent as $key => $val) {
+                if (!array_key_exists($key, $children)) {
+                    // capture missing string keys
+                    $children[$key] = $val;
+                } elseif ($this->isStringKeyedArray($val)) {
+                    // recurse
+                    $children[$key]
+                        = $this->mergeWithoutOverride($children[$key], $val);
+                } elseif (is_array($val)) {
+                    // capture unique or missing array items
+                    $children[$key] = array_merge($val, (array)$children[$key]);
+                } elseif (is_array($children[$key])) {
+                    // string -> array
+                    $children[$key] = array_merge((array)$val, $children[$key]);
+                }
+            }
+
+            return $children;
+        }
+
+        // capture unique or missing array items
+        return array_merge((array)$parent, (array)$children);
+    }
+
+    /**
      * Get a configuration element, merged to reflect theme inheritance.
      *
-     * @param string $key     Configuration key to retrieve (or empty string to
+     * @param string $key Configuration key to retrieve (or empty string to
      * retrieve full configuration)
-     * @param bool   $flatten Use array_replace to flatten values
      *
-     * @return array
+     * @return array|string
      */
-    public function getMergedConfig(string $key = '', bool $flatten = false): array
+    public function getMergedConfig(string $key = '')
     {
         $currentTheme = $this->getTheme();
         $allThemeInfo = $this->getThemeInfo();
 
-        /**
-         * Assume a parent value 'a' and a child value 'b'
-         *
-         * Using array_merge (default) will merge them into ['b', 'a']
-         * Using array_replace ($flatten = true) will merge them into 'b'
-         *
-         * We're using an anonymous function here to swap the arguments in the
-         * flatten case. This is to make sure child values override parent values
-         * with replace but parent values are appended to the end of merged values
-         */
-        $deepFunc = !$flatten
-            ? 'array_merge_recursive'
-            : 'array_replace_recursive';
-
-        $cacheKey = ($flatten ? '1_' : '0_') . $currentTheme . '_' . $key;
+        $cacheKey = $currentTheme . '_' . $key;
 
         if ($this->cache !== null) {
             $cached = $this->cache->getItem($cacheKey);
@@ -256,18 +309,16 @@ class ThemeInfo
                 $allThemeInfo[$currentTheme]['mixins'] ?? [],
             );
 
+            // from child to parent
             foreach ($currentThemeSet as $theme) {
                 if (isset($allThemeInfo[$theme])
                     && (empty($key) || isset($allThemeInfo[$theme][$key]))
                 ) {
-                    $merged = $deepFunc(
-                        (array)(
-                            empty($key)
-                                ? $allThemeInfo[$theme]
-                                : $allThemeInfo[$theme][$key]
-                        ),
-                        $merged,
-                    );
+                    $current = empty($key)
+                        ? $allThemeInfo[$theme]
+                        : $allThemeInfo[$theme][$key];
+
+                    $merged = $this->mergeWithoutOverride($merged, $current);
                 }
             }
 

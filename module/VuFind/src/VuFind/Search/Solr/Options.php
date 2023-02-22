@@ -50,20 +50,6 @@ class Options extends \VuFind\Search\Base\Options
     ];
 
     /**
-     * Hierarchical facets
-     *
-     * @var array
-     */
-    protected $hierarchicalFacets = [];
-
-    /**
-     * Hierarchical facet separators
-     *
-     * @var array
-     */
-    protected $hierarchicalFacetSeparators = [];
-
-    /**
      * Relevance sort override for empty searches
      *
      * @var string
@@ -76,6 +62,13 @@ class Options extends \VuFind\Search\Base\Options
      * @var bool
      */
     protected $displayRecordVersions = true;
+
+    /**
+     * Solr field to be used as a tie-breaker.
+     *
+     * @var string
+     */
+    protected $sortTieBreaker = null;
 
     /**
      * Constructor
@@ -95,6 +88,9 @@ class Options extends \VuFind\Search\Base\Options
         }
         if (isset($searchSettings->General->default_sort)) {
             $this->defaultSort = $searchSettings->General->default_sort;
+        }
+        if (isset($searchSettings->General->tie_breaker_sort)) {
+            $this->sortTieBreaker = $searchSettings->General->tie_breaker_sort;
         }
         if (isset($searchSettings->General->empty_search_relevance_override)) {
             $this->emptySearchRelevanceOverride
@@ -211,10 +207,8 @@ class Options extends \VuFind\Search\Base\Options
 
         // Turn on highlighting if the user has requested highlighting or snippet
         // functionality:
-        $highlight = !isset($searchSettings->General->highlighting)
-            ? false : $searchSettings->General->highlighting;
-        $snippet = !isset($searchSettings->General->snippets)
-            ? false : $searchSettings->General->snippets;
+        $highlight = $searchSettings->General->highlighting ?? false;
+        $snippet = $searchSettings->General->snippets ?? false;
         if ($highlight || $snippet) {
             $this->highlight = true;
         }
@@ -305,23 +299,13 @@ class Options extends \VuFind\Search\Base\Options
     }
 
     /**
-     * Get an array of hierarchical facets.
+     * Get the field to be used as a sort tie-breaker.
      *
-     * @return array
+     * @return ?string Sort field or null if not set
      */
-    public function getHierarchicalFacets()
+    public function getSortTieBreaker()
     {
-        return $this->hierarchicalFacets;
-    }
-
-    /**
-     * Get hierarchical facet separators
-     *
-     * @return array
-     */
-    public function getHierarchicalFacetSeparators()
-    {
-        return $this->hierarchicalFacetSeparators;
+        return $this->sortTieBreaker;
     }
 
     /**

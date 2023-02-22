@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -29,6 +29,7 @@ namespace VuFind\Controller;
 
 use Laminas\Config\Config;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFindSearch\Command\SearchCommand;
 use VuFindSearch\Query\Query;
 
 /**
@@ -40,9 +41,11 @@ use VuFindSearch\Query\Query;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class CollectionsController extends AbstractBase
+class CollectionsController extends AbstractBase implements
+    \VuFind\I18n\HasSorterInterface
 {
     use Feature\AlphaBrowseTrait;
+    use \VuFind\I18n\HasSorterTrait;
 
     /**
      * VuFind configuration
@@ -60,6 +63,7 @@ class CollectionsController extends AbstractBase
     public function __construct(ServiceLocatorInterface $sm, Config $config)
     {
         $this->config = $config;
+        $this->setSorter($sm->get(\VuFind\I18n\Sorter::class));
         parent::__construct($sm);
     }
 
@@ -286,7 +290,7 @@ class CollectionsController extends AbstractBase
             $valuesSorted[$resKey]
                 = $this->normalizeForBrowse($resVal['displayText']);
         }
-        asort($valuesSorted);
+        $this->getSorter()->asort($valuesSorted);
 
         // Now the $valuesSorted is in the right order
         return $valuesSorted;
@@ -340,7 +344,13 @@ class CollectionsController extends AbstractBase
         $title = addcslashes($title, '"');
         $query = new Query("is_hierarchy_title:\"$title\"", 'AllFields');
         $searchService = $this->serviceLocator->get(\VuFindSearch\Service::class);
-        $result = $searchService->search('Solr', $query, 0, $this->getBrowseLimit());
+        $command = new SearchCommand(
+            'Solr',
+            $query,
+            0,
+            $this->getBrowseLimit()
+        );
+        $result = $searchService->invoke($command)->getResult();
         return $result->getRecords();
     }
 }

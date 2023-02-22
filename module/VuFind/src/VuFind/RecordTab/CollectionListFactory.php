@@ -27,10 +27,10 @@
  */
 namespace VuFind\RecordTab;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Factory for building the CollectionList tab.
@@ -70,7 +70,8 @@ class CollectionListFactory
         }
         return new $requestedName(
             $container->get(\VuFind\Search\SearchRunner::class),
-            $container->get(\VuFind\Recommend\PluginManager::class)
+            $container->get(\VuFind\Recommend\PluginManager::class),
+            $container->get(\VuFind\Search\Memory::class)
         );
     }
 }

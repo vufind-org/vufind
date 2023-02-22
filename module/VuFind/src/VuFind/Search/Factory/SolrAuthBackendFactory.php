@@ -28,9 +28,6 @@
  */
 namespace VuFind\Search\Factory;
 
-use VuFindSearch\Backend\Solr\Connector;
-use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
-
 /**
  * Factory for the authority SOLR backend.
  *
@@ -51,33 +48,22 @@ class SolrAuthBackendFactory extends AbstractSolrBackendFactory
         $this->searchConfig = 'authority';
         $this->searchYaml = 'authsearchspecs.yaml';
         $this->facetConfig = 'authority';
+        $this->indexNameSetting = 'default_authority_core';
+        $this->defaultIndexName = 'authority';
+        $this->allowFallbackForIndexName = true;
     }
 
     /**
-     * Get the Solr core.
+     * Get the callback for creating a record.
      *
-     * @return string
+     * Returns a callable or null to use RecordCollectionFactory's default method.
+     *
+     * @return callable|null
      */
-    protected function getSolrCore()
+    protected function getCreateRecordCallback(): ?callable
     {
-        $config = $this->config->get($this->mainConfig);
-        return $config->Index->default_authority_core ?? 'authority';
-    }
-
-    /**
-     * Create the SOLR backend.
-     *
-     * @param Connector $connector Connector
-     *
-     * @return \VuFindSearch\Backend\Solr\Backend
-     */
-    protected function createBackend(Connector $connector)
-    {
-        $backend = parent::createBackend($connector);
         $manager = $this->serviceLocator
             ->get(\VuFind\RecordDriver\PluginManager::class);
-        $factory = new RecordCollectionFactory([$manager, 'getSolrAuthRecord']);
-        $backend->setRecordCollectionFactory($factory);
-        return $backend;
+        return [$manager, 'getSolrAuthRecord'];
     }
 }

@@ -41,8 +41,10 @@
           $ariaLabel = $this->translate('Remove filter') . ' ' . $this->escapeHtmlAttr($desc);
         ?>
         <?=$desc?>
-        <?php if($removeLink): ?>
-          <a class="search-filter-remove" aria-label="<?=$ariaLabel?>" href="<?=$removeLink?>"><!--icon from css --></a>
+        <?php if ($removeLink): ?>
+          <a class="search-filter-remove" aria-label="<?=$ariaLabel?>" href="<?=$removeLink?>">
+            <?=$this->icon('search-filter-remove') ?>
+          </a>
         <?php endif; ?>
       </span>
     <?php endif ?>
@@ -88,17 +90,20 @@
         <span class="filters-term filters-<?=$operatorClass?>">
           <?=($index > 0 || 'NOT' === $value['operator']) ? $join : '' ?>
         </span>
-        <span class="filter-value filters-<?=$operatorClass?>">
-          <span class="text">
-            <?=$this->escapeHtml($value['displayText'])?>
-          </span>
           <?php
             $removeLink = isset($this->urlQuery)
               ? $urlQuery->removeFacet($value['field'], $value['value'], $value['operator'])
               : $this->searchMemory()->getEditLink($this->searchClassId, 'removeFacet', $value);
           ?>
-          <a class="search-filter-remove" aria-label="<?=$this->translate('Remove filter') ?>" href="<?=$removeLink?>"><!--icon from css --></a>
-        </span>
+        <a class="filter-value filters-<?=$operatorClass?>" href="<?=$removeLink?>">
+          <span class="sr-only">
+            <?=$this->translate('Remove filter') ?>
+          </span>
+          <span class="text">
+            <?=$this->escapeHtml($value['displayText'])?>
+          </span>
+          <?=$this->icon('search-filter-remove') ?>
+        </a>
         <?php if ($dropdown): ?>
           </li>
         <?php endif; ?>
@@ -123,18 +128,21 @@
   ?>
   <?php // Normal view ?>
   <div class="active-filters hidden-xs">
+    <span class="sr-only"><?=$this->transEscAttr('page_reload_on_deselect_hint') ?></span>
     <?php if ($resetLink && $options->getRetainFilterSetting()): ?>
       <a class="reset-filters-btn" href="<?=$resetLink?>"><?=$this->transEsc('reset_filters_button')?></a>
     <?php elseif ($advancedSearch): ?>
       <p class="adv_search_filters"><?=$this->transEsc('adv_search_filters')?>:</p>
     <?php endif; ?>
     <div class="filters">
+      <span class="sr-only"><?=$this->transEscAttr('applied_filters') ?></span>
       <?=$filters ?>
     </div>
     <div class="clearfix"></div>
   </div>
   <?php // Narrow view ?>
   <div class="active-filters visible-xs">
+    <span class="sr-only"><?=$this->transEscAttr('page_reload_on_deselect_hint') ?></span>
     <div class="filters-toggle-bar">
       <?php if ($resetLink && $options->getRetainFilterSetting()): ?>
         <a class="reset-filters-btn" href="<?=$resetLink?>"><?=$this->transEsc('reset_filters_button')?></a>

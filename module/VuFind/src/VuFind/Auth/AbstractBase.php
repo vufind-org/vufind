@@ -193,7 +193,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
         } catch (AuthException $e) {
             return false;
         }
-        return isset($user) && $user instanceof User;
+        return $user instanceof User;
     }
 
     /**
@@ -316,47 +316,99 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
-     * Return a canned password policy hint when available
+     * Return a canned username or password policy hint when available
      *
-     * @param string $pattern Current policy pattern
+     * @param string  $type    Policy type (password or username)
+     * @param ?string $pattern Current policy pattern
      *
-     * @return string
+     * @return ?string
      */
-    protected function getCannedPasswordPolicyHint($pattern)
+    protected function getCannedPolicyHint(string $type, ?string $pattern): ?string
     {
+        /* Return a value according to the policy and pattern type, e.g.:
+         *
+         * 'numeric'      => password_only_numeric or username_only_numeric
+         * 'alphanumeric' => password_only_alphanumeric or username_only_alphanumeric
+         * others         => null (any hint should be defined by the password_hint or
+         *                   username_hint setting)
+         */
         return (in_array($pattern, ['numeric', 'alphanumeric']))
-            ? 'password_only_' . $pattern : null;
+            ? $type . '_only_' . $pattern : null;
     }
 
     /**
-     * Password policy for a new password (e.g. minLength, maxLength)
+     * Return a canned password policy hint when available
+     *
+     * @param ?string $pattern Current policy pattern
+     *
+     * @return ?string
+     *
+     * @deprecated Use getCannedPolicyHint instead
+     */
+    protected function getCannedPasswordPolicyHint($pattern)
+    {
+        return $this->getCannedPolicyHint('password', $pattern);
+    }
+
+    /**
+     * Get a policy configuration
+     *
+     * @param string $type Policy type (password or username)
+     *
+     * @return array
+     */
+    public function getPolicyConfig(string $type): array
+    {
+        $policy = [];
+        $config = $this->getConfig();
+        $authConfig = isset($config->Authentication)
+            ? $config->Authentication->toArray()
+            : [];
+        /* Map settings to the policy array, e.g.:
+         *
+         * password_minimum_length or username_minimum_length => minLength
+         * password_maximum_length or username_maximum_length => maxLength
+         * password_pattern or username_pattern => pattern
+         * password_hint or username_hint => hint
+         */
+        $map = [
+            "minimum_{$type}_length" => 'minLength',
+            "maximum_{$type}_length" => 'maxLength',
+            "{$type}_pattern" => 'pattern',
+            "{$type}_hint" => 'hint',
+        ];
+        foreach ($map as $iniSetting => $returnKey) {
+            if (null !== ($value = $authConfig[$iniSetting] ?? null)) {
+                $policy[$returnKey] = $value;
+            }
+        }
+        if (!isset($policy['hint'])) {
+            $policy['hint'] = $this->getCannedPolicyHint(
+                $type,
+                $policy['pattern'] ?? null
+            );
+        }
+        return $policy;
+    }
+
+    /**
+     * Get username policy for a new account (e.g. minLength, maxLength)
+     *
+     * @return array
+     */
+    public function getUsernamePolicy()
+    {
+        return $this->getPolicyConfig('username');
+    }
+
+    /**
+     * Get password policy for a new password (e.g. minLength, maxLength)
      *
      * @return array
      */
     public function getPasswordPolicy()
     {
-        $policy = [];
-        $config = $this->getConfig();
-        if (isset($config->Authentication->minimum_password_length)) {
-            $policy['minLength']
-                = $config->Authentication->minimum_password_length;
-        }
-        if (isset($config->Authentication->maximum_password_length)) {
-            $policy['maxLength']
-                = $config->Authentication->maximum_password_length;
-        }
-        if (isset($config->Authentication->password_pattern)) {
-            $policy['pattern']
-                = $config->Authentication->password_pattern;
-        }
-        if (isset($config->Authentication->password_hint)) {
-            $policy['hint'] = $config->Authentication->password_hint;
-        } else {
-            $policy['hint'] = $this->getCannedPasswordPolicyHint(
-                $policy['pattern'] ?? null
-            );
-        }
-        return $policy;
+        return $this->getPolicyConfig('password');
     }
 
     /**
@@ -370,6 +422,24 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
+     * Verify that a username fulfills the username policy. Throws exception if
+     * the usernmae is invalid.
+     *
+     * @param string $username Password to verify
+     *
+     * @return void
+     * @throws AuthException
+     */
+    protected function validateUsernameAgainstPolicy(string $username): void
+    {
+        $this->validateStringAgainstPolicy(
+            'username',
+            $this->getUsernamePolicy(),
+            $username
+        );
+    }
+
+    /**
      * Verify that a password fulfills the password policy. Throws exception if
      * the password is invalid.
      *
@@ -378,25 +448,49 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      * @return void
      * @throws AuthException
      */
-    protected function validatePasswordAgainstPolicy($password)
+    protected function validatePasswordAgainstPolicy(string $password): void
     {
-        $policy = $this->getPasswordPolicy();
+        $this->validateStringAgainstPolicy(
+            'password',
+            $this->getPasswordPolicy(),
+            $password
+        );
+    }
+
+    /**
+     * Verify that a username or password fulfills the given policy. Throws exception
+     * if the string is invalid.
+     *
+     * @param string $type   Policy type (password or username)
+     * @param array  $policy Policy configuration
+     * @param string $string String to verify
+     *
+     * @return void
+     * @throws AuthException
+     */
+    protected function validateStringAgainstPolicy(
+        string $type,
+        array $policy,
+        string $string
+    ): void {
         if (isset($policy['minLength'])
-            && strlen($password) < $policy['minLength']
+            && mb_strlen($string, 'UTF-8') < $policy['minLength']
         ) {
+            // e.g. password_minimum_length or username_minimum_length:
             throw new AuthException(
                 $this->translate(
-                    'password_minimum_length',
+                    "{$type}_minimum_length",
                     ['%%minlength%%' => $policy['minLength']]
                 )
             );
         }
         if (isset($policy['maxLength'])
-            && strlen($password) > $policy['maxLength']
+            && mb_strlen($string, 'UTF-8') > $policy['maxLength']
         ) {
+            // e.g. password_maximum_length or username_maximum_length:
             throw new AuthException(
                 $this->translate(
-                    'password_maximum_length',
+                    "{$type}_maximum_length",
                     ['%%maxlength%%' => $policy['maxLength']]
                 )
             );
@@ -404,30 +498,27 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
         if (!empty($policy['pattern'])) {
             $valid = true;
             if ($policy['pattern'] == 'numeric') {
-                if (!ctype_digit($password)) {
+                if (!ctype_digit($string)) {
                     $valid = false;
                 }
             } elseif ($policy['pattern'] == 'alphanumeric') {
-                if (preg_match('/[^\da-zA-Z]/', $password)) {
+                if (preg_match('/[^\da-zA-Z]/', $string)) {
                     $valid = false;
                 }
             } else {
-                $result = preg_match(
-                    "/({$policy['pattern']})/",
-                    $password,
-                    $matches
-                );
+                $result = preg_match("/({$policy['pattern']})/u", $string, $matches);
                 if ($result === false) {
                     throw new \Exception(
-                        'Invalid regexp in password pattern: ' . $policy['pattern']
+                        "Invalid regexp in $type pattern: " . $policy['pattern']
                     );
                 }
-                if (!$result || $matches[1] != $password) {
+                if (!$result || $matches[1] != $string) {
                     $valid = false;
                 }
             }
             if (!$valid) {
-                throw new AuthException($this->translate('password_error_invalid'));
+                // e.g. password_error_invalid or username_error_invalid:
+                throw new AuthException($this->translate("{$type}_error_invalid"));
             }
         }
     }

@@ -445,6 +445,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
     protected function getOpeningTrackingCode(): string
     {
         $escape = $this->getView()->plugin('escapejs');
+        $cookieConsent = $this->getView()->plugin('cookieConsent');
         $pageUrl = $escape($this->getPageUrl());
         $code = <<<EOT
 var _paq = window._paq = window._paq || [];
@@ -454,6 +455,8 @@ _paq.push(['setCustomUrl', '$pageUrl']);
 EOT;
         if ($this->disableCookies) {
             $code .= "_paq.push(['disableCookies']);\n";
+        } elseif ($cookieConsent->isEnabled()) {
+            $code .= "_paq.push(['requireCookieConsent']);\n";
         }
 
         return $code;

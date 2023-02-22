@@ -70,10 +70,25 @@ class SearchMemory extends AbstractHelper
      */
     public function getLastSearchLink($link, $prefix = '', $suffix = '')
     {
-        $last = $this->memory->retrieveSearch();
-        if (!empty($last)) {
+        if ($lastSearch = $this->getLastSearch()) {
+            $searchClassId = $lastSearch->getBackendId();
+            $params = $lastSearch->getParams();
+            // Use last settings for params that are not stored in the search:
+            foreach (['limit', 'view', 'sort'] as $setting) {
+                $value
+                    = $this->memory->retrieveLastSetting($searchClassId, $setting);
+                if ($value) {
+                    $method = 'set' . ucfirst($setting);
+                    $params->$method($value);
+                }
+            }
+
+            $urlHelper = $this->getView()->plugin('url');
+            $url = $urlHelper($lastSearch->getOptions()->getSearchAction())
+                . $lastSearch->getUrlQuery()->getParams(false);
+
             $escaper = $this->getView()->plugin('escapeHtml');
-            return $prefix . '<a href="' . $escaper($last) . '">' . $link . '</a>'
+            return $prefix . '<a href="' . $escaper($url) . '">' . $link . '</a>'
                 . $suffix;
         }
         return '';
@@ -150,10 +165,53 @@ class SearchMemory extends AbstractHelper
         // if the user jumps from search results of one backend to a record of a
         // different backend, we don't want to display irrelevant filters. If there
         // is a backend mismatch, don't initialize the parameter object!
-        $expectedPath = $this->view->url($params->getOptions()->getSearchAction());
-        if (substr($lastUrl, 0, strlen($expectedPath)) === $expectedPath) {
-            $params->initFromRequest($request);
+        if ($lastUrl) {
+            $expectedPath
+                = $this->view->url($params->getOptions()->getSearchAction());
+            if (substr($lastUrl, 0, strlen($expectedPath)) === $expectedPath) {
+                $params->initFromRequest($request);
+            }
         }
         return $params;
+    }
+
+    /**
+     * Get current search id
+     *
+     * @return ?int
+     */
+    public function getCurrentSearchId(): ?int
+    {
+        return $this->memory->getCurrentSearchId();
+    }
+
+    /**
+     * Get current search
+     *
+     * @return ?\VuFind\Search\Base\Results
+     */
+    public function getCurrentSearch(): ?\VuFind\Search\Base\Results
+    {
+        return $this->memory->getCurrentSearch();
+    }
+
+    /**
+     * Get last search id
+     *
+     * @return ?int
+     */
+    public function getLastSearchId(): ?int
+    {
+        return $this->memory->getLastSearchId();
+    }
+
+    /**
+     * Get last search
+     *
+     * @return ?\VuFind\Search\Base\Results
+     */
+    public function getLastSearch(): ?\VuFind\Search\Base\Results
+    {
+        return $this->memory->getLastSearch();
     }
 }

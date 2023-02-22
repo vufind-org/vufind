@@ -42,6 +42,31 @@ var VuFind = (function VuFind() {
     }
   };
 
+  /**
+   * Evaluate a callback
+   */
+  var evalCallback = function evalCallback(callback, event, data) {
+    if ('function' === typeof window[callback]) {
+      return window[callback](event, data);
+    }
+    var parts = callback.split('.');
+    if (typeof window[parts[0]] === 'object') {
+      var obj = window[parts[0]];
+      for (var i = 1; i < parts.length; i++) {
+        if (typeof obj[parts[i]] === 'undefined') {
+          obj = false;
+          break;
+        }
+        obj = obj[parts[i]];
+      }
+      if ('function' === typeof obj) {
+        return obj(event, data);
+      }
+    }
+    console.error('Callback function ' + callback + ' not found.');
+    return null;
+  };
+
   var initDisableSubmitOnClick = function initDisableSubmitOnClick() {
     $('[data-disable-on-submit]').on('submit', function handleOnClickDisable() {
       var $form = $(this);
@@ -56,6 +81,31 @@ var VuFind = (function VuFind() {
     });
   };
 
+  var initClickHandlers = function initClickHandlers() {
+    window.addEventListener(
+      'click',
+      function handleClick(event) {
+        let elem = event.target;
+        if (elem.hasAttribute('data-click-callback')) {
+          return evalCallback(elem.dataset.clickCallback, event, {});
+        }
+        if (elem.hasAttribute('data-click-set-checked')) {
+          document.getElementById(elem.dataset.clickSetChecked).checked = true;
+          event.preventDefault();
+        }
+      }
+    );
+    window.addEventListener(
+      'change',
+      function handleChange(event) {
+        let elem = event.target;
+        if (elem.hasAttribute('data-submit-on-change')) {
+          elem.form.requestSubmit();
+        }
+      }
+    );
+  };
+
   var init = function init() {
     for (var i = 0; i < _submodules.length; i++) {
       if (this[_submodules[i]].init) {
@@ -65,6 +115,7 @@ var VuFind = (function VuFind() {
     _initialized = true;
 
     initDisableSubmitOnClick();
+    initClickHandlers();
   };
 
   var addTranslations = function addTranslations(s) {
@@ -94,13 +145,44 @@ var VuFind = (function VuFind() {
       }
     }
   };
-  var icon = function icon(name) {
+  var icon = function icon(name, attrs = {}) {
     if (typeof _icons[name] == "undefined") {
       console.error("JS icon missing: " + name);
       return name;
     }
 
     var html = _icons[name];
+
+    // Add additional attributes
+    function addAttrs(_html, _attrs = {}) {
+      var mod = String(_html);
+      for (var attr in _attrs) {
+        if (Object.prototype.hasOwnProperty.call(_attrs, attr)) {
+          var sliceStart = html.indexOf(" ");
+          var sliceEnd = sliceStart;
+          var value = _attrs[attr];
+          var regex = new RegExp(` ${attr}=(['"])([^\\1]+?)\\1`);
+          var existing = html.match(regex);
+          if (existing) {
+            sliceStart = existing.index;
+            sliceEnd = sliceStart + existing[0].length;
+            value = existing[2] + " " + value;
+          }
+          mod = mod.slice(0, sliceStart) +
+              " " + attr + '="' + value + '"' +
+              mod.slice(sliceEnd);
+        }
+      }
+      return mod;
+    }
+
+    if (typeof attrs == "string") {
+      return addAttrs(html, { class: attrs });
+    }
+
+    if (Object.keys(attrs).length > 0) {
+      return addAttrs(html, attrs);
+    }
 
     return html;
   };
@@ -112,7 +194,7 @@ var VuFind = (function VuFind() {
   var loading = function loading(text = null, extraClass = "") {
     let className = ("loading-spinner " + extraClass).trim();
     let string = translate(text === null ? 'loading_ellipsis' : text);
-    return '<span class="' + className + '">' + icon('spinner') + string + '</span>';
+    return '<span class="' + className + '">' + icon('spinner') + ' ' + string + '</span>';
   };
 
   /**
@@ -159,6 +241,15 @@ var VuFind = (function VuFind() {
     });
   };
 
+  var isPrinting = function() {
+    return Boolean(window.location.search.match(/[?&]print=/));
+  };
+
+  var getCurrentSearchId = function getCurrentSearchId() {
+    var match = location.href.match(/[&?]sid=(\d+)/);
+    return match ? match[1] : '';
+  };
+
   //Reveal
   return {
     defaultSearchBackend: defaultSearchBackend,
@@ -168,8 +259,10 @@ var VuFind = (function VuFind() {
     addTranslations: addTranslations,
     init: init,
     emit: emit,
+    evalCallback: evalCallback,
     getCspNonce: getCspNonce,
     icon: icon,
+    isPrinting: isPrinting,
     listen: listen,
     refreshPage: refreshPage,
     register: register,
@@ -178,7 +271,8 @@ var VuFind = (function VuFind() {
     loadHtml: loadHtml,
     loading: loading,
     translate: translate,
-    updateCspNonce: updateCspNonce
+    updateCspNonce: updateCspNonce,
+    getCurrentSearchId: getCurrentSearchId
   };
 })();
 
@@ -463,9 +557,11 @@ function setupQRCodeLinks(_container) {
 
   container.find('a.qrcodeLink').click(function qrcodeToggle() {
     if ($(this).hasClass("active")) {
-      $(this).html(VuFind.translate('qrcode_show')).removeClass("active");
+      $(".result-link-label", this).html(VuFind.translate('qrcode_show'));
+      $(this).removeClass("active");
     } else {
-      $(this).html(VuFind.translate('qrcode_hide')).addClass("active");
+      $(".result-link-label", this).html(VuFind.translate('qrcode_hide'));
+      $(this).addClass("active");
     }
 
     var holder = $(this).next('.qrcode');

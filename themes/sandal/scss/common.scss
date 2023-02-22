@@ -57,7 +57,9 @@ select.form-control {
 .breadcrumb a { color: $dark-gray; }
 .breadcrumb .active { color: $near-black; }
 
-.nav > li > a { color: $brand-primary; }
+.nav > li > a {
+  color: $brand-primary;
+}
 .navbar-collapse,
 .navbar-form { box-shadow: none; }
 

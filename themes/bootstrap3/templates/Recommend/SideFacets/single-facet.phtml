@@ -25,19 +25,17 @@
   $displayText = '<span class="facet-value">' . $displayText . '</span>';
 
   if ($this->facet['operator'] == 'OR') {
-    $displayText =
-      '<i class="fa ' . ($this->facet['isApplied'] ? 'fa-check-square-o' : 'fa-square-o') . '" aria-hidden="true"></i>'
-      . $displayText;
+    $displayText = $this->icon($this->facet['isApplied'] ? 'facet-checked' : 'facet-unchecked') . $displayText;
   }
 ?>
 <?php if ($hasSubLinks): ?>
   <div class="<?=implode(' ', $classList) ?>">
 <?php else: ?>
-  <a href="<?=$toggleUrl ?>" class="<?=implode(' ', $classList) ?>" data-title="<?=$this->escapeHtmlAttr($this->facet['displayText']) ?>" data-count="<?=$this->facet['count'] ?>"<?php if($this->facet['isApplied']): ?> title="<?=$this->transEscAttr('applied_filter') ?>"<?php endif;?> data-lightbox-ignore>
+  <a href="<?=$toggleUrl ?>" class="<?=implode(' ', $classList) ?>" data-title="<?=$this->escapeHtmlAttr($this->facet['displayText']) ?>" data-count="<?=$this->facet['count'] ?>"<?php if ($this->facet['isApplied']): ?> title="<?=$this->transEscAttr('applied_filter') ?>"<?php endif;?> data-lightbox-ignore>
 <?php endif; ?>
 
   <?php if ($hasSubLinks): ?>
-    <a class="text" href="<?=$toggleUrl ?>" data-lightbox-ignore data-title="<?=$this->escapeHtmlAttr($this->facet['displayText']) ?>" data-count="<?=$this->facet['count'] ?>"<?php if($this->facet['isApplied']): ?> title="<?=$this->transEscAttr('applied_filter') ?>"<?php endif;?>>
+    <a class="text" href="<?=$toggleUrl ?>" data-lightbox-ignore data-title="<?=$this->escapeHtmlAttr($this->facet['displayText']) ?>" data-count="<?=$this->facet['count'] ?>"<?php if ($this->facet['isApplied']): ?> title="<?=$this->transEscAttr('applied_filter') ?>"<?php endif;?>>
       <?=$displayText ?>
     </a>
   <?php else: ?>
@@ -46,16 +44,18 @@
     </span>
   <?php endif; ?>
 
-  <?php if (!$this->facet['isApplied']): ?>
+  <?php if (!$this->facet['isApplied'] && null !== $this->facet['count']): ?>
     <span class="badge">
-      <?=$this->localizedNumber($this->facet['count']) ?>
+      <?php $currentCount = $this->localizedNumber($this->facet['count']); ?>
+      <span class="sr-only"><?=$this->transEsc('result_count', ['%%count%%' => $currentCount]) ?></span>
+      <span aria-hidden="true"><?=$currentCount ?></span>
     </span>
   <?php endif; ?>
 
   <?php if ($this->exclude && !$this->facet['isApplied']): ?>
     <?php $excludeURL = $this->urlBase . $this->url->addFacet($this->group, $this->facet['value'], 'NOT'); ?>
     <a href="<?=$excludeURL ?>" data-lightbox-ignore class="exclude">
-      <i class="fa fa-times" aria-hidden="true"></i>
+      <?=$this->icon('facet-exclude') ?>
       <span class="sr-only"><?=$this->transEsc('exclude_facet') ?></span>
     </a>
   <?php endif; ?>

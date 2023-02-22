@@ -60,6 +60,13 @@ class PAIA extends DAIA
     protected $paiaURL;
 
     /**
+     * Accepted grant_type for authorization
+     *
+     * @var string
+     */
+    protected $grantType = 'password';
+
+    /**
      * Timeout in seconds to be used for PAIA http requests
      *
      * @var int
@@ -198,6 +205,11 @@ class PAIA extends DAIA
             throw new ILSException('PAIA/baseUrl configuration needs to be set.');
         }
         $this->paiaURL = $this->config['PAIA']['baseUrl'];
+
+        // read configured grantType
+        if (isset($this->config['PAIA']['grantType'])) {
+            $this->grantType = $this->config['PAIA']['grantType'];
+        }
 
         // use PAIA specific timeout setting for http requests if configured
         if ((isset($this->config['PAIA']['timeout']))) {
@@ -917,7 +929,11 @@ class PAIA extends DAIA
      */
     public function patronLogin($username, $password)
     {
-        if ($username == '' || $password == '') {
+        // check also for grantType as patron's password is never required when
+        // grantType = client_credentials is configured
+        if ($username == ''
+            || ($password == '' && $this->grantType != 'client_credentials')
+        ) {
             throw new ILSException('Invalid Login, Please try again.');
         }
 
@@ -1145,6 +1161,10 @@ class PAIA extends DAIA
                     // before the cache expires
                     if ($this->daiaCacheEnabled) {
                         $this->removeCachedData($holdDetails['doc_id']);
+                    }
+
+                    if ($this->paiaCacheEnabled) {
+                        $this->removeCachedData($patron['cat_username']);
                     }
                 }
             }
@@ -1774,18 +1794,72 @@ class PAIA extends DAIA
      */
     protected function paiaLogin($username, $password)
     {
-        // perform full PAIA auth and get patron info
-        $post_data = [
-            "username"   => $username,
-            "password"   => $password,
-            "grant_type" => "password",
-            "scope"      => self::SCOPE_READ_PATRON . " " .
+        // as PAIA supports two authentication methods (defined as grant_type:
+        // password or client_credentials), check which one is configured
+        if (!in_array($this->grantType, ['password', 'client_credentials'])) {
+            throw new ILSException(
+                'Unsupported PAIA grant_type configured: ' . $this->grantType
+            );
+        }
+
+        // prepare http header
+        $header_data = [];
+
+        // prepare post data depending on configured grant type
+        $post_data = [];
+        switch ($this->grantType) {
+        case 'password':
+            $post_data["username"] = $username;
+            $post_data["password"] = $password;
+            break;
+        case 'client_credentials':
+            // client_credentials only works if we have client_credentials
+            // username and password (see PAIA.ini for further explanation)
+            if (isset($this->config['PAIA']['clientUsername'])
+                && isset($this->config['PAIA']['clientPassword'])
+            ) {
+                $header_data["Authorization"] = 'Basic ' .
+                    base64_encode(
+                        $this->config['PAIA']['clientUsername'] . ':' .
+                        $this->config['PAIA']['clientPassword']
+                    );
+                $post_data["patron"] = $username; // actual patron identifier
+            } else {
+                throw new ILSException(
+                    'Missing username and/or password for PAIA grant_type' .
+                    ' client_credentials in PAIA configuration.'
+                );
+            }
+            break;
+        }
+
+        // finalize post data
+        $post_data["grant_type"] = $this->grantType;
+        $post_data["scope"] = self::SCOPE_READ_PATRON . " " .
                 self::SCOPE_READ_FEES . " " .
                 self::SCOPE_READ_ITEMS . " " .
                 self::SCOPE_WRITE_ITEMS . " " .
-                self::SCOPE_CHANGE_PASSWORD
-        ];
-        $responseJson = $this->paiaPostRequest('auth/login', $post_data);
+                self::SCOPE_CHANGE_PASSWORD;
+
+        // perform full PAIA auth and get patron info
+        $result = $this->httpService->post(
+            $this->paiaURL . 'auth/login',
+            json_encode($post_data),
+            'application/json; charset=UTF-8',
+            $this->paiaTimeout,
+            $header_data
+        );
+
+        if (!$result->isSuccess()) {
+            // log error for debugging
+            $this->debug(
+                'HTTP status ' . $result->getStatusCode() .
+                ' received'
+            );
+        }
+
+        // continue with result data
+        $responseJson = $result->getBody();
 
         $responseArray = $this->paiaParseJsonAsArray($responseJson);
         if (!isset($responseArray['access_token'])) {

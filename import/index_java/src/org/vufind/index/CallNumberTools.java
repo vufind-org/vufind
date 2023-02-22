@@ -353,12 +353,7 @@ public class CallNumberTools
         Set<String> result = new LinkedHashSet<String>();
 
         // Loop through the specified MARC fields:
-        Set<String> input = SolrIndexer.instance().getFieldList(record, fieldSpec);
-        Iterator<String> iter = input.iterator();
-        while (iter.hasNext()) {
-            // Get the current string to work on:
-            String current = iter.next();
-
+        for (String current : SolrIndexer.instance().getFieldList(record, fieldSpec)) {
             // Add valid strings to the set, normalizing them to be all uppercase
             // and free from whitespace.
             DeweyCallNumber callNum = new DeweyCallNumber(current);
@@ -385,12 +380,7 @@ public class CallNumberTools
      */
     public String getDeweySortable(Record record, String fieldSpec) {
         // Loop through the specified MARC fields:
-        Set<String> input = SolrIndexer.instance().getFieldList(record, fieldSpec);
-        Iterator<String> iter = input.iterator();
-        while (iter.hasNext()) {
-            // Get the current string to work on:
-            String current = iter.next();
-
+        for (String current : SolrIndexer.instance().getFieldList(record, fieldSpec)) {
             // If this is a valid Dewey number, return the sortable shelf key:
             DeweyCallNumber callNum = new DeweyCallNumber(current);
             if (callNum.isValid()) {
@@ -467,12 +457,7 @@ public class CallNumberTools
         List<String> result = new LinkedList<String>();
 
         // Loop through the specified MARC fields:
-        Set<String> input = SolrIndexer.instance().getFieldList(record, fieldSpec);
-        Iterator<String> iter = input.iterator();
-        while (iter.hasNext()) {
-            // Get the current string to work on:
-            String current = iter.next();
-
+        for (String current : SolrIndexer.instance().getFieldList(record, fieldSpec)) {
             // gather all sort keys, even if number is not valid
             DeweyCallNumber callNum = new DeweyCallNumber(current);
             result.add(callNum.getShelfKey());

@@ -27,12 +27,12 @@
  */
 namespace VuFind\Search;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Laminas\Session\Container;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Search memory factory.
@@ -67,10 +67,17 @@ class MemoryFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
+        $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
         $session = new Container(
             'Search',
-            $container->get(\Laminas\Session\SessionManager::class)
+            $sessionManager
         );
-        return new $requestedName($session);
+        return new $requestedName(
+            $session,
+            $sessionManager->getId(),
+            $container->get('Request'),
+            $container->get(\VuFind\Db\Table\PluginManager::class)->get('Search'),
+            $container->get(\VuFind\Search\Results\PluginManager::class)
+        );
     }
 }

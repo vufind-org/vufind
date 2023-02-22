@@ -127,7 +127,13 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
     protected function setUp(): void
     {
         $handlermap     = new HandlerMap(['select' => ['fallback' => true]]);
-        $connector      = new Connector('http://example.org/', $handlermap);
+        $connector      = new Connector(
+            'http://localhost/',
+            $handlermap,
+            function () {
+                return new \Laminas\Http\Client();
+            }
+        );
         $this->backend  = new Backend($connector);
         $this->backend->setIdentifier('foo');
         $this->listener = new MultiIndexListener($this->backend, self::$shards, self::$fields, self::$specs);

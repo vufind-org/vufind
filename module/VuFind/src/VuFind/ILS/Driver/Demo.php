@@ -8,7 +8,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2007.
+ * Copyright (C) Villanova University 2007, 2022.
  * Copyright (C) The National Library of Finland 2014.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -38,6 +38,7 @@ use Laminas\Http\Request as HttpRequest;
 use Laminas\Session\Container as SessionContainer;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
+use VuFindSearch\Command\RandomCommand;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Service as SearchService;
 
@@ -51,8 +52,10 @@ use VuFindSearch\Service as SearchService;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class Demo extends AbstractBase
+class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
 {
+    use \VuFind\I18n\HasSorterTrait;
+
     /**
      * Catalog ID used to distinquish between multiple Demo driver instances with the
      * MultiBackend driver
@@ -153,6 +156,33 @@ class Demo extends AbstractBase
     protected $instructors = ["Instructor A", "Instructor B", "Instructor C"];
 
     /**
+     * Item and pick up locations
+     *
+     * @var array
+     */
+    protected $locations = [
+        [
+            'locationID' => 'A',
+            'locationDisplay' => 'Campus A'
+        ],
+        [
+            'locationID' => 'B',
+            'locationDisplay' => 'Campus B'
+        ],
+        [
+            'locationID' => 'C',
+            'locationDisplay' => 'Campus C'
+        ]
+    ];
+
+    /**
+     * Default pickup location
+     *
+     * @var string
+     */
+    protected $defaultPickUpLocation;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
@@ -204,6 +234,11 @@ class Demo extends AbstractBase
         if (isset($this->config['Failure_Probabilities'])) {
             $this->failureProbabilities = $this->config['Failure_Probabilities'];
         }
+        $this->defaultPickUpLocation
+            = $this->config['Holds']['defaultPickUpLocation'] ?? '';
+        if ($this->defaultPickUpLocation === 'user-selected') {
+            $this->defaultPickUpLocation = false;
+        }
         $this->checkIntermittentFailure();
     }
 
@@ -234,7 +269,7 @@ class Demo extends AbstractBase
      */
     protected function getFakeLoc($returnText = true)
     {
-        $locations = $this->getPickUpLocations();
+        $locations = $this->locations;
         $loc = rand() % count($locations);
         return $returnText
             ? $locations[$loc]['locationDisplay']
@@ -339,7 +374,8 @@ class Demo extends AbstractBase
     {
         $source = $this->getRecordSource();
         $query = $this->config['Records']['query'] ?? '*:*';
-        $result = $this->searchService->random($source, new Query($query), 1);
+        $command = new RandomCommand($source, new Query($query), 1);
+        $result = $this->searchService->invoke($command)->getResult();
         if (count($result) === 0) {
             throw new \Exception("Problem retrieving random record from $source.");
         }
@@ -428,6 +464,7 @@ class Demo extends AbstractBase
         $locationhref = ($location === 'Campus A') ? 'http://campus-a' : false;
         $result = [
             'id'           => $id,
+            'record_id'    => $id, // for hold links to not rely on id from route
             'source'       => $this->getRecordSource(),
             'item_id'      => $number,
             'number'       => $number,
@@ -784,7 +821,7 @@ class Demo extends AbstractBase
         if ($options['itemLimit'] ?? null) {
             // For sensible pagination, we need to sort by location:
             $callback = function ($a, $b) {
-                return strcmp($a['location'], $b['location']);
+                return $this->getSorter()->compare($a['location'], $b['location']);
             };
             usort($status, $callback);
             $slice = array_slice(
@@ -891,6 +928,9 @@ class Demo extends AbstractBase
     public function getMyProfile($patron)
     {
         $this->checkIntermittentFailure();
+        $age = rand(13, 113);
+        $birthDate = new \DateTime();
+        $birthDate->sub(new \DateInterval("P{$age}Y"));
         $patron = [
             'firstname'       => 'Lib-' . $patron['cat_username'],
             'lastname'        => 'Rarian',
@@ -902,7 +942,8 @@ class Demo extends AbstractBase
             'phone'           => '1900 CALL ME',
             'mobile_phone'    => '1234567890',
             'group'           => 'Library Staff',
-            'expiration_date' => 'Someday'
+            'expiration_date' => 'Someday',
+            'birthdate'       => $birthDate->format('Y-m-d')
         ];
         return $patron;
     }
@@ -1177,7 +1218,10 @@ class Demo extends AbstractBase
                 $transactions,
                 function ($a, $b) use ($sort, $descending) {
                     if ('title' === $sort[0]) {
-                        $cmp = strcmp($a['title'] ?? '', $b['title'] ?? '');
+                        $cmp = $this->getSorter()->compare(
+                            $a['title'] ?? '',
+                            $b['title'] ?? ''
+                        );
                     } else {
                         $cmp = $a['rawduedate'] - $b['rawduedate'];
                     }
@@ -1365,26 +1409,25 @@ class Demo extends AbstractBase
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
         $this->checkIntermittentFailure();
-        $result = [
-            [
-                'locationID' => 'A',
-                'locationDisplay' => 'Campus A'
-            ],
-            [
-                'locationID' => 'B',
-                'locationDisplay' => 'Campus B'
-            ],
-            [
-                'locationID' => 'C',
-                'locationDisplay' => 'Campus C'
-            ]
-        ];
+        $result = $this->locations;
         if (($holdDetails['reqnum'] ?? '') == 1) {
             $result[] = [
                 'locationID' => 'D',
                 'locationDisplay' => 'Campus D'
             ];
         }
+
+        if (isset($this->config['Holds']['excludePickupLocations'])) {
+            $excluded
+                = explode(':', $this->config['Holds']['excludePickupLocations']);
+            $result = array_filter(
+                $result,
+                function ($loc) use ($excluded) {
+                    return !in_array($loc['locationID'], $excluded);
+                }
+            );
+        }
+
         return $result;
     }
 
@@ -1419,15 +1462,15 @@ class Demo extends AbstractBase
      * placeHold, minus the patron data.  May be used to limit the pickup options
      * or may be ignored.
      *
-     * @return string A location ID
+     * @return false|string      The default pickup location for the patron or false
+     * if the user has to choose.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
         $this->checkIntermittentFailure();
-        $locations = $this->getPickUpLocations($patron);
-        return $locations[0]['locationID'];
+        return $this->defaultPickUpLocation;
     }
 
     /**
@@ -2020,7 +2063,7 @@ class Demo extends AbstractBase
         $reqNum = sprintf('%06d', $nextId);
         $session->holds->append(
             [
-                'id'       => $holdDetails['id'],
+                'id'       => $holdDetails['record_id'],
                 'source'   => $this->getRecordSource(),
                 'location' => $holdDetails['pickUpLocation'],
                 'expire'   =>
@@ -2094,6 +2137,19 @@ class Demo extends AbstractBase
                 "sysMessage" => 'Storage Retrieval Requests are disabled.'
             ];
         }
+
+        // Make sure pickup location is valid
+        $pickUpLocation = $details['pickUpLocation'] ?? null;
+        $validLocations = array_column($this->getPickUpLocations(), 'locationID');
+        if (null !== $pickUpLocation
+            && !in_array($pickUpLocation, $validLocations)
+        ) {
+            return [
+                'success' => false,
+                'sysMessage' => 'storage_retrieval_request_invalid_pickup'
+            ];
+        }
+
         // Simulate failure:
         if ($this->isFailing(__METHOD__, 50)) {
             return [
@@ -2479,13 +2535,13 @@ class Demo extends AbstractBase
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = null)
+    public function getConfig($function, $params = [])
     {
         $this->checkIntermittentFailure();
         if ($function == 'Holds') {
             return $this->config['Holds']
                 ?? [
-                    'HMACKeys' => 'id:item_id:level',
+                    'HMACKeys' => 'record_id:item_id:level',
                     'extraHoldFields' =>
                         'comments:requestGroup:pickUpLocation:requiredByDate',
                     'defaultRequiredDate' => 'driver:0:2:0',

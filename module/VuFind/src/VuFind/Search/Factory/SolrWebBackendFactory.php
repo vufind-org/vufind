@@ -28,9 +28,6 @@
  */
 namespace VuFind\Search\Factory;
 
-use VuFindSearch\Backend\Solr\Connector;
-use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
-
 /**
  * Factory for the website SOLR backend.
  *
@@ -51,54 +48,24 @@ class SolrWebBackendFactory extends AbstractSolrBackendFactory
         $this->searchConfig = 'website';
         $this->searchYaml = 'websearchspecs.yaml';
         $this->facetConfig = 'website';
+        $this->defaultIndexName = 'website';
     }
 
     /**
-     * Get the Solr core.
+     * Get the callback for creating a record.
      *
-     * @return string
+     * Returns a callable or null to use RecordCollectionFactory's default method.
+     *
+     * @return callable|null
      */
-    protected function getSolrCore()
+    protected function getCreateRecordCallback(): ?callable
     {
-        $config = $this->config->get($this->searchConfig);
-        return $config->Index->default_core ?? 'website';
-    }
-
-    /**
-     * Get the Solr URL.
-     *
-     * @param string $config name of configuration file (null for default)
-     *
-     * @return string
-     */
-    protected function getSolrUrl($config = null)
-    {
-        // Only override parent default if valid value present in config:
-        $configToCheck = $config ?? $this->searchConfig;
-        $webConfig = $this->config->get($configToCheck);
-        $finalConfig = isset($webConfig->Index->url) ? $configToCheck : null;
-        return parent::getSolrUrl($finalConfig);
-    }
-
-    /**
-     * Create the SOLR backend.
-     *
-     * @param Connector $connector Connector
-     *
-     * @return \VuFindSearch\Backend\Solr\Backend
-     */
-    protected function createBackend(Connector $connector)
-    {
-        $backend = parent::createBackend($connector);
         $manager = $this->serviceLocator
             ->get(\VuFind\RecordDriver\PluginManager::class);
-        $callback = function ($data) use ($manager) {
+        return function ($data) use ($manager) {
             $driver = $manager->get('SolrWeb');
             $driver->setRawData($data);
             return $driver;
         };
-        $factory = new RecordCollectionFactory($callback);
-        $backend->setRecordCollectionFactory($factory);
-        return $backend;
     }
 }

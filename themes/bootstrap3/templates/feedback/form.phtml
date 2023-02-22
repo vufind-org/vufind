@@ -4,7 +4,7 @@
 
   $title = $form->getTitle();
   $title = !empty($title)
-    ? $this->transEsc($title) : null;
+    ? $this->translate($title) : null;
 
   $formUrl = $this->url('feedback-form', ['id' => $this->formId]);
   $form->setAttribute('action', $formUrl);
@@ -20,7 +20,7 @@
   <?php if ($title): ?>
     <?php $this->headTitle($title); ?>
     <?php $headTag = $this->inLightbox ? 'h2' : 'h1'; ?>
-    <<?=$headTag?>><?=$title?></<?=$headTag?>>
+    <<?=$headTag?>><?=$this->escapeHtml($title)?></<?=$headTag?>>
   <?php endif; ?>
   <?=$this->flashmessages()?>
 
@@ -34,7 +34,7 @@
   <?php endif ?>
 
   <?php $currentGroup = null; ?>
-  <?php foreach($form->getFormElementConfig() as $el): ?>
+  <?php foreach ($form->getFormElementConfig() as $el): ?>
     <?php
     $formElement = $form->get($el['name']);
 
@@ -53,13 +53,13 @@
         $handleGroup = 'openAndClose';
         $currentGroup = $group;
     }
-    $elementHelpPre = $elementHelpPost = null;
+    $elementHelpPre = $elementHelpPost = '';
     if ($elementHelp = $el['help'] ?? null) {
       if (is_string($elementHelp)) {
         $elementHelpPre = $elementHelp;
       } else {
-        $elementHelpPre = $elementHelp['pre'] ?? null;
-        $elementHelpPost = $elementHelp['post'] ?? null;
+        $elementHelpPre = $elementHelp['pre'] ?? '';
+        $elementHelpPost = $elementHelp['post'] ?? '';
       }
       $elementHelpPre = $form->getDisplayString($elementHelpPre);
       $elementHelpPost = $form->getDisplayString($elementHelpPost);
@@ -71,7 +71,7 @@
     <?php endif ?>
     <?php if (in_array($handleGroup, ['open', 'openAndClose'])): ?>
       <?php if (in_array($el['type'], ['checkbox', 'radio'])): ?>
-        <div class="field-set" role="group"<?= !empty($el['label']) ? ' aria-labelledby="' . $this->escapeHtmlAttr($el['name']) . '"' : ''?>>
+        <div class="field-set" role="group"<?= !empty($el['label']) ? ' aria-labelledby="' . $this->escapeHtmlAttr($formElement->getAttribute('id')) . '"' : ''?>>
       <?php else: ?>
         <div class="field-set"<?= !empty($elementHelpPre) ? ' role="contentinfo" aria-label="' . $this->escapeHtmlAttr($elementHelpPre) . '"' : ''?>>
       <?php endif ?>
@@ -88,9 +88,9 @@
           $requireOne = $el['requireOne'] ?? false;
         ?>
         <?php if (in_array($el['type'], ['checkbox', 'radio'])): ?>
-          <p id="<?=$this->escapeHtmlAttr($el['name'])?>" class="control-label radio-label<?=$required && !$requireOne? ' required' : ''?><?=$requireOne ? ' require-one' : ''?>"><?=$this->transEsc($el['label'])?>:</p>
-        <?php else: ?>
-          <label for="<?=$this->escapeHtmlAttr($el['name'])?>" class="control-label<?=$required ? ' required' : ''?>"><?=$this->transEsc($el['label'])?>:</label>
+          <p id="<?=$this->escapeHtmlAttr($formElement->getAttribute('id'))?>" class="control-label radio-label<?=$required && !$requireOne? ' required' : ''?><?=$requireOne ? ' require-one' : ''?>"><?=$this->transEsc($el['label'])?>:</p>
+        <?php elseif ('hidden' !== $el['type']): ?>
+          <label for="<?=$this->escapeHtmlAttr($formElement->getAttribute('id'))?>" class="control-label<?=$required ? ' required' : ''?>"><?=$this->transEsc($el['label'])?>:</label>
         <?php endif ?>
       <?php endif ?>
     <?php else: ?>

@@ -40,6 +40,29 @@ use Laminas\Db\Sql\Select;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
+ *
+ * @property int     $id
+ * @property ?string $username
+ * @property string  $password
+ * @property ?string $pass_hash
+ * @property string  $firstname
+ * @property string  $lastname
+ * @property string  $email
+ * @property ?string $email_verified
+ * @property string  $pending_email
+ * @property int     $user_provided_email
+ * @property ?string $cat_id
+ * @property ?string $cat_username
+ * @property ?string $cat_password
+ * @property ?string $cat_pass_enc
+ * @property string  $college
+ * @property string  $major
+ * @property ?string $home_library
+ * @property string  $created
+ * @property string  $verify_hash
+ * @property string  $last_login
+ * @property ?string $auth_method
+ * @property string  $last_language
  */
 class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     \LmcRbacMvc\Identity\IdentityInterface
@@ -209,21 +232,42 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
             return $text;
         }
 
+        $configAuth = $this->config->Authentication;
+
         // Load encryption key from configuration if not already present:
-        if (null === $this->encryptionKey) {
-            if (!isset($this->config->Authentication->ils_encryption_key)
-                || empty($this->config->Authentication->ils_encryption_key)
-            ) {
+        if ($this->encryptionKey === null) {
+            if (empty($configAuth->ils_encryption_key)) {
                 throw new \VuFind\Exception\PasswordSecurity(
                     'ILS password encryption on, but no key set.'
                 );
             }
-            $this->encryptionKey = $this->config->Authentication->ils_encryption_key;
+
+            $this->encryptionKey = $configAuth->ils_encryption_key;
         }
 
         // Perform encryption:
-        $algo = $this->config->Authentication->ils_encryption_algo ?? 'blowfish';
-        $cipher = new BlockCipher(new Openssl(['algorithm' => $algo]));
+        $algo = $configAuth->ils_encryption_algo ?? 'blowfish';
+
+        // Check if OpenSSL error is caused by blowfish support
+        try {
+            $cipher = new BlockCipher(new Openssl(['algorithm' => $algo]));
+            if ($algo == 'blowfish') {
+                trigger_error(
+                    'Deprecated encryption algorithm (blowfish) detected',
+                    E_USER_DEPRECATED
+                );
+            }
+        } catch (\InvalidArgumentException $e) {
+            if ($algo == 'blowfish') {
+                throw new \VuFind\Exception\PasswordSecurity(
+                    'The blowfish encryption algorithm ' .
+                    'is not supported by your version of OpenSSL. ' .
+                    'Please visit /Upgrade/CriticalFixBlowfish for further details.'
+                );
+            } else {
+                throw $e;
+            }
+        }
         $cipher->setKey($this->encryptionKey);
         return $encrypt ? $cipher->encrypt($text) : $cipher->decrypt($text);
     }
@@ -231,9 +275,12 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     /**
      * Change home library.
      *
-     * @param string $homeLibrary New home library to store.
+     * @param ?string $homeLibrary New home library to store, or null to indicate
+     * that the user does not want a default. An empty string is the default for
+     * backward compatibility and indicates that system's default pick up location is
+     * to be used
      *
-     * @return mixed           The output of the save method.
+     * @return mixed               The output of the save method.
      */
     public function changeHomeLibrary($homeLibrary)
     {
@@ -677,10 +724,11 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
      * Destroy the user.
      *
      * @param bool $removeComments Whether to remove user's comments
+     * @param bool $removeRatings  Whether to remove user's ratings
      *
      * @return int The number of rows deleted.
      */
-    public function delete($removeComments = true)
+    public function delete($removeComments = true, $removeRatings = true)
     {
         // Remove all lists owned by the user:
         $lists = $this->getLists();
@@ -696,6 +744,10 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
         if ($removeComments) {
             $comments = $this->getDbTable('Comments');
             $comments->deleteByUser($this);
+        }
+        if ($removeRatings) {
+            $ratings = $this->getDbTable('Ratings');
+            $ratings->deleteByUser($this);
         }
 
         // Remove the user itself:

@@ -28,7 +28,7 @@
             <strong><?=$this->transEsc($field)?></strong>: <?=$this->escapeHtml($filter['displayText'])?><br/>
           <?php endforeach; ?>
         <?php endforeach; ?>
-        <?php foreach($info->getParams()->getCheckboxFacets() as $facet): ?>
+        <?php foreach ($info->getParams()->getCheckboxFacets() as $facet): ?>
           <?php if ($facet['selected']): ?>
             <strong><?=$this->transEsc($facet['desc'])?></strong><br/>
           <?php endif; ?>
@@ -55,9 +55,15 @@
       <?php if ($saveSupported): ?>
         <td>
           <?php if ($this->showSaved): ?>
-            <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($info->getSearchId())?>&amp;mode=history" class="text-danger"><i class="fa fa-remove" aria-hidden="true"></i> <?=$this->transEsc("history_delete_link")?></a>
+            <a class="icon-link text-danger" href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($info->getSearchId())?>&amp;mode=history">
+              <?=$this->icon('search-delete', 'icon-link__icon') ?>
+              <span class="icon-link__label"><?=$this->transEsc("history_delete_link")?></span>
+            </a>
           <?php else: ?>
-            <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($info->getSearchId())?>&amp;mode=history"><i class="fa fa-save" aria-hidden="true"></i> <?=$this->transEsc("history_save_link")?></a>
+            <a class="icon-link" href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($info->getSearchId())?>&amp;mode=history">
+              <?=$this->icon('search-save', 'icon-link__icon') ?>
+              <span class="icon-link__label"><?=$this->transEsc("history_save_link")?></span>
+            </a>
           <?php endif; ?>
         </td>
       <?php endif; ?>

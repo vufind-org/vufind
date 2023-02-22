@@ -1,5 +1,4 @@
 <?php
-  $this->headScript()->appendFile('facets.js');
   $topFacetSet = $this->recommend->getTopFacetSet();
   $topFacetSettings = $this->recommend->getTopFacetSettings();
   $results = $this->recommend->getResults();
@@ -10,17 +9,17 @@
   ];
 ?>
 <?php if (isset($topFacetSet)): ?>
-  <?php foreach($topFacetSet as $title => $cluster): ?>
+  <?php foreach ($topFacetSet as $title => $cluster): ?>
     <?php $allowExclude = $this->recommend->excludeAllowed($title); ?>
     <div class="top-facets">
       <!--Toggle for mobile collapse -->
       <?php $topLabel = $this->transEsc('top_facet_label', ['%%label%%' => $this->translate($cluster['label'])]); ?>
-      <a class="top-title js-toggle visible-xs" data-toggle="collapse" data-target="#top_<?=$this->escapeHtml($title) ?>"><i class="fa fa-caret-right"></i> <?=$topLabel ?></a>
+      <a class="top-title js-toggle visible-xs" data-toggle="collapse" data-target="#top_<?=$this->escapeHtml($title) ?>"><?=$this->icon('collapse') ?> <?=$topLabel ?></a>
       <!--Regular title for non-mobile -->
       <strong class="top-title hidden-xs"><?=$topLabel ?></strong>
       <div class="collapse in" id="top_<?=$this->escapeHtml($title) ?>">
         <div class="top-facets-contents" data-truncate="<?=$this->escapeHtmlAttr(json_encode($truncateSettings))?>">
-          <?php foreach($cluster['list'] as $index => $thisFacet): ?>
+          <?php foreach ($cluster['list'] as $index => $thisFacet): ?>
             <span class="facet top-facet">
               <span class="top-facet-inner">
                 <?php if ($thisFacet['isApplied']):
@@ -30,7 +29,7 @@
                     $removeLink = $this->currentPath() . $results->getUrlQuery()->removeFacet($title, $thisFacet['value'], $thisFacet['operator']);
                   } ?>
                   <a href="<?=$removeLink ?>" class="applied">
-                    <?=$this->escapeHtml($thisFacet['displayText'])?> <i class="fa fa-check" aria-hidden="true"></i><!--
+                    <?=$this->escapeHtml($thisFacet['displayText'])?> <?=$this->icon('facet-applied') ?><!--
                --></a>
                 <?php else: ?>
                   <a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator'])?>">
@@ -39,7 +38,7 @@
                   <span class="badge"><?=$this->localizedNumber($thisFacet['count']) ?></span>
                   <?php if ($allowExclude): ?>
                     <a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT')?>">
-                      <i class="fa fa-times" aria-hidden="true"></i>
+                      <?=$this->icon('facet-exclude') ?>
                       <span class="sr-only"><?=$this->transEsc('exclude_facet') ?></span>
                     </a>
                   <?php endif; ?>
@@ -55,7 +54,8 @@
 <?php
 $script = <<<JS
 VuFind.truncate.initTruncate('.top-facets-contents');
-collapseTopFacets();
+// Close with JS (ensures content is shown to non-JS users)
+$(this).find('.collapse').removeClass('in');
 JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');?>

@@ -13,6 +13,11 @@
 
 <h1><?=$this->escapeHtml($pageTitle)?></h1>
 
+Current filter mode: <?=$includeOptional ? "Unfiltered" : "Mandatory strings only"?><br />
+<a href="?main=<?=urlencode($mainCode)?>&amp;includeOptional=<?=$includeOptional ? 0 : 1?>">
+  <?=$includeOptional ? "Exclude optional text domains" : "Include optional text domains"?>
+</a>
+
 <table id="lang-summary" class="table table-striped">
   <caption>Summarize status of translations in language files</caption>
   <thead>
@@ -41,11 +46,11 @@
         </td>
         <td>
           <?=$this->escapeHtml($row['missing']) ?>
-          <?php if($row['missing'] > 0):?> <button class="btn-missing btn btn-default" title="Missing Lines: <?=$this->escapeHtmlAttr($row['langtitle'])?>" data-langcode="<?=$this->escapeHtmlAttr($row['lang'])?>" type="button"><?=$this->transEsc('show')?></button><?php endif; ?>
+          <?php if ($row['missing'] > 0):?> <button class="btn-missing btn btn-default" title="Missing Lines: <?=$this->escapeHtmlAttr($row['langtitle'])?>" data-langcode="<?=$this->escapeHtmlAttr($row['lang'])?>" type="button"><?=$this->transEsc('show')?></button><?php endif; ?>
         </td>
         <td>
           <?=$this->escapeHtml($row['extra']) ?>
-          <?php if($row['extra'] > 0):?> <button class="btn-extra btn btn-default" title="Extra Lines: <?=$this->escapeHtmlAttr($row['langtitle'])?>" data-langcode="<?=$this->escapeHtmlAttr($row['lang'])?>" type="button"><?=$this->transEsc('show')?></button><?php endif; ?>
+          <?php if ($row['extra'] > 0):?> <button class="btn-extra btn btn-default" title="Extra Lines: <?=$this->escapeHtmlAttr($row['langtitle'])?>" data-langcode="<?=$this->escapeHtmlAttr($row['lang'])?>" type="button"><?=$this->transEsc('show')?></button><?php endif; ?>
         </td>
         <td>
           <?php if (($row['countfiles'] > 0) && (in_array($row['lang'], $uLangs))):?>
@@ -77,8 +82,8 @@
 <?php endif; ?>
 
 <h2>Directories</h2>
-<p>Languages in directory <i class="fa fa-folder" aria-hidden="true"></i> <em><?=$this->escapeHtml($dirLang)?></em> as .ini files.</p>
-<p>Translation of Help in directory <i class="fa fa-folder" aria-hidden="true"></i> <em><?=$this->escapeHtml($dirHelp)?></em> as .phtml files.</p>
+<p>Languages in directory <?=$this->icon('format-folder') ?> <em><?=$this->escapeHtml($dirLang)?></em> as .ini files.</p>
+<p>Translation of Help in directory <?=$this->icon('format-folder') ?> <em><?=$this->escapeHtml($dirHelp)?></em> as .phtml files.</p>
 
 <template id="template-copy-btn">
   <div class="float-right"><?=$this->copyToClipboardButton('.translation-output'); ?></div>

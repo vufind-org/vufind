@@ -3,6 +3,7 @@ VuFind.register('lightbox', function Lightbox() {
   // State
   var _originalUrl = false;
   var _currentUrl = false;
+  var _lbReferrerUrl = false;
   var _lightboxTitle = false;
   var refreshOnClose = false;
   var _modalParams = {};
@@ -128,9 +129,6 @@ VuFind.register('lightbox', function Lightbox() {
     if (_xhr !== false) {
       return;
     }
-    if (_originalUrl === false) {
-      _originalUrl = obj.url;
-    }
     // Loading
     _modalBody.find('.modal-loading-overlay,.loading-spinner').remove();
     if (_modalBody.children().length > 0) {
@@ -145,10 +143,18 @@ VuFind.register('lightbox', function Lightbox() {
         ? parts[0] + '?'
         : parts[0] + '&';
       obj.url += 'layout=lightbox';
-      if (_currentUrl) {
-        obj.url += '&lbreferer=' + encodeURIComponent(_currentUrl);
+      // Set referrer to current url if it isn't already set:
+      if (_currentUrl && !_lbReferrerUrl) {
+        _lbReferrerUrl = _currentUrl;
+      }
+      if (_lbReferrerUrl) {
+        obj.url += '&lbreferer=' + encodeURIComponent(_lbReferrerUrl);
       }
       obj.url += parts.length < 2 ? '' : '#' + parts[1];
+    }
+    // Store original URL with the layout=lightbox parameter:
+    if (_originalUrl === false) {
+      _originalUrl = obj.url;
     }
     _xhr = $.ajax(obj);
     _xhr.always(function lbAjaxAlways() { _xhr = false; })
@@ -185,7 +191,6 @@ VuFind.register('lightbox', function Lightbox() {
             || obj.url.match(/MyResearch\/(?!Bulk|Delete|Recover)/)
           ) && flashMessages.length === 0
         ) {
-
           var eventResult = _emit('VuFind.lightbox.login', {
             originalUrl: _originalUrl,
             formUrl: obj.url
@@ -216,31 +221,6 @@ VuFind.register('lightbox', function Lightbox() {
   }
 
   /**
-   * Evaluate a callback
-   */
-  function _evalCallback(callback, event, data) {
-    if ('function' === typeof window[callback]) {
-      return window[callback](event, data);
-    }
-    var parts = callback.split('.');
-    if (typeof window[parts[0]] === 'object') {
-      var obj = window[parts[0]];
-      for (var i = 1; i < parts.length; i++) {
-        if (typeof obj[parts[i]] === 'undefined') {
-          obj = false;
-          break;
-        }
-        obj = obj[parts[i]];
-      }
-      if ('function' === typeof obj) {
-        return obj(event, data);
-      }
-    }
-    console.error('Lightbox callback function not found.');
-    return null;
-  }
-
-  /**
    * Modal link data options
    *
    * data-lightbox-href = go to this url instead
@@ -250,10 +230,14 @@ VuFind.register('lightbox', function Lightbox() {
    */
   _constrainLink = function constrainLink(event) {
     var $link = $(this);
+    var urlRoot = location.origin + VuFind.path;
+
     if (typeof $link.data("lightboxIgnore") != "undefined"
       || typeof $link.attr("href") === "undefined"
       || $link.attr("href").charAt(0) === "#"
       || $link.attr("href").match(/^[a-zA-Z]+:[^/]/) // ignore resource identifiers (mailto:, tel:, etc.)
+      || ($link.attr("href").slice(0, 4) === "http" // external links
+        && $link.attr("href").indexOf(urlRoot) === -1)
       || (typeof $link.attr("target") !== "undefined"
         && (
           $link.attr("target").toLowerCase() === "_new"
@@ -316,7 +300,7 @@ VuFind.register('lightbox', function Lightbox() {
     // Special handlers
     // On submit behavior
     if ('string' === typeof $(form).data('lightboxOnsubmit')) {
-      var ret = _evalCallback($(form).data('lightboxOnsubmit'), event, data);
+      var ret = VuFind.evalCallback($(form).data('lightboxOnsubmit'), event, data);
       // return true or false to send that to the form
       // return null or anything else to continue to the ajax
       if (ret === false || ret === true) {
@@ -327,7 +311,7 @@ VuFind.register('lightbox', function Lightbox() {
     if ('string' === typeof $(form).data('lightboxOnclose')) {
       document.addEventListener('VuFind.lightbox.closed', function lightboxClosed(e) {
         this.removeEventListener('VuFind.lightbox.closed', arguments.callee);
-        _evalCallback($(form).data('lightboxOnclose'), e, form);
+        VuFind.evalCallback($(form).data('lightboxOnclose'), e, form);
       }, false);
     }
     // Prevent multiple submission of submit button in lightbox
@@ -483,6 +467,7 @@ VuFind.register('lightbox', function Lightbox() {
     _html('');
     _originalUrl = false;
     _currentUrl = false;
+    _lbReferrerUrl = false;
     _lightboxTitle = false;
     _modalParams = {};
   }

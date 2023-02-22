@@ -119,12 +119,9 @@
   }
   .result-link-icon,
   .result .cart-link-icon {
-    margin-right: .2rem;
-    padding: 0;
     font-size: inherit;
     color: $gray-darker;
   }
-  .result-link-icon { margin-right: 0; }
   .result-link-label,
   .result .cart-link-label { display: inline; }
 }
@@ -302,8 +299,7 @@
 .active-filters .filters .filter-value {
   border-radius: 2px;
 }
-.active-filters .search-filter-remove::after {
-  content: "\f00d"; /* fa-close */
+.active-filters .search-filter-remove {
   color: $mid-gray;
 }
 .search-filter-dropdown .btn {

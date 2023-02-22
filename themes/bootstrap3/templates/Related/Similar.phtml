@@ -4,9 +4,21 @@
   <ul class="list-group">
     <?php foreach ($similarRecords as $data): ?>
       <li class="list-group-item">
-        <?php $formats = $data->getFormats(); ?>
-        <i class="fa fa-x<?php if (count($formats) > 0): ?> fa-<?=preg_replace('/[^a-z0-9]/', '', strtolower($formats[0]))?>" title="<?=$formats[0] ?><?php endif; ?>"></i>
-        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($data))?>">
+        <?php
+          $attrs = ['class' => 'related__icon'];
+
+          $formats = $data->getFormats();
+          $format = $formats[0] ?? null;
+          $icon = $format
+            ? preg_replace('/[^a-z0-9]/', '', strtolower($format))
+            : 'default';
+
+          if ($format) {
+            $attrs['title'] = $format;
+          }
+        ?>
+        <a class="related__title" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($data))?>">
+          <?=$this->icon('format-' . $icon, $attrs) ?>
           <?=$this->escapeHtml($data->getTitle())?>
         </a>
         <?php $authors = $data->getPrimaryAuthors(); if (!empty($authors)): ?>

@@ -36,11 +36,17 @@
         <td>
           <?php if (count($this->pickup ?? []) > 1): // case 1: set home library allowed ?>
             <?php
-              $selected = (strlen($this->profile['home_library'] ?? '') > 0)
-                ? $this->profile['home_library'] : $this->defaultPickupLocation
+              // Use ' ** ' for null ()
+              $selected = $this->profile['home_library'] ?? ' ** ';
             ?>
             <form id="profile_form" class="form-inline" method="post">
               <select id="home_library" name="home_library" class="form-control">
+                <option value=""<?='' === $selected ? ' selected="selected"' : ''?>>
+                  <?=$this->transEsc('preferred_library_default')?>
+                </option>
+                <option value="<?=$this->escapeHtmlAttr(' ** ')?>"<?=' ** ' === $selected ? ' selected="selected"' : ''?>>
+                  <?=$this->transEsc('Always ask me')?>
+                </option>
                 <?php foreach ($this->pickup as $lib): ?>
                   <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID'])?' selected="selected"':''?>><?=$this->transEscWithPrefix('location_', $lib['locationDisplay'])?></option>
                 <?php endforeach; ?>
@@ -57,20 +63,23 @@
 
   <div id="account-actions">
     <?php if ($this->auth()->getManager()->supportsEmailChange()): ?>
-      <a class="btn btn-default" href="<?=$this->url('myresearch-changeemail') ?>">
-        <i class="fa fa-fw fa-envelope" aria-hidden="true"></i> <?=$this->transEsc('Change Email Address') ?>
+      <a class="btn btn-default icon-link" href="<?=$this->url('myresearch-changeemail') ?>">
+        <?=$this->icon('profile-email', 'icon-link__icon') ?>
+        <span class="icon-link__label"><?=$this->transEsc('Change Email Address') ?></span>
       </a>
     <?php endif; ?>
 
     <?php if ($this->auth()->getManager()->supportsPasswordChange()): ?>
-      <a class="btn btn-default" href="<?=$this->url('myresearch-changepassword') ?>">
-        <i class="fa fa-fw fa-lock" aria-hidden="true"></i> <?=$this->transEsc('Change Password') ?>
+      <a class="btn btn-default icon-link" href="<?=$this->url('myresearch-changepassword') ?>">
+        <?=$this->icon('profile-change-password', 'icon-link__icon') ?>
+        <span class="icon-link__label"><?=$this->transEsc('Change Password') ?></span>
       </a>
     <?php endif; ?>
 
     <?php if ($this->accountDeletion): ?>
-      <a class="btn btn-default" href="<?=$this->url('myresearch-deleteaccount') ?>" data-lightbox>
-        <i class="fa fa-times"></i> <?=$this->transEsc('delete_account_title') ?>
+      <a class="btn btn-default icon-link" href="<?=$this->url('myresearch-deleteaccount') ?>" data-lightbox>
+        <?=$this->icon('profile-delete', 'icon-link__icon') ?>
+        <span class="icon-link__label"><?=$this->transEsc('delete_account_title') ?></span>
       </a>
     <?php endif; ?>
   </div>

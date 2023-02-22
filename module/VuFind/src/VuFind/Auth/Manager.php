@@ -33,7 +33,7 @@ use VuFind\Cookie\CookieManager;
 use VuFind\Db\Row\User as UserRow;
 use VuFind\Db\Table\User as UserTable;
 use VuFind\Exception\Auth as AuthException;
-use VuFind\Validator\Csrf;
+use VuFind\Validator\CsrfInterface;
 
 /**
  * Wrapper class for handling logged-in user in session.
@@ -44,8 +44,11 @@ use VuFind\Validator\Csrf;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
+class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface,
+    \Laminas\Log\LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * Authentication modules
      *
@@ -119,7 +122,7 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
     /**
      * CSRF validator
      *
-     * @var Csrf
+     * @var CsrfInterface
      */
     protected $csrf;
 
@@ -131,7 +134,7 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
      * @param SessionManager $sessionManager Session manager
      * @param PluginManager  $pm             Authentication plugin manager
      * @param CookieManager  $cookieManager  Cookie manager
-     * @param Csrf           $csrf           CSRF validator
+     * @param CsrfInterface  $csrf           CSRF validator
      */
     public function __construct(
         Config $config,
@@ -139,7 +142,7 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
         SessionManager $sessionManager,
         PluginManager $pm,
         CookieManager $cookieManager,
-        Csrf $csrf
+        CsrfInterface $csrf
     ) {
         // Store dependencies:
         $this->config = $config;
@@ -262,6 +265,21 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
     }
 
     /**
+     * Username policy for a new account (e.g. minLength, maxLength)
+     *
+     * @param string $authMethod optional; check this auth method rather than
+     * the one in config file
+     *
+     * @return array
+     */
+    public function getUsernamePolicy($authMethod = null)
+    {
+        return $this->processPolicyConfig(
+            $this->getAuth($authMethod)->getUsernamePolicy()
+        );
+    }
+
+    /**
      * Password policy for a new password (e.g. minLength, maxLength)
      *
      * @param string $authMethod optional; check this auth method rather than
@@ -271,7 +289,9 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
      */
     public function getPasswordPolicy($authMethod = null)
     {
-        return $this->getAuth($authMethod)->getPasswordPolicy();
+        return $this->processPolicyConfig(
+            $this->getAuth($authMethod)->getPasswordPolicy()
+        );
     }
 
     /**
@@ -476,13 +496,17 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
                     ->select(['id' => $this->session->userId]);
                 $this->currentUser = count($results) < 1
                     ? false : $results->current();
+                // End the session since the logged-in user cannot be found:
+                if (false === $this->currentUser) {
+                    $this->logout('');
+                }
             } elseif (isset($this->session->userDetails)) {
                 // privacy mode
                 $results = $this->userTable->createRow();
                 $results->exchangeArray($this->session->userDetails);
                 $this->currentUser = $results;
             } else {
-                // unexpected state
+                // not logged in
                 $this->currentUser = false;
             }
         }
@@ -644,11 +668,12 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
         }
 
         // Validate CSRF for form-based authentication methods:
-        if (!$this->getAuth()->getSessionInitiator(null)
+        if (!$this->getAuth()->getSessionInitiator('')
             && $this->getAuth()->needsCsrfCheck($request)
         ) {
             if (!$this->csrf->isValid($request->getPost()->get('csrf'))) {
                 $this->getAuth()->resetState();
+                $this->logWarning("Invalid CSRF token passed to login");
                 throw new AuthException('authentication_error_technical');
             } else {
                 // After successful token verification, clear list to shrink session:
@@ -668,11 +693,8 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
         } catch (\Exception $e) {
             // Catch other exceptions, log verbosely, and treat them as technical
             // difficulties
-            error_log(
-                "Exception in " . get_class($this) . "::login: " . $e->getMessage()
-            );
-            error_log($e);
-            throw new AuthException('authentication_error_technical');
+            $this->logError((string)$e);
+            throw new AuthException('authentication_error_technical', 0, $e);
         }
 
         // Update user object
@@ -789,5 +811,48 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface
         $user->auth_method = strtolower($method);
         $user->last_login = date('Y-m-d H:i:s');
         $user->save();
+    }
+
+    /**
+     * Is the user allowed to log directly into the ILS?
+     *
+     * @return bool
+     */
+    public function allowsUserIlsLogin(): bool
+    {
+        return $this->config->Catalog->allowUserLogin ?? true;
+    }
+
+    /**
+     * Process a raw policy configuration
+     *
+     * @param array $policy Policy configuration
+     *
+     * @return array
+     */
+    protected function processPolicyConfig(array $policy): array
+    {
+        // Convert 'numeric' or 'alphanumeric' pattern to a regular expression:
+        switch ($policy['pattern'] ?? '') {
+        case 'numeric':
+            $policy['pattern'] = '\d+';
+            break;
+        case 'alphanumeric':
+            $policy['pattern'] = '[\da-zA-Z]+';
+        }
+
+        // Map settings to attributes for a text input field:
+        $inputMap = [
+            'minLength' => 'data-minlength',
+            'maxLength' => 'maxlength',
+            'pattern' => 'pattern',
+        ];
+        $policy['inputAttrs'] = [];
+        foreach ($inputMap as $from => $to) {
+            if (isset($policy[$from])) {
+                $policy['inputAttrs'][$to] = $policy[$from];
+            }
+        }
+        return $policy;
     }
 }

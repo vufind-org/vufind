@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2009.
+ * Copyright (C) Villanova University 2009, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -26,6 +26,8 @@
  * @link     https://vufind.org/wiki/development:plugins:related_records_modules Wiki
  */
 namespace VuFind\Related;
+
+use VuFindSearch\Command\SearchCommand;
 
 /**
  * Related Records: WorldCat-based similarity
@@ -90,7 +92,8 @@ class WorldCatSimilar extends Similar
 
         // Perform the search and save results:
         $queryObj = new \VuFindSearch\Query\Query($query);
-        $result = $this->searchService->search('WorldCat', $queryObj, 0, 5);
+        $command = new SearchCommand('WorldCat', $queryObj, 0, 5);
+        $result = $this->searchService->invoke($command)->getResult();
         $this->results = $result->getRecords();
     }
 }

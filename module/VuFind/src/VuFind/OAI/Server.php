@@ -249,7 +249,7 @@ class Server
      *
      * @return void
      */
-    public function init(\Laminas\Config\Config $config, $baseURL, $params)
+    public function init(\Laminas\Config\Config $config, $baseURL, array $params)
     {
         $this->baseURL = $baseURL;
         $parts = parse_url($baseURL);
@@ -257,7 +257,7 @@ class Server
         if (isset($parts['port'])) {
             $this->baseHostURL .= $parts['port'];
         }
-        $this->params = isset($params) && is_array($params) ? $params : [];
+        $this->params = $params;
         $this->initializeSettings($config); // Load config.ini settings
     }
 
@@ -1393,7 +1393,7 @@ class Server
         // Prefix?  Strip it off and return the stripped version if valid:
         $prefix = 'oai:' . $this->idNamespace . ':';
         $prefixLen = strlen($prefix);
-        if (!empty($prefix) && substr($id, 0, $prefixLen) == $prefix) {
+        if (substr($id, 0, $prefixLen) == $prefix) {
             return substr($id, $prefixLen);
         }
 

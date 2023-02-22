@@ -5,7 +5,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2021.
+ * Copyright (C) Villanova University 2021, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
@@ -58,14 +59,22 @@ class SolrTest extends \PHPUnit\Framework\TestCase
             ['recordCount' => 1]
         );
         $collection->add($record);
-        $expectedQuery = new \VuFindSearch\Query\Query('previous_id_str_mv:"oldId"');
+        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $commandObj->expects($this->once())->method('getResult')
+            ->will($this->returnValue($collection));
+        $checkCommand = function ($command) {
+            return get_class($command) === \VuFindSearch\Command\SearchCommand::class
+                && $command->getTargetIdentifier() === "Solr"
+                && $command->getArguments()[0]->getString() ===
+                'previous_id_str_mv:"oldId"';
+        };
         $search = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()->getMock();
-        $search->expects($this->once())->method('search')
-            ->with(
-                $this->equalTo('Solr'),
-                $this->equalTo($expectedQuery)
-            )->will($this->returnValue($collection));
+        $search->expects($this->once())->method('invoke')
+            ->with($this->callback($checkCommand))
+            ->will($this->returnValue($commandObj));
         $resource = $this->getMockBuilder(\VuFind\Db\Table\Resource::class)
             ->disableOriginalConstructor()->getMock();
         $resource->expects($this->once())->method('updateRecordId')

@@ -102,7 +102,7 @@ class Manager
         // Laminas\Config\Config can be created mutable or cloned and merged, useful
         // for future cache-specific overrides.
         $cacheConfig = $config->Cache ?? false;
-        $this->defaults = $cacheConfig ? $cacheConfig->toArray() : false;
+        $this->defaults = $cacheConfig ? $cacheConfig->toArray() : [];
 
         // Get base cache directory.
         $cacheBase = $this->getCacheDir();
@@ -168,10 +168,10 @@ class Manager
      */
     public function getCacheDir($allowCliOverride = true)
     {
-        if ($this->defaults && isset($this->defaults['cache_dir'])) {
-            // cache_dir setting in config.ini is deprecated
+        if (isset($this->defaults['cache_dir'])) {
+            // cache_dir setting in config.ini is obsolete
             throw new \Exception(
-                'Deprecated cache_dir setting found in config.ini - please use '
+                'Obsolete cache_dir setting found in config.ini - please use '
                 . 'Apache environment variable VUFIND_CACHE_DIR in '
                 . 'httpd-vufind.conf instead.'
             );
@@ -214,6 +214,25 @@ class Manager
     }
 
     /**
+     * Create a downloader-specific file cache.
+     *
+     * @param string $downloaderName Name of the downloader.
+     * @param array  $opts           Cache options.
+     *
+     * @return string
+     */
+    public function addDownloaderCache($downloaderName, $opts=[])
+    {
+        $cacheName = 'downloader-' . $downloaderName;
+        $this->createFileCache(
+            $cacheName,
+            $this->getCacheDir(),
+            $opts
+        );
+        return $cacheName;
+    }
+
+    /**
      * Create a new file cache for the given theme name if necessary. Return
      * the name of the cache.
      *
@@ -240,20 +259,24 @@ class Manager
      */
     protected function createNoCache($cacheName)
     {
-        $this->cacheSettings[$cacheName] = ['name' => 'blackhole', 'options' => []];
+        $this->cacheSettings[$cacheName] = [
+            'adapter' => \Laminas\Cache\Storage\Adapter\BlackHole::class,
+            'options' => []
+        ];
     }
 
     /**
      * Add a file cache to the manager and ensure that necessary directory exists.
      *
-     * @param string $cacheName Name of new cache to create
-     * @param string $dirName   Directory to use for storage
+     * @param string $cacheName    Name of new cache to create
+     * @param string $dirName      Directory to use for storage
+     * @param array  $overrideOpts Options to override default values.
      *
      * @return void
      */
-    protected function createFileCache($cacheName, $dirName)
+    protected function createFileCache($cacheName, $dirName, $overrideOpts=[])
     {
-        $opts = $this->defaults;    // copy defaults -- we'll modify them below
+        $opts = array_merge($this->defaults, $overrideOpts);
         if (!is_dir($dirName)) {
             if (isset($opts['umask'])) {
                 // convert umask from string
@@ -293,7 +316,7 @@ class Manager
             throw new \Exception('$opts is neither array nor false');
         }
         $this->cacheSettings[$cacheName] = [
-            'name' => 'filesystem',
+            'adapter' => \Laminas\Cache\Storage\Adapter\Filesystem::class,
             'options' => $opts,
             'plugins' => [
                 ['name' => 'serializer'],

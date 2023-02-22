@@ -42,6 +42,25 @@ use VuFind\Search\Factory\UrlQueryHelperFactory;
 class SearchController extends AbstractSolrSearch
 {
     /**
+     * Blended search action.
+     *
+     * @return mixed
+     */
+    public function blendedAction()
+    {
+        $saveId = $this->searchClassId;
+        try {
+            $this->searchClassId = 'Blender';
+            $view = $this->resultsAction();
+        } catch (\Exception $e) {
+            $this->searchClassId = $saveId;
+            throw $e;
+        }
+        $this->searchClassId = $saveId;
+        return $view;
+    }
+
+    /**
      * Show facet list for Solr-driven collections.
      *
      * @return mixed
@@ -183,8 +202,12 @@ class SearchController extends AbstractSolrSearch
     {
         // Force login if necessary
         $user = $this->getUser();
-        if ($this->params()->fromQuery('require_login', 'no') !== 'no' && !$user) {
-            return $this->forceLogin();
+        if ($this->params()->fromQuery('require_login', 'no') !== 'no') {
+            // If user is already logged in, drop the require_login parameter to
+            // allow for a cleaner log-out experience.
+            return $user
+                ? $this->redirect()->toRoute('search-history')
+                : $this->forceLogin();
         }
         $userId = is_object($user) ? $user->id : null;
 

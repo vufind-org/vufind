@@ -27,11 +27,11 @@
  */
 namespace VuFindTheme;
 
-use Interop\Container\ContainerInterface;
 use Laminas\Config\Config;
 use Laminas\Mvc\MvcEvent;
 use Laminas\Stdlib\RequestInterface as Request;
 use Laminas\View\Resolver\TemplatePathStack;
+use Psr\Container\ContainerInterface;
 
 /**
  * VuFind Theme Initializer
@@ -61,7 +61,7 @@ class Initializer
     /**
      * Top-level service container
      *
-     * @var \Interop\Container\ContainerInterface
+     * @var \Psr\Container\ContainerInterface
      */
     protected $serviceManager;
 
@@ -362,9 +362,6 @@ class Initializer
             $templatePathStack[] = $this->tools->getBaseDir() . "/$key/templates";
 
             // Add CSS and JS dependencies:
-            if ($lessActive && isset($currentThemeInfo['less'])) {
-                $resources->addLessCss($currentThemeInfo['less']);
-            }
             if (isset($currentThemeInfo['css'])) {
                 $resources->addCss($currentThemeInfo['css']);
             }

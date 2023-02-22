@@ -43,6 +43,8 @@ use VuFind\View\Helper\Root\Url;
  */
 class RecordLinkerTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ViewTrait;
+
     /**
      * Test record URL creation.
      *
@@ -52,7 +54,7 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
     {
         $recordLinker = $this->getRecordLinker();
         $this->assertEquals(
-            '/Record/foo',
+            '/Record/foo?sid=-123',
             $recordLinker->getUrl('Solr|foo')
         );
     }
@@ -66,11 +68,11 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
     {
         $recordLinker = $this->getRecordLinker();
         $this->assertEquals(
-            '/Record/foo%252fbar',
+            '/Record/foo%252fbar?sid=-123',
             $recordLinker->getUrl('Solr|foo%2fbar')
         );
         $this->assertEquals(
-            '/Record/foo%252fbar?checkRoute=1',
+            '/Record/foo%252fbar?checkRoute=1&sid=-123',
             $recordLinker->getTabUrl('Solr|foo%2fbar', null, ['checkRoute' => 1])
         );
     }
@@ -84,22 +86,24 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
     {
         $recordLinker = $this->getRecordLinker();
         $this->assertEquals(
-            '/Record/foo?param1=1&param2=2',
+            '/Record/foo?param1=1&param2=2&sid=-123',
             $recordLinker->getTabUrl('Solr|foo', null, ['param1' => 1, 'param2' => 2])
         );
     }
 
     /**
-     * Get a RecordLink object ready for testing.
+     * Get a RecordLinker object ready for testing.
      *
-     * @return RecordLink
+     * @return RecordLinker
      */
     protected function getRecordLinker(): RecordLinker
     {
-        $view = new \Laminas\View\Renderer\PhpRenderer();
-        $container = new \VuFindTest\Container\MockViewHelperContainer($this);
-        $container->set('url', $this->getUrl());
-        $view->setHelperPluginManager($container);
+        $view = $this->getPhpRenderer(
+            [
+                'searchMemory' => $this->getSearchMemoryViewHelper(),
+                'url' => $this->getUrl(),
+            ]
+        );
 
         $recordLinker = new RecordLinker(new Router(new Config([])));
         $recordLinker->setView($view);

@@ -32,12 +32,13 @@ namespace VuFind\Controller;
 use ArrayObject;
 use Composer\Semver\Comparator;
 use Exception;
+use Laminas\Crypt\BlockCipher;
+use Laminas\Crypt\Symmetric\Openssl;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Mvc\MvcEvent;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container;
 use VuFind\Cache\Manager as CacheManager;
-use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Config\Upgrade;
 use VuFind\Config\Version;
 use VuFind\Config\Writer;
@@ -61,6 +62,9 @@ use VuFind\Search\Results\PluginManager as ResultsManager;
  */
 class UpgradeController extends AbstractBase
 {
+    use Feature\ConfigPathTrait;
+    use Feature\SecureDatabaseTrait;
+
     /**
      * Cookie container
      *
@@ -218,8 +222,7 @@ class UpgradeController extends AbstractBase
      */
     public function fixconfigAction()
     {
-        $localConfig
-            = dirname(ConfigLocator::getLocalConfigPath('config.ini', null, true));
+        $localConfig = dirname($this->getForcedLocalConfigPath('config.ini'));
         $confDir = $this->cookie->oldVersion < 2
             ? $this->cookie->sourceDir . '/web/conf'
             : $localConfig;
@@ -227,7 +230,7 @@ class UpgradeController extends AbstractBase
             $this->cookie->oldVersion,
             $this->cookie->newVersion,
             $confDir,
-            dirname(ConfigLocator::getBaseConfigPath('config.ini')),
+            dirname($this->getBaseConfigFilePath('config.ini')),
             $localConfig
         );
         try {
@@ -287,7 +290,7 @@ class UpgradeController extends AbstractBase
      */
     protected function setDbEncodingConfiguration($charset)
     {
-        $config = ConfigLocator::getLocalConfigPath('config.ini', null, true);
+        $config = $this->getForcedLocalConfigPath('config.ini');
         $writer = new Writer($config);
         $writer->set('Database', 'charset', $charset);
         if (!$writer->save()) {
@@ -822,6 +825,19 @@ class UpgradeController extends AbstractBase
     }
 
     /**
+     * Organize and run critical, blocking checks
+     *
+     * @return string|null
+     */
+    protected function performCriticalChecks()
+    {
+        // Run through a series of checks to be sure there are no critical issues.
+        return $this->criticalCheckForInsecureDatabase()
+            ?? $this->criticalCheckForBlowfishEncryption()
+            ?? null;
+    }
+
+    /**
      * Display summary of installation status
      *
      * @return mixed
@@ -847,6 +863,12 @@ class UpgradeController extends AbstractBase
             || !isset($this->cookie->newVersion)
         ) {
             return $this->forwardTo('Upgrade', 'EstablishVersions');
+        }
+
+        // Check for critical upgrades
+        $criticalFixForward = $this->performCriticalChecks() ?? null;
+        if ($criticalFixForward !== null) {
+            return $this->forwardTo('Upgrade', $criticalFixForward);
         }
 
         // Now make sure we have a configuration file ready:
@@ -878,9 +900,8 @@ class UpgradeController extends AbstractBase
 
         return $this->createViewModel(
             [
-                'configDir' => dirname(
-                    ConfigLocator::getLocalConfigPath('config.ini', null, true)
-                ),
+                'configDir'
+                    => dirname($this->getForcedLocalConfigPath('config.ini')),
                 'importDir' => LOCAL_OVERRIDE_DIR . '/import',
                 'oldVersion' => $this->cookie->oldVersion
             ]
@@ -938,5 +959,70 @@ class UpgradeController extends AbstractBase
                 'message: ' . $e->getMessage()
             );
         }
+    }
+
+    /**
+     * Check for insecure database settings
+     *
+     * @return string|null
+     */
+    protected function criticalCheckForInsecureDatabase()
+    {
+        if (!empty($this->cookie->ignoreInsecureDb)) {
+            return null;
+        }
+        return $this->hasSecureDatabase() ? null : 'CriticalFixInsecureDatabase';
+    }
+
+    /**
+     * Check for deprecated and insecure use of blowfish encryption
+     *
+     * @return string|null
+     */
+    protected function criticalCheckForBlowfishEncryption()
+    {
+        $config = $this->getConfig();
+        $encryptionEnabled = $config->Authentication->encrypt_ils_password ?? false;
+        $algo = $config->Authentication->ils_encryption_algo ?? 'blowfish';
+        return ($encryptionEnabled && $algo === 'blowfish')
+            ? 'CriticalFixBlowfish' : null;
+    }
+
+    /**
+     * Lead users through the steps required to fix an insecure database
+     *
+     * @return mixed
+     */
+    public function criticalFixInsecureDatabaseAction()
+    {
+        if ($this->params()->fromQuery('ignore')) {
+            $this->cookie->ignoreInsecureDb = 1;
+            return $this->redirect()->toRoute('upgrade-home');
+        }
+        return $this->createViewModel();
+    }
+
+    /**
+     * Lead users through the steps required to replace blowfish quickly and easily
+     *
+     * @return mixed
+     */
+    public function criticalFixBlowfishAction()
+    {
+        // Test that blowfish is still working
+        $blowfishIsWorking = true;
+        try {
+            $newcipher = new BlockCipher(new Openssl(['algorithm' => 'blowfish']));
+            $newcipher->setKey('akeyforatest');
+            $newcipher->encrypt('youfoundtheeasteregg!');
+        } catch (Exception $e) {
+            $blowfishIsWorking = false;
+        }
+
+        // Get new settings
+        [$newAlgorithm, $exampleKey] = $this->getSecureAlgorithmAndKey();
+        return $this->createViewModel(
+            compact('newAlgorithm', 'exampleKey', 'blowfishIsWorking')
+        );
     }
 }

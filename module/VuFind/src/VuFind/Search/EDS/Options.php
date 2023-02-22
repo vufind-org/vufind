@@ -5,6 +5,7 @@
  * PHP version 7
  *
  * Copyright (C) EBSCO Industries 2013
+ * Copyright (C) The National Library of Finland 2022
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +23,7 @@
  * @category VuFind
  * @package  EBSCO
  * @author   Michelle Milton <mmilton@epnet.com>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -33,11 +35,26 @@ namespace VuFind\Search\EDS;
  * @category VuFind
  * @package  EBSCO
  * @author   Michelle Milton <mmilton@epnet.com>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
 class Options extends \VuFind\Search\Base\Options
 {
+    /**
+     * Default limit option
+     *
+     * @var ?int
+     */
+    protected $defaultLimit = null;
+
+    /**
+     * Default view option
+     *
+     * @var ?string
+     */
+    protected $defaultView = null;
+
     /**
      * Available search mode options
      *
@@ -88,18 +105,25 @@ class Options extends \VuFind\Search\Base\Options
     protected $advancedLimiters = [];
 
     /**
-     * Whether or not to return available facets with the search response
+     * Available Search Options from the API or null if not yet initialized
      *
-     * @var array
-     */
-    protected $includeFacets = 'y';
-
-    /**
-     * Available Search Options from the API
-     *
-     * @var array
+     * @var ?array
      */
     protected $apiInfo;
+
+    /**
+     * Callback to get available Search Options from the API
+     *
+     * @var ?callable
+     */
+    protected $apiInfoCallback = null;
+
+    /**
+     * Whether settings based on API info have been initialized
+     *
+     * @var bool
+     */
+    protected $apiOptionsInitialized = false;
 
     /**
      * Limiters to display on the basic search screen
@@ -116,27 +140,43 @@ class Options extends \VuFind\Search\Base\Options
     protected $commonExpanders = [];
 
     /**
+     * Search configuration
+     *
+     * @var \Laminas\Config\Config
+     */
+    protected $searchSettings;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Configuration loader
-     * @param array                        $apiInfo      API information
+     * @param array|callable               $apiInfo      API information or callback
+     * to retrieve it
      */
     public function __construct(
         \VuFind\Config\PluginManager $configLoader,
         $apiInfo = null
     ) {
         $this->searchIni = $this->facetsIni = 'EDS';
-        $searchSettings = $configLoader->get($this->searchIni);
+        $this->searchSettings = $configLoader->get($this->searchIni);
         parent::__construct($configLoader);
         // 2015-06-30 RF - Changed to unlimited
         //$this->resultLimit = 100;
         $this->viewOptions = [
-            'list|title' => 'Title View', 'list|brief' => 'Brief View',
+            'list|title' => 'Title View',
+            'list|brief' => 'Brief View',
             'list|detailed' => 'Detailed View'
         ];
-        $this->apiInfo = $apiInfo;
-        $this->setOptionsFromApi();
-        $this->setOptionsFromConfig($searchSettings);
+        // If we get the API info as a callback, defer until it's actually needed to
+        // avoid calling the API:
+        if (is_callable($apiInfo)) {
+            $this->apiInfo = null;
+            $this->apiInfoCallback = $apiInfo;
+        } else {
+            $this->apiInfo = $apiInfo ?? [];
+            $this->setOptionsFromApi();
+        }
+        $this->setOptionsFromConfig();
         $facetConf = $configLoader->get($this->facetsIni);
         if (isset($facetConf->Advanced_Facet_Settings->translated_facets)
             && count($facetConf->Advanced_Facet_Settings->translated_facets) > 0
@@ -148,23 +188,54 @@ class Options extends \VuFind\Search\Base\Options
     }
 
     /**
-     * Get an array of search mode options
+     * Basic 'getter' for advanced search handlers.
      *
      * @return array
      */
-    public function getModeOptions()
+    public function getAdvancedHandlers()
     {
-        return $this->modeOptions;
+        return $this->getApiProperty('advancedHandlers');
     }
 
     /**
-     * Get the default search mode
+     * Basic 'getter' for basic search handlers.
+     *
+     * @return array
+     */
+    public function getBasicHandlers()
+    {
+        return $this->getApiProperty('basicHandlers');
+    }
+
+    /**
+     * Get default search handler.
      *
      * @return string
      */
-    public function getDefaultMode()
+    public function getDefaultHandler()
     {
-        return $this->defaultMode;
+        $this->setOptionsFromApi();
+        return parent::getDefaultHandler();
+    }
+
+    /**
+     * Get an array of sort options.
+     *
+     * @return array
+     */
+    public function getSortOptions()
+    {
+        return $this->getApiProperty('sortOptions');
+    }
+
+    /**
+     * Get default limit setting.
+     *
+     * @return int
+     */
+    public function getDefaultLimit()
+    {
+        return $this->getApiProperty('defaultLimit');
     }
 
     /**
@@ -206,7 +277,27 @@ class Options extends \VuFind\Search\Base\Options
      */
     public function getView()
     {
-        return $this->defaultView;
+        return $this->getApiProperty('defaultView');
+    }
+
+    /**
+     * Get an array of search mode options
+     *
+     * @return array
+     */
+    public function getModeOptions()
+    {
+        return $this->getApiProperty('modeOptions');
+    }
+
+    /**
+     * Get the default search mode
+     *
+     * @return string
+     */
+    public function getDefaultMode()
+    {
+        return $this->getApiProperty('defaultMode');
     }
 
     /**
@@ -216,7 +307,7 @@ class Options extends \VuFind\Search\Base\Options
      */
     public function getEdsView()
     {
-        $viewArr = explode('|', $this->defaultView);
+        $viewArr = explode('|', $this->getApiProperty('defaultView'));
         return (1 < count($viewArr)) ? $viewArr[1] : $this->defaultView;
     }
 
@@ -227,7 +318,7 @@ class Options extends \VuFind\Search\Base\Options
      */
     public function getDefaultExpanders()
     {
-        return $this->defaultExpanders;
+        return $this->getApiProperty('defaultExpanders');
     }
 
     /**
@@ -248,11 +339,57 @@ class Options extends \VuFind\Search\Base\Options
      */
     public function setOptionsFromApi()
     {
+        if ($this->apiOptionsInitialized) {
+            return;
+        }
+        $this->apiOptionsInitialized = true;
+
+        // If we don't have API options yet, try to fetch them:
+        if (null === $this->apiInfo && $this->apiInfoCallback) {
+            $this->apiInfo = ($this->apiInfoCallback)();
+        }
         // Set options from the INFO method first. If settings are set in the config
         // file, use them as 'overrides', but only if they are available (ie. are
         // returned in the INFO method)
         $this->populateViewSettings();
         $this->populateSearchCriteria();
+
+        // Search handler setup. Only valid values set in the config files are used.
+        $this->filterAndReorderProperty(
+            'Basic_Searches',
+            'basicHandlers'
+        );
+        $this->filterAndReorderProperty(
+            'Advanced_Searches',
+            'advancedHandlers'
+        );
+
+        // Sort preferences:
+        $this->filterAndReorderProperty('Sorting', 'sortOptions');
+
+        // Apply overrides from configuration:
+        $defaultMode = $this->searchSettings->General->default_mode ?? null;
+        if (null !== $defaultMode && isset($this->modeOptions[$defaultMode])) {
+            $this->defaultMode = $defaultMode;
+        }
+
+        $defaultSort = $this->searchSettings->General->default_sort ?? null;
+        if (null !== $defaultSort && isset($this->sortOptions[$defaultSort])) {
+            $this->defaultSort = $defaultSort;
+        }
+
+        // Set common limiters and expanders.
+        // Only the values that are valid for this profile will be used.
+        $this->setCommonSettings(
+            'common_limiters',
+            'limiterOptions',
+            'commonLimiters'
+        );
+        $this->setCommonSettings(
+            'common_expanders',
+            'expanderOptions',
+            'commonExpanders'
+        );
     }
 
     /**
@@ -260,16 +397,16 @@ class Options extends \VuFind\Search\Base\Options
      * at the time this method is called, so we just need to check if the
      * user-supplied values are valid, and if so, filter/reorder accordingly.
      *
-     * @param \Laminas\Config\Config $searchSettings Configuration
-     * @param string                 $section        Configuration section to read
-     * @param string                 $property       Property of this object to read
-     * and/or modify.
+     * @param string $section  Configuration section to read
+     * @param string $property Property of this object to read and/or modify.
      *
      * @return void
      */
-    protected function filterAndReorderProperty($searchSettings, $section, $property)
-    {
-        if (!isset($searchSettings->$section)) {
+    protected function filterAndReorderProperty(
+        string $section,
+        string $property
+    ): void {
+        if (!isset($this->searchSettings->$section)) {
             return;
         }
 
@@ -278,7 +415,7 @@ class Options extends \VuFind\Search\Base\Options
         $propertyRef = & $this->$property;
 
         $newPropertyValues = [];
-        foreach ($searchSettings->$section as $key => $value) {
+        foreach ($this->searchSettings->$section as $key => $value) {
             if (isset($propertyRef[$key])) {
                 $newPropertyValues[$key] = $value;
             }
@@ -291,20 +428,21 @@ class Options extends \VuFind\Search\Base\Options
     /**
      * Apply user-requested "common" settings.
      *
-     * @param \Laminas\Config\Config $searchSettings Configuration
-     * @param string                 $setting        Name of common setting
-     * @param string                 $list           Name of property containing
-     * valid values
-     * @param string                 $target         Name of property to populate
+     * @param string $setting Name of common setting
+     * @param string $list    Name of property containing valid values
+     * @param string $target  Name of property to populate
      *
      * @return void
      */
-    protected function setCommonSettings($searchSettings, $setting, $list, $target)
-    {
-        if (isset($searchSettings->General->$setting)) {
-            $userValues = explode(',', $searchSettings->General->$setting);
+    protected function setCommonSettings(
+        string $setting,
+        string $list,
+        string $target
+    ): void {
+        if (!empty($this->searchSettings->General->$setting)) {
+            $userValues = explode(',', $this->searchSettings->General->$setting);
 
-            if (!empty($userValues) && isset($this->$list) && !empty($this->$list)) {
+            if (!empty($this->$list)) {
                 // Reference to property containing API-provided list of legal values
                 $listRef = & $this->$list;
                 // Reference to property containing final common settings
@@ -320,104 +458,54 @@ class Options extends \VuFind\Search\Base\Options
     }
 
     /**
-     * Load options from the configuration file. These will override the defaults set
-     * from the values in the Info method. (If the values set in the config files in
-     * not a 'valid' EDS API value, it will be ignored.
-     *
-     * @param \Laminas\Config\Config $searchSettings Configuration
+     * Load options from the configuration file.
      *
      * @return void
      */
-    protected function setOptionsFromConfig($searchSettings)
+    protected function setOptionsFromConfig()
     {
-        if (isset($searchSettings->General->default_limit)) {
-            $this->defaultLimit = $searchSettings->General->default_limit;
+        if (isset($this->searchSettings->General->default_limit)) {
+            $this->defaultLimit = $this->searchSettings->General->default_limit;
         }
-        if (isset($searchSettings->General->limit_options)) {
+        if (isset($this->searchSettings->General->limit_options)) {
             $this->limitOptions
-                = explode(",", $searchSettings->General->limit_options);
+                = explode(",", $this->searchSettings->General->limit_options);
         }
 
         // Set up highlighting preference
-        if (isset($searchSettings->General->highlighting)) {
-            $this->highlight = $searchSettings->General->highlighting;
-        }
-
-        // Set up facet preferences
-        if (isset($searchSettings->General->include_facets)) {
-            $this->includeFacets = $searchSettings->General->include_facets;
+        if (isset($this->searchSettings->General->highlighting)) {
+            $this->highlight = $this->searchSettings->General->highlighting;
         }
 
         // Load search preferences:
-        if (isset($searchSettings->General->retain_filters_by_default)) {
+        if (isset($this->searchSettings->General->retain_filters_by_default)) {
             $this->retainFiltersByDefault
-                = $searchSettings->General->retain_filters_by_default;
+                = $this->searchSettings->General->retain_filters_by_default;
         }
 
-        // Search handler setup. Only valid values set in the config files are used.
-        $this->filterAndReorderProperty(
-            $searchSettings,
-            'Basic_Searches',
-            'basicHandlers'
-        );
-        $this->filterAndReorderProperty(
-            $searchSettings,
-            'Advanced_Searches',
-            'advancedHandlers'
-        );
-
-        // Sort preferences:
-        $this->filterAndReorderProperty($searchSettings, 'Sorting', 'sortOptions');
-
-        if (isset($searchSettings->General->default_sort)
-            && isset($this->sortOptions[$searchSettings->General->default_sort])
-        ) {
-            $this->defaultSort = $searchSettings->General->default_sort;
-        }
-
-        if (isset($searchSettings->General->default_mode)
-            && isset($this->modeOptions[$searchSettings->General->default_mode])
-        ) {
-            $this->defaultMode = $searchSettings->General->default_mode;
-        }
-
-        //View preferences
-        if (isset($searchSettings->General->default_view)) {
-            $this->defaultView = 'list|' . $searchSettings->General->default_view;
+        // View preferences
+        if (isset($this->searchSettings->General->default_view)) {
+            $this->defaultView
+                = 'list|' . $this->searchSettings->General->default_view;
         }
 
         // Load list view for result (controls AJAX embedding vs. linking)
-        if (isset($searchSettings->List->view)) {
-            $this->listviewOption = $searchSettings->List->view;
+        if (isset($this->searchSettings->List->view)) {
+            $this->listviewOption = $this->searchSettings->List->view;
         }
 
-        if (isset($searchSettings->Advanced_Facet_Settings->special_facets)) {
+        if (isset($this->searchSettings->Advanced_Facet_Settings->special_facets)) {
             $this->specialAdvancedFacets
-                = $searchSettings->Advanced_Facet_Settings->special_facets;
+                = $this->searchSettings->Advanced_Facet_Settings->special_facets;
         }
-
-        // Set common limiters and expanders.
-        // Only the values that are valid for this profile will be used.
-        $this->setCommonSettings(
-            $searchSettings,
-            'common_limiters',
-            'limiterOptions',
-            'commonLimiters'
-        );
-        $this->setCommonSettings(
-            $searchSettings,
-            'common_expanders',
-            'expanderOptions',
-            'commonExpanders'
-        );
 
         // Load autocomplete preferences:
-        $this->configureAutocomplete($searchSettings);
+        $this->configureAutocomplete($this->searchSettings);
 
-        if (isset($searchSettings->General->advanced_limiters)) {
+        if (isset($this->searchSettings->General->advanced_limiters)) {
             $this->advancedLimiters = array_map(
                 'trim',
-                explode(',', $searchSettings->General->advanced_limiters)
+                explode(',', $this->searchSettings->General->advanced_limiters)
             );
         }
     }
@@ -448,13 +536,11 @@ class Options extends \VuFind\Search\Base\Options
      */
     protected function populateSearchCriteria()
     {
-        if (isset($this->apiInfo)
-            && isset($this->apiInfo['AvailableSearchCriteria'])
-        ) {
+        if (isset($this->apiInfo['AvailableSearchCriteria'])) {
             // Reference for readability:
             $availCriteria = & $this->apiInfo['AvailableSearchCriteria'];
 
-            //Sort preferences
+            // Sort preferences
             $this->sortOptions = [];
             if (isset($availCriteria['AvailableSorts'])) {
                 foreach ($availCriteria['AvailableSorts'] as $sort) {
@@ -489,7 +575,7 @@ class Options extends \VuFind\Search\Base\Options
                 }
             }
 
-            //expanders
+            // Expanders
             $this->expanderOptions = [];
             $this->defaultExpanders = [];
             if (isset($availCriteria['AvailableExpanders'])) {
@@ -505,7 +591,7 @@ class Options extends \VuFind\Search\Base\Options
                 }
             }
 
-            //Limiters
+            // Limiters
             $this->limiterOptions = [];
             if (isset($availCriteria['AvailableLimiters'])) {
                 foreach ($availCriteria['AvailableLimiters'] as $limiter) {
@@ -536,21 +622,33 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return array
      */
-    protected function populateLimiterValues($limiterValues)
+    protected function populateLimiterValues(array $limiterValues)
     {
         $availableLimiterValues = [];
-        if (isset($limiterValues)) {
-            foreach ($limiterValues as $limiterValue) {
-                $availableLimiterValues[] = [
-                    'Value' => $limiterValue['Value'],
-                    'LimiterValues' => isset($limiterValue['LimiterValues'])
-                        ? $this
-                            ->populateLimiterValues($limiterValue['LimiterValues'])
-                        : null
-                ];
-            }
+        foreach ($limiterValues as $limiterValue) {
+            $availableLimiterValues[] = [
+                'Value' => $limiterValue['Value'],
+                'LimiterValues' => isset($limiterValue['LimiterValues'])
+                    ? $this
+                        ->populateLimiterValues($limiterValue['LimiterValues'])
+                    : null
+            ];
         }
         return empty($availableLimiterValues) ? null : $availableLimiterValues;
+    }
+
+    /**
+     * Get the value of a property that is retrieved via the Info method and stored
+     * in a member property.
+     *
+     * @param string $propertyName Name of the member property
+     *
+     * @return mixed
+     */
+    protected function getApiProperty(string $propertyName)
+    {
+        $this->setOptionsFromApi();
+        return $this->$propertyName;
     }
 
     /**
@@ -560,7 +658,7 @@ class Options extends \VuFind\Search\Base\Options
      */
     public function getAvailableLimiters()
     {
-        return $this->limiterOptions;
+        return $this->getApiProperty('limiterOptions');
     }
 
     /**
@@ -580,10 +678,10 @@ class Options extends \VuFind\Search\Base\Options
                 );
                 return $limiter;
             },
-            $this->limiterOptions
+            $this->getApiProperty('limiterOptions')
         );
         // No setting = use all available values
-        if (empty($this->advancedLimiters)) {
+        if (!$this->advancedLimiters) {
             return $labeledLimiters;
         }
         // If we got this far, let's create a list of enabled limiters in the
@@ -604,7 +702,7 @@ class Options extends \VuFind\Search\Base\Options
      */
     public function getAvailableExpanders()
     {
-        return $this->expanderOptions;
+        return $this->getApiProperty('expanderOptions');
     }
 
     /**
@@ -614,25 +712,15 @@ class Options extends \VuFind\Search\Base\Options
      */
     protected function populateViewSettings()
     {
-        if (isset($this->apiInfo)
-            && isset($this->apiInfo['ViewResultSettings'])
-        ) {
-            //default result Limit
-            if (isset($this->apiInfo['ViewResultSettings']['ResultsPerPage'])) {
-                $this->defaultLimit
-                    = $this->apiInfo['ViewResultSettings']['ResultsPerPage'];
-            } else {
-                $this->defaultLimit = 20;
-            }
+        $settings = $this->apiInfo['ViewResultSettings'] ?? [];
+        // default result Limit
+        $this->defaultLimit = $this->defaultLimit
+            ?? $settings['ResultsPerPage']
+            ?? 20;
 
-            //default view (amount)
-            if (isset($this->apiInfo['ViewResultSettings']['ResultListView'])) {
-                $this->defaultView = 'list|'
-                    . $this->apiInfo['ViewResultSettings']['ResultListView'];
-            } else {
-                $this->defaultView = 'list|brief';
-            }
-        }
+        // default view
+        $this->defaultView = $this->defaultView
+            ?? 'list|' . ($settings['ResultListView'] ?? 'brief');
     }
 
     /**
@@ -660,18 +748,17 @@ class Options extends \VuFind\Search\Base\Options
     public function getSearchScreenLimiters()
     {
         $ssLimiterOptions = [];
-        if (isset($this->commonLimiters)) {
-            foreach ($this->commonLimiters as $key) {
-                $limiter = $this->limiterOptions[$key];
-                $ssLimiterOptions[$key] = [
-                    'selectedvalue' => 'LIMIT|' . $key . ':y',
-                    'description' => $this->getLabelForCheckboxFilter(
-                        'eds_limiter_' . $key,
-                        $limiter['Label']
-                    ),
-                    'selected' => ('y' == $limiter['DefaultOn']) ? true : false
-                ];
-            }
+        $limiterOptions = $this->getApiProperty('limiterOptions');
+        foreach ($this->getApiProperty('commonLimiters') as $key) {
+            $limiter = $limiterOptions[$key];
+            $ssLimiterOptions[$key] = [
+                'selectedvalue' => 'LIMIT|' . $key . ':y',
+                'description' => $this->getLabelForCheckboxFilter(
+                    'eds_limiter_' . $key,
+                    $limiter['Label']
+                ),
+                'selected' => ('y' == $limiter['DefaultOn']) ? true : false
+            ];
         }
         return $ssLimiterOptions;
     }
@@ -684,17 +771,16 @@ class Options extends \VuFind\Search\Base\Options
     public function getSearchScreenExpanders()
     {
         $ssExpanderOptions = [];
-        if (isset($this->commonExpanders)) {
-            foreach ($this->commonExpanders as $key) {
-                $expander = $this->expanderOptions[$key];
-                $ssExpanderOptions[$key] = [
-                    'selectedvalue' => 'EXPAND:' . $key,
-                    'description' => $this->getLabelForCheckboxFilter(
-                        'eds_expander_' . $key,
-                        $expander['Label']
-                    ),
-                ];
-            }
+        $expanderOptions = $this->getApiProperty('expanderOptions');
+        foreach ($this->getApiProperty('commonExpanders') as $key) {
+            $expander = $expanderOptions[$key];
+            $ssExpanderOptions[$key] = [
+                'selectedvalue' => 'EXPAND:' . $key,
+                'description' => $this->getLabelForCheckboxFilter(
+                    'eds_expander_' . $key,
+                    $expander['Label']
+                ),
+            ];
         }
         return $ssExpanderOptions;
     }
@@ -706,7 +792,7 @@ class Options extends \VuFind\Search\Base\Options
      */
     public function getDefaultView()
     {
-        $viewArr = explode('|', $this->defaultView);
+        $viewArr = explode('|', $this->getApiProperty('defaultView'));
         return $viewArr[0];
     }
 
@@ -718,7 +804,7 @@ class Options extends \VuFind\Search\Base\Options
     public function getDefaultFilters()
     {
         // Populate defaults if not already set:
-        if (empty($this->defaultFilters)) {
+        if (!$this->defaultFilters) {
             //expanders
             $expanders = $this->getDefaultExpanders();
             foreach ($expanders as $expander) {

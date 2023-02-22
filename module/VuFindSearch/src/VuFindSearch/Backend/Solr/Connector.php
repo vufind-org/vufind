@@ -30,7 +30,6 @@
  */
 namespace VuFindSearch\Backend\Solr;
 
-use Laminas\Cache\Storage\StorageInterface;
 use Laminas\Http\Client\Adapter\Exception\TimeoutException;
 use Laminas\Http\Client as HttpClient;
 use Laminas\Http\Request;
@@ -40,6 +39,7 @@ use VuFindSearch\Backend\Exception\HttpErrorException;
 use VuFindSearch\Backend\Exception\RemoteErrorException;
 use VuFindSearch\Backend\Exception\RequestErrorException;
 use VuFindSearch\Backend\Solr\Document\DocumentInterface;
+use VuFindSearch\Exception\InvalidArgumentException;
 use VuFindSearch\ParamBag;
 
 /**
@@ -56,6 +56,7 @@ use VuFindSearch\ParamBag;
 class Connector implements \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
+    use \VuFindSearch\Backend\Feature\ConnectorCacheTrait;
 
     /**
      * Maximum length of a GET url.
@@ -69,11 +70,11 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     public const MAX_GET_URL_LENGTH = 2048;
 
     /**
-     * HTTP client
+     * HTTP client factory
      *
-     * @var HttpClient
+     * @var callable
      */
-    protected $client;
+    protected $clientFactory;
 
     /**
      * URL or an array of alternative URLs of the SOLR core.
@@ -97,39 +98,31 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     protected $uniqueKey;
 
     /**
-     * HTTP read timeout.
-     *
-     * @var int
-     */
-    protected $timeout;
-
-    /**
-     * Request cache
-     *
-     * @var StorageInterface
-     */
-    protected $cache = null;
-
-    /**
      * Constructor
      *
-     * @param string|array $url       SOLR core URL or an array of alternative URLs
-     * @param HandlerMap   $map       Handler map
-     * @param string       $uniqueKey Solr field used to store unique identifier
-     * @param HttpClient   $client    HTTP client (optional)
+     * @param string|array        $url       SOLR core URL or an array of alternative
+     * URLs
+     * @param HandlerMap          $map       Handler map
+     * @param callable|HttpClient $cf        HTTP client factory or a client to clone
+     * @param string              $uniqueKey Solr field used to store unique
+     * identifier
      */
     public function __construct(
         $url,
         HandlerMap $map,
-        $uniqueKey = 'id',
-        HttpClient $client = null
+        $cf,
+        $uniqueKey = 'id'
     ) {
         $this->url = $url;
         $this->map = $map;
         $this->uniqueKey = $uniqueKey;
-        $this->client = $client ?? new HttpClient();
-        // Set default timeout:
-        $this->setTimeout(30);
+        if ($cf instanceof HttpClient) {
+            $this->clientFactory = function () use ($cf) {
+                return clone $cf;
+            };
+        } else {
+            $this->clientFactory = $cf;
+        }
     }
 
     /// Public API
@@ -262,44 +255,6 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         return $this->trySolrUrls('POST', $urlSuffix, $callback);
     }
 
-    /**
-     * Get the HTTP connect timeout.
-     *
-     * @return int
-     */
-    public function getTimeout()
-    {
-        return $this->timeout;
-    }
-
-    /**
-     * Set the HTTP connect timeout.
-     *
-     * @param int $timeout Timeout in seconds
-     *
-     * @return void
-     */
-    public function setTimeout($timeout)
-    {
-        // Ideally, it would be nice to fully delegate the timeout setting to the
-        // client... however, there is no way to retrieve the setting from the
-        // client, so we need to also store it here in the connector.
-        $this->timeout = $timeout;
-        $this->client->setOptions(compact('timeout'));
-    }
-
-    /**
-     * Set the cache storage
-     *
-     * @param StorageInterface $cache Cache
-     *
-     * @return void
-     */
-    public function setCache(StorageInterface $cache)
-    {
-        $this->cache = $cache;
-    }
-
     /// Internal API
 
     /**
@@ -333,6 +288,43 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
+     * Call a method with provided options for the HTTP client
+     *
+     * @param array  $options HTTP client options
+     * @param string $method  Method to call
+     * @param array  ...$args Method parameters
+     *
+     * @return mixed
+     */
+    public function callWithHttpOptions(
+        array $options,
+        string $method,
+        ...$args
+    ) {
+        $reflectionMethod = new \ReflectionMethod($this, $method);
+        if (!$reflectionMethod->isPublic()) {
+            throw new InvalidArgumentException("Method '$method' is not public");
+        }
+        if (empty($options)) {
+            return call_user_func_array([$this, $method], $args);
+        }
+        $originalFactory = $this->clientFactory;
+        try {
+            $this->clientFactory = function (string $url) use (
+                $originalFactory,
+                $options
+            ) {
+                $client = $originalFactory($url);
+                $client->setOptions($options);
+                return $client;
+            };
+            return call_user_func_array([$this, $method], $args);
+        } finally {
+            $this->clientFactory = $originalFactory;
+        }
+    }
+
+    /**
      * Check if an exception from a Solr request should be thrown rather than retried
      *
      * @param \Exception $ex Exception
@@ -362,7 +354,8 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         ) {
             return $ex;
         }
-        return new BackendException('Problem connecting to Solr.', null, $ex);
+        return
+            new BackendException('Problem connecting to Solr.', $ex->getCode(), $ex);
     }
 
     /**
@@ -391,55 +384,24 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         // Loop through all base URLs and try them in turn until one works.
         $cacheKey = null;
         foreach ((array)$this->url as $base) {
-            $this->client->resetParameters();
-            $this->client->setMethod($method);
-            $this->client->setUri($base . $urlSuffix);
+            $client = ($this->clientFactory)($base . $urlSuffix);
+            $client->setMethod($method);
             if (is_callable($callback)) {
-                $callback($this->client);
+                $callback($client);
             }
             // Always create the cache key from the first server, and only after any
             // callback has been called above.
             if ($cacheable && $this->cache && null === $cacheKey) {
-                $cacheKey = md5($this->client->getRequest()->toString());
-                try {
-                    if ($result = $this->cache->getItem($cacheKey)) {
-                        $this->debug('Returning cached results');
-                        return $result;
-                    }
-                } catch (\Exception $ex) {
-                    $this->logWarning('Cache getItem failed: ' . $ex->getMessage());
+                $cacheKey = $this->getCacheKey($client);
+                if ($result = $this->getCachedData($cacheKey)) {
+                    return $result;
                 }
             }
             try {
-                $result = $this->send($this->client);
-
+                $result = $this->send($client);
                 if ($cacheKey) {
-                    try {
-                        $this->cache->setItem($cacheKey, $result);
-                    } catch (\Laminas\Cache\Exception\RuntimeException $ex) {
-                        // Try to determine if caching failed due to response size
-                        // and log the case accordingly.
-                        // Unfortunately Laminas Cache does not translate exceptions
-                        // to any common error codes, so we must check codes and/or
-                        // message for adapter-specific values.
-                        // 'ITEM TOO BIG' is the message from the Memcached adapter
-                        // and comes directly from libmemcached.
-                        if ($ex->getMessage() === 'ITEM TOO BIG') {
-                            $this->debug(
-                                'Cache setItem failed: ' . $ex->getMessage()
-                            );
-                        } else {
-                            $this->logWarning(
-                                'Cache setItem failed: ' . $ex->getMessage()
-                            );
-                        }
-                    } catch (\Exception $ex) {
-                        $this->logWarning(
-                            'Cache setItem failed: ' . $ex->getMessage()
-                        );
-                    }
+                    $this->putCachedData($cacheKey, $result);
                 }
-
                 return $result;
             } catch (\Exception $ex) {
                 if ($this->isRethrowableSolrException($ex)) {

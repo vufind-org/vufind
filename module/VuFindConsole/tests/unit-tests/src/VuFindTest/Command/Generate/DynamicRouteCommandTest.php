@@ -27,7 +27,7 @@
  */
 namespace VuFindTest\Command\Generate;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 use VuFind\Route\RouteGenerator;
 use VuFindConsole\Command\Generate\DynamicRouteCommand;

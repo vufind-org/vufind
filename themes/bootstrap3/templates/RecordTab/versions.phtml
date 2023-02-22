@@ -19,7 +19,7 @@
     </div>
     <div class="search-controls">
       <a class="more-link" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getVersionsSearchUrl($this->driver))?>" rel="nofollow">
-        <i class="fa fa-arrow-right" aria-hidden="true"></i> <?=$this->transEsc('other_versions_search_link', ['%%count%%' => $results->getTotal() + 1])?>
+        <?=$this->icon('more') ?> <?=$this->transEsc('other_versions_search_link', ['%%count%%' => $results->getTotal() + 1])?>
       </a>
     </div>
   </nav>
@@ -27,13 +27,13 @@
   <?php foreach ($results as $current): ?>
     <div id="result<?=++$recordNumber ?>" class="result clearfix<?=$current->supportsAjaxStatus() ? ' ajaxItem' : ''?>">
       <span class="sr-only"><?=$this->transEsc('Search Result');?> <?=$recordNumber ?></span>
-      <?=$this->record($current)->getSearchResult($view)?>
+      <?=$this->record($current)->getSearchResult($view, $results)?>
     </div>
   <?php endforeach; ?>
   <div class="search-tools hidden-print">
     <div class="search-controls">
       <a class="more-link" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getVersionsSearchUrl($this->driver))?>" rel="nofollow">
-        <i class="fa fa-arrow-right" aria-hidden="true"></i> <?=$this->transEsc('other_versions_search_link', ['%%count%%' => $results->getTotal() + 1])?>
+        <?=$this->icon('more') ?> <?=$this->transEsc('other_versions_search_link', ['%%count%%' => $results->getTotal() + 1])?>
       </a>
     </div>
   </div>

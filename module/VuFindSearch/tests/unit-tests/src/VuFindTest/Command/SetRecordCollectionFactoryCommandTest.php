@@ -5,7 +5,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2021.
+ * Copyright (C) Villanova University 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -63,5 +63,20 @@ class SetRecordCollectionFactoryCommandTest extends TestCase
             ->with($this->equalTo($factory));
         $command = new SetRecordCollectionFactoryCommand($backendId, $factory);
         $this->assertEmpty($command->execute($backend)->getResult());  // void method
+    }
+
+    /**
+     * Test getArguments method.
+     *
+     * @return void
+     */
+    public function testgetArguments(): void
+    {
+        $factory = $this
+            ->getMockBuilder(RecordCollectionFactoryInterface::class)
+            ->getMock();
+        $backendId = 'bar';
+        $command = new SetRecordCollectionFactoryCommand($backendId, $factory);
+        $this->assertSame([$factory], $command->getArguments());
     }
 }

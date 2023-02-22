@@ -4,9 +4,10 @@
 
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
-    . '<li class="active">' . $this->transEsc('History') . '</li>';
+    . '<li class="active">' . $this->transEsc('Search History') . '</li>';
 
   $saveSupported = $this->accountCapabilities()->getSavedSearchSetting() === 'enabled';
+  $loggedInUser = $this->auth()->isLoggedIn();
 ?>
 
 <a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="Expand Sidebar">
@@ -21,21 +22,32 @@
         (<a href="<?=$this->url('myresearch-profile');?>"><?=$this->transEsc("edit");?></a>)
       <?php endif; ?>
     </div>
-  <?php elseif (!empty($this->schedule) && $this->auth()->isLoggedIn()): ?>
+  <?php elseif (!empty($this->schedule) && $loggedInUser): ?>
     <div class="alert alert-danger alert-email-notification">
       <?=$this->transEsc("no_email_address") . ' ';?><a href="<?=$this->url('myresearch-profile');?>"><?=$this->transEsc("check_profile");?></a>
     </div>
   <?php endif; ?>
   <?=$this->flashmessages()?>
-  <?php if ($saveSupported && !empty($this->saved)): ?>
+  <?php if ($saveSupported): ?>
     <h2><?=$this->transEsc("history_saved_searches")?></h2>
-    <?=$this->context()->renderInContext('search/history-table.phtml', ['showSaved' => true]);?>
+    <?php if (!empty($this->saved)): ?>
+      <?=$this->context()->renderInContext('search/history-table.phtml', ['showSaved' => true]);?>
+    <?php else: ?>
+      <?=
+        $loggedInUser
+          ? $this->transEsc('history_no_saved_searches')
+          : $this->translate('history_login_html', ['%%url%%' => '?require_login'])
+      ?>
+    <?php endif; ?>
   <?php endif; ?>
 
   <h2><?=$this->transEsc("history_recent_searches")?></h2>
   <?php if (!empty($this->unsaved)): ?>
     <?=$this->context()->renderInContext('search/history-table.phtml', ['showSaved' => false]);?>
-    <a href="?purge=true"><i class="fa fa-remove" aria-hidden="true"></i> <?=$this->transEsc("history_purge")?></a>
+    <a class="icon-link" href="?purge=true">
+      <?=$this->icon('search-delete', 'icon-link__icon') ?>
+      <span class="icon-link__label"><?=$this->transEsc("history_purge")?></span>
+    </a>
   <?php else: ?>
     <?=$this->transEsc("history_no_searches")?>
   <?php endif; ?>
@@ -46,8 +58,7 @@
     <?=
       $this->context($this)->renderInContext(
           "myresearch/menu.phtml",
-          // Only activate search history in account menu if user is logged in.
-          $this->auth()->isLoggedIn() ? ['active' => 'history'] : []
+          ['active' => 'history']
       );
     ?>
   </div>

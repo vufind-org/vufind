@@ -136,7 +136,7 @@ class SwitchType implements RecommendInterface
     /**
      * Get the new search handler, or false if it does not apply.
      *
-     * @return string
+     * @return string|false
      */
     public function getNewHandler()
     {

@@ -27,7 +27,7 @@
  */
 namespace VuFindTest\View\Helper\Root;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use VuFind\View\Helper\Root\RecordDataFormatter;
 use VuFind\View\Helper\Root\RecordDataFormatterFactory;
 
@@ -44,6 +44,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
     use \VuFindTest\Feature\ViewTrait;
+    use \VuFindTest\Feature\PathResolverTrait;
 
     /**
      * Get a mock record router.
@@ -77,11 +78,18 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
                 $this->getMockBuilder(\VuFind\Auth\ILSAuthenticator::class)->disableOriginalConstructor()->getMock()
             ),
             'context' => $context,
+            'config' => new \VuFind\View\Helper\Root\Config($container->get(\VuFind\Config\PluginManager::class)),
             'doi' => new \VuFind\View\Helper\Root\Doi($context),
+            'icon' => new \VuFind\View\Helper\Root\Icon(
+                [],
+                new \Laminas\Cache\Storage\Adapter\BlackHole(),
+                new \Laminas\View\Helper\EscapeHtmlAttr(),
+            ),
             'openUrl' => new \VuFind\View\Helper\Root\OpenUrl($context, [], $this->getMockBuilder(\VuFind\Resolver\Driver\PluginManager::class)->disableOriginalConstructor()->getMock()),
             'proxyUrl' => new \VuFind\View\Helper\Root\ProxyUrl(),
             'record' => new \VuFind\View\Helper\Root\Record(),
             'recordLinker' => new \VuFind\View\Helper\Root\RecordLinker($this->getMockRecordRouter()),
+            'searchMemory' => $this->getSearchMemoryViewHelper(),
             'searchOptions' => new \VuFind\View\Helper\Root\SearchOptions(new \VuFind\Search\Options\PluginManager($container)),
             'searchTabs' => $this->getMockBuilder(\VuFind\View\Helper\Root\SearchTabs::class)->disableOriginalConstructor()->getMock(),
             'transEsc' => new \VuFind\View\Helper\Root\TransEsc(),
@@ -144,6 +152,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             \VuFind\Config\PluginManager::class,
             new \VuFind\Config\PluginManager($container)
         );
+        $this->addPathResolverToContainer($container);
         $formatter = $factory($container, RecordDataFormatter::class);
 
         // Create a view object with a set of helpers:
@@ -200,12 +209,34 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test citation generation
+     * Data Provider for testFormatting().
+     *
+     * @return array
+     */
+    public function getFormattingData(): array
+    {
+        return [
+            [
+                'getInvokedSpecs'
+            ],
+            [
+                'getOldSpecs'
+            ]
+        ];
+    }
+
+    /**
+     * Test formatting.
+     *
+     * @dataProvider getFormattingData
+     *
+     * @param string $function Function to test the formatting with.
      *
      * @return void
      */
-    public function testFormatting()
+    public function testFormatting(string $function): void
     {
+        $driver = $this->getDriver();
         $formatter = $this->getFormatter();
         $spec = $formatter->getDefaults('core');
         $spec['Building'] = [
@@ -326,9 +357,10 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'a' => 'a',
             'b' => 'b',
         ];
-        $driver = $this->getDriver();
-        $results = $formatter->getData($driver, $spec);
 
+        // Check that the function is callable in this test.
+        $this->assertTrue(is_callable([$this, $function]));
+        $results = $this->$function($driver, $spec);
         // Check for expected array keys
         $this->assertEquals(array_keys($expected), $this->getLabels($results));
 
@@ -345,7 +377,6 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
                 )
             );
         }
-
         // Check for exact markup in representative example:
         $this->assertEquals(
             '<span property="availableLanguage" typeof="Language"><span property="name">Italian</span></span><br /><span property="availableLanguage" typeof="Language"><span property="name">Latin</span></span>',
@@ -357,5 +388,33 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             ['foo' => 1],
             $this->findResult('Building', $results)['context']
         );
+    }
+
+    /**
+     * Invokes a RecordDataFormatter with a driver and returns getData results.
+     *
+     * @param SolrDefault $driver Driver to invoke with.
+     * @param array       $spec   Specifications to test with.
+     *
+     * @return array Results from RecordDataFormatter::getData
+     */
+    protected function getInvokedSpecs($driver, array $spec): array
+    {
+        $formatter = ($this->getFormatter())($driver);
+        return $formatter->getData($spec);
+    }
+
+    /**
+     * Calls RecordDataFormatter::getData with a driver as parameter and returns the results.
+     *
+     * @param SolrDefault $driver Driver to call with.
+     * @param array       $spec   Specifications to test with.
+     *
+     * @return array Results from RecordDataFormatter::getData
+     */
+    protected function getOldSpecs($driver, array $spec): array
+    {
+        $formatter = $this->getFormatter();
+        return $formatter->getData($driver, $spec);
     }
 }

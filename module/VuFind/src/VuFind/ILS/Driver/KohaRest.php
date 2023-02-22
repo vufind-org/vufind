@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2016-2020.
+ * Copyright (C) The National Library of Finland 2016-2023.
  * Copyright (C) Moravian Library 2019.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -52,12 +52,14 @@ use VuFind\Service\CurrencyFormatter;
 class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     \VuFindHttp\HttpServiceAwareInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface,
-    \Laminas\Log\LoggerAwareInterface
+    \Laminas\Log\LoggerAwareInterface,
+    \VuFind\I18n\HasSorterInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
-    use \VuFind\ILS\Driver\CacheTrait;
+    use \VuFind\Cache\CacheTrait;
     use \VuFind\ILS\Driver\OAuth2TokenTrait;
+    use \VuFind\I18n\HasSorterTrait;
 
     /**
      * Library prefix
@@ -100,6 +102,13 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @var string
      */
     protected $defaultPickUpLocation;
+
+    /**
+     * Whether to allow canceling holds in transit. Default is false.
+     *
+     * @var bool
+     */
+    protected $allowCancelInTransit = false;
 
     /**
      * Item status rankings. The lower the value, the more important the status.
@@ -211,7 +220,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @var bool
      */
-    protected $sortItemsBySerialIssue;
+    protected $sortItemsBySerialIssue = true;
 
     /**
      * Constructor
@@ -255,6 +264,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         if ($this->defaultPickUpLocation === 'user-selected') {
             $this->defaultPickUpLocation = false;
         }
+
+        $this->allowCancelInTransit
+            = !empty($this->config['Holds']['allowCancelInTransit']);
 
         if (!empty($this->config['StatusRankings'])) {
             $this->statusRankings = array_merge(
@@ -619,7 +631,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             'zip' => $result['postal_code'],
             'city' => $result['city'],
             'country' => $result['country'],
-            'expiration_date' => $this->convertDate($result['expiry_date'] ?? null)
+            'expiration_date' => $this->convertDate($result['expiry_date'] ?? null),
+            'birthdate' => $result['date_of_birth'] ?? ''
         ];
     }
 
@@ -749,6 +762,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             $available = !empty($entry['waiting_date']);
             $inTransit = !empty($entry['status']) && $entry['status'] == 'T';
             $requestId = $entry['hold_id'];
+            $cancelDetails
+                = ($available || ($inTransit && !$this->allowCancelInTransit))
+                ? ''
+                : $requestId;
             $updateDetails = ($available || $inTransit) ? '' : $requestId;
             $holds[] = [
                 'id' => $entry['biblio_id'],
@@ -771,7 +788,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 'publication_year' => $biblio['copyright_date']
                     ?? $biblio['publication_year'] ?? '',
                 'volume' => $volume,
-                'cancel_details' => $updateDetails,
+                'cancel_details' => $cancelDetails,
                 'updateDetails' => $updateDetails,
             ];
         }
@@ -869,7 +886,6 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                         'query' => [
                             'patron_id' => (int)$patron['id'],
                             'query_pickup_locations' => 1,
-                            'ignore_patron_holds' => $requestId ? 1 : 0,
                         ]
                     ]
                 );
@@ -936,7 +952,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 if (isset($locationOrder[$bLoc])) {
                     return 1;
                 }
-                return strcasecmp($a['locationDisplay'], $b['locationDisplay']);
+                return $this->getSorter()->compare(
+                    $a['locationDisplay'],
+                    $b['locationDisplay']
+                );
             };
             usort($locations, $sortFunction);
         }
@@ -1540,7 +1559,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = null)
+    public function getConfig($function, $params = [])
     {
         if ('getMyTransactionHistory' === $function) {
             if (empty($this->config['TransactionHistory']['enabled'])) {
@@ -1632,8 +1651,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
 
         // Set timeout value
         $timeout = $this->config['Catalog']['http_timeout'] ?? 30;
+        // Make sure keepalive is disabled as this is known to cause problems:
         $client->setOptions(
-            ['timeout' => $timeout, 'useragent' => 'VuFind', 'keepalive' => true]
+            ['timeout' => $timeout, 'useragent' => 'VuFind', 'keepalive' => false]
         );
 
         // Set Accept header
@@ -2038,7 +2058,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected function statusSortFunction($a, $b)
     {
-        $result = strcmp($a['location'], $b['location']);
+        $result = $this->getSorter()->compare($a['location'], $b['location']);
 
         if (0 === $result && $this->sortItemsBySerialIssue) {
             $result = strnatcmp($a['number'], $b['number']);
@@ -2510,7 +2530,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             }
 
             $renewable = $entry['renewable'];
-            $renewals = $entry['renewals'];
+            // Koha 22.11 introduced a backward compatibility break by renaming
+            // renewals to renewals_count (bug 30275), so check both:
+            $renewals = $entry['renewals_count'] ?? $entry['renewals'];
             $renewLimit = $entry['max_renewals'];
             $message = '';
             if (!$renewable && !$checkedIn) {
@@ -2533,7 +2555,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 'item_id' => $entry['item_id'],
                 'barcode' => $entry['external_id'] ?? null,
                 'title' => $this->getBiblioTitle($entry),
-                'volume' => $entry['serial_issue_number'] ?? '',
+                // enumchron should have been mapped to serial_issue_number, but the
+                // mapping is missing from all plugin versions up to v22.05.02:
+                'volume' => $entry['serial_issue_number'] ?? $entry['enumchron']
+                    ?? '',
                 'publication_year' => $entry['copyright_date']
                     ?? $entry['publication_year'] ?? '',
                 'borrowingLocation' => $this->getLibraryName($entry['library_id']),

@@ -2,21 +2,13 @@
 <?php if ($cart->isActive()): ?>
   <?php $cartId = $this->source . '|' . $this->id; ?>
   <span class="btn-bookbag-toggle" data-cart-id="<?=$this->escapeHtmlAttr($this->id)?>" data-cart-source="<?=$this->escapeHtmlAttr($this->source)?>">
-    <a href="#" class="cart-add hidden<?php if(!$cart->contains($cartId)): ?> correct<?php endif ?>">
-      <span class="cart-link-label btn-type-add"><?=$this->transEsc('Add to Book Bag') ?></span>
+    <a href="#" class="cart-add result-link icon-link hidden<?php if (!$cart->contains($cartId)): ?> correct<?php endif ?>">
+      <?=$this->icon('cart-add', 'icon-link__icon') ?>
+      <span class="icon-link__label"><?=$this->transEsc('Add to Book Bag') ?></span>
     </a>
-    <a href="#" class="cart-remove hidden<?php if($cart->contains($cartId)): ?> correct<?php endif ?>">
-      <span class="cart-link-label btn-type-minus"><?=$this->transEsc('Remove from Book Bag') ?></span>
+    <a href="#" class="cart-remove result-link icon-link hidden<?php if ($cart->contains($cartId)): ?> correct<?php endif ?>">
+      <?=$this->icon('cart-remove', 'icon-link__icon') ?>
+      <span class="icon-link__label"><?=$this->transEsc('Remove from Book Bag') ?></span>
     </a>
-    <noscript>
-      <form method="post" name="addForm" action="<?=$this->url('cart-processor')?>">
-        <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($cartId)?>" />
-        <?php if ($cart->contains($cartId)): ?>
-          <input class="btn btn-default" type="submit" name="delete" value="<?=$this->transEscAttr('Remove from Book Bag')?>"/>
-        <?php else: ?>
-          <input class="btn btn-default" type="submit" name="add" value="<?=$this->transEscAttr('Add to Book Bag')?>"/>
-        <?php endif; ?>
-      </form>
-    </noscript>
   </span>
 <?php endif; ?>
