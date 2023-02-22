@@ -53,6 +53,8 @@ class Koha extends \VuFind\Content\AbstractCover
     public function __construct(string $url)
     {
         $this->url = $url;
+        $this->supportsRecordid = true;
+        $this->cacheAllowed = true;
     }
 
     /**
