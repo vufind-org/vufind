@@ -17,14 +17,6 @@ function ariaCollapse(container, toggle, target) {
   toggle.removeAttribute("aria-expanded");
 }
 
-function ariaToggle(container, toggle, target) {
-  if (toggle.getAttribute("aria-expanded")) {
-    ariaCollapse(container, toggle, target);
-  } else {
-    ariaExpand(container, toggle, target);
-  }
-}
-
 //
 // confirm-menu
 //
