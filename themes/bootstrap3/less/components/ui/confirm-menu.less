@@ -1,0 +1,52 @@
+.confirm-menu {
+  position: relative;
+  display: inline-block;
+}
+
+.confirm__toggle {}
+
+.confirm__desc {
+  margin-block: 0.5rem;
+  padding-inline: 0.75rem;
+  font-weight: 500;
+  color: @dropdown-header-color;
+}
+
+.confirm__options {
+  display: none;
+
+  position: absolute;
+  left: 0;
+  top: 100%;
+  min-width: 100%;
+  max-width: 200%;
+  margin-block: 0.25rem;
+  padding-block: 0.25rem;
+  background-color: @dropdown-bg;
+  border: 1px solid @dropdown-border;
+  border-radius: @border-radius-base;
+  box-shadow: 0 3px 3px rgba(0,0,0,0.3);
+}
+.is-open .confirm__options {
+  display: block;
+}
+
+.confirm__confirm,
+.confirm__cancel {
+  appearance: none;
+  display: block;
+  width: 100%;
+  padding: 0.25rem 0.75rem;
+  text-align: left;
+  border: 0;
+  background-color: transparent;
+
+  &:hover,
+  &:focus {
+    background-color: @dropdown-link-hover-bg;
+  }
+}
+
+.confirm__icon {
+  width: 1.5rem;
+}

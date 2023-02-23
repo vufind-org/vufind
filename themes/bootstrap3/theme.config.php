@@ -43,10 +43,11 @@ return [
         ['file' => 'lib/form-attr-polyfill.js', 'priority' => 210], // input[form] polyfill, cannot load conditionally, since we need all versions of IE
         ['file' => 'lib/autocomplete.js', 'priority' => 220],
         ['file' => 'common.js', 'priority' => 310],
-        ['file' => 'lightbox.js', 'priority' => 320],
-        ['file' => 'truncate.js', 'priority' => 330],
-        ['file' => 'trigger_print.js', 'priority' => 340],
-        ['file' => 'observer_manager.js', 'priority' => 350],
+        ['file' => 'components.js', 'priority' => 320],
+        ['file' => 'lightbox.js', 'priority' => 330],
+        ['file' => 'truncate.js', 'priority' => 340],
+        ['file' => 'trigger_print.js', 'priority' => 350],
+        ['file' => 'observer_manager.js', 'priority' => 360],
     ],
     'favicon' => 'vufind-favicon.ico',
     'helpers' => [

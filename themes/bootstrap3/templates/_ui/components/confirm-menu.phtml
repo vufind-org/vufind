@@ -1,0 +1,36 @@
+<?php
+	$toggleLabel = $this->transEsc($this->label ?? '{->label}');
+	$toggleClass = trim('confirm__toggle ' . $this->escapeHtmlAttr(($this->toggleClass ?? 'btn')));
+
+	$desc = $this->transEsc($this->description ?? 'Are you sure?');
+
+	$actionType = $this->action->type ?? 'submit';
+
+	$confirmLabel = $this->transEsc($this->confirm ?? 'confirm_dialog_yes');
+	$cancelLabel = $this->transEsc($this->cancel ?? 'confirm_dialog_no');
+?>
+
+<div class="confirm-menu">
+	<button class="<?=$toggleClass ?>"><?=$toggleLabel ?></button>
+
+	<div class="confirm__options">
+		<p class="confirm__desc"><?=$desc ?></p>
+
+		<?php if ($actionType == 'submit'): ?>
+			<button type="submit" class="confirm__confirm">
+				<?=$this->icon('ui-success', 'confirm__icon') ?>
+				<?=$confirmLabel ?>
+			</button>
+		<?php elseif ($actionType == 'link'): ?>
+			<a class="confirm__confirm" href="<?=$this->escapeHtmlAttr($this->action->value) ?>">
+				<?=$this->icon('ui-success', 'confirm__icon') ?>
+				<?=$confirmLabel ?>
+			</a>
+		<?php endif; ?>
+
+		<button type="button" class="confirm__cancel">
+			<?=$this->icon('ui-failure', 'confirm__icon') ?>
+			<?=$cancelLabel ?>
+		</button>
+	</div>
+</div>
