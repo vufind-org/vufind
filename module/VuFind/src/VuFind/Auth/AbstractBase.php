@@ -506,7 +506,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
                     $valid = false;
                 }
             } else {
-                $result = preg_match("/({$policy['pattern']})/u", $string, $matches);
+                $result = @preg_match("/({$policy['pattern']})/u", $string, $matches);
                 if ($result === false) {
                     throw new \Exception(
                         "Invalid regexp in $type pattern: " . $policy['pattern']
