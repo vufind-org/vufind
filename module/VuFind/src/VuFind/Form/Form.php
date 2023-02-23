@@ -619,6 +619,8 @@ class Form extends \Laminas\Form\Form implements
 
         $this->formConfig = $formConfig;
 
+        $prefill = $this->sanitizePrefill($prefill);
+
         $elements = [];
         $configuredElements = $this->getFormElements($config);
 
@@ -725,7 +727,6 @@ class Form extends \Laminas\Form\Form implements
                 }
             }
 
-            $prefill = $this->sanitizePrefill($prefill);
             if (!empty($prefill[$element['name']])) {
                 $element['settings']['value'] = $prefill[$element['name']];
             }
@@ -1167,16 +1168,12 @@ class Form extends \Laminas\Form\Form implements
      */
     protected function sanitizePrefill(array $prefill): array
     {
-        foreach ($this->getProtectedFieldNames() as $fieldName) {
-            if (isset($prefill[$fieldName])) {
-                unset($prefill[$fieldName]);
-            }
-        }
         $prefillFields = $this->formConfig['prefillFields'] ?? [];
         $prefill = array_filter(
             $prefill,
             function ($key) use ($prefillFields) {
-                return in_array($key, $prefillFields);
+                return in_array($key, $prefillFields)
+                    && !in_array($key, $this->getProtectedFieldNames());
             },
             ARRAY_FILTER_USE_KEY
         );

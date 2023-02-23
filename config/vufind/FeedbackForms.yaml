@@ -65,7 +65,7 @@
 #
 #     Help texts may contain HTML-formatting.
 #
-#   prefillFields (array) Fields that could be prefilled by passing parametr to form URL. Could be
+#   prefillFields (array) Fields that could be prefilled by passing parameter to form URL. Could be
 #                         used only with hidden, text and textarea types.
 #                         Example:
 #                           prefillFields:

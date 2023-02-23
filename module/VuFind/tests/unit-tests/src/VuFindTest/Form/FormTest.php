@@ -846,6 +846,11 @@ class FormTest extends \PHPUnit\Framework\TestCase
         );
     }
 
+    /**
+     * Test prefilling values for inputs from form configuration
+     *
+     * @return void
+     */
     public function testPrefill(): void
     {
         $form = $this->getMockTestForm(
@@ -907,6 +912,11 @@ class FormTest extends \PHPUnit\Framework\TestCase
         );
     }
 
+    /**
+     * Test protecting fields from being prefilled
+     *
+     * @return void
+     */
     public function testPrefillProtectedFields(): void
     {
         $form = $this->getMockTestForm(
