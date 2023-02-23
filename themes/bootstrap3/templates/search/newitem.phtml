@@ -17,7 +17,7 @@
     <label class="control-label"><?=$this->transEsc('Range')?>:</label>
     <div class="btn-group" data-toggle="buttons">
       <?php foreach ($this->ranges as $key => $range): ?>
-        <label class="btn btn-primary<?php if($key == 0): ?> active<?php endif ?>">
+        <label class="btn btn-primary<?php if ($key == 0): ?> active<?php endif ?>">
           <input type="radio" name="range" id="newitem_range_<?=$this->escapeHtmlAttr($key)?>" value="<?=$this->escapeHtmlAttr($range)?>"<?=($key == 0) ? ' checked="checked"' : ''?>/>
           <?=($range == 1) ? $this->transEsc('Yesterday') : $this->transEsc('past_days', ['%%range%%' => $this->escapeHtml($range)])?>
         </label>

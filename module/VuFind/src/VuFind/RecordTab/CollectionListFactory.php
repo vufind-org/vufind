@@ -70,7 +70,8 @@ class CollectionListFactory
         }
         return new $requestedName(
             $container->get(\VuFind\Search\SearchRunner::class),
-            $container->get(\VuFind\Recommend\PluginManager::class)
+            $container->get(\VuFind\Recommend\PluginManager::class),
+            $container->get(\VuFind\Search\Memory::class)
         );
     }
 }

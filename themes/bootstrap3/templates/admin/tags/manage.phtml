@@ -31,7 +31,7 @@
         <div class="form-group">
           <label for="user_id" class="control-label"><?=$this->transEsc('Username')?></label>
           <select name="user_id" id="user_id" class="form-control">
-            <?php foreach($this->uniqueUsers as $user):?>
+            <?php foreach ($this->uniqueUsers as $user):?>
               <option value="<?=$this->escapeHtmlAttr($user['user_id']) ?>">
                 <?=$this->escapeHtml($user['username']) ?>
               </option>
@@ -43,7 +43,7 @@
         <div class="form-group">
           <label for="tag_id" class="control-label"><?=$this->transEsc('Tag')?></label>
           <select name="tag_id" id="tag_id" class="form-control">
-            <?php foreach($this->uniqueTags as $tag):?>
+            <?php foreach ($this->uniqueTags as $tag):?>
               <option value="<?=$this->escapeHtmlAttr($tag['tag_id']) ?>">
                 <?= $tag['tag'] ?>
               </option>
@@ -55,7 +55,7 @@
         <div class="form-group">
           <label for="resource_id" class="control-label"><?=$this->transEsc('Title')?></label>
           <select name="resource_id" id="resource_id" class="form-control">
-            <?php foreach($this->uniqueResources as $resource):?>
+            <?php foreach ($this->uniqueResources as $resource):?>
               <option value="<?=$this->escapeHtmlAttr($resource['resource_id']) ?>" title="<?=$this->escapeHtmlAttr($resource['title']) ?>">
                 <?=$this->escapeHtml($this->truncate($resource['title'], 80)) ?> (<?=$this->escapeHtml($resource['resource_id']) ?>)
               </option>
