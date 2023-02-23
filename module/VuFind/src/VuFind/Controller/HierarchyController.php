@@ -154,11 +154,13 @@ class HierarchyController extends AbstractBase
     public function gettreejsonAction()
     {
         $this->disableSessionWrites();  // avoid session write timing bug
+
         // Retrieve the record from the index
         $id = $this->params()->fromQuery('id');
         $source = $this->params()
             ->fromQuery('hierarchySource', DEFAULT_SEARCH_BACKEND);
         $loader = $this->getRecordLoader();
+        $message = 'Service Unavailable'; // default error message
         try {
             if ($recordDriver = $loader->load($id, $source)) {
                 $results = $recordDriver->getHierarchyDriver()
@@ -174,11 +176,14 @@ class HierarchyController extends AbstractBase
             }
         } catch (\Exception $e) {
             // Let exceptions fall through to error condition below:
+            $message = APPLICATION_ENV !== 'development'
+                ? (string)$e : 'Unexpected exception';
         }
 
         // If we got this far, something went wrong:
-        $response = ['error' => ['code': 503, 'message' => 'Service Unavailable']];
-        return $this->outputJSON(json_encode($response), 503);
+        $code = 503;
+        $response = ['error' => compact('code', 'message')];
+        return $this->outputJSON(json_encode($response), $code);
         // Service Unavailable
     }
 
