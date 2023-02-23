@@ -56,25 +56,31 @@ class PrintArrayHtml extends AbstractHelper
         $makeTag = $this->getView()->plugin('makeTag');
         $html = "";
         if (is_array($entry)) {
-            $isFlat = $this->isFlatIntegerArray($entry);
+            $isList = $this->isArrayList($entry);
+            $isFlat = $this->isArrayFlat($entry);
             foreach ($entry as $key => $value) {
                 if ($indentFirst || $key != array_key_first($entry)) {
                     $html .= str_repeat("&ensp;", $indentLevel);
                 }
+                $valueIsSingleKeyList = $this->isSingleKeyList($value);
 
                 $nextIndentLevel = $indentLevel;
                 // Indent first line unless we're continuing from hyphen
-                $nextIndentFirst = $isFlat || !is_int($key) || !is_array($value);
-                if (!$isFlat) {
+                $nextIndentFirst = ($isFlat || !$isList || !is_array($value))
+                                   && !$valueIsSingleKeyList;
+                if (!$isFlat || !$isList) {
                     // Increase indent if entering new array
                     $nextIndentLevel = is_array($value) ? $indentLevel + 2 : 0;
-                    if (is_int($key)) {
-                        // Integer keyed arrays use a hyphen list
-                        $html .= "&ndash;&ensp;";
-                    } else {
-                        $html .= $makeTag("span", $key . ":", ["class" => "term"]) .
-                                 (is_array($value) ? "<br/>\n" : " ");
-                    }
+                }
+                if (!$isFlat && $isList && !$valueIsSingleKeyList) {
+                    // Integer keyed arrays use a hyphen list unless they're flat
+                    $html .= "&ndash;&ensp;";
+                } elseif (!$isList) {
+                    $html .= $makeTag("span", $key . ":", ["class" => "term"])
+                             . (
+                                 (is_array($value) && !$valueIsSingleKeyList)
+                                 ? "<br/>\n" : " "
+                             );
                 }
 
                 $html .= $this->__invoke($value, $nextIndentLevel, $nextIndentFirst);
@@ -86,23 +92,60 @@ class PrintArrayHtml extends AbstractHelper
     }
 
     /**
-     * Check if variable is an array with only integer keys and
-     * no arrays as values.
+     * Check is a variable is and array and all keys are sequential
+     * integers starting from index 0.
+     * TODO This function can be replaced by array_is_list() in PHP8
      *
      * @param mixed $var A variable to perform the check on.
      *
      * @return bool
      */
-    protected function isFlatIntegerArray($var)
+    protected function isArrayList($var)
     {
         if (!is_array($var)) {
             return false;
         }
-        foreach ($var as $key => $val) {
-            if (!is_int($key) || is_array($val)) {
+        $i = 0;
+        foreach ($var as $key => $_) {
+            if ($key !== $i++) {
                 return false;
             }
         }
         return true;
+    }
+
+    /**
+     * Check if variable is an array and has no arrays as values.
+     *
+     * @param mixed $var A variable to perform the check on.
+     *
+     * @return bool
+     */
+    protected function isArrayFlat($var)
+    {
+        if (!is_array($var)) {
+            return false;
+        }
+        foreach ($var as $val) {
+            if (is_array($val)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Check if variable is an integer keyed array of size 1
+     * whose single value is not an array.
+     *
+     * @param mixed $var A variable to perform the check on.
+     *
+     * @return bool
+     */
+    protected function isSingleKeyList($var)
+    {
+        return $this->isArrayList($var)
+               && $this->isArrayFlat($var)
+               && count($var) == 1;
     }
 }
