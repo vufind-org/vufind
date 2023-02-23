@@ -102,6 +102,7 @@ sub {
   bottom: -0.25em;
 }
 img {
+  max-width: 100%;
   border: 0;
 }
 svg:not(:root) {
