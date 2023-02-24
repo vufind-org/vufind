@@ -49,15 +49,15 @@ class IpRegExTest extends \PHPUnit\Framework\TestCase
      */
     protected function getPermissionProvider($ipAddr)
     {
-        $mockRequestClass = $this->getMockClass(
+        $mockRequest = $this->getMockBuilder(
             \Laminas\Http\PhpEnvironment\Request::class
-        );
+        )->disableOriginalConstructor()->getMock();
         $mockIpReader = $this->getMockBuilder(\VuFind\Net\UserIpReader::class)
             ->disableOriginalConstructor()
             ->getMock();
         $mockIpReader->expects($this->once())->method('getUserIp')
             ->will($this->returnValue($ipAddr));
-        return new IpRegEx(new $mockRequestClass, $mockIpReader);
+        return new IpRegEx(new $mockRequest, $mockIpReader);
     }
 
     /**
