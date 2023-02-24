@@ -42,7 +42,7 @@ return [
         ['file' => 'vendor/validator.min.js', 'priority' => 140],
         ['file' => 'lib/form-attr-polyfill.js', 'priority' => 210], // input[form] polyfill, cannot load conditionally, since we need all versions of IE
         ['file' => 'lib/autocomplete.js', 'priority' => 220],
-        ['file' => 'lib/status_ajax_queue.js', 'priority' => 230],
+        ['file' => 'lib/ajax_request_queue.js', 'priority' => 230],
         ['file' => 'common.js', 'priority' => 310],
         ['file' => 'lightbox.js', 'priority' => 320],
         ['file' => 'truncate.js', 'priority' => 330],
