@@ -1,4 +1,4 @@
-/*global StatusAjaxQueue, VuFind */
+/*global AjaxRequestQueue, VuFind */
 
 VuFind.register("recordVersions", function recordVersions() {
   function checkVersionStatusSuccess(items, response) {
@@ -21,15 +21,15 @@ VuFind.register("recordVersions", function recordVersions() {
     return new Promise(function runVersionAjaxPromise(done, error) {
       $.getJSON(VuFind.path + "/AJAX/JSON", {
         method: "getRecordVersions",
-        id: items.map((item) => item.id),
-        source: items.map((item) => item.source),
+        id: items.records.map((item) => item.id),
+        source: items.records.map((item) => item.source),
       })
         .done(done)
         .fail(error);
     });
   }
 
-  const versionQueue = new StatusAjaxQueue({
+  const versionQueue = new AjaxRequestQueue({
     run: runVersionAjaxQueue,
     success: checkVersionStatusSuccess,
     failure: checkVersionStatusFailure,

@@ -1,4 +1,4 @@
-/*global StatusAjaxQueue, VuFind, unwrapJQuery */
+/*global AjaxRequestQueue, VuFind, unwrapJQuery */
 
 VuFind.register('itemStatuses', function ItemStatuses() {
   function formatCallnumbers(callnumber, callnumber_handler) {
@@ -92,9 +92,9 @@ VuFind.register('itemStatuses', function ItemStatuses() {
   function itemStatusAjaxSuccess(items, response) {
     let idMap = {};
 
-    // make map if ids to element arrays
+    // make map of ids to element arrays
     items.forEach(function mapItemId(item) {
-      if (typeof idMap[item.id] == "undefined") {
+      if (typeof idMap[item.id] === "undefined") {
         idMap[item.id] = [];
       }
 
@@ -103,7 +103,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
 
     // display data
     response.data.statuses.forEach(function displayItemStatusResponse(status) {
-      if (typeof idMap[status.id] == "undefined") {
+      if (typeof idMap[status.id] === "undefined") {
         return;
       }
 
@@ -147,7 +147,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
     method = "POST",
     delay = 200,
   } = {}) {
-    return new StatusAjaxQueue({
+    return new AjaxRequestQueue({
       run: function runItemAjaxQueue(items) {
         return new Promise(function runItemAjaxPromise(done, error) {
           $.ajax({
@@ -184,6 +184,17 @@ VuFind.register('itemStatuses', function ItemStatuses() {
       return;
     }
 
+    // update element to reflect lookup
+    el.classList.add("js-item-pending");
+    el.classList.remove("hidden");
+    el.querySelector(".callnumAndLocation").classList.remove("hidden");
+    el.querySelector(".callnumAndLocation .ajax-availability").classList.remove("hidden");
+    const statusEl = el.querySelector(".status");
+    if (statusEl) {
+      statusEl.classList.remove("hidden");
+    }
+
+    // get proper handler
     let handlerName = "ils";
     if (el.dataset.handlerName) {
       handlerName = el.dataset.handlerName;
@@ -195,17 +206,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
       }
     }
 
-    // update element to reflect lookup
-    el.classList.add("js-item-pending");
-    el.classList.remove("hidden");
-    el.querySelector(".callnumAndLocation").classList.remove("hidden");
-    el.querySelector(".callnumAndLocation .ajax-availability").classList.remove("hidden");
-    const statusEl = el.querySelector(".status");
-    if (statusEl) {
-      statusEl.classList.remove("hidden");
-    }
-
-    //queue the element into the queue
+    // queue the element into the queue
     checkItemHandlers[handlerName].add({ el, id: hiddenIdEl.value });
   }
 

@@ -1,4 +1,4 @@
-class StatusAjaxQueue {
+class AjaxRequestQueue {
   constructor({ run, success, failure, delay }) {
     this.isRunning = false;
     this.queue = [];
@@ -11,7 +11,7 @@ class StatusAjaxQueue {
     this.successFn = success ? success : noop;
     this.failureFn = failure ? failure : noop;
 
-    // move once Javascript is modularized
+    // TODO: move once Javascript is modularized
     function debounce(func, delay = 300) {
       let timeout;
 

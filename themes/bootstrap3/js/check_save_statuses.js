@@ -1,4 +1,4 @@
-/*global htmlEncode, userIsLoggedIn, StatusAjaxQueue, VuFind, unwrapJQuery */
+/*global escapeHtmlAttr, htmlEncode, userIsLoggedIn, AjaxRequestQueue, VuFind, unwrapJQuery */
 
 VuFind.register("saveStatuses", function ItemStatuses() {
   function displaySaveStatus(itemLists, el) {
@@ -7,7 +7,9 @@ VuFind.register("saveStatuses", function ItemStatuses() {
     if (itemLists.length > 0) {
       // If we got lists back, display them!
       var html = '<ul>' + itemLists.map(function convertToLi(l) {
-        return '<li><a href="' + l.list_url + '">' + htmlEncode(l.list_title) + '</a></li>';
+        return '<li><a href="' + escapeHtmlAttr(l.list_url) + '">' +
+          htmlEncode(l.list_title) +
+          '</a></li>';
       }).join('') + '</ul>';
       $item.find('.savedLists').addClass('loaded');
       $item.find('.js-load').replaceWith(html);
@@ -72,7 +74,7 @@ VuFind.register("saveStatuses", function ItemStatuses() {
     });
   }
 
-  const saveStatusQueue = new StatusAjaxQueue({
+  const saveStatusQueue = new AjaxRequestQueue({
     run: runSaveAjaxQueue,
     success: checkSaveStatusSuccess,
     failure: checkSaveStatusFailure,

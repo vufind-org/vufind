@@ -93,7 +93,7 @@ class GetRecordVersions extends \VuFind\AjaxHandler\AbstractBase
      *
      * @return string
      */
-    protected function getVersionsForRecord($id, $source)
+    protected function getVersionsLinkForRecord($id, $source)
     {
         $driver = $this->recordLoader->load($id, $source);
         $tabs = $this->tabManager->getTabsForRecord($driver);
@@ -120,16 +120,21 @@ class GetRecordVersions extends \VuFind\AjaxHandler\AbstractBase
         $source = $params->fromPost('source') ?: $params->fromQuery('source');
 
         if (!is_array($id)) {
-            return $this->formatResponse($this->getVersionsForRecord($id, $source));
+            return $this->formatResponse(
+                $this->getVersionsLinkForRecord($id, $source)
+            );
         }
 
         $htmlByRecord = [];
         for ($i=0; $i < count($id); $i++) {
             $key = $source[$i] . '|' . $id[$i];
 
-            $htmlByRecord[$key] = $this->getVersionsForRecord($id[$i], $source[$i]);
+            $htmlByRecord[$key] = $this->getVersionsLinkForRecord(
+                $id[$i],
+                $source[$i]
+            );
         }
 
-        return $this->formatResponse($htmlByRecord);
+        return $this->formatResponse(['records' => $htmlByRecord]);
     }
 }

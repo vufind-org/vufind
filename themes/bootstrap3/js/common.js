@@ -284,6 +284,49 @@ function htmlEncode(value) {
     return '';
   }
 }
+
+function escapeHtmlAttr(str) {
+  if (!str) {
+    return str;
+  }
+
+  const namedEntities = {
+    34: 'quot', // quotation mark
+    38: 'amp', // ampersand
+    60: 'lt', // less-than sign
+    62: 'gt', // greater-than sign
+  };
+
+  const regexp = new RegExp(/[^a-z0-9,\.\-_]/gisu);
+  return str.replace(regexp, (char) => {
+    const code = char.charCodeAt(0);
+
+    // Named entities
+    if (code in namedEntities) {
+      return `&${namedEntities[code]};`
+    }
+
+    /**
+     * The following replaces characters undefined in HTML with the
+     * hex entity for the Unicode replacement character.
+     */
+    if (
+      (code >= 0x7f && code <= 0x9f) ||
+      (code <= 0x1f && char !== "\t" && char !== "\n" && char !== "\r")
+    ) {
+      return '&#xFFFD;';
+    }
+
+    const hex = code.toString(16).toUpperCase();
+
+    if (code > 255) {
+      return `&#x${hex.padStart(4, 0)};`;
+    }
+
+    return `&#x${hex.padStart(2, 0)};`;
+  });
+}
+
 function extractClassParams(selector) {
   var str = $(selector).attr('class');
   if (typeof str === "undefined") {
