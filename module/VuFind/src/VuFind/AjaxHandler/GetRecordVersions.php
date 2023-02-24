@@ -98,13 +98,14 @@ class GetRecordVersions extends \VuFind\AjaxHandler\AbstractBase
 
         $id = $params->fromPost('id') ?: $params->fromQuery('id');
         $source = $params->fromPost('source') ?: $params->fromQuery('source');
+        $searchId = $params->fromPost('sid') ?: $params->fromQuery('sid');
         $driver = $this->recordLoader->load($id, $source);
         $tabs = $this->tabManager->getTabsForRecord($driver);
         $full = true;
 
         $html = ($this->recordPlugin)($driver)->renderTemplate(
             'versions-link.phtml',
-            compact('driver', 'tabs', 'full')
+            compact('driver', 'tabs', 'full', 'searchId')
         );
 
         return $this->formatResponse($html);
