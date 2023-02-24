@@ -86,7 +86,7 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
                 $this->equalTo(1)
             );
         $memcache->expects($this->once())->method('addServer')
-            ->with($this->equalTo('localhost', $this->equalTo(11211)))
+            ->with($this->equalTo('localhost'), $this->equalTo(11211))
             ->will($this->returnValue(true));
         $memcache->expects($this->once())->method('get')
             ->with($this->equalTo('vufind_sessions/foo'))
