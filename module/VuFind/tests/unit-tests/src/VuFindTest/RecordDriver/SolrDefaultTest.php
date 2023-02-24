@@ -102,7 +102,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test an OpenURL for an unknown material type.
+     * Test an OpenURL for an unknown material type with no ISBN or ISSN
      *
      * @return void
      */
@@ -110,9 +110,39 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
     {
         $overrides = [
             'format' => ['Thingie'],
+            'isbn' => [],
         ];
         $driver = $this->getDriver($overrides);
         $this->assertEquals('url_ver=Z39.88-2004&ctx_ver=Z39.88-2004&ctx_enc=info%3Aofi%2Fenc%3AUTF-8&rfr_id=info%3Asid%2Fvufind.svn.sourceforge.net%3Agenerator&rft.title=La+congiura+dei+Principi+Napoletani+1701+%3A+%28prima+e+seconda+stesura%29+%2F&rft.date=1992&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Adc&rft.creator=Vico%2C+Giambattista%2C+1668-1744.&rft.pub=Centro+di+Studi+Vichiani%2C&rft.format=Thingie&rft.language=Italian', $driver->getOpenUrl());
+    }
+
+    /**
+     * Test an OpenURL for an unknown material type with only ISBNs
+     *
+     * @return void
+     */
+    public function testUnknownTypeOnlyISBNsOpenURL()
+    {
+        $overrides = [
+            'format' => ['Thingie'],
+        ];
+        $driver = $this->getDriver($overrides);
+        $this->assertEquals('url_ver=Z39.88-2004&ctx_ver=Z39.88-2004&ctx_enc=info%3Aofi%2Fenc%3AUTF-8&rfr_id=info%3Asid%2Fvufind.svn.sourceforge.net%3Agenerator&rft.title=La+congiura+dei+Principi+Napoletani+1701+%3A+%28prima+e+seconda+stesura%29+%2F&rft.date=1992&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Adc&rft.creator=Vico%2C+Giambattista%2C+1668-1744.&rft.pub=Centro+di+Studi+Vichiani%2C&rft.format=Thingie&rft.language=Italian', $driver->getOpenUrl());
+    }
+
+    /**
+     * Test an OpenURL for an unknown material type with both ISBN and ISSN
+     *
+     * @return void
+     */
+    public function testUnknownTypeBothISBNsandISSNsOpenURL()
+    {
+        $overrides = [
+            'format' => ['Thingie'],
+            'issn' => ['1234-5678'],
+        ];
+        $driver = $this->getDriver($overrides);
+        $this->assertEquals('url_ver=Z39.88-2004&ctx_ver=Z39.88-2004&ctx_enc=info%3Aofi%2Fenc%3AUTF-8&rfr_id=info%3Asid%2Fvufind.svn.sourceforge.net%3Agenerator&rft.title=La+congiura+dei+Principi+Napoletani+1701+%3A+%28prima+e+seconda+stesura%29+%2F&rft.date=1992&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&rft.genre=book&rft.btitle=La+congiura+dei+Principi+Napoletani+1701+%3A+%28prima+e+seconda+stesura%29+%2F&rft.series=Vico%2C+Giambattista%2C+1668-1744.+Works.+1982+%3B&rft.au=Vico%2C+Giambattista%2C+1668-1744.&rft.pub=Centro+di+Studi+Vichiani%2C&rft.edition=Fictional+edition.&rft.isbn=8820737493', $driver->getOpenUrl());
     }
 
     /**

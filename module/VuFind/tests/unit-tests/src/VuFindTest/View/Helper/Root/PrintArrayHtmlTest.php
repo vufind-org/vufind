@@ -64,11 +64,11 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
     public function getPrintArrayHtmlData(): array
     {
         return [
-            [
+            [ # Set 0
                 [],
                 ''
             ],
-            [
+            [ # Set 1
                 [
                     'KeyA' => "ValueA",
                 ],
@@ -77,14 +77,14 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
 
                 END
             ],
-            [
+            [ # Set 2
                 "Value0",
                 <<<END
                 <span class="detail">Value0</span><br/>
 
                 END
             ],
-            [
+            [ # Set 3
                 [
                     0 => "Value0",
                 ],
@@ -93,7 +93,7 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
 
                 END
             ],
-            [
+            [ # Set 4
                 [
                     0 => "Value0",
                     1 => "Value1",
@@ -104,7 +104,7 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
 
                 END
             ],
-            [
+            [ # Set 5
                 [
                     0 => "Escaped vals <>&'\"",
                 ],
@@ -113,7 +113,7 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
 
                 END
             ],
-            [
+            [ # Set 6
                 [
                     "KeyA" => [
                         0 => "Value0",
@@ -127,7 +127,7 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
 
                 END
             ],
-            [
+            [ # Set 7
                 [
                     0 => [
                         0 => "Value0",
@@ -140,7 +140,7 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
 
                 END
             ],
-            [
+            [ # Set 8
                 [
                     "KeyA" => [
                         0 => "Value0",
@@ -161,7 +161,7 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
 
                 END
             ],
-            [
+            [ # Set 9
                 [
                     0 => [
                         0 => "Value0",
@@ -171,7 +171,7 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
                         "KeyX" => "Value2",
                         "KeyY" => "Value3",
                     ],
-                    99 => "Value4",
+                    2 => "Value4",
                 ],
                 <<<END
                 &ndash;&ensp;<span class="detail">Value0</span><br/>
@@ -182,7 +182,7 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
 
                 END
             ],
-            [
+            [ # Set 10
                 [
                     "KeyA" => [
                         0 => "Value0",
@@ -202,6 +202,157 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
                 &ensp;&ensp;&ensp;&ensp;<span class="term">KeyX:</span> <span class="detail">Value3</span><br/>
                 &ensp;&ensp;&ndash;&ensp;<span class="term">KeyY:</span> <span class="detail">Value4</span><br/>
                 &ensp;&ensp;&ensp;&ensp;<span class="term">KeyZ:</span> <span class="detail">Value5</span><br/>
+
+                END
+            ],
+            [ # Set 11
+                [
+                    "KeyA" => [
+                        0 => "Value0",
+                        1 => "Value1",
+                    ],
+                    "001" => [
+                        0 => "Value2",
+                        1 => "Value3",
+                    ],
+                    "100" => [
+                        0 => "Value4",
+                        1 => "Value5",
+                    ],
+                    101 => [
+                        "KeyB" => "Value6",
+                        200 => "Value7",
+                    ],
+                ],
+                <<<END
+                <span class="term">KeyA:</span><br/>
+                &ensp;&ensp;<span class="detail">Value0</span><br/>
+                &ensp;&ensp;<span class="detail">Value1</span><br/>
+                <span class="term">001:</span><br/>
+                &ensp;&ensp;<span class="detail">Value2</span><br/>
+                &ensp;&ensp;<span class="detail">Value3</span><br/>
+                <span class="term">100:</span><br/>
+                &ensp;&ensp;<span class="detail">Value4</span><br/>
+                &ensp;&ensp;<span class="detail">Value5</span><br/>
+                <span class="term">101:</span><br/>
+                &ensp;&ensp;<span class="term">KeyB:</span> <span class="detail">Value6</span><br/>
+                &ensp;&ensp;<span class="term">200:</span> <span class="detail">Value7</span><br/>
+
+                END
+            ],
+            [ # Set 12
+                [
+                    "001" => ["Value0"],
+                    "002" => [
+                        "020" => ["Value1"],
+                        "040" => ["Value2"],
+                        200 => ["Value3"],
+                        "201" => ["Value4"],
+                    ],
+                    "003" => ["Value5"],
+                    "100" => ["Value6"],
+                ],
+                <<<END
+                <span class="term">001:</span> <span class="detail">Value0</span><br/>
+                <span class="term">002:</span><br/>
+                &ensp;&ensp;<span class="term">020:</span> <span class="detail">Value1</span><br/>
+                &ensp;&ensp;<span class="term">040:</span> <span class="detail">Value2</span><br/>
+                &ensp;&ensp;<span class="term">200:</span> <span class="detail">Value3</span><br/>
+                &ensp;&ensp;<span class="term">201:</span> <span class="detail">Value4</span><br/>
+                <span class="term">003:</span> <span class="detail">Value5</span><br/>
+                <span class="term">100:</span> <span class="detail">Value6</span><br/>
+
+                END
+            ],
+            [ # Set 13
+                [
+                    ["001" => ["Value0"]],
+                    ["002" => ["Value1"]],
+                    ["049" => ["Value2"]],
+                    ["100" => ["Value3"]],
+                ],
+                <<<END
+                &ndash;&ensp;<span class="term">001:</span> <span class="detail">Value0</span><br/>
+                &ndash;&ensp;<span class="term">002:</span> <span class="detail">Value1</span><br/>
+                &ndash;&ensp;<span class="term">049:</span> <span class="detail">Value2</span><br/>
+                &ndash;&ensp;<span class="term">100:</span> <span class="detail">Value3</span><br/>
+
+                END
+            ],
+            [ # Set 14
+                [
+                    "KeyA" => [0 => "Value0"],
+                ],
+                <<<END
+                <span class="term">KeyA:</span> <span class="detail">Value0</span><br/>
+
+                END
+            ],
+            [ # Set 15
+                [
+                    "KeyA" => ["000" => "Value0"],
+                ],
+                <<<END
+                <span class="term">KeyA:</span><br/>
+                &ensp;&ensp;<span class="term">000:</span> <span class="detail">Value0</span><br/>
+
+                END
+            ],
+            [ # Set 16
+                [
+                    "KeyA" => [0 => [0 => "Value0"]],
+                ],
+                <<<END
+                <span class="term">KeyA:</span><br/>
+                &ensp;&ensp;<span class="detail">Value0</span><br/>
+
+                END
+            ],
+            [ # Set 17
+                [
+                    "KeyA" => [0 => [0 => [0 => [0 => "Value0"]]]],
+                ],
+                <<<END
+                <span class="term">KeyA:</span><br/>
+                &ensp;&ensp;&ndash;&ensp;&ndash;&ensp;<span class="detail">Value0</span><br/>
+
+                END
+            ],
+            [ # Set 18
+                [
+                    "KeyA" => [
+                        0 => [0 => "Value0"],
+                        1 => [0 => "Value1"],
+                        2 => [0 => "Value2"],
+                    ],
+                ],
+                <<<END
+                <span class="term">KeyA:</span><br/>
+                &ensp;&ensp;<span class="detail">Value0</span><br/>
+                &ensp;&ensp;<span class="detail">Value1</span><br/>
+                &ensp;&ensp;<span class="detail">Value2</span><br/>
+
+                END
+            ],
+            [ # Set 19
+                [
+                    "KeyA" => [
+                        0 => [
+                            0 => ["Value0"],
+                            1 => ["Value1"],
+                        ],
+                        1 => [
+                            0 => "Value2",
+                            1 => "Value3",
+                        ],
+                    ],
+                ],
+                <<<END
+                <span class="term">KeyA:</span><br/>
+                &ensp;&ensp;&ndash;&ensp;<span class="detail">Value0</span><br/>
+                &ensp;&ensp;&ensp;&ensp;<span class="detail">Value1</span><br/>
+                &ensp;&ensp;&ndash;&ensp;<span class="detail">Value2</span><br/>
+                &ensp;&ensp;&ensp;&ensp;<span class="detail">Value3</span><br/>
 
                 END
             ],
