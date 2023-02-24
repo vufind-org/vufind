@@ -43,7 +43,7 @@ use VuFindTheme\ThemeInfo;
  * @method getSeparator()
  */
 class HeadScript extends \Laminas\View\Helper\HeadScript
-    implements \Laminas\Log\LoggerAwareInterface
+implements \Laminas\Log\LoggerAwareInterface
 {
     use ConcatTrait {
         getMinifiedData as getBaseMinifiedData;

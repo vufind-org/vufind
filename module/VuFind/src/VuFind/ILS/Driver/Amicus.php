@@ -161,12 +161,12 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
         $otherStatuses = [];
         foreach ($statusArray as $status) {
             switch ($status) {
-            case 'Disponible':
-                $notCharged = true;
-                break;
-            default:
-                $otherStatuses[] = $status;
-                break;
+                case 'Disponible':
+                    $notCharged = true;
+                    break;
+                default:
+                    $otherStatuses[] = $status;
+                    break;
             }
         }
 
