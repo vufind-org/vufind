@@ -1,5 +1,5 @@
 /*global grecaptcha, isPhoneNumberValid */
-/*exported VuFind, htmlEncode, deparam, getUrlRoot, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, bulkFormHandler, setupMultiILSLoginFields, unwrapJQuery */
+/*exported VuFind, htmlEncode, escapeHtmlAttr, deparam, getUrlRoot, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, bulkFormHandler, setupMultiILSLoginFields, unwrapJQuery */
 
 // IE 9< console polyfill
 window.console = window.console || { log: function polyfillLog() {} };
@@ -294,6 +294,13 @@ function htmlEncode(value) {
   }
 }
 
+/**
+ * Adapted from Laminas.
+ * Source: https://github.com/laminas/laminas-escaper/blob/2.13.x/src/Escaper.php
+ *
+ * @param  {string} str Attribute
+ * @return {string}
+ */
 function escapeHtmlAttr(str) {
   if (!str) {
     return str;
