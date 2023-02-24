@@ -150,10 +150,12 @@ VuFind.register('itemStatuses', function ItemStatuses() {
     return new AjaxRequestQueue({
       run: function runItemAjaxQueue(items) {
         return new Promise(function runItemAjaxPromise(done, error) {
+          const sid = VuFind.getCurrentSearchId();
+
           $.ajax({
             // todo: replace with fetch
             url: VuFind.path + url,
-            data: { id: items.map((item) => item.id) },
+            data: { id: items.map((item) => item.id), sid },
             dataType,
             method,
           })

@@ -10,6 +10,7 @@ var VuFind = (function VuFind() {
   var _initialized = false;
   var _submodules = [];
   var _cspNonce = '';
+  var _searchId = null;
 
   var _icons = {};
   var _translations = {};
@@ -246,8 +247,15 @@ var VuFind = (function VuFind() {
   };
 
   var getCurrentSearchId = function getCurrentSearchId() {
+    if (null !== _searchId) {
+      return _searchId;
+    }
     var match = location.href.match(/[&?]sid=(\d+)/);
     return match ? match[1] : '';
+  };
+
+  var setCurrentSearchId = function setCurrentSearchId(searchId) {
+    _searchId = searchId;
   };
 
   //Reveal
@@ -272,7 +280,8 @@ var VuFind = (function VuFind() {
     loading: loading,
     translate: translate,
     updateCspNonce: updateCspNonce,
-    getCurrentSearchId: getCurrentSearchId
+    getCurrentSearchId: getCurrentSearchId,
+    setCurrentSearchId: setCurrentSearchId
   };
 })();
 
