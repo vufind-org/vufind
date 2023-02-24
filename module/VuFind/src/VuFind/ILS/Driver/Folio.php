@@ -588,15 +588,19 @@ class Folio extends AbstractAPI implements
                 . '" NOT discoverySuppress==true)'
         ];
         $items = [];
+        $itemSort = $this->config['Holdings']['sort']
+            ?? 'volume enumeration chronology';
         foreach ($this->getPagedResults(
             'holdingsRecords',
             '/holdings-storage/holdings',
             $query
         ) as $holding) {
-            $query = [
-                'query' => '(holdingsRecordId=="' . $holding->id
-                    . '" NOT discoverySuppress==true)'
-            ];
+            $rawQuery = '(holdingsRecordId=="' . $holding->id
+                . '" NOT discoverySuppress==true)';
+            if (!empty($itemSort)) {
+                $rawQuery .= ' sortby ' . $itemSort;
+            }
+            $query = ['query' => $rawQuery];
             $notesFormatter = function ($note) {
                 return !($note->staffOnly ?? false)
                     && !empty($note->note) ? $note->note : '';
