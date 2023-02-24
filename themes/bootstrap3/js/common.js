@@ -319,7 +319,7 @@ function escapeHtmlAttr(str) {
 
     // Named entities
     if (code in namedEntities) {
-      return `&${namedEntities[code]};`
+      return `&${namedEntities[code]};`;
     }
 
     /**
