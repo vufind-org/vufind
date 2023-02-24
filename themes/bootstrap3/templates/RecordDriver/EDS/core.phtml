@@ -34,7 +34,7 @@
       <?php $pdfLink = $this->driver->getPdfLink();
           if ($pdfLink): ?>
         <span>
-          <a href="<?=$pdfLink?>" class="icon pdf fulltext">
+          <a href="<?=$pdfLink?>" class="eds icon pdf fulltext">
             <?=$this->transEsc('PDF Full Text')?>
           </a>
         </span><br />
@@ -42,14 +42,14 @@
       <?php $epubLink = $this->driver->getEpubLink();
           if ($epubLink): ?>
         <span>
-          <a href="<?=$epubLink?>" class="icon epub fulltext">
+          <a href="<?=$epubLink?>" class="eds icon epub fulltext">
             <?=$this->transEsc('ePub Full Text')?>
           </a>
         </span><br />
       <?php endif; ?>
       <?php if ($this->driver->hasHTMLFullTextAvailable()): ?>
         <span>
-          <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->driver))?>#html" class="icon html fulltext">
+          <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->driver))?>#html" class="eds icon html fulltext">
             <?=$this->transEsc('HTML Full Text')?>
           </a>
         </span><br />
