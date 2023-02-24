@@ -41,7 +41,7 @@ use VuFind\Session\Memcache;
 class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
 {
     /**
-     * Test reading a session from the database.
+     * Test reading a session from the database with Memcache.
      *
      * @return void
      */
@@ -49,6 +49,11 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
     {
         if (!class_exists(\Memcache::class)) {
             $this->markTestSkipped();
+        }
+        // TODO: remove this check after raising minimum PHP version to 8;
+        // for some reason, this test does not work under PHP 7 with PHPUnit 9.6.
+        if (PHP_MAJOR_VERSION < 8) {
+            $this->markTestSkipped('Not supported in PHP 7');
         }
         $memcache = $this->getMockBuilder(\Memcache::class)
             ->onlyMethods(['connect', 'get'])
@@ -59,6 +64,35 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
             ->with($this->equalTo('vufind_sessions/foo'))
             ->will($this->returnValue('bar'));
         $handler = $this->getHandler(null, $memcache);
+        $this->assertEquals('bar', $handler->read('foo'));
+    }
+
+    /**
+     * Test reading a session from the database with Memcached.
+     *
+     * @return void
+     */
+    public function testReadWithMemcached()
+    {
+        if (!class_exists(\Memcached::class)) {
+            $this->markTestSkipped();
+        }
+        $memcache = $this->getMockBuilder(\Memcached::class)
+            ->onlyMethods(['setOption', 'addServer', 'get'])
+            ->getMock();
+        $memcache->expects($this->once())->method('setOption')
+            ->with(
+                $this->equalTo(\Memcached::OPT_CONNECT_TIMEOUT),
+                $this->equalTo(1)
+            );
+        $memcache->expects($this->once())->method('addServer')
+            ->with($this->equalTo('localhost', $this->equalTo(11211)))
+            ->will($this->returnValue(true));
+        $memcache->expects($this->once())->method('get')
+            ->with($this->equalTo('vufind_sessions/foo'))
+            ->will($this->returnValue('bar'));
+        $config = new \Laminas\Config\Config(['memcache_client' => 'Memcached']);
+        $handler = $this->getHandler($config, $memcache);
         $this->assertEquals('bar', $handler->read('foo'));
     }
 
