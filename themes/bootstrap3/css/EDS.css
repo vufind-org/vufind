@@ -42,7 +42,7 @@
 
 /* full text icons */
 /* Icons */
-.eds.icon {
+.icon--eds {
     background: url("../images/EDS/sprites_32.png") no-repeat top left;
     height: 32px;
     line-height: 32px;
@@ -50,15 +50,15 @@
     padding-left: 36px;
 }
 
-.eds.icon.ebook {
+.icon--eds.ebook {
     background-position: 0 0;
 }
 
-.eds.icon.html {
+.icon--eds.html {
     background-position: 0 -42px;
 }
 
-.eds.icon.pdf {
+.icon--eds.pdf {
     background-position: 0 -84px;
 }
 
