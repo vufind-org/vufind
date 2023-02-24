@@ -88,12 +88,13 @@ class GetRecordVersions extends \VuFind\AjaxHandler\AbstractBase
     /**
      * Load a single record and render the link template
      *
-     * @param string $id     Record id
-     * @param string $source Record source
+     * @param string $id       Record id
+     * @param string $source   Record source
+     * @param string $searchId Search ID
      *
      * @return string
      */
-    protected function getVersionsLinkForRecord($id, $source)
+    protected function getVersionsLinkForRecord($id, $source, $searchId)
     {
         $driver = $this->recordLoader->load($id, $source, $searchId);
         $tabs = $this->tabManager->getTabsForRecord($driver);
