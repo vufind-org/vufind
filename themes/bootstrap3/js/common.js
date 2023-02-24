@@ -306,7 +306,7 @@ function escapeHtmlAttr(str) {
     62: 'gt', // greater-than sign
   };
 
-  const regexp = new RegExp(/[^a-z0-9,\.\-_]/gisu);
+  const regexp = new RegExp(/[^a-z0-9,\\.\\-_]/giu);
   return str.replace(regexp, (char) => {
     const code = char.charCodeAt(0);
 
