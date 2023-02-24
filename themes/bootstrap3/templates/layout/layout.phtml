@@ -86,7 +86,7 @@
       $translations = !isset($this->renderingError) ? $this->render('js-translations.phtml') : '{}';
       $dsb = DEFAULT_SEARCH_BACKEND;
       $cspNonce = $this->cspNonce();
-      $searchId = $this->layout()->searchId;
+      $searchId = json_encode($this->layout()->searchId);
       $appendScripts[] = <<<JS
 VuFind.path = '{$root}';
 VuFind.defaultSearchBackend = '{$dsb}';

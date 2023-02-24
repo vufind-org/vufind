@@ -5,7 +5,7 @@
   }
   if (isset($this->tabs['Versions'])) {
     $url = !empty($this->full)
-      ? ($this->recordLinker()->getTabUrl($this->driver, 'Versions', [], ['query' => ['sid' => $this->searchId], 'fragment' => 'tabnav']) . '#tabnav')
+      ? ($this->recordLinker()->getTabUrl($this->driver, 'Versions', [], ['query' => ['sid' => $this->searchId]]) . '#tabnav')
       : '#versions';
     $translationKey = 'other_versions_link';
   } else {
