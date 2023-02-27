@@ -703,7 +703,10 @@ class Folio extends AbstractAPI implements
                 usort(
                     $nextBatch,
                     function ($a, $b) use ($vufindItemSort) {
-                        return strnatcasecmp($a[$vufindItemSort], $b[$vufindItemSort]);
+                        return strnatcasecmp(
+                            $a[$vufindItemSort],
+                            $b[$vufindItemSort]
+                        );
                     }
                 );
                 // Renumber the re-sorted batch:
