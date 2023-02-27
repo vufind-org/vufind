@@ -700,9 +700,12 @@ class Folio extends AbstractAPI implements
                 $nextBatch[] = $nextItem;
             }
             if ($sortNeeded) {
-                usort($nextBatch, function ($a, $b) use ($vufindItemSort) {
-                    return strnatcasecmp($a[$vufindItemSort], $b[$vufindItemSort]);
-                });
+                usort(
+                    $nextBatch,
+                    function ($a, $b) use ($vufindItemSort) {
+                        return strnatcasecmp($a[$vufindItemSort], $b[$vufindItemSort]);
+                    }
+                );
                 // Renumber the re-sorted batch:
                 $nbCount = count($nextBatch);
                 for ($nbIndex = 0; $nbIndex < $nbCount; $nbIndex++) {
