@@ -588,8 +588,8 @@ class Folio extends AbstractAPI implements
                 . '" NOT discoverySuppress==true)'
         ];
         $items = [];
-        $itemSort = $this->config['Holdings']['sort']
-            ?? 'volume enumeration chronology';
+        $folioItemSort = $this->config['Holdings']['folio_sort'] ?? '';
+        $vufindItemSort = $this->config['Holdings']['vufind_sort'] ?? '';
         foreach ($this->getPagedResults(
             'holdingsRecords',
             '/holdings-storage/holdings',
@@ -597,8 +597,8 @@ class Folio extends AbstractAPI implements
         ) as $holding) {
             $rawQuery = '(holdingsRecordId=="' . $holding->id
                 . '" NOT discoverySuppress==true)';
-            if (!empty($itemSort)) {
-                $rawQuery .= ' sortby ' . $itemSort;
+            if (!empty($folioItemSort)) {
+                $rawQuery .= ' sortby ' . $folioItemSort;
             }
             $query = ['query' => $rawQuery];
             $notesFormatter = function ($note) {
@@ -630,6 +630,8 @@ class Folio extends AbstractAPI implements
             );
             $holdingCallNumber = $holding->callNumber ?? '';
             $holdingCallNumberPrefix = $holding->callNumberPrefix ?? '';
+            $nextBatch = [];
+            $sortNeeded = false;
             foreach ($this->getPagedResults(
                 'items',
                 '/item-storage/items',
@@ -671,11 +673,11 @@ class Folio extends AbstractAPI implements
                     $dueDateItemCount++;
                 }
 
-                $items[] = $callNumberData + [
+                $nextItem = $callNumberData + [
                     'id' => $bibId,
                     'item_id' => $item->id,
                     'holding_id' => $holding->id,
-                    'number' => count($items) + 1,
+                    'number' => count($nextBatch) + 1,
                     'enumchron' => $enum,
                     'barcode' => $item->barcode ?? '',
                     'status' => $item->status->name,
@@ -692,7 +694,22 @@ class Folio extends AbstractAPI implements
                     'reserve' => 'TODO',
                     'addLink' => true
                 ];
+                if (!empty($vufindItemSort) && !empty($nextItem[$vufindItemSort])) {
+                    $sortNeeded = true;
+                }
+                $nextBatch[] = $nextItem;
             }
+            if ($sortNeeded) {
+                usort($nextBatch, function ($a, $b) use ($vufindItemSort) {
+                    return strnatcasecmp($a[$vufindItemSort], $b[$vufindItemSort]);
+                });
+                // Renumber the re-sorted batch:
+                $nbCount = count($nextBatch);
+                for ($nbIndex = 0; $nbIndex < $nbCount; $nbIndex++) {
+                    $nextBatch[$nbIndex]['number'] = $nbIndex + 1;
+                }
+            }
+            $items = array_merge($items, $nextBatch);
         }
         return $items;
     }
