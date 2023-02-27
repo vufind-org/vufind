@@ -137,7 +137,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
           'recordid' => 'testbug2',
           'source' => '',
           'oclc' => '30585539',
-          'isbns' => ['8820737493', '9788072815562'],
+          'isbns' => ['8820737493', '8072815563'],
         ];
         $this->assertEquals($thumbnail, $this->getDriver()->getThumbnail());
     }
@@ -474,6 +474,49 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
                 array_values($this->getDriver([], $cfg)->getCitationFormats())
             );
         }
+    }
+
+    public function getCleanISBNsProvider(): array
+    {
+        return [
+            [
+                ['8820737493', '8072815563'],
+                ['only10' => true],
+            ],
+            [
+                ['8820737493', '8072815563'],
+                ['prefer10' => true],
+            ],
+            [
+                ['8820737493', '8072815563'],
+                ['filterInvalid' => false],
+            ],
+            [
+                ['9788820737498', '9788072815562'],
+                ['normalize13' => true],
+            ],
+            [
+                ['8820737493', '8072815563'],
+                [
+                    'only10' => true,
+                    'prefer10' => false,
+                    'normalize13' => false,
+                    'filterInvalid' => false,
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Test getCleanISBNs for a record.
+     *
+     * @dataProvider getCleanISBNsProvider
+     *
+     * @return void
+     */
+    public function testGetCleanISBNs($result, $flags)
+    {
+        $this->assertEquals($result, $this->getDriver()->getCleanISBNs($flags));
     }
 
     /**

@@ -283,20 +283,29 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
-     * Return all valid ISBNs found in the record.
+     * Return all ISBNs found in the record.
      *
-     * @param array $flags Flags to prefer ISBN-10 or ISBN-13. If 'only10' is true,
-     * only ISBN-10s will be returned. If 'normalize13' is true, the ISBN is always
-     * converted to ISBN-13. If both are false (default), then each ISBN is returned
-     * as found in record.
+     * @param array $userFlags Flags to control behavior:
+     *  - 'only10' returns only ISBN-10s
+     *  - 'prefer10' returns ISBN-10s if available, otherwise ISBN-13s (default)
+     *  - 'normalize13' returns ISBN-13s, normalizing ISBN-10s to ISBN-13s
+     *  - 'filterInvalid' filters out invalid ISBNs
+     * Only one of 'only10', 'prefer10', or 'normalize13' should be set to true.
      *
      * @return array
      */
     public function getCleanISBNs(
-        array $flags = ['only10' =>  false, 'normalize13' => false]
+        array $userFlags = []
     ): array {
+        $defaultFlags = [
+            'only10' =>  false,
+            'prefer10' => true,
+            'normalize13' => false,
+            'filterInvalid' => true,
+        ];
+        $flags = $userFlags + $defaultFlags;
         $isbns = $this->getISBNs();
-        $cleanIsbns = [];
+        $all = $tens = $thirteens = $invalid = [];
         foreach ($isbns as $isbn) {
             // Strip off any unwanted notes:
             if ($pos = strpos($isbn, ' ')) {
@@ -304,16 +313,21 @@ class DefaultRecord extends AbstractBase
             }
             $isbnObj = new ISBN($isbn);
             if ($isbnObj->isValid()) {
-                if ($flags['only10'] && ($isbn10 = $isbnObj->get10())) {
-                    $cleanIsbns[] = $isbn10;
-                } elseif ($flags['normalize13'] && ($isbn13 = $isbnObj->get13())) {
-                    $cleanIsbns[] = $isbn13;
-                } else {
-                    $cleanIsbns[] = $isbn;
+                if ($isbn10 = $isbnObj->get10()) {
+                    $normalized
+                        = $flags['normalize13'] ? $isbnObj->get13() : $isbn10;
+                    $tens[] = $normalized;
+                    $all[] = $normalized;
+                } elseif ($isbn13 = $isbnObj->get13()) {
+                    $thirteens[] = $isbn13;
+                    $all[] = $isbn13;
                 }
+            } elseif (!$flags['filterInvalid']) {
+                $invalid[] = $isbn;
+                $all[] = $isbn;
             }
         }
-        return $cleanIsbns;
+        return $flags['prefer10'] ? array_merge($tens, $thirteens, $invalid) : $all;
     }
 
     /**
