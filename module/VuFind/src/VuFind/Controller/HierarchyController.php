@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010-2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -159,6 +159,7 @@ class HierarchyController extends AbstractBase
         $source = $this->params()
             ->fromQuery('hierarchySource', DEFAULT_SEARCH_BACKEND);
         $loader = $this->getRecordLoader();
+        $message = 'Service Unavailable'; // default error message
         try {
             if ($recordDriver = $loader->load($id, $source)) {
                 $results = $recordDriver->getHierarchyDriver()
@@ -174,10 +175,15 @@ class HierarchyController extends AbstractBase
             }
         } catch (\Exception $e) {
             // Let exceptions fall through to error condition below:
+            $message = APPLICATION_ENV !== 'development'
+                ? (string)$e : 'Unexpected exception';
         }
 
         // If we got this far, something went wrong:
-        return $this->outputJSON('error', 503); // Service Unavailable
+        $code = 503;
+        $response = ['error' => compact('code', 'message')];
+        return $this->outputJSON(json_encode($response), $code);
+        // Service Unavailable
     }
 
     /**

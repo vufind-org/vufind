@@ -160,7 +160,10 @@ VuFind.register('itemStatuses', function ItemStatuses() {
         method: this.method,
         url: VuFind.path + this.url,
         context: this,
-        data: { 'id': ids }
+        data: {
+          'id': ids,
+          'sid': VuFind.getCurrentSearchId()
+        }
       })
         .done(this.checkItemStatusDone)
         .fail( this.itemStatusFail)
