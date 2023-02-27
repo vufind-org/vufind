@@ -26,6 +26,9 @@
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs .= '<li class="active">' . $this->escapeHtml($headTitle) . '</li>';
 
+  // Store search id:
+  $this->layout()->searchId = $this->results->getSearchId();
+
   // Enable cart if appropriate:
   $this->showBulkOptions = $this->params->getOptions()->supportsCart() && $this->showBulkOptions;
   // Checkboxes if appropriate:
