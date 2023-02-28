@@ -636,9 +636,16 @@ class Folio extends AbstractAPI implements
      * @param int    $number         The current item number (position within
      * current holdings record)
      * @param string $dueDateValue   The due date to display to the user
+     *
+     * @return array
      */
-    protected function formatHoldingItem($bibId, $holdingDetails, $item, $number, $dueDateValue)
-    {
+    protected function formatHoldingItem(
+        string $bibId,
+        array $holdingDetails,
+        $item,
+        $number,
+        string $dueDateValue
+    ): array {
         $itemNotes = array_filter(
             array_map([$this, 'formatNote'], $item->notes ?? [])
         );
@@ -695,6 +702,8 @@ class Folio extends AbstractAPI implements
      *
      * @param array  $holdings  Holdings to sort
      * @param string $sortField Sort field
+     *
+     * @return array
      */
     protected function sortHoldings(array $holdings, string $sortField): array
     {
