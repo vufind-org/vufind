@@ -563,24 +563,24 @@ class InstallCommand extends Command
 
         // In multisite mode, we need to make environment variables conditional:
         switch ($this->multisiteMode) {
-        case self::MULTISITE_DIR_BASED:
-            $config = preg_replace(
-                '/SetEnv\s+(\w+)\s+(.*)/',
-                'SetEnvIf Request_URI "^' . $this->basePath . '" $1=$2',
-                $config
-            );
-            break;
-        case self::MULTISITE_HOST_BASED:
-            if (($result = $this->validateHost($this->host)) !== true) {
-                return $result;
-            }
-            $config = preg_replace(
-                '/SetEnv\s+(\w+)\s+(.*)/',
-                'SetEnvIfNoCase Host ' . str_replace('.', '\.', $this->host)
-                . ' $1=$2',
-                $config
-            );
-            break;
+            case self::MULTISITE_DIR_BASED:
+                $config = preg_replace(
+                    '/SetEnv\s+(\w+)\s+(.*)/',
+                    'SetEnvIf Request_URI "^' . $this->basePath . '" $1=$2',
+                    $config
+                );
+                break;
+            case self::MULTISITE_HOST_BASED:
+                if (($result = $this->validateHost($this->host)) !== true) {
+                    return $result;
+                }
+                $config = preg_replace(
+                    '/SetEnv\s+(\w+)\s+(.*)/',
+                    'SetEnvIfNoCase Host ' . str_replace('.', '\.', $this->host)
+                    . ' $1=$2',
+                    $config
+                );
+                break;
         }
 
         $target = $this->overrideDir . '/httpd-vufind.conf';

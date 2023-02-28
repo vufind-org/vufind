@@ -155,25 +155,25 @@ class Wikipedia implements TranslatorAwareInterface
 
             // At the moment we only want stuff related to the image.
             switch (strtolower($key)) {
-            case "img":
-            case "image":
-            case "image:":
-            case "image_name":
-            case "imagem":
-            case 'imagen':
-            case 'immagine':
-                $imageName = str_replace(' ', '_', $value);
-                break;
-            case "caption":
-            case "img_capt":
-            case "image_caption":
-            case "legenda":
-            case 'textoimagen':
-                $imageCaption = $value;
-                break;
-            default:
-                /* Nothing else... yet */
-                break;
+                case "img":
+                case "image":
+                case "image:":
+                case "image_name":
+                case "imagem":
+                case 'imagen':
+                case 'immagine':
+                    $imageName = str_replace(' ', '_', $value);
+                    break;
+                case "caption":
+                case "img_capt":
+                case "image_caption":
+                case "legenda":
+                case 'textoimagen':
+                    $imageCaption = $value;
+                    break;
+                default:
+                    /* Nothing else... yet */
+                    break;
             }
         }
 

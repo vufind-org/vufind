@@ -69,18 +69,20 @@ class Factory implements FactoryInterface
 
         // Initialize object based on requested type:
         switch (strtolower($type)) {
-        case 'clickatell':
-            $client = $container->get(\VuFindHttp\HttpService::class)
-                ->createClient();
-            return new Clickatell($smsConfig, ['client' => $client]);
-        case 'mailer':
-            $options = ['mailer' => $container->get(\VuFind\Mailer\Mailer::class)];
-            if (isset($mainConfig->Site->email)) {
-                $options['defaultFrom'] = $mainConfig->Site->email;
-            }
-            return new Mailer($smsConfig, $options);
-        default:
-            throw new \Exception('Unrecognized SMS type: ' . $type);
+            case 'clickatell':
+                $client = $container->get(\VuFindHttp\HttpService::class)
+                    ->createClient();
+                return new Clickatell($smsConfig, ['client' => $client]);
+            case 'mailer':
+                $options = [
+                    'mailer' => $container->get(\VuFind\Mailer\Mailer::class)
+                ];
+                if (isset($mainConfig->Site->email)) {
+                    $options['defaultFrom'] = $mainConfig->Site->email;
+                }
+                return new Mailer($smsConfig, $options);
+            default:
+                throw new \Exception('Unrecognized SMS type: ' . $type);
         }
     }
 }

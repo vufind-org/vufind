@@ -80,15 +80,15 @@ class GetUserTransactions extends AbstractIlsAndUserAction
                 ->getMyTransactions($patron, $pageOptions['ilsParams']);
             foreach ($result['records'] as $item) {
                 switch ($item['dueStatus'] ?? '') {
-                case 'due':
-                    $counts['warn']++;
-                    break;
-                case 'overdue':
-                    $counts['overdue']++;
-                    break;
-                default:
-                    $counts['ok']++;
-                    break;
+                    case 'due':
+                        $counts['warn']++;
+                        break;
+                    case 'overdue':
+                        $counts['overdue']++;
+                        break;
+                    default:
+                        $counts['ok']++;
+                        break;
                 }
             }
             $pageEnd = $pageOptions['ilsPaging']
