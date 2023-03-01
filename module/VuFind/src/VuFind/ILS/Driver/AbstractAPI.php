@@ -171,6 +171,23 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
             );
             throw new ILSException("Unexpected error code.");
         }
+        if ($jsonLog = ($this->config['API']['json_log_file'] ?? false)) {
+            if (APPLICATION_ENV !== 'development') {
+                throw new \Exception(
+                    'SECURITY: json_log_file enabled outside of development mode'
+                );
+            }
+            $json = file_exists($jsonLog)
+                ? json_decode(file_get_contents($jsonLog)) : [];
+            $json[] = [
+                'expectedMethod' => $method,
+                'expectedPath' => $path,
+                'expectedParams' => $params,
+                'body' => $response->getBody(),
+                'code' => $code,
+            ];
+            file_put_contents($jsonLog, json_encode($json));
+        }
         return $response;
     }
 
