@@ -1,0 +1,7 @@
+[
+    {},
+    {
+        "expectedPath": "/users",
+        "expectedParams": { "query": "username == \"foo\"" }
+    }
+]

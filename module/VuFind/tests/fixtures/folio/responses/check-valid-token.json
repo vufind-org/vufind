@@ -1,4 +1,17 @@
 [
-  { "status": 200 },
-  { "body": "{ \"loans\": [] }" }
+  {
+    "expectedPath": "/users",
+    "status": 200
+  },
+  {
+    "comment": "We're checking that the token was correctly cached from get-tokens.json.",
+    "expectedPath": "/circulation/loans",
+    "expectedHeaders": { "X-Okapi-Token": "x-okapi-token-config-tenant" },
+    "expectedParams": {
+      "query": "userId==whatever and status.name==Open",
+      "offset": 0,
+      "limit": 1000
+    },
+    "body": "{ \"loans\": [] }"
+  }
 ]

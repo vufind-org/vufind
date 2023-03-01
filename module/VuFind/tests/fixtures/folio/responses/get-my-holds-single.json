@@ -1,6 +1,12 @@
 [
-  { "comment": "Initial request for token" },
+  { "comment": "Initial request for user" },
   {
+    "expectedPath": "/request-storage/requests",
+    "expectedParams": {
+      "query": "(requesterId == \"foo\"  and status == Open*)",
+      "offset": 0,
+      "limit": 1000
+    },
     "comment": "User with 1 holds, request will expire on 2022-12-28T05:59:59.000+00:00",
     "status": 200,
     "body": "{\"requests\":[{\"id\":\"bb07eb2c-bf3a-449f-8e8b-a114ce410c7f\",\"requestLevel\":\"Item\",\"requestType\":\"Hold\",\"requestDate\":\"2022-12-20T05:55:01.000+00:00\",\"requesterId\":\"162c474e-ca1f-4310-b233-7ad3a2ad8c34\",\"instanceId\":\"c7a7df0d-36a2-486c-85f5-008191e6b32d\",\"holdingsRecordId\":\"a6630c3f-8ecd-4d2b-809b-abeeaa4ac111\",\"itemId\":\"26532648-67a3-4459-a97f-9b54b4c5ebd9\",\"status\":\"Open - Not yet filled\",\"position\":3,\"instance\":{\"title\":\"Organic farming : everything you need to know \",\"identifiers\":[{\"value\":\"9780760324691 (pbk.) :\",\"identifierTypeId\":\"8261054f-be78-422d-bd51-4ed9f33c3422\"}]},\"item\":{\"barcode\":\"2713958827\"},\"requester\":{\"firstName\":\"John\",\"lastName\":\"Testuser\",\"barcode\":\"995324292\"},\"fulfilmentPreference\":\"Hold Shelf\",\"requestExpirationDate\":\"2022-12-28T05:59:59.000+00:00\",\"pickupServicePointId\":\"7bfc4faa-e731-47db-92c9-da18c4ca9bc8\",\"metadata\":{\"createdDate\":\"2022-12-20T05:55:02.908+00:00\",\"createdByUserId\":\"d916e883-f8f1-4188-bc1d-f0dce1511b50\",\"updatedDate\":\"2022-12-20T05:55:02.970+00:00\",\"updatedByUserId\":\"d916e883-f8f1-4188-bc1d-f0dce1511b50\"}}],\"totalRecords\":1}"

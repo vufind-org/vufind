@@ -1,7 +1,25 @@
 [
-    { "comment": "Initial request for token" },
-    { "body": "{ \"requesterId\": \"foo\", \"itemId\": \"item1\" }" },
-    { "status": 204 },
-    { "body": "{ \"requesterId\": \"foo\", \"itemId\": \"item2\" }" },
-    { "status": 500 }
+    {
+        "comment": "Initial request for user"
+    },
+    {
+        "expectedPath": "/circulation/requests/request1",
+        "body": "{ \"requesterId\": \"foo\", \"itemId\": \"item1\" }"
+    },
+    {
+        "expectedMethod": "PUT",
+        "expectedPath": "/circulation/requests/request1",
+        "expectedParams": "{\"requesterId\":\"foo\",\"itemId\":\"item1\",\"status\":\"Closed - Cancelled\",\"cancellationReasonId\":\"75187e8d-e25a-47a7-89ad-23ba612338de\"}",
+        "status": 204
+    },
+    {
+        "expectedPath": "/circulation/requests/request2",
+        "body": "{ \"requesterId\": \"foo\", \"itemId\": \"item2\" }"
+    },
+    {
+        "expectedMethod": "PUT",
+        "expectedPath": "/circulation/requests/request2",
+        "expectedParams": "{\"requesterId\":\"foo\",\"itemId\":\"item2\",\"status\":\"Closed - Cancelled\",\"cancellationReasonId\":\"75187e8d-e25a-47a7-89ad-23ba612338de\"}",
+        "status": 500
+    }
 ]
