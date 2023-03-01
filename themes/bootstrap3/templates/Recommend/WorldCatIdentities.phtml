@@ -13,12 +13,12 @@
 <?php $worldCatIdentities = $this->recommend->getIdentities(); if (!empty($worldCatIdentities)): ?>
   <div>
     <h3><?=$this->transEsc('Authors Related to Your Search')?></h3>
-    <dl class="truncate-identities-authors" data-truncate="<?=$this->escapeHtmlAttr(json_encode($authorTruncateSettings))?>">
+    <dl class="truncate-identities-authors" data-truncate="<?=$this->htmlSafeJsonEncode($authorTruncateSettings)?>">
       <?php $i = 0; foreach ($worldCatIdentities as $author => $subjects): ?>
         <dd class="author">
           <a href="<?=$this->url('search-results')?>?lookfor=%22<?=urlencode($author)?>%22&amp;type=Author"><?=$this->escapeHtml($author)?></a>
           <?php if (count($subjects) > 0): ?>
-            <dl class="truncate-identities-subjects" data-truncate="<?=$this->escapeHtmlAttr(json_encode($subjectTruncateSettings))?>">
+            <dl class="truncate-identities-subjects" data-truncate="<?=$this->htmlSafeJsonEncode($subjectTruncateSettings)?>">
             <dd><?=$this->transEsc('Related Subjects')?>:</dd>
             <?php $j = 0; foreach ($subjects as $subj): ?>
               <?php $moreClassInner = 'narrowGroupHidden-subjects' . $this->escapeHtmlAttr($i) . ' hidden'; ?>
