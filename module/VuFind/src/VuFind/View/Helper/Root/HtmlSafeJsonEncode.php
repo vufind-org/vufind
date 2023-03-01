@@ -43,15 +43,20 @@ class HtmlSafeJsonEncode extends AbstractHelper
     /**
      * JSON-encode $value in an HTML-safe manner.
      *
-     * @param mixed $value Data to encode
+     * @param mixed   $value        Data to encode
+     * @param ?string $outerEscaper Name of a view helper to use to escape the JSON
+     * (null/empty value for no extra escaping). Defaults to escapeHtmlAttr.
      *
      * @return string
      */
-    public function __invoke($value)
+    public function __invoke($value, ?string $outerEscaper = 'escapeHtmlAttr')
     {
-        return json_encode(
+        $json = json_encode(
             $value,
             JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP
         );
+        return $outerEscaper
+            ? $this->getView()->plugin($outerEscaper)->__invoke($json)
+            : $json;
     }
 }
