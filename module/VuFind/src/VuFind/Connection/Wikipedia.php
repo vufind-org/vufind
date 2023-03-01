@@ -102,7 +102,7 @@ class Wikipedia implements TranslatorAwareInterface
         }
 
         // Get information from Wikipedia API
-        $uri = 'http://' . $this->lang . '.wikipedia.org/w/api.php' .
+        $uri = 'https://' . $this->lang . '.wikipedia.org/w/api.php' .
                '?action=query&prop=revisions&rvprop=content&format=php' .
                '&list=allpages&titles=' . urlencode($author);
 
@@ -475,7 +475,7 @@ class Wikipedia implements TranslatorAwareInterface
     protected function getWikipediaImageURL($imageName)
     {
         $imageUrl = null;
-        $url = "http://{$this->lang}.wikipedia.org/w/api.php" .
+        $url = "https://{$this->lang}.wikipedia.org/w/api.php" .
                '?prop=imageinfo&action=query&iiprop=url&iiurlwidth=150&format=php' .
                '&titles=Image:' . urlencode($imageName);
 
@@ -499,9 +499,9 @@ class Wikipedia implements TranslatorAwareInterface
                 // Hack for wikipedia api, just in case we couldn't find it
                 //   above look for a http url inside the response.
                 if (!isset($imageUrl)) {
-                    preg_match('/\"http:\/\/(.*)\"/', $response, $matches);
+                    preg_match('/\"https?:\/\/(.*)\"/', $response, $matches);
                     if (isset($matches[1])) {
-                        $imageUrl = 'http://' .
+                        $imageUrl = 'https://' .
                             substr($matches[1], 0, strpos($matches[1], '"'));
                     }
                 }
