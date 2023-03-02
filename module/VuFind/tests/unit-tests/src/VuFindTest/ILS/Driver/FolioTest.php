@@ -556,11 +556,11 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Basic getHolding test
+     * Test getHolding with HRID-based lookup
      *
      * @return void
      */
-    public function testGetHolding(): void
+    public function testGetHoldingWithHridLookup(): void
     {
         $driverConfig = $this->defaultDriverConfig;
         $driverConfig['IDs']['type'] = 'hrid';
@@ -591,5 +591,43 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             ]
         ];
         $this->assertEquals($expected, $this->driver->getHolding("foo"));
+    }
+
+    /**
+     * Test getHolding with FOLIO-based sorting.
+     *
+     * @return void
+     */
+    public function testGetHoldingWithFolioSorting(): void
+    {
+        $driverConfig = $this->defaultDriverConfig;
+        $driverConfig['Holdings']['folio_sort'] = 'volume';
+        $this->createConnector("get-holding-sorted", $driverConfig);
+        $expected = [
+            [
+                'callnumber_prefix' => '',
+                'callnumber' => 'PS2394 .M643 1883',
+                'id' => 'instanceid',
+                'item_id' => 'itemid',
+                'holding_id' => 'holdingid',
+                'number' => 1,
+                'enumchron' => '',
+                'barcode' => 'barcode-test',
+                'status' => 'Available',
+                'duedate' => '',
+                'availability' => true,
+                'is_holdable' => true,
+                'holdings_notes' => null,
+                'item_notes' => null,
+                'issues' => [],
+                'supplements' => [],
+                'indexes' => [],
+                'location' => 'Special Collections',
+                'location_code' => 'DCOC',
+                'reserve' => 'TODO',
+                'addLink' => true,
+            ]
+        ];
+        $this->assertEquals($expected, $this->driver->getHolding("instanceid"));
     }
 }
