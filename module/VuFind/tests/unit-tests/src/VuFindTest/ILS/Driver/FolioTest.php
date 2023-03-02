@@ -137,7 +137,10 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         // Create response
         $response = new \Laminas\Http\Response();
         $response->setStatusCode($testData['status'] ?? 200);
-        $response->setContent($testData['body'] ?? '');
+        $bodyType = $testData['bodyType'] ?? "string";
+        $rawBody = $testData['body'] ?? '';
+        $body = $bodyType === 'json' ? json_encode($rawBody) : $rawBody;
+        $response->setContent($body);
         $response->getHeaders()->addHeaders($testData['headers'] ?? []);
         return $response;
     }
@@ -550,5 +553,43 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($this->callMethod($this->driver, "isHoldable", [1]));
         $this->assertTrue($this->callMethod($this->driver, "isHoldable", [0]));
         $this->assertFalse($this->callMethod($this->driver, "isHoldable", ["1"]));
+    }
+
+    /**
+     * Basic getHolding test
+     *
+     * @return void
+     */
+    public function testGetHolding(): void
+    {
+        $driverConfig = $this->defaultDriverConfig;
+        $driverConfig['IDs']['type'] = 'hrid';
+        $this->createConnector("get-holding", $driverConfig);
+        $expected = [
+            [
+                'callnumber_prefix' => '',
+                'callnumber' => 'PS2394 .M643 1883',
+                'id' => 'foo',
+                'item_id' => 'itemid',
+                'holding_id' => 'holdingid',
+                'number' => 1,
+                'enumchron' => '',
+                'barcode' => 'barcode-test',
+                'status' => 'Available',
+                'duedate' => '',
+                'availability' => true,
+                'is_holdable' => true,
+                'holdings_notes' => null,
+                'item_notes' => null,
+                'issues' => [],
+                'supplements' => [],
+                'indexes' => [],
+                'location' => 'Special Collections',
+                'location_code' => 'DCOC',
+                'reserve' => 'TODO',
+                'addLink' => true,
+            ]
+        ];
+        $this->assertEquals($expected, $this->driver->getHolding("foo"));
     }
 }
