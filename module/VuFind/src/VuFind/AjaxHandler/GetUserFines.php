@@ -91,9 +91,9 @@ class GetUserFines extends AbstractIlsAndUserAction
         if (!$this->ils->checkCapability('getMyFines')) {
             return $this->formatResponse('', self::STATUS_HTTP_ERROR);
         }
-        $summary = $this->getFineSummary($this->ils->getMyFines($patron));
-        $value = $summary['sum'] / 100;
-        $display = $this->currencyFormatter->convertToDisplayFormat($value);
-        return $this->formatResponse(compact('value', 'display'));
+        $fines = $this->ils->getMyFines($patron);
+        return $this->formatResponse(
+            $this->getFineSummary($fines, $this->currencyFormatter)
+        );
     }
 }

@@ -30,6 +30,8 @@
  */
 namespace VuFind\ILS\Logic;
 
+use VuFind\Service\CurrencyFormatter;
+
 /**
  * Trait for getting a summary for checkouts, fines, holds, ILL requests or storage
  * retrieval requests.
@@ -46,17 +48,21 @@ trait SummaryTrait
     /**
      * Get a status summary for an array of fines
      *
-     * @param iterable $fines Fines
+     * @param iterable          $fines     Fines
+     * @param CurrencyFormatter $formatter Currency formatter
      *
-     * @return array Associative array with key sum.
+     * @return array Associative array with keys total and display.
      */
-    protected function getFineSummary(iterable $fines): array
-    {
-        $sum = 0;
+    protected function getFineSummary(
+        iterable $fines,
+        CurrencyFormatter $formatter
+    ): array {
+        $total = 0;
         foreach ($fines as $fine) {
-            $sum += $fine['balance'];
+            $total += $fine['balance'];
         }
-        return compact('sum');
+        $display = $formatter->convertToDisplayFormat($total / 100);
+        return compact('total', 'display');
     }
 
     /**
@@ -86,7 +92,7 @@ trait SummaryTrait
     /**
      * Get a status summary for an array of checkouts
      *
-     * @param iterable $requests Requests
+     * @param iterable $transactions Checkouts
      *
      * @return array Associative array with keys available, in_transit and other.
      */

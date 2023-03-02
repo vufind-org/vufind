@@ -5,6 +5,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +23,7 @@
  * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
@@ -48,6 +50,7 @@ use VuFind\Validator\CsrfInterface;
  * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
@@ -1614,7 +1617,6 @@ class MyResearchController extends AbstractBase
         // Get fine details:
         $result = $catalog->getMyFines($patron);
         $fines = [];
-        $totalDue = 0;
         $driversNeeded = [];
         foreach ($result as $i => $row) {
             // If we have an id, add it to list of record drivers to load:
@@ -1624,7 +1626,6 @@ class MyResearchController extends AbstractBase
                     'source' => $row['source'] ?? DEFAULT_SEARCH_BACKEND
                 ];
             }
-            $totalDue += $row['balance'] ?? 0;
             // Store by original index so that we can access it when loading record
             // drivers:
             $fines[$i] = $row;
@@ -1646,9 +1647,10 @@ class MyResearchController extends AbstractBase
 
         // Collect up to date stats for ajax account notifications:
         if (!empty($this->getConfig()->Authentication->enableAjax)) {
-            $accountStatus = [
-                'total' => $totalDue / 100.00
-            ];
+            $accountStatus = $this->getFineSummary(
+                $fines,
+                $this->serviceLocator->get(\VuFind\Service\CurrencyFormatter::class)
+            );
         } else {
             $accountStatus = null;
         }
