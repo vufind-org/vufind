@@ -675,7 +675,43 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getHolding with FOLIO-based sorting.
+     * Test getHolding with checked out item.
+     *
+     * @return void
+     */
+    public function testGetHoldingWithDueDate(): void
+    {
+        $this->createConnector("get-holding-checkedout");
+        $expected = [
+            [
+                'callnumber_prefix' => '',
+                'callnumber' => 'PS2394 .M643 1883',
+                'id' => 'instanceid',
+                'item_id' => 'itemid',
+                'holding_id' => 'holdingid',
+                'number' => 1,
+                'enumchron' => '',
+                'barcode' => 'barcode-test',
+                'status' => 'Checked out',
+                'duedate' => '06-01-2023',
+                'availability' => false,
+                'is_holdable' => true,
+                'holdings_notes' => ["Fake note"],
+                'item_notes' => null,
+                'issues' => [],
+                'supplements' => ['Fake supplement statement With a note!'],
+                'indexes' => [],
+                'location' => 'Special Collections',
+                'location_code' => 'DCOC',
+                'reserve' => 'TODO',
+                'addLink' => true,
+            ]
+        ];
+        $this->assertEquals($expected, $this->driver->getHolding("instanceid"));
+    }
+
+    /**
+     * Test getHolding with VuFind-based sorting.
      *
      * @return void
      */
