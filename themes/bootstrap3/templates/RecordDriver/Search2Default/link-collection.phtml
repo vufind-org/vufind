@@ -1,1 +1,7 @@
-<?=$this->url('search2collection', ['id' => $this->lookfor])?>?recordID=<?=urlencode($this->driver->getUniqueID())?>
+<?=htmlspecialchars(
+    $this->url(
+        'search2collection',
+        ['id' => $this->lookfor],
+        ['query' => ['recordID' => $this->driver->getUniqueID(), 'sid' => ($this->results ? $this->results->getSearchId() : null) ?? $this->searchMemory()->getCurrentSearchId()]]
+    )
+)?>
