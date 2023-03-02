@@ -1,6 +1,6 @@
 [
     {
-        "comment": "Initial request for user"
+        "comment": "Initial token check"
     },
     {
         "expectedMethod": "POST",

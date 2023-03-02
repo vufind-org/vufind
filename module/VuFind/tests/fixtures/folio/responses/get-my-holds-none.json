@@ -1,6 +1,6 @@
 [
   {
-    "comment": "Initial request for user"
+    "comment": "Initial token check"
   },
   {
     "comment": "User with 0 holds, will return an empty requests array",

@@ -1,6 +1,6 @@
 [
   {
-    "comment": "Initial request for user"
+    "comment": "Initial token check"
   },
   {
     "comment": "User with 1 hold, item is currently in_transit",

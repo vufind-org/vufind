@@ -1,6 +1,6 @@
 [
   {
-    "comment": "Initial request for user"
+    "comment": "Initial token check"
   },
   {
     "comment": "User with 1 hold, hold is available for pickup until 2022-12-29T05:59:59.000+00:00",
