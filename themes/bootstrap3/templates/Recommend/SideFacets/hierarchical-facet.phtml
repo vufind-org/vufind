@@ -21,7 +21,7 @@
     'wrapper-tagname' => 'div',
   ];
 ?>
-<div<?php if ($truncateSettings): ?> class="truncate-hierarchy" data-truncate="<?=$this->escapeHtml(json_encode($truncateSettings))?>"<?php endif; ?>>
+<div<?php if ($truncateSettings): ?> class="truncate-hierarchy" data-truncate="<?=$this->htmlSafeJsonEncode($truncateSettings)?>"<?php endif; ?>>
   <div id="facet_<?=$this->escapeHtml($this->title)?>" class="jstree-facet"
     data-source="<?=$this->escapeHtml($this->searchClassId)?>"
     data-facet="<?=$this->escapeHtmlAttr($this->title)?>"
