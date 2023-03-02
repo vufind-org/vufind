@@ -45,6 +45,8 @@ use VuFind\Session\Settings as SessionSettings;
  */
 class GetUserFines extends AbstractIlsAndUserAction
 {
+    use \VuFind\ILS\Logic\SummaryTrait;
+
     /**
      * Currency formatter
      *
@@ -89,11 +91,8 @@ class GetUserFines extends AbstractIlsAndUserAction
         if (!$this->ils->checkCapability('getMyFines')) {
             return $this->formatResponse('', self::STATUS_HTTP_ERROR);
         }
-        $sum = 0;
-        foreach ($this->ils->getMyFines($patron) as $fine) {
-            $sum += $fine['balance'];
-        }
-        $value = $sum / 100;
+        $summary = $this->getFineSummary($this->ils->getMyFines($patron));
+        $value = $summary['sum'] / 100;
         $display = $this->currencyFormatter->convertToDisplayFormat($value);
         return $this->formatResponse(compact('value', 'display'));
     }

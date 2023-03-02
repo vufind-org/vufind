@@ -54,6 +54,7 @@ use VuFind\Validator\CsrfInterface;
 class MyResearchController extends AbstractBase
 {
     use Feature\CatchIlsExceptionsTrait;
+    use \VuFind\ILS\Logic\SummaryTrait;
 
     /**
      * Permission that must be granted to access this module (false for no
@@ -1431,10 +1432,11 @@ class MyResearchController extends AbstractBase
 
         // Get paging setup:
         $config = $this->getConfig();
+        $pageSize = $config->Catalog->checked_out_page_size ?? 50;
         $pageOptions = $this->getPaginationHelper()->getOptions(
             (int)$this->params()->fromQuery('page', 1),
             $this->params()->fromQuery('sort'),
-            $config->Catalog->checked_out_page_size ?? 50,
+            $pageSize,
             $catalog->checkFunction('getMyTransactions', $patron)
         );
 
@@ -1457,14 +1459,11 @@ class MyResearchController extends AbstractBase
 
         // If the results are not paged in the ILS, collect up to date stats for ajax
         // account notifications:
-        if ((!$pageOptions['ilsPaging'] || !$paginator)
-            && !empty($this->getConfig()->Authentication->enableAjax)
+        if (!empty($config->Authentication->enableAjax)
+            && (!$pageOptions['ilsPaging'] || !$paginator
+            || $result['count'] <= $pageSize)
         ) {
-            $accountStatus = [
-                'ok' => 0,
-                'warn' => 0,
-                'overdue' => 0
-            ];
+            $accountStatus = $this->getTransactionSummary($result['records']);
         } else {
             $accountStatus = null;
         }
@@ -1482,20 +1481,6 @@ class MyResearchController extends AbstractBase
             ) {
                 // Enable renewal form if necessary:
                 $renewForm = true;
-            }
-
-            if (null !== $accountStatus) {
-                switch ($current['dueStatus'] ?? '') {
-                    case 'due':
-                        $accountStatus['warn']++;
-                        break;
-                    case 'overdue':
-                        $accountStatus['overdue']++;
-                        break;
-                    default:
-                        $accountStatus['ok']++;
-                        break;
-                }
             }
 
             // Build record drivers (only for the current visible page):
