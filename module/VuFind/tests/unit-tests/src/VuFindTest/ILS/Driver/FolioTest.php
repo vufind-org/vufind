@@ -728,7 +728,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                 'item_id' => 'itemid2',
                 'holding_id' => 'holdingid',
                 'number' => 1,
-                'enumchron' => '',
+                'enumchron' => 'v.2',
                 'barcode' => 'barcode-test2',
                 'status' => 'Available',
                 'duedate' => '',
@@ -743,7 +743,6 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                 'location_code' => 'DCOC',
                 'reserve' => 'TODO',
                 'addLink' => true,
-                'enumchron' => 'v.2',
             ],
             [
                 'callnumber_prefix' => '',
@@ -752,7 +751,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                 'item_id' => 'itemid',
                 'holding_id' => 'holdingid',
                 'number' => 2,
-                'enumchron' => '',
+                'enumchron' => 'v.100',
                 'barcode' => 'barcode-test',
                 'status' => 'Available',
                 'duedate' => '',
@@ -767,7 +766,6 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                 'location_code' => 'DCOC',
                 'reserve' => 'TODO',
                 'addLink' => true,
-                'enumchron' => 'v.100',
             ]
         ];
         $this->assertEquals($expected, $this->driver->getHolding("instanceid"));
