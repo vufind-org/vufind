@@ -107,10 +107,19 @@
                     "callNumberTypeId": "cntypeid",
                     "callNumber": "PS2394 .M643 1883",
                     "administrativeNotes": [],
-                    "notes": [],
+                    "notes": [
+                        {
+                            "note": "Fake note"
+                        }
+                    ],
                     "holdingsStatements": [],
                     "holdingsStatementsForIndexes": [],
-                    "holdingsStatementsForSupplements": [],
+                    "holdingsStatementsForSupplements": [
+                        {
+                            "statement": "Fake supplement statement",
+                            "note": "With a note!"
+                        }
+                    ],
                     "discoverySuppress": false,
                     "statisticalCodeIds": [],
                     "holdingsItems": [],
