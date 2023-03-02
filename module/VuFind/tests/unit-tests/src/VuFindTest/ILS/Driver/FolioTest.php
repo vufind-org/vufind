@@ -174,6 +174,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         // Configure the stub
         $this->driver->setConfig($config ?? $this->defaultDriverConfig);
+        $this->driver->setCacheStorage(new \Laminas\Cache\Storage\Adapter\Memory());
         $this->driver->expects($this->any())
             ->method('makeRequest')
             ->will($this->returnCallback([$this, 'mockMakeRequest']));
@@ -668,6 +669,69 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                 'location_code' => 'DCOC',
                 'reserve' => 'TODO',
                 'addLink' => true,
+            ]
+        ];
+        $this->assertEquals($expected, $this->driver->getHolding("instanceid"));
+    }
+
+    /**
+     * Test getHolding with FOLIO-based sorting.
+     *
+     * @return void
+     */
+    public function testGetHoldingMultiVolumeWithVuFindSorting(): void
+    {
+        $driverConfig = $this->defaultDriverConfig;
+        $driverConfig['Holdings']['vufind_sort'] = 'enumchron';
+        $this->createConnector("get-holding-multi-volume", $driverConfig);
+        $expected = [
+            [
+                'callnumber_prefix' => '',
+                'callnumber' => 'PS2394 .M643 1883',
+                'id' => 'instanceid',
+                'item_id' => 'itemid2',
+                'holding_id' => 'holdingid',
+                'number' => 1,
+                'enumchron' => '',
+                'barcode' => 'barcode-test2',
+                'status' => 'Available',
+                'duedate' => '',
+                'availability' => true,
+                'is_holdable' => true,
+                'holdings_notes' => ["Fake note"],
+                'item_notes' => null,
+                'issues' => [],
+                'supplements' => ['Fake supplement statement With a note!'],
+                'indexes' => [],
+                'location' => 'Special Collections',
+                'location_code' => 'DCOC',
+                'reserve' => 'TODO',
+                'addLink' => true,
+                'enumchron' => 'v.2',
+            ],
+            [
+                'callnumber_prefix' => '',
+                'callnumber' => 'PS2394 .M643 1883',
+                'id' => 'instanceid',
+                'item_id' => 'itemid',
+                'holding_id' => 'holdingid',
+                'number' => 2,
+                'enumchron' => '',
+                'barcode' => 'barcode-test',
+                'status' => 'Available',
+                'duedate' => '',
+                'availability' => true,
+                'is_holdable' => true,
+                'holdings_notes' => ["Fake note"],
+                'item_notes' => null,
+                'issues' => [],
+                'supplements' => ['Fake supplement statement With a note!'],
+                'indexes' => [],
+                'location' => 'Special Collections',
+                'location_code' => 'DCOC',
+                'reserve' => 'TODO',
+                'addLink' => true,
+                'enumchron' => 'v.100',
             ]
         ];
         $this->assertEquals($expected, $this->driver->getHolding("instanceid"));
