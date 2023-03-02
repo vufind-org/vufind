@@ -2,6 +2,9 @@
 /**
  * HTML-safe JSON encoding.
  *
+ * This helper is used to ensure that we consistently escape JSON data when
+ * embedding it directly into HTML (typically via data attributes).
+ *
  * PHP version 7
  *
  * Copyright (C) Villanova University 2023.
@@ -56,7 +59,7 @@ class HtmlSafeJsonEncode extends AbstractHelper
             JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP
         );
         return $outerEscaper
-            ? $this->getView()->plugin($outerEscaper)->__invoke($json)
+            ? ($this->getView()->plugin($outerEscaper))($json)
             : $json;
     }
 }
