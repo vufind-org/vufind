@@ -117,15 +117,17 @@ class IlsRecords extends \Laminas\Mvc\Controller\Plugin\AbstractPlugin
         }
         $accountStatus = [
             'available' => 0,
-            'in_transit' => 0
+            'in_transit' => 0,
+            'other' => 0,
         ];
         foreach ($records as $record) {
             $request = $record->getExtraDetail('ils_details');
             if ($request['available'] ?? false) {
                 $accountStatus['available']++;
-            }
-            if ($request['in_transit'] ?? false) {
+            } elseif ($request['in_transit'] ?? false) {
                 $accountStatus['in_transit']++;
+            } else {
+                $accountStatus['other']++;
             }
         }
         return $accountStatus;
