@@ -184,37 +184,6 @@
     },
     {
         "expectedMethod": "GET",
-        "expectedPath": "\/locations",
-        "expectedParams": {
-            "offset": 0,
-            "limit": 1000
-        },
-        "body": {
-            "locations": [
-                {
-                    "id": "location-id",
-                    "name": "Spec Coll",
-                    "code": "DCOC",
-                    "discoveryDisplayName": "Special Collections",
-                    "isActive": true,
-                    "institutionId": "fakeinst",
-                    "campusId": "fakecamp",
-                    "libraryId": "fakelib",
-                    "details": {},
-                    "primaryServicePoint": "fakepsp",
-                    "servicePointIds": [
-                        "fakepsp"
-                    ],
-                    "servicePoints": []
-                }
-           ],
-            "totalRecords": 1
-        },
-        "bodyType": "json",
-        "code": 200
-    },
-    {
-        "expectedMethod": "GET",
         "expectedPath": "\/circulation\/loans",
         "expectedParams": {
             "query": "itemId==itemid",
@@ -245,6 +214,37 @@
                     }
                 }
             ],
+            "totalRecords": 1
+        },
+        "bodyType": "json",
+        "code": 200
+    },
+    {
+        "expectedMethod": "GET",
+        "expectedPath": "\/locations",
+        "expectedParams": {
+            "offset": 0,
+            "limit": 1000
+        },
+        "body": {
+            "locations": [
+                {
+                    "id": "location-id",
+                    "name": "Spec Coll",
+                    "code": "DCOC",
+                    "discoveryDisplayName": "Special Collections",
+                    "isActive": true,
+                    "institutionId": "fakeinst",
+                    "campusId": "fakecamp",
+                    "libraryId": "fakelib",
+                    "details": {},
+                    "primaryServicePoint": "fakepsp",
+                    "servicePointIds": [
+                        "fakepsp"
+                    ],
+                    "servicePoints": []
+                }
+           ],
             "totalRecords": 1
         },
         "bodyType": "json",
