@@ -29,7 +29,7 @@
 namespace VuFind\Controller\Plugin;
 
 use Laminas\Db\Adapter\Adapter as DbAdapter;
-use Laminas\Db\Metadata\Metadata as DbMetadata;
+use Laminas\Db\Metadata\Source\Factory as DbMetadataSourceFactory;
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 
 /**
@@ -159,7 +159,9 @@ class DbUpgrade extends AbstractPlugin
     protected function getTableInfo($reload = false)
     {
         if ($reload || !$this->tableInfo) {
-            $metadata = new DbMetadata($this->getAdapter());
+            $metadata = DbMetadataSourceFactory::createSourceFromAdapter(
+                $this->getAdapter()
+            );
             $tables = $metadata->getTables();
             $this->tableInfo = [];
             foreach ($tables as $current) {
