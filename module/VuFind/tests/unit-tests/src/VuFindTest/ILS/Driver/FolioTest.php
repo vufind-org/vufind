@@ -367,6 +367,107 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test successful place hold with no expiration date
+     *
+     * @return void
+     */
+    public function testSuccessfulPlaceHoldNoExpirationDate(): void
+    {
+        $this->createConnector('successful-place-hold');
+        $details = [
+            'patron' => ['id' => 'foo'],
+            'item_id' => 'record1',
+            'status' => 'Available',
+            'pickUpLocation' => 'desk1',
+        ];
+        $result = $this->driver->placeHold($details);
+        $expected = [
+            'success' => true,
+            'status' => 'success',
+        ];
+        $this->assertEquals($expected, $result);
+        $this->assertEquals(
+            '/circulation/requests',
+            $this->testRequestLog[1]['path']
+        );
+        $request = json_decode($this->testRequestLog[1]['params'], true);
+        // Request date changes on every request, so let's not assert about it:
+        unset($request['requestDate']);
+        $this->assertEquals(
+            [
+                'itemId' => 'record1',
+                'requestType' => 'Page',
+                'requesterId' => 'foo',
+                'fulfilmentPreference' => 'Hold Shelf',
+                'requestExpirationDate' => null,
+                'pickupServicePointId' => 'desk1',
+            ],
+            $request
+        );
+    }
+
+    /**
+     * Test unsuccessful place hold with invalid expiration date
+     *
+     * @return void
+     */
+    public function testUnsuccessfulPlaceHoldInvalidExpirationDate(): void
+    {
+        $this->createConnector('unsuccessful-place-hold');
+        $details = [
+            'requiredBy' => '1234-33-11',
+            'patron' => ['id' => 'foo'],
+            'item_id' => 'record1',
+            'status' => 'Available',
+            'pickUpLocation' => 'desk1',
+        ];
+        $this->expectException(\VuFind\Exception\ILS::class);
+        $this->expectExceptionMessage("hold_date_invalid");
+        $result = $this->driver->placeHold($details);
+    }
+
+    /**
+     * Test unsuccessful place hold
+     *
+     * @return void
+     */
+    public function testUnsuccessfulPlaceHold(): void
+    {
+        $this->createConnector('unsuccessful-place-hold');
+        $details = [
+            'requiredBy' => '2000-01-01',
+            'patron' => ['id' => 'foo'],
+            'item_id' => 'record1',
+            'status' => 'Available',
+            'pickUpLocation' => 'desk1',
+        ];
+        $result = $this->driver->placeHold($details);
+        $expected = [
+            'success' => false,
+            'status' => 'requestExpirationDate cannot be in the past',
+        ];
+        $this->assertEquals($expected, $result);
+        $this->assertEquals(
+            '/circulation/requests',
+            $this->testRequestLog[1]['path']
+        );
+        $request = json_decode($this->testRequestLog[1]['params'], true);
+        // Request date changes on every request, so let's not assert about it:
+        unset($request['requestDate']);
+        $this->assertEquals(
+            [
+                'itemId' => 'record1',
+                'requestType' => 'Page',
+                'requesterId' => 'foo',
+                'fulfilmentPreference' => 'Hold Shelf',
+                'requestExpirationDate' => '2000-01-01',
+                'pickupServicePointId' => 'desk1',
+            ],
+            $request
+        );
+    }
+
+    /**
      * Test successful renewal
      *
      * @return void
