@@ -113,18 +113,18 @@ class UserIpReader
                 // in place of specific indexes, because the filtering above may have
                 // left non-consecutive keys in place.
                 switch (strtolower(rtrim($behavior, ':'))) {
-                case 'first':
-                    if (!empty($parts)) {
-                        return array_shift($parts);
-                    }
-                case 'last':
-                    if (!empty($parts)) {
-                        return array_pop($parts);
-                    }
-                default:
-                    if (count($parts) === 1) {
-                        return current($parts);
-                    }
+                    case 'first':
+                        if (!empty($parts)) {
+                            return array_shift($parts);
+                        }
+                    case 'last':
+                        if (!empty($parts)) {
+                            return array_pop($parts);
+                        }
+                    default:
+                        if (count($parts) === 1) {
+                            return current($parts);
+                        }
                 }
             }
         }

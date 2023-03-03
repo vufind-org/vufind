@@ -44,7 +44,7 @@ use VuFind\Search\Results\PluginManager as ResultsManager;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class Facets extends AbstractChannelProvider
-   implements TranslatorAwareInterface
+implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
@@ -265,7 +265,7 @@ class Facets extends AbstractChannelProvider
         // Determine the filter for the current channel, and add it:
         $params->addFilter($filter);
 
-        $query = $newResults->getUrlQuery();
+        $query = $newResults->getUrlQuery()->getParams(false);
         $retVal['links'][] = [
             'label' => 'channel_search',
             'icon' => 'fa-list',

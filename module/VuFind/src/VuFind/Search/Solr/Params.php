@@ -403,12 +403,12 @@ class Params extends \VuFind\Search\Base\Params
         // special illustrations filter.
         parent::initFilters($request);
         switch ($request->get('illustration', -1)) {
-        case 1:
-            $this->addFilter('illustrated:Illustrated');
-            break;
-        case 0:
-            $this->addFilter('illustrated:"Not Illustrated"');
-            break;
+            case 1:
+                $this->addFilter('illustrated:Illustrated');
+                break;
+            case 0:
+                $this->addFilter('illustrated:"Not Illustrated"');
+                break;
         }
     }
 

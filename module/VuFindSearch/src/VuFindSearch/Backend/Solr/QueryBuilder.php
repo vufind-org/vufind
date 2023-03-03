@@ -227,30 +227,30 @@ class QueryBuilder implements QueryBuilderInterface
             $values = reset($condition);
             $condition = key($condition);
             switch ($condition) {
-            case 'SearchTypeIn':
-                if (empty(array_intersect((array)$values, $searchTypes))) {
-                    return false;
-                }
-                break;
-            case 'AllSearchTypesIn':
-                if (array_diff($searchTypes, (array)$values)) {
-                    return false;
-                }
-                break;
-            case 'SearchTypeNotIn':
-                if (!empty(array_intersect((array)$values, $searchTypes))) {
-                    return false;
-                }
-                break;
-            case 'NoDismaxParams':
-                foreach ((array)$values as $value) {
-                    if ($this->hasDismaxParamsField($searchTypes, $value)) {
+                case 'SearchTypeIn':
+                    if (empty(array_intersect((array)$values, $searchTypes))) {
                         return false;
                     }
-                }
-                break;
-            default:
-                throw new \Exception("Unknown parameter condition: $condition");
+                    break;
+                case 'AllSearchTypesIn':
+                    if (array_diff($searchTypes, (array)$values)) {
+                        return false;
+                    }
+                    break;
+                case 'SearchTypeNotIn':
+                    if (!empty(array_intersect((array)$values, $searchTypes))) {
+                        return false;
+                    }
+                    break;
+                case 'NoDismaxParams':
+                    foreach ((array)$values as $value) {
+                        if ($this->hasDismaxParamsField($searchTypes, $value)) {
+                            return false;
+                        }
+                    }
+                    break;
+                default:
+                    throw new \Exception("Unknown parameter condition: $condition");
             }
         }
         return true;

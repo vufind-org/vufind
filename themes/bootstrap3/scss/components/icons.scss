@@ -3,18 +3,55 @@
  * generated through the Icon view helper.
  */
 
-.icon--link {
-    display: inline-flex;
-    gap: 0.125rem;
-    align-items: center;
-    vertical-align: inherit;
+.icon-link {
+  display: inline-flex;
+  gap: 0.25rem;
+  vertical-align: middle;
 }
+.icon-link,
+.icon-link:active,
+.icon-link:focus,
+.icon-link:hover {
+  text-decoration: none;
+}
+.icon-link__icon {
+  flex: none;
+  padding: 0;
+  line-height: inherit;
+  color: inherit;
+}
+.icon-link__label {
+  text-decoration: $link-hover-decoration;
+}
+span.icon-link .icon-link__label,
+.disabled .icon-link__label,
+[disabled] .icon-link__label {
+  text-decoration: none;
+}
+.icon-link.active .icon-link__icon,
+.icon-link.active .icon-link__label {
+  color: #fff;
+}
+
+// Exceptions
+.banner .icon-link__label,
+.pager .icon-link__label,
+.action-toolbar .icon-link__label {
+  text-decoration: none;
+}
+
+/**
+ * Styling by type
+ */
 
 .icon--font {
     display: inline-block;
-    width: 1.25em;
+    max-width: 1.25em;
+    height: min-content; /* FF */
+    height: fit-content;
     line-height: inherit;
     text-align: center;
+    vertical-align: top;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -29,11 +66,11 @@
 }
 
 .icon--svg {
-    width: 1.1em;
-    height: 1.1em;
-    margin-top: 0.25em;
+    display: inline-block;
+    max-width: 1.25em;
+    max-height: 1.25em;
     fill: currentColor;
-    vertical-align: top;
+    vertical-align: text-bottom;
 }
 
 .show--closed,
@@ -42,14 +79,6 @@
 }
 .collapsed .show--closed {
     display: inline;
-}
-
-/**
- * Alignment for side menu
- */
-.myresearch-menu .icon--font {
-  display: inline-block;
-  margin-right: 0.375rem;
 }
 
 /**

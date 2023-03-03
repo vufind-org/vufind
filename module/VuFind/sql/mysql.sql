@@ -137,7 +137,7 @@ CREATE TABLE `search` (
   `session_id` varchar(128) DEFAULT NULL,
   `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   `title` varchar(20) DEFAULT NULL,
-  `saved` int(1) NOT NULL DEFAULT '0',
+  `saved` tinyint(1) NOT NULL DEFAULT '0',
   `search_object` blob,
   `checksum` int(11) DEFAULT NULL,
   `notification_frequency` int(11) NOT NULL DEFAULT '0',
@@ -263,7 +263,7 @@ CREATE TABLE `user_list` (
   `title` varchar(200) NOT NULL,
   `description` text,
   `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
-  `public` int(11) NOT NULL DEFAULT '0',
+  `public` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `user_list_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE

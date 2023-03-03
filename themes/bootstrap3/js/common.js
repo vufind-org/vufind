@@ -10,6 +10,7 @@ var VuFind = (function VuFind() {
   var _initialized = false;
   var _submodules = [];
   var _cspNonce = '';
+  var _searchId = null;
 
   var _icons = {};
   var _translations = {};
@@ -245,6 +246,18 @@ var VuFind = (function VuFind() {
     return Boolean(window.location.search.match(/[?&]print=/));
   };
 
+  var getCurrentSearchId = function getCurrentSearchId() {
+    if (null !== _searchId) {
+      return _searchId;
+    }
+    var match = location.href.match(/[&?]sid=(\d+)/);
+    return match ? match[1] : '';
+  };
+
+  var setCurrentSearchId = function setCurrentSearchId(searchId) {
+    _searchId = searchId;
+  };
+
   //Reveal
   return {
     defaultSearchBackend: defaultSearchBackend,
@@ -266,7 +279,9 @@ var VuFind = (function VuFind() {
     loadHtml: loadHtml,
     loading: loading,
     translate: translate,
-    updateCspNonce: updateCspNonce
+    updateCspNonce: updateCspNonce,
+    getCurrentSearchId: getCurrentSearchId,
+    setCurrentSearchId: setCurrentSearchId
   };
 })();
 
@@ -551,9 +566,11 @@ function setupQRCodeLinks(_container) {
 
   container.find('a.qrcodeLink').click(function qrcodeToggle() {
     if ($(this).hasClass("active")) {
-      $(this).html(VuFind.translate('qrcode_show')).removeClass("active");
+      $(".result-link-label", this).html(VuFind.translate('qrcode_show'));
+      $(this).removeClass("active");
     } else {
-      $(this).html(VuFind.translate('qrcode_hide')).addClass("active");
+      $(".result-link-label", this).html(VuFind.translate('qrcode_hide'));
+      $(this).addClass("active");
     }
 
     var holder = $(this).next('.qrcode');

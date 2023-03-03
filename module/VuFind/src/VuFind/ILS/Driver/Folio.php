@@ -363,10 +363,10 @@ class Folio extends AbstractAPI implements
             : $this->getInstanceById($instanceOrInstanceId, $holdingId, $itemId);
 
         switch ($idType) {
-        case 'hrid':
-            return $instance->hrid;
-        case 'instance':
-            return $instance->id;
+            case 'hrid':
+                return $instance->hrid;
+            case 'instance':
+                return $instance->id;
         }
 
         throw new \Exception('Unsupported ID type: ' . $idType);
@@ -389,7 +389,7 @@ class Folio extends AbstractAPI implements
      *
      * @param string $bibId Bib-level id
      *
-     * @return array
+     * @return object
      */
     protected function getInstanceByBibId($bibId)
     {
@@ -565,6 +565,163 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Support method: format a note for display
+     *
+     * @param object $note Note object decoded from FOLIO JSON.
+     *
+     * @return string
+     */
+    protected function formatNote($note): string
+    {
+        return !($note->staffOnly ?? false) && !empty($note->note)
+            ? $note->note : '';
+    }
+
+    /**
+     * Support method for getHolding(): extract details from the holding record that
+     * will be needed by formatHoldingItem() below.
+     *
+     * @param object $holding FOLIO holding record (decoded from JSON)
+     *
+     * @return array
+     */
+    protected function getHoldingDetailsForItem($holding): array
+    {
+        $textFormatter = function ($supplement) {
+            $format = '%s %s';
+            $supStat = $supplement->statement ?? '';
+            $supNote = $supplement->note ?? '';
+            $statement = trim(sprintf($format, $supStat, $supNote));
+            return $statement;
+        };
+        $id = $holding->id;
+        $holdingNotes = array_filter(
+            array_map([$this, 'formatNote'], $holding->notes ?? [])
+        );
+        $hasHoldingNotes = !empty(implode($holdingNotes));
+        $holdingsStatements = array_map(
+            $textFormatter,
+            $holding->holdingsStatements ?? []
+        );
+        $holdingsSupplements = array_map(
+            $textFormatter,
+            $holding->holdingsStatementsForSupplements ?? []
+        );
+        $holdingsIndexes = array_map(
+            $textFormatter,
+            $holding->holdingsStatementsForIndexes ?? []
+        );
+        $holdingCallNumber = $holding->callNumber ?? '';
+        $holdingCallNumberPrefix = $holding->callNumberPrefix ?? '';
+        return compact(
+            'id',
+            'holdingNotes',
+            'hasHoldingNotes',
+            'holdingsStatements',
+            'holdingsSupplements',
+            'holdingsIndexes',
+            'holdingCallNumber',
+            'holdingCallNumberPrefix'
+        );
+    }
+
+    /**
+     * Support method for getHolding() -- given a few key details, format an item
+     * for inclusion in the return value.
+     *
+     * @param string $bibId          Current bibliographic ID
+     * @param array  $holdingDetails Holding details produced by
+     * getHoldingDetailsForItem()
+     * @param object $item           FOLIO item record (decoded from JSON)
+     * @param int    $number         The current item number (position within
+     * current holdings record)
+     * @param string $dueDateValue   The due date to display to the user
+     *
+     * @return array
+     */
+    protected function formatHoldingItem(
+        string $bibId,
+        array $holdingDetails,
+        $item,
+        $number,
+        string $dueDateValue
+    ): array {
+        $itemNotes = array_filter(
+            array_map([$this, 'formatNote'], $item->notes ?? [])
+        );
+        $locationId = $item->effectiveLocationId;
+        $locationData = $this->getLocationData($locationId);
+        $locationName = $locationData['name'];
+        $locationCode = $locationData['code'];
+        // concatenate enumeration fields if present
+        $enum = implode(
+            ' ',
+            array_filter(
+                [
+                    $item->volume ?? null,
+                    $item->enumeration ?? null,
+                    $item->chronology ?? null
+                ]
+            )
+        );
+        $callNumberData = $this->chooseCallNumber(
+            $holdingDetails['holdingCallNumberPrefix'],
+            $holdingDetails['holdingCallNumber'],
+            $item->effectiveCallNumberComponents->prefix
+                ?? $item->itemLevelCallNumberPrefix ?? '',
+            $item->effectiveCallNumberComponents->callNumber
+                ?? $item->itemLevelCallNumber ?? ''
+        );
+
+        return $callNumberData + [
+            'id' => $bibId,
+            'item_id' => $item->id,
+            'holding_id' => $holdingDetails['id'],
+            'number' => $number,
+            'enumchron' => $enum,
+            'barcode' => $item->barcode ?? '',
+            'status' => $item->status->name,
+            'duedate' => $dueDateValue,
+            'availability' => $item->status->name == 'Available',
+            'is_holdable' => $this->isHoldable($locationName),
+            'holdings_notes'=> $holdingDetails['hasHoldingNotes']
+                ? $holdingDetails['holdingNotes'] : null,
+            'item_notes' => !empty(implode($itemNotes)) ? $itemNotes : null,
+            'issues' => $holdingDetails['holdingsStatements'],
+            'supplements' => $holdingDetails['holdingsSupplements'],
+            'indexes' => $holdingDetails['holdingsIndexes'],
+            'location' => $locationName,
+            'location_code' => $locationCode,
+            'reserve' => 'TODO',
+            'addLink' => true
+        ];
+    }
+
+    /**
+     * Given a holdings array and a sort field, sort the array.
+     *
+     * @param array  $holdings  Holdings to sort
+     * @param string $sortField Sort field
+     *
+     * @return array
+     */
+    protected function sortHoldings(array $holdings, string $sortField): array
+    {
+        usort(
+            $holdings,
+            function ($a, $b) use ($sortField) {
+                return strnatcasecmp($a[$sortField], $b[$sortField]);
+            }
+        );
+        // Renumber the re-sorted batch:
+        $nbCount = count($holdings);
+        for ($nbIndex = 0; $nbIndex < $nbCount; $nbIndex++) {
+            $holdings[$nbIndex]['number'] = $nbIndex + 1;
+        }
+        return $holdings;
+    }
+
+    /**
      * This method queries the ILS for holding information.
      *
      * @param string $bibId   Bib-level id
@@ -588,76 +745,29 @@ class Folio extends AbstractAPI implements
                 . '" NOT discoverySuppress==true)'
         ];
         $items = [];
+        $folioItemSort = $this->config['Holdings']['folio_sort'] ?? '';
+        $vufindItemSort = $this->config['Holdings']['vufind_sort'] ?? '';
         foreach ($this->getPagedResults(
             'holdingsRecords',
             '/holdings-storage/holdings',
             $query
         ) as $holding) {
-            $query = [
-                'query' => '(holdingsRecordId=="' . $holding->id
-                    . '" NOT discoverySuppress==true)'
-            ];
-            $notesFormatter = function ($note) {
-                return !($note->staffOnly ?? false)
-                    && !empty($note->note) ? $note->note : '';
-            };
-            $textFormatter = function ($supplement) {
-                $format = '%s %s';
-                $supStat = $supplement->statement ?? '';
-                $supNote = $supplement->note ?? '';
-                $statement = trim(sprintf($format, $supStat, $supNote));
-                return $statement;
-            };
-            $holdingNotes = array_filter(
-                array_map($notesFormatter, $holding->notes ?? [])
-            );
-            $hasHoldingNotes = !empty(implode($holdingNotes));
-            $holdingsStatements = array_map(
-                $textFormatter,
-                $holding->holdingsStatements ?? []
-            );
-            $holdingsSupplements = array_map(
-                $textFormatter,
-                $holding->holdingsStatementsForSupplements ?? []
-            );
-            $holdingsIndexes = array_map(
-                $textFormatter,
-                $holding->holdingsStatementsForIndexes ?? []
-            );
-            $holdingCallNumber = $holding->callNumber ?? '';
-            $holdingCallNumberPrefix = $holding->callNumberPrefix ?? '';
+            $rawQuery = '(holdingsRecordId=="' . $holding->id
+                . '" NOT discoverySuppress==true)';
+            if (!empty($folioItemSort)) {
+                $rawQuery .= ' sortby ' . $folioItemSort;
+            }
+            $query = ['query' => $rawQuery];
+            $holdingDetails = $this->getHoldingDetailsForItem($holding);
+            $nextBatch = [];
+            $sortNeeded = false;
+            $number = 0;
             foreach ($this->getPagedResults(
                 'items',
                 '/item-storage/items',
                 $query
             ) as $item) {
-                $itemNotes = array_filter(
-                    array_map($notesFormatter, $item->notes ?? [])
-                );
-                $locationId = $item->effectiveLocationId;
-                $locationData = $this->getLocationData($locationId);
-                $locationName = $locationData['name'];
-                $locationCode = $locationData['code'];
-                // concatenate enumeration fields if present
-                $enum = implode(
-                    ' ',
-                    array_filter(
-                        [
-                            $item->volume ?? null,
-                            $item->enumeration ?? null,
-                            $item->chronology ?? null
-                        ]
-                    )
-                );
-                $callNumberData = $this->chooseCallNumber(
-                    $holdingCallNumberPrefix,
-                    $holdingCallNumber,
-                    $item->effectiveCallNumberComponents->prefix
-                        ?? $item->itemLevelCallNumberPrefix ?? '',
-                    $item->effectiveCallNumberComponents->callNumber
-                        ?? $item->itemLevelCallNumber ?? ''
-                );
-
+                $number++;
                 $dueDateValue = '';
                 if ($item->status->name == 'Checked out'
                     && $showDueDate
@@ -666,29 +776,23 @@ class Folio extends AbstractAPI implements
                     $dueDateValue = $this->getDueDate($item->id, $showTime);
                     $dueDateItemCount++;
                 }
-
-                $items[] = $callNumberData + [
-                    'id' => $bibId,
-                    'item_id' => $item->id,
-                    'holding_id' => $holding->id,
-                    'number' => count($items) + 1,
-                    'enumchron' => $enum,
-                    'barcode' => $item->barcode ?? '',
-                    'status' => $item->status->name,
-                    'duedate' => $dueDateValue,
-                    'availability' => $item->status->name == 'Available',
-                    'is_holdable' => $this->isHoldable($locationName),
-                    'holdings_notes'=> $hasHoldingNotes ? $holdingNotes : null,
-                    'item_notes' => !empty(implode($itemNotes)) ? $itemNotes : null,
-                    'issues' => $holdingsStatements,
-                    'supplements' => $holdingsSupplements,
-                    'indexes' => $holdingsIndexes,
-                    'location' => $locationName,
-                    'location_code' => $locationCode,
-                    'reserve' => 'TODO',
-                    'addLink' => true
-                ];
+                $nextItem = $this->formatHoldingItem(
+                    $bibId,
+                    $holdingDetails,
+                    $item,
+                    $number,
+                    $dueDateValue
+                );
+                if (!empty($vufindItemSort) && !empty($nextItem[$vufindItemSort])) {
+                    $sortNeeded = true;
+                }
+                $nextBatch[] = $nextItem;
             }
+            $items = array_merge(
+                $items,
+                $sortNeeded
+                    ? $this->sortHoldings($nextBatch, $vufindItemSort) : $nextBatch
+            );
         }
         return $items;
     }
@@ -844,7 +948,7 @@ class Folio extends AbstractAPI implements
             $json = json_decode($response->getBody());
             if (!$response->isSuccess() || !$json) {
                 $msg = $json->errors[0]->message ?? json_last_error_msg();
-                throw new ILSException($msg);
+                throw new ILSException("Error: '$msg' fetching '$responseKey'");
             }
             $total = $json->totalRecords ?? 0;
             $previousCount = $count;

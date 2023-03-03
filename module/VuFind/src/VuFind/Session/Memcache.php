@@ -98,17 +98,18 @@ class Memcache extends AbstractBase
 
         // Establish connection:
         switch ($clientClass) {
-        case 'Memcache':
-            if (!$this->connection->connect($host, $port, $timeout)) {
-                throw $connectionException;
-            }
-            break;
-        case 'Memcached':
-            $this->connection->setOption(\Memcached::OPT_CONNECT_TIMEOUT, $timeout);
-            if (!$this->connection->addServer($host, $port)) {
-                throw $connectionException;
-            }
-            break;
+            case 'Memcache':
+                if (!$this->connection->connect($host, $port, $timeout)) {
+                    throw $connectionException;
+                }
+                break;
+            case 'Memcached':
+                $this->connection
+                    ->setOption(\Memcached::OPT_CONNECT_TIMEOUT, $timeout);
+                if (!$this->connection->addServer($host, $port)) {
+                    throw $connectionException;
+                }
+                break;
         }
     }
 
