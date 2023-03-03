@@ -1248,10 +1248,11 @@ class Folio extends AbstractAPI implements
     {
         $default_request = $this->config['Holds']['default_request'] ?? 'Hold';
         try {
-            $requiredBy = $this->dateConverter->convertFromDisplayDate(
-                'Y-m-d',
-                $holdDetails['requiredBy']
-            );
+            $requiredBy = isset($holdDetails['requiredBy']) ? 
+                $this->dateConverter->convertFromDisplayDate(
+                    'Y-m-d',
+                    $holdDetails['requiredBy']
+                ) : null;
         } catch (Exception $e) {
             $this->throwAsIlsException($e, 'hold_date_invalid');
         }
