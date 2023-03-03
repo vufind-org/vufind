@@ -32,6 +32,7 @@ use Behat\Mink\Driver\Selenium2Driver;
 use Behat\Mink\Element\Element;
 use Behat\Mink\Session;
 use DMore\ChromeDriver\ChromeDriver;
+use PHPUnit\Util\Test;
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
@@ -769,6 +770,16 @@ EOS
         ) {
             return;
         }
+        $annotations = Test::parseTestMethodAnnotations(
+            static::class,
+            $this->getName(false)
+        );
+        if (($annotations['method']['skip_html_validation'][0] ?? false)
+            || ($annotations['class']['skip_html_validation'][0] ?? false)
+        ) {
+            return;
+        }
+
         $http = new \VuFindHttp\HttpService();
         $client = $http->createClient(
             $nuAddress,
