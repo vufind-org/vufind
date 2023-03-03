@@ -948,7 +948,7 @@ class Folio extends AbstractAPI implements
             $json = json_decode($response->getBody());
             if (!$response->isSuccess() || !$json) {
                 $msg = $json->errors[0]->message ?? json_last_error_msg();
-                throw new ILSException($msg);
+                throw new ILSException("Error: '$msg' fetching '$responseKey'");
             }
             $total = $json->totalRecords ?? 0;
             $previousCount = $count;

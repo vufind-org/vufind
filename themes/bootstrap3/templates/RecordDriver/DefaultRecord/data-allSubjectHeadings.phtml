@@ -4,7 +4,7 @@
     'top-toggle' => 30,
   ];
 ?>
-<div class="truncate-subjects" data-truncate="<?=$this->escapeHtmlAttr(json_encode($truncateSettings))?>">
+<div class="truncate-subjects" data-truncate="<?=$this->htmlSafeJsonEncode($truncateSettings)?>">
   <?php foreach ($data as $field): ?>
     <div class="subject-line" property="keywords">
       <?php $subject = ''; ?>

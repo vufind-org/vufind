@@ -1,4 +1,9 @@
 [
-    { "comment": "Initial request for token" },
-    { "body": "{ \"requesterId\": \"foo\" }" }
+    {
+        "comment": "Initial token check"
+    },
+    {
+        "expectedPath": "/circulation/requests/request1",
+        "body": "{ \"requesterId\": \"foo\" }"
+    }
 ]

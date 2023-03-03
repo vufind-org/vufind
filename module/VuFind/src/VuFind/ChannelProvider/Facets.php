@@ -265,7 +265,7 @@ implements TranslatorAwareInterface
         // Determine the filter for the current channel, and add it:
         $params->addFilter($filter);
 
-        $query = $newResults->getUrlQuery();
+        $query = $newResults->getUrlQuery()->getParams(false);
         $retVal['links'][] = [
             'label' => 'channel_search',
             'icon' => 'fa-list',
