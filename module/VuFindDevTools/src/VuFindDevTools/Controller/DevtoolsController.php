@@ -114,7 +114,7 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
     public function iconAction()
     {
         $config = $this->serviceLocator->get(\VuFindTheme\ThemeInfo::class)
-            ->getMergedConfig('icons', true);
+            ->getMergedConfig('icons');
         $aliases = array_keys($config['aliases'] ?? []);
         sort($aliases);
         return compact('aliases');

@@ -59,7 +59,7 @@ label { cursor: pointer; }
 
 // Icons vs. Underline fix
 .btn-link {
-  &:extend(.icon--link);
+  &:extend(.icon-link);
 
   &.pull-left,
   &.pull-right {
@@ -67,15 +67,34 @@ label { cursor: pointer; }
   }
 }
 .nav > li > a {
-  &:extend(.icon--link);
+  &:extend(.icon-link);
   text-decoration: none;
+
+  &:hover,
+  &:focus {
+    /* borrowed from a11y accessibility */
+    color: @dropdown-bg;
+    text-decoration: none;
+    background-color: #333;
+    outline: dotted 1px #000;
+  }
 }
 .nav .dropdown-toggle {
   padding-right: 8px;
 
+  .icon {
+    margin-left: 4px;
+    margin-right: 0;
+  }
+
   body.rtl & {
     padding-left: 8px;
     padding-right: 10px;
+
+    .icon {
+      margin-left: 0;
+      margin-right: 4px;
+    }
   }
 }
 
@@ -123,6 +142,14 @@ h3 { font-size: 16px; }
   }
   .form-control { max-width: 400px; }
   #modal .form-control { max-width: none; }
+}
+
+button.dropdown-toggle {
+  .button-variant(@btn-default-color; @btn-default-bg; @btn-default-border);
+  appearance: none;
+  padding: 15px;
+  border: 0;
+  color: @brand-primary;
 }
 
 /* ------ Layout ------ */
@@ -233,10 +260,23 @@ footer {
 }
 
 /* ------ Cart ------ */
-.cart-controls .checkbox {
-  line-height: 2.5rem;
-  padding-right: 1rem;
+.cart-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  align-items: center;
 }
+.cart-controls .checkbox {
+  padding-right: 1rem;
+  padding-bottom: 0.25rem;
+}
+.cart-controls .toolbar-btn {
+  &:extend(.toolbar-btn);
+  &:extend(.icon-link);
+
+  margin: 0;
+}
+
 .nav .btn-bookbag-toggle { float: left; }
 .nav .btn-bookbag-toggle a {
   display: block;
@@ -263,11 +303,12 @@ footer {
 .form-login .btn-link ~ .btn-link { padding-left: 0; } // Login link spacing
 .myresearch-menu {
   a {
-    display: block;
+    display: inline-flex;
+    gap: 0.375rem;
+    width: 100%;
     padding: 10px 15px;
-    &.flex {
-      display: flex;
-    }
+    line-height: 1.15;
+
     &:hover {
       background-color: @gray-lighter;
       outline: dotted 1px #000;
@@ -282,15 +323,23 @@ footer {
       background-color: @brand-primary;
       color: #fff;
     }
+
+    .icon-link__icon {
+      width: 1rem;
+      text-align: center;
+    }
+
+    .icon-link__label {
+      flex: 1 1 0%;
+    }
   }
 
   .status {
-    float: right;
     display: flex;
+    gap: 2px;
     flex: none;
     .badge {
       border-radius: 2px;
-      margin: 0 2px;
       border: 1px solid; /* color inherited from bootstrap */
       height: 20px;
 

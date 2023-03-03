@@ -245,7 +245,12 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
         // Fulfill plugin quota
         $helper('sanity-check', 'this is good');
 
-        $this->expectWarning();
+        $this->expectExceptionMessage("'<marquee>' is deprecated and should be replaced.");
+        $errorCallback = function (int $code, string $msg) {
+            throw new \Exception($msg, $code);
+        };
+        set_error_handler($errorCallback, E_USER_WARNING);
         $helper('marquee', 'Now Playing: A Simpler Time!');
+        restore_error_handler();
     }
 }

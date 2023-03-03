@@ -37,7 +37,7 @@ namespace VuFind\View\Helper\Root;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class TranslationEmpty extends \Laminas\View\Helper\AbstractHelper
-    implements \VuFind\I18n\Translator\TranslatorAwareInterface
+implements \VuFind\I18n\Translator\TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 

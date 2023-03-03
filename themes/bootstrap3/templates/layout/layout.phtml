@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
     <?=$this->headMeta()?>
+    <?=$this->googleTagManager()->getHeadCode()?>
 
     <?php
       // Format the page title using the translation system:
@@ -85,12 +86,14 @@
       $translations = !isset($this->renderingError) ? $this->render('js-translations.phtml') : '{}';
       $dsb = DEFAULT_SEARCH_BACKEND;
       $cspNonce = $this->cspNonce();
+      $searchId = json_encode($this->layout()->searchId);
       $appendScripts[] = <<<JS
 VuFind.path = '{$root}';
 VuFind.defaultSearchBackend = '{$dsb}';
 VuFind.addTranslations({$translations});
 VuFind.addIcons({$icons});
 VuFind.setCspNonce('{$cspNonce}');
+VuFind.setCurrentSearchId($searchId);
 JS;
       $this->headScript()->appendScript(implode("\n", $appendScripts));
 
@@ -144,6 +147,7 @@ JS;
       </div>
     </div>
     <div class="offcanvas-overlay" data-toggle="offcanvas"></div>
+    <?=$this->googleTagManager()->getBodyCode()?>
     <?=$this->googleanalytics()?>
     <?=$this->piwik()?>
     <?=$this->matomo()?>

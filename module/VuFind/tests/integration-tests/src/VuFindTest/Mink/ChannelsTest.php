@@ -87,6 +87,8 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         // Post count
         $this->waitStatement('$("div.channel-wrapper").length === 8');
         $this->waitStatement('$(".channel-add-menu:first .dropdown-menu li").length === 6');
+        $this->assertEquals(8, count($page->findAll('css', 'div.channel-wrapper')));
+        $this->assertEquals(6, count($channel->findAll('css', '.channel-add-menu .dropdown-menu li')));
     }
 
     /**
@@ -111,7 +113,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCss($page, '.filters .filters-title')->getText()
         );
         $this->assertEquals(
-            'Adult children of aging parents',
+            'Remove Filter Adult children of aging parents',
             $this->findCss($page, '.filters .filter-value')->getText()
         );
     }

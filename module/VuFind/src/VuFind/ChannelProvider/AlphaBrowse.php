@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2016.
+ * Copyright (C) Villanova University 2016, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -33,6 +33,8 @@ use VuFind\Record\Router as RecordRouter;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Results;
 use VuFindSearch\Command\AlphabeticBrowseCommand;
+use VuFindSearch\Command\RetrieveBatchCommand;
+use VuFindSearch\Command\RetrieveCommand;
 use VuFindSearch\ParamBag;
 
 /**
@@ -45,7 +47,7 @@ use VuFindSearch\ParamBag;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class AlphaBrowse extends AbstractChannelProvider
-    implements TranslatorAwareInterface
+implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
@@ -198,10 +200,11 @@ class AlphaBrowse extends AbstractChannelProvider
         // If the search results did not include the object we were looking for,
         // we need to fetch it from the search service:
         if (empty($channels) && is_object($driver) && $channelToken !== null) {
-            $driver = $this->searchService->retrieve(
+            $command = new RetrieveCommand(
                 $driver->getSourceIdentifier(),
                 $channelToken
-            )->first();
+            );
+            $driver = $this->searchService->invoke($command)->getResult()->first();
             if ($driver) {
                 $channels[] = $this->buildChannelFromRecord($driver);
             }
@@ -236,7 +239,8 @@ class AlphaBrowse extends AbstractChannelProvider
         }
         // If we have a cover router and a non-empty ID list, look up thumbnails:
         if ($this->coverRouter && !empty($ids)) {
-            $records = $this->searchService->retrieveBatch($this->source, $ids);
+            $command = new RetrieveBatchCommand($this->source, $ids);
+            $records = $this->searchService->invoke($command)->getResult();
             $thumbs = [];
             // First map record drivers to an ID => thumb array...
             foreach ($records as $record) {

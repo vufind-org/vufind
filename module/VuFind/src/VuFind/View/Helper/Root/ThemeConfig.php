@@ -76,7 +76,7 @@ class ThemeConfig extends AbstractHelper
         $path = (array)$path;
         $key = array_shift($path) ?? '';
 
-        $mergedConfig = $this->themeInfo->getMergedConfig($key, true);
+        $mergedConfig = $this->themeInfo->getMergedConfig($key);
 
         // Follow the path
         $nextNode = $mergedConfig;

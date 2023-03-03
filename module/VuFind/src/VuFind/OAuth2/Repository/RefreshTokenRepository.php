@@ -42,7 +42,7 @@ use VuFind\OAuth2\Entity\RefreshTokenEntity;
  * @link     https://vufind.org Main Site
  */
 class RefreshTokenRepository extends AbstractTokenRepository
-    implements RefreshTokenRepositoryInterface
+implements RefreshTokenRepositoryInterface
 {
     /**
      * Constructor

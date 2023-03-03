@@ -202,8 +202,12 @@ class SearchController extends AbstractSolrSearch
     {
         // Force login if necessary
         $user = $this->getUser();
-        if ($this->params()->fromQuery('require_login', 'no') !== 'no' && !$user) {
-            return $this->forceLogin();
+        if ($this->params()->fromQuery('require_login', 'no') !== 'no') {
+            // If user is already logged in, drop the require_login parameter to
+            // allow for a cleaner log-out experience.
+            return $user
+                ? $this->redirect()->toRoute('search-history')
+                : $this->forceLogin();
         }
         $userId = is_object($user) ? $user->id : null;
 
@@ -480,16 +484,17 @@ class SearchController extends AbstractSolrSearch
     public function opensearchAction()
     {
         switch ($this->params()->fromQuery('method')) {
-        case 'describe':
-            $config = $this->getConfig();
-            $xml = $this->getViewRenderer()->render(
-                'search/opensearch-describe.phtml',
-                ['site' => $config->Site]
-            );
-            break;
-        default:
-            $xml = $this->getViewRenderer()->render('search/opensearch-error.phtml');
-            break;
+            case 'describe':
+                $config = $this->getConfig();
+                $xml = $this->getViewRenderer()->render(
+                    'search/opensearch-describe.phtml',
+                    ['site' => $config->Site]
+                );
+                break;
+            default:
+                $xml = $this->getViewRenderer()
+                    ->render('search/opensearch-error.phtml');
+                break;
         }
 
         $response = $this->getResponse();

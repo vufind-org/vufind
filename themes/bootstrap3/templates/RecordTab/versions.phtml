@@ -27,7 +27,7 @@
   <?php foreach ($results as $current): ?>
     <div id="result<?=++$recordNumber ?>" class="result clearfix<?=$current->supportsAjaxStatus() ? ' ajaxItem' : ''?>">
       <span class="sr-only"><?=$this->transEsc('Search Result');?> <?=$recordNumber ?></span>
-      <?=$this->record($current)->getSearchResult($view)?>
+      <?=$this->record($current)->getSearchResult($view, $results)?>
     </div>
   <?php endforeach; ?>
   <div class="search-tools hidden-print">

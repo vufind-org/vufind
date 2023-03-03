@@ -18,29 +18,29 @@
         </label>
       </div>
       <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
-        <button type="submit" class="toolbar-btn" name="saveCart" value="1" title="<?=$this->transEscAttr('bookbag_save')?>" value="1">
-          <?=$this->icon('user-list-add') ?>
-          <?=$this->transEsc('Save')?>
+        <button type="submit" class="toolbar-btn" name="saveCart" title="<?=$this->transEscAttr('bookbag_save')?>" value="1">
+          <?=$this->icon('user-list-add', 'icon-link__icon') ?>
+          <span class="icon-link__label"><?=$this->transEsc('Save')?></span>
         </button>
       <?php endif; ?>
-      <button type="submit" class="toolbar-btn" name="email" value="1" title="<?=$this->transEscAttr('bookbag_email')?>" value="1">
-        <?=$this->icon('send-email') ?>
-        <?=$this->transEsc('Email')?>
+      <button type="submit" class="toolbar-btn" name="email" title="<?=$this->transEscAttr('bookbag_email')?>" value="1">
+        <?=$this->icon('send-email', 'icon-link__icon') ?>
+        <span class="icon-link__label"><?=$this->transEsc('Email')?></span>
       </button>
       <?php $exportOptions = $this->export()->getActiveFormats('bulk'); if (count($exportOptions) > 0): ?>
-        <button type="submit" class="toolbar-btn" name="export" value="1" title="<?=$this->transEscAttr('bookbag_export')?>" value="1">
-          <?=$this->icon('export') ?>
-          <?=$this->transEsc('Export')?>
+        <button type="submit" class="toolbar-btn" name="export" title="<?=$this->transEscAttr('bookbag_export')?>" value="1">
+          <?=$this->icon('export', 'icon-link__icon') ?>
+          <span class="icon-link__label"><?=$this->transEsc('Export')?></span>
         </button>
       <?php endif; ?>
-      <button type="submit" class="toolbar-btn dropdown-toggle" name="print" value="1" title="<?=$this->transEscAttr('print_selected')?>" value="1">
-        <?=$this->icon('print') ?>
-        <?=$this->transEsc('Print')?>
+      <button type="submit" class="toolbar-btn" name="print" title="<?=$this->transEscAttr('print_selected')?>" value="1">
+        <?=$this->icon('print', 'icon-link__icon') ?>
+        <span class="icon-link__label"><?=$this->transEsc('Print')?></span>
       </button>
       <div class="btn-group" id="cartDelete">
-        <button type="submit" name="delete" value="1" class="toolbar-btn dropdown-toggle" data-toggle="dropdown" id="cart-delete-label" value="1">
-          <?=$this->icon('cart-remove') ?>
-          <?=$this->transEsc('Delete')?>
+        <button type="submit" name="delete" class="toolbar-btn dropdown-toggle" data-toggle="dropdown" id="cart-delete-label" value="1">
+          <?=$this->icon('cart-remove', 'icon-link__icon') ?>
+          <span class="icon-link__label"><?=$this->transEsc('Delete')?></span>
         </button>
         <ul class="dropdown-menu" role="menu" aria-labelledby="cart-delete-label">
           <li><a id="cart-confirm-delete" title="<?=$this->transEscAttr('confirm_delete')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
@@ -48,9 +48,9 @@
         </ul>
       </div>
       <div class="btn-group">
-        <button type="submit" class="toolbar-btn dropdown-toggle" name="empty" value="1" data-toggle="dropdown" id="cart-empty-label" value="1">
-          <?=$this->icon('cart-empty') ?>
-          <?=$this->transEsc('Empty Book Bag')?>
+        <button type="submit" class="toolbar-btn dropdown-toggle" name="empty" data-toggle="dropdown" id="cart-empty-label" value="1">
+          <?=$this->icon('cart-empty', 'icon-link__icon') ?>
+          <span class="icon-link__label"><?=$this->transEsc('Empty Book Bag')?></span>
         </button>
         <ul class="dropdown-menu" role="menu" aria-labelledby="cart-empty-label">
           <li><a id="cart-confirm-empty" title="<?=$this->transEscAttr('bookbag_confirm_empty')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>

@@ -209,7 +209,7 @@ class HoldsController extends AbstractBase
         }
         // If the user input contains a value not found in the session
         // legal list, something has been tampered with -- abort the process.
-        if ($this->holds()->validateIds($selectedIds)) {
+        if (!$this->holds()->validateIds($selectedIds)) {
             $this->flashMessenger()
                 ->addErrorMessage('error_inconsistent_parameters');
             return $this->inLightbox()
