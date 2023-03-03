@@ -830,7 +830,7 @@ EOS
                         FILE_APPEND
                     );
                 } else {
-                    $this->logWarning($msg);
+                    $this->logWarning($message);
                 }
             }
             if ($errors) {
