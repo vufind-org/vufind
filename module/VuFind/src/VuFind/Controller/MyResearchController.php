@@ -5,6 +5,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +23,7 @@
  * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
@@ -48,12 +50,14 @@ use VuFind\Validator\CsrfInterface;
  * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 class MyResearchController extends AbstractBase
 {
     use Feature\CatchIlsExceptionsTrait;
+    use \VuFind\ILS\Logic\SummaryTrait;
 
     /**
      * Permission that must be granted to access this module (false for no
@@ -1431,10 +1435,11 @@ class MyResearchController extends AbstractBase
 
         // Get paging setup:
         $config = $this->getConfig();
+        $pageSize = $config->Catalog->checked_out_page_size ?? 50;
         $pageOptions = $this->getPaginationHelper()->getOptions(
             (int)$this->params()->fromQuery('page', 1),
             $this->params()->fromQuery('sort'),
-            $config->Catalog->checked_out_page_size ?? 50,
+            $pageSize,
             $catalog->checkFunction('getMyTransactions', $patron)
         );
 
@@ -1457,14 +1462,11 @@ class MyResearchController extends AbstractBase
 
         // If the results are not paged in the ILS, collect up to date stats for ajax
         // account notifications:
-        if ((!$pageOptions['ilsPaging'] || !$paginator)
-            && !empty($this->getConfig()->Authentication->enableAjax)
+        if (!empty($config->Authentication->enableAjax)
+            && (!$pageOptions['ilsPaging'] || !$paginator
+            || $result['count'] <= $pageSize)
         ) {
-            $accountStatus = [
-                'ok' => 0,
-                'warn' => 0,
-                'overdue' => 0
-            ];
+            $accountStatus = $this->getTransactionSummary($result['records']);
         } else {
             $accountStatus = null;
         }
@@ -1482,20 +1484,6 @@ class MyResearchController extends AbstractBase
             ) {
                 // Enable renewal form if necessary:
                 $renewForm = true;
-            }
-
-            if (null !== $accountStatus) {
-                switch ($current['dueStatus'] ?? '') {
-                    case 'due':
-                        $accountStatus['warn']++;
-                        break;
-                    case 'overdue':
-                        $accountStatus['overdue']++;
-                        break;
-                    default:
-                        $accountStatus['ok']++;
-                        break;
-                }
             }
 
             // Build record drivers (only for the current visible page):
@@ -1629,7 +1617,6 @@ class MyResearchController extends AbstractBase
         // Get fine details:
         $result = $catalog->getMyFines($patron);
         $fines = [];
-        $totalDue = 0;
         $driversNeeded = [];
         foreach ($result as $i => $row) {
             // If we have an id, add it to list of record drivers to load:
@@ -1639,7 +1626,6 @@ class MyResearchController extends AbstractBase
                     'source' => $row['source'] ?? DEFAULT_SEARCH_BACKEND
                 ];
             }
-            $totalDue += $row['balance'] ?? 0;
             // Store by original index so that we can access it when loading record
             // drivers:
             $fines[$i] = $row;
@@ -1661,9 +1647,10 @@ class MyResearchController extends AbstractBase
 
         // Collect up to date stats for ajax account notifications:
         if (!empty($this->getConfig()->Authentication->enableAjax)) {
-            $accountStatus = [
-                'total' => $totalDue / 100.00
-            ];
+            $accountStatus = $this->getFineSummary(
+                $fines,
+                $this->serviceLocator->get(\VuFind\Service\CurrencyFormatter::class)
+            );
         } else {
             $accountStatus = null;
         }

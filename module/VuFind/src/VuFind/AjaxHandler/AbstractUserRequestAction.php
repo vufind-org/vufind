@@ -40,6 +40,8 @@ use Laminas\Mvc\Controller\Plugin\Params;
  */
 abstract class AbstractUserRequestAction extends AbstractIlsAndUserAction
 {
+    use \VuFind\ILS\Logic\SummaryTrait;
+
     /**
      * ILS driver method for data retrieval.
      *
@@ -65,20 +67,6 @@ abstract class AbstractUserRequestAction extends AbstractIlsAndUserAction
             return $this->formatResponse('', self::STATUS_HTTP_ERROR);
         }
         $requests = $this->ils->{$this->lookupMethod}($patron);
-        $status = [
-            'available' => 0,
-            'in_transit' => 0,
-            'other' => 0
-        ];
-        foreach ($requests as $request) {
-            if (!empty($request['available'])) {
-                $status['available'] ++;
-            } elseif (!empty($request['in_transit'])) {
-                $status['in_transit'] ++;
-            } else {
-                $status['other'] ++;
-            }
-        }
-        return $this->formatResponse($status);
+        return $this->formatResponse($this->getRequestSummary($requests));
     }
 }
