@@ -806,12 +806,21 @@ EOS
                     $errors[] = $this->htmlValidationMsgToStr($message);
                 }
             }
+            $logFile = getenv('VUFIND_HTML_VALIDATOR_LOG_FILE');
             if ($info) {
-                $this->logWarning(
-                    'HTML validation messages for '
+                $message = 'HTML validation messages for '
                     . $this->session->getCurrentUrl() . ': ' . PHP_EOL . PHP_EOL
-                    . implode(PHP_EOL . PHP_EOL, $info)
-                );
+                    . implode(PHP_EOL . PHP_EOL, $info);
+
+                if ($logFile) {
+                    file_put_contents(
+                        $logFile,
+                        date('Y-m-d H:i:s') . " $message" . PHP_EOL . PHP_EOL,
+                        FILE_APPEND
+                    );
+                } else {
+                    $this->logWarning($msg);
+                }
             }
             if ($errors) {
                 $message = 'HTML validation errors for '
@@ -820,6 +829,12 @@ EOS
 
                 if (getenv('VUFIND_HTML_VALIDATOR_FAIL_TESTS') !== '0') {
                     throw new \RuntimeException($message);
+                } elseif ($logFile) {
+                    file_put_contents(
+                        $logFile,
+                        date('Y-m-d H:i:s') . " $message" . PHP_EOL . PHP_EOL,
+                        FILE_APPEND
+                    );
                 } else {
                     $this->logWarning($message);
                 }
