@@ -373,7 +373,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      */
     public function testSuccessfulPlaceHoldNoExpirationDate(): void
     {
-        $this->createConnector('successful-place-hold');
+        $this->createConnector('successful-place-hold-no-expiration-date');
         $details = [
             'patron' => ['id' => 'foo'],
             'item_id' => 'record1',

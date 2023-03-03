@@ -1,4 +1,6 @@
 [
-    { "comment": "Initial request for token" },
-    { "status" : 500, "body": "{ \"status\": \"failure\", \"success\": false, \"errors\": [ { \"message\" : \"requestExpirationDate cannot be in the past\" } ] }" }
+    { "comment": "Initial request for token",
+      "expectedMethod": "POST"
+    },
+    { "status" : 500, "method": "POST", "body": "{ \"status\": \"failure\", \"success\": false, \"errors\": [ { \"message\" : \"requestExpirationDate cannot be in the past\" } ] }" }
 ]
