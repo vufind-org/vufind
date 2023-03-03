@@ -116,17 +116,17 @@ class Manager
         // Set up search specs cache based on config settings:
         $searchCacheType = $searchConfig->Cache->type ?? false;
         switch ($searchCacheType) {
-        case 'File':
-            $this->createFileCache(
-                'searchspecs',
-                $cacheBase . 'searchspecs'
-            );
-            break;
-        case false:
-            $this->createNoCache('searchspecs');
-            break;
-        default:
-            throw new \Exception("Unsupported cache setting: $searchCacheType");
+            case 'File':
+                $this->createFileCache(
+                    'searchspecs',
+                    $cacheBase . 'searchspecs'
+                );
+                break;
+            case false:
+                $this->createNoCache('searchspecs');
+                break;
+            default:
+                throw new \Exception("Unsupported cache setting: $searchCacheType");
         }
     }
 

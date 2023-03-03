@@ -37,7 +37,7 @@ namespace VuFind\Content\Covers;
  * @link     https://vufind.org/wiki/development:plugins:content_provider_components
  */
 class Orb extends \VuFind\Content\AbstractCover
-    implements \VuFindHttp\HttpServiceAwareInterface
+implements \VuFindHttp\HttpServiceAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
 

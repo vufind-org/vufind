@@ -96,11 +96,11 @@ class BrowZine implements DoiLinkerInterface, TranslatorAwareInterface
             return false;
         }
         switch (strtolower(trim($this->config['filterType'] ?? 'none'))) {
-        case 'include':
-            return in_array($key, (array)($this->config['filter'] ?? []));
-        case 'exclude':
-            return !in_array($key, (array)($this->config['filter'] ?? []));
-        default:
+            case 'include':
+                return in_array($key, (array)($this->config['filter'] ?? []));
+            case 'exclude':
+                return !in_array($key, (array)($this->config['filter'] ?? []));
+            default:
         }
         // If we got this far, no filter setting is applied, so the option is legal:
         return true;

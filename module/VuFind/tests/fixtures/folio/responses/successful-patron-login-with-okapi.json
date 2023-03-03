@@ -1,5 +1,19 @@
 [
-    { "comment": "Initial request for token" },
-    { "comment": "login attempt" },
-    { "comment": "profile retrieval", "body": "{ \"users\": [ { \"id\": \"fake-id\", \"personal\": { \"firstName\": \"first\", \"lastName\": \"last\", \"email\": \"fake@fake.com\" } } ] }" }
+    {
+        "comment": "Initial token check"
+    },
+    {
+        "comment": "login attempt",
+        "expectedMethod": "POST",
+        "expectedPath": "/authn/login",
+        "expectedParams": "{\"tenant\":\"config_tenant\",\"username\":\"foo\",\"password\":\"bar\"}"
+    },
+    {
+        "comment": "profile retrieval",
+        "expectedPath": "/users",
+        "expectedParams": {
+            "query": "username == foo"
+        },
+        "body": "{ \"users\": [ { \"id\": \"fake-id\", \"personal\": { \"firstName\": \"first\", \"lastName\": \"last\", \"email\": \"fake@fake.com\" } } ] }"
+    }
 ]

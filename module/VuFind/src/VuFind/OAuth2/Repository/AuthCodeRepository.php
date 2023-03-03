@@ -42,7 +42,7 @@ use VuFind\OAuth2\Entity\AuthCodeEntity;
  * @link     https://vufind.org Main Site
  */
 class AuthCodeRepository extends AbstractTokenRepository
-    implements AuthCodeRepositoryInterface
+implements AuthCodeRepositoryInterface
 {
     /**
      * Constructor

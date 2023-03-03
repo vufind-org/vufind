@@ -43,7 +43,7 @@ use VuFindApi\Formatter\RecordFormatter;
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 class SearchApiController extends \VuFind\Controller\AbstractSearch
-    implements ApiInterface
+implements ApiInterface
 {
     use ApiTrait;
 

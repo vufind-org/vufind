@@ -1,8 +1,16 @@
 [
-  { "comment": "Initial request for token" },
+  {
+    "comment": "Initial token check"
+  },
   {
     "comment": "User with 1 hold, hold is available for pickup until 2022-12-29T05:59:59.000+00:00",
+    "expectedPath": "/request-storage/requests",
+    "expectedParams": {
+      "query": "((requesterId == \"foo\" or proxyUserId == \"foo\") and status == Open*)",
+      "offset": 0,
+      "limit": 1000
+    },
     "status": 200,
-    "body": "{\"requests\":[{\"id\":\"c5a8af9d-9877-453c-bbcb-f63cb5ccb3b4\",\"requestLevel\":\"Item\",\"requestType\":\"Page\",\"requestDate\":\"2022-12-20T05:55:33.000+00:00\",\"requesterId\":\"162c474e-ca1f-4310-b233-7ad3a2ad8c34\",\"instanceId\":\"3311d5df-731f-4e2c-8000-00960a9d8bf7\",\"holdingsRecordId\":\"10c3dc8e-4e7c-4c21-ad23-95e3887c1f5c\",\"itemId\":\"fc0064b4-e2e4-4be0-8251-7ca93282c9b4\",\"status\":\"Open - Awaiting pickup\",\"position\":1,\"instance\":{\"title\":\"Presentation secrets : do what you never thought possible with your presentations \",\"identifiers\":[{\"value\":\"9781118034965 (pbk : alk paper)\",\"identifierTypeId\":\"8261054f-be78-422d-bd51-4ed9f33c3422\"}]},\"item\":{\"barcode\":\"431332678\"},\"requester\":{\"firstName\":\"John\",\"lastName\":\"TestuserJohn\",\"barcode\":\"995324292\"},\"fulfilmentPreference\":\"Hold Shelf\",\"holdShelfExpirationDate\":\"2022-12-29T05:59:59.000+00:00\",\"pickupServicePointId\":\"7bfc4faa-e731-47db-92c9-da18c4ca9bc8\",\"metadata\":{\"createdDate\":\"2022-12-20T05:55:34.325+00:00\",\"createdByUserId\":\"d916e883-f8f1-4188-bc1d-f0dce1511b50\",\"updatedDate\":\"2022-12-20T06:07:27.712+00:00\",\"updatedByUserId\":\"d916e883-f8f1-4188-bc1d-f0dce1511b50\"}}],\"totalRecords\":1}"
+    "body": "{\"requests\":[{\"id\":\"c5a8af9d-9877-453c-bbcb-f63cb5ccb3b4\",\"requestLevel\":\"Item\",\"requestType\":\"Page\",\"requestDate\":\"2022-12-20T05:55:33.000+00:00\",\"requesterId\":\"foo\",\"instanceId\":\"3311d5df-731f-4e2c-8000-00960a9d8bf7\",\"holdingsRecordId\":\"10c3dc8e-4e7c-4c21-ad23-95e3887c1f5c\",\"itemId\":\"fc0064b4-e2e4-4be0-8251-7ca93282c9b4\",\"status\":\"Open - Awaiting pickup\",\"position\":1,\"instance\":{\"title\":\"Presentation secrets : do what you never thought possible with your presentations \",\"identifiers\":[{\"value\":\"9781118034965 (pbk : alk paper)\",\"identifierTypeId\":\"8261054f-be78-422d-bd51-4ed9f33c3422\"}]},\"item\":{\"barcode\":\"431332678\"},\"requester\":{\"firstName\":\"John\",\"lastName\":\"TestuserJohn\",\"barcode\":\"995324292\"},\"fulfilmentPreference\":\"Hold Shelf\",\"holdShelfExpirationDate\":\"2022-12-29T05:59:59.000+00:00\",\"pickupServicePointId\":\"7bfc4faa-e731-47db-92c9-da18c4ca9bc8\",\"metadata\":{\"createdDate\":\"2022-12-20T05:55:34.325+00:00\",\"createdByUserId\":\"d916e883-f8f1-4188-bc1d-f0dce1511b50\",\"updatedDate\":\"2022-12-20T06:07:27.712+00:00\",\"updatedByUserId\":\"d916e883-f8f1-4188-bc1d-f0dce1511b50\"}}],\"totalRecords\":1}"
   }
 ]

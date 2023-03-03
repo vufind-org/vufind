@@ -1322,9 +1322,9 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 $description .= $entry['description'];
             }
             switch ($description) {
-            case 'Overdue Renewal':
-                $description = 'Overdue';
-                break;
+                case 'Overdue Renewal':
+                    $description = 'Overdue';
+                    break;
             }
             $bibId = null;
             $title = null;
@@ -2474,12 +2474,12 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             $status = $this->mapStatusCode('Charged');
         } else {
             switch ($status) {
-            case '-':
-                $status = $this->mapStatusCode('-');
-                break;
-            case 'Lib Use Only':
-                $status = $this->mapStatusCode('o');
-                break;
+                case '-':
+                    $status = $this->mapStatusCode('-');
+                    break;
+                case 'Lib Use Only':
+                    $status = $this->mapStatusCode('o');
+                    break;
             }
         }
         if ($status == $this->mapStatusCode('-')) {

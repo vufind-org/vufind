@@ -71,19 +71,19 @@ class HierarchicalFacetHelper implements HierarchicalFacetHelperInterface,
         $topLevel = $order ?? 'count';
         if (is_string($topLevel)) {
             switch (strtolower(trim($topLevel))) {
-            case 'top':
-                $topLevel = true;
-                break;
-            case 'all':
-                $topLevel = false;
-                break;
-            case '':
-            case 'count':
-                // At present, we assume the incoming list is already sorted by
-                // count, so no further action is needed. If in future we need
-                // to support re-sorting an arbitrary list, rather than simply
-                // operating on raw Solr values, we may need to implement logic.
-                return;
+                case 'top':
+                    $topLevel = true;
+                    break;
+                case 'all':
+                    $topLevel = false;
+                    break;
+                case '':
+                case 'count':
+                    // At present, we assume the incoming list is already sorted by
+                    // count, so no further action is needed. If in future we need
+                    // to support re-sorting an arbitrary list, rather than simply
+                    // operating on raw Solr values, we may need to implement logic.
+                    return;
             }
         }
 
