@@ -347,6 +347,9 @@ abstract class AbstractRequestBase extends AbstractPlugin
      */
     protected function getDateFromArray($dateArray)
     {
+        if (!isset($dateArray[2])) {
+            return 0;
+        }
         [$d, $m, $y] = $dateArray;
         return mktime(
             0,
