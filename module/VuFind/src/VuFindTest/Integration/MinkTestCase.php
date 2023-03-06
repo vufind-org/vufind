@@ -817,39 +817,18 @@ EOS
                     $errors[] = $this->htmlValidationMsgToStr($message);
                 }
             }
-            $logFile = getenv('VUFIND_HTML_VALIDATOR_LOG_FILE');
-            $quiet = getenv('VUFIND_HTML_VALIDATOR_QUIET');
+            $logFile = (string)getenv('VUFIND_HTML_VALIDATOR_LOG_FILE');
+            $quiet = (bool)getenv('VUFIND_HTML_VALIDATOR_QUIET');
             if ($info) {
-                $message = 'HTML validation messages for '
-                    . $this->session->getCurrentUrl() . ': ' . PHP_EOL . PHP_EOL
-                    . implode(PHP_EOL . PHP_EOL, $info);
-
-                if ($logFile) {
-                    file_put_contents(
-                        $logFile,
-                        date('Y-m-d H:i:s') . " $message" . PHP_EOL . PHP_EOL,
-                        FILE_APPEND
-                    );
-                }
-                if (!$quiet) {
-                    $this->logWarning($message);
-                }
+                $this->outputHtmlValidationMessages($info, 'info', $logFile, $quiet);
             }
             if ($errors) {
-                $message = 'HTML validation errors for '
-                    . $this->session->getCurrentUrl() . ': ' . PHP_EOL . PHP_EOL
-                    . implode(PHP_EOL . PHP_EOL, $errors);
-
-                if ($logFile) {
-                    file_put_contents(
-                        $logFile,
-                        date('Y-m-d H:i:s') . " $message" . PHP_EOL . PHP_EOL,
-                        FILE_APPEND
-                    );
-                }
-                if (!$quiet) {
-                    $this->logWarning($message);
-                }
+                $this->outputHtmlValidationMessages(
+                    $errors,
+                    'error',
+                    $logFile,
+                    $quiet
+                );
                 if (getenv('VUFIND_HTML_VALIDATOR_FAIL_TESTS') !== '0') {
                     throw new \RuntimeException('HTML validation failed');
                 }
@@ -876,6 +855,40 @@ EOS
                 . $message['extract'];
         }
         return $result;
+    }
+
+    /**
+     * Output HTML validation messages to log file and/or console
+     *
+     * @param array $messages Messages
+     * @param string $level Message level (info or error)
+     * @param string $logFile Log file name
+     * @param bool $quiet Whether the console output should be quiet
+     *
+     * @return void
+     */
+    protected function outputHtmlValidationMessages(
+        array $messages,
+        string $level,
+        string $logFile,
+        bool $quiet
+    ): void {
+        $fullMessage = 'HTML validation '
+            . ('info' === $level ? 'messages' : 'errors') . ' for '
+            . $this->session->getCurrentUrl() . ': ' . PHP_EOL . PHP_EOL
+            . implode(PHP_EOL . PHP_EOL, $messages);
+
+        if ($logFile) {
+            file_put_contents(
+                $logFile,
+                date('Y-m-d H:i:s') . ' [' . strtoupper($level) . "] $fullMessage"
+                . PHP_EOL . PHP_EOL,
+                FILE_APPEND
+            );
+        }
+        if (!$quiet) {
+            $this->logWarning($fullMessage);
+        }
     }
 
     /**
