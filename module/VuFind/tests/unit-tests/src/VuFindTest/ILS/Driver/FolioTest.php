@@ -351,8 +351,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'status' => 'Available',
             'pickUpLocation' => 'desk1',
         ];
-        $this->expectException(\TypeError::class);
-        $this->expectExceptionMessage("must be of type ?int");
+        $this->expectException(\VuFind\Exception\ILS::class);
+        $this->expectExceptionMessage("hold_date_invalid");
         $result = $this->driver->placeHold($details);
     }
 
