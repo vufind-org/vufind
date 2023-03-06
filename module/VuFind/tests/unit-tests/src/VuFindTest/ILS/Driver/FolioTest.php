@@ -174,7 +174,9 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         // Configure the stub
         $this->driver->setConfig($config ?? $this->defaultDriverConfig);
-        $this->driver->setCacheStorage(new \Laminas\Cache\Storage\Adapter\Memory());
+        $cache = new \Laminas\Cache\Storage\Adapter\Memory();
+        $cache->setOptions(['memory_limit' => -1]);
+        $this->driver->setCacheStorage($cache);
         $this->driver->expects($this->any())
             ->method('makeRequest')
             ->will($this->returnCallback([$this, 'mockMakeRequest']));

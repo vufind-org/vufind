@@ -2038,7 +2038,11 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             ? $session->holds[$lastHold]['item_id'] + 1 : 0;
 
         // Figure out appropriate expiration date:
-        $expire = $holdDetails['requiredByTS'] ?: strtotime('now + 30 days');
+        $expire = !empty($holdDetails['requiredByTS'])
+            ? $this->dateConverter->convertToDisplayDate(
+                'Y-m-d',
+                gmdate('Y-m-d', $holdDetails['requiredByTS'])
+            ) : null;
 
         $requestGroup = '';
         foreach ($this->getRequestGroups(null, null) as $group) {
@@ -2074,8 +2078,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 'id'       => $holdDetails['record_id'],
                 'source'   => $this->getRecordSource(),
                 'location' => $holdDetails['pickUpLocation'],
-                'expire'   =>
-                    $this->dateConverter->convertToDisplayDate('U', $expire),
+                'expire'   => $expire,
                 'create'   =>
                     $this->dateConverter->convertToDisplayDate('U', time()),
                 'reqnum'   => $reqNum,
