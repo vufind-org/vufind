@@ -860,10 +860,10 @@ EOS
     /**
      * Output HTML validation messages to log file and/or console
      *
-     * @param array $messages Messages
-     * @param string $level Message level (info or error)
-     * @param string $logFile Log file name
-     * @param bool $quiet Whether the console output should be quiet
+     * @param array  $messages Messages
+     * @param string $level    Message level (info or error)
+     * @param string $logFile  Log file name
+     * @param bool   $quiet    Whether the console output should be quiet
      *
      * @return void
      */
