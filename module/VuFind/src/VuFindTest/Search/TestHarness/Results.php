@@ -85,7 +85,7 @@ class Results extends \VuFind\Search\Base\Results
     ) {
         parent::__construct($params, $searchService, $recordLoader);
         $this->fakeExpectedTotal = $total;
-        $this->searchId = 'fake';   // fill a fake value here so we don't hit the DB
+        $this->searchId = -123;   // fill a fake value here so we don't hit the DB
         $this->facets = $facets;
     }
 

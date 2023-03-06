@@ -40,7 +40,7 @@ use VuFind\Cache\Manager as CacheManager;
  * @link     https://vufind.org Main Page
  */
 class AdminApiController extends \VuFind\Controller\AbstractBase
-    implements ApiInterface
+implements ApiInterface
 {
     use ApiTrait;
 

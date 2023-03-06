@@ -47,7 +47,7 @@ use VuFindSearch\ParamBag;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class AlphaBrowse extends AbstractChannelProvider
-    implements TranslatorAwareInterface
+implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 

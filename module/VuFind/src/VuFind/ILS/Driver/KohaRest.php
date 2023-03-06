@@ -886,7 +886,6 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                         'query' => [
                             'patron_id' => (int)$patron['id'],
                             'query_pickup_locations' => 1,
-                            'ignore_patron_holds' => $requestId ? 1 : 0,
                         ]
                     ]
                 );
@@ -2292,13 +2291,13 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected function holdError($error)
     {
         switch ($error) {
-        case 'Hold cannot be placed. Reason: tooManyReserves':
-        case 'Hold cannot be placed. Reason: tooManyHoldsForThisRecord':
-            $error = 'hold_error_too_many_holds';
-            break;
-        case 'Hold cannot be placed. Reason: ageRestricted':
-            $error = 'hold_error_age_restricted';
-            break;
+            case 'Hold cannot be placed. Reason: tooManyReserves':
+            case 'Hold cannot be placed. Reason: tooManyHoldsForThisRecord':
+                $error = 'hold_error_too_many_holds';
+                break;
+            case 'Hold cannot be placed. Reason: ageRestricted':
+                $error = 'hold_error_age_restricted';
+                break;
         }
         return [
             'success' => false,
@@ -2384,23 +2383,23 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             foreach (array_keys($result['availability']['unavailabilities']) as $key
             ) {
                 switch ($key) {
-                case 'Biblio::NoAvailableItems':
-                    return 'hold_error_not_holdable';
-                case 'Item::NotForLoan':
-                case 'Hold::NotAllowedInOPAC':
-                case 'Hold::ZeroHoldsAllowed':
-                case 'Hold::NotAllowedByLibrary':
-                case 'Hold::NotAllowedFromOtherLibraries':
-                case 'Item::Restricted':
-                case 'Hold::ItemLevelHoldNotAllowed':
-                    return 'hold_error_item_not_holdable';
-                case 'Hold::MaximumHoldsForRecordReached':
-                case 'Hold::MaximumHoldsReached':
-                    return 'hold_error_too_many_holds';
-                case 'Item::AlreadyHeldForThisPatron':
-                    return 'hold_error_already_held';
-                case 'Hold::OnShelfNotAllowed':
-                    return 'hold_error_on_shelf_blocked';
+                    case 'Biblio::NoAvailableItems':
+                        return 'hold_error_not_holdable';
+                    case 'Item::NotForLoan':
+                    case 'Hold::NotAllowedInOPAC':
+                    case 'Hold::ZeroHoldsAllowed':
+                    case 'Hold::NotAllowedByLibrary':
+                    case 'Hold::NotAllowedFromOtherLibraries':
+                    case 'Item::Restricted':
+                    case 'Hold::ItemLevelHoldNotAllowed':
+                        return 'hold_error_item_not_holdable';
+                    case 'Hold::MaximumHoldsForRecordReached':
+                    case 'Hold::MaximumHoldsReached':
+                        return 'hold_error_too_many_holds';
+                    case 'Item::AlreadyHeldForThisPatron':
+                        return 'hold_error_already_held';
+                    case 'Hold::OnShelfNotAllowed':
+                        return 'hold_error_on_shelf_blocked';
                 }
             }
         }
@@ -2594,23 +2593,23 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     {
         $params = [];
         switch ($reason) {
-        case 'Hold::MaximumHoldsReached':
-            $params = [
-                '%%blockCount%%' => $details['current_hold_count'],
-                '%%blockLimit%%' => $details['max_holds_allowed']
-            ];
-            break;
-        case 'Patron::Debt':
-        case 'Patron::DebtGuarantees':
-            $count = isset($details['current_outstanding'])
-                ? $this->formatMoney($details['current_outstanding']) : '-';
-            $limit = isset($details['max_outstanding'])
-                ? $this->formatMoney($details['max_outstanding']) : '-';
-            $params = [
-                '%%blockCount%%' => $count,
-                '%%blockLimit%%' => $limit,
-            ];
-            break;
+            case 'Hold::MaximumHoldsReached':
+                $params = [
+                    '%%blockCount%%' => $details['current_hold_count'],
+                    '%%blockLimit%%' => $details['max_holds_allowed']
+                ];
+                break;
+            case 'Patron::Debt':
+            case 'Patron::DebtGuarantees':
+                $count = isset($details['current_outstanding'])
+                    ? $this->formatMoney($details['current_outstanding']) : '-';
+                $limit = isset($details['max_outstanding'])
+                    ? $this->formatMoney($details['max_outstanding']) : '-';
+                $params = [
+                    '%%blockCount%%' => $count,
+                    '%%blockLimit%%' => $limit,
+                ];
+                break;
         }
         return $this->translate($this->patronStatusMappings[$reason] ?? '', $params);
     }

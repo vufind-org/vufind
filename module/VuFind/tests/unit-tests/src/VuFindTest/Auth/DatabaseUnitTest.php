@@ -251,7 +251,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
         $arr = $this->getCreateParams();
         $arr['password'] = 'abcδ';
         $arr['password2'] = 'abcδ';
-        $this->expectWarning();
+        $this->expectExceptionMessage('Invalid regexp in password pattern: a/');
         $db->create($this->getRequest($arr));
     }
 

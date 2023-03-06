@@ -189,22 +189,22 @@ trait MarcAdvancedTrait
         $biblioLevel = strtoupper($leader[7]);
 
         switch ($biblioLevel) {
-        case 'M': // Monograph
-            return "Monograph";
-        case 'S': // Serial
-            return "Serial";
-        case 'A': // Monograph Part
-            return "MonographPart";
-        case 'B': // Serial Part
-            return "SerialPart";
-        case 'C': // Collection
-            return "Collection";
-        case 'D': // Collection Part
-            return "CollectionPart";
-        case 'I': // Integrating Resource
-            return "IntegratingResource";
-        default:
-            return "Unknown";
+            case 'M': // Monograph
+                return "Monograph";
+            case 'S': // Serial
+                return "Serial";
+            case 'A': // Monograph Part
+                return "MonographPart";
+            case 'B': // Serial Part
+                return "SerialPart";
+            case 'C': // Collection
+                return "Collection";
+            case 'D': // Collection Part
+                return "CollectionPart";
+            case 'I': // Integrating Resource
+                return "IntegratingResource";
+            default:
+                return "Unknown";
         }
     }
 
@@ -711,16 +711,16 @@ trait MarcAdvancedTrait
         // Assign notes based on the relationship type
         $value = $field['tag'];
         switch ($value) {
-        case '780':
-            if (in_array($relationshipIndicator, range('0', '7'))) {
-                $value .= '_' . $relationshipIndicator;
-            }
-            break;
-        case '785':
-            if (in_array($relationshipIndicator, range('0', '8'))) {
-                $value .= '_' . $relationshipIndicator;
-            }
-            break;
+            case '780':
+                if (in_array($relationshipIndicator, range('0', '7'))) {
+                    $value .= '_' . $relationshipIndicator;
+                }
+                break;
+            case '785':
+                if (in_array($relationshipIndicator, range('0', '8'))) {
+                    $value .= '_' . $relationshipIndicator;
+                }
+                break;
         }
 
         return 'note_' . $value;
@@ -752,46 +752,48 @@ trait MarcAdvancedTrait
         // If no reference found, check the next link type instead
         foreach ($linkTypes as $linkType) {
             switch (trim($linkType)) {
-            case 'oclc':
-                foreach ($linkFields as $current) {
-                    if ($oclc = $this->getIdFromLinkingField($current, 'OCoLC')) {
-                        $link = ['type' => 'oclc', 'value' => $oclc];
+                case 'oclc':
+                    foreach ($linkFields as $current) {
+                        $oclc = $this->getIdFromLinkingField($current, 'OCoLC');
+                        if ($oclc) {
+                            $link = ['type' => 'oclc', 'value' => $oclc];
+                        }
                     }
-                }
-                break;
-            case 'dlc':
-                foreach ($linkFields as $current) {
-                    if ($dlc = $this->getIdFromLinkingField($current, 'DLC', true)) {
-                        $link = ['type' => 'dlc', 'value' => $dlc];
+                    break;
+                case 'dlc':
+                    foreach ($linkFields as $current) {
+                        $dlc = $this->getIdFromLinkingField($current, 'DLC', true);
+                        if ($dlc) {
+                            $link = ['type' => 'dlc', 'value' => $dlc];
+                        }
                     }
-                }
-                break;
-            case 'id':
-                foreach ($linkFields as $current) {
-                    if ($bibLink = $this->getIdFromLinkingField($current)) {
-                        $link = ['type' => 'bib', 'value' => $bibLink];
+                    break;
+                case 'id':
+                    foreach ($linkFields as $current) {
+                        if ($bibLink = $this->getIdFromLinkingField($current)) {
+                            $link = ['type' => 'bib', 'value' => $bibLink];
+                        }
                     }
-                }
-                break;
-            case 'isbn':
-                if ($isbn = $this->getSubfield($field, 'z')) {
-                    $link = [
-                        'type' => 'isn', 'value' => $isbn,
-                        'exclude' => $this->getUniqueId()
-                    ];
-                }
-                break;
-            case 'issn':
-                if ($issn = $this->getSubfield($field, 'x')) {
-                    $link = [
-                        'type' => 'isn', 'value' => $issn,
-                        'exclude' => $this->getUniqueId()
-                    ];
-                }
-                break;
-            case 'title':
-                $link = ['type' => 'title', 'value' => $title];
-                break;
+                    break;
+                case 'isbn':
+                    if ($isbn = $this->getSubfield($field, 'z')) {
+                        $link = [
+                            'type' => 'isn', 'value' => $isbn,
+                            'exclude' => $this->getUniqueId()
+                        ];
+                    }
+                    break;
+                case 'issn':
+                    if ($issn = $this->getSubfield($field, 'x')) {
+                        $link = [
+                            'type' => 'isn', 'value' => $issn,
+                            'exclude' => $this->getUniqueId()
+                        ];
+                    }
+                    break;
+                case 'title':
+                    $link = ['type' => 'title', 'value' => $title];
+                    break;
             }
             // Exit loop if we have a link
             if (isset($link)) {

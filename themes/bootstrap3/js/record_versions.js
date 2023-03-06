@@ -22,7 +22,8 @@ VuFind.register('recordVersions', function recordVersions() {
         {
           method: 'getRecordVersions',
           id: id,
-          source: source
+          source: source,
+          sid: VuFind.getCurrentSearchId()
         }
       )
         .done(function onGetVersionsDone(response) {

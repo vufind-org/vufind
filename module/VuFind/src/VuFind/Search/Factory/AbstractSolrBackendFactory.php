@@ -108,11 +108,29 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     protected $config;
 
     /**
-     * Solr core name
+     * Name of index configuration setting to use to retrieve Solr index name
+     * (core or collection).
      *
      * @var string
      */
-    protected $solrCore = '';
+    protected $indexNameSetting = 'default_core';
+
+    /**
+     * Solr index name (used as default if $this->indexNameSetting is unset in
+     * the config).
+     *
+     * @var string
+     */
+    protected $defaultIndexName = '';
+
+    /**
+     * When looking up the Solr index name config setting, should we allow fallback
+     * into the main configuration (true), or limit ourselves to the search
+     * config (false)?
+     *
+     * @var bool
+     */
+    protected $allowFallbackForIndexName = false;
 
     /**
      * Solr field used to store unique identifiers
@@ -150,6 +168,13 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     protected $recordCollectionFactoryClass = RecordCollectionFactory::class;
 
     /**
+     * Merged index configuration
+     *
+     * @var ?array
+     */
+    protected $mergedIndexConfig = null;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -184,6 +209,69 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     }
 
     /**
+     * Return an ordered array of configurations to check for index configurations.
+     *
+     * @return string[]
+     */
+    protected function getPrioritizedConfigsForIndexSettings(): array
+    {
+        return array_unique([$this->searchConfig, $this->mainConfig]);
+    }
+
+    /**
+     * Merge together the Index sections of all eligible configuration files and
+     * return the result as an array.
+     *
+     * @return array
+     */
+    protected function getMergedIndexConfig(): array
+    {
+        if (null === $this->mergedIndexConfig) {
+            $this->mergedIndexConfig = [];
+            foreach ($this->getPrioritizedConfigsForIndexSettings() as $configName) {
+                $config = $this->config->get($configName);
+                $this->mergedIndexConfig += isset($config->Index)
+                    ? $config->Index->toArray() : [];
+            }
+        }
+        return $this->mergedIndexConfig;
+    }
+
+    /**
+     * Get the Index section of the highest-priority configuration file (for use
+     * in cases where fallback is not desired).
+     *
+     * @return array
+     */
+    protected function getFlatIndexConfig(): array
+    {
+        $configList = $this->getPrioritizedConfigsForIndexSettings();
+        $configObj = $this->config->get($configList[0]);
+        return isset($configObj->Index)
+            ? $configObj->Index->toArray() : [];
+    }
+
+    /**
+     * Get an index-related configuration setting.
+     *
+     * @param string $setting  Name of setting
+     * @param mixed  $default  Default value if unset
+     * @param bool   $fallback Should we fall back to main config if the
+     * setting is absent from the search config file?
+     *
+     * @return mixed
+     */
+    protected function getIndexConfig(
+        string $setting,
+        $default = null,
+        bool $fallback = true
+    ) {
+        $config = $fallback
+            ? $this->getMergedIndexConfig() : $this->getFlatIndexConfig();
+        return $config[$setting] ?? $default;
+    }
+
+    /**
      * Create the SOLR backend.
      *
      * @param Connector $connector Connector
@@ -193,13 +281,10 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     protected function createBackend(Connector $connector)
     {
         $backend = new $this->backendClass($connector);
-        $config = $this->config->get($this->mainConfig);
-        $pageSize = $config->Index->record_batch_size ?? 100;
-        if ($pageSize > $config->Index->maxBooleanClauses ?? $pageSize) {
-            $pageSize = $config->Index->maxBooleanClauses;
-        }
-        if ($pageSize > 0) {
-            $backend->setPageSize($pageSize);
+        $pageSize = $this->getIndexConfig('record_batch_size', 100);
+        $maxClauses = $this->getIndexConfig('maxBooleanClauses', $pageSize);
+        if ($pageSize > 0 && $maxClauses > 0) {
+            $backend->setPageSize(min($pageSize, $maxClauses));
         }
         $backend->setQueryBuilder($this->createQueryBuilder());
         $backend->setSimilarBuilder($this->createSimilarBuilder());
@@ -311,35 +396,45 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Get the Solr core.
+     * Get the name of the Solr index (core or collection).
      *
      * @return string
      */
-    protected function getSolrCore()
+    protected function getIndexName()
     {
-        return $this->solrCore;
+        return $this->getIndexConfig(
+            $this->indexNameSetting,
+            $this->defaultIndexName,
+            $this->allowFallbackForIndexName
+        );
     }
 
     /**
-     * Get the Solr URL.
+     * Get the Solr base URL(s) (without the path to the specific index)
      *
-     * @param string $config name of configuration file (null for default)
+     * @return string[]
+     */
+    protected function getSolrBaseUrls(): array
+    {
+        $urls = $this->getIndexConfig('url', []);
+        return is_object($urls) ? $urls->toArray() : (array)$urls;
+    }
+
+    /**
+     * Get the full Solr URL(s) (including index path part).
      *
      * @return string|array
      */
-    protected function getSolrUrl($config = null)
+    protected function getSolrUrl()
     {
-        $url = $this->config->get($config ?? $this->mainConfig)->Index->url;
-        $core = $this->getSolrCore();
-        if (is_object($url)) {
-            return array_map(
-                function ($value) use ($core) {
-                    return "$value/$core";
-                },
-                $url->toArray()
-            );
-        }
-        return "$url/$core";
+        $indexName = $this->getIndexName();
+        $urls = array_map(
+            function ($value) use ($indexName) {
+                return "$value/$indexName";
+            },
+            $this->getSolrBaseUrls()
+        );
+        return count($urls) === 1 ? $urls[0] : $urls;
     }
 
     /**
@@ -376,7 +471,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      */
     protected function createConnector()
     {
-        $config = $this->config->get($this->mainConfig);
+        $timeout = $this->getIndexConfig('timeout', 30);
         $searchConfig = $this->config->get($this->searchConfig);
         $defaultFields = $searchConfig->General->default_record_fields ?? '*';
 
@@ -398,9 +493,9 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
         $connector = new $this->connectorClass(
             $this->getSolrUrl(),
             new HandlerMap($handlers),
-            function (string $url) use ($config) {
+            function (string $url) use ($timeout) {
                 return $this->createHttpClient(
-                    $config->Index->timeout ?? 30,
+                    $timeout,
                     $this->getHttpOptions($url),
                     $url
                 );
@@ -441,8 +536,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     protected function createQueryBuilder()
     {
         $specs   = $this->loadSpecs();
-        $config = $this->config->get($this->mainConfig);
-        $defaultDismax = $config->Index->default_dismax_handler ?? 'dismax';
+        $defaultDismax = $this->getIndexConfig('default_dismax_handler', 'dismax');
         $builder = new QueryBuilder($specs, $defaultDismax);
 
         // Configure builder:
@@ -483,7 +577,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      * @return RecordCollectionFactoryInterface
      */
     protected function createRecordCollectionFactory()
-        : RecordCollectionFactoryInterface
+    : RecordCollectionFactoryInterface
     {
         return new $this->recordCollectionFactoryClass(
             $this->getCreateRecordCallback(),

@@ -42,7 +42,7 @@ use VuFindSearch\Command\RetrieveBatchCommand;
  * @link     https://vufind.org/wiki/development Wiki
  */
 abstract class AbstractILSChannelProvider extends AbstractChannelProvider
-    implements TranslatorAwareInterface
+implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 

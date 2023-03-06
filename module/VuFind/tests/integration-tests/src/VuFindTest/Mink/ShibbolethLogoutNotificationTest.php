@@ -42,7 +42,7 @@ use VuFind\Db\Table\ExternalSession;
  * @retry    4
  */
 final class ShibbolethLogoutNotificationTest
-    extends \VuFindTest\Integration\MinkTestCase
+extends \VuFindTest\Integration\MinkTestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
     use \VuFindTest\Feature\LiveDatabaseTrait;

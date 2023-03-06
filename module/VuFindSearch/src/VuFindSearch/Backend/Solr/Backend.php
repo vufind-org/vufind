@@ -58,7 +58,7 @@ use VuFindSearch\Response\RecordCollectionInterface;
  * @link     https://vufind.org
  */
 class Backend extends AbstractBackend
-    implements SimilarInterface, RetrieveBatchInterface, RandomInterface,
+implements SimilarInterface, RetrieveBatchInterface, RandomInterface,
     GetIdsInterface, WorkExpressionsInterface
 {
     /**

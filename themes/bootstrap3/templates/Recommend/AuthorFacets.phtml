@@ -4,7 +4,7 @@
     <p class="author-label"><?=$this->transEsc('Author Results for')?> <strong><?=$this->escapeHtml($this->recommend->getSearchTerm()) ?></strong></p>
     <div class="author-facets">
       <div class="author-list">
-      <?php foreach($similarAuthors['list'] as $i => $author): ?>
+      <?php foreach ($similarAuthors['list'] as $i => $author): ?>
         <?php if ($i == 5): ?>
             <a href="<?=$this->url('author-search') . '?lookfor=' . urlencode($this->recommend->getSearchTerm()) ?>"><strong><?=$this->transEsc("see all") ?> <?=(isset($similarAuthors['count']) && $similarAuthors['count']) ? $similarAuthors['count'] : ''?> &raquo;</strong></a>
           </div>

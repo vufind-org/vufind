@@ -2,16 +2,12 @@
     // Set page title.
     $this->headTitle($this->translate('Staff View') . ': ' . $this->driver->getBreadcrumb());
 ?>
-<table class="citation table table-striped">
+<table class="staff-view table table-striped">
   <?php $rawData = $this->driver->getRawData(); ksort($rawData); ?>
   <?php foreach ($rawData as $field => $values): ?>
     <tr>
       <th><?=$this->escapeHtml($field)?></th>
-      <td>
-        <?php foreach ((array)$values as $value): ?>
-          <?=$this->escapeHtml(is_array($value) ? print_r($value, true) : $value)?><br />
-        <?php endforeach; ?>
-      </td>
+      <td><?=$this->printArrayHtml($values)?></td>
     </tr>
   <?php endforeach; ?>
 </table>

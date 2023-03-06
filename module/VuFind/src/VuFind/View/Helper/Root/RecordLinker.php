@@ -5,6 +5,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,10 +23,13 @@
  * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 namespace VuFind\View\Helper\Root;
+
+use VuFind\RecordDriver\AbstractBase as AbstractRecord;
 
 /**
  * Record linker view helper
@@ -33,6 +37,7 @@ namespace VuFind\View\Helper\Root;
  * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -46,6 +51,20 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
     protected $router;
 
     /**
+     * Search results (optional)
+     *
+     * @var \VuFind\Search\Base\Results
+     */
+    protected $results = null;
+
+    /**
+     * Cached record URLs
+     *
+     * @var array
+     */
+    protected $cachedDriverUrls = [];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Record\Router $router Record router
@@ -53,6 +72,20 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
     public function __construct(\VuFind\Record\Router $router)
     {
         $this->router = $router;
+    }
+
+    /**
+     * Store an optional results object and return this object so that the
+     * appropriate link can be rendered.
+     *
+     * @param ?\VuFind\Search\Base\Results $results Results object.
+     *
+     * @return RecordLinker
+     */
+    public function __invoke($results = null)
+    {
+        $this->results = $results;
+        return $this;
     }
 
     /**
@@ -69,29 +102,29 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
         $urlHelper = $this->getView()->plugin('url');
         $baseUrl = $urlHelper($this->getSearchActionForSource($source));
         switch ($link['type']) {
-        case 'bib':
-            return $baseUrl
-                . '?lookfor=' . urlencode($link['value'])
-                . '&type=id&jumpto=1';
-        case 'dlc':
-            return $baseUrl
-                . '?lookfor=' . urlencode('"' . $link['value'] . '"')
-                . '&type=lccn&jumpto=1';
-        case 'isn':
-            return $baseUrl
-                . '?join=AND&bool0[]=AND&lookfor0[]=%22'
-                . urlencode($link['value'])
-                . '%22&type0[]=isn&bool1[]=NOT&lookfor1[]=%22'
-                . urlencode($link['exclude'])
-                . '%22&type1[]=id&sort=title&view=list';
-        case 'oclc':
-            return $baseUrl
-                . '?lookfor=' . urlencode($link['value'])
-                . '&type=oclc_num&jumpto=1';
-        case 'title':
-            return $baseUrl
-                . '?lookfor=' . urlencode($link['value'])
-                . '&type=title';
+            case 'bib':
+                return $baseUrl
+                    . '?lookfor=' . urlencode($link['value'])
+                    . '&type=id&jumpto=1';
+            case 'dlc':
+                return $baseUrl
+                    . '?lookfor=' . urlencode('"' . $link['value'] . '"')
+                    . '&type=lccn&jumpto=1';
+            case 'isn':
+                return $baseUrl
+                    . '?join=AND&bool0[]=AND&lookfor0[]=%22'
+                    . urlencode($link['value'])
+                    . '%22&type0[]=isn&bool1[]=NOT&lookfor1[]=%22'
+                    . urlencode($link['exclude'])
+                    . '%22&type1[]=id&sort=title&view=list';
+            case 'oclc':
+                return $baseUrl
+                    . '?lookfor=' . urlencode($link['value'])
+                    . '&type=oclc_num&jumpto=1';
+            case 'title':
+                return $baseUrl
+                    . '?lookfor=' . urlencode($link['value'])
+                    . '&type=title';
         }
         throw new \Exception('Unexpected link type: ' . $link['type']);
     }
@@ -99,19 +132,28 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
     /**
      * Given a record driver, get a URL for that record.
      *
-     * @param \VuFind\RecordDriver\AbstractBase|string $driver Record driver
-     * representing record to link to, or source|id pipe-delimited string
-     * @param string                                   $action Record
-     * action to access
+     * @param AbstractRecord|string $driver Record driver representing record to link
+     * to, or source|id pipe-delimited string
+     * @param string                $action Record action to access
+     * @param array                 $query  Optional query parameters
+     * @param string                $anchor Optional anchor
      *
      * @return string
      */
-    public function getActionUrl($driver, $action)
+    public function getActionUrl($driver, $action, $query = [], $anchor = '')
     {
         // Build the URL:
         $urlHelper = $this->getView()->plugin('url');
         $details = $this->router->getActionRouteDetails($driver, $action);
-        return $urlHelper($details['route'], $details['params'] ?: []);
+        return $urlHelper(
+            $details['route'],
+            $details['params'] ?: [],
+            [
+                'query' => $this->getRecordUrlParams() + $query,
+                'fragment' => ltrim('#', $anchor),
+                'normalize_path' => false, // required to keep slashes encoded
+            ]
+        );
     }
 
     /**
@@ -127,14 +169,13 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
         if (is_array($url)) {
             // Assemble URL string from array parts:
             $source = $url['source'] ?? DEFAULT_SEARCH_BACKEND;
-            $finalUrl
-                = $this->getActionUrl("{$source}|" . $url['record'], $url['action']);
-            if (isset($url['query'])) {
-                $finalUrl .= '?' . $url['query'];
-            }
-            if (isset($url['anchor']) && $includeAnchor) {
-                $finalUrl .= $url['anchor'];
-            }
+            parse_str($url['query'] ?? '', $query);
+            $finalUrl = $this->getActionUrl(
+                "{$source}|" . $url['record'],
+                $url['action'],
+                $query,
+                $includeAnchor ? ($url['anchor'] ?? '') : ''
+            );
         } else {
             // If URL is already a string but we don't want anchors, strip
             // the anchor now:
@@ -150,44 +191,59 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
     /**
      * Given a record driver, get a URL for that record.
      *
-     * @param \VuFind\RecordDriver\AbstractBase|string $driver Record driver
-     * representing record to link to, or source|id pipe-delimited string
-     * @param string                                   $tab    Optional record
-     * tab to access
-     * @param array                                    $query  Optional query params
+     * @param AbstractRecord|string $driver  Record driver representing record to
+     * link to, or source|id pipe-delimited string
+     * @param ?string               $tab     Optional record tab to access
+     * @param array                 $query   Optional query params
+     * @param array                 $options Any additional options:
+     * - excludeSearchId (default: false)
      *
      * @return string
      */
-    public function getTabUrl($driver, $tab = null, $query = [])
+    public function getTabUrl($driver, $tab = null, $query = [], $options = [])
     {
-        // Build the URL:
-        $urlHelper = $this->getView()->plugin('url');
-        $details = $this->router->getTabRouteDetails($driver, $tab, $query);
-        return $urlHelper(
-            $details['route'],
-            $details['params'],
-            $details['options'] ?? []
+        $driverId = is_string($driver)
+            ? $driver
+            : ($driver->getSourceIdentifier() . '|' . $driver->getUniqueID());
+        $cacheKey = md5(
+            $driverId . '|' . ($tab ?? '-') . '|' . var_export($query, true)
+            . var_export($options, true)
         );
+        if (!isset($this->cachedDriverUrls[$cacheKey])) {
+            // Build the URL:
+            $urlHelper = $this->getView()->plugin('url');
+            $details = $this->router->getTabRouteDetails($driver, $tab, $query);
+            $this->cachedDriverUrls[$cacheKey] = $urlHelper(
+                $details['route'],
+                $details['params'],
+                array_merge_recursive(
+                    $details['options'] ?? [],
+                    ['query' => $this->getRecordUrlParams($options)]
+                )
+            );
+        }
+        return $this->cachedDriverUrls[$cacheKey];
     }
 
     /**
      * Get the default URL for a record.
      *
-     * @param \VuFind\RecordDriver\AbstractBase|string $driver Record driver
-     * representing record to link to, or source|id pipe-delimited string
+     * @param AbstractRecord|string $driver  Record driver representing record to
+     * link to, or source|id pipe-delimited string
+     * @param array                 $options Any additional options:
+     * - excludeSearchId (default: false)
      *
      * @return string
      */
-    public function getUrl($driver)
+    public function getUrl($driver, $options = [])
     {
-        // Display default tab by default:
-        return $this->getTabUrl($driver);
+        return $this->getTabUrl($driver, null, [], $options);
     }
 
     /**
      * Given a record driver, generate HTML to link to the record from breadcrumbs.
      *
-     * @param \VuFind\RecordDriver\AbstractBase $driver Record to link to.
+     * @param AbstractRecord $driver Record to link to.
      *
      * @return string
      */
@@ -203,7 +259,7 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
     /**
      * Given a record driver, generate a URL to fetch all child records for it.
      *
-     * @param \VuFind\RecordDriver\AbstractBase $driver Host Record.
+     * @param AbstractRecord $driver Host Record.
      *
      * @return string
      */
@@ -220,7 +276,7 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
     /**
      * Return search URL for all versions
      *
-     * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
+     * @param AbstractRecord $driver Record driver
      *
      * @return string
      */
@@ -265,5 +321,23 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
     {
         $optionsHelper = $this->getView()->plugin('searchOptions');
         return $optionsHelper($source)->getVersionsAction();
+    }
+
+    /**
+     * Get query parameters for a record URL
+     *
+     * @param array $options Any additional options:
+     * - excludeSearchId (default: false)
+     *
+     * @return array
+     */
+    protected function getRecordUrlParams(array $options = []): array
+    {
+        if (!empty($options['excludeSearchId'])) {
+            return [];
+        }
+        $sid = ($this->results ? $this->results->getSearchId() : null)
+            ?? $this->getView()->plugin('searchMemory')->getLastSearchId();
+        return $sid ? compact('sid') : [];
     }
 }

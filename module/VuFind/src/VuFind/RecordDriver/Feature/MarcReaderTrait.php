@@ -166,12 +166,12 @@ trait MarcReaderTrait
                 ->getSubfieldArray($currentField, [$subfield], true, $separator);
             if (!empty($currentVal)) {
                 switch ($currentField['i2']) {
-                case '1':
-                    $pubResults = array_merge($pubResults, $currentVal);
-                    break;
-                case '4':
-                    $copyResults = array_merge($copyResults, $currentVal);
-                    break;
+                    case '1':
+                        $pubResults = array_merge($pubResults, $currentVal);
+                        break;
+                    case '4':
+                        $copyResults = array_merge($copyResults, $currentVal);
+                        break;
                 }
             }
         }

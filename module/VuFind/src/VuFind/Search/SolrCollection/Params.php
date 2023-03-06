@@ -67,12 +67,12 @@ class Params extends \VuFind\Search\Solr\Params
         $this->collectionID = $driver->getUniqueID();
         if ($hierarchyDriver = $driver->getHierarchyDriver()) {
             switch ($hierarchyDriver->getCollectionLinkType()) {
-            case 'All':
-                $this->collectionField = 'hierarchy_parent_id';
-                break;
-            case 'Top':
-                $this->collectionField = 'hierarchy_top_id';
-                break;
+                case 'All':
+                    $this->collectionField = 'hierarchy_parent_id';
+                    break;
+                case 'Top':
+                    $this->collectionField = 'hierarchy_top_id';
+                    break;
             }
         }
 
