@@ -51,10 +51,10 @@
   <property name="html_validator" value="" /><!-- set to base address of NU Validator (e.g. http://localhost:8888/) for HTML validation during Mink tests -->
   <property name="html_validator_fail_tests" value="1" /><!-- set to 0 to just log HTML validation errors without causing tests to fail -->
   <property name="html_validator_log_file" value="" /><!-- set to a file name to log HTML validation messages to it instead of console -->
-  <property name="phpunit_html_validation_params" value="VUFIND_HTML_VALIDATOR=${html_validator} VUFIND_HTML_VALIDATOR_FAIL_TESTS=${html_validator_fail_tests} VUFIND_HTML_VALIDATOR_LOG_FILE=${html_validator_log_file}" />
+  <property name="html_validator_quiet" value="" /><!-- set to 1 to prevent the HTML validation from outputting results to the console  -->
+  <property name="phpunit_html_validation_params" value="VUFIND_HTML_VALIDATOR=${html_validator} VUFIND_HTML_VALIDATOR_FAIL_TESTS=${html_validator_fail_tests} VUFIND_HTML_VALIDATOR_LOG_FILE=${html_validator_log_file} VUFIND_HTML_VALIDATOR_QUIET=${html_validator_quiet}" />
 
   <property name="version" value="8.1.2" />
-
 
   <!-- We only need the -p switch if the password is non-blank -->
   <if>

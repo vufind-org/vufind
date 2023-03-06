@@ -793,7 +793,7 @@ EOS
         );
         $page = $page ?? $this->session->getPage();
         $client->setFileUpload(
-            'test.html',
+            $this->session->getCurrentUrl(),
             'file',
             "<!DOCTYPE html>\n" . $page->getOuterHtml(),
             'text/html'
@@ -818,6 +818,7 @@ EOS
                 }
             }
             $logFile = getenv('VUFIND_HTML_VALIDATOR_LOG_FILE');
+            $quiet = getenv('VUFIND_HTML_VALIDATOR_QUIET');
             if ($info) {
                 $message = 'HTML validation messages for '
                     . $this->session->getCurrentUrl() . ': ' . PHP_EOL . PHP_EOL
@@ -829,7 +830,8 @@ EOS
                         date('Y-m-d H:i:s') . " $message" . PHP_EOL . PHP_EOL,
                         FILE_APPEND
                     );
-                } else {
+                }
+                if (!$quiet) {
                     $this->logWarning($message);
                 }
             }
@@ -838,16 +840,18 @@ EOS
                     . $this->session->getCurrentUrl() . ': ' . PHP_EOL . PHP_EOL
                     . implode(PHP_EOL . PHP_EOL, $errors);
 
-                if (getenv('VUFIND_HTML_VALIDATOR_FAIL_TESTS') !== '0') {
-                    throw new \RuntimeException($message);
-                } elseif ($logFile) {
+                if ($logFile) {
                     file_put_contents(
                         $logFile,
                         date('Y-m-d H:i:s') . " $message" . PHP_EOL . PHP_EOL,
                         FILE_APPEND
                     );
-                } else {
+                }
+                if (!$quiet) {
                     $this->logWarning($message);
+                }
+                if (getenv('VUFIND_HTML_VALIDATOR_FAIL_TESTS') !== '0') {
+                    throw new \RuntimeException('HTML validation failed');
                 }
             }
         }

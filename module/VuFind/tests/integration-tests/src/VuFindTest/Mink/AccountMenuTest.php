@@ -38,7 +38,6 @@ namespace VuFindTest\Mink;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  * @retry    4
- * @skip_html_validation true
  */
 final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
 {
