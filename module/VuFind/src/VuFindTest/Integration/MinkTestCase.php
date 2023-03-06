@@ -32,6 +32,7 @@ use Behat\Mink\Driver\Selenium2Driver;
 use Behat\Mink\Element\Element;
 use Behat\Mink\Session;
 use DMore\ChromeDriver\ChromeDriver;
+use PHPUnit\Util\Test;
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
@@ -753,6 +754,144 @@ EOS
     }
 
     /**
+     * Validate current page HTML if validation is enabled and a session exists
+     *
+     * @param ?Element $page Page to check (optional; uses the page from session by
+     * default)
+     *
+     * @return void
+     *
+     * @throws \RuntimeException
+     */
+    protected function validateHtml(?Element $page = null): void
+    {
+        if ((!$this->session && !$page)
+            || !($nuAddress = getenv('VUFIND_HTML_VALIDATOR'))
+        ) {
+            return;
+        }
+        $annotations = Test::parseTestMethodAnnotations(
+            static::class,
+            $this->getName(false)
+        );
+        if (($annotations['method']['skip_html_validation'][0] ?? false)
+            || ($annotations['class']['skip_html_validation'][0] ?? false)
+        ) {
+            return;
+        }
+
+        $http = new \VuFindHttp\HttpService();
+        $client = $http->createClient(
+            $nuAddress,
+            \Laminas\Http\Request::METHOD_POST
+        );
+        $client->setEncType(\Laminas\Http\Client::ENC_FORMDATA);
+        $client->setParameterPost(
+            [
+                'out' => 'json'
+            ]
+        );
+        $page = $page ?? $this->session->getPage();
+        $client->setFileUpload(
+            $this->session->getCurrentUrl(),
+            'file',
+            "<!DOCTYPE html>\n" . $page->getOuterHtml(),
+            'text/html'
+        );
+        $response = $client->send();
+        if (!$response->isSuccess()) {
+            throw new \RuntimeException(
+                'Could not validate HTML: '
+                . $response->getStatusCode() . ', '
+                . $response->getBody()
+            );
+        }
+        $result = json_decode($response->getBody(), true);
+        if (!empty($result['messages'])) {
+            $errors = [];
+            $info = [];
+            foreach ($result['messages'] as $message) {
+                if ('info' === $message['type']) {
+                    $info[] = $this->htmlValidationMsgToStr($message);
+                } else {
+                    $errors[] = $this->htmlValidationMsgToStr($message);
+                }
+            }
+            $logFile = (string)getenv('VUFIND_HTML_VALIDATOR_LOG_FILE');
+            $quiet = (bool)getenv('VUFIND_HTML_VALIDATOR_QUIET');
+            if ($info) {
+                $this->outputHtmlValidationMessages($info, 'info', $logFile, $quiet);
+            }
+            if ($errors) {
+                $this->outputHtmlValidationMessages(
+                    $errors,
+                    'error',
+                    $logFile,
+                    $quiet
+                );
+                if (getenv('VUFIND_HTML_VALIDATOR_FAIL_TESTS') !== '0') {
+                    throw new \RuntimeException('HTML validation failed');
+                }
+            }
+        }
+    }
+
+    /**
+     * Convert a NU HTML Validator message to a string
+     *
+     * @param array $message Validation message
+     *
+     * @return string
+     */
+    protected function htmlValidationMsgToStr(array $message): string
+    {
+        $result = '  [' . ($message['firstLine'] ?? $message['lastLine'] ?? 0) . ':'
+            . ($message['firstColumn'] ?? 0)
+            . '] ';
+        $stampLen = strlen($result);
+        $result .= $message['message'];
+        if (!empty($message['extract'])) {
+            $result .= PHP_EOL . str_pad('', $stampLen) . 'Extract: '
+                . $message['extract'];
+        }
+        return $result;
+    }
+
+    /**
+     * Output HTML validation messages to log file and/or console
+     *
+     * @param array  $messages Messages
+     * @param string $level    Message level (info or error)
+     * @param string $logFile  Log file name
+     * @param bool   $quiet    Whether the console output should be quiet
+     *
+     * @return void
+     */
+    protected function outputHtmlValidationMessages(
+        array $messages,
+        string $level,
+        string $logFile,
+        bool $quiet
+    ): void {
+        $fullMessage = 'HTML validation '
+            . ('info' === $level ? 'messages' : 'errors') . ' for '
+            . $this->session->getCurrentUrl() . ': ' . PHP_EOL . PHP_EOL
+            . implode(PHP_EOL . PHP_EOL, $messages);
+
+        if ($logFile) {
+            file_put_contents(
+                $logFile,
+                date('Y-m-d H:i:s') . ' [' . strtoupper($level) . "] $fullMessage"
+                . PHP_EOL . PHP_EOL,
+                FILE_APPEND
+            );
+        }
+        if (!$quiet) {
+            $this->logWarning($fullMessage);
+        }
+    }
+
+    /**
      * Standard setup method.
      *
      * @return void
@@ -808,6 +947,10 @@ EOS
 
                 file_put_contents($imageDir . '/' . $filename . '.png', $imageData);
             }
+        }
+
+        if (!$this->hasFailed()) {
+            $this->validateHtml();
         }
 
         $this->stopMinkSession();
