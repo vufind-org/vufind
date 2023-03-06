@@ -1375,8 +1375,8 @@ class Folio extends AbstractAPI implements
         ) {
             throw new ILSException('hold_date_invalid');
         }
-        $requiredBy = !empty($holdDetails['requiredByTS']) ?
-                    gmdate('Y-m-d', $holdDetails['requiredByTS']) : null;
+        $requiredBy = !empty($holdDetails['requiredByTS'])
+            ? gmdate('Y-m-d', $holdDetails['requiredByTS']) : null;
 
         $isTitleLevel = ($holdDetails['level'] ?? '') === 'title';
         if ($isTitleLevel) {
