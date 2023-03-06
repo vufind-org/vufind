@@ -1,6 +1,10 @@
 [
-    { "comment": "Initial request for token",
-      "expectedMethod": "POST"
+    { "comment": "Initial request for token"
     },
-    { "status" : 500, "method": "POST", "body": "{ \"status\": \"failure\", \"success\": false, \"errors\": [ { \"message\" : \"requestExpirationDate cannot be in the past\" } ] }" }
+    {
+        "status": 500,
+        "expectedPath": "/circulation/requests",
+        "expectedMethod": "POST",
+        "expectedParamsRegEx": "/{\"itemId\":\"record1\",\"requestType\":\"Page\",\"requesterId\":\"foo\",\"requestDate\":\".*\",\"fulfilmentPreference\":\"Hold Shelf\",\"requestExpirationDate\":\"2000-01-01\",\"pickupServicePointId\":\"desk1\"}/",
+        "body": "{ \"status\": \"failure\", \"success\": false, \"errors\": [ { \"message\" : \"requestExpirationDate cannot be in the past\" } ] }" }
 ]

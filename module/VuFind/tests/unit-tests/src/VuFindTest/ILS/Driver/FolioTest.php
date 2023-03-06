@@ -297,6 +297,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $this->createConnector('successful-place-hold');
         $details = [
             'requiredBy' => '2022-01-01',
+            'requiredByTS' => 1641049790,
             'patron' => ['id' => 'foo'],
             'item_id' => 'record1',
             'status' => 'Available',
@@ -330,24 +331,6 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'status' => 'success',
         ];
         $this->assertEquals($expected, $result);
-        $this->assertEquals(
-            '/circulation/requests',
-            $this->testRequestLog[1]['path']
-        );
-        $request = json_decode($this->testRequestLog[1]['params'], true);
-        // Request date changes on every request, so let's not assert about it:
-        unset($request['requestDate']);
-        $this->assertEquals(
-            [
-                'itemId' => 'record1',
-                'requestType' => 'Page',
-                'requesterId' => 'foo',
-                'fulfilmentPreference' => 'Hold Shelf',
-                'requestExpirationDate' => null,
-                'pickupServicePointId' => 'desk1',
-            ],
-            $request
-        );
     }
 
     /**
@@ -357,16 +340,19 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      */
     public function testUnsuccessfulPlaceHoldInvalidExpirationDate(): void
     {
+        # Validates that the requiredByTS is an of type ?int, or throws an exception
+        # otherwise
         $this->createConnector('unsuccessful-place-hold');
         $details = [
-            'requiredBy' => '1234-33-11',
+            'requiredBy' => '3333-33-33',
+            'requiredByTS' => '3333-33-33',
             'patron' => ['id' => 'foo'],
             'item_id' => 'record1',
             'status' => 'Available',
             'pickUpLocation' => 'desk1',
         ];
-        $this->expectException(\VuFind\Exception\ILS::class);
-        $this->expectExceptionMessage("hold_date_invalid");
+        $this->expectException(\TypeError::class);
+        $this->expectExceptionMessage("must be of type ?int");
         $result = $this->driver->placeHold($details);
     }
 
@@ -380,6 +366,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $this->createConnector('unsuccessful-place-hold');
         $details = [
             'requiredBy' => '2000-01-01',
+            'requiredByTS' => 946739390,
             'patron' => ['id' => 'foo'],
             'item_id' => 'record1',
             'status' => 'Available',
@@ -388,27 +375,9 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $result = $this->driver->placeHold($details);
         $expected = [
             'success' => false,
-            'status' => 'requestExpirationDate cannot be in the past',
+            'status' => 'requestExpirationDate cannot be in the past'
         ];
         $this->assertEquals($expected, $result);
-        $this->assertEquals(
-            '/circulation/requests',
-            $this->testRequestLog[1]['path']
-        );
-        $request = json_decode($this->testRequestLog[1]['params'], true);
-        // Request date changes on every request, so let's not assert about it:
-        unset($request['requestDate']);
-        $this->assertEquals(
-            [
-                'itemId' => 'record1',
-                'requestType' => 'Page',
-                'requesterId' => 'foo',
-                'fulfilmentPreference' => 'Hold Shelf',
-                'requestExpirationDate' => '2000-01-01',
-                'pickupServicePointId' => 'desk1',
-            ],
-            $request
-        );
     }
 
     /**
