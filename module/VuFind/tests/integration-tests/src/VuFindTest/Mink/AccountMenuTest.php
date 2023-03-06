@@ -334,13 +334,36 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
         $this->login();
         $storage = [
             // No fines
-            ['fines' => ['value' => 0, 'display' => 'ZILTCH']],
+            [
+                'fines' => [
+                    'total' => 0,
+                    'display' => 'ZILTCH'
+                ]
+            ],
             // Holds in transit only
-            ['holds' => ['in_transit' => 1, 'available' => 0]],
+            [
+                'holds' => [
+                    'in_transit' => 1,
+                    'available' => 0,
+                    'other' => 0
+                ]
+            ],
             // ILL Requests in transit only
-            ['illRequests' => ['in_transit' => 1, 'available' => 0]],
+            [
+                'illRequests' => [
+                    'in_transit' => 1,
+                    'available' => 0,
+                    'other' => 0
+                ]
+            ],
             // Storage Retrievals in transit only
-            ['storageRetrievalRequests' => ['in_transit' => 1, 'available' => 0]]
+            [
+                'storageRetrievalRequests' => [
+                    'in_transit' => 1,
+                    'available' => 0,
+                    'other' => 0
+                ]
+            ]
         ];
         $this->checkIcon($storage, '.account-status-none');
     }
@@ -436,7 +459,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
             [
                 [
                     'holds' => ['available' => 1],
-                    'fines' => ['value' => 0, 'display' => 'none']
+                    'fines' => ['total' => 0, 'display' => 'none']
                 ]
             ],
             '.account-status-good'

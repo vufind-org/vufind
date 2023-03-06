@@ -9,7 +9,7 @@
   ];
 ?>
 <?php if (isset($topFacetSet)): ?>
-  <?php foreach($topFacetSet as $title => $cluster): ?>
+  <?php foreach ($topFacetSet as $title => $cluster): ?>
     <?php $allowExclude = $this->recommend->excludeAllowed($title); ?>
     <div class="top-facets">
       <!--Toggle for mobile collapse -->
@@ -18,8 +18,8 @@
       <!--Regular title for non-mobile -->
       <strong class="top-title hidden-xs"><?=$topLabel ?></strong>
       <div class="collapse in" id="top_<?=$this->escapeHtml($title) ?>">
-        <div class="top-facets-contents" data-truncate="<?=$this->escapeHtmlAttr(json_encode($truncateSettings))?>">
-          <?php foreach($cluster['list'] as $index => $thisFacet): ?>
+        <div class="top-facets-contents" data-truncate="<?=$this->htmlSafeJsonEncode($truncateSettings)?>">
+          <?php foreach ($cluster['list'] as $index => $thisFacet): ?>
             <span class="facet top-facet">
               <span class="top-facet-inner">
                 <?php if ($thisFacet['isApplied']):

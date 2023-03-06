@@ -116,15 +116,15 @@ class Permission extends AbstractHelper
             ->getDeniedTemplateBehavior($context);
 
         switch ($displayLogic['action'] ?? '') {
-        case 'showMessage':
-            return $this->view->transEsc($displayLogic['value']);
-        case 'showTemplate':
-            return $this->view->context($this->view)->renderInContext(
-                $displayLogic['value'],
-                $displayLogic['params']
-            );
-        default:
-            return null;
+            case 'showMessage':
+                return $this->view->transEsc($displayLogic['value']);
+            case 'showTemplate':
+                return $this->view->context($this->view)->renderInContext(
+                    $displayLogic['value'],
+                    $displayLogic['params']
+                );
+            default:
+                return null;
         }
     }
 }

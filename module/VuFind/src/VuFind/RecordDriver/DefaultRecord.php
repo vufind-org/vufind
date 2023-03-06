@@ -66,8 +66,7 @@ class DefaultRecord extends AbstractBase
         $searchSettings = null
     ) {
         // Turn on highlighting as needed:
-        $this->highlight = !isset($searchSettings->General->highlighting)
-            ? false : $searchSettings->General->highlighting;
+        $this->highlight = $searchSettings->General->highlighting ?? false;
 
         parent::__construct($mainConfig, $recordConfig);
     }
@@ -735,11 +734,24 @@ class DefaultRecord extends AbstractBase
             return 'Article';
         } elseif (in_array('Journal', $formats)) {
             return 'Journal';
+        } elseif (strlen($this->getCleanISSN()) > 0) {
+            // If the record has an ISSN and we have not already
+            // decided it is an Article, we'll treat it as a Book
+            // if it has an ISBN and is therefore likely part of a
+            // monographic series. Otherwise, we'll treat it as a
+            // Journal.
+            // Anecdotally, some link resolvers do not return correct
+            // results when given both ISBN and ISSN for a member of a
+            // monographic series.
+            return strlen($this->getCleanISBN()) > 0 ? 'Book' : 'Journal';
         } elseif (isset($formats[0])) {
             return $formats[0];
-        } elseif (strlen($this->getCleanISSN()) > 0) {
-            return 'Journal';
         } elseif (strlen($this->getCleanISBN()) > 0) {
+            // Last ditch. Note that this is last by intention; if the
+            // record has a format set and also has an ISBN, we don't
+            // necessarily want to send the ISBN, as it may be a game
+            // or a DVD that wouldn't typically be found in OpenURL
+            // knowledgebases.
             return 'Book';
         }
         return 'UnknownFormat';
@@ -1668,25 +1680,25 @@ class DefaultRecord extends AbstractBase
         $types = [];
         foreach ($this->getFormats() as $format) {
             switch ($format) {
-            case 'Book':
-            case 'eBook':
-                $types['Book'] = 1;
-                break;
-            case 'Video':
-            case 'VHS':
-                $types['Movie'] = 1;
-                break;
-            case 'Photo':
-                $types['Photograph'] = 1;
-                break;
-            case 'Map':
-                $types['Map'] = 1;
-                break;
-            case 'Audio':
-                $types['MusicAlbum'] = 1;
-                break;
-            default:
-                $types['CreativeWork'] = 1;
+                case 'Book':
+                case 'eBook':
+                    $types['Book'] = 1;
+                    break;
+                case 'Video':
+                case 'VHS':
+                    $types['Movie'] = 1;
+                    break;
+                case 'Photo':
+                    $types['Photograph'] = 1;
+                    break;
+                case 'Map':
+                    $types['Map'] = 1;
+                    break;
+                case 'Audio':
+                    $types['MusicAlbum'] = 1;
+                    break;
+                default:
+                    $types['CreativeWork'] = 1;
             }
         }
         return array_keys($types);

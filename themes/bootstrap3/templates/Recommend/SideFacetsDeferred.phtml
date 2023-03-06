@@ -68,7 +68,8 @@
 <?php $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions() ?>
 <?php if (!empty($activeFacets) && $results->getResultTotal() > 0): ?>
   <?php foreach ($activeFacets as $field => $facetName): ?>
-    <div class="facet-group" id="side-panel-<?=$this->escapeHtmlAttr($field) ?>">
+    <?php // Data-title attribute is for analytics use.  Do not remove. ?>
+    <div class="facet-group" id="side-panel-<?=$this->escapeHtmlAttr($field) ?>" data-title="<?=$this->escapeHtmlAttr($facetName) ?>">
       <button class="title<?php if (in_array($field, $collapsedFacets)): ?> collapsed<?php endif ?>" data-toggle="collapse" data-target="#side-collapse-<?=$this->escapeHtmlAttr($field) ?>" >
         <?=$this->transEsc($facetName)?>
       </button>

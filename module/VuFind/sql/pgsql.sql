@@ -95,7 +95,7 @@ session_id varchar(128),
 folder_id int DEFAULT NULL,
 created timestamp NOT NULL DEFAULT '1970-01-01 00:00:00',
 title varchar(20) DEFAULT NULL,
-saved int NOT NULL DEFAULT '0',
+saved boolean NOT NULL DEFAULT '0',
 search_object bytea,
 checksum int DEFAULT NULL,
 notification_frequency int NOT NULL DEFAULT '0',
@@ -192,7 +192,7 @@ user_id int NOT NULL,
 title varchar(200) NOT NULL,
 description text DEFAULT NULL,
 created timestamp NOT NULL DEFAULT '1970-01-01 00:00:00',
-public int NOT NULL DEFAULT '0',
+public boolean NOT NULL DEFAULT '0',
 PRIMARY KEY (id)
 );
 CREATE INDEX user_list_user_id_idx ON user_list (user_id);

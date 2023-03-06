@@ -65,6 +65,14 @@
 #
 #     Help texts may contain HTML-formatting.
 #
+#   prefillFields (array) Fields that could be prefilled by passing parameter to form URL. Could be
+#                         used only with hidden, text and textarea types.
+#                         Example:
+#                           prefillFields:
+#                             - siteCode
+#                          With configured field 'siteCode' enables prefilling the field with
+#                          /Feedback/Form/FeedbackSite?siteCode=website
+#
 #   fields (array) List of form elements with the following options:
 #
 #     name (string)        Element name (see below for reserved element names)
@@ -150,7 +158,7 @@ forms:
   # Main Feedback form
 
   FeedbackSite:
-    title: Send us your feedback!
+    title: feedback_title
     enabled: true
     useCaptcha: true
     reportReferrer: false
@@ -163,7 +171,7 @@ forms:
     primaryHandler: email
     onlyForLoggedUsers: false
     #emailSubject: VuFind Feedback
-    response: Thank you for your feedback.
+    response: feedback_response
     senderEmailRequired: false
     senderNameRequired: false
 
@@ -186,7 +194,7 @@ forms:
     title: Acquisition Request
     onlyForLoggedUsers: false
     emailSubject: Acquisition Request
-    response: Thank you for your feedback.
+    response: feedback_response
     primaryHandler: email
 
     recipient:
@@ -246,7 +254,7 @@ forms:
 
       - name: boolean
         type: radio
-        label: Need Help?
+        label: feedback_help_label
         required: true
         options:
           - Yes

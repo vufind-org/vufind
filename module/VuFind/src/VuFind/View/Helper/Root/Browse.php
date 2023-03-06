@@ -51,24 +51,24 @@ class Browse extends AbstractHelper
     public function getSolrField($action, $backup = null)
     {
         $action = strtolower($action);
-        $backup = strtolower($backup);
+        $backup = strtolower($backup ?? '');
         switch ($action) {
-        case 'dewey':
-            return 'dewey-hundreds';
-        case 'lcc':
-            return 'callnumber-first';
-        case 'author':
-            return 'author_facet';
-        case 'topic':
-            return 'topic_facet';
-        case 'genre':
-            return 'genre_facet';
-        case 'region':
-            return 'geographic_facet';
-        case 'era':
-            return 'era_facet';
+            case 'dewey':
+                return 'dewey-hundreds';
+            case 'lcc':
+                return 'callnumber-first';
+            case 'author':
+                return 'author_facet';
+            case 'topic':
+                return 'topic_facet';
+            case 'genre':
+                return 'genre_facet';
+            case 'region':
+                return 'geographic_facet';
+            case 'era':
+                return 'era_facet';
         }
-        if ($backup == null) {
+        if (empty($backup)) {
             return $action;
         }
         return $this->getSolrField($backup);

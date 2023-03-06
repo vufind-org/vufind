@@ -668,7 +668,7 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface,
         }
 
         // Validate CSRF for form-based authentication methods:
-        if (!$this->getAuth()->getSessionInitiator(null)
+        if (!$this->getAuth()->getSessionInitiator('')
             && $this->getAuth()->needsCsrfCheck($request)
         ) {
             if (!$this->csrf->isValid($request->getPost()->get('csrf'))) {
@@ -834,11 +834,11 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface,
     {
         // Convert 'numeric' or 'alphanumeric' pattern to a regular expression:
         switch ($policy['pattern'] ?? '') {
-        case 'numeric':
-            $policy['pattern'] = '\d+';
-            break;
-        case 'alphanumeric':
-            $policy['pattern'] = '[\da-zA-Z]+';
+            case 'numeric':
+                $policy['pattern'] = '\d+';
+                break;
+            case 'alphanumeric':
+                $policy['pattern'] = '[\da-zA-Z]+';
         }
 
         // Map settings to attributes for a text input field:

@@ -106,20 +106,20 @@ abstract class Base
         if (is_array($settings)) {
             foreach ($settings as $key => $value) {
                 switch ($key) {
-                case 'api_url':
-                    $this->edsApiHost = $value;
-                    break;
-                case 'auth_url':
-                    $this->authHost = $value;
-                    break;
-                case 'debug':
-                    $this->debug = $value;
-                    break;
-                case 'orgid':
-                    $this->orgId = $value;
-                    break;
-                case 'search_http_method':
-                    $this->searchHttpMethod = $value;
+                    case 'api_url':
+                        $this->edsApiHost = $value;
+                        break;
+                    case 'auth_url':
+                        $this->authHost = $value;
+                        break;
+                    case 'debug':
+                        $this->debug = $value;
+                        break;
+                    case 'orgid':
+                        $this->orgId = $value;
+                        break;
+                    case 'search_http_method':
+                        $this->searchHttpMethod = $value;
                 }
             }
         }

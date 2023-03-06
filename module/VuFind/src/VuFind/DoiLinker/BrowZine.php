@@ -96,11 +96,11 @@ class BrowZine implements DoiLinkerInterface, TranslatorAwareInterface
             return false;
         }
         switch (strtolower(trim($this->config['filterType'] ?? 'none'))) {
-        case 'include':
-            return in_array($key, (array)($this->config['filter'] ?? []));
-        case 'exclude':
-            return !in_array($key, (array)($this->config['filter'] ?? []));
-        default:
+            case 'include':
+                return in_array($key, (array)($this->config['filter'] ?? []));
+            case 'exclude':
+                return !in_array($key, (array)($this->config['filter'] ?? []));
+            default:
         }
         // If we got this far, no filter setting is applied, so the option is legal:
         return true;
@@ -110,7 +110,8 @@ class BrowZine implements DoiLinkerInterface, TranslatorAwareInterface
      * Given an array of DOIs, perform a lookup and return an associative array
      * of arrays, keyed by DOI. Each array contains one or more associative arrays
      * with required 'link' (URL to related resource) and 'label' (display text)
-     * keys and an optional 'icon' (URL to icon graphic) key.
+     * keys and an optional 'icon' (URL to icon graphic) or localIcon (name of
+     * configured icon in theme) key.
      *
      * @param array $doiArray DOIs to look up
      *

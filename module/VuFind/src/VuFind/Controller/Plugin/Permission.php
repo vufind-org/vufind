@@ -136,38 +136,38 @@ class Permission extends AbstractPlugin implements LoggerAwareInterface,
             }
             $exceptionDescription = $dl['exceptionMessage'] ?? 'Access denied.';
             switch (strtolower($dl['action'])) {
-            case 'promptlogin':
-                // If the user is already logged in, but we're getting a "prompt
-                // login" denied permission requirement, there is probably a
-                // configuration error somewhere; throw an exception rather than
-                // triggering an infinite login redirection loop.
-                if ($this->authManager->isLoggedIn()) {
-                    throw new ForbiddenException(
-                        'Trying to prompt login due to denied ' . $permission
-                        . ' permission, but a user is already logged in; '
-                        . 'possible configuration problem in permissions.ini.'
+                case 'promptlogin':
+                    // If the user is already logged in, but we're getting a "prompt
+                    // login" denied permission requirement, there is probably a
+                    // configuration error somewhere; throw an exception rather than
+                    // triggering an infinite login redirection loop.
+                    if ($this->authManager->isLoggedIn()) {
+                        throw new ForbiddenException(
+                            'Trying to prompt login due to denied ' . $permission
+                            . ' permission, but a user is already logged in; '
+                            . 'possible configuration problem in permissions.ini.'
+                        );
+                    }
+                    $msg = empty($dl['value']) ? null : $dl['value'];
+                    return $this->getController()->forceLogin($msg, [], false);
+                case 'showmessage':
+                    return $this->getController()->redirect()->toRoute(
+                        'error-permissiondenied',
+                        [],
+                        ['query' => ['msg' => $dl['value']]]
                     );
-                }
-                $msg = empty($dl['value']) ? null : $dl['value'];
-                return $this->getController()->forceLogin($msg, [], false);
-            case 'showmessage':
-                return $this->getController()->redirect()->toRoute(
-                    'error-permissiondenied',
-                    [],
-                    ['query' => ['msg' => $dl['value']]]
-                );
-            case 'exception':
-                $exceptionClass
-                    = (isset($dl['value']) && class_exists($dl['value']))
-                    ? $dl['value'] : 'VuFind\Exception\Forbidden';
-                $exception = new $exceptionClass($exceptionDescription);
-                if ($exception instanceof \Exception) {
-                    throw $exception;
-                }
-                $this->logError("Permission configuration problem.");
-                throw new \Exception("$exceptionClass is not an exception!");
-            default:
-                throw new ForbiddenException($exceptionDescription);
+                case 'exception':
+                    $exceptionClass
+                        = (isset($dl['value']) && class_exists($dl['value']))
+                        ? $dl['value'] : 'VuFind\Exception\Forbidden';
+                    $exception = new $exceptionClass($exceptionDescription);
+                    if ($exception instanceof \Exception) {
+                        throw $exception;
+                    }
+                    $this->logError("Permission configuration problem.");
+                    throw new \Exception("$exceptionClass is not an exception!");
+                default:
+                    throw new ForbiddenException($exceptionDescription);
             }
         }
         return null;

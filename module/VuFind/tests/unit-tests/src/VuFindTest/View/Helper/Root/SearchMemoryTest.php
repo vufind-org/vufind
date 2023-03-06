@@ -72,7 +72,7 @@ class SearchMemoryTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $memory->expects($this->once())->method('retrieveSearch')
             ->will($this->returnValue($lastSearchUrl));
-        $helper = new SearchMemory($memory);
+        $helper = $this->getSearchMemoryViewHelper($memory);
         $url = $this->getMockBuilder(Url::class)
             ->disableOriginalConstructor()
             ->getMock();
