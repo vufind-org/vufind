@@ -256,4 +256,14 @@ class User implements EntityInterface
      * @ORM\Column(name="last_language", type="string", length=30, nullable=false)
      */
     protected $lastLanguage = '';
+
+    /**
+     * Id getter
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 }

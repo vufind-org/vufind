@@ -7,6 +7,7 @@ declare(strict_types=1);
  * PHP version 7
  *
  * Copyright (C) Moravian Library 2022.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -75,6 +76,7 @@ class DatabaseFactory implements FactoryInterface
         $baseUrl = $serverUrl($router->assemble([], ['name' => 'home']));
         return new $requestedName(
             $dbServiceManager->get(\VuFind\Db\Service\FeedbackService::class),
+            $dbServiceManager->get(\VuFind\Db\Service\UserService::class),
             $baseUrl
         );
     }

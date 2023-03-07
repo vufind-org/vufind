@@ -79,7 +79,7 @@ class Feedback implements EntityInterface
     /**
      * Form data
      *
-     * @var string
+     * @var mixed
      *
      * @ORM\Column(name="form_data",
      *          type="json",
@@ -182,6 +182,16 @@ class Feedback implements EntityInterface
     protected $updatedBy;
 
     /**
+     * Id getter
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
      * Message setter
      *
      * @param string $message Message
@@ -195,16 +205,36 @@ class Feedback implements EntityInterface
     }
 
     /**
+     * Message getter
+     *
+     * @return string
+     */
+    public function getMessage()
+    {
+        return $this->message;
+    }
+
+    /**
      * Form data setter.
      *
-     * @param string $data Form data
+     * @param mixed $data Form data
      *
      * @return Feedback
      */
-    public function setFormData(string $data): Feedback
+    public function setFormData($data): Feedback
     {
         $this->formData = $data;
         return $this;
+    }
+
+    /**
+     * Form data getter
+     *
+     * @return mixed
+     */
+    public function getFormData()
+    {
+        return $this->formData;
     }
 
     /**
@@ -221,6 +251,16 @@ class Feedback implements EntityInterface
     }
 
     /**
+     * Form name getter
+     *
+     * @return string
+     */
+    public function getFormName()
+    {
+        return $this->formName;
+    }
+
+    /**
      * Created setter.
      *
      * @param Datetime $dateTime Created date
@@ -231,6 +271,16 @@ class Feedback implements EntityInterface
     {
         $this->created = $dateTime;
         return $this;
+    }
+
+    /**
+     * Created getter
+     *
+     * @return Datetime
+     */
+    public function getCreated()
+    {
+        return $this->created;
     }
 
     /**
@@ -247,6 +297,16 @@ class Feedback implements EntityInterface
     }
 
     /**
+     * Updated getter
+     *
+     * @return Datetime
+     */
+    public function getUpdated()
+    {
+        return $this->updated;
+    }
+
+    /**
      * Status setter.
      *
      * @param string $status Status
@@ -257,6 +317,16 @@ class Feedback implements EntityInterface
     {
         $this->status = $status;
         return $this;
+    }
+
+    /**
+     * Status getter
+     *
+     * @return string
+     */
+    public function getStatus()
+    {
+        return $this->status;
     }
 
     /**
@@ -273,6 +343,16 @@ class Feedback implements EntityInterface
     }
 
     /**
+     * Site URL getter
+     *
+     * @return string
+     */
+    public function getSiteUrl()
+    {
+        return $this->siteUrl;
+    }
+
+    /**
      * User setter.
      *
      * @param User $user User that created request
@@ -286,6 +366,16 @@ class Feedback implements EntityInterface
     }
 
     /**
+     * User getter
+     *
+     * @return User
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
      * Updatedby setter.
      *
      * @param User $user User that updated request
@@ -296,5 +386,15 @@ class Feedback implements EntityInterface
     {
         $this->updatedBy = $user;
         return $this;
+    }
+
+    /**
+     * Updatedby getter
+     *
+     * @return User
+     */
+    public function getUpdatedBy()
+    {
+        return $this->updatedBy;
     }
 }

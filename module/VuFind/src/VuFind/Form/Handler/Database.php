@@ -7,6 +7,7 @@ declare(strict_types=1);
  * PHP version 8
  *
  * Copyright (C) Moravian Library 2022.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -50,7 +51,14 @@ class Database implements HandlerInterface, LoggerAwareInterface
      *
      * @var \VuFind\Db\Service\FeedbackService
      */
-    protected $db;
+    protected $feedbackService;
+
+    /**
+     * User database service
+     *
+     * @var \VuFind\Db\Service\UserService
+     */
+    protected $userService;
 
     /**
      * Site base url
@@ -62,14 +70,17 @@ class Database implements HandlerInterface, LoggerAwareInterface
     /**
      * Constructor
      *
-     * @param \VuFind\Db\Service\FeedbackService $db      Feedback database service
+     * @param \VuFind\Db\Service\FeedbackService $fs      Feedback database service
+     * @param \VuFind\Db\Service\UserService     $us      User database service
      * @param string                             $baseUrl Site base url
      */
     public function __construct(
-        \VuFind\Db\Service\FeedbackService $db,
+        \VuFind\Db\Service\FeedbackService $fs,
+        \VuFind\Db\Service\UserService $us,
         string $baseUrl
     ) {
-        $this->db = $db;
+        $this->feedbackService = $fs;
+        $this->userService = $us;
         $this->baseUrl = $baseUrl;
     }
 
@@ -89,20 +100,25 @@ class Database implements HandlerInterface, LoggerAwareInterface
     ): bool {
         $fields = $form->mapRequestParamsToFieldValues($params->fromPost());
         $fields = array_column($fields, 'value', 'name');
-
+        // Backward compatibility: convert Laminas\Db to Doctrine;
+        // we can simplify after completing migration.
+        $userVal = null;
+        if ($user) {
+            $userVal = $this->userService->getUserById($user->id);
+        }
         $formData = $fields;
         unset($formData['message']);
         $now = new \DateTime();
-        $data = $this->db->createEntity()
-            ->setUser($user)
+        $data = $this->feedbackService->createEntity()
+            ->setUser($userVal)
             ->setMessage($fields['message'] ?? '')
-            ->setFormData(json_encode($formData))
+            ->setFormData($formData)
             ->setFormName($form->getFormId())
             ->setSiteUrl($this->baseUrl)
             ->setCreated($now)
             ->setUpdated($now);
         try {
-            $this->db->persistEntity($data);
+            $this->feedbackService->persistEntity($data);
         } catch (\Exception $e) {
             throw $e;
             $this->logError('Could not save feedback data: ' . $e->getMessage());

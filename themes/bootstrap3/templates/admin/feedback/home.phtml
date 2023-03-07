@@ -72,30 +72,30 @@ $this->headTitle($this->translate('VuFind Administration - Feedback Management')
         </tr>
         <?php foreach ($this->feedback as $feedbackItem): ?>
           <?php
-            $data = json_decode($feedbackItem->form_data, true);
+            $data = $feedbackItem[0]->getFormData();
           ?>
           <tr>
             <td>
-              <input id="checkbox_<?=$this->escapeHtmlAttr($feedbackItem->id)?>" type="checkbox" name="ids[]" value="<?=$this->escapeHtmlAttr($feedbackItem->id)?>" class="checkbox_ui"/>
-              <input type="hidden" name="idsAll[]" value="<?=$this->escapeHtmlAttr($feedbackItem->id)?>" />
-              <?=$this->escapeHtml($feedbackItem->form_name)?>
+              <input id="checkbox_<?=$this->escapeHtmlAttr($feedbackItem[0]->getId())?>" type="checkbox" name="ids[]" value="<?=$this->escapeHtmlAttr($feedbackItem[0]->getId())?>" class="checkbox_ui"/>
+              <input type="hidden" name="idsAll[]" value="<?=$this->escapeHtmlAttr($feedbackItem[0]->getId())?>" />
+              <?=$this->escapeHtml($feedbackItem[0]->getFormName())?>
             </td>
-            <td><?=$this->escapeHtml($feedbackItem->site_url)?></td>
+            <td><?=$this->escapeHtml($feedbackItem[0]->getSiteUrl())?></td>
             <td>
-              <span id="shortMessage_<?=$this->escapeHtmlAttr($feedbackItem->id)?>" class="collapse in message_<?=$this->escapeHtmlAttr($feedbackItem->id)?>"><?=$this->truncate($feedbackItem->message, 100, '')?></span>
-              <?php if (strlen(($feedbackItem->message)) > 100): ?>
-                <span id="fullMessage_<?=$this->escapeHtmlAttr($feedbackItem->id)?>" class="collapse fullMessage message_<?=$this->escapeHtmlAttr($feedbackItem->id)?>"><?=$feedbackItem->message?></span>
-                <a id="toggleButton_<?=$this->escapeHtmlAttr($feedbackItem->id)?>" data-toggle="collapse" data-target=".message_<?=$this->escapeHtmlAttr($feedbackItem->id)?>" aria-controls="fullMessage_<?=$this->escapeHtmlAttr($feedbackItem->id)?>" aria-expanded="false" >
+              <span id="shortMessage_<?=$this->escapeHtmlAttr($feedbackItem[0]->getId())?>" class="collapse in message_<?=$this->escapeHtmlAttr($feedbackItem[0]->getId())?>"><?=$this->truncate($feedbackItem[0]->getMessage(), 100, '')?></span>
+              <?php if (strlen(($feedbackItem[0]->getMessage())) > 100): ?>
+                <span id="fullMessage_<?=$this->escapeHtmlAttr($feedbackItem[0]->getId())?>" class="collapse fullMessage message_<?=$this->escapeHtmlAttr($feedbackItem[0]->getId())?>"><?=$feedbackItem[0]->getMessage()?></span>
+                <a id="toggleButton_<?=$this->escapeHtmlAttr($feedbackItem[0]->getId())?>" data-toggle="collapse" data-target=".message_<?=$this->escapeHtmlAttr($feedbackItem[0]->getId())?>" aria-controls="fullMessage_<?=$this->escapeHtmlAttr($feedbackItem[0]->getId())?>" aria-expanded="false" >
                   <?=$this->transEsc('more_ellipsis')?>
                 </a>
               <?php endif; ?>
             </td>
             <td>
               <?php if (!empty($data)): ?>
-                <a href="#" class="btn btn-default btn-info" data-toggle="modal" data-target="#feedback-<?=$feedbackItem->id?>">
+                <a href="#" class="btn btn-default btn-info" data-toggle="modal" data-target="#feedback-<?=$feedbackItem[0]->getId()?>">
                   <?=$this->transEsc('Show')?>
                 </a>
-                <div class="modal" id="feedback-<?=$feedbackItem->id?>" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal" id="feedback-<?=$feedbackItem[0]->getId()?>" tabindex="-1" role="dialog" aria-hidden="true">
                   <div class="modal-dialog">
                     <div class="modal-content">
                       <div class="modal-header">
@@ -109,12 +109,12 @@ $this->headTitle($this->translate('VuFind Administration - Feedback Management')
                           <strong><?=$this->escapeHtml($key)?></strong>: <?=$this->escapeHtml($value)?><br>
                         <?php endforeach; ?>
                         <strong><?=$this->transEsc('Created')?></strong>:
-                        <?=$this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime('Y-m-d H:i:s', $feedbackItem->created))?>
-                        <?=$feedbackItem->user_name ? (' ' . $this->transEsc('by') . ' ' . $this->escapeHtml($feedbackItem->user_name) . ' (' . $feedbackItem->user_id . ')'): ''?>
+                        <?=$this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime('Y-m-d H:i:s', $feedbackItem[0]->getCreated()->format('Y-m-d H:i:s')))?>
+                        <?=$feedbackItem['user_name'] ? (' ' . $this->transEsc('by') . ' ' . $this->escapeHtml($feedbackItem['user_name']) . ' (' . $feedbackItem[0]->getUser()->getId() . ')'): ''?>
                         <br>
                         <strong><?=$this->transEsc('Updated')?></strong>:
-                        <?=$this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime('Y-m-d H:i:s', $feedbackItem->updated))?>
-                        <?=$feedbackItem->manager_name ? (' ' . $this->transEsc('by') . ' ' . $this->escapeHtml($feedbackItem->manager_name) . ' (' . $feedbackItem->updated_by . ')') : ''?>
+                        <?=$this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime('Y-m-d H:i:s', $feedbackItem[0]->getUpdated()->format('Y-m-d H:i:s')))?>
+                        <?=$feedbackItem['manager_name'] ? (' ' . $this->transEsc('by') . ' ' . $this->escapeHtml($feedbackItem['manager_name']) . ' (' . $feedbackItem[0]->getUpdatedBy() . ')') : ''?>
                       </div>
                     </div>
                   </div>
@@ -123,7 +123,7 @@ $this->headTitle($this->translate('VuFind Administration - Feedback Management')
             <td>
               <select class="form-control status_update" name="status_update">
                 <?php foreach ($this->statuses as $status): ?>
-                  <option value="<?=$this->escapeHtmlAttr($status)?>"<?=$status == $feedbackItem->status ? ' selected="selected"' : ''?>>
+                  <option value="<?=$this->escapeHtmlAttr($status)?>"<?=$status == $feedbackItem[0]->getStatus() ? ' selected="selected"' : ''?>>
                     <?=$this->transEsc('feedback_status_' . $status, [], $status)?>
                   </option>
                 <?php endforeach; ?>

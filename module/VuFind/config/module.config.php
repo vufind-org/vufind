@@ -563,6 +563,7 @@ $config = [
                 'result_cache' => 'filesystem',
                 'metadata_cache' => 'filesystem',
                 'hydration_cache' => 'filesystem',
+                'proxy_dir' => LOCAL_CACHE_DIR . '/doctrine-proxies',
             ],
         ],
         'driver' => [
