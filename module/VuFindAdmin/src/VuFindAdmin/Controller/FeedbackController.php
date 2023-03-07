@@ -70,7 +70,8 @@ class FeedbackController extends AbstractAdmin
         $feedback = $feedbackTable->getFeedbackByFilter(
             $this->convertFilter($this->getParam('form_name')),
             $this->convertFilter($this->getParam('site_url')),
-            $this->convertFilter($this->getParam('status'))
+            $this->convertFilter($this->getParam('status')),
+            $this->getParam('page')
         );
         $view = $this->createViewModel(
             [
