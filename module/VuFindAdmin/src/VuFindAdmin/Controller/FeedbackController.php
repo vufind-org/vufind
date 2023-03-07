@@ -233,11 +233,13 @@ class FeedbackController extends AbstractAdmin
             'admin/feedback',
             [],
             [
-                'query' => [
-                    'form_name' => $this->getParam('form_name'),
-                    'site_url' => $this->getParam('site_url'),
-                    'status' => $this->getParam('status'),
-                ],
+                'query' => array_filter(
+                    [
+                        'form_name' => $this->getParam('form_name'),
+                        'site_url' => $this->getParam('site_url'),
+                        'status' => $this->getParam('status'),
+                    ]
+                ),
             ]
         );
     }
