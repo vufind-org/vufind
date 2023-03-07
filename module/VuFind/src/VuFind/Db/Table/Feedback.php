@@ -114,6 +114,7 @@ class Feedback extends Gateway
             $select::JOIN_LEFT
         )->order('created DESC');
 
+        $page = null === $page ? null : intval($page);
         if (null !== $page) {
             $select->limit($limit);
             $select->offset($limit * ($page - 1));
