@@ -282,6 +282,51 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
+     * Return all ISBNs found in the record.
+     *
+     * @param string $mode          Mode for returning ISBNs:
+     *  - 'only10' returns only ISBN-10s
+     *  - 'prefer10' returns ISBN-10s if available, otherwise ISBN-13s (default)
+     *  - 'normalize13' returns ISBN-13s, normalizing ISBN-10s to ISBN-13s
+     * @param bool   $filterInvalid Whether to filter out invalid ISBNs
+     *
+     * @return array
+     */
+    public function getCleanISBNs(
+        string $mode = 'prefer10',
+        bool $filterInvalid = true
+    ): array {
+        $isbns = $this->getISBNs();
+        $all = $tens = $thirteens = $invalid = [];
+        foreach ($isbns as $isbn) {
+            // Strip off any unwanted notes:
+            if ($pos = strpos($isbn, ' ')) {
+                $isbn = substr($isbn, 0, $pos);
+            }
+            $isbnObj = new ISBN($isbn);
+            if ($isbnObj->isValid()) {
+                if ($isbn10 = $isbnObj->get10()) {
+                    $normalized
+                        = $mode === 'normalize13' ? $isbnObj->get13() : $isbn10;
+                    $tens[] = $normalized;
+                    $all[] = $normalized;
+                } elseif ($isbn13 = $isbnObj->get13()) {
+                    $thirteens[] = $isbn13;
+                    $all[] = $isbn13;
+                }
+            } elseif (!$filterInvalid) {
+                $invalid[] = $isbn;
+                $all[] = $isbn;
+            }
+        }
+        if ($mode === 'only10') {
+            return array_merge($tens, $invalid);
+        }
+        return $mode === 'prefer10'
+            ? array_merge($tens, $thirteens, $invalid) : $all;
+    }
+
+    /**
      * Get just the base portion of the first listed ISSN (or false if no ISSNs).
      *
      * @return mixed
@@ -1235,8 +1280,9 @@ class DefaultRecord extends AbstractBase
             'recordid'   => $this->getUniqueID(),
             'source'   => $this->getSourceIdentifier(),
         ];
-        if ($isbn = $this->getCleanISBN()) {
-            $arr['isbn'] = $isbn;
+        $isbns = $this->getCleanISBNs();
+        if (!empty($isbns)) {
+            $arr['isbns'] = $isbns;
         }
         if ($issn = $this->getCleanISSN()) {
             $arr['issn'] = $issn;
