@@ -519,7 +519,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetCleanISBNs($result, $mode,  $filterInvalid)
+    public function testGetCleanISBNs($result, $mode, $filterInvalid)
     {
         $this->assertEquals($result, $this->getDriver()->getCleanISBNs($mode, $filterInvalid));
     }

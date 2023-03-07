@@ -284,11 +284,11 @@ class DefaultRecord extends AbstractBase
     /**
      * Return all ISBNs found in the record.
      *
-     * @param string $mode Mode
+     * @param string $mode          Mode for returning ISBNs:
      *  - 'only10' returns only ISBN-10s
      *  - 'prefer10' returns ISBN-10s if available, otherwise ISBN-13s (default)
      *  - 'normalize13' returns ISBN-13s, normalizing ISBN-10s to ISBN-13s
-     * @param bool $filterInvalid Whether to filter out invalid ISBNs
+     * @param bool   $filterInvalid Whether to filter out invalid ISBNs
      *
      * @return array
      */
@@ -322,7 +322,8 @@ class DefaultRecord extends AbstractBase
         if ($mode === 'only10') {
             return array_merge($tens, $invalid);
         }
-        return $mode === 'prefer10' ? array_merge($tens, $thirteens, $invalid) : $all;
+        return $mode === 'prefer10'
+            ? array_merge($tens, $thirteens, $invalid) : $all;
     }
 
     /**
