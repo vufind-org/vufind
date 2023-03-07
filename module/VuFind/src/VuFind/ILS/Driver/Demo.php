@@ -597,6 +597,9 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 $currentItem['cancel_details'] = $currentItem['updateDetails']
                     = (!$currentItem['available'] && !$currentItem['in_transit'])
                     ? $currentItem['reqnum'] : '';
+                if (rand(0, 3) === 1) {
+                    $currentItem['proxiedBy'] = 'Fictional Proxy User';
+                }
             } else {
                 $status = rand() % 5;
                 $currentItem['available'] = $status == 1;
@@ -2065,6 +2068,11 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             $frozenThrough = '';
         }
         $reqNum = sprintf('%06d', $nextId);
+        $proxiedFor = null;
+        if (!empty($holdDetails['proxiedUser'])) {
+            $proxies = $this->getProxiedUsers($holdDetails['patron']);
+            $proxiedFor = $proxies[$holdDetails['proxiedUser']];
+        }
         $session->holds->append(
             [
                 'id'       => $holdDetails['record_id'],
@@ -2082,6 +2090,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 'frozenThrough' => $frozenThrough,
                 'updateDetails' => $reqNum,
                 'cancel_details' => $reqNum,
+                'proxiedFor' => $proxiedFor,
             ]
         );
 
@@ -2665,5 +2674,20 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     {
         // This is similar to getRecentlyReturnedBibs for demo purposes.
         return $this->getRecentlyReturnedBibs($limit, $maxage, $patron);
+    }
+
+    /**
+     * Get list of users for whom the provided patron is a proxy.
+     *
+     * This requires the FOLIO user configured in Folio.ini to have the permission:
+     * proxiesfor.collection.get
+     *
+     * @param array $patron The patron array with username and password
+     *
+     * @return array
+     */
+    public function getProxiedUsers(array $patron): array
+    {
+        return $this->config['ProxiedUsers'] ?? [];
     }
 }

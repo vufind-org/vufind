@@ -6,7 +6,7 @@
     "comment": "User with 1 hold, hold is available for pickup until 2022-12-29T05:59:59.000+00:00",
     "expectedPath": "/request-storage/requests",
     "expectedParams": {
-      "query": "((requesterId == \"foo\" or proxyUserId == \"foo\") and status == Open*)",
+      "query": "((requesterId == \"bar\" or proxyUserId == \"bar\") and status == Open*)",
       "offset": 0,
       "limit": 1000
     },

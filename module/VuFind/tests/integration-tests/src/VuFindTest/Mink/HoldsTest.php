@@ -756,6 +756,45 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test placing a hold for a proxy user
+     *
+     * @depends testPlaceHoldWithoutPickUpLocations
+     *
+     * @return void
+     */
+    public function testPlaceHoldForProxyUser(): void
+    {
+        $demoConfig = $this->getDemoIniOverrides();
+        $demoConfig['ProxiedUsers'] = [
+            'user1' => 'Proxy User 1',
+            'user2' => 'Proxy User 2'
+        ];
+        $this->changeConfigs(
+            [
+                'config' => $this->getConfigIniOverrides(),
+                'Demo' => $demoConfig,
+            ]
+        );
+
+        // Create account and log in the user on the record page:
+        $page = $this->gotoRecordById();
+        $element = $this->findCss($page, '.alert.alert-info a');
+        $this->assertEquals('Login for hold and recall information', $element->getText());
+        $element->click();
+        $this->fillInLoginForm($page, 'username3', 'test');
+        $this->submitLoginForm($page);
+
+        // Place the hold with the proxy user:
+        $this->placeHoldAndGoToHoldsScreen($page, ['#proxiedUser' => 'user2']);
+
+        // Make sure the item shows the appropriate proxy user:
+        $this->assertEquals(
+            'Proxy User 2',
+            $this->findCss($page, '.hold-proxied-for')->getText()
+        );
+    }
+
+    /**
      * Retry cleanup method in case of failure during testHoldsAll.
      *
      * @return void
