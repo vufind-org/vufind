@@ -1370,14 +1370,14 @@ class Folio extends AbstractAPI implements
     public function placeHold($holdDetails)
     {
         $default_request = $this->config['Holds']['default_request'] ?? 'Hold';
-        try {
-            $requiredBy = $this->dateConverter->convertFromDisplayDate(
-                'Y-m-d',
-                $holdDetails['requiredBy']
-            );
-        } catch (Exception $e) {
-            $this->throwAsIlsException($e, 'hold_date_invalid');
+        if (!empty($holdDetails['requiredByTS'])
+            && !is_int($holdDetails['requiredByTS'])
+        ) {
+            throw new ILSException('hold_date_invalid');
         }
+        $requiredBy = !empty($holdDetails['requiredByTS'])
+            ? gmdate('Y-m-d', $holdDetails['requiredByTS']) : null;
+
         $isTitleLevel = ($holdDetails['level'] ?? '') === 'title';
         if ($isTitleLevel) {
             $instance = $this->getInstanceByBibId($holdDetails['id']);

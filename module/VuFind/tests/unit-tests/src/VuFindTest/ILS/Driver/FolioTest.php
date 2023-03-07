@@ -297,6 +297,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $this->createConnector('successful-place-hold');
         $details = [
             'requiredBy' => '2022-01-01',
+            'requiredByTS' => 1641049790,
             'patron' => ['id' => 'foo'],
             'item_id' => 'record1',
             'status' => 'Available',
@@ -306,6 +307,75 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $expected = [
             'success' => true,
             'status' => 'success',
+        ];
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Test successful place hold with no expiration date
+     *
+     * @return void
+     */
+    public function testSuccessfulPlaceHoldNoExpirationDate(): void
+    {
+        $this->createConnector('successful-place-hold-no-expiration-date');
+        $details = [
+            'patron' => ['id' => 'foo'],
+            'item_id' => 'record1',
+            'status' => 'Available',
+            'pickUpLocation' => 'desk1',
+        ];
+        $result = $this->driver->placeHold($details);
+        $expected = [
+            'success' => true,
+            'status' => 'success',
+        ];
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Test unsuccessful place hold with invalid expiration date
+     *
+     * @return void
+     */
+    public function testUnsuccessfulPlaceHoldInvalidExpirationDate(): void
+    {
+        # Validates that the requiredByTS is an of type ?int, or throws an exception
+        # otherwise
+        $this->createConnector('unsuccessful-place-hold');
+        $details = [
+            'requiredBy' => '3333-33-33',
+            'requiredByTS' => '3333-33-33',
+            'patron' => ['id' => 'foo'],
+            'item_id' => 'record1',
+            'status' => 'Available',
+            'pickUpLocation' => 'desk1',
+        ];
+        $this->expectException(\VuFind\Exception\ILS::class);
+        $this->expectExceptionMessage("hold_date_invalid");
+        $result = $this->driver->placeHold($details);
+    }
+
+    /**
+     * Test unsuccessful place hold
+     *
+     * @return void
+     */
+    public function testUnsuccessfulPlaceHold(): void
+    {
+        $this->createConnector('unsuccessful-place-hold');
+        $details = [
+            'requiredBy' => '2000-01-01',
+            'requiredByTS' => 946739390,
+            'patron' => ['id' => 'foo'],
+            'item_id' => 'record1',
+            'status' => 'Available',
+            'pickUpLocation' => 'desk1',
+        ];
+        $result = $this->driver->placeHold($details);
+        $expected = [
+            'success' => false,
+            'status' => 'requestExpirationDate cannot be in the past'
         ];
         $this->assertEquals($expected, $result);
     }
