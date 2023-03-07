@@ -191,6 +191,7 @@ class UserEntity implements UserEntityInterface, ClaimSetInterface
                             . $this->oauth2Config['Server']['hashSalt']
                         );
                     }
+                    // no break
                 default:
                     if (
                         ($value = $this->user->{$field} ?? null)

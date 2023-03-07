@@ -65,7 +65,7 @@ class StartPageTest extends \PHPUnit\Framework\TestCase
     public function testOptions(): void
     {
         // Use anonymous class to test the callable verbose message option:
-        $messageCollector = new class {
+        $messageCollector = new class () {
             /**
              * Messages collected
              */

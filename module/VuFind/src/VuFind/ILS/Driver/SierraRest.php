@@ -50,8 +50,6 @@ class SierraRest extends AbstractBase implements
     LoggerAwareInterface,
     \VuFind\I18n\HasSorterInterface
 {
-    public const HOLDINGS_LINE_NUMBER = 40;
-
     use \VuFind\Cache\CacheTrait;
     use \VuFind\Log\LoggerAwareTrait {
         logError as error;
@@ -60,6 +58,7 @@ class SierraRest extends AbstractBase implements
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\I18n\HasSorterTrait;
     use \VuFind\Service\Feature\RetryTrait;
+    public const HOLDINGS_LINE_NUMBER = 40;
 
     /**
      * Driver configuration

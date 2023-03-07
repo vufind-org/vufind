@@ -77,7 +77,7 @@ class ImageFactoryTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo('url'))->will($this->returnValue($url));
 
         $factory = new \VuFind\Captcha\ImageFactory();
-        $fakeImage = new class {
+        $fakeImage = new class () {
             /**
              * Constructor arguments
              *
