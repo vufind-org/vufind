@@ -284,25 +284,18 @@ class DefaultRecord extends AbstractBase
     /**
      * Return all ISBNs found in the record.
      *
-     * @param array $userFlags Flags to control behavior:
+     * @param string $mode Mode
      *  - 'only10' returns only ISBN-10s
      *  - 'prefer10' returns ISBN-10s if available, otherwise ISBN-13s (default)
      *  - 'normalize13' returns ISBN-13s, normalizing ISBN-10s to ISBN-13s
-     *  - 'filterInvalid' filters out invalid ISBNs
-     * Only one of 'only10', 'prefer10', or 'normalize13' should be set to true.
+     * @param bool $filterInvalid Whether to filter out invalid ISBNs
      *
      * @return array
      */
     public function getCleanISBNs(
-        array $userFlags = []
+        string $mode = 'prefer10',
+        bool $filterInvalid = true
     ): array {
-        $defaultFlags = [
-            'only10' =>  false,
-            'prefer10' => true,
-            'normalize13' => false,
-            'filterInvalid' => true,
-        ];
-        $flags = $userFlags + $defaultFlags;
         $isbns = $this->getISBNs();
         $all = $tens = $thirteens = $invalid = [];
         foreach ($isbns as $isbn) {
@@ -314,19 +307,22 @@ class DefaultRecord extends AbstractBase
             if ($isbnObj->isValid()) {
                 if ($isbn10 = $isbnObj->get10()) {
                     $normalized
-                        = $flags['normalize13'] ? $isbnObj->get13() : $isbn10;
+                        = $mode === 'normalize13' ? $isbnObj->get13() : $isbn10;
                     $tens[] = $normalized;
                     $all[] = $normalized;
                 } elseif ($isbn13 = $isbnObj->get13()) {
                     $thirteens[] = $isbn13;
                     $all[] = $isbn13;
                 }
-            } elseif (!$flags['filterInvalid']) {
+            } elseif (!$filterInvalid) {
                 $invalid[] = $isbn;
                 $all[] = $isbn;
             }
         }
-        return $flags['prefer10'] ? array_merge($tens, $thirteens, $invalid) : $all;
+        if ($mode === 'only10') {
+            return array_merge($tens, $invalid);
+        }
+        return $mode === 'prefer10' ? array_merge($tens, $thirteens, $invalid) : $all;
     }
 
     /**

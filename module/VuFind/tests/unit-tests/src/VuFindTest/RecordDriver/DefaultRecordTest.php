@@ -137,7 +137,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
           'recordid' => 'testbug2',
           'source' => '',
           'oclc' => '30585539',
-          'isbns' => ['8820737493', '8072815563'],
+          'isbns' => ['8820737493', '8072815563', '9798644293513'],
         ];
         $this->assertEquals($thumbnail, $this->getDriver()->getThumbnail());
     }
@@ -481,28 +481,33 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
         return [
             [
                 ['8820737493', '8072815563'],
-                ['only10' => true],
+                'only10',
+                true,
             ],
             [
-                ['8820737493', '8072815563'],
-                ['prefer10' => true],
+                ['8820737493', '8072815563', 'invalid-isbn'],
+                'only10',
+                false,
             ],
             [
-                ['8820737493', '8072815563'],
-                ['filterInvalid' => false],
+                ['8820737493', '8072815563', '9798644293513'],
+                'prefer10',
+                true,
             ],
             [
-                ['9788820737498', '9788072815562'],
-                ['normalize13' => true],
+                ['8820737493', '8072815563', '9798644293513', 'invalid-isbn'],
+                'prefer10',
+                false,
             ],
             [
-                ['8820737493', '8072815563'],
-                [
-                    'only10' => true,
-                    'prefer10' => false,
-                    'normalize13' => false,
-                    'filterInvalid' => false,
-                ],
+                ['9798644293513', '9788820737498', '9788072815562'],
+                'normalize13',
+                true,
+            ],
+            [
+                ['9798644293513', '9788820737498', '9788072815562', 'invalid-isbn'],
+                'normalize13',
+                false,
             ],
         ];
     }
@@ -514,9 +519,9 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetCleanISBNs($result, $flags)
+    public function testGetCleanISBNs($result, $mode,  $filterInvalid)
     {
-        $this->assertEquals($result, $this->getDriver()->getCleanISBNs($flags));
+        $this->assertEquals($result, $this->getDriver()->getCleanISBNs($mode, $filterInvalid));
     }
 
     /**
