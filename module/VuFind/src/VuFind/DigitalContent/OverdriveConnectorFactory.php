@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Overdrive Connector factory.
  *
@@ -28,6 +29,7 @@
  *           License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\DigitalContent;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;

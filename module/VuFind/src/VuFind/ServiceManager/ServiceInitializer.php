@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Service Initializer
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\ServiceManager;
 
 use Laminas\ServiceManager\Initializer\InitializerInterface;
@@ -59,7 +61,8 @@ class ServiceInitializer implements InitializerInterface
             $enabled = false;
             foreach ($cacheConfig as $section) {
                 foreach ($section as $setting) {
-                    if (isset($setting['operatingMode'])
+                    if (
+                        isset($setting['operatingMode'])
                         && $setting['operatingMode'] !== 'disabled'
                     ) {
                         $enabled = true;
@@ -96,7 +99,8 @@ class ServiceInitializer implements InitializerInterface
             $instance->setHttpService($sm->get(\VuFindHttp\HttpService::class));
         }
         // Only inject cache if configuration enabled (to save resources):
-        if ($instance instanceof \VuFind\Record\Cache\RecordCacheAwareInterface
+        if (
+            $instance instanceof \VuFind\Record\Cache\RecordCacheAwareInterface
             && $this->isCacheEnabled($sm)
         ) {
             $instance->setRecordCache($sm->get(\VuFind\Record\Cache::class));

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Overdrive Controller
  *
@@ -10,6 +11,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Controller;
 
 use Laminas\Log\LoggerAwareInterface;
@@ -105,7 +107,8 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
             // get the current Overdrive holds for this user and add to
             // our array of IDS
             $holdsResults = $this->connector->getHolds(true);
-            if (!($holdsResults->status ?? false)
+            if (
+                !($holdsResults->status ?? false)
                 && ($checkoutResults->status ?? false) // avoid double errors
             ) {
                 $this->flashMessenger()->addMessage(

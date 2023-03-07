@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind CSV importer configuration
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/ Wiki
  */
+
 namespace VuFind\CSV;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
@@ -269,7 +271,8 @@ class Importer
             )
         );
         $argCallback = function ($arg) use ($value, $fieldValues) {
-            if (substr($arg, 0, 2) == '$$'
+            if (
+                substr($arg, 0, 2) == '$$'
                 && substr($arg, -2) == '$$'
             ) {
                 $parts = explode(':', trim($arg, '$'), 2);

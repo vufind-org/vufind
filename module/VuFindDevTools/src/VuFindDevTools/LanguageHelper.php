@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Language Helper for Development Tools Controller
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/indexing:alphabetical_heading_browse Wiki
  */
+
 namespace VuFindDevTools;
 
 use Laminas\I18n\Translator\TextDomain;
@@ -187,7 +189,8 @@ class LanguageHelper
             $dir = opendir($base);
             $domains = [];
             while ($current = readdir($dir)) {
-                if ($current != '.' && $current != '..'
+                if (
+                    $current != '.' && $current != '..'
                     && is_dir("$base/$current")
                     && !in_array($current, $filter)
                 ) {
@@ -284,7 +287,7 @@ class LanguageHelper
             }
             $data[] = [
                 "lang" => $langCode,
-                "name"=> $diffs['name'],
+                "name" => $diffs['name'],
                 "langtitle" => $langCode . (($langCode != $diffs['name'])
                     ? " (" . $diffs['name'] . ")" : ''),
                 "missing" => count($diffs['notInL2']),

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Record Driver for SolrOverdrive Records
  *
@@ -28,6 +29,7 @@
  *           License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver;
 
 use Laminas\Config\Config;
@@ -173,7 +175,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     public function getFormattedDigitalFormats()
     {
         $results = [];
-        foreach ($this->getDigitalFormats() as $key=>$format) {
+        foreach ($this->getDigitalFormats() as $key => $format) {
             $tmpresults = [];
             if ($format->fileSize > 0) {
                 if ($format->fileSize > 1000000) {
@@ -227,7 +229,8 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
 
         if (isset($data->formats[0]->samples[0])) {
             foreach ($data->formats[0]->samples as $format) {
-                if ($format->formatType == 'audiobook-overdrive'
+                if (
+                    $format->formatType == 'audiobook-overdrive'
                     || $format->formatType == 'ebook-overdrive'
                 ) {
                     $results = $format;

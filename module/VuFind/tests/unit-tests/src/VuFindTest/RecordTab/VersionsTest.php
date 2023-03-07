@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Versions Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\RecordTab;
 
 use Laminas\Config\Config;
@@ -48,7 +50,7 @@ class VersionsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetDescription(): void
     {
-        $count=5;
+        $count = 5;
         $som = $this->getMockPluginManager();
         $config = $this->getMockConfig();
         $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
@@ -57,7 +59,7 @@ class VersionsTest extends \PHPUnit\Framework\TestCase
         $recordDriver->expects($this->any())->method('tryMethod')
             ->with($this->equalTo('getOtherVersionCount'))
             ->will($this->returnValue($count));
-        $obj= new Versions($config, $som);
+        $obj = new Versions($config, $som);
         $obj->setRecordDriver($recordDriver);
         $translator = $this->getMockBuilder(\Laminas\I18n\Translator\TranslatorInterface::class)
             ->getMock();
@@ -114,7 +116,7 @@ class VersionsTest extends \PHPUnit\Framework\TestCase
         $recordDriver->expects($this->any())->method('tryMethod')
             ->with($this->equalTo('getOtherVersionCount'))
             ->will($this->returnValue($versionCount));
-        $obj= new Versions($config, $som);
+        $obj = new Versions($config, $som);
         $obj->setRecordDriver($recordDriver);
         $this->assertSame($expectedResult, $obj->isActive());
     }

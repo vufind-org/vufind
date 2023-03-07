@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Abstract base class to hold shared logic for theme utilities.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTheme;
 
 /**
@@ -96,7 +98,8 @@ abstract class AbstractThemeUtility
                 if (!$this->copyDir("$src/$current", "$dest/$current")) {
                     return false;
                 }
-            } elseif (!file_exists("$dest/$current")
+            } elseif (
+                !file_exists("$dest/$current")
                 && !copy("$src/$current", "$dest/$current")
             ) {
                 return $this->setLastError(

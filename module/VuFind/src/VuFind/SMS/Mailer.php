@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Mailer Class for SMS messages
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\SMS;
 
 use VuFind\Exception\Mail as MailException;
@@ -97,7 +99,8 @@ class Mailer extends AbstractBase
             = $options['defaultFrom'] ?? '';
 
         // Make sure mailer dependency has been injected:
-        if (!isset($options['mailer'])
+        if (
+            !isset($options['mailer'])
             || !($options['mailer'] instanceof \VuFind\Mailer\Mailer)
         ) {
             throw new \Exception(

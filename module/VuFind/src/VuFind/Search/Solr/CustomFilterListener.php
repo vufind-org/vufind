@@ -29,12 +29,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Solr;
 
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use VuFindSearch\Backend\BackendInterface;
-
 use VuFindSearch\Service;
 
 /**
@@ -122,7 +122,8 @@ class CustomFilterListener
     public function onSearchPre(EventInterface $event)
     {
         $command = $event->getParam('command');
-        if ($command->getContext() === 'search'
+        if (
+            $command->getContext() === 'search'
             && $command->getTargetIdentifier() === $this->backend->getIdentifier()
             && ($params = $command->getSearchParameters())
         ) {

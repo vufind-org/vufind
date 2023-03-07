@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OAuth2 client repository implementation.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\OAuth2\Repository;
 
 use League\OAuth2\Server\Repositories\ClientRepositoryInterface;
@@ -90,7 +92,8 @@ class ClientRepository implements ClientRepositoryInterface
             return false;
         }
 
-        if (($config['isConfidential'] ?? false)
+        if (
+            ($config['isConfidential'] ?? false)
             && (empty($config['secret'])
             || !password_verify($clientSecret ?? '', $config['secret']))
         ) {

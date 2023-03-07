@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OAuth2/OIDC test class.
  *
@@ -25,7 +26,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 declare(strict_types=1);
+
 namespace VuFindTest\Mink;
 
 use const PHP_MAJOR_VERSION;

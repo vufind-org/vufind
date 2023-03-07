@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Trait to allow AJAX response generation.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
+
 namespace VuFind\Controller;
 
 use VuFind\AjaxHandler\AjaxHandlerInterface as Ajax;
@@ -77,7 +79,8 @@ trait AjaxResponseTrait
             case 'application/javascript':
             case 'application/json':
                 $output = ['data' => $data];
-                if ('development' == APPLICATION_ENV
+                if (
+                    'development' == APPLICATION_ENV
                     && count(self::$php_errors) > 0
                 ) {
                     $output['php_errors'] = self::$php_errors;

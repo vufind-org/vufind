@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Abstract parameters search model.
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\Base;
 
 use VuFind\I18n\TranslatableString;
@@ -359,7 +361,8 @@ class Params
             // to reduce the size of result lists without actually enabling
             // the user's ability to select a reduced list size).
             $legalOptions = $this->getOptions()->getLimitOptions();
-            if (in_array($limit, $legalOptions)
+            if (
+                in_array($limit, $legalOptions)
                 || ($limit > 0 && $limit < max($legalOptions))
             ) {
                 $this->limit = $limit;
@@ -569,7 +572,8 @@ class Params
         } elseif (!empty($view) && in_array($view, $validViews)) {
             // make sure the url parameter is a valid view
             $this->setView($view);
-        } elseif (!empty($this->lastView)
+        } elseif (
+            !empty($this->lastView)
             && in_array($this->lastView, $validViews)
         ) {
             // if there is nothing in the URL, see if we had a previous value
@@ -833,7 +837,8 @@ class Params
 
         // Check all of the relevant fields for matches:
         foreach ($this->getAliasesForFacetField($field) as $current) {
-            if (isset($this->filterList[$current])
+            if (
+                isset($this->filterList[$current])
                 && in_array($value, $this->filterList[$current])
             ) {
                 return true;
@@ -1004,7 +1009,8 @@ class Params
      */
     public function getFacetLabel($field, $value = null, $default = null)
     {
-        if (!isset($this->facetConfig[$field])
+        if (
+            !isset($this->facetConfig[$field])
             && !isset($this->extraFacetLabels[$field])
             && isset($this->facetAliases[$field])
         ) {
@@ -1080,7 +1086,8 @@ class Params
             // and each value currently used for that field
             foreach ($values as $value) {
                 // Add to the list unless it's in the list of fields to skip:
-                if (!isset($skipList[$field])
+                if (
+                    !isset($skipList[$field])
                     || !in_array($value, $skipList[$field])
                 ) {
                     $facetLabel = $this->getFacetLabel($field, $value);
@@ -1235,7 +1242,8 @@ class Params
             foreach ($facets as $facet) {
                 // If the current filter is not on the include list, skip it (but
                 // accept everything if the include list is null).
-                if (($include !== null && !in_array($facet['filter'], $include))
+                if (
+                    ($include !== null && !in_array($facet['filter'], $include))
                     && !($includeDynamic && $facet['dynamic'])
                 ) {
                     continue;
@@ -1642,7 +1650,8 @@ class Params
         // Extract field and value from URL string:
         [$field, $value] = $this->parseFilter($filter);
 
-        if (isset($this->hiddenFilters[$field])
+        if (
+            isset($this->hiddenFilters[$field])
             && in_array($value, $this->hiddenFilters[$field])
         ) {
             return true;

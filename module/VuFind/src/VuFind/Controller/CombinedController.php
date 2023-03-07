@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Combined Search Controller
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
@@ -105,7 +107,8 @@ class CombinedController extends AbstractSearch
         $settings['view'] = $this->forwardTo($controller, $action);
 
         // Should we suppress content due to emptiness?
-        if (($settings['hide_if_empty'] ?? false)
+        if (
+            ($settings['hide_if_empty'] ?? false)
             && $settings['view']->results->getResultTotal() == 0
         ) {
             $html = '';

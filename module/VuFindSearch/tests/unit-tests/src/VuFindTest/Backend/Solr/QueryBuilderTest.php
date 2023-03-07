@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Backend\Solr;
 
 use VuFindSearch\Backend\Solr\QueryBuilder;
@@ -152,7 +153,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     protected function runBasicQuestionTest($qb, $handler, $test)
     {
         [$input, $output, $flags] = $test;
-        if ($handler === 'standard'
+        if (
+            $handler === 'standard'
             || ($handler === 'dismax' && empty($flags['basic']))
         ) {
             // We expect an extra set of parentheses to be added, unless the
@@ -183,7 +185,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     protected function runAdvancedQuestionTest($qb, $handler, $test)
     {
         [$input, $output, $flags] = $test;
-        if ($handler === 'standard'
+        if (
+            $handler === 'standard'
             || ($handler === 'dismax' && empty($flags['basic']))
         ) {
             $advOutput = '((' . $output . '))';
@@ -715,7 +718,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     /**
      * Test generation with GlobalExtraParams using individual queries.
      *
-     * @return void
+     * @return       void
      * @dataProvider globalExtraParamsIndividualQueryDataProvider
      */
     public function testIndividualQueryHandlerWithGlobalExtraParams(
@@ -837,7 +840,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     /**
      * Test generation with GlobalExtraParams using a grouped query.
      *
-     * @return void
+     * @return       void
      * @dataProvider globalExtraParamsGroupedQueryDataProvider
      */
     public function testGroupedQueryHandlerWithGlobalExtraParams(

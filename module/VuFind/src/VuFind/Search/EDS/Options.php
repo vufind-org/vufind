@@ -1,4 +1,5 @@
 <?php
+
 /**
  * EDS API Options
  *
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\EDS;
 
 /**
@@ -178,7 +180,8 @@ class Options extends \VuFind\Search\Base\Options
         }
         $this->setOptionsFromConfig();
         $facetConf = $configLoader->get($this->facetsIni);
-        if (isset($facetConf->Advanced_Facet_Settings->translated_facets)
+        if (
+            isset($facetConf->Advanced_Facet_Settings->translated_facets)
             && count($facetConf->Advanced_Facet_Settings->translated_facets) > 0
         ) {
             $this->setTranslatedFacets(
@@ -567,7 +570,8 @@ class Options extends \VuFind\Search\Base\Options
                     $this->modeOptions[$mode['Mode']] = [
                         'Label' => $mode['Label'], 'Value' => $mode['Mode']
                     ];
-                    if (isset($mode['DefaultOn'])
+                    if (
+                        isset($mode['DefaultOn'])
                         && 'y' == $mode['DefaultOn']
                     ) {
                         $this->defaultMode = $mode['Mode'];
@@ -583,7 +587,8 @@ class Options extends \VuFind\Search\Base\Options
                     $this->expanderOptions[$expander['Id']] = [
                         'Label' => $expander['Label'], 'Value' => $expander['Id']
                     ];
-                    if (isset($expander['DefaultOn'])
+                    if (
+                        isset($expander['DefaultOn'])
                         && 'y' == $expander['DefaultOn']
                     ) {
                         $this->defaultExpanders[] = $expander['Id'];

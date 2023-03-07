@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SideFacets Recommendations Module
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
+
 namespace VuFind\Recommend;
 
 use VuFind\Search\Solr\HierarchicalFacetHelper;
@@ -205,7 +207,8 @@ class SideFacets extends AbstractFacets
         if ($flipCheckboxes) {
             $this->checkboxFacets = array_flip($this->checkboxFacets);
         }
-        if (!$showDynamicCheckboxFacets
+        if (
+            !$showDynamicCheckboxFacets
             || strtolower(trim($showDynamicCheckboxFacets)) === 'false'
         ) {
             $this->showDynamicCheckboxFacets = false;

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Search tabs" view helper
  *
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use Laminas\Http\Request;
@@ -130,7 +132,8 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
             }
             $class = $this->helper->extractClassName($key);
             $filters = isset($allFilters[$key]) ? (array)$allFilters[$key] : [];
-            if ($class == $activeSearchClass
+            if (
+                $class == $activeSearchClass
                 && $this->helper->filtersMatch($class, $hiddenFilters, $filters)
             ) {
                 $retVal['selected'] = $this

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Context manager (useful for using render() instead of partial() for better
  * performance -- this allows us to set and roll back variables in the global
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;

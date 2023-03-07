@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Relais: Check item availability using a generic patron ID
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
@@ -63,7 +65,8 @@ class RelaisAvailability extends AbstractRelaisAction
 
         // Search
         $responseText = $this->relais->search($oclcNumber, $authorizationId);
-        if (strpos($responseText, 'error') !== false
+        if (
+            strpos($responseText, 'error') !== false
             || strpos($responseText, 'ErrorMessage') !== false
             || strpos($responseText, 'false') !== false
         ) {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink test class to test advanced search.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
@@ -73,7 +75,8 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $links = $page->findAll('css', '.adv_search_links a');
         $isAdv = false;
         foreach ($links as $link) {
-            if ($this->checkVisibility($link)
+            if (
+                $this->checkVisibility($link)
                 && $link->getHtml() == 'Edit this Advanced Search'
             ) {
                 $isAdv = true;
@@ -94,7 +97,8 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
     {
         $links = $page->findAll('css', '.adv_search_links a');
         foreach ($links as $link) {
-            if ($this->checkVisibility($link)
+            if (
+                $this->checkVisibility($link)
                 && $link->getHtml() == 'Edit this Advanced Search'
             ) {
                 $link->click();

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Functions to add advanced MARC-driven functionality to a record driver already
  * powered by the standard index spec. Depends upon MarcReaderTrait.
@@ -28,6 +29,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver\Feature;
 
 use VuFind\View\Helper\Root\RecordLinker;
@@ -542,10 +544,11 @@ trait MarcAdvancedTrait
     public function getTOC()
     {
         $toc = [];
-        if ($fields = $this->getMarcReader()->getFields(
-            '505',
-            ['a', 'g', 'r', 't', 'u']
-        )
+        if (
+            $fields = $this->getMarcReader()->getFields(
+                '505',
+                ['a', 'g', 'r', 't', 'u']
+            )
         ) {
             foreach ($fields as $field) {
                 // Implode all the subfields into a single string, then explode
@@ -1003,7 +1006,8 @@ trait MarcAdvancedTrait
     {
         $fields024 = $this->getMarcReader()->getFields('024');
         foreach ($fields024 as $field) {
-            if ($field['i1'] == 2
+            if (
+                $field['i1'] == 2
                 && $subfield = $this->getSubfield($field, 'a')
             ) {
                 return $subfield;

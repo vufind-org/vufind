@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Map Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\RecordTab;
 
 use VuFind\RecordTab\Map;
@@ -136,7 +138,7 @@ class MapTest extends \PHPUnit\Framework\TestCase
     public function testGetDisplayCoords(): void
     {
         $obj = $this->getMap();
-        $coordinates=["00 00 56 56", "45 56 87 89"];
+        $coordinates = ["00 00 56 56", "45 56 87 89"];
         $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -156,7 +158,7 @@ class MapTest extends \PHPUnit\Framework\TestCase
     public function testGetGeoLocationCoords(): void
     {
         $obj = $this->getMap();
-        $coordinates= ["ENVELOPE(25.8,43.9,5.0,4.6)"];
+        $coordinates = ["ENVELOPE(25.8,43.9,5.0,4.6)"];
         $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -176,8 +178,8 @@ class MapTest extends \PHPUnit\Framework\TestCase
     public function testGetMapTabData(): void
     {
         $obj = $this->getMap();
-        $coordinates= ["ENVELOPE(25.8,43.9,5.0,4.6)"];
-        $displayCoord =["45 56 87 89"];
+        $coordinates = ["ENVELOPE(25.8,43.9,5.0,4.6)"];
+        $displayCoord = ["45 56 87 89"];
         $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -186,7 +188,7 @@ class MapTest extends \PHPUnit\Framework\TestCase
             ->willReturnOnConsecutiveCalls($coordinates, $displayCoord);
 
         $obj->setRecordDriver($recordDriver);
-        $expected=[[25.8,4.6,43.9,5.0,'',"89 87 45 56"]];
+        $expected = [[25.8,4.6,43.9,5.0,'',"89 87 45 56"]];
         $this->assertSame($expected, $obj->getMapTabData());
     }
 }

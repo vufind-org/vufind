@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Grid cover background layer
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
+
 namespace VuFind\Cover\Layer;
 
 /**
@@ -112,12 +114,12 @@ class GridBackground extends AbstractBackgroundLayer
         $boxHeight = $settings->height / 8;
 
         $bc = str_split($pattern);
-        for ($k = 0;$k < 4;$k++) {
+        for ($k = 0; $k < 4; $k++) {
             $x = $k % 2 ? $halfWidth : $halfWidth - $boxWidth;
             $y = $k / 2 < 1 ? $halfHeight : $halfHeight - $boxHeight;
             $u = $k % 2 ? $boxWidth : -$boxWidth;
             $v = $k / 2 < 1 ? $boxHeight : -$boxHeight;
-            for ($i = 0;$i < 16;$i++) {
+            for ($i = 0; $i < 16; $i++) {
                 if ($bc[$i] == "1") {
                     imagefilledrectangle(
                         $im,

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ILS Driver for VuFind to query availability information via DAIA.
  *
@@ -30,6 +31,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use DOMDocument;
@@ -49,7 +51,8 @@ use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class DAIA extends AbstractBase implements
-    HttpServiceAwareInterface, LoggerAwareInterface
+    HttpServiceAwareInterface,
+    LoggerAwareInterface
 {
     use \VuFind\Cache\CacheTrait {
         getCacheKey as protected getBaseCacheKey;
@@ -187,7 +190,8 @@ class DAIA extends AbstractBase implements
         } else {
             $this->debug('Caching not enabled, disabling it by default.');
         }
-        if (isset($this->config['General'])
+        if (
+            isset($this->config['General'])
             && isset($this->config['General']['cacheLifetime'])
         ) {
             $this->cacheLifetime = $this->config['General']['cacheLifetime'];
@@ -264,7 +268,8 @@ class DAIA extends AbstractBase implements
     public function getStatus($id)
     {
         // check ids for existing availability data in cache and skip these ids
-        if ($this->daiaCacheEnabled
+        if (
+            $this->daiaCacheEnabled
             && $item = $this->getCachedData($this->generateURI($id))
         ) {
             if ($item != null) {
@@ -318,7 +323,8 @@ class DAIA extends AbstractBase implements
 
         // check cache for given ids and skip these ids if availability data is found
         foreach ($ids as $key => $id) {
-            if ($this->daiaCacheEnabled
+            if (
+                $this->daiaCacheEnabled
                 && $item = $this->getCachedData($this->generateURI($id))
             ) {
                 if ($item != null) {
@@ -616,7 +622,8 @@ class DAIA extends AbstractBase implements
                 // now loop through the found DAIA documents
                 foreach ($docs['document'] as $doc) {
                     // DAIA documents should use URIs as value for id
-                    if (isset($doc['id'])
+                    if (
+                        isset($doc['id'])
                         && $doc['id'] == $this->generateURI($id)
                     ) {
                         // we've found the document element with the matching URI
@@ -661,7 +668,8 @@ class DAIA extends AbstractBase implements
                 if ($node->hasChildNodes()) {
                     $prepare($node);
                 } else {
-                    if (($domNode->hasAttributes() && strlen($domNode->nodeValue))
+                    if (
+                        ($domNode->hasAttributes() && strlen($domNode->nodeValue))
                         || (in_array(
                             $domNode->nodeName,
                             ['storage', 'limitation', 'department', 'institution']
@@ -710,7 +718,8 @@ class DAIA extends AbstractBase implements
                 if (is_array($value)) {
                     $value = $restructure($value);
                 }
-                if (in_array($key, $elements, true)
+                if (
+                    in_array($key, $elements, true)
                     && !isset($array[$key][0])
                 ) {
                     unset($array[$key]);
@@ -814,13 +823,15 @@ class DAIA extends AbstractBase implements
         if (isset($item['available'])) {
             // check if item is loanable or presentation
             foreach ($item['available'] as $available) {
-                if (isset($available['service'])
+                if (
+                    isset($available['service'])
                     && in_array($available['service'], ['loan', 'presentation'])
                 ) {
                     $services['available'][] = $available['service'];
                 }
                 // attribute service can be set once or not
-                if (isset($available['service'])
+                if (
+                    isset($available['service'])
                     && in_array(
                         $available['service'],
                         ['loan', 'presentation', 'openaccess']
@@ -829,7 +840,8 @@ class DAIA extends AbstractBase implements
                     // set item available if service is loan, presentation or
                     // openaccess
                     $availability = true;
-                    if ($available['service'] == 'loan'
+                    if (
+                        $available['service'] == 'loan'
                         && isset($available['href'])
                     ) {
                         // save the link to the ils if we have a href for loan
@@ -859,19 +871,22 @@ class DAIA extends AbstractBase implements
 
         if (isset($item['unavailable'])) {
             foreach ($item['unavailable'] as $unavailable) {
-                if (isset($unavailable['service'])
+                if (
+                    isset($unavailable['service'])
                     && in_array($unavailable['service'], ['loan', 'presentation'])
                 ) {
                     $services['unavailable'][] = $unavailable['service'];
                 }
                 // attribute service can be set once or not
-                if (isset($unavailable['service'])
+                if (
+                    isset($unavailable['service'])
                     && in_array(
                         $unavailable['service'],
                         ['loan', 'presentation', 'openaccess']
                     )
                 ) {
-                    if ($unavailable['service'] == 'loan'
+                    if (
+                        $unavailable['service'] == 'loan'
                         && isset($unavailable['href'])
                     ) {
                         //save the link to the ils if we have a href for loan service
@@ -998,7 +1013,8 @@ class DAIA extends AbstractBase implements
         if (isset($item['available'])) {
             // check if item is loanable or presentation
             foreach ($item['available'] as $available) {
-                if (isset($available['service'])
+                if (
+                    isset($available['service'])
                     && in_array($available['service'], ['loan', 'presentation'])
                 ) {
                     $services['available'][] = $available['service'];
@@ -1008,7 +1024,8 @@ class DAIA extends AbstractBase implements
 
         if (isset($item['unavailable'])) {
             foreach ($item['unavailable'] as $unavailable) {
-                if (isset($unavailable['service'])
+                if (
+                    isset($unavailable['service'])
                     && in_array($unavailable['service'], ['loan', 'presentation'])
                 ) {
                     $services['unavailable'][] = $unavailable['service'];
@@ -1042,7 +1059,8 @@ class DAIA extends AbstractBase implements
         if (isset($item['available'])) {
             // check if item is loanable or presentation
             foreach ($item['available'] as $available) {
-                if (isset($available['service'])
+                if (
+                    isset($available['service'])
                     && in_array($available['service'], ['loan', 'presentation'])
                 ) {
                     $services['available'][] = $available['service'];
@@ -1055,7 +1073,8 @@ class DAIA extends AbstractBase implements
 
         if (isset($item['unavailable'])) {
             foreach ($item['unavailable'] as $unavailable) {
-                if (isset($unavailable['service'])
+                if (
+                    isset($unavailable['service'])
                     && in_array($unavailable['service'], ['loan', 'presentation'])
                 ) {
                     $services['unavailable'][] = $unavailable['service'];
@@ -1295,7 +1314,8 @@ class DAIA extends AbstractBase implements
         $availableServices = [];
         if (isset($services['available'])) {
             foreach ($services['available'] as $service) {
-                if (!isset($services['unavailable'])
+                if (
+                    !isset($services['unavailable'])
                     || !in_array($service, $services['unavailable'])
                 ) {
                     $availableServices[] = $service;

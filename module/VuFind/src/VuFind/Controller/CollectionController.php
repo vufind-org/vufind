@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Collection Controller
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Controller;
 
 use Laminas\Config\Config;
@@ -87,7 +89,8 @@ class CollectionController extends AbstractRecord
         }
 
         $result = parent::showTab($tab, $ajax);
-        if (!$ajax && $result instanceof \Laminas\View\Model\ViewModel
+        if (
+            !$ajax && $result instanceof \Laminas\View\Model\ViewModel
             && $result->getTemplate() !== 'myresearch/login'
         ) {
             $result->setTemplate('collection/view');

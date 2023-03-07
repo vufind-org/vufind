@@ -1,4 +1,5 @@
 <?php
+
 /**
  * XSLT importer support methods for work key generation.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/indexing Wiki
  */
+
 namespace VuFind\XSLT\Import;
 
 use DOMDocument;
@@ -109,7 +111,8 @@ class VuFindWorkKeys
                 $excludeRegEx,
                 $transliterator
             );
-            if (empty($normalizedTitle)                          // skip empties
+            if (
+                empty($normalizedTitle)                          // skip empties
                 || in_array($normalizedTitle, $normalizedTitles) // avoid dupes
             ) {
                 continue;

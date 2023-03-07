@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Sitemap
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Sitemap;
 
 use Laminas\Config\Config;
@@ -271,7 +273,10 @@ class Generator
     {
         $sitemapFiles = [];
         $sitemapIndexes = [];
-        $writeMap = function ($sitemap, $name) use (
+        $writeMap = function (
+            $sitemap,
+            $name
+        ) use (
             &$sitemapFiles,
             &$sitemapIndexes
         ) {
@@ -378,7 +383,8 @@ class Generator
                 $smf->addUrl($baseUrl . '/' . $sitemap);
             }
 
-            if (false === $smf->write($this->fileLocation . '/' . $this->indexFile)
+            if (
+                false === $smf->write($this->fileLocation . '/' . $this->indexFile)
             ) {
                 throw new \Exception("Problem writing $this->indexFile.");
             }

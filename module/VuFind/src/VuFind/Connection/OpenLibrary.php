@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Open Library Utilities
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Connection;
 
 /**
@@ -145,7 +147,8 @@ class OpenLibrary
                 $i = 1;
                 foreach ($data['works'] as $work) {
                     if ($i <= $limit) {
-                        if ($publicFullText && (!$work['public_scan']
+                        if (
+                            $publicFullText && (!$work['public_scan']
                             || !$work['has_fulltext'])
                         ) {
                             continue;

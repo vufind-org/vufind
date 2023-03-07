@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Hierarchy Tree Data Source (Solr)
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
+
 namespace VuFind\Hierarchy\TreeDataSource;
 
 use VuFind\Hierarchy\TreeDataFormatter\PluginManager as FormatterManager;
@@ -350,7 +352,8 @@ class Solr extends AbstractBase
         $useCache = isset($options['refresh']) ? !$options['refresh'] : true;
         $cacheTime = $this->getHierarchyDriver()->getTreeCacheTime();
 
-        if ($useCache && file_exists($cacheFile)
+        if (
+            $useCache && file_exists($cacheFile)
             && ($cacheTime < 0 || filemtime($cacheFile) > (time() - $cacheTime))
         ) {
             $this->debug("Using cached data from $cacheFile");
@@ -401,7 +404,8 @@ class Solr extends AbstractBase
     {
         $settings = $this->hierarchyDriver->getTreeSettings();
 
-        if (!isset($settings['checkAvailability'])
+        if (
+            !isset($settings['checkAvailability'])
             || $settings['checkAvailability'] == 1
         ) {
             if (!$this->getRecord($id)) {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Action Helper - Holds Support Methods
  *
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Controller\Plugin;
 
 use VuFind\Date\DateException;
@@ -224,7 +226,8 @@ class Holds extends AbstractRequestBase
             'requiredByTS' => null,
             'errors' => [],
         ];
-        if (!in_array('startDate', $enabledFormFields)
+        if (
+            !in_array('startDate', $enabledFormFields)
             && !in_array('requiredByDate', $enabledFormFields)
             && !in_array('requiredByDateOptional', $enabledFormFields)
         ) {
@@ -246,7 +249,8 @@ class Holds extends AbstractRequestBase
             }
         }
 
-        if (in_array('requiredByDate', $enabledFormFields)
+        if (
+            in_array('requiredByDate', $enabledFormFields)
             || in_array('requiredByDateOptional', $enabledFormFields)
         ) {
             $optional = in_array('requiredByDateOptional', $enabledFormFields);
@@ -263,7 +267,8 @@ class Holds extends AbstractRequestBase
                 } else {
                     $result['requiredByTS'] = 0;
                 }
-                if ((!$optional || $result['requiredByTS'])
+                if (
+                    (!$optional || $result['requiredByTS'])
                     && $result['requiredByTS'] < strtotime('today')
                 ) {
                     $result['errors'][] = 'hold_required_by_date_invalid';
@@ -273,7 +278,8 @@ class Holds extends AbstractRequestBase
             }
         }
 
-        if (!$result['errors']
+        if (
+            !$result['errors']
             && in_array('startDate', $enabledFormFields)
             && !empty($result['requiredByTS'])
             && $result['startDateTS'] > $result['requiredByTS']

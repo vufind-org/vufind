@@ -1,4 +1,5 @@
 <?php
+
 /**
  * AJAX handler to comment on a record.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
@@ -177,7 +179,8 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
         $commentId = $resource->addComment($comment, $this->user);
 
         $rating = $params->fromPost('rating', '');
-        if ($driver->isRatingAllowed()
+        if (
+            $driver->isRatingAllowed()
             && ('' !== $rating
             || $this->accountCapabilities->isRatingRemovalAllowed())
         ) {

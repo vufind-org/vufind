@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OAI Server class
  *
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\OAI;
 
 use SimpleXMLElement;
@@ -754,7 +756,8 @@ class Server
         $response = $this->createResponse();
         $xml = $response->addChild('ListMetadataFormats');
         foreach ($this->getMetadataFormats() as $prefix => $details) {
-            if ($record === false
+            if (
+                $record === false
                 || $record->getXML($prefix) !== false
                 || ('oai_vufind_json' === $prefix && $this->supportsVuFindMetadata())
             ) {
@@ -867,7 +870,8 @@ class Server
 
         // If our cursor didn't reach the last record, we need a resumption token!
         $listSize = $deletedCount + $nonDeletedCount;
-        if ($listSize > $currentCursor
+        if (
+            $listSize > $currentCursor
             && ('' === $cursorMark || $nextCursorMark !== $cursorMark)
         ) {
             $this->saveResumptionToken(
@@ -1088,7 +1092,8 @@ class Server
             // Set default date range if not already provided:
             if (empty($params['from'])) {
                 $params['from'] = $this->earliestDatestamp;
-                if (!empty($params['until'])
+                if (
+                    !empty($params['until'])
                     && strlen($params['from']) > strlen($params['until'])
                 ) {
                     $params['from'] = substr($params['from'], 0, 10);
@@ -1107,14 +1112,16 @@ class Server
 
         // If no set field is configured and a set parameter comes in, we have a
         // problem:
-        if (null === $this->setField && empty($this->setQueries)
+        if (
+            null === $this->setField && empty($this->setQueries)
             && !empty($params['set'])
         ) {
             throw new \Exception('noSetHierarchy:Sets not supported');
         }
 
         // Validate set parameter:
-        if (!empty($params['set']) && null === $this->setField
+        if (
+            !empty($params['set']) && null === $this->setField
             && !isset($this->setQueries[$params['set']])
         ) {
             throw new \Exception('badArgument:Invalid set specified');

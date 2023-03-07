@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Console command: notify users of scheduled searches.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\ScheduledSearch;
 
 use Laminas\Config\Config;
@@ -524,7 +526,8 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
         $this->msg(sprintf('Processing %d searches', count($scheduled)));
         foreach ($scheduled as $s) {
             $lastTime = new \DateTime($s->last_notification_sent);
-            if (!$this->validateSchedule($todayTime, $lastTime, $s)
+            if (
+                !$this->validateSchedule($todayTime, $lastTime, $s)
                 || !($user = $this->getUserForSearch($s))
                 || !($searchObject = $this->getObjectForSearch($s))
                 || !($newRecords = $this->getNewRecords($searchObject, $lastTime))

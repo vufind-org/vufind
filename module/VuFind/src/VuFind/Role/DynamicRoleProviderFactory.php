@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind dynamic role provider factory.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Role;
 
 use Laminas\ServiceManager\Config;
@@ -102,7 +104,8 @@ class DynamicRoleProviderFactory implements FactoryInterface
         $permissions = $configLoader->get('permissions')->toArray();
 
         // If we're configured to map legacy settings, do so now:
-        if (isset($config['map_legacy_settings'])
+        if (
+            isset($config['map_legacy_settings'])
             && $config['map_legacy_settings']
         ) {
             $permissions = $this->addLegacySettings($configLoader, $permissions);
@@ -195,7 +198,8 @@ class DynamicRoleProviderFactory implements FactoryInterface
     protected function permissionDefined(array $config, $permission)
     {
         foreach ($config as $current) {
-            if (isset($current['permission'])
+            if (
+                isset($current['permission'])
                 && in_array($permission, (array)$current['permission'])
             ) {
                 return true;

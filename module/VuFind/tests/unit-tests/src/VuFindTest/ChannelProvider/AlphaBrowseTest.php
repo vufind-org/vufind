@@ -1,4 +1,5 @@
 <?php
+
 /**
  * AlphaBrowse Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\ChannelProvider;
 
 use VuFind\ChannelProvider\AlphaBrowse;
@@ -236,7 +238,7 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo($driver), $this->equalTo('medium'))
             ->willReturn('foo_Thumbnail');
         $alpha->setCoverRouter($coverRouter);
-        $routeDetails = ['route' => 'test_route', 'params' => ['id'=> 'route_id']];
+        $routeDetails = ['route' => 'test_route', 'params' => ['id' => 'route_id']];
         $router->expects($this->once())->method('getRouteDetails')
             ->with($this->equalTo($driver))
             ->willReturn($routeDetails);

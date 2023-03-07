@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Default model for Solr records -- used when a more specific model based on
  * the record_format field cannot be found.
@@ -28,6 +29,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver;
 
 use VuFindSearch\Command\SearchCommand;
@@ -47,7 +49,8 @@ use VuFindSearch\Command\SearchCommand;
  *
  * @SuppressWarnings(PHPMD.ExcessivePublicCount)
  */
-class SolrDefault extends DefaultRecord implements Feature\PreviousUniqueIdInterface,
+class SolrDefault extends DefaultRecord implements
+    Feature\PreviousUniqueIdInterface,
     Feature\VersionAwareInterface
 {
     use Feature\HierarchyAwareTrait;
@@ -134,7 +137,8 @@ class SolrDefault extends DefaultRecord implements Feature\PreviousUniqueIdInter
         // Load snippet settings:
         $this->snippet = !isset($searchSettings->General->snippets)
             ? false : $searchSettings->General->snippets;
-        if (isset($searchSettings->Snippet_Captions)
+        if (
+            isset($searchSettings->Snippet_Captions)
             && count($searchSettings->Snippet_Captions) > 0
         ) {
             foreach ($searchSettings->Snippet_Captions as $key => $value) {
@@ -226,7 +230,8 @@ class SolrDefault extends DefaultRecord implements Feature\PreviousUniqueIdInter
             }
 
             // No preferred field found, so try for a non-forbidden field:
-            if (isset($this->highlightDetails)
+            if (
+                isset($this->highlightDetails)
                 && is_array($this->highlightDetails)
             ) {
                 foreach ($this->highlightDetails as $key => $value) {
@@ -280,7 +285,8 @@ class SolrDefault extends DefaultRecord implements Feature\PreviousUniqueIdInter
     {
         // Shortcut: if this record is not the top record, let's not find out the
         // count. This assumes that contained records cannot contain more records.
-        if (!$this->containerLinking
+        if (
+            !$this->containerLinking
             || empty($this->fields['is_hierarchy_id'])
             || null === $this->searchService
         ) {

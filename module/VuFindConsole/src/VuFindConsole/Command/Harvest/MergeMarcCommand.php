@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Console command: Merge MARC records.
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Harvest;
 
 use SimpleXMLElement;

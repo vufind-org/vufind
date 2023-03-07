@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VF Configuration Upgrade Tool
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Config;
 
 use Composer\Semver\Comparator;
@@ -247,7 +249,8 @@ class Upgrade
         // differently, so people who used this mechanism will need to refactor
         // their configurations to take advantage of the new "local directory"
         // feature.  For now, we'll just merge everything to avoid losing settings.
-        if (isset($mainArray['Extra_Config'])
+        if (
+            isset($mainArray['Extra_Config'])
             && isset($mainArray['Extra_Config']['local_overrides'])
         ) {
             $file = trim(
@@ -416,7 +419,8 @@ class Upgrade
 
         // Compare the source file against the raw file; if they happen to be the
         // same, we don't need to copy anything!
-        if (file_exists($src) && file_exists($raw)
+        if (
+            file_exists($src) && file_exists($raw)
             && md5(file_get_contents($src)) == md5(file_get_contents($raw))
         ) {
             return;
@@ -449,7 +453,8 @@ class Upgrade
         $parts = explode(',', $theme);
         $theme = trim($parts[0]);
 
-        if (!file_exists(APPLICATION_PATH . '/themes/' . $theme)
+        if (
+            !file_exists(APPLICATION_PATH . '/themes/' . $theme)
             || !is_dir(APPLICATION_PATH . '/themes/' . $theme)
         ) {
             if ($default === null) {
@@ -565,7 +570,8 @@ class Upgrade
                 . 'longer supported due to changes in Google APIs.'
             );
         }
-        if (isset($newConfig['Content']['recordMap'])
+        if (
+            isset($newConfig['Content']['recordMap'])
             && 'google' == strtolower($newConfig['Content']['recordMap'])
         ) {
             unset($newConfig['Content']['recordMap']);
@@ -576,7 +582,8 @@ class Upgrade
             );
         }
         if (isset($newConfig['GoogleAnalytics']['apiKey'])) {
-            if (!isset($newConfig['GoogleAnalytics']['universal'])
+            if (
+                !isset($newConfig['GoogleAnalytics']['universal'])
                 || !$newConfig['GoogleAnalytics']['universal']
             ) {
                 $this->addWarning(
@@ -628,7 +635,8 @@ class Upgrade
                 );
             }
         }
-        if (isset($newConfig['Record']['related'])
+        if (
+            isset($newConfig['Record']['related'])
             && in_array('Editions', $newConfig['Record']['related'])
         ) {
             $newConfig['Record']['related'] = array_diff(
@@ -643,7 +651,8 @@ class Upgrade
         }
 
         // Upgrade Google Options:
-        if (isset($newConfig['Content']['GoogleOptions'])
+        if (
+            isset($newConfig['Content']['GoogleOptions'])
             && !is_array($newConfig['Content']['GoogleOptions'])
         ) {
             $newConfig['Content']['GoogleOptions']
@@ -681,7 +690,8 @@ class Upgrade
         unset($newConfig['Extra_Config']);
 
         // Update generator if it contains a version number:
-        if (isset($newConfig['Site']['generator'])
+        if (
+            isset($newConfig['Site']['generator'])
             && preg_match('/^VuFind (\d+\.?)+$/', $newConfig['Site']['generator'])
         ) {
             $newConfig['Site']['generator'] = 'VuFind ' . $this->to;
@@ -918,7 +928,8 @@ class Upgrade
             $cfg = & $this->newConfigs[$ini]['TopRecommendations'];
             // Add SpellingSuggestions to all non-skipped handlers:
             foreach ($cfg as $key => & $value) {
-                if (!in_array($key, $skip)
+                if (
+                    !in_array($key, $skip)
                     && !in_array('SpellingSuggestions', $value)
                 ) {
                     $value[] = 'SpellingSuggestions';
@@ -999,7 +1010,8 @@ class Upgrade
     protected function upgradeReserves()
     {
         // If Reserves module is disabled, don't bother updating config:
-        if (!isset($this->newConfigs['config.ini']['Reserves']['search_enabled'])
+        if (
+            !isset($this->newConfigs['config.ini']['Reserves']['search_enabled'])
             || !$this->newConfigs['config.ini']['Reserves']['search_enabled']
         ) {
             return;
@@ -1069,7 +1081,8 @@ class Upgrade
         $permissions = & $this->newConfigs['permissions.ini'];
         if (isset($config['Auth'])) {
             $permissions['access.SummonExtendedResults'] = [];
-            if (isset($config['Auth']['check_login'])
+            if (
+                isset($config['Auth']['check_login'])
                 && $config['Auth']['check_login']
             ) {
                 $permissions['access.SummonExtendedResults']['role'] = ['loggedin'];
@@ -1126,7 +1139,8 @@ class Upgrade
     {
         $config = & $this->newConfigs['Primo.ini'];
         $permissions = & $this->newConfigs['permissions.ini'];
-        if (isset($config['Institutions']['code'])
+        if (
+            isset($config['Institutions']['code'])
             && isset($config['Institutions']['regex'])
         ) {
             $codes = $config['Institutions']['code'];
@@ -1229,7 +1243,8 @@ class Upgrade
 
         // Deal with deprecated related record module.
         $newConfig = & $this->newConfigs['WorldCat.ini'];
-        if (isset($newConfig['Record']['related'])
+        if (
+            isset($newConfig['Record']['related'])
             && in_array('WorldCatEditions', $newConfig['Record']['related'])
         ) {
             $newConfig['Record']['related'] = array_diff(
@@ -1349,7 +1364,8 @@ class Upgrade
         }
 
         // If we're set to load NoILS.ini on failure, copy that over as well:
-        if (isset($this->newConfigs['config.ini']['Catalog']['loadNoILSOnFailure'])
+        if (
+            isset($this->newConfigs['config.ini']['Catalog']['loadNoILSOnFailure'])
             && $this->newConfigs['config.ini']['Catalog']['loadNoILSOnFailure']
         ) {
             // If NoILS is also the main driver, we don't need to copy it twice:
@@ -1452,7 +1468,8 @@ class Upgrade
             // string. Note that we treat blank lines as comments.
             if (substr($trimmed, 0, 1) == ';' || empty($trimmed)) {
                 $comments .= $line;
-            } elseif (substr($trimmed, 0, 1) == '['
+            } elseif (
+                substr($trimmed, 0, 1) == '['
                 && ($closeBracket = strpos($trimmed, ']')) > 1
             ) {
                 // Is the current line the start of a section?  If so, create the

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Console command: XSLT importer
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Import;
 
 use Symfony\Component\Console\Command\Command;

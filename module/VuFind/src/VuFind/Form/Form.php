@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Configurable form.
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
+
 namespace VuFind\Form;
 
 use Laminas\InputFilter\InputFilter;
@@ -658,7 +660,8 @@ class Form extends \Laminas\Form\Form implements
 
             $required = ['type', 'name'];
             $optional = $this->getFormElementSettingFields();
-            foreach (array_merge($required, $optional) as $field
+            foreach (
+                array_merge($required, $optional) as $field
             ) {
                 if (!isset($el[$field])) {
                     continue;
@@ -667,7 +670,8 @@ class Form extends \Laminas\Form\Form implements
                 $element[$field] = $value;
             }
 
-            if (in_array($element['type'], ['checkbox', 'radio'])
+            if (
+                in_array($element['type'], ['checkbox', 'radio'])
                 && !isset($element['group'])
             ) {
                 $element['group'] = $element['name'];
@@ -712,7 +716,8 @@ class Form extends \Laminas\Form\Form implements
             }
 
             // Add default field size settings for fields that don't define them:
-            if (in_array($elementType, ['text', 'url', 'email'])
+            if (
+                in_array($elementType, ['text', 'url', 'email'])
                 && !isset($element['settings']['size'])
             ) {
                 $element['settings']['size'] = 50;
@@ -967,7 +972,8 @@ class Form extends \Laminas\Form\Form implements
             $attributes += $el['settings'];
         }
         // Add aria-label only if not a hidden field and no aria-label specified:
-        if (!empty($el['label']) && 'hidden' !== $type
+        if (
+            !empty($el['label']) && 'hidden' !== $type
             && !isset($attributes['aria-label'])
         ) {
             $attributes['aria-label'] = $el['label'];

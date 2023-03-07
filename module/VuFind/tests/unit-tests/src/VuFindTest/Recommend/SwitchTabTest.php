@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SwitchTab Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Recommend;
 
 use VuFind\Recommend\SwitchTab;
@@ -130,7 +132,7 @@ class SwitchTabTest extends \PHPUnit\Framework\TestCase
                             "permission" => "permission02",
                             "selected" => false,
                             "url" => "http://newurl2"
-                ]]],
+                            ]]],
             ];
     }
 

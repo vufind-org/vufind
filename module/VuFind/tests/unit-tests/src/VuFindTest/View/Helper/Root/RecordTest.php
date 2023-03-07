@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Record view helper Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper\Root;
 
 use Laminas\Config\Config;
@@ -203,7 +205,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $driver->expects($this->once())->method('getContainingLists')
             ->with($this->equalTo(42))
             ->will($this->returnValue([1, 2, 3]));
-        $user = new \StdClass;
+        $user = new \StdClass();
         $user->id = 42;
         $expected = [
             'driver' => $driver, 'list' => null, 'user' => $user, 'lists' => [1, 2, 3]

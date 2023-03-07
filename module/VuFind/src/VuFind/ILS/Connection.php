@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Catalog Connection Class
  *
@@ -29,6 +30,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS;
 
 use Laminas\Log\LoggerAwareInterface;
@@ -350,7 +352,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         // should contain 'id' and 'patron' keys; this isn't exactly the same as
         // the full parameter expected by placeHold() but should contain the
         // necessary details for determining eligibility.
-        if ($this->getHoldsMode() != "none"
+        if (
+            $this->getHoldsMode() != "none"
             && $this->checkCapability('placeHold', [$params ?: []])
             && isset($functionConfig['HMACKeys'])
         ) {
@@ -409,12 +412,14 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         // We can't pass exactly accurate parameters to checkCapability in this
         // context, so we'll just pass along $params as the best available
         // approximation.
-        if (isset($this->config->cancel_holds_enabled)
+        if (
+            isset($this->config->cancel_holds_enabled)
             && $this->config->cancel_holds_enabled == true
             && $this->checkCapability('cancelHolds', [$params ?: []])
         ) {
             $response = ['function' => "cancelHolds"];
-        } elseif (isset($this->config->cancel_holds_enabled)
+        } elseif (
+            isset($this->config->cancel_holds_enabled)
             && $this->config->cancel_holds_enabled == true
             && $this->checkCapability('getCancelHoldLink', [$params ?: []])
         ) {
@@ -444,12 +449,14 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         // We can't pass exactly accurate parameters to checkCapability in this
         // context, so we'll just pass along $params as the best available
         // approximation.
-        if (isset($this->config->renewals_enabled)
+        if (
+            isset($this->config->renewals_enabled)
             && $this->config->renewals_enabled == true
             && $this->checkCapability('renewMyItems', [$params ?: []])
         ) {
             $response = ['function' => "renewMyItems"];
-        } elseif (isset($this->config->renewals_enabled)
+        } elseif (
+            isset($this->config->renewals_enabled)
             && $this->config->renewals_enabled == true
             && $this->checkCapability('renewMyItemsLink', [$params ?: []])
         ) {
@@ -516,7 +523,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     ) {
         $response = false;
 
-        if (isset($this->config->cancel_storage_retrieval_requests_enabled)
+        if (
+            isset($this->config->cancel_storage_retrieval_requests_enabled)
             && $this->config->cancel_storage_retrieval_requests_enabled
         ) {
             $check = $this->checkCapability(
@@ -563,7 +571,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
 
         // $params doesn't include all of the keys used by
         // placeILLRequest, but it is the best we can do in the context.
-        if ($this->checkCapability('placeILLRequest', [$params ?: []])
+        if (
+            $this->checkCapability('placeILLRequest', [$params ?: []])
             && isset($functionConfig['HMACKeys'])
         ) {
             $response = ['function' => 'placeILLRequest'];
@@ -601,7 +610,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     {
         $response = false;
 
-        if (isset($this->config->cancel_ill_requests_enabled)
+        if (
+            isset($this->config->cancel_ill_requests_enabled)
             && $this->config->cancel_ill_requests_enabled
         ) {
             $check = $this->checkCapability(

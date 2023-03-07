@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Piwik view helper
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\View\Helper\Root;
 
 /**
@@ -464,7 +466,8 @@ EOT;
     {
         $path = $this->request->getUri()->toString();
         $routeMatch = $this->router->match($this->request);
-        if ($routeMatch
+        if (
+            $routeMatch
             && $routeMatch->getMatchedRouteName() == 'vufindrecord-ajaxtab'
         ) {
             // Replace 'AjaxTab' with tab name in record page URLs

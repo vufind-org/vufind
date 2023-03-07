@@ -1,4 +1,5 @@
 <?php
+
 /**
  * III Sierra REST API driver
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use Laminas\Log\LoggerAwareInterface;
@@ -42,8 +44,10 @@ use VuFindHttp\HttpServiceAwareInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class SierraRest extends AbstractBase implements TranslatorAwareInterface,
-    HttpServiceAwareInterface, LoggerAwareInterface,
+class SierraRest extends AbstractBase implements
+    TranslatorAwareInterface,
+    HttpServiceAwareInterface,
+    LoggerAwareInterface,
     \VuFind\I18n\HasSorterInterface
 {
     public const HOLDINGS_LINE_NUMBER = 40;
@@ -1192,7 +1196,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         $level = $data['level'] ?? 'copy';
         if ('title' === $level) {
             $bib = $this->getBibRecord($id, 'bibLevel', $patron);
-            if (!isset($bib['bibLevel']['code'])
+            if (
+                !isset($bib['bibLevel']['code'])
                 || !in_array($bib['bibLevel']['code'], $this->titleHoldBibLevels)
             ) {
                 return false;
@@ -1292,7 +1297,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             $balance = $amount - $entry['paidAmount'];
             $description = '';
             // Display charge type if it's not manual (code=1)
-            if (!empty($entry['chargeType'])
+            if (
+                !empty($entry['chargeType'])
                 && $entry['chargeType']['code'] != '1'
             ) {
                 $description = $entry['chargeType']['display'];
@@ -1513,7 +1519,10 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         $returnStatus = false
     ) {
         // Status logging callback:
-        $statusCallback = function ($attempt, $exception) use (
+        $statusCallback = function (
+            $attempt,
+            $exception
+        ) use (
             $hierarchy,
             $params,
             $method
@@ -1580,7 +1589,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         $returnStatus = false
     ) {
         // Clear current access token if it's not specific to the given patron
-        if ($patron && $this->isPatronSpecificAccess()
+        if (
+            $patron && $this->isPatronSpecificAccess()
             && $this->sessionCache->accessTokenPatron != $patron['cat_username']
         ) {
             $this->sessionCache->accessToken = null;
@@ -2025,7 +2035,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             foreach ($holdingsResult['entries'] ?? [] as $entry) {
                 $location = '';
                 foreach ($entry['fixedFields'] as $code => $field) {
-                    if ($code === static::HOLDINGS_LINE_NUMBER
+                    if (
+                        $code === static::HOLDINGS_LINE_NUMBER
                         || $field['label'] === 'LOCATION'
                     ) {
                         $location = $field['value'];
@@ -2105,7 +2116,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                     $entry['item_notes'] = $notes;
                 }
 
-                if ($this->isHoldable($item) && $this->itemHoldAllowed($item, $bib)
+                if (
+                    $this->isHoldable($item) && $this->itemHoldAllowed($item, $bib)
                 ) {
                     $entry['is_holdable'] = true;
                     $entry['level'] = 'copy';
@@ -2285,7 +2297,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 $subfieldCodes = substr($fieldSpec, 3);
                 $fields = $row['varFields'] ?? [];
                 foreach ($fields as $field) {
-                    if (($field['marcTag'] ?? '') !== $fieldCode
+                    if (
+                        ($field['marcTag'] ?? '') !== $fieldCode
                         && ($field['fieldTag'] ?? '') !== $fieldCode
                     ) {
                         continue;
@@ -2298,7 +2311,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                     ];
                     $line = [];
                     foreach ($subfields as $subfield) {
-                        if ($subfieldCodes
+                        if (
+                            $subfieldCodes
                             && false === strpos(
                                 $subfieldCodes,
                                 (string)$subfield['tag']
@@ -2511,7 +2525,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         if (!$this->itemHoldsEnabled) {
             return false;
         }
-        if (!empty($this->itemHoldExcludedItemCodes)
+        if (
+            !empty($this->itemHoldExcludedItemCodes)
             && isset($item['fixedFields']['60'])
         ) {
             $code = $item['fixedFields']['60']['value'];
@@ -2547,7 +2562,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 'GET',
                 $patron
             );
-            if (!empty($result['blockInfo'])
+            if (
+                !empty($result['blockInfo'])
                 && trim($result['blockInfo']['code']) != '-'
             ) {
                 $blockReason = [trim($result['blockInfo']['code'])];
@@ -2801,7 +2817,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             ?? null;
         // patrons/auth endpoint is only supported on API version >= 6, without
         // custom validation configured:
-        if ($this->apiVersion >= 6 && null !== $password
+        if (
+            $this->apiVersion >= 6 && null !== $password
             && empty($validationField)
         ) {
             return $this->authenticatePatronV6($username, $password, $authMethod);

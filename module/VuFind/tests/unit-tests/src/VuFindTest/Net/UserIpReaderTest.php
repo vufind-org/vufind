@@ -1,4 +1,5 @@
 <?php
+
 /**
  * UserIpReader Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Net;
 
 use Laminas\Stdlib\Parameters;
@@ -74,7 +76,7 @@ class UserIpReaderTest extends \PHPUnit\Framework\TestCase
      * Support method for testMultipleHeadersWithFilter().
      *
      * @params Parameters $params Parameters
-     * @param string      $rules  Rules to apply to UserIpReader
+     * @param  string      $rules  Rules to apply to UserIpReader
      *
      * @return void
      */

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Tags aspect of the Search Multi-class (Options)
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Tags;
 
 /**
@@ -55,7 +57,8 @@ class Options extends \VuFind\Search\Base\Options
     {
         parent::__construct($configLoader);
         $config = $configLoader->get($this->mainIni);
-        if (isset($config->Social->show_solr_options_in_tag_search)
+        if (
+            isset($config->Social->show_solr_options_in_tag_search)
             && $config->Social->show_solr_options_in_tag_search
         ) {
             $this->useSolrSearchOptions = true;

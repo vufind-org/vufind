@@ -26,10 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Connection;
 
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
-
 use Laminas\Http\Client as HttpClient;
 use VuFind\Connection\Wikipedia;
 

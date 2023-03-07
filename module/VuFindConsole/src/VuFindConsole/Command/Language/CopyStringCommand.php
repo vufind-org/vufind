@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Language command: copy string.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Language;
 
 use Symfony\Component\Console\Input\InputArgument;
@@ -136,7 +138,8 @@ class CopyStringCommand extends AbstractCommand
         [$sourceDomain, $sourceKey] = $this->extractTextDomain($source);
         [$targetDomain, $targetKey] = $this->extractTextDomain($target);
 
-        if (!($sourceDir = $this->getLangDir($output, $sourceDomain))
+        if (
+            !($sourceDir = $this->getLangDir($output, $sourceDomain))
             || !($targetDir = $this->getLangDir($output, $targetDomain, true))
         ) {
             return 1;
@@ -145,7 +148,7 @@ class CopyStringCommand extends AbstractCommand
         // First, collect the source values from the source text domain:
         $sources = [];
         $sourceCallback
-            = function ($full) use ($output, $replaceRule, $sourceKey, & $sources) {
+            = function ($full) use ($output, $replaceRule, $sourceKey, &$sources) {
                 $strings = $this->reader->getTextDomain($full, false);
                 if (!isset($strings[$sourceKey])) {
                     $output->writeln('Source key not found.');

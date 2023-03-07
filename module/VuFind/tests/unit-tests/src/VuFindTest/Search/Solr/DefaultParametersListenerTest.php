@@ -28,10 +28,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTest\Search\Solr;
 
 use Laminas\EventManager\Event;
-
 use VuFind\Search\Solr\DefaultParametersListener;
 use VuFindSearch\ParamBag;
 

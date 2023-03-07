@@ -1,4 +1,5 @@
 <?php
+
 /**
  * KohaILSDI ILS Driver
  *
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use PDO;
@@ -48,7 +50,8 @@ use VuFind\Exception\ILS as ILSException;
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
-    \VuFindHttp\HttpServiceAwareInterface, \Laminas\Log\LoggerAwareInterface
+    \VuFindHttp\HttpServiceAwareInterface,
+    \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Cache\CacheTrait {
         getCacheKey as protected getBaseCacheKey;
@@ -584,7 +587,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             if (!$this->pickupEnableBranchcodes) {
                 // No defaultPickupLocation is defined in config
                 // AND no pickupLocations are defined either
-                if (isset($holdDetails['item_id']) && (empty($holdDetails['level'])
+                if (
+                    isset($holdDetails['item_id']) && (empty($holdDetails['level'])
                     || $holdDetails['level'] == 'item')
                 ) {
                     // We try to get the actual branchcode the item is found at
@@ -600,7 +604,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                         $this->debug('Connection failed: ' . $e->getMessage());
                         $this->throwAsIlsException($e);
                     }
-                } elseif (!empty($holdDetails['level'])
+                } elseif (
+                    !empty($holdDetails['level'])
                     && $holdDetails['level'] == 'title'
                 ) {
                     // We try to get the actual branchcodes the title is found at
@@ -973,7 +978,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             }
 
             $onTransfer = false;
-            if (($rowItem["TRANSFERFROM"] != null)
+            if (
+                ($rowItem["TRANSFERFROM"] != null)
                 && ($rowItem["TRANSFERTO"] != null)
             ) {
                 $branchSqlStmt->execute([':branch' => $rowItem["TRANSFERFROM"]]);
@@ -1429,7 +1435,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                     ? [$row['TYPE']]
                     : [$this->blockTerms[$row['TYPE']]];
 
-                if (!empty($this->showBlockComments[$row['TYPE']])
+                if (
+                    !empty($this->showBlockComments[$row['TYPE']])
                     && !empty($row['COMMENT'])
                 ) {
                     $block[] = $row['COMMENT'];

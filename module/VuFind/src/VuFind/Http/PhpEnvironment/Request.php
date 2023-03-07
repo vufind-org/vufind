@@ -1,4 +1,5 @@
 <?php
+
 /**
  * HTTP Request class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Http\PhpEnvironment;
 
 /**
@@ -96,7 +98,8 @@ class Request extends \Laminas\Http\PhpEnvironment\Request
      */
     protected function cleanup($param)
     {
-        if (is_array($param)
+        if (
+            is_array($param)
             || $param instanceof \Laminas\Stdlib\ParametersInterface
         ) {
             foreach ($param as $key => &$value) {

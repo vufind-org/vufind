@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Action Helper - Database upgrade tools
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Controller\Plugin;
 
 use Laminas\Db\Adapter\Adapter as DbAdapter;
@@ -279,7 +281,8 @@ class DbUpgrade extends AbstractPlugin
             $table['Name'],
             $collation
         );
-        if (strcasecmp($collation, $table['Collation']) !== 0
+        if (
+            strcasecmp($collation, $table['Collation']) !== 0
             || strcasecmp($charset, $tableCharset) !== 0
             || !empty($problemColumns)
         ) {
@@ -657,7 +660,8 @@ class DbUpgrade extends AbstractPlugin
                     );
                 }
                 $actualConstr = $this->normalizeConstraints($actual[$type][$name]);
-                if ($constraint['deleteRule'] !== $actualConstr['deleteRule']
+                if (
+                    $constraint['deleteRule'] !== $actualConstr['deleteRule']
                     || $constraint['updateRule'] !== $actualConstr['updateRule']
                 ) {
                     $modified[$name] = $constraint;
@@ -722,7 +726,8 @@ class DbUpgrade extends AbstractPlugin
             foreach ($foreignKeyMatches[0] as $i => $sql) {
                 $fkName = $foreignKeyMatches[1][$i];
                 // Skip constraint if we're logging and it's missing
-                if (isset($missingConstraints[$table])
+                if (
+                    isset($missingConstraints[$table])
                     && $this->constraintIsMissing(
                         $fkName,
                         $missingConstraints[$table]
@@ -831,7 +836,8 @@ class DbUpgrade extends AbstractPlugin
 
         // If it's not a blob or a text (which don't have explicit sizes in our SQL),
         // we should see what the character length is, if any:
-        if ($type != 'blob' && $type != 'text' && $type !== 'mediumtext'
+        if (
+            $type != 'blob' && $type != 'text' && $type !== 'mediumtext'
             && $type != 'longtext' && $type != 'json'
         ) {
             $charLen = $column->getCharacterMaximumLength();
@@ -844,7 +850,8 @@ class DbUpgrade extends AbstractPlugin
         // this is a display width which we can't retrieve using the column metadata
         // object.  Since display width is not important to VuFind, we should ignore
         // this factor when comparing things.
-        if ($type == 'int' || $type == 'tinyint' || $type == 'smallint'
+        if (
+            $type == 'int' || $type == 'tinyint' || $type == 'smallint'
             || $type == 'mediumint' || $type == 'bigint'
         ) {
             [$expectedType] = explode('(', $expectedType);
@@ -954,13 +961,15 @@ class DbUpgrade extends AbstractPlugin
             $actualColumns = $this->getTableColumns($table);
             foreach ($expectedColumns as $i => $column) {
                 // Skip column if we're logging and it's missing
-                if (isset($missingColumns[$table])
+                if (
+                    isset($missingColumns[$table])
                     && $this->columnIsMissing($column, $missingColumns[$table])
                 ) {
                     continue;
                 }
                 $currentColumn = $actualColumns[$column];
-                if (!$this->typeMatches($currentColumn, $expectedTypes[$i])
+                if (
+                    !$this->typeMatches($currentColumn, $expectedTypes[$i])
                     || !$this->defaultMatches(
                         $currentColumn->getColumnDefault(),
                         $columnDefinitions[$column]
@@ -1125,7 +1134,8 @@ class DbUpgrade extends AbstractPlugin
             foreach ($expectedKeys as $name => $expected) {
                 if (!isset($actualKeys[$name])) {
                     $add[$name] = $expected;
-                } elseif ($actualKeys[$name]['unique'] !== $expected['unique']
+                } elseif (
+                    $actualKeys[$name]['unique'] !== $expected['unique']
                     || $actualKeys[$name]['definition'] !== $expected['definition']
                 ) {
                     $drop[] = $name;

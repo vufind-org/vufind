@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for instantiating permission providers with request object.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Role\PermissionProvider;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -41,8 +43,7 @@ use Psr\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class InjectRequestFactory
-implements \Laminas\ServiceManager\Factory\FactoryInterface
+class InjectRequestFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object

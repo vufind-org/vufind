@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Solr spelling processor.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\Solr;
 
 use Laminas\Config\Config;
@@ -173,7 +175,8 @@ class SpellingProcessor
     {
         $allSuggestions = [];
         foreach ($spellcheck as $term => $info) {
-            if (!$this->shouldSkipTerm($query, $term, false)
+            if (
+                !$this->shouldSkipTerm($query, $term, false)
                 && ($suggestions = $this->formatAndFilterSuggestions($query, $info))
             ) {
                 $allSuggestions[$term] = [

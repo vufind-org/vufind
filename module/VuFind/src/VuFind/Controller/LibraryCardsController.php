@@ -1,4 +1,5 @@
 <?php
+
 /**
  * LibraryCards Controller
  *
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Controller;
 
 use VuFind\Exception\ILS as ILSException;
@@ -81,7 +83,8 @@ class LibraryCardsController extends AbstractBase
         }
 
         // Process email authentication:
-        if ($this->params()->fromQuery('auth_method') === 'Email'
+        if (
+            $this->params()->fromQuery('auth_method') === 'Email'
             && ($hash = $this->params()->fromQuery('hash'))
         ) {
             return $this->processEmailLink($user, $hash);
@@ -294,7 +297,8 @@ class LibraryCardsController extends AbstractBase
         if ($card->cat_username !== $username || trim($password)) {
             // Connect to the ILS and check that the credentials are correct:
             $loginMethod = $this->getILSLoginMethod($target);
-            if ('password' === $loginMethod
+            if (
+                'password' === $loginMethod
                 && !$this->getAuthManager()->allowsUserIlsLogin()
             ) {
                 throw new \Exception(

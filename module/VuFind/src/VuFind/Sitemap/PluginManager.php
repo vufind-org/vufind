@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Sitemap generator plugin manager
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Sitemap;
 
 use Laminas\ServiceManager\Factory\InvokableFactory;

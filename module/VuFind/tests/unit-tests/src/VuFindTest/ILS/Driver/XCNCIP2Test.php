@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ILS driver test
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\ILS\Driver;
 
 use InvalidArgumentException;
@@ -79,7 +81,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'title' => 'Anna Nahowská a císař František Josef : zápisky / Friedrich Saathen ; z něm. přel. Ivana Víz',
                     'item_id' => '105', 'renewable' => true,
                 ],
-            ],
+                ],
             ], [
                 'file' => [
                     'LookupUserResponseWithoutNamespacePrefix.xml',
@@ -138,7 +140,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'title' => 'Anna Nahowská a císař František Josef : zápisky / Friedrich Saathen ; z něm. přel. Ivana Víz',
                     'item_id' => '105', 'renewable' => false,
                 ],
-            ],
+                ],
             ],
         ];
 
@@ -156,7 +158,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'balance' => 25, 'checkout' => '', 'fine' => 'Service Charge',
                     'createdate' => '11-14-2014',
                 ],
-            ],
+                ],
             ], [
                 'file' => 'LookupUserResponseWithoutNamespacePrefix.xml',
                 'result' => [
@@ -182,7 +184,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'cat_username' => 'my_login', 'cat_password' => 'my_password',
                 'email' => 'test@mzk.cz', 'major' => null, 'college' => null,
                 'firstname' => 'John', 'lastname' => 'Smith',
-            ],
+                ],
             ], [
                 'file' => 'LookupUserResponseWithoutNamespacePrefix.xml',
                 'result' => [
@@ -223,7 +225,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'item_agency_id' => null, 'canceled' => false,
                     'available' => false,
                 ],
-            ],
+                ],
             ], [
                 'file' => 'LookupUserResponseWithoutNamespacePrefix.xml',
                 'result' => [
@@ -264,7 +266,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'address1' => 'Trvalá ulice 123, Big City, 12345', 'address2' => '',
                 'zip' => '', 'phone' => '', 'group' => '',
                 'expiration_date' => '12-30-2099',
-            ],
+                ],
             ], [
                 'file' => 'LookupUserResponseWithoutNamespacePrefix.xml',
                 'result' => [
@@ -317,7 +319,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'item_id' => 'MZK01001333770-MZK50001370317000020',
                     'available' => false,
                 ],
-            ],
+                ],
             ], [
                 'file' => 'LookupUserResponseWithoutNamespacePrefix.xml',
                 'result' => [
@@ -369,7 +371,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                         'id' => 'MZK01000000425', 'use_unknown_message' => true,
                     ],
                 ],
-            ],
+                ],
             ], [
                 'file' => 'lookupItemSetWithoutNamespacePrefix.xml', 'result' => [
                     'MZK01000000421' => [
@@ -458,7 +460,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'addStorageRetrievalRequestLink' => 'true', 'eresource' => '',
                     'collection_desc' => 'Some holding sublocation',
                 ],
-            ],
+                ],
             ],
         ];
 
@@ -510,7 +512,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             [
                 'file' => 'RequestItemResponseAcceptedWithItemId.xml', 'result' => [
                 'success' => true,
-            ],
+                ],
             ], [
                 'file' => 'RequestItemResponseAcceptedWithRequestId.xml',
                 'result' => [
@@ -554,7 +556,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                         'success' => true, 'status' => 'hold_cancel_success',
                     ],
                 ],
-            ],
+                ],
             ], [
                 'file' => 'CancelRequestItemResponseDenied.xml', 'result' => [
                     'count' => 0, 'items' => [
@@ -590,7 +592,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                         'status' => 'storage_retrieval_request_cancel_success',
                     ],
                 ],
-            ],
+                ],
             ], [
                 'file' => 'CancelRequestItemResponseDenied.xml', 'result' => [
                     'count' => 0, 'items' => [
@@ -628,7 +630,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                         'new_time' => '20:00', 'item_id' => 'Item1'
                     ],
                 ],
-            ],
+                ],
             ], [
                 'file' => 'RenewItemResponseAcceptedAlternativeDateFormat.xml',
                 'result' => [
@@ -667,7 +669,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                         'success' => false, 'item_id' => 'Item1'
                     ],
                 ],
-            ],
+                ],
             ], [
                 'file' => 'RenewItemResponseAcceptedAlternativeDateFormat.xml',
                 'result' => [
@@ -1285,7 +1287,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             [
             'username', 'password', 'patron agency', 'item agency', '', 'Hold', null,
             '12345'
-        ]
+            ]
         );
     }
 

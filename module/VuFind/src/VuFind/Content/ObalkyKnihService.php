@@ -26,6 +26,7 @@
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Content;
 
 /**
@@ -37,7 +38,8 @@ namespace VuFind\Content;
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
+class ObalkyKnihService implements
+    \VuFindHttp\HttpServiceAwareInterface,
     \Laminas\Log\LoggerAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
@@ -87,7 +89,8 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
      */
     public function __construct(\Laminas\Config\Config $config)
     {
-        if (!isset($config->base_url) || count($config->base_url) < 1
+        if (
+            !isset($config->base_url) || count($config->base_url) < 1
             || !isset($config->books_endpoint)
         ) {
             throw new \Exception(

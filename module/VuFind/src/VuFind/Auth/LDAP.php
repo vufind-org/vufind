@@ -1,4 +1,5 @@
 <?php
+
 /**
  * LDAP authentication class
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:authentication_handlers Wiki
  */
+
 namespace VuFind\Auth;
 
 use VuFind\Exception\Auth as AuthException;
@@ -55,7 +57,8 @@ class LDAP extends AbstractBase
         // Check for missing parameters:
         $requiredParams = ['host', 'port', 'basedn', 'username'];
         foreach ($requiredParams as $param) {
-            if (!isset($this->config->LDAP->$param)
+            if (
+                !isset($this->config->LDAP->$param)
                 || empty($this->config->LDAP->$param)
             ) {
                 throw new AuthException(

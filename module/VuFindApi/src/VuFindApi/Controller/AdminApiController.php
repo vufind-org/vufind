@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Admin Api Controller
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindApi\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
@@ -39,8 +41,7 @@ use VuFind\Cache\Manager as CacheManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class AdminApiController extends \VuFind\Controller\AbstractBase
-implements ApiInterface
+class AdminApiController extends \VuFind\Controller\AbstractBase implements ApiInterface
 {
     use ApiTrait;
 

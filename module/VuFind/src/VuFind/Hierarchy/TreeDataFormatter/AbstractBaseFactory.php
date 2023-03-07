@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -27,6 +28,7 @@ declare(strict_types=1);
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Hierarchy\TreeDataFormatter;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -43,8 +45,7 @@ use Psr\Container\ContainerInterface;
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AbstractBaseFactory
-implements \Laminas\ServiceManager\Factory\FactoryInterface
+class AbstractBaseFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object

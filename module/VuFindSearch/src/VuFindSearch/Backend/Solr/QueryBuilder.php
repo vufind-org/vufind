@@ -28,12 +28,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Solr;
 
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
-
 use VuFindSearch\Query\QueryGroup;
 
 /**
@@ -153,7 +153,8 @@ class QueryBuilder implements QueryBuilderInterface
 
         if ($handler = $this->getSearchHandler($finalQuery->getHandler(), $string)) {
             $string = $handler->preprocessQueryString($string);
-            if (!$handler->hasExtendedDismax()
+            if (
+                !$handler->hasExtendedDismax()
                 && $this->getLuceneHelper()->containsAdvancedLuceneSyntax($string)
             ) {
                 $string = $this->createAdvancedInnerSearchString($string, $handler);
@@ -192,7 +193,8 @@ class QueryBuilder implements QueryBuilderInterface
             if (empty($extraParam['param']) || empty($extraParam['value'])) {
                 continue;
             }
-            if (!$this->checkParamConditions($query, $extraParam['conditions'] ?? [])
+            if (
+                !$this->checkParamConditions($query, $extraParam['conditions'] ?? [])
             ) {
                 continue;
             }
@@ -414,7 +416,8 @@ class QueryBuilder implements QueryBuilderInterface
             // operations to determine eligibility for exact handling.
             if (isset($this->exactSpecs[$handler])) {
                 $searchString = trim($searchString);
-                if (strlen($searchString) > 1
+                if (
+                    strlen($searchString) > 1
                     && substr($searchString, 0, 1) == '"'
                     && substr($searchString, -1, 1) == '"'
                 ) {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Database" URL shortener test.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\UrlShortener;
 
 use Exception;
@@ -51,7 +53,7 @@ class DatabaseTest extends TestCase
     /**
      * Get the object to test.
      *
-     * @param  object $table Database table object/mock
+     * @param object $table Database table object/mock
      *
      * @return Database
      */
@@ -63,7 +65,7 @@ class DatabaseTest extends TestCase
     /**
      * Get the mock table object.
      *
-     * @param  array $methods Methods to mock.
+     * @param array $methods Methods to mock.
      *
      * @return object
      */

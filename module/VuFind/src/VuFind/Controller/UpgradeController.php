@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Upgrade Controller
  *
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Controller;
 
 use ArrayObject;
@@ -131,7 +133,8 @@ class UpgradeController extends AbstractBase
         // If auto-configuration is disabled, prevent any other action from being
         // accessed:
         $config = $this->getConfig();
-        if (!isset($config->System->autoConfigure)
+        if (
+            !isset($config->System->autoConfigure)
             || !$config->System->autoConfigure
         ) {
             $routeMatch = $e->getRouteMatch();
@@ -852,14 +855,16 @@ class UpgradeController extends AbstractBase
         }
 
         // First find out which version we are upgrading:
-        if (!isset($this->cookie->sourceDir)
+        if (
+            !isset($this->cookie->sourceDir)
             || !is_dir($this->cookie->sourceDir)
         ) {
             return $this->forwardTo('Upgrade', 'GetSourceDir');
         }
 
         // Next figure out which version(s) are involved:
-        if (!isset($this->cookie->oldVersion)
+        if (
+            !isset($this->cookie->oldVersion)
             || !isset($this->cookie->newVersion)
         ) {
             return $this->forwardTo('Upgrade', 'EstablishVersions');

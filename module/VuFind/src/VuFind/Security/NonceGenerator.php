@@ -26,6 +26,7 @@
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/ Wiki
  */
+
 namespace VuFind\Security;
 
 /**
@@ -55,7 +56,7 @@ class NonceGenerator
      * @return string
      * @throws \Exception
      */
-    public function getNonce() : String
+    public function getNonce(): string
     {
         if (!$this->_nonce) {
             $this->_nonce = base64_encode(random_bytes(32));

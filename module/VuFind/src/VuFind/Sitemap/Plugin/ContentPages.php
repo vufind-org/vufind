@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Content pages generator plugin
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\Sitemap\Plugin;
 
 use Laminas\Config\Config;
@@ -147,7 +149,8 @@ class ContentPages extends AbstractGeneratorPlugin
         // Check each file for language suffix and combine the files into a
         // non-language specific array
         foreach ($files as $fileInfo) {
-            if (in_array($fileInfo['relativeFile'], $this->excludedFiles)
+            if (
+                in_array($fileInfo['relativeFile'], $this->excludedFiles)
             ) {
                 continue;
             }

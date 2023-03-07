@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ComponentParts Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\RecordTab;
 
 use VuFind\RecordTab\ComponentParts;
@@ -47,7 +49,7 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetDescription(): void
     {
-        $searchObj=$this->getService();
+        $searchObj = $this->getService();
         $obj = new ComponentParts($searchObj);
         $expected = 'child_records';
         $this->assertSame($expected, $obj->getDescription());
@@ -60,7 +62,7 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetMaxResults(): void
     {
-        $searchObj=$this->getService();
+        $searchObj = $this->getService();
         $obj = new ComponentParts($searchObj);
         $this->assertSame(100, $obj->getMaxResults());
     }

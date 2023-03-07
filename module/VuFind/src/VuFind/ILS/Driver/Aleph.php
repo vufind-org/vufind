@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Aleph ILS driver
  *
@@ -35,10 +36,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use Laminas\I18n\Translator\TranslatorInterface;
-
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 
@@ -333,7 +334,8 @@ class AlephRestfulException extends ILSException
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
+class Aleph extends AbstractBase implements
+    \Laminas\Log\LoggerAwareInterface,
     \VuFindHttp\HttpServiceAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
@@ -551,7 +553,8 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
         $this->bib = explode(',', $this->config['Catalog']['bib']);
         $this->useradm = $this->config['Catalog']['useradm'];
         $this->admlib = $this->config['Catalog']['admlib'];
-        if (isset($this->config['Catalog']['wwwuser'])
+        if (
+            isset($this->config['Catalog']['wwwuser'])
             && isset($this->config['Catalog']['wwwpasswd'])
         ) {
             $this->wwwuser = $this->config['Catalog']['wwwuser'];
@@ -571,12 +574,14 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
         $this->quick_availability
             = $this->config['Catalog']['quick_availability'] ?? false;
         $this->debug_enabled = $this->config['Catalog']['debug'] ?? false;
-        if (isset($this->config['util']['tab40'])
+        if (
+            isset($this->config['util']['tab40'])
             && isset($this->config['util']['tab15'])
             && isset($this->config['util']['tab_sub_library'])
         ) {
             $cache = null;
-            if (isset($this->config['Cache']['type'])
+            if (
+                isset($this->config['Cache']['type'])
                 && null !== $this->cacheManager
             ) {
                 $cache = $this->cacheManager

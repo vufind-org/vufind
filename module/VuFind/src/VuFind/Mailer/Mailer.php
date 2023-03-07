@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Mailer Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Mailer;
 
 use Laminas\Mail\Address;
@@ -274,7 +276,8 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
             throw new MailException('Invalid Sender Email Address');
         }
 
-        if (!empty($this->fromAddressOverride)
+        if (
+            !empty($this->fromAddressOverride)
             && $this->fromAddressOverride != $fromEmail
         ) {
             // Add the original from address as the reply-to address unless

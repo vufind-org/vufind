@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PAIA ILS Driver for VuFind to get patron information
  *
@@ -29,6 +30,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use VuFind\Exception\Auth as AuthException;
@@ -395,7 +397,8 @@ class PAIA extends DAIA
                     $array_response['error'] ?? ' ' .
                     $array_response['error_description'] ?? ' '
             ];
-        } elseif (isset($array_response['patron'])
+        } elseif (
+            isset($array_response['patron'])
             && $array_response['patron'] === $post_data['patron']
         ) {
             // on success patron_id is returned
@@ -931,7 +934,8 @@ class PAIA extends DAIA
     {
         // check also for grantType as patron's password is never required when
         // grantType = client_credentials is configured
-        if ($username == ''
+        if (
+            $username == ''
             || ($password == '' && $this->grantType != 'client_credentials')
         ) {
             throw new ILSException('Invalid Login, Please try again.');
@@ -1346,7 +1350,8 @@ class PAIA extends DAIA
                 foreach ($itemsResponse['doc'] as $doc) {
                     $filterCounter = 0;
                     foreach ($filter as $filterKey => $filterValue) {
-                        if (isset($doc[$filterKey])
+                        if (
+                            isset($doc[$filterKey])
                             && in_array($doc[$filterKey], (array)$filterValue)
                         ) {
                             $filterCounter++;
@@ -1816,7 +1821,8 @@ class PAIA extends DAIA
             case 'client_credentials':
                 // client_credentials only works if we have client_credentials
                 // username and password (see PAIA.ini for further explanation)
-                if (isset($this->config['PAIA']['clientUsername'])
+                if (
+                    isset($this->config['PAIA']['clientUsername'])
                     && isset($this->config['PAIA']['clientPassword'])
                 ) {
                     $header_data["Authorization"] = 'Basic ' .
@@ -1965,7 +1971,8 @@ class PAIA extends DAIA
     public function checkRequestIsValid($id, $data, $patron)
     {
         // TODO: make this more configurable
-        if (isset($patron['status']) && $patron['status'] == 0
+        if (
+            isset($patron['status']) && $patron['status'] == 0
             && isset($patron['expires']) && $patron['expires'] > date('Y-m-d')
             && in_array(self::SCOPE_WRITE_ITEMS, $this->getScope())
         ) {

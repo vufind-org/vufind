@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Hold Logic Class
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\ILS\Logic;
 
 use VuFind\Exception\ILS as ILSException;
@@ -133,12 +135,14 @@ class Holds
                     if (in_array($fieldName, ['notes', 'holdings_notes'])) {
                         if (empty($item[$fieldName])) {
                             // begin aliasing
-                            if ($fieldName == 'notes'
+                            if (
+                                $fieldName == 'notes'
                                 && !empty($item['holdings_notes'])
                             ) {
                                 // using notes as alias for holdings_notes
                                 $item[$fieldName] = $item['holdings_notes'];
-                            } elseif ($fieldName == 'holdings_notes'
+                            } elseif (
+                                $fieldName == 'holdings_notes'
                                 && !empty($item['notes'])
                             ) {
                                 // using holdings_notes as alias for notes
@@ -290,7 +294,8 @@ class Holds
                 if ($show) {
                     if ($holdConfig) {
                         // Is this copy holdable / linkable
-                        if (!$requestsBlocked
+                        if (
+                            !$requestsBlocked
                             && ($copy['addLink'] ?? false)
                             && ($copy['is_holdable'] ?? true)
                         ) {
@@ -440,7 +445,8 @@ class Holds
         foreach ($holdings as &$location) {
             foreach ($location as &$copy) {
                 // Is this copy requestable
-                if (!$requestsBlocked
+                if (
+                    !$requestsBlocked
                     && isset($copy['addStorageRetrievalRequestLink'])
                     && $copy['addStorageRetrievalRequestLink']
                 ) {
@@ -490,7 +496,8 @@ class Holds
         foreach ($holdings as &$location) {
             foreach ($location as &$copy) {
                 // Is this copy requestable
-                if (!$requestsBlocked && isset($copy['addILLRequestLink'])
+                if (
+                    !$requestsBlocked && isset($copy['addILLRequestLink'])
                     && $copy['addILLRequestLink']
                 ) {
                     $copy['ILLRequestLink'] = $this->getRequestDetails(

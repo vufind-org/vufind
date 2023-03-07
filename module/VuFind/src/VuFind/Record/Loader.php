@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Record loader
  *
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Record;
 
 use VuFind\Exception\RecordMissing as RecordMissingException;
@@ -120,7 +122,8 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
     ) {
         if (null !== $id && '' !== $id) {
             $results = [];
-            if (null !== $this->recordCache
+            if (
+                null !== $this->recordCache
                 && $this->recordCache->isPrimary($source)
             ) {
                 $results = $this->recordCache->lookup($id, $source);
@@ -136,7 +139,8 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
                     }
                 }
             }
-            if (empty($results) && null !== $this->recordCache
+            if (
+                empty($results) && null !== $this->recordCache
                 && $this->recordCache->isFallback($source)
             ) {
                 $results = $this->recordCache->lookup($id, $source);
@@ -146,7 +150,8 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
                 return $results[0];
             }
 
-            if ($this->fallbackLoader
+            if (
+                $this->fallbackLoader
                 && $this->fallbackLoader->has($source)
             ) {
                 try {
@@ -233,7 +238,8 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
         }
 
         $retVal = $genuineRecords;
-        if ($list->hasUnchecked() && $this->fallbackLoader
+        if (
+            $list->hasUnchecked() && $this->fallbackLoader
             && $this->fallbackLoader->has($source)
         ) {
             try {
@@ -257,7 +263,8 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
             }
         }
 
-        if ($list->hasUnchecked() && null !== $this->recordCache
+        if (
+            $list->hasUnchecked() && null !== $this->recordCache
             && $this->recordCache->isFallback($source)
         ) {
             // Try to load missing records from cache if source is cachable

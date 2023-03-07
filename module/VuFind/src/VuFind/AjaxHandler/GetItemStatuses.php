@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Get Item Status" AJAX handler
  *
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\AjaxHandler;
 
 use Laminas\Config\Config;
@@ -52,7 +54,8 @@ use VuFind\Session\Settings as SessionSettings;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface,
+class GetItemStatuses extends AbstractBase implements
+    TranslatorAwareInterface,
     \VuFind\I18n\HasSorterInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
@@ -282,7 +285,8 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface,
                 $available = true;
             }
             // Check for a use_unknown_message flag
-            if (isset($info['use_unknown_message'])
+            if (
+                isset($info['use_unknown_message'])
                 && $info['use_unknown_message'] == true
             ) {
                 $use_unknown_status = true;
@@ -369,7 +373,8 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface,
                 $available = $locations[$info['location']]['available'] = true;
             }
             // Check for a use_unknown_message flag
-            if (isset($info['use_unknown_message'])
+            if (
+                isset($info['use_unknown_message'])
                 && $info['use_unknown_message'] == true
             ) {
                 $use_unknown_status = true;

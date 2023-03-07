@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Table Definition for resource
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
@@ -248,7 +250,8 @@ class Resource extends Gateway
      */
     public function updateRecordId($oldId, $newId, $source = DEFAULT_SEARCH_BACKEND)
     {
-        if ($oldId !== $newId
+        if (
+            $oldId !== $newId
             && $resource = $this->findResource($oldId, $source, false)
         ) {
             $tableObjects = [];

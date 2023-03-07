@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Advanced Dummy ILS Driver -- Returns sample values based on Solr index.
  *
@@ -31,6 +32,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use ArrayObject;
@@ -316,9 +318,9 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         switch ($loc) {
             case 10:
                 return "Missing";
-            case  9:
+            case 9:
                 return "On Order";
-            case  8:
+            case 8:
                 return "Invoiced";
             default:
                 return "Available";
@@ -609,7 +611,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                     : '';
                 if ($requestType == 'ILLRequests') {
                     $transit = rand() % 2;
-                    if (!$currentItem['available']
+                    if (
+                        !$currentItem['available']
                         && !$currentItem['canceled']
                         && $transit == 1
                     ) {
@@ -909,7 +912,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         }
 
         if (isset($this->config['Users'])) {
-            if (!isset($this->config['Users'][$username])
+            if (
+                !isset($this->config['Users'][$username])
                 || $password !== $this->config['Users'][$username]
             ) {
                 return null;
@@ -1783,7 +1787,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         $results = [];
         $session = $this->getSession($patron['id']);
         foreach ($session->holds as &$currentHold) {
-            if (!isset($currentHold['updateDetails'])
+            if (
+                !isset($currentHold['updateDetails'])
                 || !in_array($currentHold['updateDetails'], $holdsDetails)
             ) {
                 continue;
@@ -2046,7 +2051,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
 
         $requestGroup = '';
         foreach ($this->getRequestGroups(null, null) as $group) {
-            if (isset($holdDetails['requestGroupId'])
+            if (
+                isset($holdDetails['requestGroupId'])
                 && $group['id'] == $holdDetails['requestGroupId']
             ) {
                 $requestGroup = $group['name'];
@@ -2153,7 +2159,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         // Make sure pickup location is valid
         $pickUpLocation = $details['pickUpLocation'] ?? null;
         $validLocations = array_column($this->getPickUpLocations(), 'locationID');
-        if (null !== $pickUpLocation
+        if (
+            null !== $pickUpLocation
             && !in_array($pickUpLocation, $validLocations)
         ) {
             return [
@@ -2182,7 +2189,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             : 0;
 
         // Figure out appropriate expiration date:
-        if (!isset($details['requiredBy'])
+        if (
+            !isset($details['requiredBy'])
             || empty($details['requiredBy'])
         ) {
             $expire = strtotime("now + 30 days");
@@ -2297,7 +2305,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             : 0;
 
         // Figure out appropriate expiration date:
-        if (!isset($details['requiredBy'])
+        if (
+            !isset($details['requiredBy'])
             || empty($details['requiredBy'])
         ) {
             $expire = strtotime('now + 30 days');
@@ -2564,7 +2573,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 'itemLimit' => $this->config['Holdings']['itemLimit'] ?? null,
             ];
         }
-        if ($function == 'StorageRetrievalRequests'
+        if (
+            $function == 'StorageRetrievalRequests'
             && $this->storageRetrievalRequests
         ) {
             return [

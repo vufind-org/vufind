@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Central class for connecting to Pazpar2 resources used by VuFind.
  *
@@ -25,12 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:architecture Wiki
  */
+
 namespace VuFindSearch\Backend\Pazpar2;
 
 use Laminas\Http\Client;
 use Laminas\Http\Request;
 use VuFindSearch\Backend\Exception\HttpErrorException;
-
 use VuFindSearch\ParamBag;
 
 /**
@@ -135,7 +136,8 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         $xml = simplexml_load_string($xmlStr);
 
         // If our session has expired, start a new session
-        if ($command !== 'init'
+        if (
+            $command !== 'init'
             && $xml->session == $this->session && isset($this->session)
         ) {
             $this->init();

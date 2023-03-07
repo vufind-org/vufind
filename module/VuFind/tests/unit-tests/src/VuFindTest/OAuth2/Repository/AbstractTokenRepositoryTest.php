@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Abstract base class for OAuth2 token repository tests.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\OAuth2\Repository;
 
 use PHPUnit\Framework\MockObject\MockObject;
@@ -58,7 +60,8 @@ abstract class AbstractTokenRepositoryTest extends \PHPUnit\Framework\TestCase
             bool $create
         ): ?AccessTokenRow {
             foreach ($this->accessTokenTable as $row) {
-                if ($id === $row['id']
+                if (
+                    $id === $row['id']
                     && $type === $row['type']
                 ) {
                     return $this->createAccessTokenRow($row);
@@ -101,7 +104,8 @@ abstract class AbstractTokenRepositoryTest extends \PHPUnit\Framework\TestCase
         $save = function () use ($result) {
             $data = $result->toArray();
             foreach ($this->accessTokenTable as &$row) {
-                if ($data['id'] === $row['id']
+                if (
+                    $data['id'] === $row['id']
                     && $data['type'] === $row['type']
                 ) {
                     $row = $data;

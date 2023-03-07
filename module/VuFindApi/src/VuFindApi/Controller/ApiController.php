@@ -1,4 +1,5 @@
 <?php
+
 /**
  * API Controller
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
+
 namespace VuFindApi\Controller;
 
 /**
@@ -76,7 +78,8 @@ class ApiController extends \VuFind\Controller\AbstractBase
         // Disable session writes
         $this->disableSessionWrites();
 
-        if (null === $this->getRequest()->getQuery('swagger')
+        if (
+            null === $this->getRequest()->getQuery('swagger')
             && null === $this->getRequest()->getQuery('openapi')
         ) {
             $urlHelper = $this->getViewRenderer()->plugin('url');

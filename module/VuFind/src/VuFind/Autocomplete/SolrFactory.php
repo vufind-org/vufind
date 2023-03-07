@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for Solr-driven autocomplete plugins. Works for \VuFind\Autocomplete\Solr
  * and all of its subclasses.
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Autocomplete;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;

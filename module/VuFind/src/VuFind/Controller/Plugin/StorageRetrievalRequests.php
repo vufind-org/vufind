@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Action Helper - Storage Retrieval Requests Support Methods
  *
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Controller\Plugin;
 
 /**
@@ -57,7 +59,8 @@ class StorageRetrievalRequests extends AbstractRequestBase
     {
         // Generate form details for cancelling requests if enabled
         if ($cancelStatus) {
-            if ($cancelStatus['function'] == 'getCancelStorageRetrievalRequestsLink'
+            if (
+                $cancelStatus['function'] == 'getCancelStorageRetrievalRequestsLink'
             ) {
                 // Build OPAC URL
                 $ilsDetails['cancel_link']

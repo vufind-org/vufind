@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Driver for offline/missing ILS.
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use VuFind\Exception\ILS as ILSException;
@@ -264,7 +266,8 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
             // If the details coming back from the record driver include the
             // ID prefix, strip it off!
             $idPrefix = $this->getIdPrefix();
-            if (isset($result[0]['id']) && strlen($idPrefix)
+            if (
+                isset($result[0]['id']) && strlen($idPrefix)
                 && $idPrefix === substr($result[0]['id'], 0, strlen($idPrefix))
             ) {
                 $result[0]['id'] = substr($result[0]['id'], strlen($idPrefix));

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Admin Tag Controller
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindAdmin\Controller;
 
 /**
@@ -140,7 +142,8 @@ class TagsController extends AbstractAdmin
         $confirm = $this->params()->fromPost('confirm', false);
 
         // Delete All
-        if ("manage" == $origin
+        if (
+            "manage" == $origin
             || null !== $this->getRequest()->getPost('deleteFilter')
             || null !== $this->getRequest()->getQuery('deleteFilter')
         ) {

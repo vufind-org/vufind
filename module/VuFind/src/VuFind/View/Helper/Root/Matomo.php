@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Matomo web analytics view helper for Matomo versions >= 4
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\View\Helper\Root;
 
 use VuFind\RecordDriver\AbstractBase as RecordDriverBase;
@@ -498,7 +500,8 @@ EOT;
         $path = $this->request->getUri()->toString();
         // Replace 'AjaxTab' with tab name in record page URLs:
         $routeMatch = $this->router->match($this->request);
-        if ($routeMatch
+        if (
+            $routeMatch
             && substr($routeMatch->getMatchedRouteName(), -8) === '-ajaxtab'
             && null !== ($pos = strrpos($path, '/AjaxTab'))
             && ($tab = $this->request->getPost('tab'))

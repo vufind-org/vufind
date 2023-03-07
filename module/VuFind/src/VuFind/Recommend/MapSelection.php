@@ -1,4 +1,5 @@
 <?php
+
 /**
  * MapSelection Recommendations Module
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
+
 namespace VuFind\Recommend;
 
 use VuFindSearch\Backend\Solr\Command\RawJsonSearchCommand;
@@ -41,7 +43,8 @@ use VuFindSearch\Service;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class MapSelection implements \VuFind\Recommend\RecommendInterface,
+class MapSelection implements
+    \VuFind\Recommend\RecommendInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
@@ -189,11 +192,12 @@ class MapSelection implements \VuFind\Recommend\RecommendInterface,
         foreach ($filters as $key => $value) {
             if ($key == $this->geoField) {
                 $match = [];
-                if (preg_match(
-                    '/Intersects\(ENVELOPE\((.*), (.*), (.*), (.*)\)\)/',
-                    $value[0],
-                    $match
-                )
+                if (
+                    preg_match(
+                        '/Intersects\(ENVELOPE\((.*), (.*), (.*), (.*)\)\)/',
+                        $value[0],
+                        $match
+                    )
                 ) {
                     array_push(
                         $this->bboxSearchCoords,

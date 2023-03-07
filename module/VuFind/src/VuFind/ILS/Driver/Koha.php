@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Koha ILS Driver
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use PDO;
@@ -227,7 +229,8 @@ class Koha extends AbstractBase
                         }
                         break;
                     case 1: // The item is not available for loan
-                    default: $available = false;
+                    default:
+                        $available = false;
                         $status = 'Not for loan';
                         $duedate = '';
                         break;
@@ -492,7 +495,8 @@ class Koha extends AbstractBase
                     ? [$row['TYPE']]
                     : [$this->blockTerms[$row['TYPE']]];
 
-                if (!empty($this->showBlockComments[$row['TYPE']])
+                if (
+                    !empty($this->showBlockComments[$row['TYPE']])
                     && !empty($row['COMMENT'])
                 ) {
                     $block[] = $row['COMMENT'];

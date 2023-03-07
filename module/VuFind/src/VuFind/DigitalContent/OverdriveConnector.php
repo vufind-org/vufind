@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHP version 7
  *
@@ -26,6 +27,7 @@
  *           License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\DigitalContent;
 
 use Exception;
@@ -59,8 +61,10 @@ use VuFind\Exception\ILS as ILSException;
  *       provide option for asking about autocheckout for every hold
  *       provide config options for how to handle patrons with no access to OD
  */
-class OverdriveConnector implements LoggerAwareInterface,
-    AuthorizationServiceAwareInterface, \VuFindHttp\HttpServiceAwareInterface
+class OverdriveConnector implements
+    LoggerAwareInterface,
+    AuthorizationServiceAwareInterface,
+    \VuFindHttp\HttpServiceAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait {
         logError as error;
@@ -183,11 +187,12 @@ class OverdriveConnector implements LoggerAwareInterface,
 
         $odAccess = $this->getSessionContainer()->odAccess;
         if ($refresh || empty($odAccess)) {
-            if ($this->connectToPatronAPI(
-                $user["cat_username"],
-                $user["cat_password"],
-                true
-            )
+            if (
+                $this->connectToPatronAPI(
+                    $user["cat_username"],
+                    $user["cat_password"],
+                    true
+                )
             ) {
                 $result = $this->getSessionContainer()->odAccess
                     = $this->getResultObject(true);
@@ -198,10 +203,11 @@ class OverdriveConnector implements LoggerAwareInterface,
                 $conf = $this->getConfig();
 
                 if ($conf->noAccessString) {
-                    if (strpos(
-                        $this->getSessionContainer()->odAccessMessage,
-                        (string)$conf->noAccessString
-                    ) !== false
+                    if (
+                        strpos(
+                            $this->getSessionContainer()->odAccessMessage,
+                            (string)$conf->noAccessString
+                        ) !== false
                     ) {
                         // this user should not have access to OD
                         $result->code = "od_account_noaccess";
@@ -891,9 +897,10 @@ class OverdriveConnector implements LoggerAwareInterface,
         if ($result->status) {
             $checkouts = $result->data;
             foreach ($checkouts as $checkout) {
-                if (strtolower($checkout->reserveId) == strtolower(
-                    $overDriveId
-                )
+                if (
+                    strtolower($checkout->reserveId) == strtolower(
+                        $overDriveId
+                    )
                 ) {
                     return $checkout;
                 }
@@ -1031,7 +1038,8 @@ class OverdriveConnector implements LoggerAwareInterface,
                     $result->data = $response->holds;
                     // Check for holds ready for chechout
                     foreach ($response->holds as $key => $hold) {
-                        if (!$hold->autoCheckout
+                        if (
+                            !$hold->autoCheckout
                             && $hold->holdListPosition == 1
                         ) {
                             $result->data[$key]->holdReadyForCheckout = true;
@@ -1095,7 +1103,8 @@ class OverdriveConnector implements LoggerAwareInterface,
             }
             if ($headers === null) {
                 $headers = [];
-                if (isset($tokenData->token_type)
+                if (
+                    isset($tokenData->token_type)
                     && isset($tokenData->access_token)
                 ) {
                     $headers[] = "Authorization: {$tokenData->token_type} "
@@ -1166,7 +1175,8 @@ class OverdriveConnector implements LoggerAwareInterface,
         $conf = $this->getConfig();
         $tokenData = $this->getSessionContainer()->tokenData;
         $this->debug("API Token from session: " . print_r($tokenData, true));
-        if ($forceNewConnection || $tokenData == null
+        if (
+            $forceNewConnection || $tokenData == null
             || !isset($tokenData->access_token)
             || time() >= $tokenData->expirationTime
         ) {
@@ -1319,7 +1329,8 @@ class OverdriveConnector implements LoggerAwareInterface,
             $this->debug("response from call: " . print_r($returnVal, true));
 
             if ($returnVal != null) {
-                if (!isset($returnVal->message)
+                if (
+                    !isset($returnVal->message)
                     || $returnVal->message != 'An unexpected error has occurred.'
                 ) {
                     return $returnVal;
@@ -1357,7 +1368,8 @@ class OverdriveConnector implements LoggerAwareInterface,
     ) {
         $patronTokenData = $this->getSessionContainer()->patronTokenData;
         $config = $this->getConfig();
-        if ($forceNewConnection
+        if (
+            $forceNewConnection
             || $patronTokenData == null
             || ($patronTokenData->expirationTime
             && time() >= $patronTokenData->expirationTime)

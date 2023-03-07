@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Multiple Backend Driver.
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use VuFind\Exception\ILS as ILSException;
@@ -305,7 +307,8 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
             // If the patron belongs to another source, just pass on an empty array
             // to indicate that the patron has logged in but is not available for the
             // current catalog.
-            if ($patron
+            if (
+                $patron
                 && !$this->driverSupportsSource($source, $patron['cat_username'])
             ) {
                 $patron = [];
@@ -589,7 +592,8 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     {
         $source = $this->getSource($patron['cat_username']);
         if ($driver = $this->getDriver($source)) {
-            if (!$this->driverSupportsSource($source, $id)
+            if (
+                !$this->driverSupportsSource($source, $id)
                 || !is_callable([$driver, 'checkStorageRetrievalRequestIsValid'])
             ) {
                 return false;
@@ -705,7 +709,8 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
                 $this->stripIdPrefixes($patron, $source),
                 $this->stripIdPrefixes($holdDetails, $source)
             ];
-            if (!$this->driverSupportsSource($source, $id)
+            if (
+                !$this->driverSupportsSource($source, $id)
                 || !$this->driverSupportsMethod($driver, __FUNCTION__, $params)
             ) {
                 // Return empty array since the sources don't match or the method
@@ -741,7 +746,8 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
                 $this->stripIdPrefixes($holdDetails, $source)
             ];
             if (!empty($holdDetails)) {
-                if (!$this->driverSupportsSource($source, $holdDetails['id'])
+                if (
+                    !$this->driverSupportsSource($source, $holdDetails['id'])
                     || !$this->driverSupportsMethod($driver, __FUNCTION__, $params)
                 ) {
                     // Return false since the sources don't match or the method
@@ -826,7 +832,8 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
     {
         $source = $this->getSource($details['patron']['cat_username']);
         $driver = $this->getDriver($source);
-        if ($driver
+        if (
+            $driver
             && is_callable([$driver, 'placeStorageRetrievalRequest'])
         ) {
             if (!$this->driverSupportsSource($source, $details['id'])) {
@@ -1321,7 +1328,8 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
                     $modifyFields
                 );
             } else {
-                if (!ctype_digit((string)$key)
+                if (
+                    !ctype_digit((string)$key)
                     && $value !== ''
                     && in_array($key, $modifyFields)
                 ) {
@@ -1370,7 +1378,8 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
                 );
             } else {
                 $prefixLen = strlen($source) + 1;
-                if ((!is_array($data)
+                if (
+                    (!is_array($data)
                     || (!ctype_digit((string)$key) && in_array($key, $modifyFields)))
                     && strncmp("$source.", $value, $prefixLen) == 0
                 ) {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Config Plugin Factory
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Config;
 
 use Laminas\Config\Config;
@@ -126,7 +128,8 @@ class PluginFactory implements AbstractFactoryInterface
                 if ($section === 'Parent_Config') {
                     continue;
                 }
-                if (in_array($section, $overrideSections)
+                if (
+                    in_array($section, $overrideSections)
                     || !isset($config->$section)
                 ) {
                     $config->$section = $child->$section;
@@ -136,7 +139,8 @@ class PluginFactory implements AbstractFactoryInterface
                         // remains a Laminas\Config\Config object. If the current
                         // section is not configured as an override section we try to
                         // merge the key[] values instead of overwriting them.
-                        if (is_object($config->$section->$key)
+                        if (
+                            is_object($config->$section->$key)
                             && is_object($child->$section->$key)
                             && $mergeArraySettings
                         ) {

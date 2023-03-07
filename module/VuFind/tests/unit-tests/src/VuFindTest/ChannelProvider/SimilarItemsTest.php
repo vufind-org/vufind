@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SimilarItems Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\ChannelProvider;
 
 use VuFind\ChannelProvider\SimilarItems;
@@ -80,7 +82,7 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
         $recordDriver = $this->getDriver();
         $results->expects($this->once())->method('getResults')
             ->willReturn([$recordDriver]);
-        [$similar, $expectedResult]= $this->configureTestTargetAndExpectations();
+        [$similar, $expectedResult] = $this->configureTestTargetAndExpectations();
         $this->assertSame($expectedResult, $similar->getFromSearch($results));
     }
 
@@ -221,7 +223,7 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
             ],
 
         ]];
-        $routeDetails = ['route' => 'test_route', 'params' => ['id'=> 'route_id']];
+        $routeDetails = ['route' => 'test_route', 'params' => ['id' => 'route_id']];
         $router->expects($this->once())->method('getRouteDetails')
             ->with($this->equalTo($recordDriver))
             ->willReturn($routeDetails);

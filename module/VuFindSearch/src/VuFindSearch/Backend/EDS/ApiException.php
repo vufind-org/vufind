@@ -1,4 +1,5 @@
 <?php
+
 /**
  * EBSCO API Exception class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\EDS;
 
 /**
@@ -82,7 +84,8 @@ class ApiException extends \VuFindSearch\Backend\Exception\BackendException
             $this->apiErrorDetails['Description'] = $message['ErrorDescription'];
             $this->apiErrorDetails['DetailedDescription']
                 = $message['DetailedErrorDescription'];
-        } elseif (is_array($message['errors'] ?? null)
+        } elseif (
+            is_array($message['errors'] ?? null)
             && count($message['errors']) > 0
         ) {
             // Array of errors

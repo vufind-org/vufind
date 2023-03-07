@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Symphony Web Services (symws) ILS Driver
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use Laminas\Log\LoggerAwareInterface;
@@ -148,7 +150,8 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
         ];
 
         // Initialize cache manager.
-        if (isset($this->config['PolicyCache']['type'])
+        if (
+            isset($this->config['PolicyCache']['type'])
             && $this->cacheManager
         ) {
             $this->policyCache = $this->cacheManager
@@ -308,7 +311,8 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
         if (isset($options['login'])) {
             $login    = $options['login'];
             $password = $options['password'] ?? null;
-        } elseif (isset($options['WebServices']['login'])
+        } elseif (
+            isset($options['WebServices']['login'])
             && !in_array(
                 $operation,
                 ['isRestrictedAccess', 'license', 'loginUser', 'version']
@@ -637,7 +641,8 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                     $notes[] = $itemInfo->publicNote;
                 }
 
-                if (isset($itemInfo->staffNote)
+                if (
+                    isset($itemInfo->staffNote)
                     && $this->config['Behaviors']['showStaffNotes']
                 ) {
                     $notes[] = $itemInfo->staffNote;
@@ -727,7 +732,8 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
         foreach ($boundwithLinkInfos as $boundwithLinkInfo) {
             // Ignore BoundwithLinkInfos which do not refer to parents
             // or which refer to the record we're already looking at.
-            if (!$boundwithLinkInfo->linkedAsParent
+            if (
+                !$boundwithLinkInfo->linkedAsParent
                 || $boundwithLinkInfo->linkedTitle->titleID == $ckey
             ) {
                 continue;
@@ -787,7 +793,8 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
 
             /* Allow returned holdings information to be
              * limited to a specified list of library names. */
-            if (isset($this->config['holdings']['include_libraries'])
+            if (
+                isset($this->config['holdings']['include_libraries'])
                 && !in_array(
                     $library_id,
                     $this->config['holdings']['include_libraries']
@@ -798,7 +805,8 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
 
             /* Allow libraries to be excluded by name
              * from returned holdings information. */
-            if (isset($this->config['holdings']['exclude_libraries'])
+            if (
+                isset($this->config['holdings']['exclude_libraries'])
                 && in_array(
                     $library_id,
                     $this->config['holdings']['exclude_libraries']
@@ -1136,7 +1144,8 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                     ? $resp->patronAddressInfo->$AddressNInfo
                     : [$resp->patronAddressInfo->$AddressNInfo];
                 foreach ($addrinfos as $addrinfo) {
-                    if ($addrinfo->addressPolicyID == 'EMAIL'
+                    if (
+                        $addrinfo->addressPolicyID == 'EMAIL'
                         && !empty($addrinfo->addressValue)
                     ) {
                         $patron['email'] = $addrinfo->addressValue;
@@ -1633,7 +1642,8 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
 
             if (isset($this->policies[$policyType])) {
                 return $this->policies[$policyType];
-            } elseif ($this->policyCache
+            } elseif (
+                $this->policyCache
                 && ($policyList = $this->policyCache->getItem($cacheKey))
             ) {
                 $this->policies[$policyType] = $policyList;

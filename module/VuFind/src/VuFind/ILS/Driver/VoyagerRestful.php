@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Voyager ILS Driver
  *
@@ -29,6 +30,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use PDO;
@@ -403,7 +405,8 @@ class VoyagerRestful extends Voyager implements
     protected function isStorageRetrievalRequestAllowed($holdingsRow)
     {
         $holdingsRow = $holdingsRow['_fullRow'];
-        if (!isset($holdingsRow['TEMP_ITEM_TYPE_ID'])
+        if (
+            !isset($holdingsRow['TEMP_ITEM_TYPE_ID'])
             || !isset($holdingsRow['ITEM_TYPE_ID'])
         ) {
             // Not a real item
@@ -527,7 +530,8 @@ class VoyagerRestful extends Voyager implements
 
             if ($isStorageRetrievalRequestAllowed) {
                 if ($patron) {
-                    if ($i < $this->callSlipCheckLimit
+                    if (
+                        $i < $this->callSlipCheckLimit
                         && $this->callSlipCheckLimit != '0'
                     ) {
                         $storageRetrieval = $this->checkItemRequests(
@@ -618,7 +622,8 @@ class VoyagerRestful extends Voyager implements
      */
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
     {
-        if (!isset($this->config['StorageRetrievalRequests'])
+        if (
+            !isset($this->config['StorageRetrievalRequests'])
             || $this->checkAccountBlocks($patron['id'])
         ) {
             return false;
@@ -704,7 +709,8 @@ class VoyagerRestful extends Voyager implements
                 ];
             }
         } else {
-            if ($this->requestGroupsEnabled
+            if (
+                $this->requestGroupsEnabled
                 && $this->pickupLocationsInRequestGroup
                 && !empty($holdDetails['requestGroupId'])
             ) {
@@ -1233,7 +1239,8 @@ EOT;
             ];
 
             $blocks = $this->makeRequest($hierarchy, $params);
-            if ($blocks
+            if (
+                $blocks
                 && (string)$blocks->{'reply-text'} == 'ok'
                 && isset($blocks->blocks->institution->borrowingBlock)
             ) {
@@ -1356,7 +1363,8 @@ EOT;
             // The service doesn't actually return messages (in Voyager 8.1),
             // but maybe in the future...
             foreach ($response->xpath('//ser:message') as $message) {
-                if ($message->attributes()->type == 'system'
+                if (
+                    $message->attributes()->type == 'system'
                     || $message->attributes()->type == 'error'
                 ) {
                     return false;
@@ -1488,7 +1496,8 @@ EOT;
         $type,
         $requestData
     ) {
-        if (empty($patron) || empty($requestData) || empty($requestData['bibId'])
+        if (
+            empty($patron) || empty($requestData) || empty($requestData['bibId'])
             || empty($type)
         ) {
             return ['success' => false, 'status' => 'hold_error_fail'];
@@ -2001,7 +2010,8 @@ EOT;
             return $this->holdError('hold_invalid_pickup');
         }
 
-        if ($this->requestGroupsEnabled && !$itemId
+        if (
+            $this->requestGroupsEnabled && !$itemId
             && empty($holdDetails['requestGroupId'])
         ) {
             return $this->holdError('hold_invalid_request_group');
@@ -2025,7 +2035,8 @@ EOT;
             if (isset($this->config['Holds'][$key])) {
                 $disabledGroups = explode(':', $this->config['Holds'][$key]);
             }
-            if (!isset($holdDetails['requestGroupId'])
+            if (
+                !isset($holdDetails['requestGroupId'])
                 || !in_array($holdDetails['requestGroupId'], $disabledGroups)
             ) {
                 $available = $this->itemsAvailable(
@@ -2224,7 +2235,8 @@ EOT;
                         $renewable = (string)$loan->attributes()->canRenew == 'Y';
 
                         foreach ($transactions as &$transaction) {
-                            if (!isset($transaction['institution_id'])
+                            if (
+                                !isset($transaction['institution_id'])
                                 && $transaction['item_id'] == (string)$loan->itemId
                             ) {
                                 $transaction['renewable'] = $renewable;
@@ -2411,7 +2423,8 @@ EOT;
         $requests = [];
         if (isset($results->callslips->institution)) {
             foreach ($results->callslips->institution as $institution) {
-                if (!$local
+                if (
+                    !$local
                     && $this->isLocalInst((string)$institution->attributes()->id)
                 ) {
                     // Unless $local is set, ignore local callslips; we have them
@@ -2491,7 +2504,8 @@ EOT;
         $bibId = $details['id'];
 
         // Make Sure Pick Up Location is Valid
-        if (isset($details['pickUpLocation'])
+        if (
+            isset($details['pickUpLocation'])
             && !$this->pickUpLocationIsValid(
                 $details['pickUpLocation'],
                 $patron,
@@ -3345,7 +3359,8 @@ EOT;
             $sql = "SELECT PATRON_PIN FROM {$this->dbName}.PATRON WHERE"
                 . ' PATRON_ID=:id';
             $sqlStmt = $this->executeSQL($sql, ['id' => $patron['id']]);
-            if (!($row = $sqlStmt->fetch(PDO::FETCH_ASSOC))
+            if (
+                !($row = $sqlStmt->fetch(PDO::FETCH_ASSOC))
                 || null !== $row['PATRON_PIN']
             ) {
                 return [

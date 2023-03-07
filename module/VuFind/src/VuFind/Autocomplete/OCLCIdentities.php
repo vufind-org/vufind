@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OCLC Identities Autocomplete Module
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:autosuggesters Wiki
  */
+
 namespace VuFind\Autocomplete;
 
 /**
@@ -66,7 +68,8 @@ class OCLCIdentities implements AutocompleteInterface
 
         // Retrieve and parse response:
         $tmp = file_get_contents($target);
-        if ($tmp && ($json = json_decode($tmp)) && isset($json->result)
+        if (
+            $tmp && ($json = json_decode($tmp)) && isset($json->result)
             && is_array($json->result)
         ) {
             foreach ($json->result as $current) {

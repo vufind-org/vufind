@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Model for records retrieved via EBSCO's EIT API.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver;
 
 /**
@@ -176,7 +178,8 @@ class EIT extends DefaultRecord
      */
     public function getFormats()
     {
-        if (isset($this->controlInfo['artinfo']['doctype'])
+        if (
+            isset($this->controlInfo['artinfo']['doctype'])
             && is_array($this->controlInfo['artinfo']['doctype'])
         ) {
             return $this->controlInfo['artinfo']['doctype'];
@@ -192,7 +195,8 @@ class EIT extends DefaultRecord
      */
     public function getPrimaryAuthors()
     {
-        if (isset($this->controlInfo['artinfo']['aug']['au'])
+        if (
+            isset($this->controlInfo['artinfo']['aug']['au'])
             && is_array($this->controlInfo['artinfo']['aug']['au'])
         ) {
             return $this->controlInfo['artinfo']['aug']['au'];
@@ -252,7 +256,8 @@ class EIT extends DefaultRecord
         // array as needed (it should be a flat string according to the default
         // schema, but we might as well support the array case just to be on the safe
         // side:
-        if (isset($this->controlInfo['artinfo']['ab'])
+        if (
+            isset($this->controlInfo['artinfo']['ab'])
             && !empty($this->controlInfo['artinfo']['ab'])
         ) {
             return is_array($this->controlInfo['artinfo']['ab'])

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Export support class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind;
 
 use Laminas\Config\Config;
@@ -256,7 +258,8 @@ class Export
         // Loop through all possible formats:
         $formats = [];
         foreach (array_keys($this->exportConfig->toArray()) as $format) {
-            if (in_array($format, $active)
+            if (
+                in_array($format, $active)
                 && $this->recordSupportsFormat($driver, $format)
             ) {
                 $formats[] = $format;
@@ -346,7 +349,8 @@ class Export
 
             $active = [];
             foreach ($formatSettings as $format => $allowedContexts) {
-                if (strpos($allowedContexts, $context) !== false
+                if (
+                    strpos($allowedContexts, $context) !== false
                     || ($context == 'record' && $allowedContexts == 1)
                 ) {
                     $active[] = $format;
@@ -354,14 +358,16 @@ class Export
             }
 
             // for legacy settings [BulkExport]
-            if ($context == 'bulk'
+            if (
+                $context == 'bulk'
                 && isset($this->mainConfig->BulkExport->enabled)
                 && $this->mainConfig->BulkExport->enabled
                 && isset($this->mainConfig->BulkExport->options)
             ) {
                 $config = explode(':', $this->mainConfig->BulkExport->options);
                 foreach ($config as $option) {
-                    if (isset($this->mainConfig->Export->$option)
+                    if (
+                        isset($this->mainConfig->Export->$option)
                         && $this->mainConfig->Export->$option == true
                     ) {
                         $active[] = $option;
