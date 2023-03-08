@@ -61,7 +61,9 @@ class PluginManagerTest extends \PHPUnit\Framework\TestCase
     public function testExpectedInterface()
     {
         $this->expectException(\Laminas\ServiceManager\Exception\InvalidServiceException::class);
-        $this->expectExceptionMessage('Plugin ArrayObject does not belong to VuFind\\Role\\PermissionProvider\\PermissionProviderInterface');
+        $this->expectExceptionMessage(
+            'Plugin ArrayObject does not belong to VuFind\\Role\\PermissionProvider\\PermissionProviderInterface'
+        );
 
         $pm = new PluginManager(new \VuFindTest\Container\MockContainer($this));
         $pm->validate(new \ArrayObject());

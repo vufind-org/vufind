@@ -41,7 +41,7 @@ use VuFind\RecordTab\Map;
 class MapTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * get a Map object
+     * Get a Map object
      *
      * @return Map
      */
