@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class OAuth2TokenTraitTest
  *
@@ -27,6 +28,7 @@
  */
 
 declare(strict_types=1);
+
 namespace VuFindTest\ILS;
 
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
