@@ -86,6 +86,18 @@ class DAIA extends AbstractBase implements
     protected $daiaIdPrefix;
 
     /**
+     * DAIA services which should be evaluated
+     *
+     * @var array
+     */
+    protected $daiaServices = [
+        'loan',
+        'presentation',
+        'remote',
+        'openaccess',
+    ];
+
+    /**
      * DAIA response format
      *
      * @var string
@@ -181,6 +193,16 @@ class DAIA extends AbstractBase implements
             $this->contentTypesResponse = $this->config['DAIA']['daiaContentTypes'];
         } else {
             $this->debug('No ContentTypes for response defined. Accepting any.');
+        }
+        if (isset($this->config['DAIA']['daiaServices'])) {
+            $this->daiaServices = explode(
+                ':',
+                $this->config['DAIA']['daiaServices']
+            );
+        } else {
+            $this->debug(
+                'Accepting loan, presentation, remote and openaccess as services.'
+            );
         }
         if (isset($this->config['DAIA']['daiaCache'])) {
             $this->daiaCacheEnabled = $this->config['DAIA']['daiaCache'];
@@ -605,7 +627,7 @@ class DAIA extends AbstractBase implements
             $docs = json_decode($daiaResponse, true);
         }
 
-        if (count($docs)) {
+        if (!empty($docs) && is_array($docs)) {
             // check for error messages and write those to log
             if (isset($docs['message'])) {
                 $this->logMessages($docs['message'], 'document');
@@ -736,7 +758,7 @@ class DAIA extends AbstractBase implements
      */
     protected function parseDaiaArray($id, $daiaArray)
     {
-        $result = [];
+        $result = ['holdings' => [], 'electronic_holdings' => []];
         $doc_id = null;
         $doc_href = null;
         if (isset($daiaArray['id'])) {
@@ -784,13 +806,48 @@ class DAIA extends AbstractBase implements
                 // custom DAIA field
                 $result_item['storagehref'] = $this->getItemStorageLink($item);
                 // status and availability will be calculated in own function
-                $result_item = $this->getItemStatus($item) + $result_item;
-                // add result_item to the result array
-                $result[] = $result_item;
+                $status = $this->getItemStatus($item);
+                // chronology provides further information and is an item_note
+                if (isset($item['chronology'])) {
+                    $status['item_notes'][] = $item['chronology']['about'];
+                }
+                // check if this is an electronic holding
+                $isElectronic = $this->serviceIsElectronic($status);
+                // add result_item to the result array: either to electronic_
+                // holdings if it is electronic or to holdings otherwise
+                if ($this->serviceIsElectronic($status)) {
+                    $result['electronic_holdings'][] = $status + $result_item;
+                } else {
+                    $result['holdings'][] = $status + $result_item;
+                }
             } // end iteration on item
         }
 
         return $result;
+    }
+
+    /**
+     * Returns true if the service is electronic; false otherwise.
+     *
+     * @param array $status Array with status informations
+     *
+     * @return bool
+     */
+    protected function serviceIsElectronic($status)
+    {
+        if (!empty($status['locationhref'])) {
+            if (in_array('openaccess', $status['services'])) {
+                // service openaccess is always electronic
+                return true;
+            } elseif (in_array('remote', $status['services'])
+                && $status['delay'] == 'PT0S'
+            ) {
+                // service remote is electronic if there is no delay according
+                // to documentation. delay is mandatory for this service
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -805,80 +862,69 @@ class DAIA extends AbstractBase implements
         $return = [];
         $availability = false;
         $duedate = null;
-        $serviceLink = '';
-        $queue = '';
-        $item_notes = [];
-        $item_limitation_types = [];
-        $services = [];
-
+        $serviceLink = $queue = $delay = '';
+        $location = $locationhref = [];
+        $item_notes = $item_limitation_types = $availableServices = [];
         if (isset($item['available'])) {
-            // check if item is loanable or presentation
             foreach ($item['available'] as $available) {
                 if (isset($available['service'])
-                    && in_array($available['service'], ['loan', 'presentation'])
+                    && in_array($available['service'], $this->daiaServices)
                 ) {
-                    $services['available'][] = $available['service'];
-                }
-                // attribute service can be set once or not
-                if (isset($available['service'])
-                    && in_array(
-                        $available['service'],
-                        ['loan', 'presentation', 'openaccess']
-                    )
-                ) {
-                    // set item available if service is loan, presentation or
-                    // openaccess
+                    $service = $available['service'];
+                    $availableServices[] = $service;
                     $availability = true;
-                    if ($available['service'] == 'loan'
-                        && isset($available['href'])
-                    ) {
-                        // save the link to the ils if we have a href for loan
-                        // service
-                        $serviceLink = $available['href'];
+                    if (isset($available['href'])) {
+                        if ($service == 'loan') {
+                            // save the link to the ils if we have a href for loan
+                            // service
+                            $serviceLink = $available['href'];
+                        } elseif ($service == 'remote'
+                            || $service == 'openaccess'
+                        ) {
+                            // access-links are provided by $available['href']
+                            // and a title-like description of the access by
+                            // $available['title']
+                            $locationhref[] = $available['href'];
+                            $location[] = $available['title']
+                                ?? $available['href'];
+                        }
                     }
-                }
-
-                // use limitation element for status string
-                if (isset($available['limitation'])) {
-                    $item_notes = array_merge(
-                        $item_notes,
-                        $this->getItemLimitationContent($available['limitation'])
-                    );
-                    $item_limitation_types = array_merge(
-                        $item_limitation_types,
-                        $this->getItemLimitationTypes($available['limitation'])
-                    );
-                }
-
-                // log messages for debugging
-                if (isset($available['message'])) {
-                    $this->logMessages($available['message'], 'item->available');
+                    if (!empty($available['delay'])) {
+                        // we need this to determine if a remote service is
+                        // electronic
+                        $delay = $available['delay'];
+                    }
+                    if (isset($available['limitation'])) {
+                        $item_notes = array_merge(
+                            $item_notes,
+                            $this->getItemLimitationContent($available['limitation'])
+                        );
+                        $item_limitation_types = array_merge(
+                            $item_limitation_types,
+                            $this->getItemLimitationTypes($available['limitation'])
+                        );
+                    }
+                    // log messages for debugging
+                    if (isset($available['message'])) {
+                        $this->logMessages($available['message'], 'item->available');
+                    }
                 }
             }
         }
-
         if (isset($item['unavailable'])) {
             foreach ($item['unavailable'] as $unavailable) {
                 if (isset($unavailable['service'])
-                    && in_array($unavailable['service'], ['loan', 'presentation'])
+                    && in_array($unavailable['service'], $this->daiaServices)
                 ) {
-                    $services['unavailable'][] = $unavailable['service'];
-                }
-                // attribute service can be set once or not
-                if (isset($unavailable['service'])
-                    && in_array(
-                        $unavailable['service'],
-                        ['loan', 'presentation', 'openaccess']
-                    )
-                ) {
-                    if ($unavailable['service'] == 'loan'
-                        && isset($unavailable['href'])
-                    ) {
-                        //save the link to the ils if we have a href for loan service
+                    $service = $unavailable['service'];
+                    // if a service is unavailable it's not available
+                    unset($availableServices[$service]);
+
+                    if ($service == 'loan' && isset($unavailable['href'])) {
+                        // save the link to the ils if we have a href
+                        // for loan service
                         $serviceLink = $unavailable['href'];
                     }
-
-                    // use limitation element for status string
                     if (isset($unavailable['limitation'])) {
                         $item_notes = array_merge(
                             $item_notes,
@@ -888,54 +934,82 @@ class DAIA extends AbstractBase implements
                         );
                         $item_limitation_types = array_merge(
                             $item_limitation_types,
-                            $this->getItemLimitationTypes($unavailable['limitation'])
+                            $this->getItemLimitationTypes(
+                                $unavailable['limitation']
+                            )
                         );
                     }
-                }
-                // attribute expected is mandatory for unavailable element
-                if (!empty($unavailable['expected'])) {
-                    try {
-                        $duedate = $this->dateConverter
-                            ->convertToDisplayDate(
-                                'Y-m-d',
-                                $unavailable['expected']
+                    // attribute expected is mandatory for unavailable
+                    // element
+                    if (!empty($unavailable['expected'])) {
+                        try {
+                            $duedate = $this->dateConverter
+                                ->convertToDisplayDate(
+                                    'Y-m-d',
+                                    $unavailable['expected']
+                                );
+                        } catch (\Exception $e) {
+                            $this->debug(
+                                'Date conversion failed: ' . $e->getMessage()
                             );
-                    } catch (\Exception $e) {
-                        $this->debug('Date conversion failed: ' . $e->getMessage());
-                        $duedate = null;
+                            $duedate = null;
+                        }
                     }
-                }
 
-                // attribute queue can be set
-                if (isset($unavailable['queue'])) {
-                    $queue = $unavailable['queue'];
-                }
+                    // attribute queue can be set
+                    if (isset($unavailable['queue'])) {
+                        $queue = $unavailable['queue'];
+                    }
 
-                // log messages for debugging
-                if (isset($unavailable['message'])) {
-                    $this->logMessages($unavailable['message'], 'item->unavailable');
+                    // log messages for debugging
+                    if (isset($unavailable['message'])) {
+                        $this->logMessages(
+                            $unavailable['message'],
+                            'item->unavailable'
+                        );
+                    }
                 }
             }
         }
 
-        /*'returnDate' => '', // false if not recently returned(?)*/
+        // gather more information about the provided service
+        if (isset($item['about'])) {
+            $item_notes[] = $item['about'];
+        }
+
+        // If no useful availability service is found, return only the
+        // information that the item is not holdable
+        if (empty($serviceLink) && empty($duedate)
+            && empty($availableServices)
+        ) {
+            return ['is_holdable' => false];
+        }
 
         if (!empty($serviceLink)) {
             $return['ilslink'] = $serviceLink;
         }
 
+        // This is only filled if remote or openaccess services are available
+        // in this case there is no location to get the item from
+        if (!empty($locationhref)) {
+            $return['location']        = $location;
+            $return['locationhref']    = $locationhref;
+        }
         $return['item_notes']      = $item_notes;
+        $return['delay']           = $delay;
         $return['status']          = $this->getStatusString($item);
         $return['availability']    = $availability;
         $return['duedate']         = $duedate;
         $return['requests_placed'] = $queue;
-        $return['services']        = $this->getAvailableItemServices($services);
+        $return['services']        = $availableServices;
 
         // In this DAIA driver implementation addLink and is_holdable are assumed
         // Boolean as patron based availability requires either a patron-id or -type.
         // This should be handled in a custom DAIA driver
-        $return['addLink']     = $this->checkIsRecallable($item);
-        $return['is_holdable'] = $this->checkIsRecallable($item);
+        // For loan an item is either holdable or recallable - not both
+        $addLink = $this->checkIsHoldable($item) ?: $this->checkIsRecallable($item);
+        $return['addLink']     = $addLink;
+        $return['is_holdable'] = $addLink;
         $return['holdtype']    = $this->getHoldType($item);
 
         // Check if we the item is available for storage retrieval request if it is
@@ -975,6 +1049,37 @@ class DAIA extends AbstractBase implements
     {
         // status cannot be null as this will crash the translator
         return '';
+    }
+
+    /**
+     * Helper function to determine if item is holdable.
+     * If so DAIA provides a link for an available loan service. Therefore this
+     * returns whether an item is holdable based on available services and the
+     * existence of an href
+     *
+     * @param array $item Array with DAIA item data
+     *
+     * @return bool
+     */
+    protected function checkIsHoldable($item)
+    {
+        // This basic implementation checks the item for being available for loan
+        // but with an existing href (as a flag for further action).
+        $href = false;
+        if (isset($item['available'])) {
+            // check if item is loanable and has an href
+            foreach ($item['available'] as $available) {
+                if (isset($available['service'])
+                    && $available['service'] == 'loan'
+                    && isset($available['href'])
+                ) {
+                    // attribute href is used to determine whether item is recallable
+                    // or not
+                    $href = true;
+                }
+            }
+        }
+        return $href;
     }
 
     /**
@@ -1280,29 +1385,6 @@ class DAIA extends AbstractBase implements
         return isset($item['label']) && !empty($item['label'])
             ? $item['label']
             : 'Unknown';
-    }
-
-    /**
-     * Returns the available services of the given set of available and unavailable
-     * services
-     *
-     * @param array $services Array with DAIA services available/unavailable
-     *
-     * @return array
-     */
-    protected function getAvailableItemServices($services)
-    {
-        $availableServices = [];
-        if (isset($services['available'])) {
-            foreach ($services['available'] as $service) {
-                if (!isset($services['unavailable'])
-                    || !in_array($service, $services['unavailable'])
-                ) {
-                    $availableServices[] = $service;
-                }
-            }
-        }
-        return array_intersect(['loan', 'presentation'], $availableServices);
     }
 
     /**

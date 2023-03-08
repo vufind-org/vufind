@@ -3,12 +3,16 @@
   <?php foreach ($this->holdings as $item): ?>
     <tr>
       <td class="fullLocation">
-        <?php $locationTextEsc = $this->transEscWithPrefix('location_', $item['location']); ?>
-        <?php if ($item['locationhref'] ?? false): ?>
-          <a href="<?=$this->escapeHtmlAttr($item['locationhref'])?>" target="_blank"><?=$locationTextEsc?></a>
-        <?php else: ?>
-          <?=$locationTextEsc?>
-        <?php endif; ?>
+        <?php foreach ((array)$item['location'] as $index => $location): ?>
+          <?php $locationTextEsc = $this->transEscWithPrefix('location_', $location); ?>
+            <p>
+          <?php if ($item['locationhref'][$index] ?? false): ?>
+              <a href="<?=$item['locationhref'][$index]?>" target="_blank"><?=$locationTextEsc?></a>
+          <?php else: ?>
+              <?=$locationTextEsc?>
+          <?php endif; ?>
+            </p>
+        <?php endforeach; ?>
       </td>
       <td class="fullAvailability">
         <?php if ($item['use_unknown_message'] ?? false): ?>
@@ -18,7 +22,7 @@
         <?php else: ?>
           <span class="text-danger"><?=$this->transEsc($item['status'])?></span>
         <?php endif; ?>
-        <?php if (isset($item['item_notes'])): ?>
+        <?php if (!empty($item['item_notes'])): ?>
           <div class="item-notes">
             <b><?=$this->transEsc("Item Notes")?>:</b>
             <ul>

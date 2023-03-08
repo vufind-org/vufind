@@ -57,7 +57,7 @@
           <?php endif; ?>
           <?=$this->relais()->renderButtonIfActive($this->driver ?? null)?>
         <?php endif; ?>
-        <?php if (isset($holding['item_notes'])): ?>
+        <?php if (!empty($holding['item_notes'])): ?>
           <div class="item-notes">
             <b><?=$this->transEsc("Item Notes")?>:</b>
             <ul>

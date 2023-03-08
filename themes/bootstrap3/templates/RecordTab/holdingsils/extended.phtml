@@ -83,7 +83,7 @@
         <?php endif; ?>
       </div>
 
-      <?php if (isset($holding['item_notes'])): ?>
+      <?php if (!empty($holding['item_notes'])): ?>
         <div class="holding-notes">
           <div class="item-notes">
             <b><?=$this->transEsc("Item Notes")?>:</b>

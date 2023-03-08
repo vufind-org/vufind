@@ -76,6 +76,9 @@
 
 <?php foreach ($holdings['holdings'] ?? [] as $holding): ?>
 <h3>
+  <?php // In case $holding['location'] or $holding['locationhref'] are arrays (which should not happen though) ?>
+  <?php $holding['location'] = implode('', (array)$holding['location']); ?>
+  <?php $holding['locationhref'] = implode('', (array)$holding['locationhref']); ?>
   <?php $locationTextEsc = $this->transEscWithPrefix('location_', $holding['location']); ?>
   <?php if ($holding['locationhref'] ?? false): ?>
     <a href="<?=$this->escapeHtmlAttr($holding['locationhref'])?>" target="_blank"><?=$locationTextEsc?></a>
