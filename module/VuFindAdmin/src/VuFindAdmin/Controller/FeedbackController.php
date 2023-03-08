@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * Class FeedbackController
  *
@@ -28,6 +26,8 @@ declare(strict_types=1);
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
+
+declare(strict_types=1);
 
 namespace VuFindAdmin\Controller;
 

@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * Holds controller plugin test class
  *
@@ -28,6 +26,8 @@ declare(strict_types=1);
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
+declare(strict_types=1);
 
 namespace VuFindTest\Controller\Plugin;
 
