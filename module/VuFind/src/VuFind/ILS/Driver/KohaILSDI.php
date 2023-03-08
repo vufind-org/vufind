@@ -757,7 +757,8 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
             // In older versions of Koha, the date parameters were named differently
             // and even never implemented, so if we got IllegalParameter, we know
             // the Koha version is before 20.05 and could retry without expiry_date
-            // parameter. See https://git.koha-community.org/Koha-community/Koha/commit/c8bf308e1b453023910336308d59566359efc535
+            // parameter. See:
+            // https://git.koha-community.org/Koha-community/Koha/commit/c8bf308e1b453023910336308d59566359efc535
             $rsp = $this->makeRequest($rqString);
         }
         //TODO - test this new functionality
