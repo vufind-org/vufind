@@ -74,8 +74,7 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
      */
     protected function getReaderClass()
     {
-        $params = new Parameters([]);
-        $readerClass = new class ($params) extends \VuFind\Net\UserIpReader {
+        $readerClass = new class () extends \VuFind\Net\UserIpReader {
             /**
              * Property for storing constructor arguments for testing.
              *
@@ -90,7 +89,9 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
             {
                 $args = func_get_args();
                 $this->args = $args;
-                parent::__construct(...$args);
+                parent::__construct(
+                    ...(empty($args) ? [new Parameters([])] : $args)
+                );
             }
         };
         return get_class($readerClass);
