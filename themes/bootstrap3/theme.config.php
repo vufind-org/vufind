@@ -40,7 +40,6 @@ return [
         ['file' => 'vendor/bootstrap.min.js', 'priority' => 120],
         ['file' => 'vendor/bootstrap-accessibility.min.js', 'priority' => 130],
         ['file' => 'vendor/validator.min.js', 'priority' => 140],
-        ['file' => 'lib/form-attr-polyfill.js', 'priority' => 210], // input[form] polyfill, cannot load conditionally, since we need all versions of IE
         ['file' => 'lib/autocomplete.js', 'priority' => 220],
         ['file' => 'common.js', 'priority' => 310],
         ['file' => 'lightbox.js', 'priority' => 320],
