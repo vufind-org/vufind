@@ -457,8 +457,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
             true
         ];
         // Create an anonymous class to stub out some behavior:
-        $resultScroller = new class (...$params) extends ResultScroller
-        {
+        $resultScroller = new class (...$params) extends ResultScroller {
             /**
              * Search results to return
              *
