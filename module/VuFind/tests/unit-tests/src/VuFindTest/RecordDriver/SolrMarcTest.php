@@ -61,9 +61,21 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
         $fixture = $this->getJsonFixture('misc/testbug1.json');
         $record->setRawData($fixture['response']['docs'][0]);
         $expected = [
-            ['title' => 'A', 'value' => 'Bollettino della Unione matematica italiana', 'link' => ['type' => 'bib', 'value' => '000343528']],
-            ['title' => 'B', 'value' => 'Bollettino della Unione matematica', 'link' => ['type' => 'bib', 'value' => '000343529']],
-            ['title' => 'note_785_8', 'value' => 'Bollettino della Unione matematica italiana', 'link' => ['type' => 'bib', 'value' => '000394898']],
+            [
+                'title' => 'A',
+                'value' => 'Bollettino della Unione matematica italiana',
+                'link' => ['type' => 'bib', 'value' => '000343528']
+            ],
+            [
+                'title' => 'B',
+                'value' => 'Bollettino della Unione matematica',
+                'link' => ['type' => 'bib', 'value' => '000343529']
+            ],
+            [
+                'title' => 'note_785_8',
+                'value' => 'Bollettino della Unione matematica italiana',
+                'link' => ['type' => 'bib', 'value' => '000394898']
+            ],
         ];
         $this->assertEquals($expected, $record->getAllRecordLinks());
     }
@@ -143,17 +155,23 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                 'Plenary Papers',
                 'Teaching missiology in and for world Christianity content and method / Peter C. Phan',
                 'The bodies we teach by: (en) gendering mission for global Christianities / Mai-Ahn Le',
-                'Teaching Christian mission in an age of world Christianity: a reflection on the centenary of the 1916 Panama Congress / Philip Wingeier-Rayo',
+                'Teaching Christian mission in an age of world Christianity: a reflection on the centenary of the '
+                . '1916 Panama Congress / Philip Wingeier-Rayo',
                 'Conference Papers',
-                'Theological metaphors of teaching mission in an age of world Christianity in the North American context / David Thang Moe',
+                'Theological metaphors of teaching mission in an age of world Christianity in the North American '
+                . 'context / David Thang Moe',
                 'Mission shifts from Pope Benedict XVI to Pope Francis / William P. Gregory',
                 'The elephant in the room: towards a paradigm shift in missiological education / Sarita D. Gallagher',
-                'Historic models of teaching Christian mission: case studies informing an age of world Christianity / Robert L. Gallagher',
+                'Historic models of teaching Christian mission: case studies informing an age of world Christianity '
+                . '/ Robert L. Gallagher',
                 'How the West was won: world Christianity as historic reality / Matt Friedman',
-                'The world\'s Christians: strategies for teaching international graduate students in Kenya\'s Christian universities / Janice Horsager Rasmussen',
-                'Gendered mission: educational work or itinerating preaching? The mission practice of the Presbyterian Church USA in Barranquilla, Colombia, 1880-1920 / Angel Santiago-Vendrell',
+                'The world\'s Christians: strategies for teaching international graduate students in Kenya\'s '
+                . 'Christian universities / Janice Horsager Rasmussen',
+                'Gendered mission: educational work or itinerating preaching? The mission practice of the Presbyterian'
+                . ' Church USA in Barranquilla, Colombia, 1880-1920 / Angel Santiago-Vendrell',
                 'Mary McLeod Bethune: Christ did not designate any particular color to go / Mary Cloutier',
-                'Teaching mission in an age of world Christianity: history, theology, anthropology, and gender in the classroom / Angel Santiago-Vendrell',
+                'Teaching mission in an age of world Christianity: history, theology, anthropology, and gender in the '
+                . 'classroom / Angel Santiago-Vendrell',
                 'Conference Proceedings',
                 'First Fruits report for the APM',
                 'Minutes of 2016 meeting',

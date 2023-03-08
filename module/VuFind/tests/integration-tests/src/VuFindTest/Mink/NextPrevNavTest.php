@@ -40,7 +40,7 @@ namespace VuFindTest\Mink;
 class NextPrevNavTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
-     * if next_prev_navigation and first_last_navigation are set to true
+     * If next_prev_navigation and first_last_navigation are set to true
      * and a search which returns no results is run
      * when a record page is visited no next prev navigation should be shown
      * and no exception should be thrown
@@ -49,7 +49,9 @@ class NextPrevNavTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testEmptySearchResultsCauseNoProblems()
     {
-        $this->changeConfigs(["config" => ["Record" => ["next_prev_navigation" => true, "first_last_navigation" => true]]]);
+        $this->changeConfigs(
+            ["config" => ["Record" => ["next_prev_navigation" => true, "first_last_navigation" => true]]]
+        );
 
         // when a search returns no results
         // make sure no errors occur when visiting a collection record after
@@ -63,6 +65,9 @@ class NextPrevNavTest extends \VuFindTest\Integration\MinkTestCase
         $session->visit($this->getVuFindUrl() . "/Record/geo20001");
 
         // should fail if exception is thrown
-        $this->assertStringContainsString("Test Publication 20001", $this->findCss($page, "div.media-body > h1[property=name]")->getText());
+        $this->assertStringContainsString(
+            "Test Publication 20001",
+            $this->findCss($page, "div.media-body > h1[property=name]")->getText()
+        );
     }
 }

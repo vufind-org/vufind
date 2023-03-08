@@ -339,7 +339,9 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Confirm that login form is disabled:
         $this->unFindCss($page, "#profile_cat_username");
         $this->assertEquals(
-            "Connection to the library management system failed. Information related to your library account cannot be displayed. If the problem persists, please contact your library.",
+            "Connection to the library management system failed. "
+            . "Information related to your library account cannot be displayed. "
+            . "If the problem persists, please contact your library.",
             $this->findCss($page, "div.alert-warning")->getText()
         );
 

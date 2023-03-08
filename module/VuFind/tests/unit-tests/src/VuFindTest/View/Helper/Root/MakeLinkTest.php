@@ -1,6 +1,6 @@
 <?php
 /**
- * makeLink view helper Test Class
+ * MakeLink view helper Test Class
  *
  * PHP version 7
  *
@@ -31,7 +31,7 @@ namespace VuFindTest\View\Helper\Root;
 use VuFind\View\Helper\Root\MakeLink;
 
 /**
- * makeLink view helper Test Class
+ * MakeLink view helper Test Class
  *
  * @category VuFind
  * @package  Tests
@@ -45,7 +45,7 @@ class MakeLinkTest extends \VuFindTest\Unit\AbstractMakeTagTest
     /**
      * Get MakeLink helper with mock view
      *
-     * return \Laminas\View\Helper\EscapeHtml
+     * @return \Laminas\View\Helper\EscapeHtml
      */
     protected function getHelper()
     {
@@ -159,7 +159,8 @@ class MakeLinkTest extends \VuFindTest\Unit\AbstractMakeTagTest
 
         // Confirm that attributes and HTML contents are escaped
         $this->assertEquals(
-            '<a data-foo="this&amp;that" href="&#x2F;Record&#x2F;foo&#x25;2Fbar&#x3F;checkRoute&#x3D;1">contains &lt;b&gt;bold&lt;/b&gt;</a>',
+            '<a data-foo="this&amp;that" href="&#x2F;Record&#x2F;foo&#x25;2Fbar&#x3F;checkRoute&#x3D;1">'
+                . 'contains &lt;b&gt;bold&lt;/b&gt;</a>',
             $helper(
                 'contains <b>bold</b>',
                 '/Record/foo%2Fbar?checkRoute=1',
@@ -169,7 +170,8 @@ class MakeLinkTest extends \VuFindTest\Unit\AbstractMakeTagTest
 
         // Confirm that HTML is NOT escaped when asked politely
         $this->assertEquals(
-            '<a data-foo="this&amp;that" href="&#x2F;Record&#x2F;foo&#x25;2Fbar&#x3F;checkRoute&#x3D;1">contains <b>bold</b></a>',
+            '<a data-foo="this&amp;that" href="&#x2F;Record&#x2F;foo&#x25;2Fbar&#x3F;checkRoute&#x3D;1">'
+                . 'contains <b>bold</b></a>',
             $helper(
                 'contains <b>bold</b>',
                 '/Record/foo%2Fbar?checkRoute=1',

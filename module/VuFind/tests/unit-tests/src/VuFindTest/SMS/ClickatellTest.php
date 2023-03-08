@@ -41,6 +41,13 @@ use VuFind\SMS\Clickatell;
 class ClickatellTest extends \PHPUnit\Framework\TestCase
 {
     /**
+     * Expected base URL in tests.
+     *
+     * @var string
+     */
+    protected $expectedBaseUri = 'https://api.clickatell.com/http/sendmsg?api_id=api_id&user=user&password=password';
+
+    /**
      * Setup method
      *
      * @return void
@@ -75,12 +82,18 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
     public function testSuccessResponse()
     {
         $client = $this->getMockClient();
-        $expectedUri = 'https://api.clickatell.com/http/sendmsg?api_id=api_id&user=user&password=password&to=1234567890&text=hello';
+        $expectedUri = $this->expectedBaseUri . '&to=1234567890&text=hello';
         $response = new \Laminas\Http\Response();
         $response->setStatusCode(200);
         $response->setContent('ID:fake');
-        $client->expects($this->once())->method('setMethod')->with($this->equalTo('GET'))->will($this->returnValue($client));
-        $client->expects($this->once())->method('setUri')->with($this->equalTo($expectedUri))->will($this->returnValue($client));
+        $client->expects($this->once())
+            ->method('setMethod')
+            ->with($this->equalTo('GET'))
+            ->will($this->returnValue($client));
+        $client->expects($this->once())
+            ->method('setUri')
+            ->with($this->equalTo($expectedUri))
+            ->will($this->returnValue($client));
         $client->expects($this->once())->method('send')->will($this->returnValue($response));
         $obj = $this->getClickatell($client);
         $this->assertTrue(
@@ -99,13 +112,21 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
         $this->expectExceptionMessage('badbadbad');
 
         $client = $this->getMockClient();
-        $expectedUri = 'https://api.clickatell.com/http/sendmsg?api_id=api_id&user=user&password=password&to=1234567890&text=hello';
+        $expectedUri = $this->expectedBaseUri . '&to=1234567890&text=hello';
         $response = new \Laminas\Http\Response();
         $response->setStatusCode(200);
         $response->setContent('badbadbad');
-        $client->expects($this->once())->method('setMethod')->with($this->equalTo('GET'))->will($this->returnValue($client));
-        $client->expects($this->once())->method('setUri')->with($this->equalTo($expectedUri))->will($this->returnValue($client));
-        $client->expects($this->once())->method('send')->will($this->returnValue($response));
+        $client->expects($this->once())
+            ->method('setMethod')
+            ->with($this->equalTo('GET'))
+            ->will($this->returnValue($client));
+        $client->expects($this->once())
+            ->method('setUri')
+            ->with($this->equalTo($expectedUri))
+            ->will($this->returnValue($client));
+        $client->expects($this->once())
+            ->method('send')
+            ->will($this->returnValue($response));
         $obj = $this->getClickatell($client);
         $obj->text('Clickatell', '1234567890', 'test@example.com', 'hello');
     }
@@ -121,12 +142,20 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
         $this->expectExceptionMessage('Problem sending text.');
 
         $client = $this->getMockClient();
-        $expectedUri = 'https://api.clickatell.com/http/sendmsg?api_id=api_id&user=user&password=password&to=1234567890&text=hello';
+        $expectedUri = $this->expectedBaseUri . '&to=1234567890&text=hello';
         $response = new \Laminas\Http\Response();
         $response->setStatusCode(404);
-        $client->expects($this->once())->method('setMethod')->with($this->equalTo('GET'))->will($this->returnValue($client));
-        $client->expects($this->once())->method('setUri')->with($this->equalTo($expectedUri))->will($this->returnValue($client));
-        $client->expects($this->once())->method('send')->will($this->returnValue($response));
+        $client->expects($this->once())
+            ->method('setMethod')
+            ->with($this->equalTo('GET'))
+            ->will($this->returnValue($client));
+        $client->expects($this->once())
+            ->method('setUri')
+            ->with($this->equalTo($expectedUri))
+            ->will($this->returnValue($client));
+        $client->expects($this->once())
+            ->method('send')
+            ->will($this->returnValue($response));
         $obj = $this->getClickatell($client);
         $obj->text('Clickatell', '1234567890', 'test@example.com', 'hello');
     }
@@ -142,10 +171,18 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
         $this->expectExceptionMessage('Foo');
 
         $client = $this->getMockClient();
-        $expectedUri = 'https://api.clickatell.com/http/sendmsg?api_id=api_id&user=user&password=password&to=1234567890&text=hello';
-        $client->expects($this->once())->method('setMethod')->with($this->equalTo('GET'))->will($this->returnValue($client));
-        $client->expects($this->once())->method('setUri')->with($this->equalTo($expectedUri))->will($this->returnValue($client));
-        $client->expects($this->once())->method('send')->will($this->throwException(new \Exception('Foo')));
+        $expectedUri = $this->expectedBaseUri . '&to=1234567890&text=hello';
+        $client->expects($this->once())
+            ->method('setMethod')
+            ->with($this->equalTo('GET'))
+            ->will($this->returnValue($client));
+        $client->expects($this->once())
+            ->method('setUri')
+            ->with($this->equalTo($expectedUri))
+            ->will($this->returnValue($client));
+        $client->expects($this->once())
+            ->method('send')
+            ->will($this->throwException(new \Exception('Foo')));
         $obj = $this->getClickatell($client);
         $obj->text('Clickatell', '1234567890', 'test@example.com', 'hello');
     }

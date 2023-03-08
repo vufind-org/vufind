@@ -162,7 +162,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
      * Get a mock search service that will return a RecordCollection.
      *
      * @param array $solrResponse   Decoded Solr response for search to return
-     * @parma array $expectedParams Expected ParamBag parameters
+     * @param array $expectedParams Expected ParamBag parameters
      *
      * @return SearchService
      */

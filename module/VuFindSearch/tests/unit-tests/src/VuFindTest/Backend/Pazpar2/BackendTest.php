@@ -79,7 +79,10 @@ class BackendTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($this->loadResponse('pp2show')));
         $conn->expects($this->exactly(2))
             ->method('stat')
-            ->willReturnOnConsecutiveCalls(simplexml_load_string($this->getStatXml(0.5)), simplexml_load_string($this->getStatXml(1.0)));
+            ->willReturnOnConsecutiveCalls(
+                simplexml_load_string($this->getStatXml(0.5)),
+                simplexml_load_string($this->getStatXml(1.0))
+            );
 
         $back = new Backend($conn);
         $back->setIdentifier('test');
@@ -91,7 +94,10 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('content: author test title test medium book', (string)$rec->getXML()->recid);
         $recs = $coll->getRecords();
         $this->assertEquals('test', $recs[19]->getSourceIdentifier());
-        $this->assertEquals('content: author navalani k author gidwani n n title a practical guide to colon classification medium book', (string)$recs[19]->getXML()->recid);
+        $this->assertEquals(
+            'content: author navalani k author gidwani n n title a practical guide to colon classification medium book',
+            (string)$recs[19]->getXML()->recid
+        );
         $this->assertEquals(54, $coll->getTotal());
     }
 

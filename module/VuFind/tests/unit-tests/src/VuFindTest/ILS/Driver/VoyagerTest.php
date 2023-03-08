@@ -98,7 +98,10 @@ class VoyagerTest extends \VuFindTest\Unit\ILSDriverTestCase
                     'Membership List of the Happy Hour Brotherhood, 1991',
                     'Dime Novel Sketches, Numbers 1-249, Arranged Alphabetically',
                     'Special birthday no., 1938 (photocopy)',
-                    'Supplements (Golden Days (undated), Index-Digest (issues 1-159; undated), Oct. 1958, Apr. 1959, Sep. 1960, Sep. 1962, Nov. 1962, Dec. 1962, Feb. 1963, Nov. 1965,  May 15, 1970, Jul. 15, 1972, Jul. 15, 1974, Dec. 1975, Oct. 1976, Aug. 1977, Feb. 1978, Aug. 1978, Feb. 1979, Apr. 1980, Oct. 1981, Dec. 1985, Aug. 1998, Fall 2014)',
+                    'Supplements (Golden Days (undated), Index-Digest (issues 1-159; undated), Oct. 1958, Apr. 1959,'
+                    . ' Sep. 1960, Sep. 1962, Nov. 1962, Dec. 1962, Feb. 1963, Nov. 1965,  May 15, 1970, Jul. 15, 1972'
+                    . ', Jul. 15, 1974, Dec. 1975, Oct. 1976, Aug. 1977, Feb. 1978, Aug. 1978, Feb. 1979, Apr. 1980, '
+                    . 'Oct. 1981, Dec. 1985, Aug. 1998, Fall 2014)',
                     'Box of duplicate issues',
                 ],
             ],

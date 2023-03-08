@@ -476,7 +476,11 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
 
         $response = $qb->build($q);
         $processedQ = $response->get('q');
-        $this->assertEquals('((_query_:"{!dismax qf=\"field_a\" mm=\\\'100%\\\'}value1") OR (_query_:"{!dismax qf=\"field_b\" mm=\\\'100%\\\'}value2"))', $processedQ[0]);
+        $this->assertEquals(
+            '((_query_:"{!dismax qf=\"field_a\" mm=\\\'100%\\\'}value1") OR '
+            . '(_query_:"{!dismax qf=\"field_b\" mm=\\\'100%\\\'}value2"))',
+            $processedQ[0]
+        );
     }
 
     /**
@@ -507,7 +511,11 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
 
         $response = $qb->build($q);
         $processedQ = $response->get('q');
-        $this->assertEquals('((field_a:(value*)^100 OR field_c:(value*)^200) OR (_query_:"{!dismax qf=\"field_b\" mm=\\\'100%\\\'}value2"))', $processedQ[0]);
+        $this->assertEquals(
+            '((field_a:(value*)^100 OR field_c:(value*)^200) OR '
+            . '(_query_:"{!dismax qf=\"field_b\" mm=\\\'100%\\\'}value2"))',
+            $processedQ[0]
+        );
     }
 
     /**

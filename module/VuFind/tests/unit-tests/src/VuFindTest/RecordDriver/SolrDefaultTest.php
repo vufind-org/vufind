@@ -53,7 +53,10 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
     public function testBookOpenURL()
     {
         $driver = $this->getDriver();
-        $this->assertEquals('url_ver=Z39.88-2004&ctx_ver=Z39.88-2004&ctx_enc=info%3Aofi%2Fenc%3AUTF-8&rfr_id=info%3Asid%2Fvufind.svn.sourceforge.net%3Agenerator&rft.title=La+congiura+dei+Principi+Napoletani+1701+%3A+%28prima+e+seconda+stesura%29+%2F&rft.date=1992&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&rft.genre=book&rft.btitle=La+congiura+dei+Principi+Napoletani+1701+%3A+%28prima+e+seconda+stesura%29+%2F&rft.series=Vico%2C+Giambattista%2C+1668-1744.+Works.+1982+%3B&rft.au=Vico%2C+Giambattista%2C+1668-1744.&rft.pub=Centro+di+Studi+Vichiani%2C&rft.edition=Fictional+edition.&rft.isbn=8820737493', $driver->getOpenUrl());
+        $this->assertEquals(
+            $this->getFixture('openurl/book'),
+            $driver->getOpenUrl()
+        );
     }
 
     /**
@@ -83,7 +86,10 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
             'container_start_page' => '12',
         ];
         $driver = $this->getDriver($overrides);
-        $this->assertEquals('url_ver=Z39.88-2004&ctx_ver=Z39.88-2004&ctx_enc=info%3Aofi%2Fenc%3AUTF-8&rfr_id=info%3Asid%2Fvufind.svn.sourceforge.net%3Agenerator&rft.date=1992&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&rft.genre=article&rft.issn=&rft.isbn=8820737493&rft.volume=XVII&rft.issue=6&rft.spage=12&rft.jtitle=Fake+Container&rft.atitle=La+congiura+dei+Principi+Napoletani+1701+%3A+%28prima+e+seconda+stesura%29+%2F&rft.au=Vico%2C+Giambattista%2C+1668-1744.&rft.format=Article&rft.language=Italian', $driver->getOpenUrl());
+        $this->assertEquals(
+            $this->getFixture('openurl/article'),
+            $driver->getOpenUrl()
+        );
     }
 
     /**
@@ -98,7 +104,10 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
             'issn' => ['1234-5678'],
         ];
         $driver = $this->getDriver($overrides);
-        $this->assertEquals('url_ver=Z39.88-2004&ctx_ver=Z39.88-2004&ctx_enc=info%3Aofi%2Fenc%3AUTF-8&rfr_id=info%3Asid%2Fvufind.svn.sourceforge.net%3Agenerator&rft.title=La+congiura+dei+Principi+Napoletani+1701+%3A+%28prima+e+seconda+stesura%29+%2F&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Adc&rft.creator=Vico%2C+Giambattista%2C+1668-1744.&rft.pub=Centro+di+Studi+Vichiani%2C&rft.format=Journal&rft.language=Italian&rft.issn=1234-5678', $driver->getOpenUrl());
+        $this->assertEquals(
+            $this->getFixture('openurl/journal'),
+            $driver->getOpenUrl()
+        );
     }
 
     /**
@@ -113,7 +122,10 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
             'isbn' => [],
         ];
         $driver = $this->getDriver($overrides);
-        $this->assertEquals('url_ver=Z39.88-2004&ctx_ver=Z39.88-2004&ctx_enc=info%3Aofi%2Fenc%3AUTF-8&rfr_id=info%3Asid%2Fvufind.svn.sourceforge.net%3Agenerator&rft.title=La+congiura+dei+Principi+Napoletani+1701+%3A+%28prima+e+seconda+stesura%29+%2F&rft.date=1992&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Adc&rft.creator=Vico%2C+Giambattista%2C+1668-1744.&rft.pub=Centro+di+Studi+Vichiani%2C&rft.format=Thingie&rft.language=Italian', $driver->getOpenUrl());
+        $this->assertEquals(
+            $this->getFixture('openurl/unknown'),
+            $driver->getOpenUrl()
+        );
     }
 
     /**
@@ -127,7 +139,10 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
             'format' => ['Thingie'],
         ];
         $driver = $this->getDriver($overrides);
-        $this->assertEquals('url_ver=Z39.88-2004&ctx_ver=Z39.88-2004&ctx_enc=info%3Aofi%2Fenc%3AUTF-8&rfr_id=info%3Asid%2Fvufind.svn.sourceforge.net%3Agenerator&rft.title=La+congiura+dei+Principi+Napoletani+1701+%3A+%28prima+e+seconda+stesura%29+%2F&rft.date=1992&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Adc&rft.creator=Vico%2C+Giambattista%2C+1668-1744.&rft.pub=Centro+di+Studi+Vichiani%2C&rft.format=Thingie&rft.language=Italian', $driver->getOpenUrl());
+        $this->assertEquals(
+            $this->getFixture('openurl/unknown-isbn'),
+            $driver->getOpenUrl()
+        );
     }
 
     /**
@@ -142,7 +157,10 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
             'issn' => ['1234-5678'],
         ];
         $driver = $this->getDriver($overrides);
-        $this->assertEquals('url_ver=Z39.88-2004&ctx_ver=Z39.88-2004&ctx_enc=info%3Aofi%2Fenc%3AUTF-8&rfr_id=info%3Asid%2Fvufind.svn.sourceforge.net%3Agenerator&rft.title=La+congiura+dei+Principi+Napoletani+1701+%3A+%28prima+e+seconda+stesura%29+%2F&rft.date=1992&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&rft.genre=book&rft.btitle=La+congiura+dei+Principi+Napoletani+1701+%3A+%28prima+e+seconda+stesura%29+%2F&rft.series=Vico%2C+Giambattista%2C+1668-1744.+Works.+1982+%3B&rft.au=Vico%2C+Giambattista%2C+1668-1744.&rft.pub=Centro+di+Studi+Vichiani%2C&rft.edition=Fictional+edition.&rft.isbn=8820737493', $driver->getOpenUrl());
+        $this->assertEquals(
+            $this->getFixture('openurl/unknown-isbn-issn'),
+            $driver->getOpenUrl()
+        );
     }
 
     /**
