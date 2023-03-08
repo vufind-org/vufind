@@ -33,7 +33,6 @@ $rules = [
     'native_function_casing' => true,
     'no_blank_lines_after_class_opening' => true,
     'no_blank_lines_after_phpdoc' => true,
-    'no_blank_lines_before_namespace' => true,
     'no_empty_comment' => true,
     'no_empty_phpdoc' => true,
     'no_empty_statement' => true,

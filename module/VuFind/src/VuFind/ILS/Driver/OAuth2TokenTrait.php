@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 
 /**
  * Trait OAuth2TokenTraitTest
@@ -28,6 +27,9 @@ declare(strict_types=1);
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://knihovny.cz Main Page
  */
+
+declare(strict_types=1);
+
 namespace VuFind\ILS\Driver;
 
 use VuFind\Auth\AuthToken;
