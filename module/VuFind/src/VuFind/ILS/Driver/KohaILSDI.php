@@ -31,10 +31,12 @@
 
 namespace VuFind\ILS\Driver;
 
+use Laminas\Log\LoggerAwareInterface;
 use PDO;
 use PDOException;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
+use VuFindHttp\HttpServiceAwareInterface;
 
 /**
  * VuFind Driver for Koha, using web APIs (ILSDI)
@@ -49,9 +51,7 @@ use VuFind\Exception\ILS as ILSException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
-    \VuFindHttp\HttpServiceAwareInterface,
-    \Laminas\Log\LoggerAwareInterface
+class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, LoggerAwareInterface
 {
     use \VuFind\Cache\CacheTrait {
         getCacheKey as protected getBaseCacheKey;
