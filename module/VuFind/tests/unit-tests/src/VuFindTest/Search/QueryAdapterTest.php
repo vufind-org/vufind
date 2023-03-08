@@ -128,7 +128,8 @@ class QueryAdapterTest extends \PHPUnit\Framework\TestCase
         // Array of fixture directory => expected display query
         $cases = [
             'basic' => 'john smith',
-            'advanced' => '(CallNumber:oranges AND toc:bananas AND ISN:pears) OR (Title:cars OR Subject:trucks) NOT ((AllFields:squid))'
+            'advanced' => '(CallNumber:oranges AND toc:bananas AND ISN:pears) OR '
+                . '(Title:cars OR Subject:trucks) NOT ((AllFields:squid))'
         ];
 
         // Create simple closure to fill in for translation callbacks:

@@ -271,7 +271,8 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
                     [
                         'page-size' => 100,
                         'page' => 0,
-                        'fields' => 'Inventory.Barcode,Inventory.CallNumLC,Inventory.ClaimDate,UniqRecNum,Inventory.SubLoc.CodeDesc,Inventory.ActType.Status,Inventory.VolumeDesc',
+                        'fields' => 'Inventory.Barcode,Inventory.CallNumLC,Inventory.ClaimDate,UniqRecNum,'
+                        . 'Inventory.SubLoc.CodeDesc,Inventory.ActType.Status,Inventory.VolumeDesc',
                         'command' => "UniqRecNum == 'foo-id'",
                     ],
                     [
@@ -460,7 +461,8 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
                     [
                         'page-size' => 1,
                         'page' => 0,
-                        'fields' => 'Address1,Address2,ZipCode,City,StateProv.CodeDesc,Country.CodeDesc,PhoneNumber,ExpiryDate',
+                        'fields' => 'Address1,Address2,ZipCode,City,StateProv.CodeDesc,Country.CodeDesc,'
+                        . 'PhoneNumber,ExpiryDate',
                         'command' => "ID == 'fake.user.fake.com'",
                     ],
                     [

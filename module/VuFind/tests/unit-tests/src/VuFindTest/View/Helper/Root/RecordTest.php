@@ -63,7 +63,10 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     public function testMissingTemplate()
     {
         $this->expectException(\Laminas\View\Exception\RuntimeException::class);
-        $this->expectExceptionMessage('Cannot find RecordDriver/[brief class name]/core.phtml for class VuFind\\RecordDriver\\SolrMarc or any of its parent classes');
+        $this->expectExceptionMessage(
+            'Cannot find RecordDriver/[brief class name]/core.phtml for class '
+            . 'VuFind\\RecordDriver\\SolrMarc or any of its parent classes'
+        );
 
         $record = $this->getRecord($this->loadRecordFixture('testbug1.json'));
         $record->getView()->resolver()->expects($this->exactly(4))->method('resolve')
@@ -322,8 +325,14 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $context = $this->getMockContext();
         $context->expects($this->exactly(2))->method('renderInContext')
             ->withConsecutive(
-                ['record/checkbox.phtml', ['id' => 'Solr|000105196', 'number' => 1, 'prefix' => 'bar', 'formAttr' => 'foo']],
-                ['record/checkbox.phtml', ['id' => 'Solr|000105196', 'number' => 2, 'prefix' => 'bar', 'formAttr' => 'foo']]
+                [
+                    'record/checkbox.phtml',
+                    ['id' => 'Solr|000105196', 'number' => 1, 'prefix' => 'bar', 'formAttr' => 'foo']
+                ],
+                [
+                    'record/checkbox.phtml',
+                    ['id' => 'Solr|000105196', 'number' => 2, 'prefix' => 'bar', 'formAttr' => 'foo']
+                ]
             )
             ->willReturnOnConsecutiveCalls('success', 'success');
         $record = $this->getRecord(
@@ -395,7 +404,10 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $config = ['QRCode' => ['showInCore' => true]];
         $record = $this->getRecord($driver, $config, $context, 'qrcode-show');
         $this->setSuccessTemplate($record, 'RecordDriver/SolrMarc/core-qrcode.phtml', 'success', $this->any());
-        $this->assertEquals('http://foo/bar?text=success&level=L&size=3&margin=4', $record->getQrCode('core', ['extra' => 'xyzzy']));
+        $this->assertEquals(
+            'http://foo/bar?text=success&level=L&size=3&margin=4',
+            $record->getQrCode('core', ['extra' => 'xyzzy'])
+        );
     }
 
     /**
@@ -471,7 +483,12 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $record = $this->getRecord($driver, [], null, 'fake-route', true);
         $this->assertEquals(
             [
-                ['route' => 'fake-route', 'prefix' => 'http://proxy?_=', 'desc' => 'a link', 'url' => 'http://proxy?_=http://server-foo/baz']
+                [
+                    'route' => 'fake-route',
+                    'prefix' => 'http://proxy?_=',
+                    'desc' => 'a link',
+                    'url' => 'http://proxy?_=http://server-foo/baz'
+                ]
             ],
             $record->getLinkDetails()
         );
@@ -498,7 +515,12 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $record = $this->getRecord($driver);
         $this->assertEquals(
             [
-                ['route' => 'fake-route', 'prefix' => 'http://proxy?_=', 'desc' => 'a link', 'url' => 'http://proxy?_=http://server-foo/baz']
+                [
+                    'route' => 'fake-route',
+                    'prefix' => 'http://proxy?_=',
+                    'desc' => 'a link',
+                    'url' => 'http://proxy?_=http://server-foo/baz'
+                ]
             ],
             $record->getLinkDetails()
         );
@@ -566,7 +588,8 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      * @param \VuFind\RecordDriver\AbstractBase $driver    Record driver
      * @param array|Config                      $config    Configuration
      * @param \VuFind\View\Helper\Root\Context  $context   Context helper
-     * @param bool|string                       $url       Should we add a URL helper? False if no, expected route if yes.
+     * @param bool|string                       $url       Should we add a URL helper? False if no,
+     * expected route if yes.
      * @param bool                              $serverurl Should we add a ServerURL helper?
      *
      * @return Record

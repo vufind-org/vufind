@@ -63,7 +63,9 @@ class PluginManagerTest extends \PHPUnit\Framework\TestCase
     public function testExpectedInterface()
     {
         $this->expectException(\Laminas\ServiceManager\Exception\InvalidServiceException::class);
-        $this->expectExceptionMessage('Plugin ArrayObject does not belong to VuFind\\Resolver\\Driver\\DriverInterface');
+        $this->expectExceptionMessage(
+            'Plugin ArrayObject does not belong to VuFind\\Resolver\\Driver\\DriverInterface'
+        );
 
         $pm = new PluginManager(new \VuFindTest\Container\MockContainer($this));
         $pm->validate(new \ArrayObject());

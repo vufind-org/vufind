@@ -1,7 +1,4 @@
 <?php
-
-declare(strict_types=1);
-
 /**
  * Class OAuth2TokenTraitTest
  *
@@ -28,6 +25,8 @@ declare(strict_types=1);
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://knihovny.cz Main Page
  */
+
+declare(strict_types=1);
 
 namespace VuFindTest\ILS;
 
@@ -70,7 +69,11 @@ END;
 
         $this->configureDriver();
         $this->mockResponse($response);
-        $token = $this->driver->getNewOAuth2Token('https://www.example.com/api/v1/oauth/token', 'some_client', 'some_secret');
+        $token = $this->driver->getNewOAuth2Token(
+            'https://www.example.com/api/v1/oauth/token',
+            'some_client',
+            'some_secret'
+        );
         $this->assertEquals('Bearer some_access_token', $token->getHeaderValue());
 
         $response = <<<END

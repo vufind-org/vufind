@@ -63,7 +63,10 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
 
         $theme = $this->getMockBuilder(\VuFindTheme\ThemeInfo::class)
             ->setConstructorArgs(['foo', 'bar'])->getMock();
-        $theme->expects($this->once())->method('findContainingTheme')->with($this->equalTo(['images/noCover2.gif']))->will($this->returnValue(false));
+        $theme->expects($this->once())
+            ->method('findContainingTheme')
+            ->with($this->equalTo(['images/noCover2.gif']))
+            ->will($this->returnValue(false));
         $loader = $this->getLoader([], null, $theme);
         $loader->getImage();
     }
@@ -123,7 +126,8 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $loader = $this->getLoader($cfg, null, null, null, ['debug']);
 
         // We expect the loader to complain about the bad filename and load the default image:
-        $expected = "Illegal file-extension 'phtml' for image '" . $this->getThemeDir() . '/' . $this->testTheme . '/' . $badfile . "'";
+        $expected = "Illegal file-extension 'phtml' for image '" . $this->getThemeDir() . '/'
+            . $this->testTheme . '/' . $badfile . "'";
         $loader->expects($this->once())->method('debug')->with($this->equalTo($expected));
         $loader->loadUnavailable();
         $this->assertEquals('368', strlen($loader->getImage()));
@@ -153,10 +157,12 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
             $httpService = $this->getMockBuilder(\VuFindHttp\HttpService::class)->getMock();
         }
         if ($mock) {
-            return $this->getMockBuilder(__NAMESPACE__ . '\MockLoader')
+            $mock = array_unique(array_merge($mock, ['debug']));
+            $mockLoader = $this->getMockBuilder(Loader::class)
                 ->onlyMethods($mock)
                 ->setConstructorArgs([$config, $manager, $theme, $httpService])
                 ->getMock();
+            return $mockLoader;
         }
         return new Loader($config, $manager, $theme, $httpService);
     }
@@ -169,12 +175,5 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
     protected function getThemeDir()
     {
         return realpath(__DIR__ . '/../../../../../../../themes');
-    }
-}
-
-class MockLoader extends \VuFind\Cover\Loader
-{
-    public function debug($msg, array $context = [], $prependClass = true)
-    {
     }
 }

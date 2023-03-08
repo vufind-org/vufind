@@ -328,8 +328,10 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             'The [WorldCat] xISBN_secret setting is no longer used and has been removed.',
             'The [WorldCat] xISSN_token setting is no longer used and has been removed.',
             'The [WorldCat] xISSN_secret setting is no longer used and has been removed.',
-            'The Editions related record module is no longer supported due to OCLC\'s xID API shutdown. It has been removed from your settings.',
-            'The WorldCatEditions related record module is no longer supported due to OCLC\'s xID API shutdown. It has been removed from your settings.',
+            'The Editions related record module is no longer supported due to OCLC\'s xID '
+            . 'API shutdown. It has been removed from your settings.',
+            'The WorldCatEditions related record module is no longer supported due to OCLC\'s '
+            . 'xID API shutdown. It has been removed from your settings.',
         ];
         $this->assertEquals($expectedWarnings, $upgrader->getWarnings());
     }

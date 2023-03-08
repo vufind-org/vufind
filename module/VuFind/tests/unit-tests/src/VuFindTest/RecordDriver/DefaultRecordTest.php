@@ -111,7 +111,10 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetSortTitle()
     {
-        $this->assertEquals("congiura dei principi napoletani 1701 :(prima e seconda stesura)", $this->getDriver()->getSortTitle());
+        $this->assertEquals(
+            "congiura dei principi napoletani 1701 :(prima e seconda stesura)",
+            $this->getDriver()->getSortTitle()
+        );
     }
 
     /**

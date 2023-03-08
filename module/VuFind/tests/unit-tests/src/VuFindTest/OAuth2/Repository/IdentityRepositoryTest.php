@@ -143,7 +143,8 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTest
                 'birthdate' => $this->userBirthDate,
                 'locale' => 'en-GB',
                 'phone' => '1900 CALL ME',
-                'address' => '{"street_address":"Somewhere...\\nOver the Rainbow","locality":"City","postal_code":"12345","country":"Country"}',
+                'address' => '{"street_address":"Somewhere...\\nOver the Rainbow","locality":"City",'
+                    . '"postal_code":"12345","country":"Country"}',
                 'block_status' => $blocks,
                 'nonce' => $nonce,
                 'library_user_id' => $this->getCatUsernameHash('user'),

@@ -126,7 +126,7 @@ class HoldingsWorldCatTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * get a Service object
+     * Get a Service object
      *
      * @return Service
      */

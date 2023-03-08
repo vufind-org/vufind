@@ -72,7 +72,10 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         // Confirm that we have 9 results and no filters to begin with:
         $time = $this->findCss($page, '.search-query-time');
         $stats = $this->findCss($page, '.search-stats');
-        $this->assertEquals("Showing 1 - 9 results of 9 for search 'building:weird_ids.mrc'" . $time->getText(), $stats->getText());
+        $this->assertEquals(
+            "Showing 1 - 9 results of 9 for search 'building:weird_ids.mrc'" . $time->getText(),
+            $stats->getText()
+        );
         $items = $page->findAll('css', $this->activeFilterSelector);
         $this->assertEquals(0, count($items));
 
@@ -85,7 +88,10 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $time = $this->findCss($page, '.search-query-time');
         $stats = $this->findCss($page, '.search-stats');
-        $this->assertEquals("Showing 1 - 7 results of 7 for search 'building:weird_ids.mrc'" . $time->getText(), $stats->getText());
+        $this->assertEquals(
+            "Showing 1 - 7 results of 7 for search 'building:weird_ids.mrc'" . $time->getText(),
+            $stats->getText()
+        );
         $items = $page->findAll('css', $this->activeFilterSelector);
         $this->assertEquals(1, count($items));
     }

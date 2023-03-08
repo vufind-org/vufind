@@ -75,8 +75,8 @@ class UserIpReaderTest extends \PHPUnit\Framework\TestCase
     /**
      * Support method for testMultipleHeadersWithFilter().
      *
-     * @params Parameters $params Parameters
-     * @param  string      $rules  Rules to apply to UserIpReader
+     * @param Parameters $params Parameters
+     * @param string     $rules  Rules to apply to UserIpReader
      *
      * @return void
      */

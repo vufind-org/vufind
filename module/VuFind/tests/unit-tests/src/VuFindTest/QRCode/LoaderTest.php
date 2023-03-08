@@ -63,7 +63,10 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
 
         $theme = $this->getMockBuilder(\VuFindTheme\ThemeInfo::class)
             ->setConstructorArgs(['foo', 'bar'])->getMock();
-        $theme->expects($this->once())->method('findContainingTheme')->with($this->equalTo(['images/noQRCode.gif']))->will($this->returnValue(false));
+        $theme->expects($this->once())
+            ->method('findContainingTheme')
+            ->with($this->equalTo(['images/noQRCode.gif']))
+            ->will($this->returnValue(false));
         $loader = $this->getLoader([], $theme);
         $loader->getImage();
     }

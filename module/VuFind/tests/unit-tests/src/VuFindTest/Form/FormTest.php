@@ -823,12 +823,12 @@ class FormTest extends \PHPUnit\Framework\TestCase
     /**
      * Test email subjects.
      *
-     * @dataProvider getEmailSubjectsData
-     *
      * @param string $formToTest      ID of the form to test.
      * @param string $expectedSubject String to be expected.
      *
      * @return void
+     *
+     * @dataProvider getEmailSubjectsData
      */
     public function testEmailSubjects(
         string $formToTest,

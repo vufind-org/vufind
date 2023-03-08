@@ -51,7 +51,8 @@ class SummonResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestCa
         $params = $results->getParams();
         $options = $this->getMockBuilder(\VuFind\Search\Solr\Options::class)
             ->disableOriginalConstructor()->getMock();
-        $options->expects($this->once())->method('getLabelForBasicHandler')->with($this->equalTo('bar'))->will($this->returnValue('baz'));
+        $options->expects($this->once())->method('getLabelForBasicHandler')
+            ->with($this->equalTo('bar'))->will($this->returnValue('baz'));
         $params->expects($this->once())->method('getOptions')->will($this->returnValue($options));
         $params->expects($this->once())->method('getSearchHandler')->will($this->returnValue('bar'));
         $mod = $this->getRecommend(\VuFind\Recommend\SummonResultsDeferred::class, '', null, $results);

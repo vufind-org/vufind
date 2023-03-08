@@ -69,9 +69,21 @@ class DynamicRoleProviderTest extends \PHPUnit\Framework\TestCase
             ],
         ];
         $pm = $this->getFakePluginManager();
-        $pm->get('a')->expects($this->any())->method('getPermissions')->with($this->equalTo('foo'))->will($this->returnValue([]));
-        $pm->get('b')->expects($this->any())->method('getPermissions')->with($this->equalTo('bar'))->will($this->returnValue(['role']));
-        $pm->get('c')->expects($this->any())->method('getPermissions')->with($this->equalTo([1, 2, 3]))->will($this->returnValue(['role']));
+        $pm->get('a')
+            ->expects($this->any())
+            ->method('getPermissions')
+            ->with($this->equalTo('foo'))
+            ->will($this->returnValue([]));
+        $pm->get('b')
+            ->expects($this->any())
+            ->method('getPermissions')
+            ->with($this->equalTo('bar'))
+            ->will($this->returnValue(['role']));
+        $pm->get('c')
+            ->expects($this->any())
+            ->method('getPermissions')
+            ->with($this->equalTo([1, 2, 3]))
+            ->will($this->returnValue(['role']));
         $result = $this->getDynamicRoleProvider($pm, $config)->getRoles(['role']);
         $this->assertEquals(1, count($result));
         $this->assertEquals('role', $result[0]->getName());
@@ -105,7 +117,10 @@ class DynamicRoleProviderTest extends \PHPUnit\Framework\TestCase
     {
         $pm = new PluginManager(new \VuFindTest\Container\MockContainer($this));
         foreach (['a', 'b', 'c'] as $name) {
-            $pm->setService($name, $this->createMock(\VuFind\Role\PermissionProvider\PermissionProviderInterface::class));
+            $pm->setService(
+                $name,
+                $this->createMock(\VuFind\Role\PermissionProvider\PermissionProviderInterface::class)
+            );
         }
         return $pm;
     }

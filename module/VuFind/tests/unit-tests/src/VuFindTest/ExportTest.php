@@ -239,7 +239,8 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     public function testGetRedirectUrl()
     {
         $mainConfig = ['config' => ['this' => 'that=true']];
-        $template = 'http://result?src={encodedCallback}&fallbacktest={config|config|unset|default}&configtest={encodedConfig|config|this|default}';
+        $template = 'http://result?src={encodedCallback}&fallbacktest={config|config|unset|default}'
+            . '&configtest={encodedConfig|config|this|default}';
         $exportConfig = ['foo' => ['redirectUrl' => $template]];
         $export = $this->getExport($mainConfig, $exportConfig);
         $this->assertEquals(
