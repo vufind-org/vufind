@@ -2793,7 +2793,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @return string Scheme attribute or empty string
      */
-    private function _schemeAttr(string $element, $namespacePrefix = 'ns1'): string
+    protected function schemeAttr(string $element, $namespacePrefix = 'ns1'): string
     {
         return isset($this->schemes[$element])
             ? ' ' . $namespacePrefix . ':Scheme="' . $this->schemes[$element] . '"'
@@ -2816,7 +2816,7 @@ class XCNCIP2 extends AbstractBase implements
     ): string {
         $fullElementName = $namespacePrefix . ':' . $elementName;
         return '<' . $fullElementName .
-            $this->_schemeAttr($elementName, $namespacePrefix) . '>' .
+            $this->schemeAttr($elementName, $namespacePrefix) . '>' .
             htmlspecialchars($text) .
             '</' . $fullElementName . '>';
     }
