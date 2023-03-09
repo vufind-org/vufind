@@ -76,10 +76,18 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
     {
         // Set up encoding:
         $headMeta = $this->getView()->plugin('headMeta');
+
+        // Make sure this is never escaped:
+        $autoEscape = $headMeta->getAutoEscape();
+        $headMeta->setAutoEscape(false);
+
         $headMeta()->prependHttpEquiv(
             'Content-Type',
             'text/html; charset=' . $this->container->getEncoding()
         );
+
+        // Restore initial escape setting:
+        $headMeta->setAutoEscape($autoEscape);
 
         // Set up generator:
         $generator = $this->container->getGenerator();
