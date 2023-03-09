@@ -27,6 +27,8 @@
  */
 namespace VuFind\ILS\Driver\Aleph;
 
+use VuFind\Exception\ILS as ILSException;
+
 /**
  * Restful Exception
  *
