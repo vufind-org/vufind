@@ -115,9 +115,9 @@
 <?php /* End Main Listing */ ?>
 
 <?php /* Refine Search Options */ ?>
-<div class="<?=$this->layoutClass('sidebar')?>" id="search-sidebar">
+<aside class="<?=$this->layoutClass('sidebar')?>" id="search-sidebar">
   <?php foreach ($this->results->getRecommendations('side') as $index => $current): ?>
     <?=$this->recommend($current, 'side', $index)?>
   <?php endforeach; ?>
-</div>
+</aside>
 <?php /* End Refine Search Options */ ?>

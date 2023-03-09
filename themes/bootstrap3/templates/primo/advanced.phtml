@@ -77,7 +77,7 @@
     <input type="submit" class="btn btn-primary" name="submit" value="<?=$this->transEscAttr("Find")?>"/>
   </div>
 
-  <div class="<?=$this->layoutClass('sidebar')?>">
+  <aside class="<?=$this->layoutClass('sidebar')?>">
     <?php if ($hasDefaultsApplied): ?>
       <input type="hidden" name="dfApplied" value="1" />
     <?php endif ?>
@@ -110,5 +110,5 @@
         </div>
       <?php endforeach; ?>
     <?php endif; ?>
-  </div>
+  </aside>
 </form>

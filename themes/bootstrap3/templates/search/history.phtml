@@ -54,14 +54,14 @@
 </div>
 
 <?php if ($saveSupported): ?>
-  <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
+  <aside class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
     <?=
       $this->context($this)->renderInContext(
           "myresearch/menu.phtml",
           ['active' => 'history']
       );
     ?>
-  </div>
+  </aside>
 <?php endif; ?>
 
 <?php

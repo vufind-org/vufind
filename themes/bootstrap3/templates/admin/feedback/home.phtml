@@ -140,9 +140,9 @@ $this->headTitle($this->translate('VuFind Administration - Feedback Management')
   <?php endif;?>
 </div>
 
-<div class="<?=$this->layoutClass('sidebar')?>">
+<aside class="<?=$this->layoutClass('sidebar')?>">
   <?=$this->render("admin/menu.phtml")?>
-</div>
+</aside>
 
 <?php
 $url = $this->url('admin/feedback', ['action' => 'UpdateStatus']);

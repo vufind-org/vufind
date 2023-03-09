@@ -166,7 +166,7 @@
       <?php endif; ?>
     </div>
 
-    <div class="<?=$this->layoutClass('sidebar')?>">
+    <aside class="<?=$this->layoutClass('sidebar')?>">
       <?php if ($hasDefaultsApplied): ?>
         <input type="hidden" name="dfApplied" value="1" />
       <?php endif ?>
@@ -204,7 +204,7 @@
         <a class="facet help-link" data-lightbox href="<?=$this->url('help-home')?>?topic=advsearch&amp;_=<?=time() ?>"><?=$this->transEsc("Help with Advanced Search")?></a>
         <a class="facet help-link" data-lightbox href="<?=$this->url('help-home')?>?topic=search&amp;_=<?=time() ?>"><?=$this->transEsc("Help with Search Operators")?></a>
       </div>
-    </div>
+    </aside>
   </form>
 </div>
 <?php

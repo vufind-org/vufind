@@ -70,6 +70,6 @@
   <?php endif; ?>
   </form>
 </div>
-<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
+<aside class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
   <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => empty($listID) ? 'favorites' : 'list' . $listID])?>
-</div>
+</aside>

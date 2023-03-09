@@ -61,7 +61,7 @@
 </form>
 <?php if ($this->auth()->isLoggedIn() && $this->layout()->getTemplate() !== 'layout/lightbox') :?>
   </div>
-  <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
+  <aside class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
       <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => empty($this->list->id) ? 'editlist/NEW' : 'list' . $this->list->id])?>
-  </div>
+  </aside>
 <?php endif; ?>
