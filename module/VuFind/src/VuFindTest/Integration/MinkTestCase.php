@@ -795,6 +795,7 @@ EOS
             ]
         );
         $page = $page ?? $this->session->getPage();
+        $this->waitForPageLoad($page);
         $client->setFileUpload(
             $this->session->getCurrentUrl(),
             'file',
@@ -876,21 +877,23 @@ EOS
         string $logFile,
         bool $quiet
     ): void {
-        $fullMessage = 'HTML validation '
-            . ('info' === $level ? 'messages' : 'errors') . ' for '
-            . $this->session->getCurrentUrl() . ': ' . PHP_EOL . PHP_EOL
+        $logMessage = $this->session->getCurrentUrl() . ': ' . PHP_EOL . PHP_EOL
             . implode(PHP_EOL . PHP_EOL, $messages);
 
         if ($logFile) {
+            $method = get_class($this) . '::' . $this->getName(false);
             file_put_contents(
                 $logFile,
-                date('Y-m-d H:i:s') . ' [' . strtoupper($level) . "] $fullMessage"
-                . PHP_EOL . PHP_EOL,
+                date('Y-m-d H:i:s') . ' [' . strtoupper($level) . "] [$method] "
+                . $logMessage . PHP_EOL . PHP_EOL,
                 FILE_APPEND
             );
         }
         if (!$quiet) {
-            $this->logWarning($fullMessage);
+            $this->logWarning(
+                'HTML validation ' . ('info' === $level ? 'messages' : 'errors')
+                . " for $logMessage"
+            );
         }
     }
 
