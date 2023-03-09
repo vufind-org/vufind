@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for SolrDefault-based record drivers that do not need a search service.
  *

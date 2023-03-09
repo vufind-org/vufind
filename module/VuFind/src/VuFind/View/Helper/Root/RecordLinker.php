@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Record linker view helper
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class for managing "next" and "previous" navigation within result sets.
  *

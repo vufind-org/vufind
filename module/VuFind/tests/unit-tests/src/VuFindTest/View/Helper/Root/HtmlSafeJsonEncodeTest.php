@@ -1,4 +1,5 @@
 <?php
+
 /**
  * HtmlSafeJsonEncode View Helper Test Class
  *

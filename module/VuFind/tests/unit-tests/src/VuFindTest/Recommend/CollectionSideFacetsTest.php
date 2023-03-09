@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CollectionSideFacets recommendation module Test Class
  *

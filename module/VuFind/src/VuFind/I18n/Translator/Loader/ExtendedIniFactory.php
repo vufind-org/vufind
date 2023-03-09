@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ExtendedIni Loader Factory
  *

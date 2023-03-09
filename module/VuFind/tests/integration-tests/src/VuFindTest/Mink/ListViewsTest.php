@@ -1,4 +1,5 @@
 <?php
+
 /**
  * List views (i.e. tabs/accordion) test class.
  *

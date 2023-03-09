@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Search 2 Collection list tab
  *

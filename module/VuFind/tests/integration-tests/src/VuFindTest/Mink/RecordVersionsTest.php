@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Record versions test class.
  *

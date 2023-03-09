@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink Feedback module test class.
  *

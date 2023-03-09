@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Normalized search object.
  *

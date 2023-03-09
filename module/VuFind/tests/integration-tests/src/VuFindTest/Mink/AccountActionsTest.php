@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink account actions test class.
  *

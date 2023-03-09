@@ -1,4 +1,5 @@
 <?php
+
 /**
  * JsTranslations helper for passing translation text to Javascript
  *

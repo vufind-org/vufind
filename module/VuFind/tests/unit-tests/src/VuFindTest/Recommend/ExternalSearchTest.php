@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ExternalSearch recommendation module Test Class
  *

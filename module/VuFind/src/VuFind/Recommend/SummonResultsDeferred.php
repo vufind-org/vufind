@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SummonResultsDeferred Recommendations Module
  *

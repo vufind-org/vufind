@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Flashmessages helper factory.
  *

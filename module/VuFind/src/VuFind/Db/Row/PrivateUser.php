@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Fake database row to represent a user in privacy mode.
  *

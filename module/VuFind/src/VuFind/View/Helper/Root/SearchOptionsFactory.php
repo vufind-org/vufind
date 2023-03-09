@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SearchOptions helper factory.
  *

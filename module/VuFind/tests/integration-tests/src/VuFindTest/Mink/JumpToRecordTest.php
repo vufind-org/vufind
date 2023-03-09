@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Jump to record" test class.
  *

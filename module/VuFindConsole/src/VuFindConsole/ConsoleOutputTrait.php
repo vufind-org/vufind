@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Console output trait (used to add output support to other classes).
  *

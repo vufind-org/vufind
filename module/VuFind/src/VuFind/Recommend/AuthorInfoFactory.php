@@ -1,4 +1,5 @@
 <?php
+
 /**
  * AuthorInfo recommendation module factory.
  *

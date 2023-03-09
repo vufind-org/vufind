@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Generate/NonTabRecordAction command test.
  *

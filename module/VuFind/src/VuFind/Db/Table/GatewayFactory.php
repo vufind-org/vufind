@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Generic table gateway factory.
  *

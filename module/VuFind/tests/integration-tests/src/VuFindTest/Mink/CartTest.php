@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink cart test class.
  *

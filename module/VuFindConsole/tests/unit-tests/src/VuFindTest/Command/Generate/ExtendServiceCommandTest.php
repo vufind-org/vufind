@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Generate/ExtendService command test.
  *

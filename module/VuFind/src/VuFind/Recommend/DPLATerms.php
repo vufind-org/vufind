@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DPLATerms Recommendations Module
  *

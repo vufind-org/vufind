@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Row Definition for change_tracker
  *

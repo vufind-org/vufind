@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Module definition for the VuFind theme system.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VF Configuration Upgrade Tool
  *

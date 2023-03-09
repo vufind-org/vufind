@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Additional functionality for API controllers.
  *

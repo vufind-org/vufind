@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Lightweight caching downloader aware marker trait.
  *

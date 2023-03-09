@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Related helper factory.
  *

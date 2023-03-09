@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Reviews content loader plugin manager
  *

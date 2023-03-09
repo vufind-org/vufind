@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Solr Collection aspect of the Search Multi-class (Params)
  *

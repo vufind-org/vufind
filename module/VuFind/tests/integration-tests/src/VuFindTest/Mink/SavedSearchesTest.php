@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink saved searches test class.
  *

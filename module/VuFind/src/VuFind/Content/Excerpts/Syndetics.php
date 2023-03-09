@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Syndetics excerpt content loader.
  *

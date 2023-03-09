@@ -1,4 +1,5 @@
 <?php
+
 /**
  * InjectTemplateListenerFactory Test Class
  *

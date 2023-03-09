@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Console command: VuFind-specific customizations to OAI-PMH harvest command
  *

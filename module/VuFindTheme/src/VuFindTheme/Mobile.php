@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mobile Device Detection Wrapper
  *

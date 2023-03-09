@@ -1,4 +1,5 @@
 <?php
+
 /**
  * GeoCoords helper factory.
  *

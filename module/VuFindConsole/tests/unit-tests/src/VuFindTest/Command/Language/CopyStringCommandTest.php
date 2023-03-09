@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Language/CopyString command test.
  *

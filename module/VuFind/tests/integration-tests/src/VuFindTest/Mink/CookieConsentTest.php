@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink cookie consent test class.
  *

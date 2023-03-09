@@ -1,4 +1,5 @@
 <?php
+
 /**
  * External Authentication/Authorization Controller
  *

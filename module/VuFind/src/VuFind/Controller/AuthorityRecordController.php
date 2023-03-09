@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Authority Record Controller
  *

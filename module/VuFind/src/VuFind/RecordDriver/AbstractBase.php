@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Abstract base record model.
  *

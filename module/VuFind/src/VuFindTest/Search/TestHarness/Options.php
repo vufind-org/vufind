@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Test options search model.
  *

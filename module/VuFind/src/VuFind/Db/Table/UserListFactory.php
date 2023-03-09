@@ -1,4 +1,5 @@
 <?php
+
 /**
  * UserList table gateway factory.
  *

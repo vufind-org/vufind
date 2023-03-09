@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Book Cover Generator
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Search\Options Plugin Manager Test Class
  *

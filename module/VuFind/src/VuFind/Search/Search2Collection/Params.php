@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Search2 Collection aspect of the Search Multi-class (Params)
  *

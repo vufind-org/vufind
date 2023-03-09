@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CookieConsent helper factory.
  *

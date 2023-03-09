@@ -1,4 +1,5 @@
 <?php
+
 /**
  * MultiILS authentication test class.
  *

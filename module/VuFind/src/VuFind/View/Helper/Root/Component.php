@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Component view helper
  *

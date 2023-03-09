@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Authentication manager test class.
  *

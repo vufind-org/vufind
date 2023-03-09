@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Content AuthorNotes Plugin Manager Test Class
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Related Items Plugin Manager Test Class
  *

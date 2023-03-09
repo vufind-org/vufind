@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Console command: generate sitemaps
  *

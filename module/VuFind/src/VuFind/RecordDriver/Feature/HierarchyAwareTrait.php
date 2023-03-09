@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Hierarchy support for record drivers.
  *

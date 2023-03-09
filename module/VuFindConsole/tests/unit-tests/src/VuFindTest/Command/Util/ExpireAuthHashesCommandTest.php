@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ExpireAuthHashesCommand test.
  *

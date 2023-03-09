@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PermissionProvider User Test Class
  *

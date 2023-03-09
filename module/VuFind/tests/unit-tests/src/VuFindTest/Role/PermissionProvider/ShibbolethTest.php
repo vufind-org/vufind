@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PermissionProvider Shibboleth Test Class
  *

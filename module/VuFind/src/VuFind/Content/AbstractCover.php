@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Abstract base for cover loader plug-ins.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind HTTP Service factory.
  *

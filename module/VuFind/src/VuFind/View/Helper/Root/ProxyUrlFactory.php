@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ProxyUrl helper factory.
  *

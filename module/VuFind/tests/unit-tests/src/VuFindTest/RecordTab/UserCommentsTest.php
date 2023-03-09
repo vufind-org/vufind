@@ -1,4 +1,5 @@
 <?php
+
 /**
  * UserComments Test Class
  *

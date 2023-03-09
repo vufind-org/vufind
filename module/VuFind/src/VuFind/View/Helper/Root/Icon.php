@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Icon view helper
  *

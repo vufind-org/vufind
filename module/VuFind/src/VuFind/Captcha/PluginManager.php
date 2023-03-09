@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CAPTCHA plugin manager
  *

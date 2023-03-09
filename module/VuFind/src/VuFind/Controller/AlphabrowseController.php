@@ -1,4 +1,5 @@
 <?php
+
 /**
  * AlphaBrowse Module Controller
  *

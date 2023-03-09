@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Citation view helper
  *

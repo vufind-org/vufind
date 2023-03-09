@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interface for exceptions to indicate the logging severity level.
  *

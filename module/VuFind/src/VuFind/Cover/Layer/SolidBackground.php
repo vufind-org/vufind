@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Solid cover background layer
  *

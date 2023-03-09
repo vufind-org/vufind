@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Map Tab Configuration Module
  *

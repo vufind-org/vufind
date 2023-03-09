@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Booksite review content loader.
  *

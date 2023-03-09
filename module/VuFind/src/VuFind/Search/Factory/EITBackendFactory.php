@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for EBSCO Integration Toolkit (EIT) backends.
  *

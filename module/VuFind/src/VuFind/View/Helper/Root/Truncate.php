@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Truncate view helper
  *

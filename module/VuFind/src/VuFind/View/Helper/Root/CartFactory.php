@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Cart helper factory.
  *

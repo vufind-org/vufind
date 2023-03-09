@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Helper class for managing bootstrap theme's high-level (body vs. sidebar) page
  * layout.

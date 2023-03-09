@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CommentRecord test class.
  *

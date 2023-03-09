@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Language Helper for Development Tools Controller
  *

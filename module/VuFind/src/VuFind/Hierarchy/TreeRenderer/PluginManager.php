@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Hierarchy tree renderer plugin manager
  *

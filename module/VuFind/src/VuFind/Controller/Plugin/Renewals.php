@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Action Helper - Renewals Support Methods
  *

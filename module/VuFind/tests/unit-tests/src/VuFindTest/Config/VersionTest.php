@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Version Reader Test Class
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Abstract base class for pulling Summon-specific recommendations.
  *

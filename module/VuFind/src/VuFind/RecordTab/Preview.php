@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Embedded Preview tab
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Invalid Authentication Argument Exception
  *

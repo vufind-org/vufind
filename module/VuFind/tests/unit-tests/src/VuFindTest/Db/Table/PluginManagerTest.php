@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DB Table Plugin Manager Test Class
  *

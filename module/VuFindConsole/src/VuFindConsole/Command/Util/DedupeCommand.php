@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Console command: deduplicate lines in a sorted file.
  *

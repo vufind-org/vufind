@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Check Request is Valid" AJAX handler
  *

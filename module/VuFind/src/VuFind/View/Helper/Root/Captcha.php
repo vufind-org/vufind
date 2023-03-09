@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Captcha view helper
  *

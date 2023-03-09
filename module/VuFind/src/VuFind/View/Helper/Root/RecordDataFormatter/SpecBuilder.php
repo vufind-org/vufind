@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Specification builder for record driver data formatting view helper
  *

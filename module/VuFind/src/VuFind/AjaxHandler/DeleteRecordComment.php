@@ -1,4 +1,5 @@
 <?php
+
 /**
  * AJAX handler to delete a comment on a record.
  *

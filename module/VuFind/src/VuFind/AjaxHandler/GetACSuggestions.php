@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Get Autocomplete Suggestions" AJAX handler
  *

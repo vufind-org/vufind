@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SearchBox helper factory.
  *

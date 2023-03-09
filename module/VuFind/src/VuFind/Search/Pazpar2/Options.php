@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Pazpar2 Search Options
  *

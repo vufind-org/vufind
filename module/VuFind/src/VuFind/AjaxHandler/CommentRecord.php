@@ -1,4 +1,5 @@
 <?php
+
 /**
  * AJAX handler to comment on a record.
  *

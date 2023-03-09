@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Email authentication module.
  *

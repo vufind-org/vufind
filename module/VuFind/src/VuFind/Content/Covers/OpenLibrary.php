@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OpenLibrary cover content loader.
  *

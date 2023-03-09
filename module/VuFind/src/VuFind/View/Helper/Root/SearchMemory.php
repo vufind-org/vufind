@@ -1,4 +1,5 @@
 <?php
+
 /**
  * View helper for remembering recent user searches/parameters.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Autocomplete handler plugin manager
  *

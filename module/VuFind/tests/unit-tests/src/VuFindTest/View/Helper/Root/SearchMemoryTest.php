@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SearchMemory view helper Test Class
  *

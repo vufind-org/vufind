@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Load help text" view helper
  *

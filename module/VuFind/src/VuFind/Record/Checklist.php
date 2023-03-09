@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Checklist class (used for checking off a list of values)
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Console command: remove suppressed records from index
  *

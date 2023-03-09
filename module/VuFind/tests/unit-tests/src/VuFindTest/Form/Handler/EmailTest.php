@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Email Form Handler Test Class
  *

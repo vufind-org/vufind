@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Metadata vocabulary base class
  * (provides results from available RecordDriver methods in a standardized form)

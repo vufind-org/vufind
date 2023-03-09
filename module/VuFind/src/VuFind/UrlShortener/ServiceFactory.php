@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory to construct the configured UrlShortener service.
  *

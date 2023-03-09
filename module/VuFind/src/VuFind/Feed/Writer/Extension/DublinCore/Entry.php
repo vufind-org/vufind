@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Laminas\Feed\Entry extension for Dublin Core
  *

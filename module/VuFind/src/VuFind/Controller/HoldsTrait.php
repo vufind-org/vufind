@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Holds trait (for subclasses of AbstractRecord)
  *

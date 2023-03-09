@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Shared factory for route generator commands.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Account capabilities factory.
  *

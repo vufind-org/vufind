@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class for accessing OCLC WorldCat search API
  *

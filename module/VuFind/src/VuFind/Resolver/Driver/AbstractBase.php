@@ -1,4 +1,5 @@
 <?php
+
 /**
  * AbstractBase for Resolver Driver
  *

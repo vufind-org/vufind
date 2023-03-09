@@ -1,4 +1,5 @@
 <?php
+
 /**
  * UserIpReaderFactory Test Class
  *

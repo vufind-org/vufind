@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Matomo web analytics view helper for Matomo versions >= 4
  *

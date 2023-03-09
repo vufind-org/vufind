@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Content loader view helper
  *

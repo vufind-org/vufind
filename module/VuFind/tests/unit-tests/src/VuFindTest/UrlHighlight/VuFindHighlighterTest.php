@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFindHighlighter Test Class
  *

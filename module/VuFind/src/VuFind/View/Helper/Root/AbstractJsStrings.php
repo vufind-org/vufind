@@ -1,4 +1,5 @@
 <?php
+
 /**
  * AbstractJsStrings helper for passing transformed text to Javascript
  *

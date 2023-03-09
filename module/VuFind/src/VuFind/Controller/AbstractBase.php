@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind controller base class (defines some methods that can be shared by other
  * controllers).

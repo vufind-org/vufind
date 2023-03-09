@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Home action for Help module
  *

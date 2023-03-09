@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SearchTabs helper factory.
  *

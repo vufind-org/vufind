@@ -1,4 +1,5 @@
 <?php
+
 /**
  * View helper to render a portion of an array.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Recommendation module view helper
  *

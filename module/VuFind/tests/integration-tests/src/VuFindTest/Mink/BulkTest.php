@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink bulk action test class.
  *

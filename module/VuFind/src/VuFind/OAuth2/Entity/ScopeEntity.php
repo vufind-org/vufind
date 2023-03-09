@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OAuth2 scope entity implementation.
  *

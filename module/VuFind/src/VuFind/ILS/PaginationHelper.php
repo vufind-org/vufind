@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ILS Pagination Helper
  *

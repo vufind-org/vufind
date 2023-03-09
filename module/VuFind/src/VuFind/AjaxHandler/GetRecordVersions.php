@@ -1,4 +1,5 @@
 <?php
+
 /**
  * AJAX handler for fetching versions link
  *

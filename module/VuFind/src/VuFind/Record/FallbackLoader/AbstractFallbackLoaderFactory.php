@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Abstract record fallback loader factory
  *

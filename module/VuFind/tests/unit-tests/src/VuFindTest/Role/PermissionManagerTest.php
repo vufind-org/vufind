@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PermissionManager Test Class
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Theme Public Resource Handler (for CSS, JS, etc.)
  *

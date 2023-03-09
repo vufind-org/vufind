@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ExtendedIni translation loader Test Class
  *

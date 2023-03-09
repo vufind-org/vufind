@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Role permission provider for VuFind.
  *

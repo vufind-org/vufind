@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Database" URL shortener test.
  *

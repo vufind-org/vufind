@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SwitchQuery recommendation module factory.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Metadata vocabulary implementation for PRISM
  *

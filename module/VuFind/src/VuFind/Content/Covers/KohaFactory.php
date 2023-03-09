@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Koha cover loader factory
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ILL trait (for subclasses of AbstractRecord)
  *

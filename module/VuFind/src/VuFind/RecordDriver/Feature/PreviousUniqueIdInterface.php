@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interface to support "previous unique ID" behavior.
  *

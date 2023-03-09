@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Compile/Theme command test.
  *

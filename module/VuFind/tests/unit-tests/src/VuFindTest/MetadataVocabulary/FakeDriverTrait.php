@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Trait containing method to generate fake drivers for metadata testing.
  *

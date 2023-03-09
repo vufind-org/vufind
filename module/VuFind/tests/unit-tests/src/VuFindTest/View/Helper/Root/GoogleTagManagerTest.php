@@ -1,4 +1,5 @@
 <?php
+
 /**
  * GoogleTagManager view helper Test Class
  *

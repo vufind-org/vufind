@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Action Helper - Storage Retrieval Requests Support Methods
  *

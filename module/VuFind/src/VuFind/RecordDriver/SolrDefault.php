@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Default model for Solr records -- used when a more specific model based on
  * the record_format field cannot be found.

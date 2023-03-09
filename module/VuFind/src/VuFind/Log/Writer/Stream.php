@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Stream writer
  *

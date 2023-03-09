@@ -1,4 +1,5 @@
 <?php
+
 /**
  * RecordDataFormatter Test Class
  *

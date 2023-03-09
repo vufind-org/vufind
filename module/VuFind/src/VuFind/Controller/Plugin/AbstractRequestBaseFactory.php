@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for controller plugins extending AbstractRequestBase.
  *

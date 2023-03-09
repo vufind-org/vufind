@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Console command: Generate non-tab record action route.
  *

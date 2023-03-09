@@ -1,4 +1,5 @@
 <?php
+
 /**
  * AJAX handler to get the rating for a record.
  *

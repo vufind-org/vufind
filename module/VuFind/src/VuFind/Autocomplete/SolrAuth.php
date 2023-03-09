@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Solr Authority Autocomplete Module
  *

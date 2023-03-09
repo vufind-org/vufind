@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Test functionality of the home page facets.
  *

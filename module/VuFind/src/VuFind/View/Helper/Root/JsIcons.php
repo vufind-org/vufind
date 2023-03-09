@@ -1,4 +1,5 @@
 <?php
+
 /**
  * JsIcons helper for passing icon HTML to Javascript
  *

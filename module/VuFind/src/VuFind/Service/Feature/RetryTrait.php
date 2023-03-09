@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Trait that provides support for calling a method with configurable retries
  *

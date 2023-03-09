@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Bad Configuration Exception
  *

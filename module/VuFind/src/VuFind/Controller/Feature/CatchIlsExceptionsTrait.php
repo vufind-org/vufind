@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Action Feature Trait - Catch ILS exceptions from actions with an OnDispatch
  * handler

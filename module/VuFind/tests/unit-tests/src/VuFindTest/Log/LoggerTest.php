@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Logger Test Class
  *

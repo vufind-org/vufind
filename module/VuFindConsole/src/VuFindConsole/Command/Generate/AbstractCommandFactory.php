@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Shared factory for generator commands.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Auth handler plugin manager
  *

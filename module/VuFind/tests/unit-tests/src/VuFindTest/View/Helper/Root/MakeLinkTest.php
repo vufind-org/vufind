@@ -1,4 +1,5 @@
 <?php
+
 /**
  * MakeLink view helper Test Class
  *

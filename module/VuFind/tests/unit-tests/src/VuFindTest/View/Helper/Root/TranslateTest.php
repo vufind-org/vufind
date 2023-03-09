@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Translate view helper Test Class (and by extension, the TranslatorAwareTrait)
  *

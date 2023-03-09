@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ServerUrl helper factory. This uses the core Laminas helper but configures it
  * according to VuFind settings.

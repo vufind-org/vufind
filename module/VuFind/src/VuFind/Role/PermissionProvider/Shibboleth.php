@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Shibboleth permission provider for VuFind.
  *

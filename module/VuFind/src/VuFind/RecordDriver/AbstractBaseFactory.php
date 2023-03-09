@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Default factory for record drivers.
  *

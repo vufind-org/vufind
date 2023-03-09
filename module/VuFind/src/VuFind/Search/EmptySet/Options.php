@@ -1,4 +1,5 @@
 <?php
+
 /**
  * EmptySet aspect of the Search Multi-class (Options)
  *

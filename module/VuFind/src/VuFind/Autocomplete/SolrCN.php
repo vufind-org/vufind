@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Solr Call Number Autocomplete Module
  *

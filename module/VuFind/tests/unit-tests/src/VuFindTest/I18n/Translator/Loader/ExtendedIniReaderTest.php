@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ExtendedIniReader Test Class
  *

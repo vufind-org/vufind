@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Abstract SearchObject Recommendations Module (needs to be extended to use
  * a particular search object).

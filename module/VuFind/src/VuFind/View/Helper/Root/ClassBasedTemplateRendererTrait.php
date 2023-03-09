@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Trait for view helpers that render a template based on a class name.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class to represent currently-selected theme and related information.
  *

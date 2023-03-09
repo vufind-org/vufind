@@ -1,4 +1,5 @@
 <?php
+
 /**
  * System contact email helper.
  *

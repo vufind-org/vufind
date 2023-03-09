@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink ChoiceAuth test class.
  *

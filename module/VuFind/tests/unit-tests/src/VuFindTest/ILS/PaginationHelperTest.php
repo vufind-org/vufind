@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Pagination helper test
  *

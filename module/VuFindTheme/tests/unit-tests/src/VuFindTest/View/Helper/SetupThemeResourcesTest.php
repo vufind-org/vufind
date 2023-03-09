@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SetupThemeResources view helper Test Class
  *

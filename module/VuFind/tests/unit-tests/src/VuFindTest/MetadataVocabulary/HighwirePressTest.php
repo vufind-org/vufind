@@ -1,4 +1,5 @@
 <?php
+
 /**
  * HighwirePress Test Class
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Recommend Plugin Manager Test Class
  *

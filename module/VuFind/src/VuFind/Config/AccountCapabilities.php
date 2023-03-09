@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class to determine which account capabilities are available, based on
  * configuration and other factors.

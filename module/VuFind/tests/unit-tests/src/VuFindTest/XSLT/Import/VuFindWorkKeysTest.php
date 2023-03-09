@@ -1,4 +1,5 @@
 <?php
+
 /**
  * XSLT helper tests for VuFindWorkKeys.
  *

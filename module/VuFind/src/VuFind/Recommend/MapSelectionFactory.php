@@ -1,4 +1,5 @@
 <?php
+
 /**
  * MapSelection recommendation module factory.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CSV Importer Configuration Test Class
  *

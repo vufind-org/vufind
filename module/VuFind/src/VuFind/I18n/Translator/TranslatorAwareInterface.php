@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Lightweight translator aware marker interface.
  *

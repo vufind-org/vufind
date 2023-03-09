@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Solr Auth Connection Test Class
  *

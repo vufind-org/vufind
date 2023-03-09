@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Action Feature Trait - Record Versions Search
  * Depends on method getSearchResultsView and record driver's method getWorkKeys.

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * AddThis view helper
  *

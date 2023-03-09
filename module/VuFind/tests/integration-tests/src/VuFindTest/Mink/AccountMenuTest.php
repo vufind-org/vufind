@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink account ajax menu test class.
  *

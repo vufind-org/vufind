@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CatalogResults Recommendations Module
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Resolver driver plugin manager
  *

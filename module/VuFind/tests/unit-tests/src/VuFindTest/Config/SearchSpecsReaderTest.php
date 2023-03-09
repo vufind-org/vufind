@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Config SearchSpecsReader Test Class
  *

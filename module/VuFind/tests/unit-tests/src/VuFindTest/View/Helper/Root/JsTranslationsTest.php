@@ -1,4 +1,5 @@
 <?php
+
 /**
  * JsTranslations view helper Test Class
  *

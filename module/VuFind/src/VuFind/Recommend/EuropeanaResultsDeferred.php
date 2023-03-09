@@ -1,4 +1,5 @@
 <?php
+
 /**
  * EuropeanaResultsDeferred Recommendations Module
  *

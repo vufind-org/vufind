@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Model for Pazpar2 records.
  *

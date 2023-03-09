@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CAS authentication module.
  *

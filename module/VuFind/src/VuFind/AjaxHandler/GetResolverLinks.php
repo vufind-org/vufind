@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Get Resolver Links" AJAX handler
  *

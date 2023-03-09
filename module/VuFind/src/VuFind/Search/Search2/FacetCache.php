@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Search2 FacetCache.
  *

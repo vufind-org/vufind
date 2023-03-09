@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Syndetics author notes content loader.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Solr Writer Test Class
  *

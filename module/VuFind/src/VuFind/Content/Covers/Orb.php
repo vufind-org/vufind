@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Orb cover content loader.
  *

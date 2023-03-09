@@ -1,4 +1,5 @@
 <?php
+
 /**
  * LintMarc command test.
  *

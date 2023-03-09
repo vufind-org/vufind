@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ThemeCompiler Test Class
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ContentBlock view helper
  *

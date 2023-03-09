@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Syndetics cover loader factory
  *

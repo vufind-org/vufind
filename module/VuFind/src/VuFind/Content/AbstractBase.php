@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Abstract base for content loader plug-ins.
  *

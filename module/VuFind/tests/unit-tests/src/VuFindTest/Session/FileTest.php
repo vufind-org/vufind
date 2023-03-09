@@ -1,4 +1,5 @@
 <?php
+
 /**
  * File Session Handler Test Class
  *

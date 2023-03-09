@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Facet cache plugin manager
  *

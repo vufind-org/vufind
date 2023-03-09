@@ -1,4 +1,5 @@
 <?php
+
 /**
  * BrowZine Test Class
  *

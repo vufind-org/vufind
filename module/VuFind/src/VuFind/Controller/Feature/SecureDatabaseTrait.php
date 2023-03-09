@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Action Feature Trait - Secure database detection trait
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for EDS-driven autocomplete plugins. Works for \VuFind\Autocomplete\Eds
  *

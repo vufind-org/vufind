@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SummonResults Test Class
  *

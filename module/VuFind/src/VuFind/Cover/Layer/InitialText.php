@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Initial cover text layer
  *

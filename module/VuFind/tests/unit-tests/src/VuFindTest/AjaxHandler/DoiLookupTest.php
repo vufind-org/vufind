@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DoiLookup test class.
  *

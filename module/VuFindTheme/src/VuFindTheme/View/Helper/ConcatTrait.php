@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Trait to add asset pipeline functionality (concatenation / minification) to
  * a HeadLink/HeadScript-style view helper.

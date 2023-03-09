@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Search\Params Plugin Manager Test Class
  *

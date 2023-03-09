@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Abstract options search model.
  *

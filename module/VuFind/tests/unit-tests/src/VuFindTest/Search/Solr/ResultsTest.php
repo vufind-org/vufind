@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Solr Search Object Results Test
  *

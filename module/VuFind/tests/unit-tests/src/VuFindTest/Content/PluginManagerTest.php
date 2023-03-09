@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Content Plugin Manager Test Class
  *

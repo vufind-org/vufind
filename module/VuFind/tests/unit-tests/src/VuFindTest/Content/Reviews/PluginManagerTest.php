@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Content Reviews Plugin Manager Test Class
  *

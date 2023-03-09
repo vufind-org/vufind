@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CollectionSideFacets Recommendations Module
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Context manager (useful for using render() instead of partial() for better
  * performance -- this allows us to set and roll back variables in the global

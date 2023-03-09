@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Laminas\Feed\Feed extension for Open Search
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * WorldCatIdentities recommendation module factory.
  *

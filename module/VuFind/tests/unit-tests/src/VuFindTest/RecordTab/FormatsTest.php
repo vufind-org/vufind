@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Formats Test Class
  *

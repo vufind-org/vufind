@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Excerpts content loader plugin manager
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Translate + escape view helper for HTML attributes
  *

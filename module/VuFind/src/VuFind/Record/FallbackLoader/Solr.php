@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Solr record fallback loader
  *

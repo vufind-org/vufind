@@ -1,4 +1,5 @@
 <?php
+
 /**
  * EBSCO EDS API Search Model
  *

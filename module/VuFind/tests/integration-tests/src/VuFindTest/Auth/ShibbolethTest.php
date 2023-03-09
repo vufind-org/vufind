@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Shibboleth authentication test class.
  *

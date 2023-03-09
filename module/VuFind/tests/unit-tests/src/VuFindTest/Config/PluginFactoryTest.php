@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Config Factory Test Class
  *

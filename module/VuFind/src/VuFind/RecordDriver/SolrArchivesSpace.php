@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Model for ArchivesSpace records in Solr.
  *

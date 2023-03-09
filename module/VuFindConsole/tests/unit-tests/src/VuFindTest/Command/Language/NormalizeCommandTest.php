@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Language/Normalize command test.
  *

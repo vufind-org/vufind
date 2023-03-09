@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Similar items" channel provider.
  *

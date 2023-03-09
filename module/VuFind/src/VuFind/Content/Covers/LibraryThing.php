@@ -1,4 +1,5 @@
 <?php
+
 /**
  * LibraryThing cover content loader.
  *

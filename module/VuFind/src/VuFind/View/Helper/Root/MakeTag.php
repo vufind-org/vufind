@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Make tag view helper
  *

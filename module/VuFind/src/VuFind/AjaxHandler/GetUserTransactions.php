@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Get User Transactions" AJAX handler
  *

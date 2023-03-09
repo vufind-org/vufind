@@ -1,4 +1,5 @@
 <?php
+
 /**
  * RecommendLinks recommendation module Test Class
  *

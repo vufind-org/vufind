@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Demo (fake data) TOC content loader.
  *

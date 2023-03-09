@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Template for code module for storing local overrides.
  *

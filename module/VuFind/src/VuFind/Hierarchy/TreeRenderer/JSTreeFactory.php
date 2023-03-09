@@ -1,4 +1,5 @@
 <?php
+
 /**
  * JSTree hierarchy tree renderer plugin factory.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Trait to add facet prefix and matches settings to a Params object.
  *

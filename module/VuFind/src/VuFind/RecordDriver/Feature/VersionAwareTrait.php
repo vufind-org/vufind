@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Logic for record versions support. Depends on versionAwareInterface.
  *

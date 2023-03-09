@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Helper to check if a translation is empty
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Model for records retrieved via EBSCO's EIT API.
  *

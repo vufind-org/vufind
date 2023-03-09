@@ -1,4 +1,5 @@
 <?php
+
 /**
  * MapSelection Configuration Module
  *

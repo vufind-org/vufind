@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for helpers relying on asset pipeline configuration.
  *

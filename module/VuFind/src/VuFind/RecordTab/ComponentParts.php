@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Component parts display tab
  *

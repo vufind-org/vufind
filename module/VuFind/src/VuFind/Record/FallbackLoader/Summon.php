@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Summon record fallback loader
  *

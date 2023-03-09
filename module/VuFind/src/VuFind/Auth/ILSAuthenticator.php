@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class for managing ILS-specific authentication.
  *

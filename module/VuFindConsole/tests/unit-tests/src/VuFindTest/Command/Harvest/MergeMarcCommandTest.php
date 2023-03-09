@@ -1,4 +1,5 @@
 <?php
+
 /**
  * MergeMarc command test.
  *

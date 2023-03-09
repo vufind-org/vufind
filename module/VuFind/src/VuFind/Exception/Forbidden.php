@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Forbidden Access" Exception
  *

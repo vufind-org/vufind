@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Language command: add string using template.
  *

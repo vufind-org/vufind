@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Session Plugin Manager Test Class
  *

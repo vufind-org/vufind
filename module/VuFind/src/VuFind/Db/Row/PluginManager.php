@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Database row plugin manager
  *

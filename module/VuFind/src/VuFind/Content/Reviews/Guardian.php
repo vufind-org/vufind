@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Guardian review content loader.
  *

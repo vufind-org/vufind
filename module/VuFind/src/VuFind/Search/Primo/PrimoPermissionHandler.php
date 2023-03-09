@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Primo Permission Handler.
  *

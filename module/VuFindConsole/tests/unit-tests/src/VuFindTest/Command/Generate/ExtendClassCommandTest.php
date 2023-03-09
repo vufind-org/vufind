@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Generate/ExtendClass command test.
  *

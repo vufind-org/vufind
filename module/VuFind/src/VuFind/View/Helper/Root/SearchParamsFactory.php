@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SearchParams helper factory.
  *

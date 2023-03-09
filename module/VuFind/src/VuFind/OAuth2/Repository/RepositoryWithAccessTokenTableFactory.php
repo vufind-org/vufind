@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for repositories requiring the access token table.
  *

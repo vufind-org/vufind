@@ -1,4 +1,5 @@
 <?php
+
 /**
  * JsIcons helper factory.
  *

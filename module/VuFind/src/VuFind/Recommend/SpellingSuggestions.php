@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SpellingSuggestions Recommendations Module
  *

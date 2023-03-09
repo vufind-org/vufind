@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Translate Adapter ExtendedIni
  *

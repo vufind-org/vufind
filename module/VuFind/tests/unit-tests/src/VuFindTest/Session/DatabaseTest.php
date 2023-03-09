@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Database Session Handler Test Class
  *

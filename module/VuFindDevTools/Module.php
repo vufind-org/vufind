@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Developer Tools module.
  *

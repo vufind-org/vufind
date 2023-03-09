@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Password Access authentication class
  *

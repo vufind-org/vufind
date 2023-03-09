@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Hierarchy Tree Renderer for the JS_Tree plugin
  *

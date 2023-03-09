@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Recently returned" channel provider.
  *

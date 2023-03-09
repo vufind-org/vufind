@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Icon View Helper Test Class
  *

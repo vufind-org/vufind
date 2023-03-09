@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for QR Code Generator
  *

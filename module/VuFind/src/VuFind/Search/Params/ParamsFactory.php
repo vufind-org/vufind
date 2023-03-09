@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Generic factory for search params objects.
  *

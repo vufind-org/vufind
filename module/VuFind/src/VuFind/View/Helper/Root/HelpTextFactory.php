@@ -1,4 +1,5 @@
 <?php
+
 /**
  * HelpText helper factory.
  *

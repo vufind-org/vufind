@@ -1,4 +1,5 @@
 <?php
+
 /**
  * XSLT geographic helper tests.
  *

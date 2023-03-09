@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Config Writer Test Class
  *

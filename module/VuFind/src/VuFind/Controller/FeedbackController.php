@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Controller for configurable forms (feedback etc).
  *

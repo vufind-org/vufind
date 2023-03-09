@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ShortenUrl helper factory.
  *

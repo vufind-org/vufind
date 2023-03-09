@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class to compile a theme hierarchy into a single flat theme.
  *

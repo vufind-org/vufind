@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Alma Database authentication class
  *

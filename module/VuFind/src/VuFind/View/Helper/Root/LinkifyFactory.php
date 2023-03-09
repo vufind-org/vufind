@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Linkify helper factory
  *

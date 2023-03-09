@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ChoiceAuth test class.
  *

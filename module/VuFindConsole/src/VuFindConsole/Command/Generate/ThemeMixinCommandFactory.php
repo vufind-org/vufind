@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for theme mixin generator command.
  *

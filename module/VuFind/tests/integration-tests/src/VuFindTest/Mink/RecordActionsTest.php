@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink record actions test class.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * RemoveFilters Recommendations Module
  * Recommends to remove filters

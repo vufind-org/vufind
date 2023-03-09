@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Simple abstract recommendation module that simply passes the Results object
  * through to the template.

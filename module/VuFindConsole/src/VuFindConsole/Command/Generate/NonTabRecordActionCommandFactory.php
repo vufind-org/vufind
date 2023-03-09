@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for non-tab record action route generator command.
  *

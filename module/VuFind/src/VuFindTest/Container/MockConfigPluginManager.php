@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind config plugin container that produces mock objects.
  *

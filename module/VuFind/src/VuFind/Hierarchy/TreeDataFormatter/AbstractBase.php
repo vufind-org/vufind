@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Hierarchy Tree Data Formatter (abstract base)
  *

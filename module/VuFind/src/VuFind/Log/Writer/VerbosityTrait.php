@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Trait to add configurable verbosity settings to loggers
  *

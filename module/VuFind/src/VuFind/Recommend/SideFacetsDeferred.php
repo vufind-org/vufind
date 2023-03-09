@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SideFacetsDeferred Recommendations Module
  *

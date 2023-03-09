@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Recommend test class.
  *

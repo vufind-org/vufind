@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ExtendedIniNormalizer Test Class
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Facet-driven channel provider.
  *

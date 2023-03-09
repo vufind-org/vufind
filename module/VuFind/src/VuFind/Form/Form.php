@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Configurable form.
  *

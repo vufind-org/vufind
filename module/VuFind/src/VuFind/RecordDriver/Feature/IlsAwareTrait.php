@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ILS support for MARC and other types of records.
  *

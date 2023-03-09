@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Facet formatter for API responses
  *

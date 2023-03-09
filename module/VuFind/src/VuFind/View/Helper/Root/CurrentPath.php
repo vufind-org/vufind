@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Current path view helper
  *

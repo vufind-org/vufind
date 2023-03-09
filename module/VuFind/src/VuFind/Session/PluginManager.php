@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Session handler plugin manager
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Abstract base class for handlers depending on the ILS and a logged-in user.
  *

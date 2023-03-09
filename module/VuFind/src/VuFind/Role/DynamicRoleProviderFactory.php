@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind dynamic role provider factory.
  *

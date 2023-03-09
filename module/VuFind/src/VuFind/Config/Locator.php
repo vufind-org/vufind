@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Configuration Locator - A static compatibility wrapper around PathResolver
  *

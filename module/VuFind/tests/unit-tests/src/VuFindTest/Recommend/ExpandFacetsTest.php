@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ExpandFacets recommendation module Test Class
  *

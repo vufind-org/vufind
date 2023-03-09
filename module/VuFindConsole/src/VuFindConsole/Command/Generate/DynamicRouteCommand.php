@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Console command: Generate dynamic route.
  *

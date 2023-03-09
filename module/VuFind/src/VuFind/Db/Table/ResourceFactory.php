@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Resource table gateway factory.
  *

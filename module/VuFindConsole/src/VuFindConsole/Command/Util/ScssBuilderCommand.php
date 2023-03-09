@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Console command: build CSS from SCSS.
  *

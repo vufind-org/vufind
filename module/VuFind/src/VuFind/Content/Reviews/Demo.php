@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Demo (fake data) reviews content loader.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Search results plugin manager
  *

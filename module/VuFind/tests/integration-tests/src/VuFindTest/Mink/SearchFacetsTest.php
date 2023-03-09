@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink search facet/filter functionality test class.
  *

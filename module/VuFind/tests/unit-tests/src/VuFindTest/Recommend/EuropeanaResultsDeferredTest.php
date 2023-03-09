@@ -1,4 +1,5 @@
 <?php
+
 /**
  * EuropeanaResultsDeferred recommendation module Test Class
  *

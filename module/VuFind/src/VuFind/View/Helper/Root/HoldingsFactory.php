@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Holdings helper factory.
  *

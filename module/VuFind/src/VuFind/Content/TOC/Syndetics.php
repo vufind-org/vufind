@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Syndetics TOC content loader.
  *

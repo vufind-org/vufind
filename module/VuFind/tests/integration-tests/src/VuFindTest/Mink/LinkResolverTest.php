@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink link resolver test class.
  *

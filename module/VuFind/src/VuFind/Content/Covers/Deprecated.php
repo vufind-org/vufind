@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Deprecated cover content loader (for backward-compatibility with deprecated
  * settings).

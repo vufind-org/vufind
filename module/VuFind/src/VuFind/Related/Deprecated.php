@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Deprecated Related Records Module - used to replace legacy modules that no
  * longer function due to, for example, external APIs that have been shut down.

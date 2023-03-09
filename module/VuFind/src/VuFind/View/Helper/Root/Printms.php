@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Prints a human readable format from a number of milliseconds
  *

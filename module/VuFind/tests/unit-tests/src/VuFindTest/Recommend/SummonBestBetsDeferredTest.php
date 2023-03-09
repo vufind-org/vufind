@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SummonBestBetsDeferred recommendation module Test Class
  *

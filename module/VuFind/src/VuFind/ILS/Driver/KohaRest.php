@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Driver for Koha, using REST API
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Relais: Check if logged-in patron can order an item.
  *

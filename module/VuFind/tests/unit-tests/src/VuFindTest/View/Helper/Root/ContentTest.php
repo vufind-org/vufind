@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Content View Helper Test Class
  *

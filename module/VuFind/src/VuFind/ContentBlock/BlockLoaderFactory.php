@@ -1,4 +1,5 @@
 <?php
+
 /**
  * BlockLoader factory.
  *

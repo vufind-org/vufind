@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SummonTopics Recommendations Module
  *

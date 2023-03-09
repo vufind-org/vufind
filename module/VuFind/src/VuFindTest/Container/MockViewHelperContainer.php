@@ -1,4 +1,5 @@
 <?php
+
 /**
  * View helper container that produces mock objects.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Central class for connecting to Pazpar2 resources used by VuFind.
  *

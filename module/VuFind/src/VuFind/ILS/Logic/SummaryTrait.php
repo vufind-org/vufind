@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Trait for getting a summary for checkouts, fines, holds, ILL requests or storage
  * retrieval requests.

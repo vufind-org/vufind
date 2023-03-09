@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Oracle support code for VTLS Virtua Driver
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Provide URL formatted as HTML and prefixed with proxy if applicable
  *

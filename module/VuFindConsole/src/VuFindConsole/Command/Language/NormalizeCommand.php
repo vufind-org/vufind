@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Language command: normalize file or directory.
  *

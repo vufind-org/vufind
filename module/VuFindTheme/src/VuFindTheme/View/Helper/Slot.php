@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Slot view helper
  *

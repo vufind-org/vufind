@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Abstract console command: build CSS with precompiler.
  *

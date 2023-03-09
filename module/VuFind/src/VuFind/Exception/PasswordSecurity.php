@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Password Security Exception
  *

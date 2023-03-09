@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Digital Content Formats tab
  *

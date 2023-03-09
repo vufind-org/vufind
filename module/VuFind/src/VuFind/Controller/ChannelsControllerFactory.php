@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Channels controller factory.
  *

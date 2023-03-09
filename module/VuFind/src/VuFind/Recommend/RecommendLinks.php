@@ -1,4 +1,5 @@
 <?php
+
 /**
  * RecommendLinks Recommendations Module
  *

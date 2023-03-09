@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ContentLoader helper factory.
  *

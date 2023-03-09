@@ -1,4 +1,5 @@
 <?php
+
 /**
  * MultiAuth Authentication plugin
  *

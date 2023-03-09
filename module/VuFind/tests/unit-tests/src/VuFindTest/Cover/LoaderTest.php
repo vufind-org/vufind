@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Cover Loader Test Class
  *

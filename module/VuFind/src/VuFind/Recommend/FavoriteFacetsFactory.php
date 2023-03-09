@@ -1,4 +1,5 @@
 <?php
+
 /**
  * FavoriteFacets recommendation module factory.
  *

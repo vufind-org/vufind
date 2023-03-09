@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for instantiating permission providers with request object.
  *

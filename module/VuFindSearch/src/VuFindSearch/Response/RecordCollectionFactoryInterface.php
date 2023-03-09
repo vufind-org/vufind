@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Search backend record collection factory interface.
  *

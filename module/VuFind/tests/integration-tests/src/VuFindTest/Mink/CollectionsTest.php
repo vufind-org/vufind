@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink test class for basic collection functionality.
  *

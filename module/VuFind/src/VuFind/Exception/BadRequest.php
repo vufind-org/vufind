@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Bad Request" Exception
  *

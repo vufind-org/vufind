@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for Solr-driven autocomplete plugins. Works for \VuFind\Autocomplete\Solr
  * and all of its subclasses.

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Container that produces mock objects.
  *

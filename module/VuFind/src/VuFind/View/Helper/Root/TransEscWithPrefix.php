@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Translate with prefix + escape view helper
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Generic VuFind table gateway.
  *

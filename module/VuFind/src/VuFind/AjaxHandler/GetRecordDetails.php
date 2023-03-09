@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Get Record Details" AJAX handler
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * POST Log Writer Test Class
  *

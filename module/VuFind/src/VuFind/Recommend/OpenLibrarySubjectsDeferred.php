@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OpenLibrarySubjects Recommendations Module
  *

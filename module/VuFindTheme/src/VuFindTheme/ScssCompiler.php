@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class to compile SCSS into CSS within a theme.
  *

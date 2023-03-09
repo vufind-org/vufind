@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Citation helper factory.
  *

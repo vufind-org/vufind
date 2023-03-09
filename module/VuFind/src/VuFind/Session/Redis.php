@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Redis session handler
  *

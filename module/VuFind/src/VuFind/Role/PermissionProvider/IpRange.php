@@ -1,4 +1,5 @@
 <?php
+
 /**
  * IpRange permission provider for VuFind.
  *

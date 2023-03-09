@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Syndetics review content loader.
  *

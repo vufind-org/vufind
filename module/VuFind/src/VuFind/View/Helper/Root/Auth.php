@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Authentication view helper
  *

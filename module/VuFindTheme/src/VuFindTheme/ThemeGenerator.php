@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class to generate a new theme from a template and reconfigure VuFind to use it.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Favorites aspect of the Search Multi-class (Results)
  *

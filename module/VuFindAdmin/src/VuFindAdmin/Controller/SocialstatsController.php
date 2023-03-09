@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Admin Social Statistics Controller
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Summon cover content loader.
  *

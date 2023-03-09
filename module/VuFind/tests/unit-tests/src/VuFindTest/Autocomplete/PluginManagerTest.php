@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Autocomplete Plugin Manager Test Class
  *

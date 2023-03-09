@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Very simple Mink test class.
  *

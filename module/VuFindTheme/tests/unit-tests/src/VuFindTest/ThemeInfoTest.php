@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ThemeInfo Test Class
  *

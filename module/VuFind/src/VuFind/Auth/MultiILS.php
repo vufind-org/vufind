@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Multiple ILS authentication module that works with MultiBackend driver
  *

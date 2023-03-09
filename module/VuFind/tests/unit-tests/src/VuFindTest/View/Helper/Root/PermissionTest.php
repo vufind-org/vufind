@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Permission view helper Test Class
  *

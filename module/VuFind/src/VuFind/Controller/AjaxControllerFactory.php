@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ajax controller factory.
  *

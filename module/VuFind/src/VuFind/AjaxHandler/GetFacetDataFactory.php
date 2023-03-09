@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for GetFacetData AJAX handler.
  *

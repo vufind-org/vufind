@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Content View Helper to resolve translated pages.
  * This is basically a wrapper around the PageLocator.

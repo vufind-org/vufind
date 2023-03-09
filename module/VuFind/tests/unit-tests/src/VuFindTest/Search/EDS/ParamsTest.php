@@ -1,4 +1,5 @@
 <?php
+
 /**
  * EDS Search Object Parameters Test
  *

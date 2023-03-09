@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for instantiating SMS objects
  *

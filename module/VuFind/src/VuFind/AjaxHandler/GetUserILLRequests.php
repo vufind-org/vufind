@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Get User ILL Requests" AJAX handler
  *

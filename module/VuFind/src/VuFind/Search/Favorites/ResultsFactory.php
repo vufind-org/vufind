@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for Favorites search results objects.
  *

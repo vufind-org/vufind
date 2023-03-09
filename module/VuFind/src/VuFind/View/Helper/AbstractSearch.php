@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Helper class for displaying search-related HTML chunks.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink ILS actions test class.
  *

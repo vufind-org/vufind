@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SOLR backend.
  *

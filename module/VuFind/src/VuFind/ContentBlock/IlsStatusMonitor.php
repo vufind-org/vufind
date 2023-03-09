@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ILS status monitor content block.
  *

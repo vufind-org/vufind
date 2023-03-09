@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class to generate a new mixin from a template.
  *

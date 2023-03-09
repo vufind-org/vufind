@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OpenSearch Feed Plugin Test Class
  *

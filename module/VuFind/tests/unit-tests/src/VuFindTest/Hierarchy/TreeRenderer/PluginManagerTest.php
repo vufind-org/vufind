@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Hierarchy Tree Renderer Plugin Manager Test Class
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Theme Config helper factory.
  *

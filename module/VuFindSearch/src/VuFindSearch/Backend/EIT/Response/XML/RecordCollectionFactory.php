@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Simple XML-based factory for record collection.
  *

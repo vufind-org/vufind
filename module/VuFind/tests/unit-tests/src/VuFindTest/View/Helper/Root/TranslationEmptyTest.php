@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TranslationEmpty view helper Test Class
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Generic factory to constructor-inject the config.ini settings.
  *

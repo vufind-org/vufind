@@ -1,4 +1,5 @@
 <?php
+
 /**
  * HeadTitle helper factory.
  *

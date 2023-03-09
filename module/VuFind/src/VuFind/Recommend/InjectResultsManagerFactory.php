@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for instantiating recommendation modules with Results plugin manager.
  *

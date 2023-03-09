@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PubDateVisAjax Recommendations Module
  *

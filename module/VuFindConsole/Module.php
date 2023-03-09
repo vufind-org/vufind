@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Code module for VuFind's console functionality
  *

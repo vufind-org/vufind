@@ -1,4 +1,5 @@
 <?php
+
 /**
  * EDSResultsDeferred Recommendations Module
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Keep Alive" AJAX handler
  *

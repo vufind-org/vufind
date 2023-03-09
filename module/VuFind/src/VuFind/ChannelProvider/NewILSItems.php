@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "New ILS items" channel provider.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Dynamic Book Cover Generator
  *

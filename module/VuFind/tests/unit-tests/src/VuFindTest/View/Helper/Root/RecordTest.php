@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Record view helper Test Class
  *

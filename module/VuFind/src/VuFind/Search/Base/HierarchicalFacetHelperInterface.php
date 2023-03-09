@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Hierarchical facet helper interface
  *

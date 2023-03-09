@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DOI helper factory.
  *

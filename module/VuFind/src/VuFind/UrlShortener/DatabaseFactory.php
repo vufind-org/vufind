@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for local database-driven URL shortener.
  *

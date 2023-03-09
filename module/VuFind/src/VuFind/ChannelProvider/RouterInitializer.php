@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Channel Provider Router Initializer
  *

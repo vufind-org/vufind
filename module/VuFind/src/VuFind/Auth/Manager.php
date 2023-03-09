@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Wrapper class for handling logged-in user in session.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * User permission provider for VuFind.
  *

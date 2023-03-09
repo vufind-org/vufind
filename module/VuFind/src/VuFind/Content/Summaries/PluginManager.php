@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Summaries content loader plugin manager
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * HelpText View Helper Test Class
  *

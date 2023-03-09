@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TranslatableString Test Class
  *

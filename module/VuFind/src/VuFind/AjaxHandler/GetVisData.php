@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Get Visualization Data" AJAX handler
  *

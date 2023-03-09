@@ -1,4 +1,5 @@
 <?php
+
 /**
  * FacetCloud recommendation module Test Class
  *

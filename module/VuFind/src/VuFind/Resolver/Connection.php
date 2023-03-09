@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Link Resolver Driver Wrapper
  *

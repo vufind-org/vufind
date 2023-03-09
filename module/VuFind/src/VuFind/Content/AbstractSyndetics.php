@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Abstract base for Syndetics content loader plug-ins.
  *

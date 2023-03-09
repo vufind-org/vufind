@@ -1,4 +1,5 @@
 <?php
+
 /**
  * AJAX handler to get all tags for a record as HTML.
  *

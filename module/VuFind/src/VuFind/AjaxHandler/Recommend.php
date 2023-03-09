@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Load a recommendation module via AJAX.
  *

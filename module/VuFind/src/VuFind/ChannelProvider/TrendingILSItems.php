@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Trending ILS items" channel provider.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Get Request Group Pickup Locations" AJAX handler
  *

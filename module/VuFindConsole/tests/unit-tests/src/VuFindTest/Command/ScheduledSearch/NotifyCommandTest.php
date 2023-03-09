@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ScheduledSearch/Notify command test.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * HeadThemeResources view helper Test Class
  *

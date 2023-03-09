@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ProxyManager configuration factory.
  *

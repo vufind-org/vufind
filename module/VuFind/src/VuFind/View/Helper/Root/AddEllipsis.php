@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Add ellipsis" view helper
  *

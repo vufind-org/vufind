@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Locale Detector Strategy for language cookie
  *

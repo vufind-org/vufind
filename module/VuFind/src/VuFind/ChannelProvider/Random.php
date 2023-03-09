@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Random items" channel provider.
  *

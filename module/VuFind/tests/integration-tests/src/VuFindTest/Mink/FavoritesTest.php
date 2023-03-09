@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink favorites test class.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OCLC Identities Autocomplete Module
  *

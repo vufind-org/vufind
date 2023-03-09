@@ -1,4 +1,5 @@
 <?php
+
 /**
  * UserList helper factory.
  *

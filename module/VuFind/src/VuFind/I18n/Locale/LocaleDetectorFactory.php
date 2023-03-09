@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Locale Detector Delegator Factory
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SwitchTab Test Class
  *

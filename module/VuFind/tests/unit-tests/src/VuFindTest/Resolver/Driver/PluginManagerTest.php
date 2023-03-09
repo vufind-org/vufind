@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Resolver\Driver Plugin Manager Test Class
  *

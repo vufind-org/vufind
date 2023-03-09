@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CookieConsent view helper
  *

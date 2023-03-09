@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Office 365 Log Writer Test Class
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Solr Reserves Autocomplete Module
  *

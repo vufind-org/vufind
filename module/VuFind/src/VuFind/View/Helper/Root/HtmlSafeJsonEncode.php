@@ -1,4 +1,5 @@
 <?php
+
 /**
  * HTML-safe JSON encoding.
  *

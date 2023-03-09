@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Get Facet Data" AJAX handler
  *

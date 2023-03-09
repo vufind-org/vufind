@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Console command: notify users of scheduled searches.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for record driver data formatting view helper
  *

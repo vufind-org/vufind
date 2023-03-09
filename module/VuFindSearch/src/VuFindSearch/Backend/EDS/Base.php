@@ -1,4 +1,5 @@
 <?php
+
 /**
  * EBSCO Search API abstract base class
  *

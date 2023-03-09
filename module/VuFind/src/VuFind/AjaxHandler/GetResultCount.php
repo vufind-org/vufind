@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Get Result Counts" AJAX Handler
  *

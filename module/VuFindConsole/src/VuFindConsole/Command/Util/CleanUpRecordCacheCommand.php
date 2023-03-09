@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Console command: clean up record cache.
  *

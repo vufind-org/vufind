@@ -1,4 +1,5 @@
 <?php
+
 /**
  * HTTP POST log writer for Slack
  *

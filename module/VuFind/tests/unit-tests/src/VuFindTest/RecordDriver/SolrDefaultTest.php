@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SolrDefault Record Driver Test Class
  *

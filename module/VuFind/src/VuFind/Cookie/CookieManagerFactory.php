@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Cookie Manager factory.
  *

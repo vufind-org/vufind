@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ajax Controller Module
  *

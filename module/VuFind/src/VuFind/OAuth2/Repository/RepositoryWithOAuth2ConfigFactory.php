@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for repositories requiring OAuth2 configuration.
  *

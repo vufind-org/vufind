@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Covers content loader plugin manager
  *

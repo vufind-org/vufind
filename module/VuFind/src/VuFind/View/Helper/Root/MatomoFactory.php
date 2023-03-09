@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Matomo helper factory.
  *

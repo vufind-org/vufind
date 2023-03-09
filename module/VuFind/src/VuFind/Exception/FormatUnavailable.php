@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Format Unavailable" Exception
  *

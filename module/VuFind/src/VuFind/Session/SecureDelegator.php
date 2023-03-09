@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Secure session delegator
  *

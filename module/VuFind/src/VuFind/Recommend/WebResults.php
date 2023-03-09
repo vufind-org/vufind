@@ -1,4 +1,5 @@
 <?php
+
 /**
  * WebResults Recommendations Module
  *

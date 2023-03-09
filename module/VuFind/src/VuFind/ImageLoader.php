@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Base class for loading images (shared by Cover\Loader and QRCode\Loader)
  *

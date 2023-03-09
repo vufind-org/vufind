@@ -1,4 +1,5 @@
 <?php
+
 /**
  * A minimal record class for wrapping an array of fields
  *

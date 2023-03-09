@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Hierarchy tree data formatter plugin manager
  *

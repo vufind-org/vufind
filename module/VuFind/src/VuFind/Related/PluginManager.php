@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Related record plugin manager
  *

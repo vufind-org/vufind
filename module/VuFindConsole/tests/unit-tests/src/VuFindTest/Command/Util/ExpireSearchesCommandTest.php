@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ExpireSearchesCommand test.
  *

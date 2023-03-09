@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Base formatter for API responses
  *

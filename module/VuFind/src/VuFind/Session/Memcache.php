@@ -1,4 +1,5 @@
 <?php
+
 /**
  * MemCache session handler
  *

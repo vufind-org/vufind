@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ServerParam permission provider for VuFind.
  *

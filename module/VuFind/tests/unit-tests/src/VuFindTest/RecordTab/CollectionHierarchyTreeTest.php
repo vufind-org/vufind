@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CollectionHierarchyTree Test Class
  *

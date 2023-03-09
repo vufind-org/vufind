@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Form handler plugin manager
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Record driver data formatting view helper
  *

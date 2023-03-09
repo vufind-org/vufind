@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Demo CAPTCHA (expect hard-coded value; used for test suite only).
  *

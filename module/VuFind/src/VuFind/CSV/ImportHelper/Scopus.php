@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Helpers for Scopus CSV import example.
  *

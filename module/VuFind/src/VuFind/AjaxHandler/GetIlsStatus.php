@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Get ILS Status" AJAX handler
  *

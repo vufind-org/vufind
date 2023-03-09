@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Language command: copy string.
  *

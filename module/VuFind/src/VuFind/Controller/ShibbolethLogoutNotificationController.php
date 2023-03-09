@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Shibboleth Logout Notification API Controller
  *

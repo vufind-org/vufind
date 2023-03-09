@@ -1,4 +1,5 @@
 <?php
+
 /**
  * RecordLinker view helper Test Class
  *

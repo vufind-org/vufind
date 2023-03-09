@@ -1,4 +1,5 @@
 <?php
+
 /**
  * EDS Autocomplete Module
  *

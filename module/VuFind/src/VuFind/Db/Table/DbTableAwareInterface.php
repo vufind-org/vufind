@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Marker interface for classes that depend on the \VuFind\Db\Table\PluginManager
  *

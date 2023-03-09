@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Abstract authentication base class
  *

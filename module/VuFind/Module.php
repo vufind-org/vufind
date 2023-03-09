@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Code module for the core of the VuFind application
  *

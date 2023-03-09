@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Autocomplete Plug-In Interface
  *

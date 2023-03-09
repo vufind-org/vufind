@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Cover controller factory.
  *

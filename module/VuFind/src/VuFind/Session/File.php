@@ -1,4 +1,5 @@
 <?php
+
 /**
  * File-based session handler
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Slack Log Writer Test Class
  *

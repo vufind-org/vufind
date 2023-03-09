@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Laminas\Feed\Renderer\Feed extension for Open Search
  *

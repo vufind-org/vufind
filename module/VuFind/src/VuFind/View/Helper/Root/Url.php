@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Url view helper (extending core Laminas helper with additional functionality)
  *

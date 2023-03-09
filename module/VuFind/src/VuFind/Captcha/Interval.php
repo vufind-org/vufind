@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interval CAPTCHA (requires an interval between actions or from start of session).
  *

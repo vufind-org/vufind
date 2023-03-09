@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind tag processing logic
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * AuthorFacets aspect of the Search Multi-class (Params)
  *

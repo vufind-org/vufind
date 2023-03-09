@@ -1,4 +1,5 @@
 <?php
+
 /**
  * AlphaBrowse Test Class
  *

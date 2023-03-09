@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SolrAuthMarc Record Driver Test Class
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OAuth2 access token repository implementation.
  *

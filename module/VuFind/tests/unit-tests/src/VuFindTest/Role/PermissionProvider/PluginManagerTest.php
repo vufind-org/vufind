@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PermissionProvider Plugin Manager Test Class
  *

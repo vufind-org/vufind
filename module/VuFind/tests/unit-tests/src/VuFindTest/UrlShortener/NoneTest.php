@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "None" URL shortener test.
  *

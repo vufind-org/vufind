@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Generator tools factory.
  *

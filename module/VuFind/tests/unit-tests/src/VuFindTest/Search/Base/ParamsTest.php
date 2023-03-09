@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Base Search Object Parameters Test
  *

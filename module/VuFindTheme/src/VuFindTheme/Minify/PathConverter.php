@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CSS path converter extension
  *

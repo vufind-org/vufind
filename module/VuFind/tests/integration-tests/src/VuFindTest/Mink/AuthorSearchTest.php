@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink author search test class.
  *

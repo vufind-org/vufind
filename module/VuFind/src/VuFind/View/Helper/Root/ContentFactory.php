@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Content helper factory.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Get Save Statuses" AJAX handler
  *

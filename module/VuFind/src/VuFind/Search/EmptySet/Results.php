@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Empty Search Object
  *

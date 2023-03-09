@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Abstract base for deferred-load Summon recommendations modules
  *

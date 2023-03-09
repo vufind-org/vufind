@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Caching support trait for connectors.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Combined results search model.
  *

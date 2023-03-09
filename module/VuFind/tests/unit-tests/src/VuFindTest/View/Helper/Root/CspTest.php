@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Csp View Helper Test Class
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Row Definition for auth_hash
  *

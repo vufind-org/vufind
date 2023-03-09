@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Trait to add facet limiting settings to a Params object.
  *

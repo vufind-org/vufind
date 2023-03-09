@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ContentCafe cover loader factory
  *

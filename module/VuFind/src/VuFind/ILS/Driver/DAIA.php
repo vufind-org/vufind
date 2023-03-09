@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ILS Driver for VuFind to query availability information via DAIA.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SwitchTab Recommendations Module
  * Recommends to use another SearchTab

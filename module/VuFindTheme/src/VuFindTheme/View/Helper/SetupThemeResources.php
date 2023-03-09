@@ -1,4 +1,5 @@
 <?php
+
 /**
  * View helper for loading theme-related resources.
  *

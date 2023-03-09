@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Config Plugin Factory
  *

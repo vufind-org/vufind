@@ -1,4 +1,5 @@
 <?php
+
 /**
  * XSLT importer support methods.
  *

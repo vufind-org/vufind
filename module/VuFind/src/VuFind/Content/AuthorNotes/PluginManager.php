@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Author notes content loader plugin manager
  *

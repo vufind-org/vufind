@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Record Driver for SolrOverdrive Records
  *

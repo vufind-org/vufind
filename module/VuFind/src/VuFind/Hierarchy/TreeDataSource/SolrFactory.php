@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Solr Hierarchy tree data source plugin factory.
  *

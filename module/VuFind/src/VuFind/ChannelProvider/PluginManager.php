@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Channel provider plugin manager
  *

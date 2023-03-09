@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Trait for implementing containers that produces mock objects.
  *

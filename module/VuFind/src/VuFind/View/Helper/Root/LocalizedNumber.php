@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Localization based number formatting
  *

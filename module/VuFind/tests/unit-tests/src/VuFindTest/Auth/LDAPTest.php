@@ -1,4 +1,5 @@
 <?php
+
 /**
  * LDAP authentication test class.
  *

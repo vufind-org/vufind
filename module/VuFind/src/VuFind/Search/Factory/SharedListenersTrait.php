@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Trait containing methods for building shared listeners.
  *

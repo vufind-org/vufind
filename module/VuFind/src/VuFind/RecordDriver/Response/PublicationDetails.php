@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class encapsulating publication details.
  *

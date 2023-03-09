@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Icon helper factory.
  *

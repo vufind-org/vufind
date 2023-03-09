@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Deprecated content loader (used for backward compatibility with deprecated
  * settings).

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Helper to get path to a parent template (for including)
  *

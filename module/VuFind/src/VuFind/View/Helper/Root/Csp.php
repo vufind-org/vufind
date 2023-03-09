@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Content Security Policy view helper
  *

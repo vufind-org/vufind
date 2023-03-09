@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Storage retrieval requests trait (for subclasses of AbstractRecord)
  *

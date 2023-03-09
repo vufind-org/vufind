@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Url helper factory.
  *

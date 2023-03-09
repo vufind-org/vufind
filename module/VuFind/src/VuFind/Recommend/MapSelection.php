@@ -1,4 +1,5 @@
 <?php
+
 /**
  * MapSelection Recommendations Module
  *

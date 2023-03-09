@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Abstract base class to precompile CSS within a theme.
  *

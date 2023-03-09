@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SolrOverdrive Record Driver Test Class
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Unpaywall DOI linker factory
  *

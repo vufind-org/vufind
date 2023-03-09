@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Action Feature Trait - Alphabetic browse support
  * Depends on direct access to the Service Manager.

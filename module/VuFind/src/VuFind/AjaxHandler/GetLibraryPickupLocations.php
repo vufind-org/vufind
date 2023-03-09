@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Get Library Pickup Locations" AJAX handler
  *

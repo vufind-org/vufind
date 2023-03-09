@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "List items" channel provider.
  *

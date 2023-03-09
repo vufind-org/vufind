@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Extension of Laminas\Validator\Csrf with token counting/clearing functions added.
  *

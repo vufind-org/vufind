@@ -1,4 +1,5 @@
 <?php
+
 /**
  * LibGuides aspect of the Search Multi-class (Results)
  *

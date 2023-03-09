@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Content Excerpts Plugin Manager Test Class
  *

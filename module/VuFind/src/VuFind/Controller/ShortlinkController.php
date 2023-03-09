@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Short link controller
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Get User Storage Retrieval Requests" AJAX handler
  *

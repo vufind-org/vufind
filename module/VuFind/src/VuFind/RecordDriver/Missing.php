@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Model for missing records -- used for saved favorites that have been deleted
  * from the index.

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Console command: Merge MARC records.
  *

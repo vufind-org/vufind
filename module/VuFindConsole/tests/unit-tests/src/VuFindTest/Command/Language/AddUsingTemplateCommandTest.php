@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Language/AddUsingTemplate command test.
  *

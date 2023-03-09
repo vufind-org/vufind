@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SearchTabs view helper Test Class
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Action Helper - Captcha handler
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Test params search model.
  *

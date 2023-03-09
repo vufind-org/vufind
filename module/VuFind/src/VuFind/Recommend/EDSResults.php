@@ -1,4 +1,5 @@
 <?php
+
 /**
  * EDSResults Recommendations Module
  *

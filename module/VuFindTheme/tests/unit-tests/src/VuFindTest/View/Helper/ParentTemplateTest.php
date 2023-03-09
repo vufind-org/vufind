@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ParentTemplate view helper Test Class
  *

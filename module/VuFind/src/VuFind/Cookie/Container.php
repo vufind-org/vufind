@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class for treating a set of cookies as an object (inspired by
  * \Laminas\Session\Container).

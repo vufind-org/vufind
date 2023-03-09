@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Footer script view helper (same as HeadScript but outputs to the bottom of <body>)
  *

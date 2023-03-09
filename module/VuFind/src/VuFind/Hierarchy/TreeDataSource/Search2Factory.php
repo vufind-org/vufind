@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Search2 Hierarchy tree data source plugin factory.
  *

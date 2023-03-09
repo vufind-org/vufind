@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SafeMoneyFormat view helper Test Class
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for ILS authentication module (and others with equivalent constructors).
  *

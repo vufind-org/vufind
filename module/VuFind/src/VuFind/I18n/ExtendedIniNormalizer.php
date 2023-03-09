@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class to consistently format ExtendedIni language files.
  *

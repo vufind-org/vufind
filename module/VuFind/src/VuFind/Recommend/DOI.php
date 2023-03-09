@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DOI Recommendations Module
  *

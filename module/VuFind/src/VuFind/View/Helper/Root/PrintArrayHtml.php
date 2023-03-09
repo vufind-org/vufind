@@ -1,4 +1,5 @@
 <?php
+
 /**
  * View helper to print an array formatted for HTML display.
  *

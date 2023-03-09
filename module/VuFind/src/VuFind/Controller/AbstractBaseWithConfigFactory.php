@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Generic controller factory (with config injection).
  *

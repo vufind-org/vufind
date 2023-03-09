@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SitemapCommand test.
  *

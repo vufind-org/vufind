@@ -1,4 +1,5 @@
 <?php
+
 /**
  * RecordDriver Plugin Manager Test Class
  *

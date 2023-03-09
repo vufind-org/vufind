@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interface shared by theme and mixin generator classes.
  *

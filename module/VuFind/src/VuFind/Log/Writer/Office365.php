@@ -1,4 +1,5 @@
 <?php
+
 /**
  * HTTP POST log writer for Office365 webhooks.
  *

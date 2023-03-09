@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Config Locator Test Class
  *

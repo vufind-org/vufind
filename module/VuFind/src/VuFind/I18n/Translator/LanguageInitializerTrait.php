@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Logic for initializing a language within a translator used by VuFind.
  *

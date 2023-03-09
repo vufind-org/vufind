@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for Search2 results objects.
  *

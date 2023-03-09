@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SIP2 authentication test class.
  *

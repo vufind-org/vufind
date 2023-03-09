@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Permission manager factory.
  *

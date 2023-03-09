@@ -1,4 +1,5 @@
 <?php
+
 /**
  * AJAX handler to look up DOI data.
  *

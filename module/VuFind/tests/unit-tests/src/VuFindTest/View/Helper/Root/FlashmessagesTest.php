@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Flashmessages View Helper Test Class
  *

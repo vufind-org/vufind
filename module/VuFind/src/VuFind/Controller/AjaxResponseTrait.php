@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Trait to allow AJAX response generation.
  *

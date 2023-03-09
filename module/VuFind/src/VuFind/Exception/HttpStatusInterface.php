@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interface for exceptions that should trigger specific HTTP status codes
  * when unhandled.

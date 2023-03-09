@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Blender aspect of the Search Multi-class (Results)
  *

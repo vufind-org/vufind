@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Test results search model.
  *

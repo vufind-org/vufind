@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SimilarItemsCarousel Test Class
  *

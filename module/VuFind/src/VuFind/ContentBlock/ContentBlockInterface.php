@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Content block interface
  *

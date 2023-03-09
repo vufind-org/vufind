@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for OAI harvest command.
  *

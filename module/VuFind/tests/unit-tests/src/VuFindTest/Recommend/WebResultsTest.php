@@ -1,4 +1,5 @@
 <?php
+
 /**
  * WebResults Test Class
  *

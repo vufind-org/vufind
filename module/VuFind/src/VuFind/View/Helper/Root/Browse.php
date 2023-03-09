@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Browse controller view helper
  *

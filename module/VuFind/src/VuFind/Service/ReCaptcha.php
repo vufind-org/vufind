@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Recaptcha service
  *

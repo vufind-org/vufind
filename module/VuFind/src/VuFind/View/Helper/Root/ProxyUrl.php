@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Proxy URL view helper
  *

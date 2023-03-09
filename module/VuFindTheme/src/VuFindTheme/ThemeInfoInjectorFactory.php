@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for objects that depend on the ThemeInfo object.
  *

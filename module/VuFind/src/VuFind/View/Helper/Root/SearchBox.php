@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Search box view helper
  *

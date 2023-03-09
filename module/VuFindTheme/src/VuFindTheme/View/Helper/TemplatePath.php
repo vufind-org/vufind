@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Helper to get path to a template from another theme (for including)
  *

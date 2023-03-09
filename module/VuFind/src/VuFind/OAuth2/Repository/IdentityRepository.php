@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OpenID Connect identity repository implementation.
  *

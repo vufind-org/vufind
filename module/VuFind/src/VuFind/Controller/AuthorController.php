@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Author Search Controller
  *

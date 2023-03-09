@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DOI linker plugin manager
  *

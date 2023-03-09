@@ -1,4 +1,5 @@
 <?php
+
 /**
  * AbstractSearch with Solr-specific features added.
  *

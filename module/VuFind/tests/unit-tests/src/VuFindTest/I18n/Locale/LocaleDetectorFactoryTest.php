@@ -1,4 +1,5 @@
 <?php
+
 /**
  * LocaleDetectorFactory Test Class
  *

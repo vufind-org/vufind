@@ -1,4 +1,5 @@
 <?php
+
 /**
  * No-op URL shortener (default version, does nothing).
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Record formatter for API responses
  *

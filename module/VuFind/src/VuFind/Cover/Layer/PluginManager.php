@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Cover layer plugin manager
  *

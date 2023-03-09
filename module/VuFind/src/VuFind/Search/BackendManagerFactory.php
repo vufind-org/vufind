@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Search Backend Manager factory.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * FacetCloud Recommendations Module
  *

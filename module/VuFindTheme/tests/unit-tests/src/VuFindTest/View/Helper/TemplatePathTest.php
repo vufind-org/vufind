@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TemplatePath view helper Test Class
  *

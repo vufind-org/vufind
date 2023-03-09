@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Safe money format view helper
  *

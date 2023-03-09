@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for console generator commands that rely on a service container.
  *

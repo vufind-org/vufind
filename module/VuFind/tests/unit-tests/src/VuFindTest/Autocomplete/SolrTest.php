@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Solr autocomplete test class.
  *

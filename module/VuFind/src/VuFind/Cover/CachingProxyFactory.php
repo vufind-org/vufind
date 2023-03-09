@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Cover caching proxy factory.
  *

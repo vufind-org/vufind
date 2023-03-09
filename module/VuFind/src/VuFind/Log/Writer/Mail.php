@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mail log writer
  *

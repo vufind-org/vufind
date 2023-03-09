@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for Similar related record module (and subclasses).
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Hide values of facet for displaying
  *

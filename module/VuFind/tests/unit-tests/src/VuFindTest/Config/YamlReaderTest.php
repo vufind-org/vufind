@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Config YamlReader Test Class
  *

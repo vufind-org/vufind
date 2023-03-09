@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Get Item Status" AJAX handler
  *

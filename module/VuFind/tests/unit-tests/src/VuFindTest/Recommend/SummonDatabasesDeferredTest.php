@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SummonDatabasesDeferred recommendation module Test Class
  *

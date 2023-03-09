@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Record cache aware marker interface.
  *

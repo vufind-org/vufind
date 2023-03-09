@@ -1,4 +1,5 @@
 <?php
+
 /**
  * EBSCO API Exception class
  *

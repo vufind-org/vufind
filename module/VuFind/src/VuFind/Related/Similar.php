@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Related Records: Solr-based similarity
  *

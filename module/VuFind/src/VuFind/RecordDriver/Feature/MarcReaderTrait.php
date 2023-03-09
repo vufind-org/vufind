@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Functions for reading MARC records.
  *

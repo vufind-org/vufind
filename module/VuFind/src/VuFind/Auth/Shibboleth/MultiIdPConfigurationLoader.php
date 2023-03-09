@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Configuration loader for Multiple IdPs
  *

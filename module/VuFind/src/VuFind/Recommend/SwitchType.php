@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SwitchType Recommendations Module
  *

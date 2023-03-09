@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Row Definition for external_session
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Database table plugin factory
  *

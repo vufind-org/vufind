@@ -1,4 +1,5 @@
 <?php
+
 /**
  * GoogleAnalytics view helper
  *

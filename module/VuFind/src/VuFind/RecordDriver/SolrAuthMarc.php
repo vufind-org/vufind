@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Model for MARC authority records in Solr.
  *

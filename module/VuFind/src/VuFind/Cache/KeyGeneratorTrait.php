@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Cache Key Generator Trait
  *

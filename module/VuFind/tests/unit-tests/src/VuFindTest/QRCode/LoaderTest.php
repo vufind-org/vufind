@@ -1,4 +1,5 @@
 <?php
+
 /**
  * QR Code Loader Test Class
  *

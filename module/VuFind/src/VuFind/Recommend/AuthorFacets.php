@@ -1,4 +1,5 @@
 <?php
+
 /**
  * AuthorFacets Recommendations Module
  *

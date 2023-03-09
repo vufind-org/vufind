@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SummonDatabasesDeferred Recommendations Module
  *

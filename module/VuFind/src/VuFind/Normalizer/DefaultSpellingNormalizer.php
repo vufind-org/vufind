@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Default text normalizer for spellcheck text replacement.
  *

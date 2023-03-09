@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Functions to add advanced MARC-driven functionality to a record driver already
  * powered by the standard index spec. Depends upon MarcReaderTrait.

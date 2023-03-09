@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for EDS search options objects.
  *

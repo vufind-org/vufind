@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ILS authentication module.
  *

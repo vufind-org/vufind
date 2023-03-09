@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Caching Proxy for Cover Images
  *

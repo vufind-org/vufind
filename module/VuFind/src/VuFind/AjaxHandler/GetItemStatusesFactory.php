@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for GetItemStatus AJAX handler.
  *

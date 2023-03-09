@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CurrencyFormatter Factory
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TOC content loader plugin manager
  *

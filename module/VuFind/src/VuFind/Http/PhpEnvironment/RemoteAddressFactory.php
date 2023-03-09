@@ -1,4 +1,5 @@
 <?php
+
 /**
  * RemoteAddress utility factory. This uses the core Laminas RemoteAddress but
  * configures it according to VuFind settings.

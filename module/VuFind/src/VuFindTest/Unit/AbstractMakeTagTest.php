@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Abstract Test Class for element making helpers
  *

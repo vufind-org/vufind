@@ -1,4 +1,5 @@
 <?php
+
 /**
  * AJAX handler to tag/untag a record.
  *

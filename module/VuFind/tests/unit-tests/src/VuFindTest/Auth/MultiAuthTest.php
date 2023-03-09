@@ -1,4 +1,5 @@
 <?php
+
 /**
  * MultiAuth authentication test class.
  *

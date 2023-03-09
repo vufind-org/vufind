@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Extension of \Laminas\Log\LoggerAwareTrait with some convenience methods.
  *

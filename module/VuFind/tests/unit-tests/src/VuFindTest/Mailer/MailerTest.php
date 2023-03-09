@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mailer Test Class
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Trait for tables that support expiration
  *

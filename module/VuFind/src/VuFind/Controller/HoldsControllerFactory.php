@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Holds controller factory.
  *

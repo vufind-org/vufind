@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Abstract factory for building AbstractContent tabs.
  *

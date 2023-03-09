@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Service to retrieve user IP address.
  *

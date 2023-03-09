@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class for text messaging via Clickatell's HTTP API
  *

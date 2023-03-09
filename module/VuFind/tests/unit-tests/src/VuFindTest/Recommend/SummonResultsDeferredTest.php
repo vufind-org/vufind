@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SummonResultsDeferred recommendation module Test Class
  *

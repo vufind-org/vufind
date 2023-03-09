@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Console command: index course reserves into Solr.
  *

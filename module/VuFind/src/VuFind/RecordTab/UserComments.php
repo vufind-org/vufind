@@ -1,4 +1,5 @@
 <?php
+
 /**
  * User comments tab
  *

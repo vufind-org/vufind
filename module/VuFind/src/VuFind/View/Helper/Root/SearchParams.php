@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Retrieve search params" view helper
  *

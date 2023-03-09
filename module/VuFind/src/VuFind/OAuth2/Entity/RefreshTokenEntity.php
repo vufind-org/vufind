@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OAuth2 refresh token entity implementation.
  *

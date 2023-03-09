@@ -1,4 +1,5 @@
 <?php
+
 /**
  * RetryTrait Test Class
  *

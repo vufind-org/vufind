@@ -1,4 +1,5 @@
 <?php
+
 /**
  * AJAX handler to get list of comments for a record as HTML.
  *

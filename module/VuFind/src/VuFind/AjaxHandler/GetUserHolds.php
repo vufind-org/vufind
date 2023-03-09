@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Get User Holds" AJAX handler
  *

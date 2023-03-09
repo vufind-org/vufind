@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Action Feature Trait - HTTP response formatting support methods
  *

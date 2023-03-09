@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for record drivers that uses the class name to look up config files.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class for translatable string with a special default translation.
  *

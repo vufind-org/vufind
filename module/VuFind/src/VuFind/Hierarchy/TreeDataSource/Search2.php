@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Hierarchy Tree Data Source (Search2)
  *

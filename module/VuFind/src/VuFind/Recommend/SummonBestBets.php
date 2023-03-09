@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SummonBestBets Recommendations Module
  *

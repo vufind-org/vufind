@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Buchhandel cover loader factory
  *

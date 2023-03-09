@@ -1,4 +1,5 @@
 <?php
+
 /**
  * III Sierra REST API driver
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Admin Configuration Controller
  *

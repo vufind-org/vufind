@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Abstract base class for channel providers.
  *

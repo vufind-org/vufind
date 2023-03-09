@@ -1,4 +1,5 @@
 <?php
+
 /**
  * RecordTab Plugin Manager Test Class
  *

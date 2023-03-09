@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Shared Tags / ResourceTags table gateway factory.
  *

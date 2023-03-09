@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Model for MARC records without a fullrecord in Solr. The fullrecord is being
  * retrieved from an external source.

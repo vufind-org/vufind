@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for GetVisData AJAX handler.
  *

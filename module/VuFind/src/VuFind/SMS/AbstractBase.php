@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Base class to enable sharing of common methods between SMS subclasses
  *

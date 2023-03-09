@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Solr Reserves aspect of the Search Multi-class (Options)
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Theme config view helper
  *

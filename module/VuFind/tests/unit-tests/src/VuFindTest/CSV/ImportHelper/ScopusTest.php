@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Scopus CSV Import helper test class.
  *

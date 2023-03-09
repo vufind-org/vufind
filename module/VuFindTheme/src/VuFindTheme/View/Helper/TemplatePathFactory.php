@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TemplatePath helper factory.
  *

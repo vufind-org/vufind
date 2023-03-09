@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Container for session settings, allowing those settings to be configured
  * "just in case" they are needed, without invoking the heavy weight of

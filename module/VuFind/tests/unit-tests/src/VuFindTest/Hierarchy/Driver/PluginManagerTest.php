@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Hierarchy Driver Plugin Manager Test Class
  *

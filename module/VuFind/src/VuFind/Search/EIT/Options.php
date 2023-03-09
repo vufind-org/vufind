@@ -1,4 +1,5 @@
 <?php
+
 /**
  * EBSCO EIT API Search Options
  *

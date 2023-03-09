@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Generic base class for Solr commands.
  *

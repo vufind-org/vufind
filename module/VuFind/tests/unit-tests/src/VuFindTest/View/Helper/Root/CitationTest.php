@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CitationBuilder Test Class
  *

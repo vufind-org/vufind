@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Alphabrowse channel provider.
  *

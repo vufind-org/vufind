@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Relais connection class.
  *

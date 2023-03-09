@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Highlight view helper
  *

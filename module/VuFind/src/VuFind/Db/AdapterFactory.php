@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Database utility class. May be used as a service or as a standard
  * Laminas factory.

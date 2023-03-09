@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DB table plugin container that produces mock objects.
  *

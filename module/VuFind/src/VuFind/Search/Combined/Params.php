@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Combined aspect of the Search Multi-class (Params)
  *

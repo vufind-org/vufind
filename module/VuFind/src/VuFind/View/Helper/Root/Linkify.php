@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Linkify a string so that the links become clickable HTML
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * IpRegEx permission provider for VuFind.
  *

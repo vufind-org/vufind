@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Api module.
  *

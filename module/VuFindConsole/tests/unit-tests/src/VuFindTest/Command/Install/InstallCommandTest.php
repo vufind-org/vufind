@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Install command test.
  *

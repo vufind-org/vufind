@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CSP helper factory.
  *

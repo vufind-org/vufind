@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Syndetics Summaries content loader.
  *

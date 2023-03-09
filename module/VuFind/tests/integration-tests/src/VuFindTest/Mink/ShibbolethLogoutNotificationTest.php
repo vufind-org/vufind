@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Shibboleth logout notification test class.
  *

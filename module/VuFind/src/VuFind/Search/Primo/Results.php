@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Primo Central Search Results
  *

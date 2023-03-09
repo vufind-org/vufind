@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink search actions test class.
  *

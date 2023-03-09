@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Console command: switch database encryption algorithm.
  *

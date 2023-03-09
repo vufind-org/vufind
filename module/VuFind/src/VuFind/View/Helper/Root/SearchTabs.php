@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Search tabs" view helper
  *

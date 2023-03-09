@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Third-party content loader
  *

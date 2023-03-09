@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Config Upgrade Test Class
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class for managing email-based authentication.
  *

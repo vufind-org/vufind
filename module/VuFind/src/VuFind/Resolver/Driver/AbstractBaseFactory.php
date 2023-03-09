@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Generic factory suitable for most resolver drivers.
  *

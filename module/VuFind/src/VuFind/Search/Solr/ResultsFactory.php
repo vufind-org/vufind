@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for Solr search results objects.
  *

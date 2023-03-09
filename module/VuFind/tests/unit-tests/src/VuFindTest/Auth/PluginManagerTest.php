@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Auth Plugin Manager Test Class
  *

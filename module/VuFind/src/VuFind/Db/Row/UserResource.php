@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Row Definition for user_resource
  *

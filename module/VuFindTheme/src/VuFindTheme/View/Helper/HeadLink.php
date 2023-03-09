@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Head link view helper (extended for VuFind's theme system)
  *

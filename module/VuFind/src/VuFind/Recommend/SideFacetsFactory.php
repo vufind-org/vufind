@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SideFacets recommendation module factory.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Facebook authentication module.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class to help build URLs and forms in the view based on search settings.
  *

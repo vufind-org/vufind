@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Abstract Base FacetCache.
  *
