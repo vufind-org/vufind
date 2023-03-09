@@ -33,6 +33,14 @@ use Laminas\Config\Exception\RuntimeException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Driver\MultiBackend;
 
+require_once __DIR__ . '/MultiBackendTest/ILSMockTrait.php';
+require_once __DIR__ . '/MultiBackendTest/DemoMock.php';
+require_once __DIR__ . '/MultiBackendTest/DummyILS.php';
+require_once __DIR__ . '/MultiBackendTest/UnicornMock.php';
+require_once __DIR__ . '/MultiBackendTest/VoyagerMock.php';
+require_once __DIR__ . '/MultiBackendTest/Voyager2Mock.php';
+require_once __DIR__ . '/MultiBackendTest/VoyagerNoSupportMock.php';
+
 /**
  * ILS driver test
  *
@@ -2653,7 +2661,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
             $params
         )->will($this->returnValue($return2));
 
-        $dummyILS = new DummyILS();
+        $dummyILS = new MultiBackendTest\DummyILS();
 
         return $this->getMultibackendForDrivers(
             [
@@ -2833,7 +2841,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
     {
         $session = $this->getMockBuilder(\Laminas\Session\Container::class)
             ->disableOriginalConstructor()->getMock();
-        return $this->getMockBuilder(__NAMESPACE__ . '\DemoMock')
+        return $this->getMockBuilder(__NAMESPACE__ . '\MultiBackendTest\DemoMock')
             ->setConstructorArgs(
                 [
                     new \VuFind\Date\Converter(),
@@ -2858,14 +2866,14 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         $mock = null;
         if ($methods && in_array('supportsMethod', $methods)) {
             $mock = $this
-                ->getMockBuilder(__NAMESPACE__ . '\\' . $type . 'NoSupportMock')
+                ->getMockBuilder(__NAMESPACE__ . '\\MultiBackendTest\\' . $type . 'NoSupportMock')
                 ->onlyMethods($methods)
                 ->setConstructorArgs([new \VuFind\Date\Converter()])
                 ->getMock();
         } elseif ($type == 'Demo') {
             $mock = $this->getMockDemoDriver();
         } else {
-            $class = __NAMESPACE__ . '\\' . $type . 'Mock';
+            $class = __NAMESPACE__ . '\\MultiBackendTest\\' . $type . 'Mock';
             $mock = $this->getMockBuilder($class)
                 ->setConstructorArgs([new \VuFind\Date\Converter()])
                 ->getMock();
@@ -2878,250 +2886,4 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         $mock->setConfig(['dummy_config' => true]);
         return $mock;
     }
-}
-
-/**
- * A dummy ILS driver used for testing a driver with unsupported features
- *
- * @category VuFind
- * @package  Tests
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Page
- */
-class DummyILS extends \VuFind\ILS\Driver\AbstractBase
-{
-    /**
-     * Initialize the driver.
-     *
-     * Validate configuration and perform all resource-intensive tasks needed to
-     * make the driver active.
-     *
-     * @return void
-     */
-    public function init()
-    {
-    }
-
-    /**
-     * Get Status
-     *
-     * This is responsible for retrieving the status information of a certain
-     * record.
-     *
-     * @param string $id The record id to retrieve the holdings for
-     *
-     * @throws \VuFind\Exception\ILS
-     * @return mixed     On success, an associative array with the following keys:
-     * id, availability (boolean), status, location, reserve, callnumber.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function getStatus($id)
-    {
-        return [];
-    }
-
-    /**
-     * Get Statuses
-     *
-     * This is responsible for retrieving the status information for a
-     * collection of records.
-     *
-     * @param array $ids The array of record ids to retrieve the status for
-     *
-     * @throws \VuFind\Exception\ILS
-     * @return array     An array of getStatus() return values on success.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function getStatuses($ids)
-    {
-        return [];
-    }
-
-    /**
-     * Get Holding
-     *
-     * This is responsible for retrieving the holding information of a certain
-     * record.
-     *
-     * @param string $id      The record id to retrieve the holdings for
-     * @param array  $patron  Patron data
-     * @param array  $options Extra options (not currently used)
-     *
-     * @throws \VuFind\Exception\ILS
-     * @return array         On success, an associative array with the following
-     * keys: id, availability (boolean), status, location, reserve, callnumber,
-     * duedate, number, barcode.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function getHolding($id, array $patron = null, array $options = [])
-    {
-        return [];
-    }
-
-    /**
-     * Get Purchase History
-     *
-     * This is responsible for retrieving the acquisitions history data for the
-     * specific record (usually recently received issues of a serial).
-     *
-     * @param string $id The record id to retrieve the info for
-     *
-     * @throws \VuFind\Exception\ILS
-     * @return array     An array with the acquisitions data on success.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function getPurchaseHistory($id)
-    {
-        return [];
-    }
-}
-
-trait ILSMockTrait
-{
-    public function cancelHolds($cancelDetails)
-    {
-        return [];
-    }
-
-    public function cancelILLRequests($cancelDetails)
-    {
-        return [];
-    }
-
-    public function cancelStorageRetrievalRequests($cancelDetails)
-    {
-        return [];
-    }
-
-    public function checkRequestIsValid($id, $data, $patron)
-    {
-    }
-
-    public function checkILLRequestIsValid($id, $data, $patron)
-    {
-    }
-
-    public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
-    {
-    }
-
-    public function getCancelHoldDetails($holdDetails, $patron = [])
-    {
-        return '';
-    }
-
-    public function getCancelILLRequestDetails($holdDetails, $patron)
-    {
-        return '';
-    }
-
-    public function getCancelStorageRetrievalRequestDetails($holdDetails, $patron)
-    {
-        return '';
-    }
-
-    public function getConfig($function, $params = null)
-    {
-        return [];
-    }
-
-    public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
-    {
-        return '';
-    }
-
-    public function getDefaultRequestGroup($patron = false, $holdDetails = null)
-    {
-        return false;
-    }
-
-    public function getMyILLRequests($patron)
-    {
-    }
-
-    public function getILLPickUpLibraries($patron = false, $holdDetails = null)
-    {
-    }
-
-    public function getILLPickUpLocations($id, $pickupLib, $patron)
-    {
-    }
-
-    public function getPickUpLocations($patron = false, $holdDetails = null)
-    {
-        return [];
-    }
-
-    public function getRenewDetails($checkoutDetails)
-    {
-        return '';
-    }
-
-    public function getRequestGroups($bibId = null, $patron = null, $holdDetails = null)
-    {
-        return [];
-    }
-
-    public function loginIsHidden()
-    {
-        return false;
-    }
-
-    public function placeHold($holdDetails)
-    {
-    }
-
-    public function placeILLRequest($holdDetails)
-    {
-    }
-
-    public function placeStorageRetrievalRequest($details)
-    {
-    }
-
-    public function renewMyItems($renewDetails)
-    {
-        return [];
-    }
-
-    public function getAccountBlocks($patron)
-    {
-        return false;
-    }
-
-    public function getRequestBlocks($patron)
-    {
-        return false;
-    }
-}
-
-class DemoMock extends \VuFind\ILS\Driver\Demo
-{
-    use ILSMockTrait;
-}
-class VoyagerMock extends \VuFind\ILS\Driver\Voyager
-{
-    use ILSMockTrait;
-}
-class Voyager2Mock extends \VuFind\ILS\Driver\Voyager
-{
-    use ILSMockTrait;
-}
-class VoyagerNoSupportMock extends \VuFind\ILS\Driver\Voyager
-{
-    use ILSMockTrait;
-
-    public function supportsMethod(...$args)
-    {
-        return false;
-    }
-}
-class UnicornMock extends \VuFind\ILS\Driver\Unicorn
-{
-    use ILSMockTrait;
 }

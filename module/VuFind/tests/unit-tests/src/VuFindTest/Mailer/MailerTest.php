@@ -358,8 +358,8 @@ class MailerTest extends \PHPUnit\Framework\TestCase
                 && $in['from'] == 'from@example.com'
                 && $in['message'] == 'message';
         };
-        $view = $this->getMockBuilder(__NAMESPACE__ . '\MockEmailRenderer')
-            ->onlyMethods(['partial'])->getMock();
+        $view = $this->getMockBuilder(\Laminas\View\Renderer\PhpRenderer::class)
+            ->addMethods(['partial'])->getMock();
         $view->expects($this->once())->method('partial')
             ->with($this->equalTo('Email/share-link.phtml'), $this->callback($viewCallback))
             ->will($this->returnValue('body'));
@@ -405,8 +405,8 @@ class MailerTest extends \PHPUnit\Framework\TestCase
                 && $in['from'] == 'from@example.com'
                 && $in['message'] == 'message';
         };
-        $view = $this->getMockBuilder(__NAMESPACE__ . '\MockEmailRenderer')
-            ->onlyMethods(['partial'])->getMock();
+        $view = $this->getMockBuilder(\Laminas\View\Renderer\PhpRenderer::class)
+            ->addMethods(['partial'])->getMock();
         $view->expects($this->once())->method('partial')
             ->with($this->equalTo('Email/record.phtml'), $this->callback($viewCallback))
             ->will($this->returnValue('body'));
@@ -461,12 +461,5 @@ class MailerTest extends \PHPUnit\Framework\TestCase
         $mailer = new Mailer($transport);
         $body = $mailer->buildMultipartBody($text, $html);
         $mailer->send('to@example.com', $address, 'subject', $body);
-    }
-}
-
-class MockEmailRenderer extends \Laminas\View\Renderer\PhpRenderer
-{
-    public function partial($template, $driver)
-    {
     }
 }
