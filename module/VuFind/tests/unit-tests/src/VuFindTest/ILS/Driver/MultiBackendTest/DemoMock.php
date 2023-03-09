@@ -29,7 +29,7 @@
  * @link     https://vufind.org Main Page
  */
 
-namespace VuFindTest\ILS\Driver;
+namespace VuFindTest\ILS\Driver\MultiBackendTest;
 
 /**
  * Support class (fake Demo driver) for MultiBackend ILS driver test

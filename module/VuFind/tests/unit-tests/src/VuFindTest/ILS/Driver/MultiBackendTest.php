@@ -2661,7 +2661,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
             $params
         )->will($this->returnValue($return2));
 
-        $dummyILS = new DummyILS();
+        $dummyILS = new MultiBackendTest\DummyILS();
 
         return $this->getMultibackendForDrivers(
             [
@@ -2841,7 +2841,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
     {
         $session = $this->getMockBuilder(\Laminas\Session\Container::class)
             ->disableOriginalConstructor()->getMock();
-        return $this->getMockBuilder(__NAMESPACE__ . '\DemoMock')
+        return $this->getMockBuilder(__NAMESPACE__ . '\MultiBackendTest\DemoMock')
             ->setConstructorArgs(
                 [
                     new \VuFind\Date\Converter(),
@@ -2866,14 +2866,14 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         $mock = null;
         if ($methods && in_array('supportsMethod', $methods)) {
             $mock = $this
-                ->getMockBuilder(__NAMESPACE__ . '\\' . $type . 'NoSupportMock')
+                ->getMockBuilder(__NAMESPACE__ . '\\MultiBackendTest\\' . $type . 'NoSupportMock')
                 ->onlyMethods($methods)
                 ->setConstructorArgs([new \VuFind\Date\Converter()])
                 ->getMock();
         } elseif ($type == 'Demo') {
             $mock = $this->getMockDemoDriver();
         } else {
-            $class = __NAMESPACE__ . '\\' . $type . 'Mock';
+            $class = __NAMESPACE__ . '\\MultiBackendTest\\' . $type . 'Mock';
             $mock = $this->getMockBuilder($class)
                 ->setConstructorArgs([new \VuFind\Date\Converter()])
                 ->getMock();
