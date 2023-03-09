@@ -560,7 +560,7 @@ class BackendTest extends TestCase
 
         // Test that random proxies search; stub out injectResponseWriter() to prevent it
         // from injecting unwanted extra parameters into $params:
-        $back = $this->getMockBuilder(__NAMESPACE__ . '\BackendMock')
+        $back = $this->getMockBuilder(Backend::class)
             ->onlyMethods(['search', 'injectResponseWriter'])
             ->setConstructorArgs([$this->getConnectorMock()])
             ->getMock();
@@ -670,12 +670,5 @@ class BackendTest extends TestCase
                 ]
             )
             ->getMock();
-    }
-}
-
-class BackendMock extends \VuFindSearch\Backend\Solr\Backend
-{
-    public function injectResponseWriter(\VuFindSearch\ParamBag $params)
-    {
     }
 }
