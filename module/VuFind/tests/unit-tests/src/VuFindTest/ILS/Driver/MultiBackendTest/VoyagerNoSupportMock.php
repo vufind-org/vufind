@@ -1,7 +1,8 @@
 <?php
 
 /**
- * Support class for MultiBackend ILS driver test
+ * Support class (limited functionality mock Voyager driver) for MultiBackend ILS
+ * driver test
  *
  * PHP version 7
  *
@@ -32,7 +33,8 @@
 namespace VuFindTest\ILS\Driver;
 
 /**
- * Support class for MultiBackend ILS driver test
+ * Support class (limited functionality mock Voyager driver) for MultiBackend ILS
+ * driver test
  *
  * @category VuFind
  * @package  Tests
