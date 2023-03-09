@@ -5,14 +5,14 @@
  */
 
 // MenuButton: When the menu is displayed, the element with role button has aria-expanded set to true.
-function ariaExpand(container, toggle, target) {
+function ariaExpand(container, toggle) {
   container.classList.add("is-open");
   toggle.setAttribute("aria-expanded", true);
 }
 
 // MenuButton: When the menu is hidden, it is recommended that aria-expanded is not present.
 // MenuButton: If aria-expanded is specified when the menu is hidden, it is set to false.
-function ariaCollapse(container, toggle, target) {
+function ariaCollapse(container, toggle) {
   container.classList.remove("is-open");
   toggle.removeAttribute("aria-expanded");
 }
@@ -43,9 +43,9 @@ function bindConfirmMenus() {
     // Confirm action either link or submit, so no event needed
     const confirmEl = document.querySelector(".confirm__confirm");
 
-    const cancelEl = document.querySelector(".confirm__cancel")
+    const cancelEl = document.querySelector(".confirm__cancel");
     // Close menu on cancel
-    cancelEl.addEventListener("click", (event) => {
+    cancelEl.addEventListener("click", () => {
       ariaCollapse(menu, toggleEl, targetEl);
       toggleEl.focus();
     }, false);
@@ -55,7 +55,7 @@ function bindConfirmMenus() {
     cancelEl.setAttribute("role", "menuitem");
 
     // MenuButton: click to toggle
-    toggleEl.addEventListener("click", (event) => {
+    toggleEl.addEventListener("click", () => {
       if (toggleEl.getAttribute("aria-expanded")) {
         ariaCollapse(menu, toggleEl, targetEl);
         toggleEl.focus();
@@ -70,27 +70,27 @@ function bindConfirmMenus() {
     // MenuButton: (Optional) Down Arrow: opens the menu and moves focus to the first menu item.
     // MenuButton: (Optional) Up Arrow: opens the menu and moves focus to the last menu item.
     toggleEl.addEventListener("keydown", (event) => {
-      switch(event.key) {
-        case "ArrowDown":
-        case "Down":
-          ariaExpand(menu, toggleEl, targetEl);
-          confirmEl.focus(); // first element
-          break;
+      switch (event.key) {
+      case "ArrowDown":
+      case "Down":
+        ariaExpand(menu, toggleEl, targetEl);
+        confirmEl.focus(); // first element
+        break;
 
-        case "Up":
-        case "ArrowUp":
-          ariaExpand(menu, toggleEl, targetEl);
-          cancelEl.focus(); // last element
-          break;
+      case "Up":
+      case "ArrowUp":
+        ariaExpand(menu, toggleEl, targetEl);
+        cancelEl.focus(); // last element
+        break;
 
-        case "Esc":
-        case "Escape":
-          ariaCollapse(menu, toggleEl, targetEl);
-          toggleEl.focus();
-          break;
+      case "Esc":
+      case "Escape":
+        ariaCollapse(menu, toggleEl, targetEl);
+        toggleEl.focus();
+        break;
 
-        default:
-          return;
+      default:
+        return;
       }
 
       event.stopPropagation();
