@@ -28,6 +28,7 @@
  *           License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver;
 
 use Laminas\Config\Config;

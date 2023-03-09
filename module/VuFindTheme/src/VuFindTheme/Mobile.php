@@ -31,6 +31,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://github.com/ahand/mobileesp MobileESP Project
  */
+
 namespace VuFindTheme;
 
 use uagent_info;
