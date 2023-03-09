@@ -106,7 +106,7 @@ class Translator
             $line = chop($line);
             if (preg_match("/!!/", $line)) {
                 $line = chop($line);
-                $rgxp = AlephTranslator::regexp($line);
+                $rgxp = static::regexp($line);
             }
             if (preg_match("/!.*/", $line) || $rgxp == "" || $line == "") {
             } else {
