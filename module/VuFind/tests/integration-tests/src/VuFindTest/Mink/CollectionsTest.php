@@ -156,7 +156,7 @@ class CollectionsTest extends \VuFindTest\Integration\MinkTestCase
             trim($this->findCss($page, '#tree-preview h2')->getText()),
             'Subcollection 1'
         );
-        $this->clickCss($page, '[recordid="colitem2"] a');
+        $this->clickCss($page, '[data-recordid="colitem2"] a');
 
         $this->waitStatement('$("#tree-preview h2").text().trim() === "Collection item 2"');
 

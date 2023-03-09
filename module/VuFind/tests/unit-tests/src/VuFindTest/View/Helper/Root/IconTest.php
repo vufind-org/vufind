@@ -211,7 +211,8 @@ class IconTest extends \PHPUnit\Framework\TestCase
     {
         $plugins = ['imageLink' => $this->getMockImageLink('icons/baz.png')];
         $helper = $this->getIconHelper(null, null, $plugins);
-        $expected = '<img class="icon icon--img" src="baz.png" aria-hidden="true"/>';
+        $expected = '<img class="icon icon--img" src="baz.png" aria-hidden="true"'
+            . ' alt="">';
         $this->assertEquals($expected, $helper('bar'));
     }
 
@@ -225,7 +226,8 @@ class IconTest extends \PHPUnit\Framework\TestCase
     {
         $plugins = ['imageLink' => $this->getMockImageLink('icons/zzz.png')];
         $helper = $this->getIconHelper(null, null, $plugins);
-        $expected = '<img class="icon icon--img weird:class foo" src="zzz.png" aria-hidden="true"/>';
+        $expected = '<img class="icon icon--img weird:class foo" src="zzz.png"'
+            . ' aria-hidden="true" alt="">';
         $this->assertEquals($expected, $helper('extraClassy'));
     }
 
@@ -238,8 +240,8 @@ class IconTest extends \PHPUnit\Framework\TestCase
     {
         $plugins = ['imageLink' => $this->getMockImageLink('icons/baz.png')];
         $helper = $this->getIconHelper(null, null, $plugins);
-        $expected
-            = '<img class="icon icon--img myclass" src="baz.png" aria-hidden="true"/>';
+        $expected = '<img class="icon icon--img myclass" src="baz.png"'
+            . ' aria-hidden="true" alt="">';
         // Send a string, validating the shortcut where strings are treated as
         // classes, in addition to confirming that extras work for image icons.
         $this->assertEquals($expected, $helper('bar', 'myclass'));
@@ -255,13 +257,15 @@ class IconTest extends \PHPUnit\Framework\TestCase
         // RTL exists
         $plugins = ['imageLink' => $this->getMockImageLink('icons/zab.png')];
         $helper = $this->getIconHelper(null, null, $plugins, true);
-        $expected = '<img class="icon icon--img" src="zab.png" aria-hidden="true"/>';
+        $expected = '<img class="icon icon--img" src="zab.png" aria-hidden="true"'
+            . ' alt="">';
         $this->assertEquals($expected, $helper('bar'));
 
         // RTL does not exist
         $plugins = ['imageLink' => $this->getMockImageLink('icons/ltronly.png')];
         $helper = $this->getIconHelper(null, null, $plugins, true);
-        $expected = '<img class="icon icon--img" src="ltronly.png" aria-hidden="true"/>';
+        $expected = '<img class="icon icon--img" src="ltronly.png"'
+            . ' aria-hidden="true" alt="">';
         $this->assertEquals($expected, $helper('ltronly'));
     }
 

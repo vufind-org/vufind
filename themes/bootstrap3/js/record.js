@@ -345,7 +345,7 @@ function recordDocReady() {
     $('.record-tabs .nav-tabs li').attr('aria-selected', 'false');
     $(e.target).parent().attr('aria-selected', 'true');
   });
-  $('.record-tabs .nav-tabs a').click(function recordTabsClick() {
+  $('.record-tabs .nav-tabs a').on('click', function recordTabsClick() {
     var $li = $(this).parent();
     // If it's an active tab, click again to follow to a shareable link.
     if ($li.hasClass('active')) {
