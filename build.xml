@@ -335,6 +335,8 @@
 
   <!-- Copy files from node modules to themes -->
   <target name="copynodemodules">
+    <!-- autocomplete.js -->
+    <copy file="${srcdir}/node_modules/autocomplete/autocomplete.js" todir="${srcdir}/themes/bootstrap3/js/vendor" />
     <!-- vanilla-cookieconsent -->
     <copy file="${srcdir}/node_modules/vanilla-cookieconsent/dist/cookieconsent.umd.js" todir="${srcdir}/themes/bootstrap3/js/vendor" />
   </target>
