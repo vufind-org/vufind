@@ -67,8 +67,8 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
     /**
      * Set up a tab manager for testing.
      *
-     * @param  PluginManager $pluginManager Plugin manager to use (null for default)
-     * @param  ConfigManager $configManager Config manager to use (null for default)
+     * @param PluginManager $pluginManager Plugin manager to use (null for default)
+     * @param ConfigManager $configManager Config manager to use (null for default)
      *
      * @return TabManager
      */
