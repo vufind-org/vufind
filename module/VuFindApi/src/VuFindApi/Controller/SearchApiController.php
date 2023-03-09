@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Search API Controller
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
+
 namespace VuFindApi\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
@@ -324,9 +326,7 @@ implements ApiInterface
                     $request,
                     $requestedFields
                 ) {
-                    foreach ($request['facet'] ?? []
-                       as $facet
-                    ) {
+                    foreach ($request['facet'] ?? [] as $facet) {
                         if (!isset($hierarchicalFacets[$facet])) {
                             $params->addFacet($facet);
                         }

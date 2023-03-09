@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SirsiDynix Unicorn ILS Driver (VuFind side)
  *
@@ -24,6 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://code.google.com/p/vufind-unicorn/ vufind-unicorn project
  */
+
 namespace VuFind\ILS\Driver;
 
 use VuFind\Exception\ILS as ILSException;
@@ -1363,10 +1365,8 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         // PS: Does this make this implementation year-3K safe?
         $link_digits = floor(strlen((string)PHP_INT_MAX) / 2);
 
-        foreach ((array_key_exists(0, $textuals)
-                  ? []
-                  : $record->getFields('863'))
-                 as $field) {
+        $data863 = array_key_exists(0, $textuals) ? [] : $record->getFields('863');
+        foreach ($data863 as $field) {
             $linking_field = $record->getSubfield($field, '8');
 
             if ($linking_field === false) {
