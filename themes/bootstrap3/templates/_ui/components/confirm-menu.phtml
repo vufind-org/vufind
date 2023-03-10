@@ -16,21 +16,27 @@
 	<div class="confirm__options">
 		<p class="confirm__desc"><?=$desc ?></p>
 
-		<?php if ($actionType == 'submit'): ?>
-			<button type="submit" class="confirm__confirm">
-				<?=$this->icon('ui-success', 'confirm__icon') ?>
-				<?=$confirmLabel ?>
-			</button>
-		<?php elseif ($actionType == 'link'): ?>
-			<a class="confirm__confirm" href="<?=$this->escapeHtmlAttr($this->action->value) ?>">
-				<?=$this->icon('ui-success', 'confirm__icon') ?>
-				<?=$confirmLabel ?>
-			</a>
-		<?php endif; ?>
+		<ul role="menu" class="confirm__menu">
+			<li role="none">
+				<?php if ($actionType == 'submit'): ?>
+					<button role="menuitem" type="submit" class="confirm__confirm">
+						<?=$this->icon('ui-success', 'confirm__icon') ?>
+						<?=$confirmLabel ?>
+					</button>
+				<?php elseif ($actionType == 'link'): ?>
+					<a role="menuitem" class="confirm__confirm" href="<?=$this->escapeHtmlAttr($this->action->value) ?>">
+						<?=$this->icon('ui-success', 'confirm__icon') ?>
+						<?=$confirmLabel ?>
+					</a>
+				<?php endif; ?>
+			</li>
 
-		<button type="button" class="confirm__cancel">
-			<?=$this->icon('ui-failure', 'confirm__icon') ?>
-			<?=$cancelLabel ?>
-		</button>
+			<li role="none">
+				<button type="button" role="menuitem" class="confirm__cancel">
+					<?=$this->icon('ui-failure', 'confirm__icon') ?>
+					<?=$cancelLabel ?>
+				</button>
+			</li>
+		</ul>
 	</div>
 </div>

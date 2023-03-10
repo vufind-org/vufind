@@ -17,6 +17,80 @@ function ariaCollapse(container, toggle) {
   toggle.removeAttribute("aria-expanded");
 }
 
+// Menu: https://www.w3.org/WAI/ARIA/apg/patterns/menu
+function bindAriaMenu(menuList, controller = null) {
+  const menuitems = menuList.querySelectorAll(`[role="menuitem"]`);
+  let currentIndex = 0;
+
+  function escape() {
+    if (controller) {
+      controller.focus();
+    }
+  }
+
+  function prev() {
+    currentIndex = (currentIndex + menuitems.length - 1) % menuitems.length;
+    menuitems[currentIndex].focus();
+  }
+  function next() {
+    currentIndex = (currentIndex + 1) % menuitems.length;
+    menuitems[currentIndex].focus();
+  }
+
+  function focusFirst() {
+    currentIndex = 0;
+    menuitems[currentIndex].focus();
+  }
+
+  function focusLast() {
+    currentIndex = menuitems.length - 1;
+    menuitems[currentIndex].focus();
+  }
+
+  menuList.addEventListener("keydown", (event) => {
+    switch (event.key) {
+    case "Esc":
+    case "Escape":
+      escape();
+      break;
+
+    case "ArrowUp":
+      prev();
+      break;
+
+    case "ArrowDown":
+      next();
+      break;
+
+    case "Home":
+      focusFirst();
+      break;
+
+    case "End":
+      focusLast();
+      break;
+
+    case " ":
+    case "Enter":
+      menuitems[currentIndex].click();
+      break;
+
+    default:
+      return;
+    }
+
+    event.preventDefault();
+    if (controller === null) {
+      event.stopPropagation();
+    }
+  }, false);
+
+  return {
+    focusFirst,
+    focusLast,
+  };
+}
+
 //
 // confirm-menu
 //
@@ -35,8 +109,7 @@ function bindConfirmMenus() {
       toggleEl.setAttribute("aria-expanded", true);
     }
 
-    // MenuButton: The element that contains the menu items displayed by activating the button has role menu.
-    //
+    // MenuButton: The element that contains the menu menuitems displayed by activating the button has role menu.
     const targetEl = menu.querySelector(".confirm__options");
     toggleEl.setAttribute("role", "menu");
 
@@ -50,9 +123,11 @@ function bindConfirmMenus() {
       toggleEl.focus();
     }, false);
 
-    // Menu: The items contained in a menu are child elements of the containing menu or menubar and have any of the following roles: menuitem, menuitemcheckbox, menuitemradio
+    // Menu: The menuitems contained in a menu are child elements of the containing menu or menubar and have any of the following roles: menuitem, menuitemcheckbox, menuitemradio
     confirmEl.setAttribute("role", "menuitem");
     cancelEl.setAttribute("role", "menuitem");
+
+    const ariaMenu = bindAriaMenu(document.querySelector(".confirm__menu"));
 
     // MenuButton: click to toggle
     toggleEl.addEventListener("click", () => {
@@ -61,7 +136,7 @@ function bindConfirmMenus() {
         toggleEl.focus();
       } else {
         ariaExpand(menu, toggleEl, targetEl);
-        confirmEl.focus();
+        ariaMenu.focusFirst();
       }
     }, false);
 
@@ -74,19 +149,13 @@ function bindConfirmMenus() {
       case "ArrowDown":
       case "Down":
         ariaExpand(menu, toggleEl, targetEl);
-        confirmEl.focus(); // first element
+        ariaMenu.focusFirst();
         break;
 
       case "Up":
       case "ArrowUp":
         ariaExpand(menu, toggleEl, targetEl);
-        cancelEl.focus(); // last element
-        break;
-
-      case "Esc":
-      case "Escape":
-        ariaCollapse(menu, toggleEl, targetEl);
-        toggleEl.focus();
+        ariaMenu.focusLast();
         break;
 
       default:
@@ -95,6 +164,20 @@ function bindConfirmMenus() {
 
       event.stopPropagation();
       event.preventDefault();
+    }, false);
+
+    // MenuButton: Escape: close menu, focus trigger
+    menu.addEventListener("keydown", (event) => {
+      if (
+        event.key === "Esc" ||
+        event.key === "Escape"
+      ) {
+        ariaCollapse(menu, toggleEl, targetEl);
+        toggleEl.focus();
+
+        event.stopPropagation();
+        event.preventDefault();
+      }
     }, false);
 
     // MenuButton: Optionally, the element with role button has a value specified for aria-controls that refers to the element with role menu.
