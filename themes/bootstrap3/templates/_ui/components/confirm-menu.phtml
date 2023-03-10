@@ -1,42 +1,42 @@
 <?php
-	$toggleLabel = $this->transEsc($this->label ?? '{->label}');
-	$toggleClass = trim('confirm__toggle ' . $this->escapeHtmlAttr(($this->toggleClass ?? 'btn')));
+  $toggleLabel = $this->transEsc($this->label ?? '{->label}');
+  $toggleClass = trim('confirm__toggle ' . $this->escapeHtmlAttr(($this->toggleClass ?? 'btn')));
 
-	$desc = $this->transEsc($this->description ?? 'Are you sure?');
+  $desc = $this->transEsc($this->description ?? 'Are you sure?');
 
-	$actionType = $this->action->type ?? 'submit';
+  $actionType = $this->action->type ?? 'submit';
 
-	$confirmLabel = $this->transEsc($this->confirm ?? 'confirm_dialog_yes');
-	$cancelLabel = $this->transEsc($this->cancel ?? 'confirm_dialog_no');
+  $confirmLabel = $this->transEsc($this->confirm ?? 'confirm_dialog_yes');
+  $cancelLabel = $this->transEsc($this->cancel ?? 'confirm_dialog_no');
 ?>
 
 <div class="confirm-menu">
-	<button class="<?=$toggleClass ?>"><?=$toggleLabel ?></button>
+  <button class="<?=$toggleClass ?>"><?=$toggleLabel ?></button>
 
-	<div class="confirm__options">
-		<p class="confirm__desc"><?=$desc ?></p>
+  <div class="confirm__options">
+    <p class="confirm__desc"><?=$desc ?></p>
 
-		<ul role="menu" class="confirm__menu">
-			<li role="none">
-				<?php if ($actionType == 'submit'): ?>
-					<button role="menuitem" type="submit" class="confirm__confirm">
-						<?=$this->icon('ui-success', 'confirm__icon') ?>
-						<?=$confirmLabel ?>
-					</button>
-				<?php elseif ($actionType == 'link'): ?>
-					<a role="menuitem" class="confirm__confirm" href="<?=$this->escapeHtmlAttr($this->action->value) ?>">
-						<?=$this->icon('ui-success', 'confirm__icon') ?>
-						<?=$confirmLabel ?>
-					</a>
-				<?php endif; ?>
-			</li>
+    <ul role="menu" class="confirm__menu">
+      <li role="none">
+        <?php if ($actionType == 'submit'): ?>
+          <button role="menuitem" type="submit" class="confirm__confirm">
+            <?=$this->icon('ui-success', 'confirm__icon') ?>
+            <?=$confirmLabel ?>
+          </button>
+        <?php elseif ($actionType == 'link'): ?>
+          <a role="menuitem" class="confirm__confirm" href="<?=$this->escapeHtmlAttr($this->action->value) ?>">
+            <?=$this->icon('ui-success', 'confirm__icon') ?>
+            <?=$confirmLabel ?>
+          </a>
+        <?php endif; ?>
+      </li>
 
-			<li role="none">
-				<button type="button" role="menuitem" class="confirm__cancel">
-					<?=$this->icon('ui-failure', 'confirm__icon') ?>
-					<?=$cancelLabel ?>
-				</button>
-			</li>
-		</ul>
-	</div>
+      <li role="none">
+        <button type="button" role="menuitem" class="confirm__cancel">
+          <?=$this->icon('ui-failure', 'confirm__icon') ?>
+          <?=$cancelLabel ?>
+        </button>
+      </li>
+    </ul>
+  </div>
 </div>
