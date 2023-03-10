@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CookieConsent view helper
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\View\Helper\Root;
 
 use VuFind\Cookie\CookieManager;
@@ -360,9 +362,8 @@ implements TranslatorAwareInterface
             'desc' => $this->translate('CookieConsent::Description'),
             'exp' => $this->translate('CookieConsent::Expiration'),
         ];
-        foreach ($this->consentConfig['Categories'] ?? []
-            as $categoryId => $categoryConfig
-        ) {
+        $categoryData = $this->consentConfig['Categories'] ?? [];
+        foreach ($categoryData as $categoryId => $categoryConfig) {
             if ($enabledCategories && !in_array($categoryId, $enabledCategories)) {
                 continue;
             }
