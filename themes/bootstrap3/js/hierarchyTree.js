@@ -158,7 +158,7 @@ function buildTreeWithXml(cb) {
     });
 }
 
-$(document).on('ready', function hierarchyTreeReady() {
+$(document).ready(function hierarchyTreeReady() {
   // Code for the search button
   hierarchyID = $("#hierarchyTree").find(".hiddenHierarchyId")[0].value;
   recordID = $("#hierarchyTree").find(".hiddenRecordId")[0].value;
