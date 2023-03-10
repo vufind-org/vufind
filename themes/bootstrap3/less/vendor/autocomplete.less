@@ -1,0 +1,62 @@
+/* https://github.com/vufind-org/autocomplete.js (v2.1.3) */
+
+@autocomplete-item-bg   : #fff;
+@autocomplete-active-bg : @brand-primary;
+@autocomplete-hover-bg  : lighten(@brand-primary, 40%);
+@autocomplete-border    : lightgray;
+@autocomplete-secondary : darkgray; // item description
+
+.autocomplete-results {
+  position: absolute;
+  display: none;
+  max-width: 500px; /* CUSTOMIZED */
+  margin: 0;
+  margin-top: 2px;
+  padding: 0;
+  border: 1px solid @autocomplete-border;
+  background-color: @autocomplete-item-bg;
+  overflow: hidden;
+  z-index: 50;
+
+  &.open {
+    display: table;
+  }
+
+  .ac-item {
+    display: block;
+    margin: 0;
+    padding: .5rem;
+    border-bottom: 1px solid @autocomplete-border;
+    cursor: pointer;
+
+    &:last-child { border: 0; }
+    &:hover { background-color: @autocomplete-hover-bg; }
+    &.is-selected {
+      background-color: @autocomplete-active-bg;
+      color: contrast(@autocomplete-active-bg);
+    }
+
+    small {
+      display: block;
+      color: @autocomplete-secondary;
+    }
+
+    .ac-header,
+    .ac-disabled,
+    [disabled] {
+      color: @autocomplete-secondary;
+    }
+
+    .ac-header {
+      font-weight: bold;
+    }
+  }
+  .ac-header {
+    float: right;
+    display: block;
+    margin-top: -1.75rem;
+    padding: 0 .5rem;
+    color: @autocomplete-border;
+    background-color: #fff;
+  }
+}
