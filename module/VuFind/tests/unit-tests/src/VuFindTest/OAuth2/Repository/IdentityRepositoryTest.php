@@ -110,11 +110,11 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTest
     /**
      * Test identity repository
      *
-     * @dataProvider getTestIdentityRepositoryData
-     *
      * @param ?bool $blocks Blocks status
      *
      * @return void
+     *
+     * @dataProvider getTestIdentityRepositoryData
      */
     public function testIdentityRepository(?bool $blocks): void
     {

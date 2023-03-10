@@ -90,7 +90,7 @@ class InstallControllerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * getMinimalPhpVersion test data
+     * Test data for getMinimalPhpVersion
      *
      * @return array[]
      */
