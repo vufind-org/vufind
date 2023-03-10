@@ -1,11 +1,13 @@
 /* #LESS>
 @import "vendor/bootstrap/bootstrap";
 @import "vendor/font-awesome/font-awesome";
+@import "vendor/autocomplete";
 <#LESS */
 /* #SCSS> */
 $fa-font-path: "../../bootstrap3/css/fonts";
 @import "vendor/bootstrap";
 @import "vendor/font-awesome/font-awesome";
+@import "vendor/autocomplete";
 /* <#SCSS */
 
 @import "components/accessibility";
@@ -13,7 +15,6 @@ $fa-font-path: "../../bootstrap3/css/fonts";
 
 @import "components/advanced-search";
 @import "components/alphabrowse";
-@import "components/autocomplete";
 @import "components/channels";
 @import "components/cookie-consent";
 @import "components/devtools";
