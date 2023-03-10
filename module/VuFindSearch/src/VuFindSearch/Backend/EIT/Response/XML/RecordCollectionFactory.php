@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Simple XML-based factory for record collection.
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\EIT\Response\XML;
 
 use VuFindSearch\Exception\InvalidArgumentException;

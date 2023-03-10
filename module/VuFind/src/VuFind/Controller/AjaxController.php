@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ajax Controller Module
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
+
 namespace VuFind\Controller;
 
 use Laminas\Mvc\Controller\AbstractActionController;

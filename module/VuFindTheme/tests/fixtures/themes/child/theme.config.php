@@ -1,4 +1,5 @@
 <?php
+
 return [
     'extends' => 'parent',
     'css' => ['child.css'],

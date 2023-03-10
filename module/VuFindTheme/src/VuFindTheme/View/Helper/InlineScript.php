@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Inline script view helper (extended for VuFind's theme system)
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTheme\View\Helper;
 
 /**

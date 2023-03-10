@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Trait for setting up view options. Designed to be included in a subclass of
  * \VuFind\Search\Base\Options.
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\Options;
 
 use Laminas\Config\Config;

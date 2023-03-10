@@ -1,4 +1,5 @@
 <?php
+
 namespace VuFindAdmin\Module\Configuration;
 
 $config = [

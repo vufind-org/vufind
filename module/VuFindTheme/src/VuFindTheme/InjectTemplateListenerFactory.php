@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for InjectTemplateListener
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU GPLv2
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTheme;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
