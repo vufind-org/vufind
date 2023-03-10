@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Abstract Base FacetCache.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Search\Base;
 
 use VuFind\Cache\Manager as CacheManager;

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Action Feature Trait - Alphabetic browse support
  * Depends on direct access to the Service Manager.
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Controller\Feature;
 
 use VuFindSearch\Command\AlphabeticBrowseCommand;

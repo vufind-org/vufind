@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Generator tools.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Generator;
 
 use Laminas\Code\Generator\ClassGenerator;

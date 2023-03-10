@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Helper to get path to a parent template (for including)
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindTheme\View\Helper;
 
 use Laminas\View\Resolver\TemplatePathStack;

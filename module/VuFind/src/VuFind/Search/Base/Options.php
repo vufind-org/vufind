@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Abstract options search model.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\Base;
 
 use Laminas\Config\Config;
@@ -317,9 +319,8 @@ abstract class Options implements TranslatorAwareInterface
         $id = $this->getSearchClassId();
         $facetSettings = $configLoader->get($this->facetsIni);
         if (isset($facetSettings->AvailableFacetSortOptions[$id])) {
-            foreach ($facetSettings->AvailableFacetSortOptions[$id]->toArray()
-                     as $facet => $sortOptions
-            ) {
+            $sortArray = $facetSettings->AvailableFacetSortOptions[$id]->toArray();
+            foreach ($sortArray as $facet => $sortOptions) {
                 $this->facetSortOptions[$facet] = [];
                 foreach (explode(',', $sortOptions) as $fieldAndLabel) {
                     [$field, $label] = explode('=', $fieldAndLabel);

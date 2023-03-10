@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Record ID list (support class for Loader)
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Record;
 
 use VuFind\RecordDriver\AbstractBase as Record;

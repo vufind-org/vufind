@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Module definition for the VuFind theme system.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development
  */
+
 namespace VuFindTheme;
 
 use Laminas\Mvc\View\Http\InjectTemplateListener as ParentInjectTemplateListener;

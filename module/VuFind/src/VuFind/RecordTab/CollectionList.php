@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Collection list tab
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
+
 namespace VuFind\RecordTab;
 
 use VuFind\Recommend\PluginManager as RecommendManager;

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Support class (dummy ILS driver) for MultiBackend ILS driver test
  *

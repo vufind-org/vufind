@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Record Driver for SolrOverdrive Records
  *
@@ -28,6 +29,7 @@
  *           License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver;
 
 use Laminas\Config\Config;

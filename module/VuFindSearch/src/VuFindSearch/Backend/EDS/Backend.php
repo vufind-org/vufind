@@ -1,4 +1,5 @@
 <?php
+
 /**
  * EDS API Backend
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\EDS;
 
 use Exception;

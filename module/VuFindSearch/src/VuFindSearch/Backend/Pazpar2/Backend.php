@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Pazpar2 backend.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Pazpar2;
 
 use VuFindSearch\Backend\AbstractBackend;
