@@ -122,6 +122,16 @@ trait HoldsTrait
             return $this->redirectToRecord('#top');
         }
 
+        $proxiedUsers = [];
+        if (in_array('proxiedUsers', $extraHoldFields)
+            && $catalog->checkCapability(
+                'getProxiedUsers',
+                [$driver->getUniqueID(), $patron, $gatheredDetails]
+            )
+        ) {
+            $proxiedUsers = $catalog->getProxiedUsers($patron);
+        }
+
         // Process form submissions if necessary:
         if (null !== $this->params()->fromPost('placeHold')) {
             // If the form contained a pickup location, request group, start date or
@@ -178,7 +188,9 @@ trait HoldsTrait
                 if (isset($results['success']) && $results['success'] == true) {
                     $msg = [
                         'html' => true,
-                        'msg' => 'hold_place_success_html',
+                        'msg' => empty($gatheredDetails['proxiedUser'])
+                            ? 'hold_place_success_html'
+                            : 'proxy_hold_place_success_html',
                         'tokens' => [
                             '%%url%%' => $this->url()->fromRoute('holds-list')
                         ],
@@ -209,15 +221,17 @@ trait HoldsTrait
         $defaultStartDate = $dateConverter->convertToDisplayDate('U', time());
 
         // Find and format the default required date:
-        $defaultRequiredDate = $dateConverter->convertToDisplayDate(
-            'U',
-            $this->holds()->getDefaultRequiredDate(
-                $checkHolds,
-                $catalog,
-                $patron,
-                $gatheredDetails
-            )
+        $defaultRequiredTS = $this->holds()->getDefaultRequiredDate(
+            $checkHolds,
+            $catalog,
+            $patron,
+            $gatheredDetails
         );
+        $defaultRequiredDate = $defaultRequiredTS
+            ? $dateConverter->convertToDisplayDate(
+                'U',
+                $defaultRequiredTS
+            ) : '';
         try {
             $defaultPickup
                 = $catalog->getDefaultPickUpLocation($patron, $gatheredDetails);
@@ -250,6 +264,7 @@ trait HoldsTrait
                 'requestGroups',
                 'defaultRequestGroup',
                 'requestGroupNeeded',
+                'proxiedUsers',
                 'helpText',
                 'helpTextHtml'
             )

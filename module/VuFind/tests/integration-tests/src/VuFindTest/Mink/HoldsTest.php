@@ -120,7 +120,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function placeHoldAndGoToHoldsScreen(
+    protected function placeHold(
         Element $page,
         array $extras = []
     ): void {
@@ -139,6 +139,22 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCss($page, $selector)->setValue($value);
         }
         $this->clickCss($page, '.modal-body .btn.btn-primary');
+    }
+
+    /**
+     * Support method to place a hold and click through to "Your Holds and Recalls."
+     *
+     * @param Element $page   Page element.
+     * @param array   $extras Associative array of selector => value for additional
+     * form values to set.
+     *
+     * @return void
+     */
+    protected function placeHoldAndGoToHoldsScreen(
+        Element $page,
+        array $extras = []
+    ): void {
+        $this->placeHold($page, $extras);
 
         // If successful, we should now have a link to review the hold:
         $link = $this->findCss($page, '.modal-body a');
@@ -192,6 +208,29 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         // Test valid patron login
         $this->submitCatalogLoginForm($page, 'catuser', 'catpass');
 
+        // Test placing a hold with an empty "required by" date:
+        $this->placeHold($page, ['#requiredByDate' => '']);
+        $alert = $this->findCss($page, '.alert.alert-danger');
+        $this->assertEquals(
+            "Please enter a valid 'required by' date",
+            $alert->getText()
+        );
+        $this->closeLightbox($page);
+
+        // Test placing a hold with an invalid "required by" date:
+        $this->placeHold($page, ['#requiredByDate' => '01-01-2023']);
+        $alert = $this->findCss($page, '.alert.alert-danger');
+        $this->assertEquals(
+            "Please enter a valid 'required by' date",
+            $alert->getText()
+        );
+        // Verify the label for the "required by" field:
+        $this->assertEquals(
+            'No longer required after:',
+            $this->findCss($page, '.hold-required-by label')->getText()
+        );
+        $this->closeLightbox($page);
+
         // Create the hold and go to the holds screen:
         $this->placeHoldAndGoToHoldsScreen($page);
 
@@ -201,7 +240,90 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
             . ' the journal of the Institute for Rational-Emotive Therapy.',
             $this->findCss($page, 'a.title')->getText()
         );
-        $this->assertTrue(false !== strstr($page->getContent(), 'Campus B'));
+        $pageContent = $page->getContent();
+        $this->assertTrue(false !== strstr($pageContent, 'Campus B'));
+        $this->assertTrue(false !== strstr($pageContent, 'Created:'));
+        $this->assertTrue(false !== strstr($pageContent, 'Expires:'));
+
+        // Confirm that no cancel buttons appear, since they are not configured:
+        $this->assertNull($page->find('css', '#cancelSelected'));
+        $this->assertNull($page->find('css', '#cancelAll'));
+    }
+
+    /**
+     * Test placing a hold with an optional "required by" date
+     *
+     * @retryCallback removeUsername4
+     *
+     * @return void
+     */
+    public function testPlaceHoldWithOptionalRequiredBy(): void
+    {
+        $demoConfig = $this->getDemoIniOverrides();
+        $demoConfig['Holds'] = [
+            'HMACKeys' => 'record_id:item_id:level',
+            'extraHoldFields' =>
+                'comments:requestGroup:pickUpLocation:requiredByDateOptional',
+            'defaultRequiredDate' => '',
+        ];
+        $this->changeConfigs(
+            [
+                'config' => $this->getConfigIniOverrides(),
+                'Demo' => $demoConfig,
+            ]
+        );
+        // Use search to find a record to simulate a typical use case:
+        $page = $this->gotoRecordWithSearch();
+        $element = $this->findCss($page, '.alert.alert-info a');
+        $this->assertEquals(
+            'Login for hold and recall information',
+            $element->getText()
+        );
+        $element->click();
+        $this->clickCss($page, '.createAccountLink');
+        $this->fillInAccountForm(
+            $page,
+            [
+                'username' => 'username4',
+                'email' => "username4@ignore.com"
+            ]
+        );
+        $this->clickCss($page, 'input.btn.btn-primary');
+
+        // Start establishing library catalog profile
+        $this->waitForPageLoad($page);
+        $element = $this->findCss($page, '.alert.alert-info a');
+        $this->assertEquals('Library Catalog Profile', $element->getText());
+        $element->click();
+        $this->submitCatalogLoginForm($page, 'catuser', 'catpass');
+
+        // Test placing a hold with an invalid "required by" date:
+        $this->placeHold($page, ['#requiredByDate' => '01-01-2023']);
+        $alert = $this->findCss($page, '.alert.alert-danger');
+        $this->assertEquals(
+            "Please enter a valid 'required by' date",
+            $alert->getText()
+        );
+        // Verify the label for the "required by" field:
+        $this->assertEquals(
+            'No longer required after (optional):',
+            $this->findCss($page, '.hold-required-by label')->getText()
+        );
+        $this->closeLightbox($page);
+
+        // Create the hold and go to the holds screen:
+        $this->placeHoldAndGoToHoldsScreen($page, ['#requiredByDate' => '']);
+
+        // Verify the hold is correct:
+        $this->assertEquals(
+            'Journal of rational emotive therapy :'
+            . ' the journal of the Institute for Rational-Emotive Therapy.',
+            $this->findCss($page, 'a.title')->getText()
+        );
+        $pageContent = $page->getContent();
+        $this->assertTrue(false !== strstr($pageContent, 'Campus B'));
+        $this->assertTrue(false !== strstr($pageContent, 'Created:'));
+        $this->assertFalse(strstr($pageContent, 'Expires:'));
 
         // Confirm that no cancel buttons appear, since they are not configured:
         $this->assertNull($page->find('css', '#cancelSelected'));
@@ -634,6 +756,45 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test placing a hold for a proxy user
+     *
+     * @depends testPlaceHoldWithoutPickUpLocations
+     *
+     * @return void
+     */
+    public function testPlaceHoldForProxyUser(): void
+    {
+        $demoConfig = $this->getDemoIniOverrides();
+        $demoConfig['ProxiedUsers'] = [
+            'user1' => 'Proxy User 1',
+            'user2' => 'Proxy User 2'
+        ];
+        $this->changeConfigs(
+            [
+                'config' => $this->getConfigIniOverrides(),
+                'Demo' => $demoConfig,
+            ]
+        );
+
+        // Create account and log in the user on the record page:
+        $page = $this->gotoRecordById();
+        $element = $this->findCss($page, '.alert.alert-info a');
+        $this->assertEquals('Login for hold and recall information', $element->getText());
+        $element->click();
+        $this->fillInLoginForm($page, 'username3', 'test');
+        $this->submitLoginForm($page);
+
+        // Place the hold with the proxy user:
+        $this->placeHoldAndGoToHoldsScreen($page, ['#proxiedUser' => 'user2']);
+
+        // Make sure the item shows the appropriate proxy user:
+        $this->assertEquals(
+            'Proxy User 2',
+            $this->findCss($page, '.hold-proxied-for')->getText()
+        );
+    }
+
+    /**
      * Retry cleanup method in case of failure during testHoldsAll.
      *
      * @return void
@@ -655,12 +816,23 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Retry cleanup method in case of failure during
+     * testPlaceHoldWithOptionalRequiredBy.
+     *
+     * @return void
+     */
+    protected function removeUsername4(): void
+    {
+        static::removeUsers(['username4']);
+    }
+
+    /**
      * Standard teardown method.
      *
      * @return void
      */
     public static function tearDownAfterClass(): void
     {
-        static::removeUsers(['username1', 'username2', 'username3']);
+        static::removeUsers(['username1', 'username2', 'username3', 'username4']);
     }
 }

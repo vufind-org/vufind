@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 
 /**
  * Class FeedbackController
@@ -27,6 +26,9 @@ declare(strict_types=1);
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
+
+declare(strict_types=1);
+
 namespace VuFindAdmin\Controller;
 
 use Laminas\Db\Sql\Select;
@@ -70,7 +72,8 @@ class FeedbackController extends AbstractAdmin
         $feedback = $feedbackTable->getFeedbackByFilter(
             $this->convertFilter($this->getParam('form_name')),
             $this->convertFilter($this->getParam('site_url')),
-            $this->convertFilter($this->getParam('status'))
+            $this->convertFilter($this->getParam('status')),
+            $this->getParam('page')
         );
         $view = $this->createViewModel(
             [
@@ -232,11 +235,13 @@ class FeedbackController extends AbstractAdmin
             'admin/feedback',
             [],
             [
-                'query' => [
-                    'form_name' => $this->getParam('form_name'),
-                    'site_url' => $this->getParam('site_url'),
-                    'status' => $this->getParam('status'),
-                ],
+                'query' => array_filter(
+                    [
+                        'form_name' => $this->getParam('form_name'),
+                        'site_url' => $this->getParam('site_url'),
+                        'status' => $this->getParam('status'),
+                    ]
+                ),
             ]
         );
     }

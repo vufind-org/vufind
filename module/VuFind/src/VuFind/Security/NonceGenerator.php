@@ -47,7 +47,7 @@ class NonceGenerator
      *
      * @var string
      */
-    private $_nonce;
+    protected $nonce;
 
     /**
      * Generates a random nonce parameter.
@@ -57,9 +57,9 @@ class NonceGenerator
      */
     public function getNonce() : String
     {
-        if (!$this->_nonce) {
-            $this->_nonce = base64_encode(random_bytes(32));
+        if (!$this->nonce) {
+            $this->nonce = base64_encode(random_bytes(32));
         }
-        return $this->_nonce;
+        return $this->nonce;
     }
 }

@@ -28,7 +28,6 @@
 namespace VuFindTest\Related;
 
 use VuFind\Related\WorldCatSimilar;
-use VuFindSearch\Query\Query;
 
 /**
  * WorldCat Similar Related Items Test Class
@@ -49,8 +48,16 @@ class WorldCatSimilarTest extends \PHPUnit\Framework\TestCase
     public function testGetResults()
     {
         $driver = $this->getMockBuilder(\VuFind\RecordDriver\WorldCat::class)
-            ->onlyMethods(['tryMethod', 'getPrimaryAuthor', 'getAllSubjectHeadings', 'getTitle', 'getUniqueId', 'getSourceIdentifier'])
-            ->getMock();
+            ->onlyMethods(
+                [
+                    'tryMethod',
+                    'getPrimaryAuthor',
+                    'getAllSubjectHeadings',
+                    'getTitle',
+                    'getUniqueId',
+                    'getSourceIdentifier'
+                ]
+            )->getMock();
         $driver->expects($this->once())
             ->method('tryMethod')
             ->with($this->equalTo('getDeweyCallNumber'))
@@ -73,7 +80,6 @@ class WorldCatSimilarTest extends \PHPUnit\Framework\TestCase
         $service = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $expectedQuery = new Query('(srw.dd any "fakedc" or srw.au all "fakepa" or srw.su all "fakesh1a fakesh1b" or srw.su all "fakesh2" or srw.ti any "faketitle") not srw.no all "fakeid"');
         $response = $this->getMockBuilder(\VuFindSearch\Backend\WorldCat\Response\XML\RecordCollection::class)
             ->onlyMethods(['getRecords'])
             ->setConstructorArgs([['offset' => 0, 'total' => 0]])
@@ -89,9 +95,12 @@ class WorldCatSimilarTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($response));
 
         $checkCommand = function ($command) {
+            $expectedTerms = '(srw.dd any "fakedc" or srw.au all "fakepa" or '
+                . 'srw.su all "fakesh1a fakesh1b" or srw.su all "fakesh2" or '
+                . 'srw.ti any "faketitle") not srw.no all "fakeid"';
             return get_class($command) === \VuFindSearch\Command\SearchCommand::class
                 && $command->getTargetIdentifier() === "WorldCat"
-                && $command->getArguments()[0]->getAllTerms() === '(srw.dd any "fakedc" or srw.au all "fakepa" or srw.su all "fakesh1a fakesh1b" or srw.su all "fakesh2" or srw.ti any "faketitle") not srw.no all "fakeid"'
+                && $command->getArguments()[0]->getAllTerms() === $expectedTerms
                 && $command->getArguments()[1] === 0
                 && $command->getArguments()[2] === 5;
         };

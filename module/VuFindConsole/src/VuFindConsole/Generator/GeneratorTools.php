@@ -547,15 +547,15 @@ class GeneratorTools
         }
 
         switch ($sourceType) {
-        case 'factories':
-            $this->createSubclassInModule($parts[$partCount - 1], $target);
-            $newConfig = $this->cloneFactory($config, $target);
-            break;
-        case 'invokables':
-            $newConfig = $this->createSubclassInModule($config, $target);
-            break;
-        default:
-            throw new \Exception('Reached unreachable code!');
+            case 'factories':
+                $this->createSubclassInModule($parts[$partCount - 1], $target);
+                $newConfig = $this->cloneFactory($config, $target);
+                break;
+            case 'invokables':
+                $newConfig = $this->createSubclassInModule($config, $target);
+                break;
+            default:
+                throw new \Exception('Reached unreachable code!');
         }
         $this->writeNewConfig($parts, $newConfig, $target);
         return true;

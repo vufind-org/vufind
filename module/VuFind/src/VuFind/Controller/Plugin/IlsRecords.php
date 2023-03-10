@@ -41,6 +41,8 @@ use VuFind\Record\Loader;
  */
 class IlsRecords extends \Laminas\Mvc\Controller\Plugin\AbstractPlugin
 {
+    use \VuFind\ILS\Logic\SummaryTrait;
+
     /**
      * VuFind configuration
      *
@@ -115,19 +117,13 @@ class IlsRecords extends \Laminas\Mvc\Controller\Plugin\AbstractPlugin
         if (empty($this->config->Authentication->enableAjax)) {
             return null;
         }
-        $accountStatus = [
-            'available' => 0,
-            'in_transit' => 0
-        ];
-        foreach ($records as $record) {
-            $request = $record->getExtraDetail('ils_details');
-            if ($request['available'] ?? false) {
-                $accountStatus['available']++;
-            }
-            if ($request['in_transit'] ?? false) {
-                $accountStatus['in_transit']++;
-            }
-        }
-        return $accountStatus;
+        return $this->getRequestSummary(
+            array_map(
+                function ($record) {
+                    return $record->getExtraDetail('ils_details');
+                },
+                $records
+            )
+        );
     }
 }

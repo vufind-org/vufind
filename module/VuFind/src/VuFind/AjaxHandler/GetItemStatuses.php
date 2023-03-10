@@ -486,7 +486,8 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface,
     {
         $results = [];
         $this->disableSessionWrites();  // avoid session write timing bug
-        $ids = $params->fromPost('id', $params->fromQuery('id', []));
+        $ids = $params->fromPost('id') ?? $params->fromQuery('id', []);
+        $searchId = $params->fromPost('sid') ?? $params->fromQuery('sid');
         try {
             $results = $this->ils->getStatuses($ids);
         } catch (ILSException $e) {
@@ -557,7 +558,10 @@ class GetItemStatuses extends AbstractBase implements TranslatorAwareInterface,
                 // If a full status display has been requested and no errors were
                 // encountered, append the HTML:
                 if ($showFullStatus && empty($record[0]['error'])) {
-                    $current['full_status'] = $this->renderFullStatus($record);
+                    $current['full_status'] = $this->renderFullStatus(
+                        $record,
+                        compact('searchId')
+                    );
                 }
                 $current['record_number'] = array_search($current['id'], $ids);
                 $statuses[] = $current;

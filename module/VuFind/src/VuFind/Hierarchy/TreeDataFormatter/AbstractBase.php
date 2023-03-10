@@ -170,14 +170,14 @@ abstract class AbstractBase implements \VuFind\I18n\HasSorterInterface
     {
         // Check config setting for what constitutes a collection
         switch ($this->collectionType) {
-        case 'All':
-            return isset($fields->is_hierarchy_id);
-        case 'Top':
-            return isset($fields->is_hierarchy_id)
-                && in_array($fields->is_hierarchy_id, $fields->hierarchy_top_id);
-        default:
-            // Default to not be a collection level record
-            return false;
+            case 'All':
+                return isset($fields->is_hierarchy_id);
+            case 'Top':
+                return isset($fields->is_hierarchy_id)
+                    && in_array($fields->is_hierarchy_id, $fields->hierarchy_top_id);
+            default:
+                // Default to not be a collection level record
+                return false;
         }
     }
 

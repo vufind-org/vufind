@@ -66,7 +66,8 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     {
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
-        $db->expects($this->once())->method('getSessionInitiator')->with($this->equalTo('foo'))->will($this->returnValue('bar'));
+        $db->expects($this->once())->method('getSessionInitiator')
+            ->with($this->equalTo('foo'))->will($this->returnValue('bar'));
         $manager = $this->getManager([], null, null, $pm);
         $this->assertEquals('bar', $manager->getSessionInitiator('foo'));
     }
@@ -137,7 +138,8 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     {
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
-        $db->expects($this->once())->method('logout')->with($this->equalTo('http://foo/bar'))->will($this->returnValue('http://baz'));
+        $db->expects($this->once())->method('logout')
+            ->with($this->equalTo('http://foo/bar'))->will($this->returnValue('http://baz'));
         $sm = $this->getMockSessionManager();
         $sm->expects($this->once())->method('destroy');
         $manager = $this->getManager([], null, $sm, $pm);
@@ -153,7 +155,8 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     {
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
-        $db->expects($this->once())->method('logout')->with($this->equalTo('http://foo/bar'))->will($this->returnValue('http://baz'));
+        $db->expects($this->once())->method('logout')
+            ->with($this->equalTo('http://foo/bar'))->will($this->returnValue('http://baz'));
         $sm = $this->getMockSessionManager();
         $sm->expects($this->exactly(0))->method('destroy');
         $manager = $this->getManager([], null, $sm, $pm);
@@ -501,15 +504,18 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $user = $this->getMockUser();
         $userArray = new \ArrayObject();
         $userArray->append($user);
-        $table->expects($this->once())->method('select')->with($this->equalTo(['id' => 'foo']))->will($this->returnValue($userArray->getIterator()));
+        $table->expects($this->once())->method('select')
+            ->with($this->equalTo(['id' => 'foo']))->will($this->returnValue($userArray->getIterator()));
         $manager = $this->getManager([], $table);
 
         // Fake the session inside the manager:
         $mockSession = $this->getMockBuilder(\Laminas\Session\Container::class)
             ->onlyMethods(['__get', '__isset', '__set', '__unset'])
             ->disableOriginalConstructor()->getMock();
-        $mockSession->expects($this->any())->method('__isset')->with($this->equalTo('userId'))->will($this->returnValue(true));
-        $mockSession->expects($this->any())->method('__get')->with($this->equalTo('userId'))->will($this->returnValue('foo'));
+        $mockSession->expects($this->any())->method('__isset')
+            ->with($this->equalTo('userId'))->will($this->returnValue(true));
+        $mockSession->expects($this->any())->method('__get')
+            ->with($this->equalTo('userId'))->will($this->returnValue('foo'));
         $this->setProperty($manager, 'session', $mockSession);
 
         $this->assertEquals($user, $manager->isLoggedIn());
@@ -610,7 +616,8 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $mockChoice = $this->getMockBuilder(\VuFind\Auth\ChoiceAuth::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockChoice->expects($this->any())->method('getSelectableAuthOptions')->will($this->returnValue(['Database', 'Shibboleth']));
+        $mockChoice->expects($this->any())
+            ->method('getSelectableAuthOptions')->will($this->returnValue(['Database', 'Shibboleth']));
         $mockDb = $this->getMockBuilder(\VuFind\Auth\Database::class)
             ->disableOriginalConstructor()
             ->getMock();

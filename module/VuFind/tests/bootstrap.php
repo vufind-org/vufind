@@ -1,12 +1,6 @@
 <?php
 
-// Define application environment (default to testing)
-defined('APPLICATION_ENV')
-    || define(
-        'APPLICATION_ENV',
-        (getenv('VUFIND_ENV') ? getenv('VUFIND_ENV') : 'testing')
-    );
-
+require __DIR__ . '/bootstrap_constants.php';
 require __DIR__ . '/../../../config/constants.config.php';
 
 chdir(APPLICATION_PATH);

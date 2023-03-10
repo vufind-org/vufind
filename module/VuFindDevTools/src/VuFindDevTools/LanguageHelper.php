@@ -160,12 +160,12 @@ class LanguageHelper
             return $this->configuredLanguages[$lang];
         }
         switch ($lang) {
-        case 'en-gb':
-            return 'British English';
-        case 'pt-br':
-            return 'Brazilian Portuguese';
-        default:
-            return $lang;
+            case 'en-gb':
+                return 'British English';
+            case 'pt-br':
+                return 'Brazilian Portuguese';
+            default:
+                return $lang;
         }
     }
 

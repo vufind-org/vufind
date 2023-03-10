@@ -64,14 +64,21 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      *
      * @var array
      */
-    protected $testResponses = [];
+    protected $fixtureSteps = [];
 
     /**
-     * Log of requests made during test (reset by each test)
+     * Current fixture step
      *
-     * @var array
+     * @var int
      */
-    protected $testRequestLog = [];
+    protected $currentFixtureStep = 0;
+
+    /**
+     * Current fixture name
+     *
+     * @var string
+     */
+    protected $currentFixture = 'none';
 
     /**
      * Driver under test
@@ -100,16 +107,41 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $httpHeaders = new \Laminas\Http\Headers();
         $httpHeaders->addHeaders($headers);
         [$httpHeaders, $params] = $this->driver->preRequest($httpHeaders, $params);
-        // Log request
-        $this->testRequestLog[] = compact('method', 'path', 'params') + [
-            'headers' => $httpHeaders->toArray()
-        ];
+
+        // Get the next step of the test, and make assertions as necessary
+        // (we'll skip making assertions if the next step is empty):
+        $testData = $this->fixtureSteps[$this->currentFixtureStep] ?? [];
+        $this->currentFixtureStep++;
+        unset($testData['comment']);
+        if (!empty($testData)) {
+            $msg = "Error in step {$this->currentFixtureStep} of fixture: "
+                . $this->currentFixture;
+            $this->assertEquals($testData['expectedMethod'] ?? 'GET', $method, $msg);
+            $this->assertEquals($testData['expectedPath'] ?? '/', $path, $msg);
+            if (isset($testData['expectedParamsRegEx'])) {
+                $this->assertMatchesRegularExpression(
+                    $testData['expectedParamsRegEx'],
+                    $params,
+                    $msg
+                );
+            } else {
+                $this
+                    ->assertEquals($testData['expectedParams'] ?? [], $params, $msg);
+            }
+            $actualHeaders = $httpHeaders->toArray();
+            foreach ($testData['expectedHeaders'] ?? [] as $header => $expected) {
+                $this->assertEquals($expected, $actualHeaders[$header]);
+            }
+        }
+
         // Create response
-        $testResponse = array_shift($this->testResponses);
         $response = new \Laminas\Http\Response();
-        $response->setStatusCode($testResponse['status'] ?? 200);
-        $response->setContent($testResponse['body'] ?? '');
-        $response->getHeaders()->addHeaders($testResponse['headers'] ?? []);
+        $response->setStatusCode($testData['status'] ?? 200);
+        $bodyType = $testData['bodyType'] ?? "string";
+        $rawBody = $testData['body'] ?? '';
+        $body = $bodyType === 'json' ? json_encode($rawBody) : $rawBody;
+        $response->setContent($body);
+        $response->getHeaders()->addHeaders($testData['headers'] ?? []);
         return $response;
     }
 
@@ -127,9 +159,9 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     protected function createConnector(string $test, array $config = null): void
     {
         // Setup test responses
-        $this->testResponses = $this->getJsonFixture("folio/responses/$test.json");
-        // Reset log
-        $this->testRequestLog = [];
+        $this->fixtureSteps = $this->getJsonFixture("folio/responses/$test.json");
+        $this->currentFixture = $test;
+        $this->currentFixtureStep = 0;
         // Session factory
         $factory = function ($namespace) {
             $manager = new \Laminas\Session\SessionManager();
@@ -142,6 +174,9 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         // Configure the stub
         $this->driver->setConfig($config ?? $this->defaultDriverConfig);
+        $cache = new \Laminas\Cache\Storage\Adapter\Memory();
+        $cache->setOptions(['memory_limit' => -1]);
+        $this->driver->setCacheStorage($cache);
         $this->driver->expects($this->any())
             ->method('makeRequest')
             ->will($this->returnCallback([$this, 'mockMakeRequest']));
@@ -156,21 +191,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     public function testTokens(): void
     {
         $this->createConnector('get-tokens'); // saves to $this->driver
-        $profile = $this->driver->getMyProfile(['id' => 'whatever']);
-        // Get token
-        // - Right URL
-        $this->assertEquals('/authn/login', $this->testRequestLog[0]['path']);
-        // - Right tenant
-        $this->assertEquals(
-            $this->defaultDriverConfig['API']['tenant'],
-            $this->testRequestLog[0]['headers']['X-Okapi-Tenant']
-        );
-        // Profile request
-        // - Passed correct token
-        $this->assertEquals(
-            'x-okapi-token-config-tenant', // from fixtures: get-tokens.json
-            $this->testRequestLog[1]['headers']['X-Okapi-Token']
-        );
+        $this->driver->getMyProfile(['id' => 'whatever']);
     }
 
     /**
@@ -181,16 +202,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     public function testCheckValidToken(): void
     {
         $this->createConnector('check-valid-token');
-        $profile = $this->driver->getMyTransactions(['id' => 'whatever']);
-        // Check token
-        $this->assertEquals('/users', $this->testRequestLog[0]['path']);
-        // Move to method call
-        $this->assertEquals('/circulation/loans', $this->testRequestLog[1]['path']);
-        // - Passed correct token
-        $this->assertEquals(
-            'x-okapi-token-config-tenant', // from fixtures: get-tokens.json (cached)
-            $this->testRequestLog[1]['headers']['X-Okapi-Token']
-        );
+        $this->driver->getMyTransactions(['id' => 'whatever']);
     }
 
     /**
@@ -201,18 +213,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     public function testCheckInvalidToken(): void
     {
         $this->createConnector('check-invalid-token');
-        $profile = $this->driver->getPickupLocations(['username' => 'whatever']);
-        // Check token
-        $this->assertEquals('/users', $this->testRequestLog[0]['path']);
-        // Request new token
-        $this->assertEquals('/authn/login', $this->testRequestLog[1]['path']);
-        // Move to method call
-        $this->assertEquals('/service-points', $this->testRequestLog[2]['path']);
-        // - Passed correct token
-        $this->assertEquals(
-            'x-okapi-token-after-invalid', // from fixtures: check-invalid-token.json
-            $this->testRequestLog[2]['headers']['X-Okapi-Token']
-        );
+        $this->driver->getPickupLocations(['username' => 'whatever']);
     }
 
     /**
@@ -249,22 +250,6 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             ],
         ];
         $this->assertEquals($expected, $result);
-        $this->assertEquals(
-            '/circulation/requests/request1',
-            $this->testRequestLog[2]['path']
-        );
-        $this->assertEquals(
-            '{"requesterId":"foo","itemId":"item1","status":"Closed - Cancelled","cancellationReasonId":"75187e8d-e25a-47a7-89ad-23ba612338de"}',
-            $this->testRequestLog[2]['params']
-        );
-        $this->assertEquals(
-            '/circulation/requests/request2',
-            $this->testRequestLog[4]['path']
-        );
-        $this->assertEquals(
-            '{"requesterId":"foo","itemId":"item2","status":"Closed - Cancelled","cancellationReasonId":"75187e8d-e25a-47a7-89ad-23ba612338de"}',
-            $this->testRequestLog[4]['params']
-        );
     }
 
     /**
@@ -274,16 +259,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      */
     public function testUnsuccessfulPatronLogin(): void
     {
-        $this->createConnector('empty');
+        $this->createConnector('unsuccessful-patron-login');
         $this->assertNull($this->driver->patronLogin('foo', 'bar'));
-        $this->assertEquals(
-            '/users',
-            $this->testRequestLog[1]['path']
-        );
-        $this->assertEquals(
-            ['query' => 'username == "foo"'],
-            $this->testRequestLog[1]['params']
-        );
     }
 
     /**
@@ -308,22 +285,6 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'email' => 'fake@fake.com',
         ];
         $this->assertEquals($expected, $result);
-        $this->assertEquals(
-            '/authn/login',
-            $this->testRequestLog[1]['path']
-        );
-        $this->assertEquals(
-            '{"tenant":"config_tenant","username":"foo","password":"bar"}',
-            $this->testRequestLog[1]['params']
-        );
-        $this->assertEquals(
-            '/users',
-            $this->testRequestLog[2]['path']
-        );
-        $this->assertEquals(
-            ['query' => 'username == foo'],
-            $this->testRequestLog[2]['params']
-        );
     }
 
     /**
@@ -336,6 +297,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $this->createConnector('successful-place-hold');
         $details = [
             'requiredBy' => '2022-01-01',
+            'requiredByTS' => 1641049790,
             'patron' => ['id' => 'foo'],
             'item_id' => 'record1',
             'status' => 'Available',
@@ -347,24 +309,75 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'status' => 'success',
         ];
         $this->assertEquals($expected, $result);
-        $this->assertEquals(
-            '/circulation/requests',
-            $this->testRequestLog[1]['path']
-        );
-        $request = json_decode($this->testRequestLog[1]['params'], true);
-        // Request date changes on every request, so let's not assert about it:
-        unset($request['requestDate']);
-        $this->assertEquals(
-            [
-                'itemId' => 'record1',
-                'requestType' => 'Page',
-                'requesterId' => 'foo',
-                'fulfilmentPreference' => 'Hold Shelf',
-                'requestExpirationDate' => '2022-01-01',
-                'pickupServicePointId' => 'desk1',
-            ],
-            $request
-        );
+    }
+
+    /**
+     * Test successful place hold with no expiration date
+     *
+     * @return void
+     */
+    public function testSuccessfulPlaceHoldNoExpirationDate(): void
+    {
+        $this->createConnector('successful-place-hold-no-expiration-date');
+        $details = [
+            'patron' => ['id' => 'foo'],
+            'item_id' => 'record1',
+            'status' => 'Available',
+            'pickUpLocation' => 'desk1',
+        ];
+        $result = $this->driver->placeHold($details);
+        $expected = [
+            'success' => true,
+            'status' => 'success',
+        ];
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Test unsuccessful place hold with invalid expiration date
+     *
+     * @return void
+     */
+    public function testUnsuccessfulPlaceHoldInvalidExpirationDate(): void
+    {
+        # Validates that the requiredByTS is an of type ?int, or throws an exception
+        # otherwise
+        $this->createConnector('unsuccessful-place-hold');
+        $details = [
+            'requiredBy' => '3333-33-33',
+            'requiredByTS' => '3333-33-33',
+            'patron' => ['id' => 'foo'],
+            'item_id' => 'record1',
+            'status' => 'Available',
+            'pickUpLocation' => 'desk1',
+        ];
+        $this->expectException(\VuFind\Exception\ILS::class);
+        $this->expectExceptionMessage("hold_date_invalid");
+        $result = $this->driver->placeHold($details);
+    }
+
+    /**
+     * Test unsuccessful place hold
+     *
+     * @return void
+     */
+    public function testUnsuccessfulPlaceHold(): void
+    {
+        $this->createConnector('unsuccessful-place-hold');
+        $details = [
+            'requiredBy' => '2000-01-01',
+            'requiredByTS' => 946739390,
+            'patron' => ['id' => 'foo'],
+            'item_id' => 'record1',
+            'status' => 'Available',
+            'pickUpLocation' => 'desk1',
+        ];
+        $result = $this->driver->placeHold($details);
+        $expected = [
+            'success' => false,
+            'status' => 'requestExpirationDate cannot be in the past'
+        ];
+        $this->assertEquals($expected, $result);
     }
 
     /**
@@ -392,14 +405,6 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             ]
         ];
         $this->assertEquals($expected, $result);
-        $this->assertEquals(
-            '/circulation/renew-by-id',
-            $this->testRequestLog[1]['path']
-        );
-        $this->assertEquals(
-            '{"itemId":"record1","userId":"foo"}',
-            $this->testRequestLog[1]['params']
-        );
     }
 
     /**
@@ -423,7 +428,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testAvailbleItemGetMyHolds(): void
+    public function testAvailableItemGetMyHolds(): void
     {
         $this->createConnector('get-my-holds-available');
         $patron = [
@@ -434,14 +439,43 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'type' => 'Page',
             'create' => '12-20-2022',
             'expire' => '',
-            'id' => '3311d5df-731f-4e2c-8000-00960a9d8bf7',
-            'item_id' => 'fc0064b4-e2e4-4be0-8251-7ca93282c9b4',
-            'reqnum' => 'c5a8af9d-9877-453c-bbcb-f63cb5ccb3b4',
+            'id' => 'fake-instance-id',
+            'item_id' => 'fake-item-id',
+            'reqnum' => 'fake-request-num',
             'title' => 'Presentation secrets : do what you never thought possible with your presentations ',
             'available' => true,
             'in_transit' => false,
             'last_pickup_date' => '12-29-2022',
             'position' => 1
+        ];
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Test successful call to holds, one available item placed for a proxy
+     *
+     * @return void
+     */
+    public function testAvailableProxyItemGetMyHolds(): void
+    {
+        $this->createConnector('get-my-holds-available-proxy');
+        $patron = [
+            'id' => 'bar'
+        ];
+        $result = $this->driver->getMyHolds($patron);
+        $expected[0] = [
+            'type' => 'Page',
+            'create' => '12-20-2022',
+            'expire' => '',
+            'id' => 'fake-instance-id',
+            'item_id' => 'fake-item-id',
+            'reqnum' => 'fake-request-num',
+            'title' => 'Presentation secrets : do what you never thought possible with your presentations ',
+            'available' => true,
+            'in_transit' => false,
+            'last_pickup_date' => '12-29-2022',
+            'position' => 1,
+            'proxiedFor' => 'TestuserJohn, John',
         ];
         $this->assertEquals($expected, $result);
     }
@@ -462,9 +496,9 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'type' => 'Page',
             'create' => '11-07-2022',
             'expire' => '',
-            'id' => 'c112b154-720c-486c-890d-81e1c288c097',
-            'item_id' => '795759ad-0b33-41dd-a658-947405261360',
-            'reqnum' => '074c0f3d-e8a0-47b5-b598-74a45c29d3d7',
+            'id' => 'fake-instance-id',
+            'item_id' => 'fake-item-id',
+            'reqnum' => 'fake-request-num',
             'title' => 'Basic economics : a common sense guide to the economy ',
             'available' => false,
             'in_transit' => true,
@@ -490,9 +524,9 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'type' => 'Hold',
             'create' => '12-20-2022',
             'expire' => '12-28-2022',
-            'id' => 'c7a7df0d-36a2-486c-85f5-008191e6b32d',
-            'item_id' => '26532648-67a3-4459-a97f-9b54b4c5ebd9',
-            'reqnum' => 'bb07eb2c-bf3a-449f-8e8b-a114ce410c7f',
+            'id' => 'fake-instance-id',
+            'item_id' => 'fake-item-id',
+            'reqnum' => 'fake-request-num',
             'title' => 'Organic farming : everything you need to know ',
             'available' => false,
             'in_transit' => false,
@@ -621,5 +655,263 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($this->callMethod($this->driver, "isHoldable", [1]));
         $this->assertTrue($this->callMethod($this->driver, "isHoldable", [0]));
         $this->assertFalse($this->callMethod($this->driver, "isHoldable", ["1"]));
+    }
+
+    /**
+     * Test the getMyProfile method.
+     *
+     * @return void
+     */
+    public function testGetMyProfile(): void
+    {
+        $this->createConnector('get-my-profile');
+        $patron = [
+            'id' => 'foo'
+        ];
+        $result = $this->driver->getMyProfile($patron);
+        $expected = [
+            'id' => 'foo',
+            'firstname' => 'Test',
+            'lastname' => 'User',
+            'address1' => 'street',
+            'city' => 'city',
+            'country' => 'country',
+            'zip' => '12345',
+            'phone' => '0123456789',
+            'mobile_phone' => '1234567890',
+            'expiration_date' => '05-29-2030',
+        ];
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Test the getProxiedUsers method.
+     *
+     * @return void
+     */
+    public function testGetProxiedUsers(): void
+    {
+        $this->createConnector('get-proxied-users');
+        $patron = [
+            'id' => 'foo'
+        ];
+        $result = $this->driver->getProxiedUsers($patron);
+        $expected = ['fakeid' => 'Lastname, Proxity P.'];
+        $this->assertEquals($expected, $result);
+    }
+
+    /*
+     * Test getHolding with HRID-based lookup
+     *
+     * @return void
+     */
+    public function testGetHoldingWithHridLookup(): void
+    {
+        $driverConfig = $this->defaultDriverConfig;
+        $driverConfig['IDs']['type'] = 'hrid';
+        $this->createConnector("get-holding", $driverConfig);
+        $expected = [
+            [
+                'callnumber_prefix' => '',
+                'callnumber' => 'PS2394 .M643 1883',
+                'id' => 'foo',
+                'item_id' => 'itemid',
+                'holding_id' => 'holdingid',
+                'number' => 1,
+                'enumchron' => '',
+                'barcode' => 'barcode-test',
+                'status' => 'Available',
+                'duedate' => '',
+                'availability' => true,
+                'is_holdable' => true,
+                'holdings_notes' => null,
+                'item_notes' => null,
+                'issues' => [],
+                'supplements' => [],
+                'indexes' => [],
+                'location' => 'Special Collections',
+                'location_code' => 'DCOC',
+                'reserve' => 'TODO',
+                'addLink' => true,
+            ]
+        ];
+        $this->assertEquals($expected, $this->driver->getHolding("foo"));
+    }
+
+    /**
+     * Test getHolding with HRID-based lookup
+     *
+     * @return void
+     */
+    public function testGetStatuses(): void
+    {
+        // getStatuses is just a wrapper around getHolding, so we can test it with
+        // a minor variation of the test above.
+        $driverConfig = $this->defaultDriverConfig;
+        $driverConfig['IDs']['type'] = 'hrid';
+        $this->createConnector("get-holding", $driverConfig);
+        $expected = [
+            [
+                [
+                    'callnumber_prefix' => '',
+                    'callnumber' => 'PS2394 .M643 1883',
+                    'id' => 'foo',
+                    'item_id' => 'itemid',
+                    'holding_id' => 'holdingid',
+                    'number' => 1,
+                    'enumchron' => '',
+                    'barcode' => 'barcode-test',
+                    'status' => 'Available',
+                    'duedate' => '',
+                    'availability' => true,
+                    'is_holdable' => true,
+                    'holdings_notes' => null,
+                    'item_notes' => null,
+                    'issues' => [],
+                    'supplements' => [],
+                    'indexes' => [],
+                    'location' => 'Special Collections',
+                    'location_code' => 'DCOC',
+                    'reserve' => 'TODO',
+                    'addLink' => true,
+                ]
+            ]
+        ];
+        $this->assertEquals($expected, $this->driver->getStatuses(["foo"]));
+    }
+
+    /**
+     * Test getHolding with FOLIO-based sorting.
+     *
+     * @return void
+     */
+    public function testGetHoldingWithFolioSorting(): void
+    {
+        $driverConfig = $this->defaultDriverConfig;
+        $driverConfig['Holdings']['folio_sort'] = 'volume';
+        $this->createConnector("get-holding-sorted", $driverConfig);
+        $expected = [
+            [
+                'callnumber_prefix' => '',
+                'callnumber' => 'PS2394 .M643 1883',
+                'id' => 'instanceid',
+                'item_id' => 'itemid',
+                'holding_id' => 'holdingid',
+                'number' => 1,
+                'enumchron' => '',
+                'barcode' => 'barcode-test',
+                'status' => 'Available',
+                'duedate' => '',
+                'availability' => true,
+                'is_holdable' => true,
+                'holdings_notes' => ["Fake note"],
+                'item_notes' => null,
+                'issues' => [],
+                'supplements' => ['Fake supplement statement With a note!'],
+                'indexes' => [],
+                'location' => 'Special Collections',
+                'location_code' => 'DCOC',
+                'reserve' => 'TODO',
+                'addLink' => true,
+            ]
+        ];
+        $this->assertEquals($expected, $this->driver->getHolding("instanceid"));
+    }
+
+    /**
+     * Test getHolding with checked out item.
+     *
+     * @return void
+     */
+    public function testGetHoldingWithDueDate(): void
+    {
+        $this->createConnector("get-holding-checkedout");
+        $expected = [
+            [
+                'callnumber_prefix' => '',
+                'callnumber' => 'PS2394 .M643 1883',
+                'id' => 'instanceid',
+                'item_id' => 'itemid',
+                'holding_id' => 'holdingid',
+                'number' => 1,
+                'enumchron' => '',
+                'barcode' => 'barcode-test',
+                'status' => 'Checked out',
+                'duedate' => '06-01-2023',
+                'availability' => false,
+                'is_holdable' => true,
+                'holdings_notes' => ["Fake note"],
+                'item_notes' => null,
+                'issues' => [],
+                'supplements' => ['Fake supplement statement With a note!'],
+                'indexes' => [],
+                'location' => 'Special Collections',
+                'location_code' => 'DCOC',
+                'reserve' => 'TODO',
+                'addLink' => true,
+            ]
+        ];
+        $this->assertEquals($expected, $this->driver->getHolding("instanceid"));
+    }
+
+    /**
+     * Test getHolding with VuFind-based sorting.
+     *
+     * @return void
+     */
+    public function testGetHoldingMultiVolumeWithVuFindSorting(): void
+    {
+        $driverConfig = $this->defaultDriverConfig;
+        $driverConfig['Holdings']['vufind_sort'] = 'enumchron';
+        $this->createConnector("get-holding-multi-volume", $driverConfig);
+        $expected = [
+            [
+                'callnumber_prefix' => '',
+                'callnumber' => 'PS2394 .M643 1883',
+                'id' => 'instanceid',
+                'item_id' => 'itemid2',
+                'holding_id' => 'holdingid',
+                'number' => 1,
+                'enumchron' => 'v.2',
+                'barcode' => 'barcode-test2',
+                'status' => 'Available',
+                'duedate' => '',
+                'availability' => true,
+                'is_holdable' => true,
+                'holdings_notes' => ["Fake note"],
+                'item_notes' => null,
+                'issues' => [],
+                'supplements' => ['Fake supplement statement With a note!'],
+                'indexes' => [],
+                'location' => 'Special Collections',
+                'location_code' => 'DCOC',
+                'reserve' => 'TODO',
+                'addLink' => true,
+            ],
+            [
+                'callnumber_prefix' => '',
+                'callnumber' => 'PS2394 .M643 1883',
+                'id' => 'instanceid',
+                'item_id' => 'itemid',
+                'holding_id' => 'holdingid',
+                'number' => 2,
+                'enumchron' => 'v.100',
+                'barcode' => 'barcode-test',
+                'status' => 'Available',
+                'duedate' => '',
+                'availability' => true,
+                'is_holdable' => true,
+                'holdings_notes' => ["Fake note"],
+                'item_notes' => null,
+                'issues' => [],
+                'supplements' => ['Fake supplement statement With a note!'],
+                'indexes' => [],
+                'location' => 'Special Collections',
+                'location_code' => 'DCOC',
+                'reserve' => 'TODO',
+                'addLink' => true,
+            ]
+        ];
+        $this->assertEquals($expected, $this->driver->getHolding("instanceid"));
     }
 }

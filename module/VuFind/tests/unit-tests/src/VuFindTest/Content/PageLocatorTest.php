@@ -130,7 +130,10 @@ class PageLocatorTest extends \PHPUnit\Framework\TestCase
         $themeInfo = new ThemeInfo(rtrim($fixturePath, '/'), 'parent');
         $pageLocator = new PageLocator($themeInfo, $language, $defaultLanguage);
         foreach ($testCases as $case) {
-            $this->assertEquals($case['result'], $pageLocator->determineTemplateAndRenderer($pathPrefix, $case['pageName']));
+            $this->assertEquals(
+                $case['result'],
+                $pageLocator->determineTemplateAndRenderer($pathPrefix, $case['pageName'])
+            );
         }
     }
 }
