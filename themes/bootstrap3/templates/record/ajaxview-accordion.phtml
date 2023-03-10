@@ -10,7 +10,7 @@
   <?php $coreMetadata = $this->record($this->driver)->getCoreMetadata(); ?>
   <?php if (!empty($coreMetadata)): ?>
     <div class="panel panel-default">
-      <div id="information_<?=$idSuffixEsc?>" class="list-tab-toggle panel-heading loaded" data-toggle="collapse" data-parent="#accordion_<?=$idSuffixEsc?>" data-target="#information_<?=$idSuffixEsc?>-content">
+      <div id="information_<?=$idSuffixEsc?>" class="list-tab-toggle panel-heading loaded" role="presentation" data-toggle="collapse" data-parent="#accordion_<?=$idSuffixEsc?>" data-target="#information_<?=$idSuffixEsc?>-content">
         <h4 class="panel-title">
           <a class="accordion-toggle">
             <?=$this->translate('ajaxview_label_information') ?>

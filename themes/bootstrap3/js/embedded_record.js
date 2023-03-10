@@ -100,7 +100,7 @@ VuFind.register('embedded', function embedded() {
       result.addClass('embedded');
       shortNode.addClass('collapse');
       linksNode.addClass('collapse');
-      longNode = $('<div class="long-view collapse"></div>');
+      longNode = $('<div class="long-view collapse" role="presentation"></div>');
       // Add loading status
       shortNode
         .before('<div class="loading hidden">' + VuFind.loading() + '</div>')
