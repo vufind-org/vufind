@@ -118,7 +118,8 @@ class Unicorn extends AbstractBase implements
         $this->url = $this->config['Catalog']['url'];
 
         // host/port/search_prog kept for backward compatibility
-        if (isset($this->config['Catalog']['host'])
+        if (
+            isset($this->config['Catalog']['host'])
             && isset($this->config['Catalog']['port'])
             && isset($this->config['Catalog']['search_prog'])
         ) {
@@ -964,7 +965,8 @@ class Unicorn extends AbstractBase implements
         foreach ($item_lines as $item) {
             [$instructor_id, $course_id, $dept_id, $bib_id]
                 = explode('|', $item);
-            if ($bib_id && (empty($instructorId) || $instructorId == $instructor_id)
+            if (
+                $bib_id && (empty($instructorId) || $instructorId == $instructor_id)
                 && (empty($courseId) || $courseId == $course_id)
                 && (empty($departmentId) || $departmentId == $dept_id)
             ) {
@@ -1085,12 +1087,14 @@ class Unicorn extends AbstractBase implements
 
         // even though item is NOT checked out, it still may not be "Available"
         // the following are the special cases
-        if (isset($this->config['UnavailableItemTypes'])
+        if (
+            isset($this->config['UnavailableItemTypes'])
             && isset($this->config['UnavailableItemTypes'][$item_type])
         ) {
             $availability = 0;
             $status = $this->config['UnavailableItemTypes'][$item_type];
-        } elseif (isset($this->config['UnavailableLocations'])
+        } elseif (
+            isset($this->config['UnavailableLocations'])
             && isset($this->config['UnavailableLocations'][$currLocCode])
         ) {
             $availability = 0;
@@ -1139,7 +1143,8 @@ class Unicorn extends AbstractBase implements
      */
     protected function mapLocation($code)
     {
-        if (isset($this->config['Locations'])
+        if (
+            isset($this->config['Locations'])
             && isset($this->config['Locations'][$code])
         ) {
             return $this->config['Locations'][$code];
@@ -1157,7 +1162,8 @@ class Unicorn extends AbstractBase implements
      */
     protected function mapLibrary($code)
     {
-        if (isset($this->config['Libraries'])
+        if (
+            isset($this->config['Libraries'])
             && isset($this->config['Libraries'][$code])
         ) {
             return $this->config['Libraries'][$code];
