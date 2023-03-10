@@ -470,7 +470,7 @@ function setupAutocomplete() {
   // Bind autocomplete auto submit
   if ($searchbox.hasClass("ac-auto-submit")) {
     input.addEventListener("ac-select", (event) => {
-      input.setAttribute("value", event.detail.value);
+      input.value = event.detail.value ?? event.detail;
       $("#searchForm").submit();
     });
   }
