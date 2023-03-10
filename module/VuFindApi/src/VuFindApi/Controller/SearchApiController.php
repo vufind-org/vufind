@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Search API Controller
  *
@@ -324,9 +325,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
                     $request,
                     $requestedFields
                 ) {
-                    foreach ($request['facet'] ?? []
-                       as $facet
-                    ) {
+                    foreach ($request['facet'] ?? [] as $facet) {
                         if (!isset($hierarchicalFacets[$facet])) {
                             $params->addFacet($facet);
                         }

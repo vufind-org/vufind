@@ -192,9 +192,8 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
      */
     public function getFacetDelimiter(string $field): string
     {
-        foreach ($this->config->Advanced_Settings->delimited_facets ?? []
-            as $current
-        ) {
+        $delimitedFacets = $this->config->Advanced_Settings->delimited_facets ?? [];
+        foreach ($delimitedFacets as $current) {
             $parts = explode('|', $current);
             if ($parts[0] === $field) {
                 return $parts[1] ?? $this->config->Advanced_Settings->delimiter
@@ -318,9 +317,8 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
 
         // Iterate through mappings and merge values. It is important to do it this
         // way since multiple facets may map to a single one.
-        foreach ($this->mappings['Facets']['Fields'] ?? []
-            as $facetField => $settings
-        ) {
+        $facetFieldData = $this->mappings['Facets']['Fields'] ?? [];
+        foreach ($facetFieldData as $facetField => $settings) {
             // Get merged list of facet values:
             $list = $this->mapFacetValues($collections, $settings);
             // Re-sort the list:

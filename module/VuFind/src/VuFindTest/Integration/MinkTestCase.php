@@ -956,12 +956,22 @@ EOS
             }
         }
 
+        $htmlValidationException = null;
         if (!$this->hasFailed()) {
-            $this->validateHtml();
+            try {
+                $this->validateHtml();
+            } catch (\Exception $e) {
+                // Store the exception and throw after cleanup:
+                $htmlValidationException = $e;
+            }
         }
 
         $this->stopMinkSession();
         $this->restoreConfigs();
+
+        if (null !== $htmlValidationException) {
+            throw $htmlValidationException;
+        }
     }
 
     /**

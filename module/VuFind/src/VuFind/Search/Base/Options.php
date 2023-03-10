@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Abstract options search model.
  *
@@ -318,9 +319,8 @@ abstract class Options implements TranslatorAwareInterface
         $id = $this->getSearchClassId();
         $facetSettings = $configLoader->get($this->facetsIni);
         if (isset($facetSettings->AvailableFacetSortOptions[$id])) {
-            foreach ($facetSettings->AvailableFacetSortOptions[$id]->toArray()
-                     as $facet => $sortOptions
-            ) {
+            $sortArray = $facetSettings->AvailableFacetSortOptions[$id]->toArray();
+            foreach ($sortArray as $facet => $sortOptions) {
                 $this->facetSortOptions[$facet] = [];
                 foreach (explode(',', $sortOptions) as $fieldAndLabel) {
                     [$field, $label] = explode('=', $fieldAndLabel);

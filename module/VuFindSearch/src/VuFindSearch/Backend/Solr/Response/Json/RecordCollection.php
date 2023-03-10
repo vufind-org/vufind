@@ -134,9 +134,8 @@ class RecordCollection extends AbstractRecordCollection
     {
         if (null === $this->facetFields) {
             $this->facetFields = [];
-            foreach ($this->response['facet_counts']['facet_fields'] ?? []
-                as $field => $facetData
-            ) {
+            $facetFieldData = $this->response['facet_counts']['facet_fields'] ?? [];
+            foreach ($facetFieldData as $field => $facetData) {
                 $values = [];
                 foreach ($facetData as $value) {
                     $values[$value[0]] = $value[1];

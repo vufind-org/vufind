@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SirsiDynix Unicorn ILS Driver (VuFind side)
  *
@@ -1365,10 +1366,8 @@ class Unicorn extends AbstractBase implements
         // PS: Does this make this implementation year-3K safe?
         $link_digits = floor(strlen((string)PHP_INT_MAX) / 2);
 
-        foreach ((array_key_exists(0, $textuals)
-                  ? []
-                  : $record->getFields('863'))
-                 as $field) {
+        $data863 = array_key_exists(0, $textuals) ? [] : $record->getFields('863');
+        foreach ($data863 as $field) {
             $linking_field = $record->getSubfield($field, '8');
 
             if ($linking_field === false) {

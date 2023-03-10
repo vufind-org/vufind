@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Unit tests for Blender backend.
  *
@@ -566,9 +567,7 @@ class BackendTest extends TestCase
                 $facetCounts = $facets[$facet];
                 $expectedCounts = [];
                 foreach ($active as $source) {
-                    foreach ($expectedCountsForSources[$source]
-                        as $field => $count
-                    ) {
+                    foreach ($expectedCountsForSources[$source] as $field => $count) {
                         $expectedCounts[$field] =
                             ($expectedCounts[$field] ?? 0) + $count;
                     }

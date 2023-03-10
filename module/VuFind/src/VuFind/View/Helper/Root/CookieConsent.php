@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CookieConsent view helper
  *
@@ -360,9 +361,8 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
             'desc' => $this->translate('CookieConsent::Description'),
             'exp' => $this->translate('CookieConsent::Expiration'),
         ];
-        foreach ($this->consentConfig['Categories'] ?? []
-            as $categoryId => $categoryConfig
-        ) {
+        $categoryData = $this->consentConfig['Categories'] ?? [];
+        foreach ($categoryData as $categoryId => $categoryConfig) {
             if ($enabledCategories && !in_array($categoryId, $enabledCategories)) {
                 continue;
             }
