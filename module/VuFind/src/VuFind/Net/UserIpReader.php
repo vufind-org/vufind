@@ -119,10 +119,12 @@ class UserIpReader
                         if (!empty($parts)) {
                             return array_shift($parts);
                         }
+                        // no break
                     case 'last':
                         if (!empty($parts)) {
                             return array_pop($parts);
                         }
+                        // no break
                     default:
                         if (count($parts) === 1) {
                             return current($parts);

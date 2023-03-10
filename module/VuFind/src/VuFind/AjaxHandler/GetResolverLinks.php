@@ -136,6 +136,7 @@ class GetResolverLinks extends AbstractBase implements TranslatorAwareInterface
                     // Special case -- modify DOI text for special display:
                     $link['title'] = $this->translate('Get full text');
                     $link['coverage'] = '';
+                    // no break
                 case 'getFullTxt':
                 default:
                     $electronic[] = $link;
