@@ -18,7 +18,7 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
     }
     item.setAttribute('title', facet.displayText);
     if (facet.operator === 'OR') {
-      item.innerHTML = facet.isApplied ? VuFind.icon('facet-checked', { title: selected }) : VuFind.icon('facet-unchecked');
+      item.innerHTML = facet.isApplied ? VuFind.icon('facet-checked', { title: selected, class: 'icon-link__icon' }) : VuFind.icon('facet-unchecked', 'icon-link__icon');
     }
     var facetValue = document.createElement('span');
     facetValue.className = 'facet-value icon-link__label';
