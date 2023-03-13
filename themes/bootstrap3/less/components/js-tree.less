@@ -54,18 +54,6 @@
   background-repeat: no-repeat;
 }
 
-/* Reset styles for children of active children */
-.facet-group .jstree-node.active,
-.facet-group .jstree-node.active a {
-  color: @link-color;
-  background-color: transparent;
-}
-
-.facet-group .jstree-facet .jstree-node.active .badge {
-  color: @badge-color;
-  background-color: @badge-bg;
-}
-
 /* --- Look --- */
 .jstree-children {
   padding: 0;
@@ -97,17 +85,6 @@
   .jstree-node .facet {
     padding: 2px 0;
     border: 0;
-  }
-
-  .active > .jstree-anchor .facet {
-    padding-left: 2px;
-    color: @list-group-active-color;
-    background-color: @list-group-active-bg;
-  }
-  .jstree-node.active .badge,
-  .jstree-node.active .badge .fa {
-    background-color: #fff;
-    color: @brand-primary;
   }
 }
 
@@ -146,14 +123,6 @@
 
 /* --- Facets --- */
 /* facet list styling */
-.jstree-facet li span.main {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.jstree-facet .main.applied .fa-check {
-  margin: 4px;
-}
 .jstree-facet .jstree-container-ul {
   padding: 0;
 }
@@ -167,6 +136,9 @@ li.jstree-facet .badge {
 }
 .jstree-facet .jstree-ocl {
   float: left;
+  &::before {
+    width: 1.3rem;
+  }
 }
 
 /* RTL */

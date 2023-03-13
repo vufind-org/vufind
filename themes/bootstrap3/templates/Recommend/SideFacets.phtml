@@ -24,6 +24,8 @@
     // jstree.min.js used to be injected by hierarchical-facet.js, but with deferred
     // processing it's called too late to append anything to the headers.
     $this->headScript()->appendFile('vendor/jsTree/jstree.min.js');
+    $this->headScript()->appendFile('jstree-vufind-facet-plugin.js');
+
   }
 ?>
 <button class="close-offcanvas btn btn-link" data-toggle="offcanvas"><?=$this->transEsc('navigate_back') ?></button>

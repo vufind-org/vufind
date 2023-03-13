@@ -1,5 +1,6 @@
 <?php
   $this->headScript()->appendFile('vendor/jsTree/jstree.min.js');
+  $this->headScript()->appendFile('jstree-vufind-facet-plugin.js');
   $this->headScript()->appendFile('facets.js');
 
   $results = $this->recommend->getResults();
