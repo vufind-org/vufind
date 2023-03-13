@@ -46,8 +46,7 @@ use VuFind\Content\PluginManager as ContentManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-abstract class AbstractContentFactory
-implements \Laminas\ServiceManager\Factory\FactoryInterface
+abstract class AbstractContentFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * The name of the tab being constructed.
