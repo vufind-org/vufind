@@ -21,7 +21,7 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
       item.innerHTML = facet.isApplied ? VuFind.icon('facet-checked', { title: selected }) : VuFind.icon('facet-unchecked');
     }
     var facetValue = document.createElement('span');
-    facetValue.className = 'facet-value';
+    facetValue.className = 'facet-value icon-link__label';
     facetValue.appendChild(document.createTextNode(facet.displayText));
     item.appendChild(facetValue);
 
@@ -38,7 +38,7 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
         selected: facet.isApplied
       },
       a_attr: {
-        class: 'hierarchical-facet-anchor',
+        class: 'hierarchical-facet-anchor icon-link',
         href: url
       },
       data: {
