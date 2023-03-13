@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Unpaywall DOI linker factory
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:doi_linkers Wiki
  */
+
 namespace VuFind\DoiLinker;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;

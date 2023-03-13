@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Solr aspect of the Search Multi-class (Results)
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\Solr;
 
 use VuFind\Search\Solr\AbstractErrorListener as ErrorListener;

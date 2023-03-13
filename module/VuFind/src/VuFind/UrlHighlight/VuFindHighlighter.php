@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Provide URL formatted as HTML and prefixed with proxy if applicable
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\UrlHighlight;
 
 use VStelmakh\UrlHighlight\Highlighter\HtmlHighlighter;

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ILS driver test
  *
@@ -27,19 +28,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\ILS\Driver;
 
 use Laminas\Config\Exception\RuntimeException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Driver\MultiBackend;
-
-require_once __DIR__ . '/MultiBackendTest/ILSMockTrait.php';
-require_once __DIR__ . '/MultiBackendTest/DemoMock.php';
-require_once __DIR__ . '/MultiBackendTest/DummyILS.php';
-require_once __DIR__ . '/MultiBackendTest/UnicornMock.php';
-require_once __DIR__ . '/MultiBackendTest/VoyagerMock.php';
-require_once __DIR__ . '/MultiBackendTest/Voyager2Mock.php';
-require_once __DIR__ . '/MultiBackendTest/VoyagerNoSupportMock.php';
 
 /**
  * ILS driver test

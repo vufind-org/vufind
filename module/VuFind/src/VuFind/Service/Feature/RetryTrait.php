@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Trait that provides support for calling a method with configurable retries
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development
  */
+
 namespace VuFind\Service\Feature;
 
 /**

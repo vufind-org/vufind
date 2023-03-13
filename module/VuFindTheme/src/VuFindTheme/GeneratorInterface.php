@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interface shared by theme and mixin generator classes.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTheme;
 
 use Symfony\Component\Console\Output\OutputInterface;

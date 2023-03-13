@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This is a helper that lets the layout know whether or not to include the feedback
  * tab
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 /**

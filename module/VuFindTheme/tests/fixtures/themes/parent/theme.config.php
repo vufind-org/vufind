@@ -1,4 +1,5 @@
 <?php
+
 return [
     'extends' => false,
     'js' => ['hello.js'],

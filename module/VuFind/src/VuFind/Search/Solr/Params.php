@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Solr aspect of the Search Multi-class (Params)
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\Solr;
 
 use VuFindSearch\ParamBag;

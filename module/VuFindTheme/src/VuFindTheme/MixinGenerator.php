@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class to generate a new mixin from a template.
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTheme;
 
 /**

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Database utility class. May be used as a service or as a standard
  * Laminas factory.
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Db;
 
 use Laminas\Config\Config;

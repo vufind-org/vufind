@@ -1,4 +1,5 @@
 <?php
+
 namespace VuFindApi\Module\Configuration;
 
 $config = [

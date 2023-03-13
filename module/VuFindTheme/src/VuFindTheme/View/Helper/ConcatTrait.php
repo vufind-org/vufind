@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Trait to add asset pipeline functionality (concatenation / minification) to
  * a HeadLink/HeadScript-style view helper.
@@ -28,6 +29,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindTheme\View\Helper;
 
 use VuFindTheme\ThemeInfo;

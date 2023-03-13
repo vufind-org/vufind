@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Hierarchy Tree Renderer for the JS_Tree plugin
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
+
 namespace VuFind\Hierarchy\TreeRenderer;
 
 use Laminas\Mvc\Controller\Plugin\Url as UrlPlugin;

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Summon Search Parameters
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\Summon;
 
 use SerialsSolutions_Summon_Query as SummonQuery;

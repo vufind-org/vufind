@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Laminas\Feed\Entry extension for Dublin Core
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Feed\Writer\Extension\DublinCore;
 
 use Laminas\Feed\Writer\Extension\ITunes\Entry as ParentEntry;
