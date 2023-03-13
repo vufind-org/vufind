@@ -1,7 +1,7 @@
 /*global checkSaveStatuses, registerAjaxCommentRecord, registerTabEvents, syn_get_widget, VuFind */
 VuFind.register('embedded', function embedded() {
   var _STORAGEKEY = 'vufind_search_open';
-  var _SEPERATOR = ':::';
+  var _SEPARATOR = ':::';
   var _DELIM = ',';
   var _STATUS = {};
 
@@ -11,7 +11,7 @@ VuFind.register('embedded', function embedded() {
     for (str in _STATUS) {
       if ({}.hasOwnProperty.call(_STATUS, str)) {
         if (_STATUS[str]) {
-          str += _SEPERATOR + _STATUS[str];
+          str += _SEPARATOR + _STATUS[str];
         }
         storage.push(str);
       }
@@ -100,7 +100,7 @@ VuFind.register('embedded', function embedded() {
       result.addClass('embedded');
       shortNode.addClass('collapse');
       linksNode.addClass('collapse');
-      longNode = $('<div class="long-view collapse" role="presentation"></div>');
+      longNode = $('<div class="long-view collapse"></div>');
       // Add loading status
       shortNode
         .before('<div class="loading hidden">' + VuFind.loading() + '</div>')
@@ -203,7 +203,7 @@ VuFind.register('embedded', function embedded() {
     var j;
     hiddenIds = $('.hiddenId');
     for (i = 0; i < items.length; i++) {
-      parts = items[i].split(_SEPERATOR);
+      parts = items[i].split(_SEPARATOR);
       _STATUS[parts[0]] = parts[1] || null;
       result = null;
       for (j = 0; j < hiddenIds.length; j++) {
@@ -226,7 +226,7 @@ VuFind.register('embedded', function embedded() {
   }
 
   function init() {
-    $('.getFull').click(function linkToggle() { return toggleDataView(this); });
+    $('.getFull').on('click', function linkToggle() { return toggleDataView(this); });
     loadStorage();
   }
 
