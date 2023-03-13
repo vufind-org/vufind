@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OAuth2 IdentityRepository tests.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\OAuth2\Repository;
 
 use PHPUnit\Framework\MockObject\MockObject;
@@ -108,11 +110,11 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTest
     /**
      * Test identity repository
      *
-     * @dataProvider getTestIdentityRepositoryData
-     *
      * @param ?bool $blocks Blocks status
      *
      * @return void
+     *
+     * @dataProvider getTestIdentityRepositoryData
      */
     public function testIdentityRepository(?bool $blocks): void
     {
@@ -141,7 +143,8 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTest
                 'birthdate' => $this->userBirthDate,
                 'locale' => 'en-GB',
                 'phone' => '1900 CALL ME',
-                'address' => '{"street_address":"Somewhere...\\nOver the Rainbow","locality":"City","postal_code":"12345","country":"Country"}',
+                'address' => '{"street_address":"Somewhere...\\nOver the Rainbow","locality":"City",'
+                    . '"postal_code":"12345","country":"Country"}',
                 'block_status' => $blocks,
                 'nonce' => $nonce,
                 'library_user_id' => $this->getCatUsernameHash('user'),

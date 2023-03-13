@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ILS driver test
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\ILS\Driver;
 
 use InvalidArgumentException;
@@ -76,7 +78,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'id' => 'KN3183000000046386',
                     'item_agency_id' => 'Agency from lookup item',
                     'patronAgencyId' => 'Test agency', 'duedate' => '11-26-2014',
-                    'title' => 'Anna Nahowská a císař František Josef : zápisky / Friedrich Saathen ; z něm. přel. Ivana Víz',
+                    'title' => 'Anna Nahowská a císař František Josef : zápisky / Friedrich Saathen ; '
+                        . 'z něm. přel. Ivana Víz',
                     'item_id' => '105', 'renewable' => true,
                 ],
             ],
@@ -94,7 +97,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                         'id' => 'MZK01000000456-MZK50000000456000440',
                         'item_agency_id' => 'My Agency',
                         'patronAgencyId' => 'Test agency', 'duedate' => '11-26-2014',
-                        'title' => 'Anna Nahowská a císař František Josef : zápisky / Friedrich Saathen ; z něm. přel. Ivana Víz',
+                        'title' => 'Anna Nahowská a císař František Josef : zápisky / Friedrich Saathen ; '
+                            . 'z něm. přel. Ivana Víz',
                         'item_id' => '105', 'renewable' => true,
                     ],
                 ],
@@ -112,7 +116,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                         'id' => 'MZK01000000456-MZK50000000456000440',
                         'item_agency_id' => 'My Agency',
                         'patronAgencyId' => 'Test agency', 'duedate' => '11-26-2014',
-                        'title' => 'Anna Nahowská a císař František Josef : zápisky / Friedrich Saathen ; z něm. přel. Ivana Víz',
+                        'title' => 'Anna Nahowská a císař František Josef : zápisky / Friedrich Saathen ; '
+                            . 'z něm. přel. Ivana Víz',
                         'item_id' => '105', 'renewable' => true,
                     ],
                 ],
@@ -135,7 +140,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'id' => 'KN3183000000046386',
                     'item_agency_id' => 'Agency from lookup item',
                     'patronAgencyId' => 'Test agency', 'duedate' => '11-26-2014',
-                    'title' => 'Anna Nahowská a císař František Josef : zápisky / Friedrich Saathen ; z něm. přel. Ivana Víz',
+                    'title' => 'Anna Nahowská a císař František Josef : zápisky / Friedrich Saathen ; '
+                        . 'z něm. přel. Ivana Víz',
                     'item_id' => '105', 'renewable' => false,
                 ],
             ],
@@ -309,7 +315,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'file' => 'lookupUserResponse.xml', 'result' => [
                 [
                     'id' => '155',
-                    'title' => 'Listen and play : with magicians! : 3. ročník / Věra Štiková ; [ilustrace Andrea Schindlerová]',
+                    'title' => 'Listen and play : with magicians! : 3. ročník / Věra Štiková ; '
+                        . '[ilustrace Andrea Schindlerová]',
                     'create' => '11-09-2014', 'expire' => null, 'position' => null,
                     'requestId' => null,
                     'location' => 'Loan Department - Ground floor',
@@ -323,7 +330,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'result' => [
                     [
                         'id' => '155',
-                        'title' => 'Listen and play : with magicians! : 3. ročník / Věra Štiková ; [ilustrace Andrea Schindlerová]',
+                        'title' => 'Listen and play : with magicians! : 3. ročník / Věra Štiková ; '
+                            . '[ilustrace Andrea Schindlerová]',
                         'create' => '11-09-2014', 'expire' => null,
                         'position' => null, 'requestId' => null,
                         'location' => 'Loan Department - Ground floor',
@@ -1364,8 +1372,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      */
     public function testParseProblem()
     {
-        $xml
-            = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><NCIPMessage xmlns="http://www.niso.org/2008/ncip"><Problem><ProblemType>Needed Data Missing</ProblemType><ProblemDetail>UserId or AuthenticationInput must be provided.</ProblemDetail><ProblemElement>LookupUser</ProblemElement></Problem></NCIPMessage>';
+        $xml = $this->getFixture('xcncip2/response/parseproblem.xml');
         $method = new \ReflectionMethod(
             '\VuFind\ILS\Driver\XCNCIP2',
             'parseProblem'
@@ -1373,7 +1380,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         $method->setAccessible(true);
         $result = $method->invokeArgs($this->driver, [$xml]);
         $expected
-            = 'ProblemType: Needed Data Missing, ProblemDetail: UserId or AuthenticationInput must be provided., ProblemElement: LookupUser';
+            = 'ProblemType: Needed Data Missing, ProblemDetail: UserId or AuthenticationInput must be provided., '
+            . 'ProblemElement: LookupUser';
         $this->assertEquals($expected, $result);
     }
 
@@ -1424,7 +1432,9 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         $this->configureDriver($config);
         $this->mockResponse('RenewItemResponse404.xml');
         $this->expectException(\VuFind\Exception\ILS::class);
-        $this->expectExceptionMessage('HTTP error: ProblemType: Item Not Renewable, ProblemDetail: No active registration.');
+        $this->expectExceptionMessage(
+            'HTTP error: ProblemType: Item Not Renewable, ProblemDetail: No active registration.'
+        );
         $renew = $this->driver->renewMyItems([
             'patron' => [
                 'cat_username' => 'my_login',

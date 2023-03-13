@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PAIA ILS Driver for VuFind to get patron information
  *
@@ -29,6 +30,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use VuFind\Exception\Auth as AuthException;

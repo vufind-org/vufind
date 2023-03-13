@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Footer script view helper (same as HeadScript but outputs to the bottom of <body>)
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindTheme\View\Helper;
 
 /**

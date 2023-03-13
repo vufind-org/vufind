@@ -114,6 +114,23 @@
     <?php else: ?>
       <input type="hidden" name="gatheredDetails[pickUpLocation]" value="<?=$this->escapeHtmlAttr($this->defaultPickup)?>" />
     <?php endif; ?>
+
+    <?php if (!empty($this->proxiedUsers)): ?>
+      <div class="form-group hold-proxied-users">
+        <label class="control-label"><?=$this->transEsc("proxied_user")?>:</label>
+        <?php $selectedProxy = $this->gatheredDetails['proxiedUser'] ?? ''; ?>
+        <select id="proxiedUser" name="gatheredDetails[proxiedUser]" class="form-control">
+          <option value=""<?php if (empty($selectedProxy)): ?> selected="selected"<?php endif; ?>>
+            <?=$this->transEsc('no_proxied_user')?>
+          </option>
+          <?php foreach ($this->proxiedUsers as $userId => $userName): ?>
+            <option value="<?=$this->escapeHtmlAttr($userId)?>"<?=($selectedProxy == $userId) ? ' selected="selected"' : ''?>>
+              <?=$this->escapeHtml($userName)?>
+            </option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+    <?php endif; ?>
   <?php endif; ?>
   <div class="form-group">
     <input class="btn btn-primary" type="submit" name="placeHold" value="<?=$this->transEscAttr('request_submit_text')?>"/>

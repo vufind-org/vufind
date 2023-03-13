@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Unit tests for Blender backend.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Backend\Blender;
 
 use Laminas\Config\Config;
@@ -565,9 +567,7 @@ class BackendTest extends TestCase
                 $facetCounts = $facets[$facet];
                 $expectedCounts = [];
                 foreach ($active as $source) {
-                    foreach ($expectedCountsForSources[$source]
-                        as $field => $count
-                    ) {
+                    foreach ($expectedCountsForSources[$source] as $field => $count) {
                         $expectedCounts[$field] =
                             ($expectedCounts[$field] ?? 0) + $count;
                     }

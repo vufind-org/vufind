@@ -1,4 +1,5 @@
 <?php
+
 /**
  * QR Code Generator
  *
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/configuration:external_content Wiki
  */
+
 namespace VuFind\QRCode;
 
 use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelHigh;

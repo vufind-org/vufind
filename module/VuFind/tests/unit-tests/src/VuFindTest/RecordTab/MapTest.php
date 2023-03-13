@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Map Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\RecordTab;
 
 use VuFind\RecordTab\Map;
@@ -41,7 +43,7 @@ use VuFind\RecordTab\Map;
 class MapTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * get a Map object
+     * Get a Map object
      *
      * @return Map
      */

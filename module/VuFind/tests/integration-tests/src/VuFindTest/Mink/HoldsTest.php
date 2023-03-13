@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Test class for holds-related functionality.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\DocumentElement;
@@ -752,6 +754,45 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals(
             'No pickup locations available',
             $this->findCss($page, '.alert.alert-danger')->getText()
+        );
+    }
+
+    /**
+     * Test placing a hold for a proxy user
+     *
+     * @depends testPlaceHoldWithoutPickUpLocations
+     *
+     * @return void
+     */
+    public function testPlaceHoldForProxyUser(): void
+    {
+        $demoConfig = $this->getDemoIniOverrides();
+        $demoConfig['ProxiedUsers'] = [
+            'user1' => 'Proxy User 1',
+            'user2' => 'Proxy User 2'
+        ];
+        $this->changeConfigs(
+            [
+                'config' => $this->getConfigIniOverrides(),
+                'Demo' => $demoConfig,
+            ]
+        );
+
+        // Create account and log in the user on the record page:
+        $page = $this->gotoRecordById();
+        $element = $this->findCss($page, '.alert.alert-info a');
+        $this->assertEquals('Login for hold and recall information', $element->getText());
+        $element->click();
+        $this->fillInLoginForm($page, 'username3', 'test');
+        $this->submitLoginForm($page);
+
+        // Place the hold with the proxy user:
+        $this->placeHoldAndGoToHoldsScreen($page, ['#proxiedUser' => 'user2']);
+
+        // Make sure the item shows the appropriate proxy user:
+        $this->assertEquals(
+            'Proxy User 2',
+            $this->findCss($page, '.hold-proxied-for')->getText()
         );
     }
 

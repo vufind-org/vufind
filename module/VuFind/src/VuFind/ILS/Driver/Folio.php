@@ -1,4 +1,5 @@
 <?php
+
 /**
  * FOLIO REST API driver
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use DateTime;
@@ -1027,6 +1029,21 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Given a user UUID, return the user's profile object (null if not found).
+     *
+     * @param string $id User UUID
+     *
+     * @return ?object
+     */
+    protected function getUserById(string $id): ?object
+    {
+        $query = ['query' => 'id == "' . $id . '"'];
+        $response = $this->makeRequest('GET', '/users', $query);
+        $users = json_decode($response->getBody());
+        return $users->users[0] ?? null;
+    }
+
+    /**
      * This method queries the ILS for a patron's current profile information
      *
      * @param array $patron Patron login information from $this->patronLogin
@@ -1035,10 +1052,7 @@ class Folio extends AbstractAPI implements
      */
     public function getMyProfile($patron)
     {
-        $query = ['query' => 'id == "' . $patron['id'] . '"'];
-        $response = $this->makeRequest('GET', '/users', $query);
-        $users = json_decode($response->getBody());
-        $profile = $users->users[0];
+        $profile = $this->getUserById($patron['id']);
         $expiration = isset($profile->expirationDate)
             ? $this->dateConverter->convertToDisplayDate(
                 "Y-m-d H:i",
@@ -1297,10 +1311,9 @@ class Folio extends AbstractAPI implements
      */
     public function getMyHolds($patron)
     {
-        $query = [
-            'query' => '(requesterId == "' . $patron['id'] . '"  ' .
-            'and status == Open*)'
-        ];
+        $userQuery = '(requesterId == "' . $patron['id'] . '" '
+            . 'or proxyUserId == "' . $patron['id'] . '")';
+        $query = ['query' => '(' . $userQuery . ' and status == Open*)'];
         $holds = [];
         foreach ($this->getPagedResults(
             'requests',
@@ -1325,8 +1338,7 @@ class Folio extends AbstractAPI implements
                     $hold->holdShelfExpirationDate
                 )
                 : null;
-
-            $holds[] = [
+            $currentHold = [
                 'type' => $hold->requestType,
                 'create' => $requestDate,
                 'expire' => $expireDate ?? "",
@@ -1352,6 +1364,23 @@ class Folio extends AbstractAPI implements
                 'last_pickup_date' => $lastPickup,
                 'position' => $hold->position ?? null,
             ];
+            // If this request was created by a proxy user, and the proxy user
+            // is not the current user, we need to indicate their name.
+            if (($hold->proxyUserId ?? $patron['id']) !== $patron['id']
+                && isset($hold->proxy)
+            ) {
+                $currentHold['proxiedBy']
+                    = $this->userObjectToNameString($hold->proxy);
+            }
+            // If this request was not created for the current user, it must be
+            // a proxy request created by the current user. We should indicate this.
+            if (($hold->requesterId ?? $patron['id']) !== $patron['id']
+                && isset($hold->requester)
+            ) {
+                $currentHold['proxiedFor']
+                    = $this->userObjectToNameString($hold->requester);
+            }
+            $holds[] = $currentHold;
         }
         return $holds;
     }
@@ -1370,14 +1399,14 @@ class Folio extends AbstractAPI implements
     public function placeHold($holdDetails)
     {
         $default_request = $this->config['Holds']['default_request'] ?? 'Hold';
-        try {
-            $requiredBy = $this->dateConverter->convertFromDisplayDate(
-                'Y-m-d',
-                $holdDetails['requiredBy']
-            );
-        } catch (Exception $e) {
-            $this->throwAsIlsException($e, 'hold_date_invalid');
+        if (!empty($holdDetails['requiredByTS'])
+            && !is_int($holdDetails['requiredByTS'])
+        ) {
+            throw new ILSException('hold_date_invalid');
         }
+        $requiredBy = !empty($holdDetails['requiredByTS'])
+            ? gmdate('Y-m-d', $holdDetails['requiredByTS']) : null;
+
         $isTitleLevel = ($holdDetails['level'] ?? '') === 'title';
         if ($isTitleLevel) {
             $instance = $this->getInstanceByBibId($holdDetails['id']);
@@ -1402,6 +1431,10 @@ class Folio extends AbstractAPI implements
             'requestExpirationDate' => $requiredBy,
             'pickupServicePointId' => $holdDetails['pickUpLocation']
         ];
+        if (!empty($holdDetails['proxiedUser'])) {
+            $requestBody['requesterId'] = $holdDetails['proxiedUser'];
+            $requestBody['proxyUserId'] = $holdDetails['patron']['id'];
+        }
         if (!empty($holdDetails['comment'])) {
             $requestBody['patronComments'] = $holdDetails['comment'];
         }
@@ -1473,7 +1506,9 @@ class Folio extends AbstractAPI implements
             $request_json = json_decode($response->getBody());
 
             // confirm request belongs to signed in patron
-            if ($request_json->requesterId != $patron['id']) {
+            if ($request_json->requesterId != $patron['id']
+                && ($request_json->proxyUserId ?? null) != $patron['id']
+            ) {
                 throw new ILSException("Invalid Request");
             }
             // Change status to Closed and add cancellationID
@@ -1724,6 +1759,67 @@ class Folio extends AbstractAPI implements
             ];
         }
         return $fines;
+    }
+
+    /**
+     * Given a user object from the FOLIO API, return a name string.
+     *
+     * @param object $user User object
+     *
+     * @return string
+     */
+    protected function userObjectToNameString(object $user): string
+    {
+        $firstParts = ($user->firstName ?? '')
+            . ' ' . ($user->middleName ?? '');
+        $parts = [
+            trim($user->lastName ?? ''),
+            trim($firstParts)
+        ];
+        return implode(', ', array_filter($parts));
+    }
+
+    /**
+     * Given a user object returned by getUserById(), return a string representing
+     * the user's name.
+     *
+     * @param object $proxy User object from FOLIO
+     *
+     * @return string
+     */
+    protected function formatUserNameForProxyList(object $proxy): string
+    {
+        return $this->userObjectToNameString($proxy->personal);
+    }
+
+    /**
+     * Get list of users for whom the provided patron is a proxy.
+     *
+     * This requires the FOLIO user configured in Folio.ini to have the permission:
+     * proxiesfor.collection.get
+     *
+     * @param array $patron The patron array with username and password
+     *
+     * @return array
+     */
+    public function getProxiedUsers(array $patron): array
+    {
+        $query = [
+            'query' => '(proxyUserId=="' . $patron['id'] . '")'
+        ];
+        $results = [];
+        $proxies = $this->getPagedResults('proxiesFor', '/proxiesfor', $query);
+        foreach ($proxies as $current) {
+            if ($current->status ?? '' === 'Active'
+                && $current->requestForSponsor ?? '' === 'Yes'
+                && isset($current->userId)
+            ) {
+                if ($proxy = $this->getUserById($current->userId)) {
+                    $results[$proxy->id] = $this->formatUserNameForProxyList($proxy);
+                }
+            }
+        }
+        return $results;
     }
 
     // @codingStandardsIgnoreStart

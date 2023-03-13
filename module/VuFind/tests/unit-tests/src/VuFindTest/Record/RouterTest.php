@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Record;
 
 use Laminas\Config\Config;
@@ -174,7 +175,10 @@ class RouterTest extends \PHPUnit\Framework\TestCase
     public function testCollectionSpecialCaseWithDriver()
     {
         $driver = $this->getDriver();
-        $driver->expects($this->once())->method('tryMethod')->with($this->equalTo('isCollection'))->will($this->returnValue(true));
+        $driver->expects($this->once())
+            ->method('tryMethod')
+            ->with($this->equalTo('isCollection'))
+            ->will($this->returnValue(true));
         $router = $this->getRouter(['Collections' => ['collections' => true]]);
         $this->assertEquals(
             [

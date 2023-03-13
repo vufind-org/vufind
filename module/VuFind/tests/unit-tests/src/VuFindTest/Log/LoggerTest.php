@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Logger Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Log;
 
 use VuFind\Log\Logger;
@@ -58,8 +60,11 @@ Array
     [REQUEST_URI] => /foo/bar
 )
 CONTEXT;
+            $expectedA2 = 'Exception : test'
+                . '(Server: IP = 1.2.3.4, Referer = none, User Agent = Fake browser, '
+                . 'Host = localhost:80, Request URI = /foo/bar)';
             return $a[1] === 'Exception : test'
-                && $a[2] === 'Exception : test(Server: IP = 1.2.3.4, Referer = none, User Agent = Fake browser, Host = localhost:80, Request URI = /foo/bar)'
+                && $a[2] === $expectedA2
                 && false !== strpos($a[3], $a[2])
                 && false !== strpos($a[3], 'Backtrace:')
                 && false !== strpos($a[3], 'line')

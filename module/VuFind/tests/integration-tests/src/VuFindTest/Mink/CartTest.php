@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink cart test class.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
@@ -785,9 +787,24 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         // Expected
         $this->assertVisible($combo, $elements, 'headerBtn', $combo['showBookBag']);
         $this->assertVisible($combo, $elements, 'bulkEmail', $combo['showBulkOptions']);
-        $this->assertVisible($combo, $elements, 'bulkUpdateCart', $combo['showBookBag'] && ($combo['showBulkOptions'] || !$combo['bookbagTogglesInSearch']));
-        $this->assertVisible($combo, $elements, 'resultCartBtns', $combo['showBookBag'] && $combo['bookbagTogglesInSearch']);
-        $this->assertVisible($combo, $elements, 'resultCheckbox', $elements['bulkEmail'] || $elements['bulkUpdateCart']);
+        $this->assertVisible(
+            $combo,
+            $elements,
+            'bulkUpdateCart',
+            $combo['showBookBag'] && ($combo['showBulkOptions'] || !$combo['bookbagTogglesInSearch'])
+        );
+        $this->assertVisible(
+            $combo,
+            $elements,
+            'resultCartBtns',
+            $combo['showBookBag'] && $combo['bookbagTogglesInSearch']
+        );
+        $this->assertVisible(
+            $combo,
+            $elements,
+            'resultCheckbox',
+            $elements['bulkEmail'] || $elements['bulkUpdateCart']
+        );
         return $elements;
     }
 

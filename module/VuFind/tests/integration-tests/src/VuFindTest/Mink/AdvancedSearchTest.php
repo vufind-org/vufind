@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink test class to test advanced search.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
@@ -142,7 +144,8 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
 
         // Check for proper search
         $this->assertEquals(
-            '(All Fields:bride AND Title:tomb AND All Fields:garbage AND Year of Publication:1883) AND (All Fields:miller)',
+            '(All Fields:bride AND Title:tomb AND All Fields:garbage AND Year of Publication:1883) AND '
+            . '(All Fields:miller)',
             $this->findCss($page, '.adv_search_terms strong')->getHtml()
         );
 

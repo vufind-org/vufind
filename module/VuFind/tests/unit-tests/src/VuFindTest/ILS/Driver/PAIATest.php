@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ILS driver test
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\ILS\Driver;
 
 use InvalidArgumentException;
@@ -124,9 +126,15 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'createdate' => '06-07-2016',
                 'duedate' => '',
                 'id' => '',
-                'title' => 'Open source licensing : software freedom and intellectual property law ; [open source licensees are free to: use open source software for any purpose, make and distribute copies, create and distribute derivative works, access and use the source code, com / Rosen, Lawrence (c 2005)',
+                'title' => 'Open source licensing : software freedom and intellectual property law ; '
+                    . '[open source licensees are free to: use open source software for any purpose, make and'
+                    . ' distribute copies, create and distribute derivative works, access and use the source code, '
+                    . 'com / Rosen, Lawrence (c 2005)',
                 'feeid' => null,
-                'about' => 'Open source licensing : software freedom and intellectual property law ; [open source licensees are free to: use open source software for any purpose, make and distribute copies, create and distribute derivative works, access and use the source code, com / Rosen, Lawrence (c 2005)',
+                'about' => 'Open source licensing : software freedom and intellectual property law ; '
+                    . '[open source licensees are free to: use open source software for any purpose, make and'
+                    . ' distribute copies, create and distribute derivative works, access and use the source code, '
+                    . 'com / Rosen, Lawrence (c 2005)',
                 'item' => 'http://uri.gbv.de/document/opac-de-830:bar:830$28295402'
             ],
         1 =>
@@ -197,7 +205,8 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'location' => 'Test-Theke',
                 'position' => 0,
                 'available' => true,
-                'title' => 'Praktikum über Entwurf und Manipulation von Datenbanken : SQL/DS (IBM), UDS (Siemens) und MEMODAX / Vossen, Gottfried (1986)',
+                'title' => 'Praktikum über Entwurf und Manipulation von Datenbanken : SQL/DS (IBM), UDS '
+                    . '(Siemens) und MEMODAX / Vossen, Gottfried (1986)',
                 'callnumber' => '34:3409-6983',
                 'create' => '06-17-2016',
                 'expire' => '',
@@ -211,7 +220,10 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'location' => 'Ausleihe',
                 'position' => 0,
                 'available' => false,
-                'title' => 'Open source licensing : software freedom and intellectual property law ; [open source licensees are free to: use open source software for any purpose, make and distribute copies, create and distribute derivative works, access and use the source code, com / Rosen, Lawrence (c 2005)',
+                'title' => 'Open source licensing : software freedom and intellectual property law ; '
+                    . '[open source licensees are free to: use open source software for any purpose, make and'
+                    . ' distribute copies, create and distribute derivative works, access and use the source code, '
+                    . 'com / Rosen, Lawrence (c 2005)',
                 'callnumber' => '28:2829-5402',
                 'create' => '06-15-2016',
                 'duedate' => '06-15-2016',
@@ -264,7 +276,8 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'item_id' => 'http://uri.gbv.de/document/opac-de-830:bar:830$22278001',
                 'renew_details' => '',
                 'id' => 'http://uri.gbv.de/document/opac-de-830:ppn:659228084',
-                'title' => 'Linked Open Library Data : bibliographische Daten und ihre Zugänglichkeit im Web der Daten ; Innovationspreis 2011 / Fürste, Fabian M. (2011)',
+                'title' => 'Linked Open Library Data : bibliographische Daten und ihre Zugänglichkeit im Web der'
+                    . ' Daten ; Innovationspreis 2011 / Fürste, Fabian M. (2011)',
                 'request' => 0,
                 'renew' => 9,
                 'reminder' => 0,

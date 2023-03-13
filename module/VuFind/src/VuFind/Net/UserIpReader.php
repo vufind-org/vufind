@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Service to retrieve user IP address.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Net;
 
 use Laminas\Stdlib\Parameters;

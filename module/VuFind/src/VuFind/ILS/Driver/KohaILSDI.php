@@ -1,4 +1,5 @@
 <?php
+
 /**
  * KohaILSDI ILS Driver
  *
@@ -27,12 +28,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
+use Laminas\Log\LoggerAwareInterface;
 use PDO;
 use PDOException;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
+use VuFindHttp\HttpServiceAwareInterface;
 
 /**
  * VuFind Driver for Koha, using web APIs (ILSDI)
@@ -47,8 +51,8 @@ use VuFind\Exception\ILS as ILSException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
-    \VuFindHttp\HttpServiceAwareInterface, \Laminas\Log\LoggerAwareInterface
+class KohaILSDI extends AbstractBase implements
+    HttpServiceAwareInterface, LoggerAwareInterface
 {
     use \VuFind\Cache\CacheTrait {
         getCacheKey as protected getBaseCacheKey;
@@ -752,7 +756,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             // In older versions of Koha, the date parameters were named differently
             // and even never implemented, so if we got IllegalParameter, we know
             // the Koha version is before 20.05 and could retry without expiry_date
-            // parameter. See https://git.koha-community.org/Koha-community/Koha/commit/c8bf308e1b453023910336308d59566359efc535
+            // parameter. See:
+            // https://git.koha-community.org/Koha-community/Koha/commit/c8bf308e1b453023910336308d59566359efc535
             $rsp = $this->makeRequest($rqString);
         }
         //TODO - test this new functionality

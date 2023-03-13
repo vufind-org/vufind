@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Language command: copy string.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Language;
 
 use Symfony\Component\Console\Input\InputArgument;

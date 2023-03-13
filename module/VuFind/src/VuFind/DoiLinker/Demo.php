@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Demo (fake data) DOI linker
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:doi_linkers Wiki
  */
+
 namespace VuFind\DoiLinker;
 
 /**

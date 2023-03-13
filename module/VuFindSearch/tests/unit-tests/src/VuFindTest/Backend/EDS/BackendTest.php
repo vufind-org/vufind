@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Backend\EDS;
 
 use InvalidArgumentException;
@@ -262,13 +263,20 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @param \VuFindSearch\Backend\EDS\Connector                     $connector Connector
      * @param \VuFindSearch\Response\RecordCollectionFactoryInterface $factory   Record collection factory
-     * @param \Laminas\Cache\Storage\Adapter\AbstractAdapter             $cache     Object cache adapter
-     * @param \Laminas\Session\Container                                 $container Session container
+     * @param \Laminas\Cache\Storage\Adapter\AbstractAdapter          $cache     Object cache adapter
+     * @param \Laminas\Session\Container                              $container Session container
      * @param array                                                   $settings  Additional settings
-     * @param array                                                   $mock      Methods to mock (or null for a real object)
+     * @param array                                                   $mock      Methods to mock (or null for a
+     * real object)
      */
-    protected function getBackend($connector, $factory = null, $cache = null, $container = null, $settings = [], $mock = null)
-    {
+    protected function getBackend(
+        $connector,
+        $factory = null,
+        $cache = null,
+        $container = null,
+        $settings = [],
+        $mock = null
+    ) {
         if (null === $factory) {
             $factory = $this->createMock(\VuFindSearch\Response\RecordCollectionFactoryInterface::class);
         }

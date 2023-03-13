@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ILS driver test
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\ILS\Driver;
 
 use Laminas\Http\Response;
@@ -297,6 +299,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $this->createConnector('successful-place-hold');
         $details = [
             'requiredBy' => '2022-01-01',
+            'requiredByTS' => 1641049790,
             'patron' => ['id' => 'foo'],
             'item_id' => 'record1',
             'status' => 'Available',
@@ -306,6 +309,75 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $expected = [
             'success' => true,
             'status' => 'success',
+        ];
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Test successful place hold with no expiration date
+     *
+     * @return void
+     */
+    public function testSuccessfulPlaceHoldNoExpirationDate(): void
+    {
+        $this->createConnector('successful-place-hold-no-expiration-date');
+        $details = [
+            'patron' => ['id' => 'foo'],
+            'item_id' => 'record1',
+            'status' => 'Available',
+            'pickUpLocation' => 'desk1',
+        ];
+        $result = $this->driver->placeHold($details);
+        $expected = [
+            'success' => true,
+            'status' => 'success',
+        ];
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Test unsuccessful place hold with invalid expiration date
+     *
+     * @return void
+     */
+    public function testUnsuccessfulPlaceHoldInvalidExpirationDate(): void
+    {
+        # Validates that the requiredByTS is an of type ?int, or throws an exception
+        # otherwise
+        $this->createConnector('unsuccessful-place-hold');
+        $details = [
+            'requiredBy' => '3333-33-33',
+            'requiredByTS' => '3333-33-33',
+            'patron' => ['id' => 'foo'],
+            'item_id' => 'record1',
+            'status' => 'Available',
+            'pickUpLocation' => 'desk1',
+        ];
+        $this->expectException(\VuFind\Exception\ILS::class);
+        $this->expectExceptionMessage("hold_date_invalid");
+        $result = $this->driver->placeHold($details);
+    }
+
+    /**
+     * Test unsuccessful place hold
+     *
+     * @return void
+     */
+    public function testUnsuccessfulPlaceHold(): void
+    {
+        $this->createConnector('unsuccessful-place-hold');
+        $details = [
+            'requiredBy' => '2000-01-01',
+            'requiredByTS' => 946739390,
+            'patron' => ['id' => 'foo'],
+            'item_id' => 'record1',
+            'status' => 'Available',
+            'pickUpLocation' => 'desk1',
+        ];
+        $result = $this->driver->placeHold($details);
+        $expected = [
+            'success' => false,
+            'status' => 'requestExpirationDate cannot be in the past'
         ];
         $this->assertEquals($expected, $result);
     }
@@ -358,7 +430,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testAvailbleItemGetMyHolds(): void
+    public function testAvailableItemGetMyHolds(): void
     {
         $this->createConnector('get-my-holds-available');
         $patron = [
@@ -369,14 +441,43 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'type' => 'Page',
             'create' => '12-20-2022',
             'expire' => '',
-            'id' => '3311d5df-731f-4e2c-8000-00960a9d8bf7',
-            'item_id' => 'fc0064b4-e2e4-4be0-8251-7ca93282c9b4',
-            'reqnum' => 'c5a8af9d-9877-453c-bbcb-f63cb5ccb3b4',
+            'id' => 'fake-instance-id',
+            'item_id' => 'fake-item-id',
+            'reqnum' => 'fake-request-num',
             'title' => 'Presentation secrets : do what you never thought possible with your presentations ',
             'available' => true,
             'in_transit' => false,
             'last_pickup_date' => '12-29-2022',
             'position' => 1
+        ];
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Test successful call to holds, one available item placed for a proxy
+     *
+     * @return void
+     */
+    public function testAvailableProxyItemGetMyHolds(): void
+    {
+        $this->createConnector('get-my-holds-available-proxy');
+        $patron = [
+            'id' => 'bar'
+        ];
+        $result = $this->driver->getMyHolds($patron);
+        $expected[0] = [
+            'type' => 'Page',
+            'create' => '12-20-2022',
+            'expire' => '',
+            'id' => 'fake-instance-id',
+            'item_id' => 'fake-item-id',
+            'reqnum' => 'fake-request-num',
+            'title' => 'Presentation secrets : do what you never thought possible with your presentations ',
+            'available' => true,
+            'in_transit' => false,
+            'last_pickup_date' => '12-29-2022',
+            'position' => 1,
+            'proxiedFor' => 'TestuserJohn, John',
         ];
         $this->assertEquals($expected, $result);
     }
@@ -397,9 +498,9 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'type' => 'Page',
             'create' => '11-07-2022',
             'expire' => '',
-            'id' => 'c112b154-720c-486c-890d-81e1c288c097',
-            'item_id' => '795759ad-0b33-41dd-a658-947405261360',
-            'reqnum' => '074c0f3d-e8a0-47b5-b598-74a45c29d3d7',
+            'id' => 'fake-instance-id',
+            'item_id' => 'fake-item-id',
+            'reqnum' => 'fake-request-num',
             'title' => 'Basic economics : a common sense guide to the economy ',
             'available' => false,
             'in_transit' => true,
@@ -425,9 +526,9 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'type' => 'Hold',
             'create' => '12-20-2022',
             'expire' => '12-28-2022',
-            'id' => 'c7a7df0d-36a2-486c-85f5-008191e6b32d',
-            'item_id' => '26532648-67a3-4459-a97f-9b54b4c5ebd9',
-            'reqnum' => 'bb07eb2c-bf3a-449f-8e8b-a114ce410c7f',
+            'id' => 'fake-instance-id',
+            'item_id' => 'fake-item-id',
+            'reqnum' => 'fake-request-num',
             'title' => 'Organic farming : everything you need to know ',
             'available' => false,
             'in_transit' => false,
@@ -559,6 +660,49 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test the getMyProfile method.
+     *
+     * @return void
+     */
+    public function testGetMyProfile(): void
+    {
+        $this->createConnector('get-my-profile');
+        $patron = [
+            'id' => 'foo'
+        ];
+        $result = $this->driver->getMyProfile($patron);
+        $expected = [
+            'id' => 'foo',
+            'firstname' => 'Test',
+            'lastname' => 'User',
+            'address1' => 'street',
+            'city' => 'city',
+            'country' => 'country',
+            'zip' => '12345',
+            'phone' => '0123456789',
+            'mobile_phone' => '1234567890',
+            'expiration_date' => '05-29-2030',
+        ];
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Test the getProxiedUsers method.
+     *
+     * @return void
+     */
+    public function testGetProxiedUsers(): void
+    {
+        $this->createConnector('get-proxied-users');
+        $patron = [
+            'id' => 'foo'
+        ];
+        $result = $this->driver->getProxiedUsers($patron);
+        $expected = ['fakeid' => 'Lastname, Proxity P.'];
+        $this->assertEquals($expected, $result);
+    }
+
+    /*
      * Test getHolding with HRID-based lookup
      *
      * @return void

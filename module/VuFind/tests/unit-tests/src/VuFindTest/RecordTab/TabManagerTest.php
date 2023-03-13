@@ -1,4 +1,5 @@
 <?php
+
 /**
  * RecordTab Manager Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\RecordTab;
 
 use VuFind\Config\PluginManager as ConfigManager;
@@ -65,8 +67,9 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
     /**
      * Set up a tab manager for testing.
      *
-     * @param  PluginManager $pluginManager Plugin manager to use (null for default)
-     * @param  ConfigManager $configManager Config manager to use (null for default)
+     * @param PluginManager $pluginManager Plugin manager to use (null for default)
+     * @param ConfigManager $configManager Config manager to use (null for default)
+     *
      * @return TabManager
      */
     protected function getTabManager(

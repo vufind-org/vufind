@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Base62 generator
  *
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Crypt;
 
 use Exception;

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHP version 7
  *
@@ -26,6 +27,7 @@
  *           License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\DigitalContent;
 
 use Exception;
