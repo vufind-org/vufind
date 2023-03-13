@@ -4,6 +4,7 @@
     : $this->urlBase . $this->url->addFacet($this->group, $this->facet['value'], $this->facet['operator']);
 
   $hasSubLinks = $this->exclude && !$this->facet['isApplied'];
+  $hasCheckbox = $this->facet['operator'] === 'OR';
 
   $classList = ['facet', 'js-facet-item'];
   if ($this->facet['isApplied']) {
@@ -22,42 +23,38 @@
   } elseif (!empty($this->facet['value'])) {
     $displayText = $this->escapeHtml($this->facet['value']);
   }
-  $displayText = '<span class="facet-value">' . $displayText . '</span>';
+  $displayText = '<span class="facet-value' . ($hasCheckbox ? ' icon-link__label' : '') . '">' . $displayText . '</span>';
 
-  if ($this->facet['operator'] == 'OR') {
-    $displayText = $this->icon($this->facet['isApplied'] ? 'facet-checked' : 'facet-unchecked') . $displayText;
+  if ($hasCheckbox) {
+    $displayText = $this->icon($this->facet['isApplied'] ? 'facet-checked' : 'facet-unchecked', 'icon-link__icon') . $displayText;
   }
 ?>
 <?php if ($hasSubLinks): ?>
   <div class="<?=implode(' ', $classList) ?>">
-<?php else: ?>
-  <a href="<?=$toggleUrl ?>" class="<?=implode(' ', $classList) ?>" data-title="<?=$this->escapeHtmlAttr($this->facet['displayText']) ?>" data-count="<?=$this->facet['count'] ?>"<?php if ($this->facet['isApplied']): ?> title="<?=$this->transEscAttr('applied_filter') ?>"<?php endif;?> data-lightbox-ignore>
-<?php endif; ?>
-
-  <?php if ($hasSubLinks): ?>
-    <a class="text" href="<?=$toggleUrl ?>" data-lightbox-ignore data-title="<?=$this->escapeHtmlAttr($this->facet['displayText']) ?>" data-count="<?=$this->facet['count'] ?>"<?php if ($this->facet['isApplied']): ?> title="<?=$this->transEscAttr('applied_filter') ?>"<?php endif;?>>
+    <a class="text<?=$hasCheckbox ? ' icon-link' : ''?>" href="<?=$toggleUrl ?>" data-lightbox-ignore data-title="<?=$this->escapeHtmlAttr($this->facet['displayText']) ?>" data-count="<?=$this->facet['count'] ?>"<?php if ($this->facet['isApplied']): ?> title="<?=$this->transEscAttr('applied_filter') ?>"<?php endif;?>>
       <?=$displayText ?>
     </a>
-  <?php else: ?>
+<?php else: ?>
+  <a href="<?=$toggleUrl ?>" class="<?=implode(' ', $classList) ?><?=$hasCheckbox ? ' icon-link' : ''?>" data-title="<?=$this->escapeHtmlAttr($this->facet['displayText']) ?>" data-count="<?=$this->facet['count'] ?>"<?php if ($this->facet['isApplied']): ?> title="<?=$this->transEscAttr('applied_filter') ?>"<?php endif;?> data-lightbox-ignore>
     <span class="text">
       <?=$displayText ?>
     </span>
-  <?php endif; ?>
+<?php endif; ?>
 
-  <?php if (!$this->facet['isApplied'] && null !== $this->facet['count']): ?>
-    <span class="badge">
-      <?php $currentCount = $this->localizedNumber($this->facet['count']); ?>
-      <span class="sr-only"><?=$this->transEsc('result_count', ['%%count%%' => $currentCount]) ?></span>
-      <span aria-hidden="true"><?=$currentCount ?></span>
-    </span>
-  <?php endif; ?>
+<?php if (!$this->facet['isApplied'] && null !== $this->facet['count']): ?>
+  <span class="badge">
+    <?php $currentCount = $this->localizedNumber($this->facet['count']); ?>
+    <span class="sr-only"><?=$this->transEsc('result_count', ['%%count%%' => $currentCount]) ?></span>
+    <span aria-hidden="true"><?=$currentCount ?></span>
+  </span>
+<?php endif; ?>
 
-  <?php if ($this->exclude && !$this->facet['isApplied']): ?>
-    <?php $excludeURL = $this->urlBase . $this->url->addFacet($this->group, $this->facet['value'], 'NOT'); ?>
-    <a href="<?=$excludeURL ?>" data-lightbox-ignore class="exclude">
-      <?=$this->icon('facet-exclude') ?>
-      <span class="sr-only"><?=$this->transEsc('exclude_facet') ?></span>
-    </a>
-  <?php endif; ?>
+<?php if ($this->exclude && !$this->facet['isApplied']): ?>
+  <?php $excludeURL = $this->urlBase . $this->url->addFacet($this->group, $this->facet['value'], 'NOT'); ?>
+  <a href="<?=$excludeURL ?>" data-lightbox-ignore class="exclude">
+    <?=$this->icon('facet-exclude') ?>
+    <span class="sr-only"><?=$this->transEsc('exclude_facet') ?></span>
+  </a>
+<?php endif; ?>
 
 <?=$hasSubLinks ? '</div>' : '</a>'; ?>
