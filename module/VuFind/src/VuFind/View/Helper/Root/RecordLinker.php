@@ -152,7 +152,7 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
             $details['params'] ?: [],
             [
                 'query' => $this->getRecordUrlParams() + $query,
-                'fragment' => ltrim('#', $anchor),
+                'fragment' => ltrim($anchor, '#'),
                 'normalize_path' => false, // required to keep slashes encoded
             ]
         );

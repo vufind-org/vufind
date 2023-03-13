@@ -7,7 +7,6 @@ return [
         //'bootstrap-custom.css',
         'compiled.css',
         'print.css:print',
-        'flex-fallback.css::lt IE 10', // flex polyfill
     ],
     'js' => [
         /**
