@@ -66,12 +66,14 @@
 .jstree-clicked:active,
 .jstree-clicked:focus,
 .jstree-clicked:hover {
-  color: @list-group-active-color;
-  background-color: @list-group-active-bg;
+  &:not(.hierarchical-facet-anchor) {
+    color: @list-group-active-color;
+    background-color: @list-group-active-bg;
 
-  .jstree-themeicon-custom {
-    color: #fff;
-    filter: invert(1);
+    .jstree-themeicon-custom {
+      color: #fff;
+      filter: invert(1);
+    }
   }
 }
 
