@@ -65,6 +65,13 @@ class CheckoutsController extends AbstractBase
     protected $sessionManager;
 
     /**
+     * Session container
+     *
+     * @var \Laminas\Session\Container
+     */
+    protected $sessionContainer = null;
+
+    /**
      * Pagination helper
      *
      * @var PaginationHelper
@@ -186,12 +193,14 @@ class CheckoutsController extends AbstractBase
      */
     public function purgeHistoryAction()
     {
+        $this->ilsExceptionResponse = $redirectResponse
+            = $this->redirect()->toRoute('checkouts-listhistory');
+
         // Stop now if the user does not have valid catalog credentials available:
         if (!is_array($patron = $this->catalogLogin())) {
             return $patron;
         }
 
-        $redirectResponse = $this->redirect()->toRoute('checkouts-listhistory');
         if ($this->formWasSubmitted('purgeSelected', false)
             || $this->formWasSubmitted('purgeAll', false)
         ) {
@@ -230,7 +239,11 @@ class CheckoutsController extends AbstractBase
      */
     protected function getRowIdContainer()
     {
-        return new \Laminas\Session\Container('row_ids', $this->sessionManager);
+        if (null === $this->sessionContainer) {
+            $this->sessionContainer
+                = new \Laminas\Session\Container('row_ids', $this->sessionManager);
+        }
+        return $this->sessionContainer;
     }
 
     /**
