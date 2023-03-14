@@ -1527,78 +1527,7 @@ class MyResearchController extends AbstractBase
      */
     public function historicloansAction()
     {
-        // Stop now if the user does not have valid catalog credentials available:
-        if (!is_array($patron = $this->catalogLogin())) {
-            return $patron;
-        }
-
-        // Connect to the ILS:
-        $catalog = $this->getILS();
-
-        // Check function config
-        $functionConfig = $catalog->checkFunction(
-            'getMyTransactionHistory',
-            $patron
-        );
-        if (false === $functionConfig) {
-            $this->flashMessenger()->addErrorMessage('ils_action_unavailable');
-            return $this->createViewModel();
-        }
-
-        // Get paging setup:
-        $config = $this->getConfig();
-        $pageOptions = $this->getPaginationHelper()->getOptions(
-            (int)$this->params()->fromQuery('page', 1),
-            $this->params()->fromQuery('sort'),
-            $config->Catalog->historic_loan_page_size ?? 50,
-            $functionConfig
-        );
-
-        // Get checked out item details:
-        $result
-            = $catalog->getMyTransactionHistory($patron, $pageOptions['ilsParams']);
-
-        if (isset($result['success']) && !$result['success']) {
-            $this->flashMessenger()->addErrorMessage($result['status']);
-            return $this->createViewModel();
-        }
-
-        $paginator = $this->getPaginationHelper()->getPaginator(
-            $pageOptions,
-            $result['count'],
-            $result['transactions']
-        );
-        if ($paginator) {
-            $pageStart = $paginator->getAbsoluteItemNumber(1) - 1;
-            $pageEnd = $paginator->getAbsoluteItemNumber($pageOptions['limit']) - 1;
-        } else {
-            $pageStart = 0;
-            $pageEnd = $result['count'];
-        }
-
-        $driversNeeded = $hiddenTransactions = [];
-        foreach ($result['transactions'] as $i => $current) {
-            // Build record drivers (only for the current visible page):
-            if ($pageOptions['ilsPaging'] || ($i >= $pageStart && $i <= $pageEnd)) {
-                $driversNeeded[] = $current;
-            } else {
-                $hiddenTransactions[] = $current;
-            }
-        }
-
-        $transactions = $this->ilsRecords()->getDrivers($driversNeeded);
-        $sortList = $pageOptions['sortList'];
-        $params = $pageOptions['ilsParams'];
-        return $this->createViewModel(
-            compact(
-                'transactions',
-                'paginator',
-                'params',
-                'hiddenTransactions',
-                'sortList',
-                'functionConfig'
-            )
-        );
+        return $this->redirect()->toRoute('checkouts-listhistory');
     }
 
     /**

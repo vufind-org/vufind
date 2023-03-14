@@ -4,6 +4,8 @@
 
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Loan History') . '</li>';
+
+  $this->headScript()->appendFile('checkouts.js');
 ?>
 
 <a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="Expand Sidebar">
@@ -36,11 +38,56 @@
         <?=$this->context($this)->renderInContext('myresearch/controls/sort.phtml', ['sortList' => $this->sortList]); ?>
       <?php endif; ?>
     </nav>
+    <?php if ($purgeAllAllowed || $purgeSelectedAllowed): ?>
+      <form name="purge_history" method="post" action="<?=$this->url('checkouts-purgehistory')?>" id="purge_history" data-disable-on-submit>
+      <input type="hidden" id="submitType" name="purgeSelected" value="1">
+      <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>">
+      <div class="toolbar">
+        <div class="checkbox">
+          <?php if ($purgeSelectedAllowed): ?>
+            <label>
+              <input type="checkbox" name="selectAll" class="checkbox-select-all"/>
+              <?=$this->transEsc('select_page')?>
+            </label>
+            <div class="btn-group">
+              <input type="submit" id="purgeSelected" name="purgeSelected" value="<?=$this->transEscAttr('loan_history_purge_selected')?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-lightbox-ignore>
+              <ul class="dropdown-menu">
+                <li class="disabled"><span class="prompt-text"><?=$this->transEsc('loan_history_confirm_purge_selected')?></span></li>
+                <li><a href="#" id="confirm_purge_selected_yes"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+                <li><a href="#" class="confirm_purge_no"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+              </ul>
+            </div>
+          <?php endif; ?>
+          <?php if ($purgeAllAllowed): ?>
+            <div class="btn-group">
+              <input type="submit" id="purgeAll" name="purgeAll" value="<?=$this->transEscAttr('loan_history_purge_all')?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-lightbox-ignore>
+              <ul class="dropdown-menu">
+                <li class="disabled"><span class="prompt-text"><?=$this->transEsc('loan_history_confirm_purge_all')?></span></li>
+                <li><a href="#" id="confirm_purge_all_yes"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+                <li><a href="#" class="confirm_purge_no"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+              </ul>
+            </div>
+          <?php endif; ?>
+        </div>
+      </div>
+    <?php endif; ?>
 
     <ul class="record-list">
       <?php $i = 0; foreach ($this->transactions as $resource): ?>
         <?php $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
         <li id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>" class="result">
+          <?php if ($this->purgeSelectedAllowed): ?>
+            <div class="checkbox">
+              <?php if (isset($ilsDetails['row_id'])): ?>
+                <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['row_id']); ?>
+                <label>
+                  <input class="checkbox-select-item" type="checkbox" name="purgeSelectedIDs[]" value="<?=$this->escapeHtmlAttr($ilsDetails['row_id'])?>" id="checkbox_<?=$safeId?>" />
+                </label>
+              <?php else: ?>
+                <label> </label>
+              <?php endif; ?>
+            </div>
+          <?php endif; ?>
           <?php
             $coverDetails = $this->record($resource)->getCoverDetails('checkedout', 'small', $this->recordLinker()->getUrl($resource));
             $cover = $coverDetails['html'];
@@ -124,6 +171,11 @@
         </li>
       <?php endforeach; ?>
     </ul>
+
+    <?php if ($purgeAllAllowed || $purgeSelectedAllowed): ?>
+      </form>
+    <?php endif; ?>
+
     <?=$this->paginator ? $this->paginationControl($this->paginator, 'Sliding', 'Helpers/pagination.phtml', ['params' => $this->params]) : ''?>
   <?php else: ?>
     <?=$this->transEsc('loan_history_empty')?>

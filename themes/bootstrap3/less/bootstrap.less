@@ -372,6 +372,13 @@ footer {
   }
 }
 
+.dropdown-menu > li > .prompt-text {
+  &:extend(.dropdown-menu > li > a);
+
+  white-space: inherit;
+  min-width: 200px;
+}
+
 .logoutOptions.with-dropdown a { padding-right: .5rem; }
 #login-dropdown a {
   margin-right: .5rem;
