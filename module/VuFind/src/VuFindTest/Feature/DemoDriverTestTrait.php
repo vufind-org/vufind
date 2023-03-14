@@ -75,7 +75,8 @@ trait DemoDriverTestTrait
      * Get historic transaction JSON for Demo.ini.
      *
      * @param string $bibId  Bibliographic record ID to create fake item info for.
-     * @param string $bibId2 Another bibliographic record ID to create fake item info for.
+     * @param string $bibId2 Another bibliographic record ID to create fake item info
+     * for.
      *
      * @return array
      */
@@ -122,18 +123,21 @@ trait DemoDriverTestTrait
     /**
      * Get Demo.ini override settings for testing ILS functions.
      *
-     * @param string $bibId Bibliographic record ID to create fake item info for.
+     * @param string $bibId  Bibliographic record ID to create fake item info for.
      * @param string $bibId2 Bibliographic record ID for a second transaction history
      * row.
      *
      * @return array
      */
-    protected function getDemoIniOverrides($bibId = 'testsample1', $bibId2 = 'testsample2')
-    {
+    protected function getDemoIniOverrides(
+        $bibId = 'testsample1',
+        $bibId2 = 'testsample2'
+    ) {
         return [
             'Records' => [
                 'transactions' => $this->getFakeTransactions($bibId),
-                'historicTransactions' => $this->getFakeHistoricTransactions($bibId, $bibId2),
+                'historicTransactions'
+                    => $this->getFakeHistoricTransactions($bibId, $bibId2),
             ],
             'Failure_Probabilities' => [
                 'cancelHolds' => 0,
