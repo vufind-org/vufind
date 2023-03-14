@@ -1,8 +1,10 @@
 <?php
-  $toggleLabel = $this->transEsc($this->label ?? '{->label}');
-  $toggleClass = trim('confirm__toggle ' . $this->escapeHtmlAttr(($this->toggleClass ?? 'btn')));
+  if (!isset($this->label)) {
+    throw new \Exception('label undefined for confirm-menu component.');
+  }
 
-  $desc = $this->transEsc($this->description ?? 'Are you sure?');
+  $toggleLabel = $this->transEsc($this->label);
+  $toggleClass = trim('confirm__toggle ' . $this->escapeHtmlAttr(($this->toggleClass ?? 'btn')));
 
   $actionType = $this->action->type ?? 'submit';
 
@@ -14,20 +16,22 @@
   <button class="<?=$toggleClass ?>"><?=$toggleLabel ?></button>
 
   <div class="confirm__options">
-    <p class="confirm__desc"><?=$desc ?></p>
+    <?php if ($this->description): ?>
+      <p class="confirm__desc"><?=$this->transEsc($this->description) ?></p>
+    <?php endif; ?>
 
     <ul role="menu" class="confirm__menu">
       <li role="none">
-        <?php if ($actionType == 'submit'): ?>
-          <button role="menuitem" type="submit" class="confirm__confirm">
-            <?=$this->icon('ui-success', 'confirm__icon') ?>
-            <?=$confirmLabel ?>
-          </button>
-        <?php elseif ($actionType == 'link'): ?>
+        <?php if ($actionType == 'link'): ?>
           <a role="menuitem" class="confirm__confirm" href="<?=$this->escapeHtmlAttr($this->action->value) ?>">
             <?=$this->icon('ui-success', 'confirm__icon') ?>
             <?=$confirmLabel ?>
           </a>
+        <?php else: ?>
+          <button role="menuitem" type="submit" class="confirm__confirm">
+            <?=$this->icon('ui-success', 'confirm__icon') ?>
+            <?=$confirmLabel ?>
+          </button>
         <?php endif; ?>
       </li>
 
