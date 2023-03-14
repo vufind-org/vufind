@@ -29,32 +29,41 @@
     $displayText = $this->icon($this->facet['isApplied'] ? 'facet-checked' : 'facet-unchecked', 'icon-link__icon') . $displayText;
   }
 ?>
-<?php if ($hasSubLinks): ?>
-  <div class="<?=implode(' ', $classList) ?>">
-    <a class="text<?=$hasCheckbox ? ' icon-link' : ''?>" href="<?=$toggleUrl ?>" data-lightbox-ignore data-title="<?=$this->escapeHtmlAttr($this->facet['displayText']) ?>" data-count="<?=$this->facet['count'] ?>"<?php if ($this->facet['isApplied']): ?> title="<?=$this->transEscAttr('applied_filter') ?>"<?php endif;?>>
-      <?=$displayText ?>
-    </a>
-<?php else: ?>
-  <a href="<?=$toggleUrl ?>" class="<?=implode(' ', $classList) ?><?=$hasCheckbox ? ' icon-link' : ''?>" data-title="<?=$this->escapeHtmlAttr($this->facet['displayText']) ?>" data-count="<?=$this->facet['count'] ?>"<?php if ($this->facet['isApplied']): ?> title="<?=$this->transEscAttr('applied_filter') ?>"<?php endif;?> data-lightbox-ignore>
-    <span class="text">
-      <?=$displayText ?>
-    </span>
-<?php endif; ?>
 
-  <?php if (!$this->facet['isApplied'] && null !== $this->facet['count']): ?>
+<?php
+  // Capture badge and exclude link to a variable first:
+  ob_start();
+?>
+<?php if (!$this->facet['isApplied'] && null !== $this->facet['count']): ?>
     <span class="badge">
       <?php $currentCount = $this->localizedNumber($this->facet['count']); ?>
       <span class="sr-only"><?=$this->transEsc('result_count', ['%%count%%' => $currentCount]) ?></span>
       <span aria-hidden="true"><?=$currentCount ?></span>
     </span>
-  <?php endif; ?>
+<?php endif; ?>
 
-  <?php if ($this->exclude && !$this->facet['isApplied']): ?>
+<?php if ($this->exclude && !$this->facet['isApplied']): ?>
     <?php $excludeURL = $this->urlBase . $this->url->addFacet($this->group, $this->facet['value'], 'NOT'); ?>
     <a href="<?=$excludeURL ?>" data-lightbox-ignore class="exclude">
       <?=$this->icon('facet-exclude') ?>
       <span class="sr-only"><?=$this->transEsc('exclude_facet') ?></span>
     </a>
-  <?php endif; ?>
+<?php endif; ?>
+<?php $badgeExclude = ob_get_clean(); ?>
 
-<?=$hasSubLinks ? '</div>' : '</a>'; ?>
+<?php // Render the element: ?>
+<?php if ($hasSubLinks): ?>
+  <div class="<?=implode(' ', $classList) ?>">
+    <a class="text<?=$hasCheckbox ? ' icon-link' : ''?>" href="<?=$toggleUrl ?>" data-lightbox-ignore data-title="<?=$this->escapeHtmlAttr($this->facet['displayText']) ?>" data-count="<?=$this->facet['count'] ?>"<?php if ($this->facet['isApplied']): ?> title="<?=$this->transEscAttr('applied_filter') ?>"<?php endif;?>>
+      <?=$displayText ?>
+    </a>
+    <?=$badgeExclude?>
+  </div>
+<?php else: ?>
+  <a href="<?=$toggleUrl ?>" class="<?=implode(' ', $classList) ?><?=$hasCheckbox ? ' icon-link' : ''?>" data-title="<?=$this->escapeHtmlAttr($this->facet['displayText']) ?>" data-count="<?=$this->facet['count'] ?>"<?php if ($this->facet['isApplied']): ?> title="<?=$this->transEscAttr('applied_filter') ?>"<?php endif;?> data-lightbox-ignore>
+    <span class="text">
+      <?=$displayText ?>
+    </span>
+    <?=$badgeExclude?>
+  </a>
+<?php endif; ?>
