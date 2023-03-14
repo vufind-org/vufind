@@ -15,10 +15,6 @@
 ?>
 
 <div class="searchHomeContent">
-  <?=$this->component('confirm-menu', [
-    'label' => 'Delete everything',
-  ]) ?>
-
   <?php $this->slot('search-home-hero')->start() ?>
     <?=$this->context($this)->renderInContext("search/searchbox.phtml", ['ignoreHiddenFilterMemory' => true])?>
     <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, '$("#searchForm_lookfor").focus();', 'SET'); ?>
