@@ -41,7 +41,7 @@ use Behat\Mink\Element\Element;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
+* @retry    0
  */
 final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -578,6 +578,80 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
             'Renewal Successful',
             $this->findCss($page, '.alert.alert-success')->getText()
         );
+    }
+
+    /**
+     * Test transaction history.
+     *
+     * @depends testProfile
+     *
+     * @return void
+     */
+    public function testTransactionHistory(): void
+    {
+        $this->changeConfigs(
+            [
+                'config' => $this->getConfigIniOverrides(),
+                'Demo' => $this->getDemoIniOverrides(),
+            ]
+        );
+
+        // Go to user profile screen:
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Checkouts/ListHistory');
+        $page = $session->getPage();
+
+        // Log in
+        $this->fillInLoginForm($page, 'username1', 'test', false);
+        $this->submitLoginForm($page, false);
+
+        // Test sorting
+        $titles = [
+            'Journal of rational emotive therapy : the journal of the Institute for Rational-Emotive Therapy.',
+            'Rational living.',
+        ];
+        foreach ($titles as $index => $title) {
+            $this->assertEquals(
+                $title,
+                $this->findCss($page, 'ul.record-list li a.title', null, $index)->getText()
+            );
+        }
+        $this->clickCss($page, '#sort_options_1 option', null, 2);
+        $this->waitForPageLoad($page);
+        foreach (array_reverse($titles) as $index => $title) {
+            $this->assertEquals(
+                $title,
+                $this->findCss($page, 'ul.record-list li a.title', null, $index)->getText()
+            );
+        }
+
+        // Test submitting with no selected checkboxes:
+        $this->clickCss($page, '#purgeSelected');
+        $this->clickButtonGroupLink($page, 'Yes');
+        $this->assertEquals(
+            'No Items were Selected',
+            $this->findCss($page, '.alert.alert-danger')->getText()
+        );
+
+        // Purge one:
+        $this->clickCss($page, '.checkbox-select-item');
+        $this->clickCss($page, '#purgeSelected');
+        $this->clickButtonGroupLink($page, 'Yes');
+        $this->assertEquals(
+            'Selected loans have been purged from your loan history',
+            $this->findCss($page, '.alert.alert-info')->getText()
+        );
+        $this->findCss($page, '.checkbox-select-item');
+        $this->unFindCss($page, '.checkbox-select-item', null, 1);
+
+        // Purge all:
+        $this->clickCss($page, '#purgeAll');
+        $this->clickButtonGroupLink($page, 'Yes');
+        $this->assertEquals(
+            'Your loan history has been purged',
+            $this->findCss($page, '.alert.alert-info')->getText()
+        );
+        $this->unFindCss($page, '.checkbox-select-item');
     }
 
     /**

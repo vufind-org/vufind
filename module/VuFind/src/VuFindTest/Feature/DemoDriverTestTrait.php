@@ -72,17 +72,68 @@ trait DemoDriverTestTrait
     }
 
     /**
-     * Get Demo.ini override settings for testing ILS functions.
+     * Get historic transaction JSON for Demo.ini.
      *
-     * @param string $bibId Bibliographic record ID to create fake item info for.
+     * @param string $bibId  Bibliographic record ID to create fake item info for.
+     * @param string $bibId2 Another bibliographic record ID to create fake item info for.
      *
      * @return array
      */
-    protected function getDemoIniOverrides($bibId = 'testsample1')
+    protected function getFakeHistoricTransactions($bibId, $bibId2)
+    {
+        $checkoutDate = strtotime('now -30 days');
+        $returnDate = strtotime('now -5 days');
+        $dueDate = strtotime('now -2 days');
+        $checkoutDate2 = strtotime('now -34 days');
+        $returnDate2 = strtotime('now -3 days');
+        $dueDate2 = strtotime('now -1 days');
+        return json_encode(
+            [
+                [
+                    'checkoutDate' => date('Y-m-d', $checkoutDate),
+                    '_checkoutDate' => $checkoutDate,
+                    'dueDate' => date('Y-m-d', $dueDate),
+                    '_dueDate' => $dueDate,
+                    'returnDate' => date('Y-m-d', $returnDate),
+                    '_returnDate' => $returnDate,
+                    'barcode' => 1234567890,
+                    'id' => $bibId,
+                    'source' => 'Solr',
+                    'item_id' => 0,
+                    'row_id' => 31313,
+                ],
+                [
+                    'checkoutDate' => date('Y-m-d', $checkoutDate2),
+                    '_checkoutDate' => $checkoutDate2,
+                    'dueDate' => date('Y-m-d', $dueDate2),
+                    '_dueDate' => $dueDate2,
+                    'returnDate' => date('Y-m-d', $returnDate2),
+                    '_returnDate' => $returnDate2,
+                    'barcode' => 2345678901,
+                    'id' => $bibId2,
+                    'source' => 'Solr',
+                    'item_id' => 0,
+                    'row_id' => 21212,
+                ]
+            ]
+        );
+    }
+
+    /**
+     * Get Demo.ini override settings for testing ILS functions.
+     *
+     * @param string $bibId Bibliographic record ID to create fake item info for.
+     * @param string $bibId2 Bibliographic record ID for a second transaction history
+     * row.
+     *
+     * @return array
+     */
+    protected function getDemoIniOverrides($bibId = 'testsample1', $bibId2 = 'testsample2')
     {
         return [
             'Records' => [
                 'transactions' => $this->getFakeTransactions($bibId),
+                'historicTransactions' => $this->getFakeHistoricTransactions($bibId, $bibId2),
             ],
             'Failure_Probabilities' => [
                 'cancelHolds' => 0,
@@ -101,9 +152,13 @@ trait DemoDriverTestTrait
                 'placeStorageRetrievalRequest' => 0,
                 'renewMyItems' => 0,
                 'updateHolds' => 0,
+                'purgeTransactionHistory' => 0,
             ],
             'StaticHoldings' => [$bibId => json_encode([$this->getFakeItem()])],
             'Users' => ['catuser' => 'catpass'],
+            'TransactionHistory' => [
+                'enabled' => true,
+            ],
         ];
     }
 
