@@ -178,13 +178,13 @@
 
   <!-- ESLint -->
   <target name="eslint">
-    <exec command="npx eslint -c ${srcdir}/.eslintrc.js ${srcdir}/themes/bootstrap3/js/*.js" escape="false" checkreturn="true" passthru="true" />
+    <exec command="npx eslint themes/**/*.js -c ${srcdir}/.eslintrc.js" escape="false" checkreturn="true" passthru="true" />
   </target>
   <target name="eslint-fix">
-    <exec command="npx eslint -c ${srcdir}/.eslintrc.js ${srcdir}/themes/bootstrap3/js/*.js --fix" escape="false" passthru="true" />
+    <exec command="npx eslint themes/**/*.js -c ${srcdir}/.eslintrc.js --fix" escape="false" passthru="true" />
   </target>
   <target name="eslint-report">
-    <exec command="npx eslint -c ${srcdir}/.eslintrc.js ${srcdir}/themes/bootstrap3/js/*.js --format checkstyle -o ${builddir}/reports/eslint-checkstyle.xml" escape="false" />
+    <exec command="npx eslint themes/**/*.js -c ${srcdir}/.eslintrc.js --format checkstyle -o ${builddir}/reports/eslint-checkstyle.xml" escape="false" />
   </target>
 
   <!-- JSHint -->

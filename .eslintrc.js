@@ -1,4 +1,5 @@
 module.exports = {
+  ignorePatterns: ["themes/**/vendor/**"],
   extends: "eslint:recommended",
   env: {
     "browser": true,
