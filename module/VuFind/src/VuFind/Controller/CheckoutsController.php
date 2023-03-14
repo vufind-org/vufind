@@ -217,6 +217,11 @@ class CheckoutsController extends AbstractBase
                 $result = $catalog->purgeTransactionHistory($patron, null);
             } else {
                 $ids = $this->getRequest()->getPost()->get('purgeSelectedIDs', []);
+                if (!$ids) {
+                    $this->flashMessenger()
+                        ->addErrorMessage('no_items_selected');
+                    return $redirectResponse;
+                }
                 if (!$this->validateRowIds($ids)) {
                     $this->flashMessenger()
                         ->addErrorMessage('error_inconsistent_parameters');
