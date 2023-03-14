@@ -46,6 +46,7 @@
       'handle' => 'square',
       'tooltip' => 'hide',
       'value' => [(int)$low, (int)$high],
+      'id' => $safeBaseId . '_slider_control',
     ];
     $sliderOptionsJson = json_encode($sliderOptions);
     $script = <<<JS
