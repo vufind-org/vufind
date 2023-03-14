@@ -52,7 +52,8 @@ use VuFindHttp\HttpServiceAwareInterface;
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class KohaILSDI extends AbstractBase implements
-    HttpServiceAwareInterface, LoggerAwareInterface
+    HttpServiceAwareInterface,
+    LoggerAwareInterface
 {
     use \VuFind\Cache\CacheTrait {
         getCacheKey as protected getBaseCacheKey;

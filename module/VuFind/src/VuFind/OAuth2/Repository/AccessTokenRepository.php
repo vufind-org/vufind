@@ -45,8 +45,7 @@ use VuFind\OAuth2\Entity\AccessTokenEntity;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class AccessTokenRepository extends AbstractTokenRepository
-implements AccessTokenRepositoryInterface
+class AccessTokenRepository extends AbstractTokenRepository implements AccessTokenRepositoryInterface
 {
     /**
      * Constructor

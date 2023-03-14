@@ -38,7 +38,8 @@ namespace VuFind\Exception;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class RecordMissing extends \Exception implements HttpStatusInterface,
+class RecordMissing extends \Exception implements
+    HttpStatusInterface,
     SeverityLevelInterface
 {
     /**
