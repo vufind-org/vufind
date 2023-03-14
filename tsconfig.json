@@ -1,0 +1,12 @@
+{
+  "include": ["scripts/*.js"], // "themes/**/*.js"
+  "exclude": ["themes/**/js/vendor/*"],
+  "compilerOptions": {
+    // Modern Javascript
+    "lib": ["esnext", "dom"],
+    // Tells TypeScript to check JS files
+    "checkJs": true,
+    // No compile, just type checking.
+    "noEmit": true
+  }
+}
