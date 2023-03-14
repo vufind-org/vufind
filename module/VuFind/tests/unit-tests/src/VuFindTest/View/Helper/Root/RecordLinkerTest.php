@@ -113,6 +113,10 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
             '/Record/foo/Description?sid=-123#anchor1',
             $recordLinker->getActionUrl('Solr|foo', 'Description', [], 'anchor1')
         );
+        $this->assertEquals(
+            '/Record/foo/Description?sid=-123&param1=someValue#anchor1',
+            $recordLinker->getActionUrl('Solr|foo', 'Description', ['param1' => 'someValue'], 'anchor1')
+        );
     }
 
     /**
