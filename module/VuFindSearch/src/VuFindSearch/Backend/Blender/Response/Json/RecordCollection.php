@@ -40,8 +40,7 @@ use VuFindSearch\Response\RecordInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-class RecordCollection
-extends \VuFindSearch\Backend\Solr\Response\Json\RecordCollection
+class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCollection
 {
     /**
      * Blender configuration

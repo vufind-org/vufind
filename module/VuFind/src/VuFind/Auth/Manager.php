@@ -46,7 +46,8 @@ use VuFind\Validator\CsrfInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface,
+class Manager implements
+    \LmcRbacMvc\Identity\IdentityProviderInterface,
     \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;

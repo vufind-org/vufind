@@ -45,7 +45,8 @@ use VuFind\Role\PermissionManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Permission extends AbstractPlugin implements LoggerAwareInterface,
+class Permission extends AbstractPlugin implements
+    LoggerAwareInterface,
     TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
