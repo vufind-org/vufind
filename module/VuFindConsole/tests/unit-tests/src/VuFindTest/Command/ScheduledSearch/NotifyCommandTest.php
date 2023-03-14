@@ -395,7 +395,6 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
             'id' => 1,
             'user_id' => 2,
             'session_id' => null,
-            'folder_id' => null,
             'created' => '2000-01-01 00:00:00',
             'title' => null,
             'saved' => 1,
