@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Code module for the core of the VuFind application
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFind;
 
 use Laminas\Mvc\MvcEvent;

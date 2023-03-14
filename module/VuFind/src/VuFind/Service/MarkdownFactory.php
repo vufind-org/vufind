@@ -27,6 +27,7 @@
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://knihovny.cz Main Page
  */
+
 namespace VuFind\Service;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink account actions test class.
  *
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 use VuFind\Db\Table\User;

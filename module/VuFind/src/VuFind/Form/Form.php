@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Configurable form.
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
+
 namespace VuFind\Form;
 
 use Laminas\InputFilter\InputFilter;

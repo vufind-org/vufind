@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Solr\Response\Json;
 
 use VuFindSearch\Response\AbstractRecordCollection;
@@ -133,9 +134,8 @@ class RecordCollection extends AbstractRecordCollection
     {
         if (null === $this->facetFields) {
             $this->facetFields = [];
-            foreach ($this->response['facet_counts']['facet_fields'] ?? []
-                as $field => $facetData
-            ) {
+            $facetFieldData = $this->response['facet_counts']['facet_fields'] ?? [];
+            foreach ($facetFieldData as $field => $facetData) {
                 $values = [];
                 foreach ($facetData as $value) {
                     $values[$value[0]] = $value[1];

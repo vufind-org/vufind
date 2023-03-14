@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Integration;
 
 use Behat\Mink\Driver\Selenium2Driver;
@@ -952,12 +953,22 @@ EOS
             }
         }
 
+        $htmlValidationException = null;
         if (!$this->hasFailed()) {
-            $this->validateHtml();
+            try {
+                $this->validateHtml();
+            } catch (\Exception $e) {
+                // Store the exception and throw after cleanup:
+                $htmlValidationException = $e;
+            }
         }
 
         $this->stopMinkSession();
         $this->restoreConfigs();
+
+        if (null !== $htmlValidationException) {
+            throw $htmlValidationException;
+        }
     }
 
     /**

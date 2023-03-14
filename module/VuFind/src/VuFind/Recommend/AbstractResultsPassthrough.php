@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Simple abstract recommendation module that simply passes the Results object
  * through to the template.
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
+
 namespace VuFind\Recommend;
 
 /**

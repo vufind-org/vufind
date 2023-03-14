@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Record linker view helper
  *
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use VuFind\RecordDriver\AbstractBase as AbstractRecord;
@@ -150,7 +152,7 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
             $details['params'] ?: [],
             [
                 'query' => $this->getRecordUrlParams() + $query,
-                'fragment' => ltrim('#', $anchor),
+                'fragment' => ltrim($anchor, '#'),
                 'normalize_path' => false, // required to keep slashes encoded
             ]
         );

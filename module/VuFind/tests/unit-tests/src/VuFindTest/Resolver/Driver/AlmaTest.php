@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Alma resolver driver test
  *
@@ -30,6 +31,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Resolver\Driver;
 
 use InvalidArgumentException;

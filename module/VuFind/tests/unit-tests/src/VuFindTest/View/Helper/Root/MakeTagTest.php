@@ -1,6 +1,7 @@
 <?php
+
 /**
- * makeTag view helper Test Class
+ * MakeTag view helper Test Class
  *
  * PHP version 7
  *
@@ -26,12 +27,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper\Root;
 
 use VuFind\View\Helper\Root\MakeTag;
 
 /**
- * makeTag view helper Test Class
+ * MakeTag view helper Test Class
  *
  * @category VuFind
  * @package  Tests
@@ -45,9 +47,9 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
     /**
      * Get makeTag helper with mock view
      *
-     * return \Laminas\View\Helper\EscapeHtml
+     * @return MakeTag
      */
-    protected function getHelper()
+    protected function getHelper(): MakeTag
     {
         $helper = new MakeTag();
         $helper->setView($this->getViewWithHelpers());
@@ -56,8 +58,10 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
 
     /**
      * Test that responds to common inputs
+     *
+     * @return array
      */
-    public function htmlAttributesTests()
+    public function htmlAttributesTests(): array
     {
         return [
             'Basic' => [
@@ -82,10 +86,12 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
         ];
     }
 
-    /*
+    /**
      * Void elements for test below
+     *
+     * @return array
      */
-    public function helperOptionTests()
+    public function helperOptionTests(): array
     {
         return [
             'escapes innerHTML' => [
@@ -118,10 +124,12 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
         ];
     }
 
-    /*
+    /**
      * Void elements for test below
+     *
+     * @return array
      */
-    public function voidTags()
+    public function voidTags(): array
     {
         return [
             'self closing tag' => [
@@ -158,8 +166,10 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
      * @dataProvider htmlAttributesTests
      * @dataProvider helperOptionTests
      * @dataProvider voidTags
+     *
+     * @return void
      */
-    public function testElements($expected, $params)
+    public function testElements($expected, $params): void
     {
         $helper = $this->getHelper();
 
@@ -169,10 +179,12 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
         );
     }
 
-    /*
+    /**
      * Good tag names for test below
+     *
+     * @return array
      */
-    public function validTags()
+    public function validTags(): array
     {
         return [
             ['SPAN'], // CAPITAL
@@ -189,8 +201,10 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
      * Test tag name edge cases
      *
      * @dataProvider validTags
+     *
+     * @return void
      */
-    public function testValidTagNames($tagName)
+    public function testValidTagNames($tagName): void
     {
         $helper = $this->getHelper();
 
@@ -202,10 +216,12 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
         // test passes if no errors are thrown
     }
 
-    /*
+    /**
      * Bad tag names for test below
+     *
+     * @return array
      */
-    public function invalidTags()
+    public function invalidTags(): array
     {
         return [
             ['nohyphencustom'],
@@ -222,8 +238,10 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
      * Test exception on bad tag names
      *
      * @dataProvider invalidTags
+     *
+     * @return void
      */
-    public function testInvalidTagNames($tagName)
+    public function testInvalidTagNames($tagName): void
     {
         $helper = $this->getHelper();
 
@@ -237,8 +255,10 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
 
     /**
      * Test deprecated elements
+     *
+     * @return void
      */
-    public function testDeprecatedElementTriggersWarning()
+    public function testDeprecatedElementTriggersWarning(): void
     {
         $helper = $this->getHelper();
 

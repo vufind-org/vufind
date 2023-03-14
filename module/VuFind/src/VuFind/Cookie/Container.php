@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class for treating a set of cookies as an object (inspired by
  * \Laminas\Session\Container).
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Cookie;
 
 /**

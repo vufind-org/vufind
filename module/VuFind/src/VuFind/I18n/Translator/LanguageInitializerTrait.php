@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Logic for initializing a language within a translator used by VuFind.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\I18n\Translator;
 
 use Laminas\I18n\Translator\TranslatorInterface;

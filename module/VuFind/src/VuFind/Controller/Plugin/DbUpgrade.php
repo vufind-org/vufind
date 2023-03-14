@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Action Helper - Database upgrade tools
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Controller\Plugin;
 
 use Laminas\Db\Adapter\Adapter as DbAdapter;

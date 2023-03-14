@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Content Security Policy view helper
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use Laminas\Http\Response;
@@ -68,9 +70,11 @@ class Csp extends \Laminas\View\Helper\AbstractHelper
             return;
         }
         $headers = $this->response->getHeaders();
-        foreach (['Content-Security-Policy', 'Content-Security-Policy-Report-Only']
-            as $field
-        ) {
+        $fieldsToCheck = [
+            'Content-Security-Policy',
+            'Content-Security-Policy-Report-Only'
+        ];
+        foreach ($fieldsToCheck as $field) {
             if ($cspHeaders = $headers->get($field)) {
                 // Make sure the result is iterable (an array cast doesn't work here
                 // as a single header may be castable as an array):
