@@ -44,8 +44,7 @@ use VuFindSearch\Command\RandomCommand;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Random extends AbstractChannelProvider
-implements TranslatorAwareInterface
+class Random extends AbstractChannelProvider implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 

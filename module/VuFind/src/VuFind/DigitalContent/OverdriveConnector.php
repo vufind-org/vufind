@@ -61,8 +61,10 @@ use VuFind\Exception\ILS as ILSException;
  *       provide option for asking about autocheckout for every hold
  *       provide config options for how to handle patrons with no access to OD
  */
-class OverdriveConnector implements LoggerAwareInterface,
-    AuthorizationServiceAwareInterface, \VuFindHttp\HttpServiceAwareInterface
+class OverdriveConnector implements
+    LoggerAwareInterface,
+    AuthorizationServiceAwareInterface,
+    \VuFindHttp\HttpServiceAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait {
         logError as error;

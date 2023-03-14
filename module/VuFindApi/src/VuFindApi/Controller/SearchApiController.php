@@ -44,8 +44,7 @@ use VuFindApi\Formatter\RecordFormatter;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
-class SearchApiController extends \VuFind\Controller\AbstractSearch
-implements ApiInterface
+class SearchApiController extends \VuFind\Controller\AbstractSearch implements ApiInterface
 {
     use ApiTrait;
 

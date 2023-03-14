@@ -49,7 +49,8 @@ use VuFindSearch\Command\SearchCommand;
  *
  * @SuppressWarnings(PHPMD.ExcessivePublicCount)
  */
-class SolrDefault extends DefaultRecord implements Feature\PreviousUniqueIdInterface,
+class SolrDefault extends DefaultRecord implements
+    Feature\PreviousUniqueIdInterface,
     Feature\VersionAwareInterface
 {
     use Feature\HierarchyAwareTrait;

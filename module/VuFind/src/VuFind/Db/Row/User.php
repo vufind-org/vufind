@@ -66,7 +66,8 @@ use Laminas\Db\Sql\Select;
  * @property ?string $auth_method
  * @property string  $last_language
  */
-class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
+class User extends RowGateway implements
+    \VuFind\Db\Table\DbTableAwareInterface,
     \LmcRbacMvc\Identity\IdentityInterface
 {
     use \VuFind\Db\Table\DbTableAwareTrait;
