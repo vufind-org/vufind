@@ -3,7 +3,12 @@
   <description>Coding standards for VuFind.</description>
   <file>../module</file>
   <exclude-pattern>module/[^/]+/config/*</exclude-pattern>
+  <exclude-pattern>module/[^/]+/tests/fixtures/*</exclude-pattern>
   <arg name="extensions" value="php"/>
+  <!-- We only use PEAR to ensure complete comments at this time -->
+  <rule ref="PEAR.Commenting">
+    <exclude name="PEAR.Commenting.FunctionComment.ParamCommentAlignment" />
+  </rule>
   <rule ref="Generic.NamingConventions.UpperCaseConstantName"/>
   <rule ref="Generic.Commenting.DocComment"/>
   <rule ref="Squiz.Commenting.DocCommentAlignment"/>
