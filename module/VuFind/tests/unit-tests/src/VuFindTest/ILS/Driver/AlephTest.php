@@ -63,9 +63,9 @@ class AlephTest extends \VuFindTest\Unit\ILSDriverTestCase
         $this->mockResponse('cash.xml');
         $fines = $this->driver->getMyFines(
             [
-            'cat_username' => 'my_login',
-            'cat_password' => 'my_password',
-            'id' => "patron_id",
+                'cat_username' => 'my_login',
+                'cat_password' => 'my_password',
+                'id' => "patron_id",
             ]
         );
         $expected = [
