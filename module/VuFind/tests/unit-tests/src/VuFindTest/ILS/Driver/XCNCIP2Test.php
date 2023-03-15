@@ -1441,13 +1441,14 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         $this->mockResponse('RenewItemResponse404.xml');
         $renew = $this->driver->renewMyItems(
             [
-            'patron' => [
-                'cat_username' => 'my_login',
-                'cat_password' => 'my_password',
-                'patronAgencyId' => 'Test agency',
-            ], 'details' => [
-                'My University|Item1',
-            ],
+                'patron' => [
+                    'cat_username' => 'my_login',
+                    'cat_password' => 'my_password',
+                    'patronAgencyId' => 'Test agency',
+                ],
+                'details' => [
+                    'My University|Item1',
+                ],
             ]
         );
         $expected = [
@@ -1476,13 +1477,14 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         );
         $renew = $this->driver->renewMyItems(
             [
-            'patron' => [
-                'cat_username' => 'my_login',
-                'cat_password' => 'my_password',
-                'patronAgencyId' => 'Test agency',
-            ], 'details' => [
-                'My University|Item1',
-            ],
+                'patron' => [
+                    'cat_username' => 'my_login',
+                    'cat_password' => 'my_password',
+                    'patronAgencyId' => 'Test agency',
+                ],
+                'details' => [
+                    'My University|Item1',
+                ],
             ]
         );
     }
