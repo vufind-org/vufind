@@ -470,8 +470,8 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
 
         $privateKey = openssl_pkey_new(
             [
-            'private_key_bits' => 2048,
-            'private_key_type' => OPENSSL_KEYTYPE_RSA
+                'private_key_bits' => 2048,
+                'private_key_type' => OPENSSL_KEYTYPE_RSA
             ]
         );
         if (!$privateKey) {
