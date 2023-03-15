@@ -750,8 +750,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             $this->mockResponse($test['file']);
             $transactions = $this->driver->getMyTransactions(
                 [
-                'cat_username' => 'my_login', 'cat_password' => 'my_password',
-                'patronAgencyId' => 'Test agency', 'id' => "patron_id",
+                    'cat_username' => 'my_login', 'cat_password' => 'my_password',
+                    'patronAgencyId' => 'Test agency', 'id' => "patron_id",
                 ]
             );
             $this->assertEquals(
@@ -782,8 +782,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             $this->mockResponse($test['file']);
             $transactions = $this->driver->getMyTransactions(
                 [
-                'cat_username' => 'my_login', 'cat_password' => 'my_password',
-                'patronAgencyId' => 'Test agency', 'id' => "patron_id",
+                    'cat_username' => 'my_login', 'cat_password' => 'my_password',
+                    'patronAgencyId' => 'Test agency', 'id' => "patron_id",
                 ]
             );
             $this->assertEquals(
@@ -818,8 +818,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             $this->mockResponse($test['file']);
             $transactions = $this->driver->getMyTransactions(
                 [
-                'cat_username' => 'my_login', 'cat_password' => 'my_password',
-                'patronAgencyId' => 'Test agency', 'id' => "patron_id",
+                    'cat_username' => 'my_login', 'cat_password' => 'my_password',
+                    'patronAgencyId' => 'Test agency', 'id' => "patron_id",
                 ]
             );
             $this->assertEquals(
@@ -885,8 +885,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             $this->mockResponse($test['file']);
             $holds = $this->driver->getMyHolds(
                 [
-                'cat_username' => 'my_login', 'cat_password' => 'my_password',
-                'patronAgencyId' => 'Test agency', 'id' => "patron_id",
+                    'cat_username' => 'my_login', 'cat_password' => 'my_password',
+                    'patronAgencyId' => 'Test agency', 'id' => "patron_id",
                 ]
             );
             $this->assertEquals(
