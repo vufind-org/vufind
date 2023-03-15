@@ -59,9 +59,12 @@ use VuFindSearch\Response\RecordCollectionInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class Backend extends AbstractBackend
-implements SimilarInterface, RetrieveBatchInterface, RandomInterface,
-    GetIdsInterface, WorkExpressionsInterface
+class Backend extends AbstractBackend implements
+    SimilarInterface,
+    RetrieveBatchInterface,
+    RandomInterface,
+    GetIdsInterface,
+    WorkExpressionsInterface
 {
     /**
      * Limit for records per query in a batch retrieval.

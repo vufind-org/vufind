@@ -111,7 +111,7 @@ class AddUsingTemplateCommand extends AbstractCommand
             if (!$sourceDir) {
                 return 1;
             }
-            $sourceCallback = function ($full) use (& $tokens) {
+            $sourceCallback = function ($full) use (&$tokens) {
                 $strings = $this->reader->getTextDomain($full, false);
                 foreach ($tokens as & $current) {
                     $sourceKey = $current['key'];

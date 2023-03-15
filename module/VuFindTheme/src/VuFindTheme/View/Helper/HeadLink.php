@@ -44,8 +44,7 @@ use VuFindTheme\ThemeInfo;
  * @method getIndent()
  * @method getSeparator()
  */
-class HeadLink extends \Laminas\View\Helper\HeadLink
-implements \Laminas\Log\LoggerAwareInterface
+class HeadLink extends \Laminas\View\Helper\HeadLink implements \Laminas\Log\LoggerAwareInterface
 {
     use ConcatTrait;
     use \VuFind\Log\LoggerAwareTrait;

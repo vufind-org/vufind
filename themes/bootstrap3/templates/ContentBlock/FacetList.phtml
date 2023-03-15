@@ -22,7 +22,7 @@ $(document).ready(function() {
 JS;
           echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
         ?>
-        <div id="facet_<?=$this->escapeHtml($field)?>_container" class="home-facet <?=$this->escapeHtmlAttr($field)?> hide">
+        <div id="facet_<?=$this->escapeHtml($field)?>_container" role="listbox" class="home-facet <?=$this->escapeHtmlAttr($field)?> hide">
           <h2><?=$labelHeading?></h2>
           <div id="facet_<?=$this->escapeHtml($field)?>" class="jstree-facet"
               data-source="<?=$this->escapeHtml($this->searchClassId)?>"

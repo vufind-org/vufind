@@ -56,13 +56,14 @@
 <?php $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions() ?>
 <?php if (!empty($sideFacetSet) && $results->getResultTotal() > 0): ?>
   <?php foreach ($sideFacetSet as $title => $cluster): ?>
+    <?php $collapsed = in_array($title, $collapsedFacets); ?>
     <?php // Data-title attribute is for analytics use.  Do not remove. ?>
     <div class="facet-group" id="side-panel-<?=$this->escapeHtmlAttr($title) ?>" data-title="<?=$this->escapeHtmlAttr($cluster['label']) ?>">
-      <button class="title<?php if (in_array($title, $collapsedFacets)): ?> collapsed<?php endif ?>" data-toggle="collapse" data-target="#side-collapse-<?=$this->escapeHtmlAttr($title) ?>" >
+      <button class="title<?php if ($collapsed): ?> collapsed<?php endif ?>" data-toggle="collapse" data-target="#side-collapse-<?=$this->escapeHtmlAttr($title) ?>" >
         <span class="facet-title"><?=$this->transEsc($cluster['label'])?></span>
         <?=$this->icon('collapse', 'facet-title-icon') ?>
       </button>
-      <div id="side-collapse-<?=$this->escapeHtmlAttr($title) ?>" class="collapse<?php if (!in_array($title, $collapsedFacets)): ?> in<?php endif ?>"<?php if (in_array($title, $forceUncollapsedFacets)): ?> data-force-in="1"<?php endif ?>>
+      <div id="side-collapse-<?=$this->escapeHtmlAttr($title) ?>" role="listbox" aria-expanded="<?=$collapsed ? 'false' : 'true'?>" class="collapse<?php if (!$collapsed): ?> in<?php endif ?>"<?php if (in_array($title, $forceUncollapsedFacets)): ?> data-force-in="1"<?php endif ?>>
         <?=
           $this->context($this)->renderInContext(
               'Recommend/SideFacets/facet.phtml',
