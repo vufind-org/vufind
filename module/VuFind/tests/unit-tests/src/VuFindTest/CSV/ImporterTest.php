@@ -225,13 +225,13 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
             $this->equalTo('Solr'),
             $this->callback(
                 function ($doc) {
-                $expected = file_get_contents($this->csvFixtureDir . 'test.json');
-                $this->assertJsonStringEqualsJsonString(
-                    $expected,
-                    $doc->getContent()
-                );
-                // If we got past the assertion, we can report success!
-                return true;
+                    $expected = file_get_contents($this->csvFixtureDir . 'test.json');
+                    $this->assertJsonStringEqualsJsonString(
+                        $expected,
+                        $doc->getContent()
+                    );
+                    // If we got past the assertion, we can report success!
+                    return true;
                 }
             ),
             $this->equalTo('update')
