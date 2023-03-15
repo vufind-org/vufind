@@ -435,7 +435,7 @@ class LoggerFactory implements FactoryInterface
         // Construct the logger as a lazy loading value holder so that
         // the object is not instantiated until it is called. This helps break
         // potential circular dependencies with other services.
-        $callback = function (& $wrapped, $proxy) use ($container, $requestedName) {
+        $callback = function (&$wrapped, $proxy) use ($container, $requestedName) {
             // Indicate that initialization is complete to avoid reinitialization:
             $proxy->setProxyInitializer(null);
 
