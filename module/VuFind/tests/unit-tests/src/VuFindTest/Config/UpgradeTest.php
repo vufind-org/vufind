@@ -72,6 +72,8 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      * and warnings so that further assertions can be performed by calling code if
      * necessary.
      *
+     * @param string $version Version to test
+     *
      * @return array
      */
     protected function checkVersion($version)

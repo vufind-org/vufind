@@ -324,7 +324,7 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
     /**
      * Create markdown converter
      *
-     * @param array $config
+     * @param array $config Configuration
      *
      * @return ConverterInterface
      * @throws \Psr\Container\ContainerExceptionInterface

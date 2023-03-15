@@ -146,6 +146,9 @@ class SorterTest extends \PHPUnit\Framework\TestCase
     /**
      * Test compare function
      *
+     * @param array $test     Test data
+     * @param int   $expected Expected result
+     *
      * @dataProvider compareProvider
      *
      * @return void
@@ -241,6 +244,9 @@ class SorterTest extends \PHPUnit\Framework\TestCase
     /**
      * Test sort function
      *
+     * @param array $test     Test data
+     * @param array $expected Expected result
+     *
      * @dataProvider sortProvider
      *
      * @return void
@@ -315,6 +321,9 @@ class SorterTest extends \PHPUnit\Framework\TestCase
     /**
      * Test asort function
      *
+     * @param array $test     Test data
+     * @param array $expected Expected result
+     *
      * @dataProvider asortProvider
      *
      * @return void
@@ -328,6 +337,11 @@ class SorterTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($result);
     }
 
+    /**
+     * Data provider for testNatsort()
+     *
+     * @return array
+     */
     public static function natsortProvider(): array
     {
         return [
@@ -352,6 +366,9 @@ class SorterTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test natsort function
+     *
+     * @param array $test     Test data
+     * @param array $expected Expected result
      *
      * @dataProvider natsortProvider
      *

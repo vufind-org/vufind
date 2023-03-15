@@ -51,6 +51,11 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\ReflectionTrait;
 
+    /**
+     * Test performing a search
+     *
+     * @return void
+     */
     public function testPerformSearch()
     {
         $callback = function (CommandInterface $command): CommandInterface {

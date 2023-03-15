@@ -309,6 +309,8 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a fake record driver
      *
+     * @param array $data Test data (solrField is only supported field)
+     *
      * @return TestHarness
      */
     protected function getDriver($data = [])

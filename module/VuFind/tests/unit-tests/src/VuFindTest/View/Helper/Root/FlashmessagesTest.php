@@ -214,7 +214,7 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a Flashmessages helper with the given messages in the queue
      *
-     * @array $messages Messages
+     * @param array $messages Messages
      *
      * @return Flashmessages
      */

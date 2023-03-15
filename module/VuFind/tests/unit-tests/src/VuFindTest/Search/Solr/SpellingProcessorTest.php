@@ -568,6 +568,8 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a fixture object
      *
+     * @return string $file Name of fixture file
+     *
      * @return mixed
      */
     protected function unserializeFixture($file)
