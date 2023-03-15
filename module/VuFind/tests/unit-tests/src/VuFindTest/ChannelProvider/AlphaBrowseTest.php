@@ -140,11 +140,10 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
     /**
      * Support method to mock objects.
      *
-     * @param array $options                Set options for theprovider
-     * @param bool  $fetchFromSearchService flag indicating test case to fetch from
-     *                                      search service when the search results
-     *                                      do not include object we are looking
-     *                                      for
+     * @param array $options                Set options for the provider
+     * @param bool  $fetchFromSearchService Flag indicating test case to fetch from
+     * search service when the search results do not include object we are looking
+     * for
      *
      * @return array
      */
