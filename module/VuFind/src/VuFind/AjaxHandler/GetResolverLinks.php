@@ -125,18 +125,20 @@ class GetResolverLinks extends AbstractBase implements TranslatorAwareInterface
         // Sort the returned links into categories based on service type:
         $electronic = $print = $services = [];
         foreach ($result as $link) {
-            switch ($link['service_type'] ?? '') {
+            $serviceType = $link['service_type'] ?? '';
+            // Special case -- modify DOI text for special display, then apply
+            // default $electronic behavior below:
+            if ($serviceType === 'getDOI') {
+                $link['title'] = $this->translate('Get full text');
+                $link['coverage'] = '';
+            }
+            switch ($serviceType) {
                 case 'getHolding':
                     $print[] = $link;
                     break;
                 case 'getWebService':
                     $services[] = $link;
                     break;
-                case 'getDOI':
-                    // Special case -- modify DOI text for special display:
-                    $link['title'] = $this->translate('Get full text');
-                    $link['coverage'] = '';
-                    // no break
                 case 'getFullTxt':
                 default:
                     $electronic[] = $link;
