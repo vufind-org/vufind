@@ -1001,7 +1001,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             ], [
                 'locationID' => 'My University|2', 'locationDisplay' => 'Stacks',
             ]
-            ], $locations
+            ],
+            $locations
         );
 
         // Test reading pickup locations from NCIP responder
