@@ -114,21 +114,14 @@ class UserIpReader
                 // Also note that we need to use array_shift/array_pop/current here
                 // in place of specific indexes, because the filtering above may have
                 // left non-consecutive keys in place.
-                switch (strtolower(rtrim($behavior, ':'))) {
-                    case 'first':
-                        if (!empty($parts)) {
-                            return array_shift($parts);
-                        }
-                        // no break
-                    case 'last':
-                        if (!empty($parts)) {
-                            return array_pop($parts);
-                        }
-                        // no break
-                    default:
-                        if (count($parts) === 1) {
-                            return current($parts);
-                        }
+                $finalBehavior = strtolower(rtrim($behavior, ':'));
+                $partCount = count($parts);
+                if ($finalBehavior === 'first' && $partCount > 0) {
+                    return array_shift($parts);
+                } elseif ($finalBehavior === 'last' && $partCount > 0) {
+                    return array_pop($parts);
+                } elseif ($partCount === 1) {
+                    return current($parts);
                 }
             }
         }
