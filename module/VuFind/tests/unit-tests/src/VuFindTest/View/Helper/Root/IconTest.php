@@ -32,7 +32,6 @@ namespace VuFindTest\View\Helper\Root;
 use Laminas\Cache\Storage\Adapter\BlackHole;
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\View\Helper\EscapeHtmlAttr;
-use Laminas\View\Helper\HeadLink;
 use VuFind\View\Helper\Root\Icon;
 use VuFindTheme\View\Helper\ImageLink;
 
@@ -107,10 +106,10 @@ class IconTest extends \PHPUnit\Framework\TestCase
     /**
      * Get an Icon helper
      *
-     * @param array            $config   Icon helper configuration array
-     * @param StorageInterface $cache    Cache storage adapter (null for BlackHole)
-     * @param HeadLink         $headLink HeadLink helper (null for mock)
-     * @param array            $plugins  Array of extra plugins for renderer
+     * @param array            $config  Icon helper configuration array
+     * @param StorageInterface $cache   Cache storage adapter (null for BlackHole)
+     * @param array            $plugins Array of extra plugins for renderer
+     * @param bool             $rtl     Are we in right-to-left mode?
      *
      * @return Icon
      */

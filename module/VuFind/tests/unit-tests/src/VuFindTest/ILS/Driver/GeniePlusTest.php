@@ -110,7 +110,8 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
     /**
      * Get a mock response with a predetermined body.
      *
-     * @param string $body Body
+     * @param string $body   Body
+     * @param int    $status HTTP status code
      *
      * @return Response
      */

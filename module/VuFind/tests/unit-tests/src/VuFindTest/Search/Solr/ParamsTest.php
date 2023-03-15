@@ -178,8 +178,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     /**
      * Test sort tie-breaker parameter.
      *
-     * @param string $sort Sort parameter of normalizeSort method
-     * @param string $tieBreaker Sort tie breaker form Searches.ini
+     * @param string $sort           Sort parameter of normalizeSort method
+     * @param string $tieBreaker     Sort tie breaker form Searches.ini
      * @param string $expectedResult Expected return value from normalizeSort
      *
      * @return void

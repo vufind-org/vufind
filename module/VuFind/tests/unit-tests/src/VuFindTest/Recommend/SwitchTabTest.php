@@ -92,7 +92,7 @@ class SwitchTabTest extends \PHPUnit\Framework\TestCase
     /**
      * Test getting the active tab.
      *
-     * @param array $tabEnv tabConfig
+     * @param array $tabEnv         tabConfig
      * @param array $expectedResult expected result from getActiveTab
      *
      * @return void
@@ -139,7 +139,7 @@ class SwitchTabTest extends \PHPUnit\Framework\TestCase
     /**
      * Test getting the active tab.
      *
-     * @param array $tabEnv tabConfig
+     * @param array $tabEnv         tabConfig
      * @param array $expectedResult expected result from getInactiveTabs
      *
      * @return void

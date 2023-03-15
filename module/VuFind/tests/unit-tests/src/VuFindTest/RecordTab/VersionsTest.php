@@ -88,8 +88,8 @@ class VersionsTest extends \PHPUnit\Framework\TestCase
     /**
      * Test if the tab is active.
      *
-     * @param bool $versionAction Action from Plugin
-     * @param int  $versionCount  Version count from Record Driver
+     * @param bool $versionAction  Action from Plugin
+     * @param int  $versionCount   Version count from Record Driver
      * @param bool $expectedResult Expected return value from isActive
      *
      * @return void

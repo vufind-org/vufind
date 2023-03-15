@@ -147,6 +147,9 @@ class PathResolverTest extends \PHPUnit\Framework\TestCase
     /**
      * Test stacked path resolution
      *
+     * @param string $filename     Filename to check
+     * @param string $expectedPath Expected result
+     *
      * @dataProvider getTestPathStackData
      *
      * @return void

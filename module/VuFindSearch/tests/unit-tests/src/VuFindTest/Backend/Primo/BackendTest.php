@@ -252,6 +252,9 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     /**
      * Test pcAvailability filter.
      *
+     * @param string $value    Input value of filter
+     * @param string $expected Expected output value of filter
+     *
      * @dataProvider getPcAvailabilityData
      *
      * @return void

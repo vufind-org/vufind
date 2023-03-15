@@ -82,7 +82,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                         . 'z něm. přel. Ivana Víz',
                     'item_id' => '105', 'renewable' => true,
                 ],
-                ],
+            ],
             ], [
                 'file' => [
                     'LookupUserResponseWithoutNamespacePrefix.xml',
@@ -144,7 +144,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                         . 'z něm. přel. Ivana Víz',
                     'item_id' => '105', 'renewable' => false,
                 ],
-                ],
+            ],
             ],
         ];
 
@@ -162,7 +162,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'balance' => 25, 'checkout' => '', 'fine' => 'Service Charge',
                     'createdate' => '11-14-2014',
                 ],
-                ],
+            ],
             ], [
                 'file' => 'LookupUserResponseWithoutNamespacePrefix.xml',
                 'result' => [
@@ -188,7 +188,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'cat_username' => 'my_login', 'cat_password' => 'my_password',
                 'email' => 'test@mzk.cz', 'major' => null, 'college' => null,
                 'firstname' => 'John', 'lastname' => 'Smith',
-                ],
+            ],
             ], [
                 'file' => 'LookupUserResponseWithoutNamespacePrefix.xml',
                 'result' => [
@@ -229,7 +229,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'item_agency_id' => null, 'canceled' => false,
                     'available' => false,
                 ],
-                ],
+            ],
             ], [
                 'file' => 'LookupUserResponseWithoutNamespacePrefix.xml',
                 'result' => [
@@ -270,7 +270,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'address1' => 'Trvalá ulice 123, Big City, 12345', 'address2' => '',
                 'zip' => '', 'phone' => '', 'group' => '',
                 'expiration_date' => '12-30-2099',
-                ],
+            ],
             ], [
                 'file' => 'LookupUserResponseWithoutNamespacePrefix.xml',
                 'result' => [
@@ -324,7 +324,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'item_id' => 'MZK01001333770-MZK50001370317000020',
                     'available' => false,
                 ],
-                ],
+            ],
             ], [
                 'file' => 'LookupUserResponseWithoutNamespacePrefix.xml',
                 'result' => [
@@ -377,7 +377,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                         'id' => 'MZK01000000425', 'use_unknown_message' => true,
                     ],
                 ],
-                ],
+            ],
             ], [
                 'file' => 'lookupItemSetWithoutNamespacePrefix.xml', 'result' => [
                     'MZK01000000421' => [
@@ -466,7 +466,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'addStorageRetrievalRequestLink' => 'true', 'eresource' => '',
                     'collection_desc' => 'Some holding sublocation',
                 ],
-                ],
+            ],
             ],
         ];
 
@@ -518,7 +518,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             [
                 'file' => 'RequestItemResponseAcceptedWithItemId.xml', 'result' => [
                 'success' => true,
-                ],
+            ],
             ], [
                 'file' => 'RequestItemResponseAcceptedWithRequestId.xml',
                 'result' => [
@@ -562,7 +562,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                         'success' => true, 'status' => 'hold_cancel_success',
                     ],
                 ],
-                ],
+            ],
             ], [
                 'file' => 'CancelRequestItemResponseDenied.xml', 'result' => [
                     'count' => 0, 'items' => [
@@ -598,7 +598,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                         'status' => 'storage_retrieval_request_cancel_success',
                     ],
                 ],
-                ],
+            ],
             ], [
                 'file' => 'CancelRequestItemResponseDenied.xml', 'result' => [
                     'count' => 0, 'items' => [
@@ -636,7 +636,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                         'new_time' => '20:00', 'item_id' => 'Item1'
                     ],
                 ],
-                ],
+            ],
             ], [
                 'file' => 'RenewItemResponseAcceptedAlternativeDateFormat.xml',
                 'result' => [
@@ -675,7 +675,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                         'success' => false, 'item_id' => 'Item1'
                     ],
                 ],
-                ],
+            ],
             ], [
                 'file' => 'RenewItemResponseAcceptedAlternativeDateFormat.xml',
                 'result' => [
@@ -748,10 +748,12 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         foreach ($this->transactionsTests as $test) {
             $this->configureDriver();
             $this->mockResponse($test['file']);
-            $transactions = $this->driver->getMyTransactions([
-                'cat_username' => 'my_login', 'cat_password' => 'my_password',
-                'patronAgencyId' => 'Test agency', 'id' => "patron_id",
-            ]);
+            $transactions = $this->driver->getMyTransactions(
+                [
+                    'cat_username' => 'my_login', 'cat_password' => 'my_password',
+                    'patronAgencyId' => 'Test agency', 'id' => "patron_id",
+                ]
+            );
             $this->assertEquals(
                 $test['result'],
                 $transactions,
@@ -778,10 +780,12 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         foreach ($this->notRenewableTransactionsTests as $test) {
             $this->configureDriver($config);
             $this->mockResponse($test['file']);
-            $transactions = $this->driver->getMyTransactions([
-                'cat_username' => 'my_login', 'cat_password' => 'my_password',
-                'patronAgencyId' => 'Test agency', 'id' => "patron_id",
-            ]);
+            $transactions = $this->driver->getMyTransactions(
+                [
+                    'cat_username' => 'my_login', 'cat_password' => 'my_password',
+                    'patronAgencyId' => 'Test agency', 'id' => "patron_id",
+                ]
+            );
             $this->assertEquals(
                 $test['result'],
                 $transactions,
@@ -791,7 +795,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         foreach ($this->renewMyItemsWithDisabledRenewals as $test) {
             $this->configureDriver($config);
             $this->mockResponse($test['file']);
-            $result = $this->driver->renewMyItems([
+            $result = $this->driver->renewMyItems(
+                [
                     'patron' => [
                         'cat_username' => 'my_login',
                         'cat_password' => 'my_password',
@@ -799,7 +804,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     ], 'details' => [
                         'My University|Item1',
                     ],
-                ]);
+                ]
+            );
             $this->assertEquals(
                 $test['result'],
                 $result,
@@ -810,10 +816,12 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         foreach ($this->transactionsTests as $test) {
             $this->configureDriver($config);
             $this->mockResponse($test['file']);
-            $transactions = $this->driver->getMyTransactions([
-                'cat_username' => 'my_login', 'cat_password' => 'my_password',
-                'patronAgencyId' => 'Test agency', 'id' => "patron_id",
-            ]);
+            $transactions = $this->driver->getMyTransactions(
+                [
+                    'cat_username' => 'my_login', 'cat_password' => 'my_password',
+                    'patronAgencyId' => 'Test agency', 'id' => "patron_id",
+                ]
+            );
             $this->assertEquals(
                 $test['result'],
                 $transactions,
@@ -832,10 +840,12 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         foreach ($this->finesTests as $test) {
             $this->configureDriver();
             $this->mockResponse($test['file']);
-            $fines = $this->driver->getMyFines([
+            $fines = $this->driver->getMyFines(
+                [
                     'cat_username' => 'my_login', 'cat_password' => 'my_password',
                     'patronAgencyId' => 'Test agency', 'id' => "patron_id",
-                ]);
+                ]
+            );
             $this->assertEquals(
                 $test['result'],
                 $fines,
@@ -873,10 +883,12 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         foreach ($this->holdsTests as $test) {
             $this->configureDriver();
             $this->mockResponse($test['file']);
-            $holds = $this->driver->getMyHolds([
-                'cat_username' => 'my_login', 'cat_password' => 'my_password',
-                'patronAgencyId' => 'Test agency', 'id' => "patron_id",
-            ]);
+            $holds = $this->driver->getMyHolds(
+                [
+                    'cat_username' => 'my_login', 'cat_password' => 'my_password',
+                    'patronAgencyId' => 'Test agency', 'id' => "patron_id",
+                ]
+            );
             $this->assertEquals(
                 $test['result'],
                 $holds,
@@ -895,10 +907,12 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         foreach ($this->profileTests as $test) {
             $this->configureDriver();
             $this->mockResponse($test['file']);
-            $profile = $this->driver->getMyProfile([
+            $profile = $this->driver->getMyProfile(
+                [
                     'cat_username' => 'my_login', 'cat_password' => 'my_password',
                     'patronAgencyId' => 'Test agency', 'id' => "patron_id",
-                ]);
+                ]
+            );
             $this->assertEquals(
                 $test['result'],
                 $profile,
@@ -917,10 +931,12 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         foreach ($this->storageRetrievalTests as $test) {
             $this->configureDriver();
             $this->mockResponse($test['file']);
-            $storageRetrievals = $this->driver->getMyStorageRetrievalRequests([
+            $storageRetrievals = $this->driver->getMyStorageRetrievalRequests(
+                [
                 'cat_username' => 'my_login', 'cat_password' => 'my_password',
                 'patronAgencyId' => 'Test agency', 'id' => "patron_id",
-            ]);
+                ]
+            );
             $this->assertEquals(
                 $test['result'],
                 $storageRetrievals,
@@ -977,39 +993,51 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         // Test reading pickup locations from file
         $this->configureDriver();
         $locations = $this->driver->getPickUpLocations([]);
-        $this->assertEquals([
+        $this->assertEquals(
+            [
             [
                 'locationID' => 'My University|1',
                 'locationDisplay' => 'Main Circulation Desk',
             ], [
                 'locationID' => 'My University|2', 'locationDisplay' => 'Stacks',
             ]
-        ], $locations);
+            ],
+            $locations
+        );
 
         // Test reading pickup locations from NCIP responder
-        $this->configureDriver([
+        $this->configureDriver(
+            [
             'Catalog' => [
                 'url' => 'https://test.ncip.example', 'consortium' => false,
                 'agency' => ['Test agency'], 'pickupLocationsFromNCIP' => true,
             ], 'NCIP' => [],
-        ]);
+            ]
+        );
         $this->mockResponse('LookupAgencyResponse.xml');
         $locations = $this->driver->getPickUpLocations([]);
-        $this->assertEquals([
+        $this->assertEquals(
             [
-                'locationID' => 'My library|1', 'locationDisplay' => 'Main library',
-            ], [
-                'locationID' => 'My library|2', 'locationDisplay' => 'Stacks',
-            ]
-        ], $locations);
+                [
+                    'locationID' => 'My library|1', 'locationDisplay' => 'Main library',
+                ],
+                [
+                    'locationID' => 'My library|2', 'locationDisplay' => 'Stacks',
+                ]
+            ],
+            $locations
+        );
 
         // Test reading pickup locations from NCIP, but response is without locations
-        $this->configureDriver([
-            'Catalog' => [
-                'url' => 'https://test.ncip.example', 'consortium' => false,
-                'agency' => ['Test agency'], 'pickupLocationsFromNCIP' => true,
-            ], 'NCIP' => [],
-        ]);
+        $this->configureDriver(
+            [
+                'Catalog' => [
+                    'url' => 'https://test.ncip.example', 'consortium' => false,
+                    'agency' => ['Test agency'], 'pickupLocationsFromNCIP' => true,
+                ],
+                'NCIP' => [],
+            ]
+        );
         $this->mockResponse('LookupAgencyResponseWithoutLocations.xml');
         $locations = $this->driver->getPickUpLocations([]);
         $this->assertEquals([], $locations);
@@ -1025,7 +1053,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         $this->configureDriver();
         foreach ($this->placeHoldTests as $test) {
             $this->mockResponse($test['file']);
-            $hold = $this->driver->placeHold([
+            $hold = $this->driver->placeHold(
+                [
                     'patron' => [
                         'cat_username' => 'my_login',
                         'cat_password' => 'my_password',
@@ -1034,7 +1063,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'pickUpLocation' => 'My University|1', 'holdtype' => 'title',
                     'requiredBy' => '2020-12-30',
                     'item_agency_id' => 'My University',
-                ]);
+                ]
+            );
             $this->assertEquals(
                 $test['result'],
                 $hold,
@@ -1053,7 +1083,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         $this->configureDriver();
         foreach ($this->placeStorageRetrievalRequestTests as $test) {
             $this->mockResponse($test['file']);
-            $result = $this->driver->placeStorageRetrievalRequest([
+            $result = $this->driver->placeStorageRetrievalRequest(
+                [
                     'patron' => [
                         'cat_username' => 'my_login',
                         'cat_password' => 'my_password',
@@ -1062,7 +1093,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'pickUpLocation' => 'My University|1', 'holdtype' => 'title',
                     'requiredBy' => '2020-12-30',
                     'item_agency_id' => 'My University',
-                ]);
+                ]
+            );
             $this->assertEquals(
                 $test['result'],
                 $result,
@@ -1081,7 +1113,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         $this->configureDriver();
         foreach ($this->cancelHoldsTests as $test) {
             $this->mockResponse($test['file']);
-            $result = $this->driver->cancelHolds([
+            $result = $this->driver->cancelHolds(
+                [
                     'patron' => [
                         'cat_username' => 'my_login',
                         'cat_password' => 'my_password',
@@ -1089,7 +1122,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     ], 'details' => [
                         'My University|Request1|Item1',
                     ],
-                ]);
+                ]
+            );
             $this->assertEquals(
                 $test['result'],
                 $result,
@@ -1108,7 +1142,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         $this->configureDriver();
         foreach ($this->cancelStorageRetrievalTests as $test) {
             $this->mockResponse($test['file']);
-            $result = $this->driver->cancelStorageRetrievalRequests([
+            $result = $this->driver->cancelStorageRetrievalRequests(
+                [
                     'patron' => [
                         'cat_username' => 'my_login',
                         'cat_password' => 'my_password',
@@ -1116,7 +1151,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     ], 'details' => [
                         'My University|Request1|Item1',
                     ],
-                ]);
+                ]
+            );
             $this->assertEquals(
                 $test['result'],
                 $result,
@@ -1135,7 +1171,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         $this->configureDriver();
         foreach ($this->renewMyItemsTests as $test) {
             $this->mockResponse($test['file']);
-            $result = $this->driver->renewMyItems([
+            $result = $this->driver->renewMyItems(
+                [
                     'patron' => [
                         'cat_username' => 'my_login',
                         'cat_password' => 'my_password',
@@ -1143,7 +1180,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     ], 'details' => [
                         'My University|Item1',
                     ],
-                ]);
+                ]
+            );
             $this->assertEquals(
                 $test['result'],
                 $result,
@@ -1291,8 +1329,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         $request = $method->invokeArgs(
             $this->driver,
             [
-            'username', 'password', 'patron agency', 'item agency', '', 'Hold', null,
-            '12345'
+                'username', 'password', 'patron agency', 'item agency', '', 'Hold', null,
+                '12345'
             ]
         );
     }
@@ -1402,15 +1440,18 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         ];
         $this->configureDriver($config);
         $this->mockResponse('RenewItemResponse404.xml');
-        $renew = $this->driver->renewMyItems([
-            'patron' => [
-                'cat_username' => 'my_login',
-                'cat_password' => 'my_password',
-                'patronAgencyId' => 'Test agency',
-            ], 'details' => [
-                'My University|Item1',
-            ],
-        ]);
+        $renew = $this->driver->renewMyItems(
+            [
+                'patron' => [
+                    'cat_username' => 'my_login',
+                    'cat_password' => 'my_password',
+                    'patronAgencyId' => 'Test agency',
+                ],
+                'details' => [
+                    'My University|Item1',
+                ],
+            ]
+        );
         $expected = [
             'blocks' => false,
             'details' => [
@@ -1435,15 +1476,18 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         $this->expectExceptionMessage(
             'HTTP error: ProblemType: Item Not Renewable, ProblemDetail: No active registration.'
         );
-        $renew = $this->driver->renewMyItems([
-            'patron' => [
-                'cat_username' => 'my_login',
-                'cat_password' => 'my_password',
-                'patronAgencyId' => 'Test agency',
-            ], 'details' => [
-                'My University|Item1',
-            ],
-        ]);
+        $renew = $this->driver->renewMyItems(
+            [
+                'patron' => [
+                    'cat_username' => 'my_login',
+                    'cat_password' => 'my_password',
+                    'patronAgencyId' => 'Test agency',
+                ],
+                'details' => [
+                    'My University|Item1',
+                ],
+            ]
+        );
     }
 
     /**
@@ -1479,6 +1523,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     /**
      * Test getBib method
      *
+     * @return void
      * @throws \ReflectionException
      */
     public function testGetBib()
@@ -1501,8 +1546,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      * Mock fixture as HTTP client response
      *
      * @param string|array|null $fixture Fixture file
-     *                                   *
      *
+     * @return void
      * @throws InvalidArgumentException Fixture file does not exist
      */
     protected function mockResponse($fixture = null)

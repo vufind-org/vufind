@@ -200,8 +200,9 @@ class RetryTraitTest extends \PHPUnit\Framework\TestCase
     /**
      * Test the backoff duration handling
      *
-     * @param int   $attempt Attempt number
-     * @param array $options Current options
+     * @param int   $expected Expected result
+     * @param int   $attempt  Attempt number
+     * @param array $options  Current options
      *
      * @dataProvider backoffDataProvider
      *

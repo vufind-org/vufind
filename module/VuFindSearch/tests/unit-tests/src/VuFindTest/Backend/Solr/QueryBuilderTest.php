@@ -153,8 +153,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     protected function runBasicQuestionTest($qb, $handler, $test)
     {
         [$input, $output, $flags] = $test;
-        if (
-            $handler === 'standard'
+        if ($handler === 'standard'
             || ($handler === 'dismax' && empty($flags['basic']))
         ) {
             // We expect an extra set of parentheses to be added, unless the
@@ -185,8 +184,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     protected function runAdvancedQuestionTest($qb, $handler, $test)
     {
         [$input, $output, $flags] = $test;
-        if (
-            $handler === 'standard'
+        if ($handler === 'standard'
             || ($handler === 'dismax' && empty($flags['basic']))
         ) {
             $advOutput = '((' . $output . '))';
@@ -726,7 +724,12 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     /**
      * Test generation with GlobalExtraParams using individual queries.
      *
-     * @return       void
+     * @param array $globalExtraParams Global extra parameters
+     * @param array $expected1         First set of expected fields
+     * @param array $expected2         Second set of expected fields
+     *
+     * @return void
+     *
      * @dataProvider globalExtraParamsIndividualQueryDataProvider
      */
     public function testIndividualQueryHandlerWithGlobalExtraParams(
@@ -848,7 +851,11 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     /**
      * Test generation with GlobalExtraParams using a grouped query.
      *
-     * @return       void
+     * @param array $globalExtraParams Global extra parameters
+     * @param array $expectedFields    Expected fields
+     *
+     * @return void
+     *
      * @dataProvider globalExtraParamsGroupedQueryDataProvider
      */
     public function testGroupedQueryHandlerWithGlobalExtraParams(

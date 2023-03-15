@@ -205,8 +205,8 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
     /**
      * Create a SearchTabsHelper
      *
-     * @param string $config   Which config set to use
-     * @param array  $filters  Active filters for a simulated request
+     * @param string $config  Which config set to use
+     * @param array  $filters Active filters for a simulated request
      *
      * @return \VuFind\Search\SearchTabsHelper
      */

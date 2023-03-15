@@ -308,7 +308,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
     /**
      * Support method to test callbacks.
      *
-     * @param array $args    Command arguments
+     * @param array  $args   Command arguments
      * @param string $class  Command class
      * @param string $target Target identifier
      *
@@ -363,7 +363,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
     ) {
         if (null === $factory) {
             $factory = $this->getMockBuilder(\VuFind\RecordDriver\PluginManager::class)
-            ->disableOriginalConstructor()->getMock();
+                ->disableOriginalConstructor()->getMock();
         }
         return new Loader($service, $factory, $recordCache, $fallbackLoader);
     }

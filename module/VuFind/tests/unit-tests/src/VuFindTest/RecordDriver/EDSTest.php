@@ -272,6 +272,8 @@ class EDSTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Data provider for testLinkUrls
+     *
+     * @return array
      */
     public function getLinkUrlsProvider(): array
     {
@@ -290,6 +292,9 @@ class EDSTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test linkUrls for a record.
+     *
+     * @param string $url      Input URL
+     * @param string $expected Expected value
      *
      * @dataProvider getLinkUrlsProvider
      *

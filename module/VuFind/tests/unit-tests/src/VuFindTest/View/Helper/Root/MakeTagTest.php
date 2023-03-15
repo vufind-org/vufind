@@ -163,6 +163,9 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
     /**
      * Test all data providers above
      *
+     * @param string $expected Expected value
+     * @param array  $params   Parameters to test
+     *
      * @dataProvider htmlAttributesTests
      * @dataProvider helperOptionTests
      * @dataProvider voidTags
@@ -200,6 +203,8 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
     /**
      * Test tag name edge cases
      *
+     * @param string $tagName Tag name to use in test
+     *
      * @dataProvider validTags
      *
      * @return void
@@ -236,6 +241,8 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
 
     /**
      * Test exception on bad tag names
+     *
+     * @param string $tagName Tag name to use in test
      *
      * @dataProvider invalidTags
      *

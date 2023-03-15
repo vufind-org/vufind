@@ -287,6 +287,7 @@ class AlmaTest extends \PHPUnit\Framework\TestCase
      * Create connector with fixture file.
      *
      * @param string $fixture Fixture file
+     * @param array  $options Connector options
      *
      * @return Connector
      *
