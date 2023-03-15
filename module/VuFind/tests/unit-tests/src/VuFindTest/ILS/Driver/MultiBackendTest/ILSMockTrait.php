@@ -284,6 +284,7 @@ trait ILSMockTrait
      */
     public function getILLPickUpLibraries($id, $patron)
     {
+        return false;
     }
 
     /**
@@ -302,6 +303,7 @@ trait ILSMockTrait
      */
     public function getILLPickUpLocations($id, $pickupLib, $patron)
     {
+        return false;
     }
 
     /**

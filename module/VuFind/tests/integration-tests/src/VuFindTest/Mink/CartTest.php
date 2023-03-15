@@ -787,7 +787,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
      * @param Element $page  Page element
      * @param array   $combo Site configuration to test
      *
-     * @return void
+     * @return array
      */
     protected function runConfigCombo($page, $combo)
     {
