@@ -435,9 +435,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
     /**
      * Get mock result scroller
      *
-     * @param \VuFind\Search\Base\Results $results restoreSearch results (null to
-     * ignore)
-     * @param array                       $methods Methods to mock
+     * @param \VuFind\Search\Base\Results $results restoreSearch results (null to ignore)
      *
      * @return ResultScroller
      */

@@ -209,6 +209,11 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
     /**
      * Test validation of create request with a password policy.
      *
+     * @param array  $authConfig             Authentication configuration
+     * @param string $password               Password for test
+     * @param string $expectedExceptionClass Expected exception class
+     * @param string $expectedExceptionMsg   Expected exception message
+     *
      * @dataProvider getTestCreateWithPasswordPolicyData
      *
      * @return void
@@ -398,6 +403,11 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test validation of create request with a username policy.
+     *
+     * @param array  $authConfig             Authentication configuration
+     * @param string $username               Username for test
+     * @param string $expectedExceptionClass Expected exception class
+     * @param string $expectedExceptionMsg   Expected exception message
      *
      * @dataProvider getTestCreateWithUsernamePolicyData
      *

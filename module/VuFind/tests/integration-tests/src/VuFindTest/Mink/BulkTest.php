@@ -81,7 +81,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    protected function setUpGenericBulkTest($checkBoxes = true)
+    protected function setUpGenericBulkTest()
     {
         // Activate the bulk options:
         $this->changeConfigs(

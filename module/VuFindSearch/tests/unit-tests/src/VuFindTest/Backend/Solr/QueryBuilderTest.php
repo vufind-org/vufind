@@ -724,6 +724,10 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     /**
      * Test generation with GlobalExtraParams using individual queries.
      *
+     * @param array $globalExtraParams Global extra parameters
+     * @param array $expected1         First set of expected fields
+     * @param array $expected2         Second set of expected fields
+     *
      * @return void
      *
      * @dataProvider globalExtraParamsIndividualQueryDataProvider
@@ -846,6 +850,9 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test generation with GlobalExtraParams using a grouped query.
+     *
+     * @param array $globalExtraParams Global extra parameters
+     * @param array $expectedFields    Expected fields
      *
      * @return void
      *

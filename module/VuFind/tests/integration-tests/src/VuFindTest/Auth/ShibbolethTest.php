@@ -138,6 +138,9 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a working configuration for the Shibboleth object
      *
+     * @param bool $useHeaders         Value for use_headers config setting
+     * @param bool $requiredAttributes Should we include a required attribute in config?
+     *
      * @return Config
      */
     public function getAuthConfig($useHeaders = false, $requiredAttributes = true)

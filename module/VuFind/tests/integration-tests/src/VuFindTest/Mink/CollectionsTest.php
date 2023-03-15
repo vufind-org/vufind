@@ -48,7 +48,7 @@ class CollectionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    private function goToCollection()
+    protected function goToCollection()
     {
         $session = $this->getMinkSession();
         $path = '/Collection/topcollection1';
@@ -61,7 +61,7 @@ class CollectionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    private function goToCollectionHierarchy()
+    protected function goToCollectionHierarchy()
     {
         $session = $this->getMinkSession();
         $path = '/Collection/subcollection1/HierarchyTree';

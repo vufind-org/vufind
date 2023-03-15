@@ -462,6 +462,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test record view print button.
+     *
+     * @return void
      */
     public function testPrint(): void
     {
@@ -514,6 +516,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test star ratings on records.
+     *
+     * @param bool $allowRemove Value for remove_rating config
      *
      * @dataProvider getTestRatingData
      *

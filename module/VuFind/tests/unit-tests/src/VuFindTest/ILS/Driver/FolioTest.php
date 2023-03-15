@@ -702,7 +702,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expected, $result);
     }
 
-    /*
+    /**
      * Test getHolding with HRID-based lookup
      *
      * @return void

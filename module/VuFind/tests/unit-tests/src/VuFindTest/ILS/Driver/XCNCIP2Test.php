@@ -1522,6 +1522,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
     /**
      * Test getBib method
      *
+     * @return void
      * @throws \ReflectionException
      */
     public function testGetBib()
@@ -1545,7 +1546,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @param string|array|null $fixture Fixture file
      *                                   *
-     *
+     * @return void
      * @throws InvalidArgumentException Fixture file does not exist
      */
     protected function mockResponse($fixture = null)

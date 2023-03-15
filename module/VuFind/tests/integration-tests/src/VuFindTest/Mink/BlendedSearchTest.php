@@ -118,6 +118,9 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test blended search
      *
+     * @param array $queryParams    Query parameters
+     * @param array $expectedLabels Expected labels
+     *
      * @dataProvider getSearchData
      *
      * @return void

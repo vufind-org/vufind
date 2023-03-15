@@ -120,6 +120,11 @@ class SearchServiceTest extends TestCase
 
     /**
      * Create a mock backend.
+     *
+     * @param string $class      Class to build
+     * @param string $identifier Backend ID to use
+     *
+     * @return object
      */
     protected function createMockBackend(
         $class = \VuFindSearch\Backend\BackendInterface::class,

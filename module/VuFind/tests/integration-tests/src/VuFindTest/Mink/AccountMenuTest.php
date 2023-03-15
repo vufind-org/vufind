@@ -87,6 +87,8 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
      * Cleared when browser closes.
      * If run multiple times in one test function, manually clear cache.
      *
+     * @param array $states States to set in JS session storage
+     *
      * @return void
      */
     protected function setJSStorage($states)
@@ -307,6 +309,9 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Abstracted test to set storage and check if the icon is correct
+     *
+     * @param array  $storage    Array of storage values to test
+     * @param string $checkClass Icon class to check
      *
      * @return void
      */
