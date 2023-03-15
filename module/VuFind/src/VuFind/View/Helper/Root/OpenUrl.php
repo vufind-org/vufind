@@ -129,7 +129,7 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
      *
      * @return void
      */
-    protected function addImageBasedParams($imagebased, & $params)
+    protected function addImageBasedParams($imagebased, &$params)
     {
         $params['openUrlImageBasedMode'] = $this->getImageBasedLinkingMode();
         $params['openUrlImageBasedSrc'] = null;

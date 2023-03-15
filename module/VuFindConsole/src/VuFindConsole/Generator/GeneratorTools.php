@@ -888,7 +888,7 @@ class GeneratorTools
     protected function applySettingToConfig(
         array $path,
         $setting,
-        array & $config
+        array &$config
     ) {
         $current = & $config;
         $finalStep = array_pop($path);
@@ -921,7 +921,7 @@ class GeneratorTools
     protected function writeNewConfigs(
         array $newValues,
         string $module,
-        bool $backup  = true
+        bool $backup = true
     ) {
         // Create backup of configuration
         $configPath = $this->getModuleConfigPath($module);
@@ -953,7 +953,7 @@ class GeneratorTools
      * @return void
      * @throws \Exception
      */
-    protected function writeNewConfig($path, $setting, $module, $backup  = true)
+    protected function writeNewConfig($path, $setting, $module, $backup = true)
     {
         $this->writeNewConfigs([compact('path', 'setting')], $module, $backup);
     }

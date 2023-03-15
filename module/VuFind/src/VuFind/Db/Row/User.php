@@ -177,7 +177,7 @@ class User extends RowGateway implements
      *
      * @return mixed           The output of the save method.
      */
-    public function saveEmailVerified($datetime=null)
+    public function saveEmailVerified($datetime = null)
     {
         if ($datetime === null) {
             $datetime = date('Y-m-d H:i:s');
