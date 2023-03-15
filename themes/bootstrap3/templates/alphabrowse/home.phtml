@@ -1,6 +1,6 @@
 <?php
   $this->headTitle($this->translate('Browse the Collection Alphabetically'));
-  $this->layout()->breadcrumbs = '<a href="' . $this->url('alphabrowse-home') . '">' . $this->transEsc('Browse Alphabetically') . '</a>';
+  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('alphabrowse-home') . '">' . $this->transEsc('Browse Alphabetically') . '</a></li>';
   $baseQuery = ['source' => $this->source, 'from' => $this->from];
 
   // Set up upper search box if necessary:
@@ -26,7 +26,7 @@
         </a>
       </li>
     <?php else: ?>
-      <li class="disabled" aria-hidden="true"><a disabled><?=$this->icon('page-prev') ?> <?=$this->transEsc('Prev')?></a></li>
+      <li class="disabled" aria-hidden="true"><a><?=$this->icon('page-prev') ?> <?=$this->transEsc('Prev')?></a></li>
     <?php endif; ?>
 
     <?php if (isset($this->nextpage)): ?>
@@ -37,7 +37,7 @@
         </a>
       </li>
     <?php else: ?>
-      <li class="disabled" aria-hidden="true"><a disabled><?=$this->transEsc('Next')?> <?=$this->icon('page-next') ?></a></li>
+      <li class="disabled" aria-hidden="true"><a><?=$this->transEsc('Next')?> <?=$this->icon('page-next') ?></a></li>
     <?php endif; ?>
   </ul>
 <?php $pageLinks = ob_get_contents(); ?>

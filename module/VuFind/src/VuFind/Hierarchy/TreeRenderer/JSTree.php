@@ -192,7 +192,7 @@ class JSTree extends AbstractBase implements \VuFind\I18n\Translator\TranslatorA
             'id' => preg_replace('/\W/', '-', $node->id),
             'text' => $escaper->escapeHtml($node->title),
             'li_attr' => [
-                'recordid' => $node->id
+                'data-recordid' => $node->id
             ],
             'a_attr' => [
                 'href' => $this->getContextualUrl($node, $context),
