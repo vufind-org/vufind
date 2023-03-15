@@ -1017,21 +1017,24 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         $locations = $this->driver->getPickUpLocations([]);
         $this->assertEquals(
             [
-            [
-                'locationID' => 'My library|1', 'locationDisplay' => 'Main library',
-            ], [
-                'locationID' => 'My library|2', 'locationDisplay' => 'Stacks',
-            ]
-            ], $locations
+                [
+                    'locationID' => 'My library|1', 'locationDisplay' => 'Main library',
+                ],
+                [
+                    'locationID' => 'My library|2', 'locationDisplay' => 'Stacks',
+                ]
+            ],
+            $locations
         );
 
         // Test reading pickup locations from NCIP, but response is without locations
         $this->configureDriver(
             [
-            'Catalog' => [
-                'url' => 'https://test.ncip.example', 'consortium' => false,
-                'agency' => ['Test agency'], 'pickupLocationsFromNCIP' => true,
-            ], 'NCIP' => [],
+                'Catalog' => [
+                    'url' => 'https://test.ncip.example', 'consortium' => false,
+                    'agency' => ['Test agency'], 'pickupLocationsFromNCIP' => true,
+                ],
+                'NCIP' => [],
             ]
         );
         $this->mockResponse('LookupAgencyResponseWithoutLocations.xml');
@@ -1325,8 +1328,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         $request = $method->invokeArgs(
             $this->driver,
             [
-            'username', 'password', 'patron agency', 'item agency', '', 'Hold', null,
-            '12345'
+                'username', 'password', 'patron agency', 'item agency', '', 'Hold', null,
+                '12345'
             ]
         );
     }
