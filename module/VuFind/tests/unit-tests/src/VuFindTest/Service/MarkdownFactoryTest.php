@@ -288,7 +288,7 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
             $result = $this->getMarkdownEnvironmentExtensions($test['config']);
             $result = array_map(
                 function ($extension) {
-                return get_class($extension);
+                    return get_class($extension);
                 }, $result
             );
             $this->assertEquals($test['expected'], $result);
