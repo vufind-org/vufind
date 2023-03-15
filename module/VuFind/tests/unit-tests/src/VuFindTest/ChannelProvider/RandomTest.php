@@ -169,7 +169,7 @@ class RandomTest extends \PHPUnit\Framework\TestCase
     /**
      * Support method to test callbacks.
      *
-     * @param array $args    Command arguments
+     * @param array  $args   Command arguments
      * @param string $class  Command class
      * @param string $target Target identifier
      *
@@ -190,10 +190,11 @@ class RandomTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a configured parameters object mock.
      *
-     * @param \VuFindSearch\Query\Query $query Search query object to be
-     * returned by getQuery method.
-     * @param \VuFindSearch\ParamBag $paramBag Request parameters to be returned by
-     * getBackendParameters method.
+     * @param \VuFindSearch\Query\Query $query    Search query object to be
+     *                                            returned by getQuery
+     *                                            method.
+     * @param \VuFindSearch\ParamBag    $paramBag Request parameters to be returned by
+     *                                            getBackendParameters method.
      *
      * @return MockObject
      */

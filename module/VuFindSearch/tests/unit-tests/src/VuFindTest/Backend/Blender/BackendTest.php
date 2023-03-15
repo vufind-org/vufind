@@ -1025,8 +1025,8 @@ class BackendTest extends TestCase
     /**
      * Return search params
      *
-     * @param array $filters   Blender filters
-     * @param Query $query     Query
+     * @param array $filters Blender filters
+     * @param Query $query   Query
      *
      * @return ParamBag
      */

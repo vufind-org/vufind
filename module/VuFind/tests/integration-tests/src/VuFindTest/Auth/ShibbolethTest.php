@@ -107,9 +107,9 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
     /**
      * Get an authentication object.
      *
-     * @param Config $config Configuration to use (null for default)
-     * @param Config $shibConfig Configuration with IdP
-     * @param boolean $useHeaders use HTTP headers instead of environment variables
+     * @param Config  $config             Configuration to use (null for default)
+     * @param Config  $shibConfig         Configuration with IdP
+     * @param boolean $useHeaders         use HTTP headers instead of environment variables
      * @param boolean $requiredAttributes required attributes
      *
      * @return Shibboleth
@@ -206,7 +206,7 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
      * Support method -- get parameters to log into an account (but allow override of
      * individual parameters so we can test different scenarios).
      *
-     * @param array $overrides    Associative array of parameters to override.
+     * @param array   $overrides  Associative array of parameters to override.
      * @param boolean $useHeaders Use headers instead of environment variables
      *
      * @return \Laminas\Http\Request

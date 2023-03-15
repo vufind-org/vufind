@@ -342,8 +342,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      */
     public function testUnsuccessfulPlaceHoldInvalidExpirationDate(): void
     {
-        # Validates that the requiredByTS is an of type ?int, or throws an exception
-        # otherwise
+        // Validates that the requiredByTS is an of type ?int, or throws an exception
+        // otherwise
         $this->createConnector('unsuccessful-place-hold');
         $details = [
             'requiredBy' => '3333-33-33',

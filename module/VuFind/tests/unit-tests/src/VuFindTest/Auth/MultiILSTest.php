@@ -232,8 +232,8 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
      *
      * @param array $onlyMethods Existing methods to mock (in addition to
      * supportsMethod)
-     * @param array $addMethods New methods to mock (in addition to
-     * getLoginDrivers)
+     * @param array $addMethods  New methods to mock (in addition to
+     *                           getLoginDrivers)
      *
      * @return MockObject&MultiBackend
      */

@@ -89,9 +89,11 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         $mockConfig = $this->createMock(PluginManager::class);
         $options = new Options($mockConfig);
         $options->setTranslator($mockTranslator);
-        $options->setTranslatedFacets([
+        $options->setTranslatedFacets(
+            [
             'dewey-raw:DDC23:dewey_format_str'
-        ]);
+            ]
+        );
         $params = $this->getParams($options);
         $params->addFacet('dewey-raw');
         $searchService = $this->getSearchServiceWithMockSearchMethod(
@@ -174,8 +176,8 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     ): SearchService {
         $collection = new RecordCollection($response);
         $searchService = $this->getMockBuilder(\VuFindSearch\Service::class)
-        ->disableOriginalConstructor()
-        ->getMock();
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
             ->disableOriginalConstructor()

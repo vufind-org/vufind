@@ -80,7 +80,7 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
     /**
      * Test if the tab is active.
      *
-     * @param int  $childCount   Child count for record driver to report
+     * @param int  $childCount     Child count for record driver to report
      * @param bool $expectedResult Expected return value from isActive
      *
      * @return void
