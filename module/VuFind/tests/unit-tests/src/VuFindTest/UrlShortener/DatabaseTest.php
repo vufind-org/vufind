@@ -53,7 +53,7 @@ class DatabaseTest extends TestCase
     /**
      * Get the object to test.
      *
-     * @param  object $table Database table object/mock
+     * @param object $table Database table object/mock
      *
      * @return Database
      */
@@ -65,7 +65,7 @@ class DatabaseTest extends TestCase
     /**
      * Get the mock table object.
      *
-     * @param  array $methods Methods to mock.
+     * @param array $methods Methods to mock.
      *
      * @return object
      */

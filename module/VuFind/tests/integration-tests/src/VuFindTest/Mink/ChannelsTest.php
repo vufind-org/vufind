@@ -58,6 +58,8 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Make sure the page works, channels exists, search
+     *
+     * @return void
      */
     public function testBasic()
     {
@@ -76,6 +78,8 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Add channels button
+     *
+     * @return void
      */
     public function testAddChannels()
     {
@@ -95,6 +99,8 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Switch to search
+     *
+     * @return void
      */
     public function testSwitchToSearch()
     {

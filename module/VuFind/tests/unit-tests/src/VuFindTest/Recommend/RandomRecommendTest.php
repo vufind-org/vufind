@@ -346,6 +346,8 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a fixture object
      *
+     * @param string $file Fixture name
+     *
      * @return mixed
      */
     protected function unserializeFixture($file)

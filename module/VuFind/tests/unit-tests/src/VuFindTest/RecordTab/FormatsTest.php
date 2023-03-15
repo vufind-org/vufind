@@ -68,7 +68,7 @@ class FormatsTest extends \PHPUnit\Framework\TestCase
     /**
      * Test if the tab is active.
      *
-     * @param bool $enable Enable the formats tab
+     * @param bool $enable         Enable the formats tab
      * @param bool $expectedResult Expected return value from isActive
      *
      * @return void

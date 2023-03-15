@@ -56,6 +56,7 @@ class OAuth2TokenTraitTest extends \PHPUnit\Framework\TestCase
     /**
      * Test for getNewOauth2Token
      *
+     * @return void
      * @throws \VuFind\Exception\ILS
      */
     public function testGetNewOAuth2Token()
@@ -103,6 +104,8 @@ END;
      *
      * @param string|array|null $responseData String or array of string which
      * with raw http response
+     *
+     * @return void
      */
     protected function mockResponse($responseData)
     {
@@ -124,6 +127,8 @@ END;
 
     /**
      * Basic configuration for tested service
+     *
+     * @return void
      */
     public function configureDriver(): void
     {

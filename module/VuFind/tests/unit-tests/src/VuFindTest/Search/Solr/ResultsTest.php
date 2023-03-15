@@ -89,9 +89,11 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         $mockConfig = $this->createMock(PluginManager::class);
         $options = new Options($mockConfig);
         $options->setTranslator($mockTranslator);
-        $options->setTranslatedFacets([
-            'dewey-raw:DDC23:dewey_format_str'
-        ]);
+        $options->setTranslatedFacets(
+            [
+                'dewey-raw:DDC23:dewey_format_str'
+            ]
+        );
         $params = $this->getParams($options);
         $params->addFacet('dewey-raw');
         $searchService = $this->getSearchServiceWithMockSearchMethod(
@@ -163,7 +165,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock search service that will return a RecordCollection.
      *
-     * @param array $solrResponse   Decoded Solr response for search to return
+     * @param array $response       Decoded Solr response for search to return
      * @param array $expectedParams Expected ParamBag parameters
      *
      * @return SearchService
@@ -174,8 +176,8 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     ): SearchService {
         $collection = new RecordCollection($response);
         $searchService = $this->getMockBuilder(\VuFindSearch\Service::class)
-        ->disableOriginalConstructor()
-        ->getMock();
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
             ->disableOriginalConstructor()
@@ -417,6 +419,10 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Get Results object
+     *
+     * @param Params        $params        Params object
+     * @param SearchService $searchService Search service
+     * @param Loader        $loader        Record loader
      *
      * @return Results
      */

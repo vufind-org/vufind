@@ -150,10 +150,13 @@ class GetResolverLinksTest extends \VuFindTest\Unit\AjaxHandlerTest
                 'searchClassId' => 'scl',
             ]
         );
-        $this->assertEquals([
+        $this->assertEquals(
             [
-                'html' => 'html',
-            ]
-        ], $handler->handleRequest($params));
+                [
+                    'html' => 'html',
+                ]
+            ],
+            $handler->handleRequest($params)
+        );
     }
 }

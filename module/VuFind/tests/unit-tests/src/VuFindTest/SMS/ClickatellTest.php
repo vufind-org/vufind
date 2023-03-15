@@ -193,7 +193,7 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
      * Build a test object
      *
      * @param \Laminas\Http\Client $client HTTP client (null for default)
-     * @param array             $config Configuration (null for default)
+     * @param array                $config Configuration (null for default)
      *
      * @return Clickatell
      */

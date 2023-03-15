@@ -665,8 +665,6 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock server URL helper
      *
-     * @param string $expectedRoute Route expected by mock helper
-     *
      * @return \Laminas\View\Helper\ServerUrl
      */
     protected function getMockServerUrl()

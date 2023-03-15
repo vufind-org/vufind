@@ -72,11 +72,23 @@ class VuFindGeoTest extends \PHPUnit\Framework\TestCase
         $logger = new class {
             protected $messages = [];
 
+            /**
+             * Capture a log message
+             *
+             * @param string $msg Log message
+             *
+             * @return void
+             */
             public function log($msg): void
             {
                 $this->messages[] = $msg;
             }
 
+            /**
+             * Get the top message from the message stack
+             *
+             * @return string
+             */
             public function popMessage()
             {
                 return array_pop($this->messages);
