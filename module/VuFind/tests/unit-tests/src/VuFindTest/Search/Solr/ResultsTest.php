@@ -91,7 +91,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         $options->setTranslator($mockTranslator);
         $options->setTranslatedFacets(
             [
-            'dewey-raw:DDC23:dewey_format_str'
+                'dewey-raw:DDC23:dewey_format_str'
             ]
         );
         $params = $this->getParams($options);
