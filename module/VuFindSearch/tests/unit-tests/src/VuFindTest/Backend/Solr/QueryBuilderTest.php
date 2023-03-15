@@ -724,7 +724,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     /**
      * Test generation with GlobalExtraParams using individual queries.
      *
-     * @return       void
+     * @return void
+     *
      * @dataProvider globalExtraParamsIndividualQueryDataProvider
      */
     public function testIndividualQueryHandlerWithGlobalExtraParams(
@@ -846,7 +847,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     /**
      * Test generation with GlobalExtraParams using a grouped query.
      *
-     * @return       void
+     * @return void
+     *
      * @dataProvider globalExtraParamsGroupedQueryDataProvider
      */
     public function testGroupedQueryHandlerWithGlobalExtraParams(
