@@ -260,7 +260,7 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
             $this->equalTo('Solr'),
             $this->callback(
                 function ($doc) {
-                return $doc instanceof RawJSONDocument;
+                    return $doc instanceof RawJSONDocument;
                 }
             ),
             $this->equalTo('update')
