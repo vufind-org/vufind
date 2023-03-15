@@ -191,10 +191,9 @@ class RandomTest extends \PHPUnit\Framework\TestCase
      * Get a configured parameters object mock.
      *
      * @param \VuFindSearch\Query\Query $query    Search query object to be
-     *                                            returned by getQuery
-     *                                            method.
+     * returned by getQuery method.
      * @param \VuFindSearch\ParamBag    $paramBag Request parameters to be returned by
-     *                                            getBackendParameters method.
+     * getBackendParameters method.
      *
      * @return MockObject
      */
