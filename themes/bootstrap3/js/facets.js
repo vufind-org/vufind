@@ -18,7 +18,6 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
       item.className += ' applied';
     }
     item.setAttribute('title', facet.displayText);
-    item.setAttribute('role', 'menuitem');
     if (facet.operator === 'OR') {
       var icon = document.createElement('span');
       icon.className = "hierarchy-facet-icon";

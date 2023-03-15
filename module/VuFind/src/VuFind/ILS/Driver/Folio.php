@@ -46,7 +46,8 @@ use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class Folio extends AbstractAPI implements
-    HttpServiceAwareInterface, TranslatorAwareInterface
+    HttpServiceAwareInterface,
+    TranslatorAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;

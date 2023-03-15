@@ -36,8 +36,8 @@
 $(document).ready(function() {
   var fillTexts = function() {
     var v = {$escField}dateSlider.getValue();
-    $('#${escField}from').val(v[0]);
-    $('#${escField}to').val(v[1]);
+    $('#{$escField}from').val(v[0]);
+    $('#{$escField}to').val(v[1]);
   };
   var {$escField}dateSlider = $('#{$escField}dateSlider')
     .slider({
@@ -45,7 +45,8 @@ $(document).ready(function() {
        'max':{$max},
        'handle':"square",
        'tooltip':"hide",
-       'value':[{$low},{$high}]
+       'value':[{$low},{$high}],
+       'id': '{$escField}date_slider_control'
     })
     .on('change', fillTexts)
     .data('slider');

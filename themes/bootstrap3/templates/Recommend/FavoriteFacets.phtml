@@ -3,7 +3,7 @@
 
 <?php if (isset($sideFacetSet['tags']) && !empty($sideFacetSet['tags']['list'])): ?>
   <h4 class="tag"><?=$this->transEsc($sideFacetSet['tags']['label'])?></h4>
-  <ul class="list-group">
+  <div class="list-group">
   <?php $filterList = $results->getParams()->getFilterList(true);
      $tagFilterList = $filterList[$sideFacetSet['tags']['label']] ?? null; ?>
     <?php if (!empty($tagFilterList)): ?>
@@ -24,5 +24,5 @@
         </a>
       <?php endif ?>
     <?php endforeach; ?>
-  </ul>
+  </div>
 <?php endif; ?>

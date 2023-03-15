@@ -43,8 +43,7 @@ use Psr\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ComponentPartsFactory
-implements \Laminas\ServiceManager\Factory\FactoryInterface
+class ComponentPartsFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object

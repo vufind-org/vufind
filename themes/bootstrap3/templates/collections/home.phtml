@@ -1,6 +1,6 @@
 <?php
   $this->headTitle($this->translate('Collection Browse'));
-  $this->layout()->breadcrumbs = '<a href="' . $this->url('collections-home') . '">' . $this->transEsc('Collections') . '</a>';
+  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('collections-home') . '">' . $this->transEsc('Collections') . '</a></li>';
   $filterList = [];
   $filterString = '';
   foreach ($filters ?? [] as $label => $filterBatch) {
@@ -25,7 +25,7 @@
         </li>
       <?php else: ?>
         <li class="disabled" aria-hidden="true">
-          <a class="icon-link" disabled>
+          <a class="icon-link">
             <?=$this->icon('page-prev', 'icon-link__icon') ?>
             <span class="icon-link__label"><?=$this->transEsc('Prev')?></span>
           </a>
@@ -40,7 +40,7 @@
         </li>
       <?php else: ?>
         <li class="disabled">
-          <a class="icon-link" disabled>
+          <a class="icon-link">
             <span class="icon-link__label"><?=$this->transEsc('Next')?></span>
             <?=$this->icon('page-next', 'icon-link__icon') ?>
           </a>
