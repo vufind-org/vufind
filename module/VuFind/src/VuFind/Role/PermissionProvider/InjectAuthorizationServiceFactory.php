@@ -33,7 +33,6 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use LmcRbacMvc\Service\AuthorizationService;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
-
 use Psr\Container\ContainerInterface;
 
 /**

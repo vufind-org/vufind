@@ -32,7 +32,6 @@ namespace VuFindSearch\Backend\Pazpar2;
 use Laminas\Http\Client;
 use Laminas\Http\Request;
 use VuFindSearch\Backend\Exception\HttpErrorException;
-
 use VuFindSearch\ParamBag;
 
 /**

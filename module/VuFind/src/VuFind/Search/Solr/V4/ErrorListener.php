@@ -31,7 +31,6 @@ namespace VuFind\Search\Solr\V4;
 
 use Laminas\EventManager\EventInterface;
 use Laminas\Http\Response;
-
 use VuFind\Search\Solr\AbstractErrorListener;
 use VuFindSearch\Backend\Exception\HttpErrorException;
 

@@ -30,7 +30,6 @@
 namespace VuFindTest\Backend\Solr;
 
 use PHPUnit\Framework\TestCase;
-
 use VuFindSearch\Backend\Solr\HandlerMap;
 
 /**

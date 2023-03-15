@@ -32,7 +32,6 @@
 namespace VuFindTest\Search\Solr;
 
 use Laminas\EventManager\Event;
-
 use VuFind\Search\Solr\DefaultParametersListener;
 use VuFindSearch\ParamBag;
 
