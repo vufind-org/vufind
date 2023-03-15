@@ -1545,7 +1545,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      * Mock fixture as HTTP client response
      *
      * @param string|array|null $fixture Fixture file
-     *                                   *
+     *
      * @return void
      * @throws InvalidArgumentException Fixture file does not exist
      */

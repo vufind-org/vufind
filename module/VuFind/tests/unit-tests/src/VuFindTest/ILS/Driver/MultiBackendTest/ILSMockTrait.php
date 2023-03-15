@@ -282,7 +282,7 @@ trait ILSMockTrait
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getILLPickUpLibraries($patron = false, $holdDetails = null)
+    public function getILLPickUpLibraries($id, $patron)
     {
     }
 
@@ -338,7 +338,7 @@ trait ILSMockTrait
      * as submitted form data in checkedOut.php. This value is then extracted by
      * the RenewMyItems function.
      *
-     * @param array $checkOutDetails An array of item data
+     * @param array $checkoutDetails An array of item data
      *
      * @return string Data for use in a form field
      *
@@ -403,7 +403,7 @@ trait ILSMockTrait
      * Attempts to place an ILL request on a particular item and returns
      * an array with result details
      *
-     * @param array $details An array of item and patron data
+     * @param array $holdDetails An array of item and patron data
      *
      * @return mixed An array of data on the request including
      * whether or not it was successful and a system message (if available)
