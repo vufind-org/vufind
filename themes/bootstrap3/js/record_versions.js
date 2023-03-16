@@ -5,8 +5,8 @@ VuFind.register("recordVersions", function recordVersions() {
     items.forEach(function displayVersionStatus(item) {
       const key = item.source + "|" + item.id;
 
-      if (typeof response.data[key] !== "undefined") {
-        $(item.el).html(VuFind.updateCspNonce(response.data[key]));
+      if (typeof response.data.records[key] !== "undefined") {
+        $(item.el).html(VuFind.updateCspNonce(response.data.records[key]));
       }
     });
   }
@@ -21,8 +21,8 @@ VuFind.register("recordVersions", function recordVersions() {
     return new Promise(function runVersionAjaxPromise(done, error) {
       $.getJSON(VuFind.path + "/AJAX/JSON", {
         method: "getRecordVersions",
-        id: items.records.map((item) => item.id),
-        source: items.records.map((item) => item.source),
+        id: items.map((item) => item.id),
+        source: items.map((item) => item.source),
         sid: VuFind.getCurrentSearchId(),
       })
         .done(done)
