@@ -32,7 +32,6 @@ namespace VuFindSearch\Backend\EIT;
 use Laminas\Http\Client;
 use Laminas\Http\Request;
 use VuFindSearch\Backend\Exception\HttpErrorException;
-
 use VuFindSearch\ParamBag;
 
 /**

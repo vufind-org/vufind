@@ -48,7 +48,7 @@ class CollectionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    private function goToCollection()
+    protected function goToCollection()
     {
         $session = $this->getMinkSession();
         $path = '/Collection/topcollection1';
@@ -61,7 +61,7 @@ class CollectionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    private function goToCollectionHierarchy()
+    protected function goToCollectionHierarchy()
     {
         $session = $this->getMinkSession();
         $path = '/Collection/subcollection1/HierarchyTree';
@@ -158,7 +158,7 @@ class CollectionsTest extends \VuFindTest\Integration\MinkTestCase
             trim($this->findCss($page, '#tree-preview h2')->getText()),
             'Subcollection 1'
         );
-        $this->clickCss($page, '[recordid="colitem2"] a');
+        $this->clickCss($page, '[data-recordid="colitem2"] a');
 
         $this->waitStatement('$("#tree-preview h2").text().trim() === "Collection item 2"');
 

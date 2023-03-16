@@ -33,7 +33,6 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-
 use VuFind\Search\SearchRunner;
 
 /**
@@ -45,8 +44,7 @@ use VuFind\Search\SearchRunner;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class InjectSearchRunnerFactory
-implements \Laminas\ServiceManager\Factory\FactoryInterface
+class InjectSearchRunnerFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object

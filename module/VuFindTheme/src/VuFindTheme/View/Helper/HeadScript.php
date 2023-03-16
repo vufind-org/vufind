@@ -44,8 +44,7 @@ use VuFindTheme\ThemeInfo;
  * @method getIndent()
  * @method getSeparator()
  */
-class HeadScript extends \Laminas\View\Helper\HeadScript
-implements \Laminas\Log\LoggerAwareInterface
+class HeadScript extends \Laminas\View\Helper\HeadScript implements \Laminas\Log\LoggerAwareInterface
 {
     use ConcatTrait {
         getMinifiedData as getBaseMinifiedData;

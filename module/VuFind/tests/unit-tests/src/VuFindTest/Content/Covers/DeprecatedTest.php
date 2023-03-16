@@ -58,8 +58,8 @@ class DeprecatedTest extends \PHPUnit\Framework\TestCase
     /**
      * Simulate retrieval of a cover URL for a particular size.
      *
-     * @param string $size  Size to retrieve
-     * @param string $isbn  ISBN to retrieve (empty for none)
+     * @param string $size Size to retrieve
+     * @param string $isbn ISBN to retrieve (empty for none)
      *
      * @return string|bool
      */

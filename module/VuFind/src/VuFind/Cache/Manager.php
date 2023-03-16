@@ -223,7 +223,7 @@ class Manager
      *
      * @return string
      */
-    public function addDownloaderCache($downloaderName, $opts=[])
+    public function addDownloaderCache($downloaderName, $opts = [])
     {
         $cacheName = 'downloader-' . $downloaderName;
         $this->createFileCache(
@@ -276,7 +276,7 @@ class Manager
      *
      * @return void
      */
-    protected function createFileCache($cacheName, $dirName, $overrideOpts=[])
+    protected function createFileCache($cacheName, $dirName, $overrideOpts = [])
     {
         $opts = array_merge($this->defaults, $overrideOpts);
         if (!is_dir($dirName)) {

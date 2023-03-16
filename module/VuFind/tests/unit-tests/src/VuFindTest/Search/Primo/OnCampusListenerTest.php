@@ -32,7 +32,6 @@ namespace VuFindTest\Search\Primo;
 use Laminas\EventManager\Event;
 use VuFind\Search\Primo\InjectOnCampusListener;
 use VuFindSearch\Backend\Primo\Backend;
-
 use VuFindSearch\Backend\Primo\Connector;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Service;

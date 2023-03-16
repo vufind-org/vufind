@@ -46,7 +46,8 @@ use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class Folio extends AbstractAPI implements
-    HttpServiceAwareInterface, TranslatorAwareInterface
+    HttpServiceAwareInterface,
+    TranslatorAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
@@ -686,7 +687,7 @@ class Folio extends AbstractAPI implements
             'duedate' => $dueDateValue,
             'availability' => $item->status->name == 'Available',
             'is_holdable' => $this->isHoldable($locationName),
-            'holdings_notes'=> $holdingDetails['hasHoldingNotes']
+            'holdings_notes' => $holdingDetails['hasHoldingNotes']
                 ? $holdingDetails['holdingNotes'] : null,
             'item_notes' => !empty(implode($itemNotes)) ? $itemNotes : null,
             'issues' => $holdingDetails['holdingsStatements'],
@@ -809,7 +810,7 @@ class Folio extends AbstractAPI implements
     protected function getDateTimeFromString(string $str): DateTime
     {
         $dateTime = new DateTime($str, new DateTimeZone('UTC'));
-        $localTimezone = (new DateTime)->getTimezone();
+        $localTimezone = (new DateTime())->getTimezone();
         $dateTime->setTimezone($localTimezone);
         return $dateTime;
     }

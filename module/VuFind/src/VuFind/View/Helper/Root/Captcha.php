@@ -66,7 +66,7 @@ class Captcha extends \Laminas\View\Helper\AbstractHelper
      */
     public function __construct(
         \Laminas\Config\Config $config,
-        array $captchas=[]
+        array $captchas = []
     ) {
         $this->config = $config;
         $this->captchas = $captchas;

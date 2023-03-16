@@ -42,8 +42,7 @@ use Laminas\Mvc\Controller\Plugin\Url as UrlPlugin;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
-class JSTree extends AbstractBase
-implements \VuFind\I18n\Translator\TranslatorAwareInterface
+class JSTree extends AbstractBase implements \VuFind\I18n\Translator\TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
@@ -192,7 +191,7 @@ implements \VuFind\I18n\Translator\TranslatorAwareInterface
             'id' => preg_replace('/\W/', '-', $node->id),
             'text' => $escaper->escapeHtml($node->title),
             'li_attr' => [
-                'recordid' => $node->id
+                'data-recordid' => $node->id
             ],
             'a_attr' => [
                 'href' => $this->getContextualUrl($node, $context),
@@ -202,7 +201,7 @@ implements \VuFind\I18n\Translator\TranslatorAwareInterface
         ];
         if (isset($node->children)) {
             $ret['children'] = [];
-            for ($i = 0;$i < count($node->children);$i++) {
+            for ($i = 0; $i < count($node->children); $i++) {
                 $ret['children'][$i] = $this
                     ->buildNodeArray($node->children[$i], $context, $hierarchyID);
             }

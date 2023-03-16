@@ -318,9 +318,9 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         switch ($loc) {
             case 10:
                 return "Missing";
-            case  9:
+            case 9:
                 return "On Order";
-            case  8:
+            case 8:
                 return "Invoiced";
             default:
                 return "Available";

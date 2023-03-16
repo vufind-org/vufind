@@ -138,9 +138,10 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
     /**
      * Support method to mock objects.
      *
-     * @param array $options Set options for theprovider
-     * @param bool $fetchFromSearchService  flag indicating test case to fetch from
-     * search service when the search results do not include object we are looking for
+     * @param array $options                Set options for the provider
+     * @param bool  $fetchFromSearchService Flag indicating test case to fetch from
+     * search service when the search results do not include object we are looking
+     * for
      *
      * @return array
      */
@@ -223,7 +224,7 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
             ],
 
         ]];
-        $routeDetails = ['route' => 'test_route', 'params' => ['id'=> 'route_id']];
+        $routeDetails = ['route' => 'test_route', 'params' => ['id' => 'route_id']];
         $router->expects($this->once())->method('getRouteDetails')
             ->with($this->equalTo($recordDriver))
             ->willReturn($routeDetails);
@@ -266,7 +267,7 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
     /**
      * Support method to test callbacks.
      *
-     * @param array $args    Command arguments
+     * @param array  $args   Command arguments
      * @param string $class  Command class
      * @param string $target Target identifier
      *

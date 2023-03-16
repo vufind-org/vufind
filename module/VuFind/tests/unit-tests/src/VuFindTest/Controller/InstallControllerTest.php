@@ -184,6 +184,9 @@ class InstallControllerTest extends \PHPUnit\Framework\TestCase
     /**
      * Test getMinimalPhpVersion with actual composer.json file
      *
+     * @param array  $json     JSON data
+     * @param string $expected Expected version number
+     *
      * @dataProvider getMinimalPhpVersionProvider
      *
      * @return void

@@ -178,7 +178,7 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Get start page
      *
-     * @return
+     * @return Element
      */
     protected function getStartPage(): Element
     {

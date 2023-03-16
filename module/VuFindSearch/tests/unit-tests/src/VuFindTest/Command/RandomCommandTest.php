@@ -120,18 +120,17 @@ class RandomCommandTest extends TestCase
         $backend->expects($this->exactly(2))->method('search')
             ->withConsecutive(
                 [
-                $this->equalTo($query),
-                $this->equalTo(0),
-                $this->equalTo(0),
-                $this->equalTo($params)
-            ],
+                    $this->equalTo($query),
+                    $this->equalTo(0),
+                    $this->equalTo(0),
+                    $this->equalTo($params)
+                ],
                 [
-                $this->equalTo($query),
-                $this->equalTo(0),
-                $this->equalTo(10),
-                $this->equalTo($params)
-
-            ]
+                    $this->equalTo($query),
+                    $this->equalTo(0),
+                    $this->equalTo(10),
+                    $this->equalTo($params)
+                ]
             )->willReturnOnConsecutiveCalls($this->returnValue($rci), $this->returnValue($rci));
         $this->assertEquals($rci, $command->execute($backend)->getResult());
     }
