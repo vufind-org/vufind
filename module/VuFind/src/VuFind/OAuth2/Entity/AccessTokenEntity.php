@@ -45,7 +45,9 @@ use League\OAuth2\Server\Entities\Traits\TokenEntityTrait;
  */
 class AccessTokenEntity implements AccessTokenEntityInterface, \JsonSerializable
 {
-    use AccessTokenTrait, TokenEntityTrait, EntityTrait;
+    use AccessTokenTrait;
+    use TokenEntityTrait;
+    use EntityTrait;
 
     /**
      * Serialize to a JSON string
