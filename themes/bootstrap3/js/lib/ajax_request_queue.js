@@ -33,7 +33,10 @@ class AjaxRequestQueue {
       this.runFn(this.payload)
         .then((...res) => this.successFn(this.payload, ...res))
 
-        .catch((...error) => this.failureFn(this.payload, ...error))
+        .catch((...error) => {
+          console.error(...error);
+          this.failureFn(this.payload, ...error);
+        })
 
         .finally(() => {
           this.isRunning = false;
