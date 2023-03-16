@@ -665,13 +665,13 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test transaction history with purge option(s) disabled.
      *
-     * @dataProvider loanHistoryWithPurgeDisabledProvider
-     * @depends      testProfile
-     *
      * @param bool $selected Whether to enable Purge Selected
      * @param bool $all      Whether to enable Purge All
      *
      * @return void
+     *
+     * @dataProvider loanHistoryWithPurgeDisabledProvider
+     * @depends      testProfile
      */
     public function testLoanHistoryWithPurgeDisabled(bool $selected, bool $all): void
     {
