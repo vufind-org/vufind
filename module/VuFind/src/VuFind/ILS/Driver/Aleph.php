@@ -40,7 +40,6 @@
 namespace VuFind\ILS\Driver;
 
 use Laminas\I18n\Translator\TranslatorInterface;
-
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 

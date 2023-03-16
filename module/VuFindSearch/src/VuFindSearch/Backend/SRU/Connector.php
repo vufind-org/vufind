@@ -31,7 +31,6 @@ namespace VuFindSearch\Backend\SRU;
 
 use VuFind\XSLT\Processor as XSLTProcessor;
 use VuFindSearch\Backend\Exception\BackendException;
-
 use VuFindSearch\Backend\Exception\HttpErrorException;
 
 /**

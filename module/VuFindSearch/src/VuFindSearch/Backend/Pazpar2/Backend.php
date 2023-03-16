@@ -30,12 +30,10 @@
 namespace VuFindSearch\Backend\Pazpar2;
 
 use VuFindSearch\Backend\AbstractBackend;
-
 use VuFindSearch\ParamBag;
 
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
-
 use VuFindSearch\Response\RecordCollectionInterface;
 
 /**

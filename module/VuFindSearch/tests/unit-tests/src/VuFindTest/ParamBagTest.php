@@ -30,7 +30,6 @@
 namespace VuFindTest;
 
 use PHPUnit\Framework\TestCase;
-
 use VuFindSearch\ParamBag;
 
 /**
