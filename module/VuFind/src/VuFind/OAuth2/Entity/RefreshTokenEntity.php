@@ -44,7 +44,8 @@ use League\OAuth2\Server\Entities\Traits\RefreshTokenTrait;
  */
 class RefreshTokenEntity implements RefreshTokenEntityInterface, \JsonSerializable
 {
-    use RefreshTokenTrait, EntityTrait;
+    use RefreshTokenTrait;
+    use EntityTrait;
 
     /**
      * Serialize to a JSON string
