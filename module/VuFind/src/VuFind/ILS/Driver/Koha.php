@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Koha ILS Driver
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use PDO;
@@ -209,28 +211,28 @@ class Koha extends AbstractBase
                     "where itemnumber = :inum";
 
                 switch ($rowItem['NOTFORLOAN']) {
-                case 0:
-                    // If the item is available for loan, then check its current
-                    // status
-                    $issueSqlStmt = $this->db->prepare($sql);
-                    $issueSqlStmt->execute([':inum' => $inum]);
-                    $rowIssue = $issueSqlStmt->fetch();
-                    if ($rowIssue) {
-                        $available = false;
-                        $status = 'Checked out';
-                        $duedate = $this->displayDateTime($rowIssue['DUEDATE']);
-                    } else {
-                        $available = true;
-                        $status = 'Available';
-                        // No due date for an available item
+                    case 0:
+                        // If the item is available for loan, then check its current
+                        // status
+                        $issueSqlStmt = $this->db->prepare($sql);
+                        $issueSqlStmt->execute([':inum' => $inum]);
+                        $rowIssue = $issueSqlStmt->fetch();
+                        if ($rowIssue) {
+                            $available = false;
+                            $status = 'Checked out';
+                            $duedate = $this->displayDateTime($rowIssue['DUEDATE']);
+                        } else {
+                            $available = true;
+                            $status = 'Available';
+                            // No due date for an available item
+                            $duedate = '';
+                        }
+                        break;
+                    case 1: // The item is not available for loan
+                    default: $available = false;
+                        $status = 'Not for loan';
                         $duedate = '';
-                    }
-                    break;
-                case 1: // The item is not available for loan
-                default: $available = false;
-                    $status = 'Not for loan';
-                    $duedate = '';
-                    break;
+                        break;
                 }
 
                 //Retrieving the full branch name
@@ -542,15 +544,15 @@ class Koha extends AbstractBase
             if (isset($params['sort'])) {
                 $parts = explode(' ', $params['sort'], 2);
                 switch ($parts[0]) {
-                case 'return':
-                    $sort = 'RETURNED';
-                    break;
-                case 'due':
-                    $sort = 'DUEDATE';
-                    break;
-                default:
-                    $sort = 'ISSUEDATE';
-                    break;
+                    case 'return':
+                        $sort = 'RETURNED';
+                        break;
+                    case 'due':
+                        $sort = 'DUEDATE';
+                        break;
+                    default:
+                        $sort = 'ISSUEDATE';
+                        break;
                 }
                 $sort .= isset($parts[1]) && 'asc' === $parts[1] ? ' asc' : ' desc';
             } else {

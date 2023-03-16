@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DoiLookup test class.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\AjaxHandler;
 
 use Laminas\View\Renderer\PhpRenderer;
@@ -192,6 +194,10 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
 
     /**
      * Test a single DOI lookup.
+     *
+     * @param array  $config     Configuration
+     * @param bool   $newWindow  Expected "new window" setting
+     * @param string $remoteIcon Expected icon value
      *
      * @dataProvider getTestSingleLookupData
      *

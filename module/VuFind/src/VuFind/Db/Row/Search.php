@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Row Definition for search
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Db\Row;
 
 use VuFind\Crypt\HMAC;
@@ -41,7 +43,6 @@ use VuFind\Crypt\HMAC;
  * @property int     $id
  * @property int     $user_id
  * @property ?string $session_id
- * @property ?int    $folder_id
  * @property string  $created
  * @property ?string $title
  * @property int     $saved

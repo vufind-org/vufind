@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Row Definition for user
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Db\Row;
 
 use Laminas\Crypt\BlockCipher as BlockCipher;
@@ -64,7 +66,8 @@ use Laminas\Db\Sql\Select;
  * @property ?string $auth_method
  * @property string  $last_language
  */
-class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
+class User extends RowGateway implements
+    \VuFind\Db\Table\DbTableAwareInterface,
     \LmcRbacMvc\Identity\IdentityInterface
 {
     use \VuFind\Db\Table\DbTableAwareTrait;
@@ -174,7 +177,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
      *
      * @return mixed           The output of the save method.
      */
-    public function saveEmailVerified($datetime=null)
+    public function saveEmailVerified($datetime = null)
     {
         if ($datetime === null) {
             $datetime = date('Y-m-d H:i:s');

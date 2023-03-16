@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class to help build URLs and forms in the view based on search settings.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search;
 
 use VuFindSearch\Query\AbstractQuery;

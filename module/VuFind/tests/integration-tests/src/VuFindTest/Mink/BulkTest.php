@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink bulk action test class.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
@@ -79,7 +81,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    protected function setUpGenericBulkTest($checkBoxes = true)
+    protected function setUpGenericBulkTest()
     {
         // Activate the bulk options:
         $this->changeConfigs(

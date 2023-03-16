@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink test class for blended search.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 /**
@@ -115,6 +117,9 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test blended search
+     *
+     * @param array $queryParams    Query parameters
+     * @param array $expectedLabels Expected labels
      *
      * @dataProvider getSearchData
      *

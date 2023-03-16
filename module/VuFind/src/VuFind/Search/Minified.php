@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Minified Search Object
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Search;
 
 /**
@@ -186,22 +188,22 @@ class Minified
         if (!isset($this->cl)) {
             $fixType = true;    // by default, assume we need to fix type
             switch ($this->ty) {
-            case 'Summon':
-            case 'SummonAdvanced':
-                $this->cl = 'Summon';
-                break;
-            case 'WorldCat':
-            case 'WorldCatAdvanced':
-                $this->cl = 'WorldCat';
-                break;
-            case 'Authority':
-            case 'AuthorityAdvanced':
-                $this->cl = 'SolrAuth';
-                break;
-            default:
-                $this->cl = 'Solr';
-                $fixType = false;
-                break;
+                case 'Summon':
+                case 'SummonAdvanced':
+                    $this->cl = 'Summon';
+                    break;
+                case 'WorldCat':
+                case 'WorldCatAdvanced':
+                    $this->cl = 'WorldCat';
+                    break;
+                case 'Authority':
+                case 'AuthorityAdvanced':
+                    $this->cl = 'SolrAuth';
+                    break;
+                default:
+                    $this->cl = 'Solr';
+                    $fixType = false;
+                    break;
             }
 
             // Now rewrite the type if necessary (only needed for legacy objects):

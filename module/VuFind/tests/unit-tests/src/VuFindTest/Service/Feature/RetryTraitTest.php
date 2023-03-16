@@ -1,4 +1,5 @@
 <?php
+
 /**
  * RetryTrait Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Service\Feature;
 
 use VuFind\Service\Feature\RetryTrait;
@@ -41,13 +43,58 @@ use VuFind\Service\Feature\RetryTrait;
 class RetryTraitTest extends \PHPUnit\Framework\TestCase
 {
     /**
+     * Get a test harness for the trait.
+     *
+     * @return object
+     */
+    protected function getMockRetryTestClass()
+    {
+        return new class () {
+            use RetryTrait;
+
+            /**
+             * Call a method and retry the call if an exception is thrown
+             *
+             * @param callable  $callback       Method to call
+             * @param ?callable $statusCallback Status callback called before retry and after
+             * a successful retry
+             * @param array     $options        Optional options to override defaults in
+             * $this->retryOptions
+             *
+             * @return mixed
+             */
+            public function call(
+                callable $callback,
+                ?callable $statusCallback = null,
+                array $options = []
+            ) {
+                return $this->callWithRetry($callback, $statusCallback, $options);
+            }
+
+            /**
+             * Get the delay before a try
+             *
+             * @param int   $attempt Attempt number
+             * @param array $options Current options
+             *
+             * @return int milliseconds
+             */
+            public function getBackoff(int $attempt, array $options): int
+            {
+                $options = array_merge($this->retryOptions, $options);
+                return $this->getBackoffDuration($attempt, $options);
+            }
+        };
+    }
+
+    /**
      * Test retry with an eventually successful method
      *
      * @return void
      */
     public function testRetrySuccess()
     {
-        $testClass = new MockRetryTestClass();
+        $testClass = $this->getMockRetryTestClass();
 
         $counter = 0;
         $result = $testClass->call(
@@ -69,7 +116,7 @@ class RetryTraitTest extends \PHPUnit\Framework\TestCase
      */
     public function testRetryFail()
     {
-        $testClass = new MockRetryTestClass();
+        $testClass = $this->getMockRetryTestClass();
 
         $counter = 0;
         $this->expectExceptionMessage('Fail attempt 1');
@@ -96,7 +143,7 @@ class RetryTraitTest extends \PHPUnit\Framework\TestCase
      */
     public function testRetryableExceptionCallback()
     {
-        $testClass = new MockRetryTestClass();
+        $testClass = $this->getMockRetryTestClass();
 
         $counter = 0;
         $retries = 0;
@@ -153,8 +200,9 @@ class RetryTraitTest extends \PHPUnit\Framework\TestCase
     /**
      * Test the backoff duration handling
      *
-     * @param int   $attempt Attempt number
-     * @param array $options Current options
+     * @param int   $expected Expected result
+     * @param int   $attempt  Attempt number
+     * @param array $options  Current options
      *
      * @dataProvider backoffDataProvider
      *
@@ -162,49 +210,8 @@ class RetryTraitTest extends \PHPUnit\Framework\TestCase
      */
     public function testBackoff(int $expected, int $attempt, array $options = [])
     {
-        $testClass = new MockRetryTestClass();
+        $testClass = $this->getMockRetryTestClass();
 
         $this->assertEquals($expected, $testClass->getBackoff($attempt, $options));
-    }
-}
-
-/**
- * Mock test class for RetryTrait
- */
-class MockRetryTestClass
-{
-    use RetryTrait;
-
-    /**
-     * Call a method and retry the call if an exception is thrown
-     *
-     * @param callable  $callback       Method to call
-     * @param ?callable $statusCallback Status callback called before retry and after
-     * a successful retry
-     * @param array     $options        Optional options to override defaults in
-     * $this->retryOptions
-     *
-     * @return mixed
-     */
-    public function call(
-        callable $callback,
-        ?callable $statusCallback = null,
-        array $options = []
-    ) {
-        return $this->callWithRetry($callback, $statusCallback, $options);
-    }
-
-    /**
-     * Get the delay before a try
-     *
-     * @param int   $attempt Attempt number
-     * @param array $options Current options
-     *
-     * @return int milliseconds
-     */
-    public function getBackoff(int $attempt, array $options): int
-    {
-        $options = array_merge($this->retryOptions, $options);
-        return $this->getBackoffDuration($attempt, $options);
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * EDS API Options
  *
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\EDS;
 
 /**
@@ -520,12 +522,12 @@ class Options extends \VuFind\Search\Base\Options
     protected function mapSortLabel($label)
     {
         switch ($label) {
-        case 'Date Newest':
-            return 'sort_year';
-        case 'Date Oldest':
-            return 'sort_year asc';
-        default:
-            return 'sort_' . strtolower($label);
+            case 'Date Newest':
+                return 'sort_year';
+            case 'Date Oldest':
+                return 'sort_year asc';
+            default:
+                return 'sort_' . strtolower($label);
         }
     }
 

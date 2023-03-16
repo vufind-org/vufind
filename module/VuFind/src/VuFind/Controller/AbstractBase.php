@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind controller base class (defines some methods that can be shared by other
  * controllers).
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
+
 namespace VuFind\Controller;
 
 use Laminas\Mvc\Controller\AbstractActionController;
@@ -67,8 +69,7 @@ use VuFind\I18n\Translator\TranslatorAwareTrait;
  *
  * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
-class AbstractBase extends AbstractActionController
-    implements TranslatorAwareInterface
+class AbstractBase extends AbstractActionController implements TranslatorAwareInterface
 {
     use TranslatorAwareTrait;
 

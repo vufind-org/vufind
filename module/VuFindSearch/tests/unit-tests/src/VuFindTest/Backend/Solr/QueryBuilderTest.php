@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Backend\Solr;
 
 use VuFindSearch\Backend\Solr\QueryBuilder;
@@ -476,7 +477,11 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
 
         $response = $qb->build($q);
         $processedQ = $response->get('q');
-        $this->assertEquals('((_query_:"{!dismax qf=\"field_a\" mm=\\\'100%\\\'}value1") OR (_query_:"{!dismax qf=\"field_b\" mm=\\\'100%\\\'}value2"))', $processedQ[0]);
+        $this->assertEquals(
+            '((_query_:"{!dismax qf=\"field_a\" mm=\\\'100%\\\'}value1") OR '
+            . '(_query_:"{!dismax qf=\"field_b\" mm=\\\'100%\\\'}value2"))',
+            $processedQ[0]
+        );
     }
 
     /**
@@ -507,7 +512,11 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
 
         $response = $qb->build($q);
         $processedQ = $response->get('q');
-        $this->assertEquals('((field_a:(value*)^100 OR field_c:(value*)^200) OR (_query_:"{!dismax qf=\"field_b\" mm=\\\'100%\\\'}value2"))', $processedQ[0]);
+        $this->assertEquals(
+            '((field_a:(value*)^100 OR field_c:(value*)^200) OR '
+            . '(_query_:"{!dismax qf=\"field_b\" mm=\\\'100%\\\'}value2"))',
+            $processedQ[0]
+        );
     }
 
     /**
@@ -715,7 +724,12 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     /**
      * Test generation with GlobalExtraParams using individual queries.
      *
+     * @param array $globalExtraParams Global extra parameters
+     * @param array $expected1         First set of expected fields
+     * @param array $expected2         Second set of expected fields
+     *
      * @return void
+     *
      * @dataProvider globalExtraParamsIndividualQueryDataProvider
      */
     public function testIndividualQueryHandlerWithGlobalExtraParams(
@@ -837,7 +851,11 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     /**
      * Test generation with GlobalExtraParams using a grouped query.
      *
+     * @param array $globalExtraParams Global extra parameters
+     * @param array $expectedFields    Expected fields
+     *
      * @return void
+     *
      * @dataProvider globalExtraParamsGroupedQueryDataProvider
      */
     public function testGroupedQueryHandlerWithGlobalExtraParams(

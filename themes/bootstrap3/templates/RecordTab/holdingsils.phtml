@@ -88,12 +88,12 @@
     'rows' => $this->config()->getHoldingsItemLimit(),
   ];
 ?>
-<table class="table table-striped truncate-field" data-truncate="<?=$this->escapeHtmlAttr(json_encode($truncateSettings))?>">
+<table class="table table-striped truncate-field" data-truncate="<?=$this->htmlSafeJsonEncode($truncateSettings)?>">
   <caption class="sr-only"><?=$this->transEsc('holdings_details_from', ['%%location%%' => $this->transEsc($holding['location'])]) ?></caption>
   <?php $callNos = $this->tab->getUniqueCallNumbers($holding['items'], true); if (!empty($callNos)): ?>
   <tr>
     <th><?=$this->transEsc("Call Number")?>: </th>
-    <td width="50%">
+    <td>
       <?php foreach ($callNos as $callNo): ?>
         <?php if ($this->callnumberHandler): ?>
           <a href="<?=$this->url('alphabrowse-home') ?>?source=<?=$this->escapeHtmlAttr($this->callnumberHandler) ?>&amp;from=<?=$this->escapeHtmlAttr($callNo['callnumber']) ?>"><?=$this->escapeHtml($callNo['display'])?></a>

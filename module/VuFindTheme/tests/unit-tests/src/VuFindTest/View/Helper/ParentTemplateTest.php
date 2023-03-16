@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ParentTemplate view helper Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper;
 
 use VuFindTheme\View\Helper\ParentTemplate;
@@ -63,13 +65,14 @@ class ParentTemplateTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a populated resource container for testing.
      *
+     * @param array $stack Path stack
+     *
      * @return ParentTemplate
      */
     protected function getHelper($stack)
     {
         // Get mock TemplateStack
-        $stackMock =
-            $this->getMockBuilder(\Laminas\View\Resolver\TemplatePathStack::class)
+        $stackMock = $this->getMockBuilder(\Laminas\View\Resolver\TemplatePathStack::class)
             ->disableOriginalConstructor()->getMock();
 
         $return = new \SplStack();

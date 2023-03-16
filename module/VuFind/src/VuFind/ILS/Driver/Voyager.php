@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Voyager ILS Driver
  *
@@ -28,6 +29,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use Laminas\Validator\EmailAddress as EmailAddressValidator;
@@ -50,8 +52,7 @@ use Yajra\Pdo\Oci8;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class Voyager extends AbstractBase
-    implements TranslatorAwareInterface, \Laminas\Log\LoggerAwareInterface
+class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\Log\LoggerAwareTrait {
@@ -340,12 +341,12 @@ EOT
         $otherStatuses = [];
         foreach ($statusArray as $status) {
             switch ($status) {
-            case 'Not Charged':
-                $notCharged = true;
-                break;
-            default:
-                $otherStatuses[] = $status;
-                break;
+                case 'Not Charged':
+                    $notCharged = true;
+                    break;
+                default:
+                    $otherStatuses[] = $status;
+                    break;
             }
         }
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Horizon ILS Driver (w/ XML API support)
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use VuFind\Exception\ILS as ILSException;
@@ -295,7 +297,6 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
         if ($this->wsDefaultPickUpLocation == false) {
-
             // Select
             $sqlSelect = ["b.location LOCATION"];
 

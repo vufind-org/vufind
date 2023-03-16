@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Favorites aspect of the Search Multi-class (Results)
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Favorites;
 
 use LmcRbacMvc\Service\AuthorizationServiceAwareInterface;
@@ -46,8 +48,7 @@ use VuFindSearch\Service as SearchService;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Results extends BaseResults
-    implements AuthorizationServiceAwareInterface
+class Results extends BaseResults implements AuthorizationServiceAwareInterface
 {
     use AuthorizationServiceAwareTrait;
 
@@ -140,22 +141,22 @@ class Results extends BaseResults
                     'list' => []
                 ];
                 switch ($field) {
-                case 'tags':
-                    if ($this->list) {
-                        $tags = $this->list->getResourceTags();
-                    } else {
-                        $tags = $this->user ? $this->user->getTags() : [];
-                    }
-                    foreach ($tags as $tag) {
-                        $this->facets[$field]['list'][] = [
-                            'value' => $tag->tag,
-                            'displayText' => $tag->tag,
-                            'count' => $tag->cnt,
-                            'isApplied' =>
-                                $this->getParams()->hasFilter("$field:" . $tag->tag)
-                        ];
-                    }
-                    break;
+                    case 'tags':
+                        if ($this->list) {
+                            $tags = $this->list->getResourceTags();
+                        } else {
+                            $tags = $this->user ? $this->user->getTags() : [];
+                        }
+                        foreach ($tags as $tag) {
+                            $this->facets[$field]['list'][] = [
+                                'value' => $tag->tag,
+                                'displayText' => $tag->tag,
+                                'count' => $tag->cnt,
+                                'isApplied' => $this->getParams()
+                                    ->hasFilter("$field:" . $tag->tag)
+                            ];
+                        }
+                        break;
                 }
             }
             if (isset($this->facets[$field])) {

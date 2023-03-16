@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Solr aspect of the Search Multi-class (Params)
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\Solr;
 
 use VuFindSearch\ParamBag;
@@ -403,12 +405,12 @@ class Params extends \VuFind\Search\Base\Params
         // special illustrations filter.
         parent::initFilters($request);
         switch ($request->get('illustration', -1)) {
-        case 1:
-            $this->addFilter('illustrated:Illustrated');
-            break;
-        case 0:
-            $this->addFilter('illustrated:"Not Illustrated"');
-            break;
+            case 1:
+                $this->addFilter('illustrated:Illustrated');
+                break;
+            case 0:
+                $this->addFilter('illustrated:"Not Illustrated"');
+                break;
         }
     }
 

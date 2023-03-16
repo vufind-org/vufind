@@ -1,4 +1,5 @@
 <?php
+
 /**
  * User permission provider for VuFind.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
+
 namespace VuFind\Role\PermissionProvider;
 
 use LmcRbacMvc\Service\AuthorizationService;
@@ -39,7 +41,8 @@ use LmcRbacMvc\Service\AuthorizationService;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class User implements PermissionProviderInterface,
+class User implements
+    PermissionProviderInterface,
     \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;

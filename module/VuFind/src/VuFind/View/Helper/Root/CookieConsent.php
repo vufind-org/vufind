@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CookieConsent view helper
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\View\Helper\Root;
 
 use VuFind\Cookie\CookieManager;
@@ -41,8 +43,7 @@ use VuFind\I18n\Translator\TranslatorAwareTrait;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class CookieConsent extends \Laminas\View\Helper\AbstractHelper
-    implements TranslatorAwareInterface
+class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements TranslatorAwareInterface
 {
     use TranslatorAwareTrait;
 
@@ -360,9 +361,8 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper
             'desc' => $this->translate('CookieConsent::Description'),
             'exp' => $this->translate('CookieConsent::Expiration'),
         ];
-        foreach ($this->consentConfig['Categories'] ?? []
-            as $categoryId => $categoryConfig
-        ) {
+        $categoryData = $this->consentConfig['Categories'] ?? [];
+        foreach ($categoryData as $categoryId => $categoryConfig) {
             if ($enabledCategories && !in_array($categoryId, $enabledCategories)) {
                 continue;
             }
@@ -387,25 +387,26 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper
                         . $this->translate('CookieConsent::third_party_html') . ')';
                 }
                 switch ($cookie['Expiration']) {
-                case 'never':
-                    $expiration
-                        = $this->translate('CookieConsent::expiration_never');
-                    break;
-                case 'session':
-                    $expiration
-                        = $this->translate('CookieConsent::expiration_session');
-                    break;
-                default:
-                    if (!empty($cookie['ExpirationUnit'])) {
-                        $expiration = ' ' . $this->translate(
-                            'CookieConsent::expiration_unit_'
-                            . $cookie['ExpirationUnit'],
-                            ['%%expiration%%' => $cookie['Expiration']],
-                            $cookie['Expiration'] . ' ' . $cookie['ExpirationUnit']
-                        );
-                    } else {
-                        $expiration = $cookie['Expiration'];
-                    }
+                    case 'never':
+                        $expiration
+                            = $this->translate('CookieConsent::expiration_never');
+                        break;
+                    case 'session':
+                        $expiration
+                            = $this->translate('CookieConsent::expiration_session');
+                        break;
+                    default:
+                        if (!empty($cookie['ExpirationUnit'])) {
+                            $expiration = ' ' . $this->translate(
+                                'CookieConsent::expiration_unit_'
+                                . $cookie['ExpirationUnit'],
+                                ['%%expiration%%' => $cookie['Expiration']],
+                                $cookie['Expiration'] . ' '
+                                . $cookie['ExpirationUnit']
+                            );
+                        } else {
+                            $expiration = $cookie['Expiration'];
+                        }
                 }
                 $section['cookieTable']['body'][] = [
                     'name' => $name,

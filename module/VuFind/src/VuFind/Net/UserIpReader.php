@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Service to retrieve user IP address.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Net;
 
 use Laminas\Stdlib\Parameters;
@@ -112,19 +114,14 @@ class UserIpReader
                 // Also note that we need to use array_shift/array_pop/current here
                 // in place of specific indexes, because the filtering above may have
                 // left non-consecutive keys in place.
-                switch (strtolower(rtrim($behavior, ':'))) {
-                case 'first':
-                    if (!empty($parts)) {
-                        return array_shift($parts);
-                    }
-                case 'last':
-                    if (!empty($parts)) {
-                        return array_pop($parts);
-                    }
-                default:
-                    if (count($parts) === 1) {
-                        return current($parts);
-                    }
+                $finalBehavior = strtolower(rtrim($behavior, ':'));
+                $partCount = count($parts);
+                if ($finalBehavior === 'first' && $partCount > 0) {
+                    return array_shift($parts);
+                } elseif ($finalBehavior === 'last' && $partCount > 0) {
+                    return array_pop($parts);
+                } elseif ($partCount === 1) {
+                    return current($parts);
                 }
             }
         }

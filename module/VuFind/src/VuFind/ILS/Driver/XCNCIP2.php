@@ -1,4 +1,5 @@
 <?php
+
 /**
  * XC NCIP Toolkit (v2) ILS Driver
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use VuFind\Config\PathResolver;
@@ -41,7 +43,8 @@ use VuFind\Exception\ILS as ILSException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface,
+class XCNCIP2 extends AbstractBase implements
+    \VuFindHttp\HttpServiceAwareInterface,
     \Laminas\Log\LoggerAwareInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface
 {
@@ -2788,7 +2791,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @return string Scheme attribute or empty string
      */
-    private function _schemeAttr(string $element, $namespacePrefix = 'ns1'): string
+    protected function schemeAttr(string $element, $namespacePrefix = 'ns1'): string
     {
         return isset($this->schemes[$element])
             ? ' ' . $namespacePrefix . ':Scheme="' . $this->schemes[$element] . '"'
@@ -2811,7 +2814,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     ): string {
         $fullElementName = $namespacePrefix . ':' . $elementName;
         return '<' . $fullElementName .
-            $this->_schemeAttr($elementName, $namespacePrefix) . '>' .
+            $this->schemeAttr($elementName, $namespacePrefix) . '>' .
             htmlspecialchars($text) .
             '</' . $fullElementName . '>';
     }

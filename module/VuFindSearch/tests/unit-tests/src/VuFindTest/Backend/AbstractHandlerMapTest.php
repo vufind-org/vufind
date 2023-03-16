@@ -26,10 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Backend;
 
 use PHPUnit\Framework\TestCase;
-
 use VuFindSearch\Backend\AbstractHandlerMap;
 use VuFindSearch\ParamBag;
 

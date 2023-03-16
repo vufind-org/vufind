@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Hold Logic Class
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\ILS\Logic;
 
 use VuFind\Exception\ILS as ILSException;
@@ -356,22 +358,22 @@ class Holds
                             ? $copy['holdOverride'] : $type;
 
                         switch ($currentType) {
-                        case "all":
-                            $addlink = true; // always provide link
-                            break;
-                        case "holds":
-                            $addlink = $copy['availability'];
-                            break;
-                        case "recalls":
-                            $addlink = !$copy['availability'];
-                            break;
-                        case "availability":
-                            $addlink = !$copy['availability']
-                                && ($any_available == false);
-                            break;
-                        default:
-                            $addlink = false;
-                            break;
+                            case "all":
+                                $addlink = true; // always provide link
+                                break;
+                            case "holds":
+                                $addlink = $copy['availability'];
+                                break;
+                            case "recalls":
+                                $addlink = !$copy['availability'];
+                                break;
+                            case "availability":
+                                $addlink = !$copy['availability']
+                                    && ($any_available == false);
+                                break;
+                            default:
+                                $addlink = false;
+                                break;
                         }
                         // If a valid holdable status has been set, use it to
                         // determine if a hold link is created

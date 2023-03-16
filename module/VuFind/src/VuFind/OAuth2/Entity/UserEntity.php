@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OAuth2 user entity implementation.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\OAuth2\Entity;
 
 use League\OAuth2\Server\Entities\Traits\EntityTrait;
@@ -132,69 +134,71 @@ class UserEntity implements UserEntityInterface, ClaimSetInterface
 
         foreach ($this->oauth2Config['ClaimMappings'] as $claim => $field) {
             switch ($field) {
-            case 'age':
-                if ($birthDate = $profile['birthdate'] ?? '') {
-                    if ($date = \DateTime::createFromFormat('Y-m-d', $birthDate)) {
-                        $diff = $date->diff(new \DateTimeImmutable(), true);
-                        $result[$claim] = (int)$diff->format('%y');
+                case 'age':
+                    if ($birthDate = $profile['birthdate'] ?? '') {
+                        $date = \DateTime::createFromFormat('Y-m-d', $birthDate);
+                        if ($date) {
+                            $diff = $date->diff(new \DateTimeImmutable(), true);
+                            $result[$claim] = (int)$diff->format('%y');
+                        }
                     }
-                }
-                break;
-            case 'address_json':
-                if ($profile) {
-                    // address_json is a specially formatted field for address
-                    // information:
-                    $street = array_filter(
-                        [
-                            $profile['address1'] ?? '',
-                            $profile['address2'] ?? '',
-                        ]
+                    break;
+                case 'address_json':
+                    if ($profile) {
+                        // address_json is a specially formatted field for address
+                        // information:
+                        $street = array_filter(
+                            [
+                                $profile['address1'] ?? '',
+                                $profile['address2'] ?? '',
+                            ]
+                        );
+                        $address = [
+                            'street_address' => implode("\n", $street),
+                            'locality' => $profile['city'] ?? '',
+                            'postal_code' => $profile['zip'] ?? '',
+                            'country' => $profile['country'] ?? '',
+                        ];
+                        $result[$claim] = json_encode($address);
+                    }
+                    break;
+                case 'block_status':
+                    // account_blocked is a flag indicating whether the patron has
+                    // blocks:
+                    $result[$claim] = $blocked;
+                    break;
+                case 'full_name':
+                    // full_name is a special field for firstname + lastname:
+                    $result[$claim] = trim(
+                        $this->user['firstname'] . ' ' . $this->user['lastname']
                     );
-                    $address = [
-                        'street_address' => implode("\n", $street),
-                        'locality' => $profile['city'] ?? '',
-                        'postal_code' => $profile['zip'] ?? '',
-                        'country' => $profile['country'] ?? '',
-                    ];
-                    $result[$claim] = json_encode($address);
-                }
-                break;
-            case 'block_status':
-                // account_blocked is a flag indicating whether the patron has
-                // blocks:
-                $result[$claim] = $blocked;
-                break;
-            case 'full_name':
-                // full_name is a special field for firstname + lastname:
-                $result[$claim] = trim(
-                    $this->user['firstname'] . ' ' . $this->user['lastname']
-                );
-                break;
-            case 'last_language':
-                // Make sure any country code is in uppercase:
-                $value = $this->user->last_language;
-                $parts = explode('-', $value);
-                if (isset($parts[1])) {
-                    $value = $parts[0] . '-' . strtoupper($parts[1]);
-                }
-                $result[$claim] = $value;
-                break;
-            case 'library_user_id_hash':
-                $id = $profile['cat_id'] ?? $this->user->cat_username ?? null;
-                if ($id) {
-                    $result[$claim] = hash(
-                        'sha256',
-                        $id
-                        . $this->oauth2Config['Server']['hashSalt']
-                    );
-                }
-            default:
-                if (($value = $this->user->{$field} ?? null)
-                    || ($value = $profile[$field] ?? null)
-                ) {
+                    break;
+                case 'last_language':
+                    // Make sure any country code is in uppercase:
+                    $value = $this->user->last_language;
+                    $parts = explode('-', $value);
+                    if (isset($parts[1])) {
+                        $value = $parts[0] . '-' . strtoupper($parts[1]);
+                    }
                     $result[$claim] = $value;
-                }
-                break;
+                    break;
+                case 'library_user_id_hash':
+                    $id = $profile['cat_id'] ?? $this->user->cat_username ?? null;
+                    if ($id) {
+                        $result[$claim] = hash(
+                            'sha256',
+                            $id
+                            . $this->oauth2Config['Server']['hashSalt']
+                        );
+                    }
+                    break;
+                default:
+                    if (($value = $this->user->{$field} ?? null)
+                        || ($value = $profile[$field] ?? null)
+                    ) {
+                        $result[$claim] = $value;
+                    }
+                    break;
             }
         }
 

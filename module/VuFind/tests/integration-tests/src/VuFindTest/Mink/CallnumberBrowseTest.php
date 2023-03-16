@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink search actions test class.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 /**
@@ -52,6 +54,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @param string $nos  multiple_call_nos setting
      * @param string $locs multiple_locations setting
+     * @param bool   $full Show full status setting
      *
      * @return void
      */
@@ -90,6 +93,11 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertStringEndsWith($hrefCallnum, $link->getText());
     }
 
+    /**
+     * Set up configuration for testing with multiple call numbers.
+     *
+     * @return void
+     */
     protected function setupMultipleCallnumbers()
     {
         $this->changeConfigs(
@@ -159,6 +167,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $nos         multiple_call_nos setting
      * @param string $locs        multiple_locations setting
      * @param bool   $expectLinks whether or not links are expected for multiple callnumbers in this config
+     * @param bool   $full        Show full status setting
      *
      * @return void
      */

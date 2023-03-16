@@ -25,6 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Sitemap\Command;
 
 use VuFind\Sitemap\Plugin\Index\CursorMarkIdFetcher;
@@ -69,9 +70,6 @@ class CursorMarkIdFetcherTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock search service
      *
-     * @param RecordCollection $records            Record set to return
-     * @param string           $expectedCursorMark Expected cursor mark
-     *
      * @return Service
      */
     protected function getMockService(): Service
@@ -85,6 +83,7 @@ class CursorMarkIdFetcherTest extends \PHPUnit\Framework\TestCase
      * Add mock records to a collection and return an array of the generated IDs.
      *
      * @param RecordCollection $records Collection to add to
+     * @param int              $offset  Offset for records
      *
      * @return int[]
      */

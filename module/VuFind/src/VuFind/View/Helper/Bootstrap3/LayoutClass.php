@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Helper class for managing bootstrap theme's high-level (body vs. sidebar) page
  * layout.
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Bootstrap3;
 
 /**
@@ -52,21 +54,21 @@ class LayoutClass extends \VuFind\View\Helper\AbstractLayoutClass
     public function __invoke($class)
     {
         switch ($class) {
-        case 'mainbody':
-            return $this->sidebarOnLeft
-                ? 'mainbody right'
-                : 'mainbody left';
-        case 'sidebar':
-            return $this->sidebarOnLeft
-                ? 'sidebar left hidden-print'
-                : 'sidebar right hidden-print';
-        case 'offcanvas-row':
-            if (!$this->offcanvas) {
-                return "";
-            }
-            return $this->sidebarOnLeft
-                ? 'offcanvas offcanvas-left'
-                : 'offcanvas offcanvas-right';
+            case 'mainbody':
+                return $this->sidebarOnLeft
+                    ? 'mainbody right'
+                    : 'mainbody left';
+            case 'sidebar':
+                return $this->sidebarOnLeft
+                    ? 'sidebar left hidden-print'
+                    : 'sidebar right hidden-print';
+            case 'offcanvas-row':
+                if (!$this->offcanvas) {
+                    return "";
+                }
+                return $this->sidebarOnLeft
+                    ? 'offcanvas offcanvas-left'
+                    : 'offcanvas offcanvas-right';
         }
         throw new \Exception('Unexpected class: ' . $class);
     }

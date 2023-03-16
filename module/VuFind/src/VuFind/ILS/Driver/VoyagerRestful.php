@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Voyager ILS Driver
  *
@@ -29,6 +30,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use PDO;
@@ -2824,39 +2826,39 @@ EOT;
         $requiredByDate = '';
         foreach ($response->xpath('//req:field') as $field) {
             switch ($field->attributes()->labelKey) {
-            case 'selectItem':
-                foreach ($field->xpath('./req:select/req:option') as $option) {
-                    $items[] = [
-                        'id' => (string)$option->attributes()->id,
-                        'name' => (string)$option
-                    ];
-                }
-                break;
-            case 'pickupLib':
-                foreach ($field->xpath('./req:select/req:option') as $option) {
-                    $libraries[] = [
-                        'id' => (string)$option->attributes()->id,
-                        'name' => (string)$option,
-                        'isDefault' => $option->attributes()->isDefault == 'Y'
-                    ];
-                }
-                break;
-            case 'pickUpAt':
-                foreach ($field->xpath('./req:select/req:option') as $option) {
-                    $locations[] = [
-                        'id' => (string)$option->attributes()->id,
-                        'name' => (string)$option,
-                        'isDefault' => $option->attributes()->isDefault == 'Y'
-                    ];
-                }
-                break;
-            case 'notNeededAfter':
-                $node = current($field->xpath('./req:text'));
-                $requiredByDate = $this->dateFormat->convertToDisplayDate(
-                    'Y-m-d H:i',
-                    (string)$node
-                );
-                break;
+                case 'selectItem':
+                    foreach ($field->xpath('./req:select/req:option') as $option) {
+                        $items[] = [
+                            'id' => (string)$option->attributes()->id,
+                            'name' => (string)$option
+                        ];
+                    }
+                    break;
+                case 'pickupLib':
+                    foreach ($field->xpath('./req:select/req:option') as $option) {
+                        $libraries[] = [
+                            'id' => (string)$option->attributes()->id,
+                            'name' => (string)$option,
+                            'isDefault' => $option->attributes()->isDefault == 'Y'
+                        ];
+                    }
+                    break;
+                case 'pickUpAt':
+                    foreach ($field->xpath('./req:select/req:option') as $option) {
+                        $locations[] = [
+                            'id' => (string)$option->attributes()->id,
+                            'name' => (string)$option,
+                            'isDefault' => $option->attributes()->isDefault == 'Y'
+                        ];
+                    }
+                    break;
+                case 'notNeededAfter':
+                    $node = current($field->xpath('./req:text'));
+                    $requiredByDate = $this->dateFormat->convertToDisplayDate(
+                        'Y-m-d H:i',
+                        (string)$node
+                    );
+                    break;
             }
         }
         $results = [
@@ -3244,7 +3246,6 @@ EOT;
             $cancel = $this->makeRequest($hierarchy, $params, 'DELETE');
 
             if ($cancel) {
-
                 // Process Cancel
                 $cancel = $cancel->children();
                 $node = 'reply-text';

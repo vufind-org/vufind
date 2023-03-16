@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink test class for basic record functionality.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 /**
@@ -62,7 +64,7 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
             $url . '#details',
             [$session, 'getCurrentUrl']
         );
-        $staffViewTable = $this->findCss($page, '.record-tabs .details-tab table.citation');
+        $staffViewTable = $this->findCss($page, '.record-tabs .details-tab table.staff-view--marc');
         $this->assertEquals('LEADER', substr($staffViewTable->getText(), 0, 6));
     }
 
@@ -84,7 +86,7 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
         $session = $this->getMinkSession();
         $session->visit($url);
         $page = $session->getPage();
-        $staffViewTable = $this->findCss($page, '.record-tabs .details-tab table.citation');
+        $staffViewTable = $this->findCss($page, '.record-tabs .details-tab table.staff-view--marc');
         $this->assertEquals('LEADER', substr($staffViewTable->getText(), 0, 6));
         $page = $session->getPage();
         $staffViewTab = $this->findCss($page, '.record-tabs .holdings a');

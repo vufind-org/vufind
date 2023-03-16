@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Central class for connecting to Pazpar2 resources used by VuFind.
  *
@@ -25,12 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:architecture Wiki
  */
+
 namespace VuFindSearch\Backend\Pazpar2;
 
 use Laminas\Http\Client;
 use Laminas\Http\Request;
 use VuFindSearch\Backend\Exception\HttpErrorException;
-
 use VuFindSearch\ParamBag;
 
 /**

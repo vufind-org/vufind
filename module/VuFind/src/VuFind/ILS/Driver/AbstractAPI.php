@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Abstract Driver for API-based ILS drivers
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use Laminas\Log\LoggerAwareInterface;
@@ -41,7 +43,8 @@ use VuFindHttp\HttpServiceAwareInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInterface,
+abstract class AbstractAPI extends AbstractBase implements
+    HttpServiceAwareInterface,
     LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait {
@@ -170,6 +173,26 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
                 . $response->getBody()
             );
             throw new ILSException("Unexpected error code.");
+        }
+        if ($jsonLog = ($this->config['API']['json_log_file'] ?? false)) {
+            if (APPLICATION_ENV !== 'development') {
+                throw new \Exception(
+                    'SECURITY: json_log_file enabled outside of development mode'
+                );
+            }
+            $body = $response->getBody();
+            $jsonBody = @json_decode($body);
+            $json = file_exists($jsonLog)
+                ? json_decode(file_get_contents($jsonLog)) : [];
+            $json[] = [
+                'expectedMethod' => $method,
+                'expectedPath' => $path,
+                'expectedParams' => $params,
+                'body' => $jsonBody ? $jsonBody : $body,
+                'bodyType' => $jsonBody ? 'json' : 'string',
+                'code' => $code,
+            ];
+            file_put_contents($jsonLog, json_encode($json));
         }
         return $response;
     }

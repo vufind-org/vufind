@@ -1,4 +1,5 @@
 <?php
+
 /**
  * MemCache session handler
  *
@@ -28,6 +29,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
+
 namespace VuFind\Session;
 
 use Laminas\Config\Config;
@@ -98,17 +100,18 @@ class Memcache extends AbstractBase
 
         // Establish connection:
         switch ($clientClass) {
-        case 'Memcache':
-            if (!$this->connection->connect($host, $port, $timeout)) {
-                throw $connectionException;
-            }
-            break;
-        case 'Memcached':
-            $this->connection->setOption(\Memcached::OPT_CONNECT_TIMEOUT, $timeout);
-            if (!$this->connection->addServer($host, $port)) {
-                throw $connectionException;
-            }
-            break;
+            case 'Memcache':
+                if (!$this->connection->connect($host, $port, $timeout)) {
+                    throw $connectionException;
+                }
+                break;
+            case 'Memcached':
+                $this->connection
+                    ->setOption(\Memcached::OPT_CONNECT_TIMEOUT, $timeout);
+                if (!$this->connection->addServer($host, $port)) {
+                    throw $connectionException;
+                }
+                break;
         }
     }
 

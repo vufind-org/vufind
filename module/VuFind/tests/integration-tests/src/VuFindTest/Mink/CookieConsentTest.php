@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink cookie consent test class.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
@@ -176,7 +178,7 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Get start page
      *
-     * @return
+     * @return Element
      */
     protected function getStartPage(): Element
     {

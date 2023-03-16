@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Backend\Primo;
 
 use InvalidArgumentException;
@@ -250,6 +251,9 @@ class BackendTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test pcAvailability filter.
+     *
+     * @param string $value    Input value of filter
+     * @param string $expected Expected output value of filter
      *
      * @dataProvider getPcAvailabilityData
      *

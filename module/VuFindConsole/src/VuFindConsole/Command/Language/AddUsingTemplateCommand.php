@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Language command: add string using template.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Language;
 
 use Symfony\Component\Console\Input\InputArgument;
@@ -109,7 +111,7 @@ class AddUsingTemplateCommand extends AbstractCommand
             if (!$sourceDir) {
                 return 1;
             }
-            $sourceCallback = function ($full) use (& $tokens) {
+            $sourceCallback = function ($full) use (&$tokens) {
                 $strings = $this->reader->getTextDomain($full, false);
                 foreach ($tokens as & $current) {
                     $sourceKey = $current['key'];

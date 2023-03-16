@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SwitchType Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Recommend;
 
 use VuFind\Recommend\SwitchType;
@@ -55,7 +57,7 @@ class SwitchTypeTest extends \PHPUnit\Framework\TestCase
     /**
      * Test the description of new search handler.
      *
-     * @param string $settings Settings from searches.ini
+     * @param string $settings       Settings from searches.ini
      * @param bool   $expectedResult Expected return value from isActive
      *
      * @return void
@@ -85,9 +87,9 @@ class SwitchTypeTest extends \PHPUnit\Framework\TestCase
     /**
      * Test getting the new search handler.
      *
-     * @param string $settings Settings from searches.ini
-     * @param string $searchHandler Settings from searches.ini
-     * @param bool|string   $expectedResult Expected return value from isActive
+     * @param string      $settings       Settings from searches.ini
+     * @param string      $searchHandler  Settings from searches.ini
+     * @param bool|string $expectedResult Expected return value from isActive
      *
      * @return void
      *

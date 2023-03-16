@@ -31,6 +31,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Primo;
 
 use Laminas\Http\Client as HttpClient;
@@ -216,24 +217,24 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             foreach ($terms as $thisTerm) {
                 //set the index to search
                 switch ($thisTerm['index']) {
-                case "AllFields":
-                    $lookin = "any";
-                    break;
-                case "Title":
-                    $lookin = "title";
-                    break;
-                case "Author":
-                    $lookin = "creator";
-                    break;
-                case "Subject":
-                    $lookin = "sub";
-                    break;
-                case "Abstract":
-                    $lookin = "desc";
-                    break;
-                case "ISSN":
-                    $lookin = "issn";
-                    break;
+                    case "AllFields":
+                        $lookin = "any";
+                        break;
+                    case "Title":
+                        $lookin = "title";
+                        break;
+                    case "Author":
+                        $lookin = "creator";
+                        break;
+                    case "Subject":
+                        $lookin = "sub";
+                        break;
+                    case "Abstract":
+                        $lookin = "desc";
+                        break;
+                    case "ISSN":
+                        $lookin = "issn";
+                        break;
                 }
 
                 //set the lookfor terms to search

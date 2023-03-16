@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Default model for Solr records -- used when a more specific model based on
  * the record_format field cannot be found.
@@ -28,6 +29,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver;
 
 use VuFindSearch\Command\SearchCommand;
@@ -47,7 +49,8 @@ use VuFindSearch\Command\SearchCommand;
  *
  * @SuppressWarnings(PHPMD.ExcessivePublicCount)
  */
-class SolrDefault extends DefaultRecord implements Feature\PreviousUniqueIdInterface,
+class SolrDefault extends DefaultRecord implements
+    Feature\PreviousUniqueIdInterface,
     Feature\VersionAwareInterface
 {
     use Feature\HierarchyAwareTrait;

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Config Upgrade Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Config;
 
 use VuFind\Config\Upgrade;
@@ -69,6 +71,8 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      * Perform standard tests for the specified version and return resulting configs
      * and warnings so that further assertions can be performed by calling code if
      * necessary.
+     *
+     * @param string $version Version to test
      *
      * @return array
      */
@@ -326,8 +330,10 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             'The [WorldCat] xISBN_secret setting is no longer used and has been removed.',
             'The [WorldCat] xISSN_token setting is no longer used and has been removed.',
             'The [WorldCat] xISSN_secret setting is no longer used and has been removed.',
-            'The Editions related record module is no longer supported due to OCLC\'s xID API shutdown. It has been removed from your settings.',
-            'The WorldCatEditions related record module is no longer supported due to OCLC\'s xID API shutdown. It has been removed from your settings.',
+            'The Editions related record module is no longer supported due to OCLC\'s xID '
+            . 'API shutdown. It has been removed from your settings.',
+            'The WorldCatEditions related record module is no longer supported due to OCLC\'s '
+            . 'xID API shutdown. It has been removed from your settings.',
         ];
         $this->assertEquals($expectedWarnings, $upgrader->getWarnings());
     }

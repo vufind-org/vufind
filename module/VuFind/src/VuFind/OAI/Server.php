@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OAI Server class
  *
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\OAI;
 
 use SimpleXMLElement;
@@ -316,19 +318,19 @@ class Server
             return $this->showError('badVerb', 'Missing Verb Argument');
         } else {
             switch ($this->params['verb']) {
-            case 'GetRecord':
-                return $this->getRecord();
-            case 'Identify':
-                return $this->identify();
-            case 'ListIdentifiers':
-            case 'ListRecords':
-                return $this->listRecords($this->params['verb']);
-            case 'ListMetadataFormats':
-                return $this->listMetadataFormats();
-            case 'ListSets':
-                return $this->listSets();
-            default:
-                return $this->showError('badVerb', 'Illegal OAI Verb');
+                case 'GetRecord':
+                    return $this->getRecord();
+                case 'Identify':
+                    return $this->identify();
+                case 'ListIdentifiers':
+                case 'ListRecords':
+                    return $this->listRecords($this->params['verb']);
+                case 'ListMetadataFormats':
+                    return $this->listMetadataFormats();
+                case 'ListSets':
+                    return $this->listSets();
+                default:
+                    return $this->showError('badVerb', 'Illegal OAI Verb');
             }
         }
     }

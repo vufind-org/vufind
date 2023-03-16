@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Jop resolver driver test
  *
@@ -26,13 +27,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Resolver\Driver;
 
 use InvalidArgumentException;
-
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
 use Laminas\Http\Response as HttpResponse;
-
 use VuFind\Resolver\Driver\Jop;
 
 /**
@@ -59,7 +59,8 @@ class JopTest extends \PHPUnit\Framework\TestCase
             'url' => "http://services.d-nb.de/fize-service/gvr/full.xml",
             'rfr_id' => "www.ub.uni-leipzig.de",
             'resolver' => "jop",
-            'window_settings' => "toolbar=no,location=no,directories=no,buttons=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=550,height=600",
+            'window_settings' => "toolbar=no,location=no,directories=no,buttons=no,status=no,"
+                . "menubar=no,scrollbars=yes,resizable=yes,width=550,height=600",
             'show_in_results' => false,
             'show_in_record' => false,
             'show_in_holdings' => true,
@@ -77,7 +78,7 @@ class JopTest extends \PHPUnit\Framework\TestCase
     {
         $conn = $this->createConnector('jop.xml');
 
-        $openUrl = "url_ver=Z39.88-2004&ctx_ver=Z39.88-2004&ctx_enc=info%3Aofi%2Fenc%3AUTF-8&rfr_id=info%3Asid%2Fwww.ub.uni-leipzig.de%3Agenerator&rft.title=No%C3%BBs&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Adc&rft.creator=&rft.pub=Wiley-Blackwell&rft.format=Journal&rft.language=English&rft.issn=0029-4624&zdbid=339287-9";
+        $openUrl = $this->getFixture('openurl/jop');
         $result = $conn->parseLinks($conn->fetchLinks($openUrl));
 
         $testResult = [
@@ -120,12 +121,15 @@ class JopTest extends \PHPUnit\Framework\TestCase
                 'title' => 'Print available',
                 'coverage' => 'Philosophical perspectives; Leipzig UB; Nachweis als Serie',
                 'access' => 'open',
-                'href' => 'http://dispatch.opac.dnb.de/CHARSET=ISO-8859-1/DB=1.1/CMD?ACT=SRCHA&IKT=8509&SRT=LST_ty&TRM=IDN+011960027+or+IDN+01545794X&HLIB=009030085#009030085',
+                'href' => 'http://dispatch.opac.dnb.de/CHARSET=ISO-8859-1/DB=1.1/CMD'
+                    . '?ACT=SRCHA&IKT=8509&SRT=LST_ty&TRM=IDN+011960027+or+IDN+01545794X'
+                    . '&HLIB=009030085#009030085',
                 'service_type' => 'getHolding'
             ],
             6 => [
                 'title' => 'Print available',
-                'coverage' => 'Noûs; Leipzig UB // HB/FH/ Standortsignatur: 96-7-558; CA 5470 Magazin: 96-7-558; 1.1967 - 27.1993; 30.1996 - 43.2009; Letzten 15 Jg. Freihand',
+                'coverage' => 'Noûs; Leipzig UB // HB/FH/ Standortsignatur: 96-7-558; '
+                    . 'CA 5470 Magazin: 96-7-558; 1.1967 - 27.1993; 30.1996 - 43.2009; Letzten 15 Jg. Freihand',
                 'access' => 'open',
                 'service_type' => 'getHolding'
             ]

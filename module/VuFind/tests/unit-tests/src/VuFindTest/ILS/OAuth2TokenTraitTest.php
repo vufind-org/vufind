@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 
 /**
  * Class OAuth2TokenTraitTest
@@ -27,6 +26,9 @@ declare(strict_types=1);
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://knihovny.cz Main Page
  */
+
+declare(strict_types=1);
+
 namespace VuFindTest\ILS;
 
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
@@ -54,6 +56,7 @@ class OAuth2TokenTraitTest extends \PHPUnit\Framework\TestCase
     /**
      * Test for getNewOauth2Token
      *
+     * @return void
      * @throws \VuFind\Exception\ILS
      */
     public function testGetNewOAuth2Token()
@@ -68,7 +71,11 @@ END;
 
         $this->configureDriver();
         $this->mockResponse($response);
-        $token = $this->driver->getNewOAuth2Token('https://www.example.com/api/v1/oauth/token', 'some_client', 'some_secret');
+        $token = $this->driver->getNewOAuth2Token(
+            'https://www.example.com/api/v1/oauth/token',
+            'some_client',
+            'some_secret'
+        );
         $this->assertEquals('Bearer some_access_token', $token->getHeaderValue());
 
         $response = <<<END
@@ -97,6 +104,8 @@ END;
      *
      * @param string|array|null $responseData String or array of string which
      * with raw http response
+     *
+     * @return void
      */
     protected function mockResponse($responseData)
     {
@@ -118,6 +127,8 @@ END;
 
     /**
      * Basic configuration for tested service
+     *
+     * @return void
      */
     public function configureDriver(): void
     {

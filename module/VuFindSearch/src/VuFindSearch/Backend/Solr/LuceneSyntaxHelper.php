@@ -30,6 +30,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Solr;
 
 /**
@@ -554,12 +555,12 @@ class LuceneSyntaxHelper
         // If the user has entered a lone BOOLEAN operator, convert it to lowercase
         // so it is treated as a word (otherwise it will trigger a fatal error):
         switch (trim($input)) {
-        case 'OR':
-            return 'or';
-        case 'AND':
-            return 'and';
-        case 'NOT':
-            return 'not';
+            case 'OR':
+                return 'or';
+            case 'AND':
+                return 'and';
+            case 'NOT':
+                return 'not';
         }
 
         // If the string consists only of control characters and/or BOOLEANs with no

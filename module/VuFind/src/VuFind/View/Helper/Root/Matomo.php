@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Matomo web analytics view helper for Matomo versions >= 4
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\View\Helper\Root;
 
 use VuFind\RecordDriver\AbstractBase as RecordDriverBase;
@@ -641,38 +643,38 @@ EOT;
         $titleJs = 'var title = null;';
         $dimensions = $this->getCustomDimensionsCode($customData);
         switch ($this->context) {
-        case 'accordion':
-            $translate = $this->getView()->plugin('translate');
-            $escape = $this->getView()->plugin('escapejs');
-            $title = $translate('ajaxview_label_information');
-            if ($driver = $this->getRecordDriver()) {
-                $title .= ': ' . $driver->getBreadcrumb();
-            }
-            $titleJs = "var title = '" . $escape($title) . "';";
-            break;
-        case 'tabs':
-            $escape = $this->getView()->plugin('escapejs');
-            $headTitle = $this->getView()->plugin('headTitle');
-            if ($title = $headTitle->renderTitle()) {
-                $title = $escape($title);
-                $titleJs = "var title = '$title';";
-            } elseif ($driver = $this->getRecordDriver()) {
-                $title = $escape($driver->getBreadcrumb());
-                $titleJs = "var title = '$title';";
-                $titleJs .= <<<EOT
+            case 'accordion':
+                $translate = $this->getView()->plugin('translate');
+                $escape = $this->getView()->plugin('escapejs');
+                $title = $translate('ajaxview_label_information');
+                if ($driver = $this->getRecordDriver()) {
+                    $title .= ': ' . $driver->getBreadcrumb();
+                }
+                $titleJs = "var title = '" . $escape($title) . "';";
+                break;
+            case 'tabs':
+                $escape = $this->getView()->plugin('escapejs');
+                $headTitle = $this->getView()->plugin('headTitle');
+                if ($title = $headTitle->renderTitle()) {
+                    $title = $escape($title);
+                    $titleJs = "var title = '$title';";
+                } elseif ($driver = $this->getRecordDriver()) {
+                    $title = $escape($driver->getBreadcrumb());
+                    $titleJs = "var title = '$title';";
+                    $titleJs .= <<<EOT
 var a = document.querySelector('.record-tabs ul.nav-tabs li.active a');
 if (a) { title = a.innerText + (title ? ': ' + title : ''); }
 
 EOT;
-            }
-            break;
-        case 'lightbox':
-            $titleJs .= <<<EOT
+                }
+                break;
+            case 'lightbox':
+                $titleJs .= <<<EOT
 var h = document.getElementsByClassName('lightbox-header');
 if (h[0]) title = h[0].innerText;
 
 EOT;
-            break;
+                break;
         }
 
         return <<<EOT

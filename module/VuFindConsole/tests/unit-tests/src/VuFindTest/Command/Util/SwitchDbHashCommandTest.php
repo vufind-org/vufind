@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SwitchDbHashCommand test.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Command\Util;
 
 use Laminas\Config\Config;
@@ -91,6 +93,8 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @param array $config Config settings
      * @param User  $table  User table gateway
+     *
+     * @return SwitchDbhashCommand
      */
     protected function getMockCommand(array $config = [], $table = null)
     {
@@ -275,6 +279,10 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Decode a hash to confirm that it was encoded correctly.
+     *
+     * @param string $hash Hash to decode
+     *
+     * @return string
      */
     protected function decode($hash)
     {

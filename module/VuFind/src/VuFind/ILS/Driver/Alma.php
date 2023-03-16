@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Alma ILS Driver
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use Laminas\Http\Headers;
@@ -43,8 +45,10 @@ use VuFind\Marc\MarcReader;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface,
-    \Laminas\Log\LoggerAwareInterface, TranslatorAwareInterface
+class Alma extends AbstractBase implements
+    \VuFindHttp\HttpServiceAwareInterface,
+    \Laminas\Log\LoggerAwareInterface,
+    TranslatorAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;

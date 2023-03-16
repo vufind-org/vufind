@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Form Test Class
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Form;
 
 use Symfony\Component\Yaml\Yaml;
@@ -423,8 +425,8 @@ class FormTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock Form object.
      *
-     * @param string $formId Form identifier
-     * @param array  $params Parameters to pass to setFormId
+     * @param string $formId  Form identifier
+     * @param array  $params  Parameters to pass to setFormId
      * @param array  $prefill Prefill data to pass to setFormId
      *
      * @return Form
@@ -820,12 +822,13 @@ class FormTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test email subjects.
-     * @dataProvider getEmailSubjectsData
      *
      * @param string $formToTest      ID of the form to test.
      * @param string $expectedSubject String to be expected.
      *
      * @return void
+     *
+     * @dataProvider getEmailSubjectsData
      */
     public function testEmailSubjects(
         string $formToTest,

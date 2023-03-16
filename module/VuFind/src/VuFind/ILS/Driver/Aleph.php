@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Aleph ILS driver
  *
@@ -35,290 +36,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use Laminas\I18n\Translator\TranslatorInterface;
-
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
-
-/**
- * Aleph Translator Class
- *
- * @category VuFind
- * @package  ILS_Drivers
- * @author   Vaclav Rosecky <vufind-tech@lists.sourceforge.net>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
- */
-class AlephTranslator
-{
-    /**
-     * Character set
-     *
-     * @var string
-     */
-    protected $charset;
-
-    /**
-     * Table 15 configuration
-     *
-     * @var array
-     */
-    protected $table15;
-
-    /**
-     * Table 40 configuration
-     *
-     * @var array
-     */
-    protected $table40;
-
-    /**
-     * Sub library configuration table
-     *
-     * @var array
-     */
-    protected $table_sub_library;
-
-    /**
-     * Constructor
-     *
-     * @param array $configArray Aleph configuration
-     */
-    public function __construct($configArray)
-    {
-        $this->charset = $configArray['util']['charset'];
-        $this->table15 = $this->parsetable(
-            $configArray['util']['tab15'],
-            get_class($this) . "::tab15Callback"
-        );
-        $this->table40 = $this->parsetable(
-            $configArray['util']['tab40'],
-            get_class($this) . "::tab40Callback"
-        );
-        $this->table_sub_library = $this->parsetable(
-            $configArray['util']['tab_sub_library'],
-            get_class($this) . "::tabSubLibraryCallback"
-        );
-    }
-
-    /**
-     * Parse a table
-     *
-     * @param string $file     Input file
-     * @param string $callback Callback routine for parsing
-     *
-     * @return array
-     */
-    public function parsetable($file, $callback)
-    {
-        $result = [];
-        $file_handle = fopen($file, "r, ccs=UTF-8");
-        $rgxp = "";
-        while (!feof($file_handle)) {
-            $line = fgets($file_handle);
-            $line = chop($line);
-            if (preg_match("/!!/", $line)) {
-                $line = chop($line);
-                $rgxp = AlephTranslator::regexp($line);
-            }
-            if (preg_match("/!.*/", $line) || $rgxp == "" || $line == "") {
-            } else {
-                $line = str_pad($line, 80);
-                $matches = "";
-                if (preg_match($rgxp, $line, $matches)) {
-                    call_user_func_array(
-                        $callback,
-                        [$matches, &$result, $this->charset]
-                    );
-                }
-            }
-        }
-        fclose($file_handle);
-        return $result;
-    }
-
-    /**
-     * Get a tab40 collection description
-     *
-     * @param string $collection Collection
-     * @param string $sublib     Sub-library
-     *
-     * @return string
-     */
-    public function tab40Translate($collection, $sublib)
-    {
-        $findme = $collection . "|" . $sublib;
-        $desc = $this->table40[$findme];
-        if ($desc == null) {
-            $findme = $collection . "|";
-            $desc = $this->table40[$findme];
-        }
-        return $desc;
-    }
-
-    /**
-     * Support method for tab15Translate -- translate a sub-library name
-     *
-     * @param string $sl Text to translate
-     *
-     * @return string
-     */
-    public function tabSubLibraryTranslate($sl)
-    {
-        return $this->table_sub_library[$sl];
-    }
-
-    /**
-     * Get a tab15 item status
-     *
-     * @param string $slc  Sub-library
-     * @param string $isc  Item status code
-     * @param string $ipsc Item process status code
-     *
-     * @return string
-     */
-    public function tab15Translate($slc, $isc, $ipsc)
-    {
-        $tab15 = $this->tabSubLibraryTranslate($slc);
-        if ($tab15 == null) {
-            echo "tab15 is null!<br>";
-        }
-        $findme = $tab15["tab15"] . "|" . $isc . "|" . $ipsc;
-        $result = $this->table15[$findme] ?? null;
-        if ($result == null) {
-            $findme = $tab15["tab15"] . "||" . $ipsc;
-            $result = $this->table15[$findme];
-        }
-        $result["sub_lib_desc"] = $tab15["desc"];
-        return $result;
-    }
-
-    /**
-     * Callback for tab15 (modify $tab15 by reference)
-     *
-     * @param array  $matches preg_match() return array
-     * @param array  $tab15   result array to generate
-     * @param string $charset character set
-     *
-     * @return void
-     */
-    public static function tab15Callback($matches, &$tab15, $charset)
-    {
-        $lib = $matches[1];
-        $no1 = $matches[2];
-        if ($no1 == "##") {
-            $no1 = "";
-        }
-        $no2 = $matches[3];
-        if ($no2 == "##") {
-            $no2 = "";
-        }
-        $desc = iconv($charset, 'UTF-8', $matches[5]);
-        $key = trim($lib) . "|" . trim($no1) . "|" . trim($no2);
-        $tab15[trim($key)] = [
-            "desc" => trim($desc), "loan" => $matches[6], "request" => $matches[8],
-            "opac" => $matches[10]
-        ];
-    }
-
-    /**
-     * Callback for tab40 (modify $tab40 by reference)
-     *
-     * @param array  $matches preg_match() return array
-     * @param array  $tab40   result array to generate
-     * @param string $charset character set
-     *
-     * @return void
-     */
-    public static function tab40Callback($matches, &$tab40, $charset)
-    {
-        $code = trim($matches[1]);
-        $sub = trim($matches[2]);
-        $sub = trim(preg_replace("/#/", "", $sub));
-        $desc = trim(iconv($charset, 'UTF-8', $matches[4]));
-        $key = $code . "|" . $sub;
-        $tab40[trim($key)] = [ "desc" => $desc ];
-    }
-
-    /**
-     * Sub-library callback (modify $tab_sub_library by reference)
-     *
-     * @param array  $matches         preg_match() return array
-     * @param array  $tab_sub_library result array to generate
-     * @param string $charset         character set
-     *
-     * @return void
-     */
-    public static function tabSubLibraryCallback(
-        $matches,
-        &$tab_sub_library,
-        $charset
-    ) {
-        $sublib = trim($matches[1]);
-        $desc = trim(iconv($charset, 'UTF-8', $matches[5]));
-        $tab = trim($matches[6]);
-        $tab_sub_library[$sublib] = [ "desc" => $desc, "tab15" => $tab ];
-    }
-
-    /**
-     * Apply standard regular expression cleanup to a string.
-     *
-     * @param string $string String to clean up.
-     *
-     * @return string
-     */
-    public static function regexp($string)
-    {
-        $string = preg_replace("/\\-/", ")\\s(", $string);
-        $string = preg_replace("/!/", ".", $string);
-        $string = preg_replace("/[<>]/", "", $string);
-        $string = "/(" . $string . ")/";
-        return $string;
-    }
-}
-
-/**
- * ILS Exception
- *
- * @category VuFind
- * @package  Exceptions
- * @author   Vaclav Rosecky <vufind-tech@lists.sourceforge.net>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
- */
-class AlephRestfulException extends ILSException
-{
-    /**
-     * XML response (false for none)
-     *
-     * @var string|bool
-     */
-    protected $xmlResponse = false;
-
-    /**
-     * Attach an XML response to the exception
-     *
-     * @param string $body XML
-     *
-     * @return void
-     */
-    public function setXmlResponse($body)
-    {
-        $this->xmlResponse = $body;
-    }
-
-    /**
-     * Return XML response (false if none)
-     *
-     * @return string|bool
-     */
-    public function getXmlResponse()
-    {
-        return $this->xmlResponse;
-    }
-}
 
 /**
  * Aleph ILS driver
@@ -333,7 +56,8 @@ class AlephRestfulException extends ILSException
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
+class Aleph extends AbstractBase implements
+    \Laminas\Log\LoggerAwareInterface,
     \VuFindHttp\HttpServiceAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
@@ -344,7 +68,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
     /**
      * Translator object
      *
-     * @var AlephTranslator
+     * @var Aleph\Translator
      */
     protected $alephTranslator = false;
 
@@ -584,7 +308,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
                 $this->alephTranslator = $cache->getItem('alephTranslator');
             }
             if ($this->alephTranslator == false) {
-                $this->alephTranslator = new AlephTranslator($this->config);
+                $this->alephTranslator = new Aleph\Translator($this->config);
                 if (isset($cache)) {
                     $cache->setItem('alephTranslator', $this->alephTranslator);
                 }
@@ -721,7 +445,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
                     'reply-message' => $replyText
                 ]
             );
-            $ex = new AlephRestfulException($replyText, $replyCode);
+            $ex = new Aleph\RestfulException($replyText, $replyCode);
             $ex->setXmlResponse($result);
             throw $ex;
         }
@@ -1237,7 +961,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
                 $result[$id] = [
                     'success' => true, 'new_date' => $this->parseDate($due)
                 ];
-            } catch (AlephRestfulException $ex) {
+            } catch (Aleph\RestfulException $ex) {
                 $result[$id] = [
                     'success' => false, 'sysMessage' => $ex->getMessage()
                 ];
@@ -1369,7 +1093,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
                     null,
                     "DELETE"
                 );
-            } catch (AlephRestfulException $e) {
+            } catch (Aleph\RestfulException $e) {
                 $statuses[$id] = [
                     'success' => false, 'status' => 'cancel_hold_failed',
                     'sysMessage' => $e->getMessage(),
@@ -1764,7 +1488,7 @@ class Aleph extends AbstractBase implements \Laminas\Log\LoggerAwareInterface,
                 "PUT",
                 $body
             );
-        } catch (AlephRestfulException $exception) {
+        } catch (Aleph\RestfulException $exception) {
             $message = $exception->getMessage();
             $note = $exception->getXmlResponse()
                 ->xpath('/put-item-hold/create-hold/note[@type="error"]');

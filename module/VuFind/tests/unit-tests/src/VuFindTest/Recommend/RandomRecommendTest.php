@@ -27,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Recommend;
 
 use VuFind\Recommend\RandomRecommend as Random;
@@ -344,6 +345,8 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Get a fixture object
+     *
+     * @param string $file Fixture name
      *
      * @return mixed
      */

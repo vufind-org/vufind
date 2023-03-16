@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ILS Driver for NewGenLib
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use PDO;
@@ -267,14 +269,14 @@ class NewGenLib extends AbstractBase
             $location = "";
             $type2 = "";
             switch ($row2['status']) {
-            case 'A':
-                $location = "Checked out - No copy available in the library";
-                $type2 = $row2['queue_no'];
-                break;
-            case 'B':
-                $location = "Item available at the circulation desk";
-                $type2 = "INTIMATED";
-                break;
+                case 'A':
+                    $location = "Checked out - No copy available in the library";
+                    $type2 = $row2['queue_no'];
+                    break;
+                case 'B':
+                    $location = "Item available at the circulation desk";
+                    $type2 = "INTIMATED";
+                    break;
             }
             $RecordId2 = $row2['cataloguerecordid'] . "_" .
                 $row2['owner_library_id'];
@@ -575,26 +577,26 @@ class NewGenLib extends AbstractBase
         $reserve = 'N';
         while ($row = $sqlSmt->fetch(PDO::FETCH_ASSOC)) {
             switch ($row['status']) {
-            case 'B':
-                $status = "Available";
-                $available = true;
-                $reserve = 'N';
-                break;
-            case 'A':
-                // Instead of relying on status = 'On holds shelf',
-                // I might want to see if:
-                // action.hold_request.current_copy = asset.copy.id
-                // and action.hold_request.capture_time is not null
-                // and I think action.hold_request.fulfillment_time is null
-                $status = "Checked Out";
-                $available = false;
-                $reserve = 'N';
-                break;
-            default:
-                $status = "Not Available";
-                $available = false;
-                $reserve = 'N';
-                break;
+                case 'B':
+                    $status = "Available";
+                    $available = true;
+                    $reserve = 'N';
+                    break;
+                case 'A':
+                    // Instead of relying on status = 'On holds shelf',
+                    // I might want to see if:
+                    // action.hold_request.current_copy = asset.copy.id
+                    // and action.hold_request.capture_time is not null
+                    // and I think action.hold_request.fulfillment_time is null
+                    $status = "Checked Out";
+                    $available = false;
+                    $reserve = 'N';
+                    break;
+                default:
+                    $status = "Not Available";
+                    $available = false;
+                    $reserve = 'N';
+                    break;
             }
             $locationsql = "select location from location where location_id='" .
                 $row['location_id'] . "' and library_id=" . $row['library_id'];

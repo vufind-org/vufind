@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Abstract authentication base class
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\Request;
@@ -42,7 +44,8 @@ use VuFind\Exception\Auth as AuthException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
+abstract class AbstractBase implements
+    \VuFind\Db\Table\DbTableAwareInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface,
     \Laminas\Log\LoggerAwareInterface
 {

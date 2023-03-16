@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink account ajax menu test class.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 /**
@@ -84,6 +86,8 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
      *
      * Cleared when browser closes.
      * If run multiple times in one test function, manually clear cache.
+     *
+     * @param array $states States to set in JS session storage
      *
      * @return void
      */
@@ -306,6 +310,9 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Abstracted test to set storage and check if the icon is correct
      *
+     * @param array  $storage    Array of storage values to test
+     * @param string $checkClass Icon class to check
+     *
      * @return void
      */
     protected function checkIcon($storage, $checkClass)
@@ -334,13 +341,36 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
         $this->login();
         $storage = [
             // No fines
-            ['fines' => ['value' => 0, 'display' => 'ZILTCH']],
+            [
+                'fines' => [
+                    'total' => 0,
+                    'display' => 'ZILTCH'
+                ]
+            ],
             // Holds in transit only
-            ['holds' => ['in_transit' => 1, 'available' => 0]],
+            [
+                'holds' => [
+                    'in_transit' => 1,
+                    'available' => 0,
+                    'other' => 0
+                ]
+            ],
             // ILL Requests in transit only
-            ['illRequests' => ['in_transit' => 1, 'available' => 0]],
+            [
+                'illRequests' => [
+                    'in_transit' => 1,
+                    'available' => 0,
+                    'other' => 0
+                ]
+            ],
             // Storage Retrievals in transit only
-            ['storageRetrievalRequests' => ['in_transit' => 1, 'available' => 0]]
+            [
+                'storageRetrievalRequests' => [
+                    'in_transit' => 1,
+                    'available' => 0,
+                    'other' => 0
+                ]
+            ]
         ];
         $this->checkIcon($storage, '.account-status-none');
     }
@@ -436,7 +466,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
             [
                 [
                     'holds' => ['available' => 1],
-                    'fines' => ['value' => 0, 'display' => 'none']
+                    'fines' => ['total' => 0, 'display' => 'none']
                 ]
             ],
             '.account-status-good'

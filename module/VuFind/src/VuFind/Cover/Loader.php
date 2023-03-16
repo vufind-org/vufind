@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Book Cover Generator
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/configuration:external_content Wiki
  */
+
 namespace VuFind\Cover;
 
 use VuFind\Content\Covers\PluginManager as ApiManager;
@@ -95,11 +97,11 @@ class Loader extends \VuFind\ImageLoader
     protected $baseDir;
 
     /**
-     * User ISBN parameter
+     * User ISBNs parameter
      *
-     * @var ISBN
+     * @var ISBN[]
      */
-    protected $isbn = null;
+    protected $isbns = null;
 
     /**
      * User ISSN parameter
@@ -252,7 +254,7 @@ class Loader extends \VuFind\ImageLoader
     protected function getDefaultSettings()
     {
         return [
-            'isbn' => null,
+            'isbns' => null,
             'size' => 'small',
             'type' => null,
             'title' => null,
@@ -301,7 +303,13 @@ class Loader extends \VuFind\ImageLoader
     protected function storeSanitizedSettings($settings)
     {
         $settings = array_merge($this->getDefaultSettings(), $settings);
-        $this->isbn = new ISBN($settings['isbn'] ?? '');
+        $this->isbns = array_map(
+            function ($isbn) {
+                return new ISBN($isbn);
+            },
+            $settings['isbns']
+                ?? (empty($settings['isbn']) ? [] : [$settings['isbn']])
+        );
         $this->ismn = new ISMN($settings['ismn'] ?? '');
         if (!empty($settings['issn'])) {
             $rawissn = preg_replace('/[^0-9X]/', '', strtoupper($settings['issn']));
@@ -323,12 +331,12 @@ class Loader extends \VuFind\ImageLoader
      * Load an image given an ISBN and/or content type.
      *
      * @param array $settings Array of settings used to calculate a cover; may
-     * contain any or all of these keys: 'isbn' (ISBN), 'size' (requested size),
-     * 'type' (content type), 'title' (title of book, for dynamic covers), 'author'
-     * (author of book, for dynamic covers), 'callnumber' (unique ID, for dynamic
-     * covers), 'issn' (ISSN), 'oclc' (OCLC number), 'upc' (UPC number),
+     * contain any or all of these keys: 'isbns' (array of ISBNs), 'size' (requested
+     * size), 'type' (content type), 'title' (title of book, for dynamic covers),
+     * 'author' (author of book, for dynamic covers), 'callnumber' (unique ID, for
+     * dynamic covers), 'issn' (ISSN), 'oclc' (OCLC number), 'upc' (UPC number),
      * 'nbn' (national bibliography number), 'ismn' (ISMN), 'uuid' (Universally
-     *  unique identifier).
+     * unique identifier).
      *
      * @return void
      */
@@ -435,8 +443,9 @@ class Loader extends \VuFind\ImageLoader
     protected function getIdentifiers()
     {
         $ids = [];
-        if ($this->isbn && $this->isbn->isValid()) {
-            $ids['isbn'] = $this->isbn;
+        if (!empty($this->isbns)) {
+            $ids['isbn'] = $this->isbns[0];
+            $ids['isbns'] = $this->isbns;
         }
         if ($this->issn && strlen($this->issn) == 8) {
             $ids['issn'] = $this->issn;

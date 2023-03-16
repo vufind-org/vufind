@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Flashmessages View Helper Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper\Root;
 
 use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
@@ -212,7 +214,7 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a Flashmessages helper with the given messages in the queue
      *
-     * @array $messages Messages
+     * @param array $messages Messages
      *
      * @return Flashmessages
      */

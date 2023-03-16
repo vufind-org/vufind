@@ -11,6 +11,7 @@
       <?php $labelHeading = $this->transEsc('home_browse_by_facet', ['%%facet%%' => $this->translate($details['label'])]); ?>
       <?php if ($isHierarchy = in_array($field, $hierarchicalFacets ?? [])):
           $this->headScript()->appendFile('vendor/jsTree/jstree.min.js');
+          $this->headScript()->appendFile('jstree-vufind-facet-plugin.js');
           $this->headScript()->appendFile('facets.js');
           $sort = $hierarchicalFacetSortOptions[$field] ?? $hierarchicalFacetSortOptions['*'] ?? 'all';
           $script = <<<JS
@@ -21,7 +22,7 @@ $(document).ready(function() {
 JS;
           echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
         ?>
-        <div id="facet_<?=$this->escapeHtml($field)?>_container" class="home-facet <?=$this->escapeHtmlAttr($field)?> hide">
+        <div id="facet_<?=$this->escapeHtml($field)?>_container" role="listbox" class="home-facet <?=$this->escapeHtmlAttr($field)?> hide">
           <h2><?=$labelHeading?></h2>
           <div id="facet_<?=$this->escapeHtml($field)?>" class="jstree-facet"
               data-source="<?=$this->escapeHtml($this->searchClassId)?>"

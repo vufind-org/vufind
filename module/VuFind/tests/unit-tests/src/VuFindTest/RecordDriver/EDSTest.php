@@ -1,4 +1,5 @@
 <?php
+
 /**
  * EDS Record Driver Test Class
  *
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\RecordDriver;
 
 use VuFind\RecordDriver\EDS;
@@ -270,6 +272,8 @@ class EDSTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Data provider for testLinkUrls
+     *
+     * @return array
      */
     public function getLinkUrlsProvider(): array
     {
@@ -288,6 +292,9 @@ class EDSTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test linkUrls for a record.
+     *
+     * @param string $url      Input URL
+     * @param string $expected Expected value
      *
      * @dataProvider getLinkUrlsProvider
      *

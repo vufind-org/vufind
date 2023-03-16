@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Wrapper class for handling logged-in user in session.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Auth;
 
 use Laminas\Config\Config;
@@ -44,7 +46,8 @@ use VuFind\Validator\CsrfInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface,
+class Manager implements
+    \LmcRbacMvc\Identity\IdentityProviderInterface,
     \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
@@ -834,11 +837,11 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface,
     {
         // Convert 'numeric' or 'alphanumeric' pattern to a regular expression:
         switch ($policy['pattern'] ?? '') {
-        case 'numeric':
-            $policy['pattern'] = '\d+';
-            break;
-        case 'alphanumeric':
-            $policy['pattern'] = '[\da-zA-Z]+';
+            case 'numeric':
+                $policy['pattern'] = '\d+';
+                break;
+            case 'alphanumeric':
+                $policy['pattern'] = '[\da-zA-Z]+';
         }
 
         // Map settings to attributes for a text input field:

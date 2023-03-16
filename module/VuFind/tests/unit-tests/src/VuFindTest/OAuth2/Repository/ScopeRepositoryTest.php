@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OAuth2 ScopeRepository tests.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\OAuth2\Repository;
 
 use VuFind\OAuth2\Repository\ScopeRepository;
@@ -56,6 +58,11 @@ class ScopeRepositoryTest extends AbstractTokenRepositoryTest
 
     /**
      * Test scope repository
+     *
+     * @param string $scopeId Scope ID
+     * @param string $desc    Expected description
+     * @param bool   $hidden  Expected hidden value
+     * @param bool   $ils     Expected "ILS Needed" value
      *
      * @dataProvider getTestScopeRepositoryData
      *

@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Controller\Plugin;
 
 use Laminas\Session\Container;
@@ -434,13 +435,11 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
     /**
      * Get mock result scroller
      *
-     * @param \VuFind\Search\Base\Results $results restoreSearch results (null to
-     * ignore)
-     * @param array                       $methods Methods to mock
+     * @param \VuFind\Search\Base\Results $results restoreSearch results (null to ignore)
      *
-     * @return ResultScrollerMock
+     * @return ResultScroller
      */
-    protected function getMockResultScroller($results): ResultScrollerMock
+    protected function getMockResultScroller($results): ResultScroller
     {
         $mockManager = $this->getMockBuilder(
             \VuFind\Search\Results\PluginManager::class
@@ -450,63 +449,60 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         $mockMemory->expects($this->any())
             ->method('getLastSearchId')
             ->willReturn(-123);
-        $resultScroller = new ResultScrollerMock(
+        $params = [
             new Container('test'),
             $mockManager,
             $mockMemory,
             true
-        );
+        ];
+        // Create an anonymous class to stub out some behavior:
+        $resultScroller = new class (...$params) extends ResultScroller {
+            /**
+             * Search results to return
+             *
+             * @var \VuFind\Search\Base\Results
+             */
+            protected $testResults;
+
+            /**
+             * Set results to remember for restoreSearch
+             *
+             * @param \VuFind\Search\Base\Results $testResults Results
+             *
+             * @return void
+             */
+            public function setResults(?\VuFind\Search\Base\Results $testResults): void
+            {
+                $this->testResults = $testResults;
+            }
+
+            /**
+             * Stubbed
+             *
+             * @param int $searchId Search ID
+             *
+             * @return ?\VuFind\Search\Base\Results
+             */
+            protected function restoreSearch(int $searchId): ?\VuFind\Search\Base\Results
+            {
+                return $this->testResults->getSearchId() === $searchId
+                    ? $this->testResults : null;
+            }
+
+            /**
+             * Stubbed
+             *
+             * @param \VuFind\Search\Base\Results $search Search object to remember.
+             *
+             * @return void
+             */
+            protected function rememberSearch($search)
+            {
+                // Do nothing
+            }
+        };
+
         $resultScroller->setResults($results);
         return $resultScroller;
-    }
-}
-
-/**
- * Mock class to stub search results
- */
-class ResultScrollerMock extends \VuFind\Controller\Plugin\ResultScroller
-{
-    /**
-     * Search results to return
-     *
-     * @var \VuFind\Search\Base\Results
-     */
-    protected $testResults;
-
-    /**
-     * Set results to remember for restoreSearch
-     *
-     * @param \VuFind\Search\Base\Results $testResults Results
-     *
-     * @return void
-     */
-    public function setResults(?\VuFind\Search\Base\Results $testResults): void
-    {
-        $this->testResults = $testResults;
-    }
-
-    /**
-     * Stubbed
-     *
-     * @param int $searchId Search ID
-     *
-     * @return ?\VuFind\Search\Base\Results
-     */
-    protected function restoreSearch(int $searchId): ?\VuFind\Search\Base\Results
-    {
-        return $this->testResults->getSearchId() === $searchId
-            ? $this->testResults : null;
-    }
-
-    /**
-     * Stubbed
-     *
-     * @param \VuFind\Search\Base\Results $search Search object to remember.
-     *
-     * @return void
-     */
-    protected function rememberSearch($search)
-    {
-        // Do nothing
     }
 }

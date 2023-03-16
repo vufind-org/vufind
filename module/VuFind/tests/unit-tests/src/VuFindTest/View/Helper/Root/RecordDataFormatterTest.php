@@ -1,4 +1,5 @@
 <?php
+
 /**
  * RecordDataFormatter Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper\Root;
 
 use Psr\Container\ContainerInterface;
@@ -80,18 +82,27 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'context' => $context,
             'config' => new \VuFind\View\Helper\Root\Config($container->get(\VuFind\Config\PluginManager::class)),
             'doi' => new \VuFind\View\Helper\Root\Doi($context),
+            'htmlSafeJsonEncode' => new \VuFind\View\Helper\Root\HtmlSafeJsonEncode(),
             'icon' => new \VuFind\View\Helper\Root\Icon(
                 [],
                 new \Laminas\Cache\Storage\Adapter\BlackHole(),
                 new \Laminas\View\Helper\EscapeHtmlAttr(),
             ),
-            'openUrl' => new \VuFind\View\Helper\Root\OpenUrl($context, [], $this->getMockBuilder(\VuFind\Resolver\Driver\PluginManager::class)->disableOriginalConstructor()->getMock()),
+            'openUrl' => new \VuFind\View\Helper\Root\OpenUrl(
+                $context,
+                [],
+                $this->getMockBuilder(\VuFind\Resolver\Driver\PluginManager::class)
+                    ->disableOriginalConstructor()->getMock()
+            ),
             'proxyUrl' => new \VuFind\View\Helper\Root\ProxyUrl(),
             'record' => new \VuFind\View\Helper\Root\Record(),
             'recordLinker' => new \VuFind\View\Helper\Root\RecordLinker($this->getMockRecordRouter()),
             'searchMemory' => $this->getSearchMemoryViewHelper(),
-            'searchOptions' => new \VuFind\View\Helper\Root\SearchOptions(new \VuFind\Search\Options\PluginManager($container)),
-            'searchTabs' => $this->getMockBuilder(\VuFind\View\Helper\Root\SearchTabs::class)->disableOriginalConstructor()->getMock(),
+            'searchOptions' => new \VuFind\View\Helper\Root\SearchOptions(
+                new \VuFind\Search\Options\PluginManager($container)
+            ),
+            'searchTabs' => $this->getMockBuilder(\VuFind\View\Helper\Root\SearchTabs::class)
+                ->disableOriginalConstructor()->getMock(),
             'transEsc' => new \VuFind\View\Helper\Root\TransEsc(),
             'translate' => new \VuFind\View\Helper\Root\Translate(),
             'usertags' => new \VuFind\View\Helper\Root\UserTags(),
@@ -228,11 +239,11 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     /**
      * Test formatting.
      *
-     * @dataProvider getFormattingData
-     *
      * @param string $function Function to test the formatting with.
      *
      * @return void
+     *
+     * @dataProvider getFormattingData
      */
     public function testFormatting(string $function): void
     {
@@ -379,7 +390,8 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         }
         // Check for exact markup in representative example:
         $this->assertEquals(
-            '<span property="availableLanguage" typeof="Language"><span property="name">Italian</span></span><br /><span property="availableLanguage" typeof="Language"><span property="name">Latin</span></span>',
+            '<span property="availableLanguage" typeof="Language"><span property="name">Italian</span></span><br />'
+            . '<span property="availableLanguage" typeof="Language"><span property="name">Latin</span></span>',
             $this->findResult('Language', $results)['value']
         );
 

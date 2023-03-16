@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for building the HierarchyTree tab.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\RecordTab;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -41,8 +43,7 @@ use Psr\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class HierarchyTreeFactory
-    implements \Laminas\ServiceManager\Factory\FactoryInterface
+class HierarchyTreeFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Hierarchy Tree Renderer Plugin Manager Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Hierarchy\TreeRenderer;
 
 use VuFind\Hierarchy\TreeRenderer\PluginManager;
@@ -61,7 +63,9 @@ class PluginManagerTest extends \PHPUnit\Framework\TestCase
     public function testExpectedInterface()
     {
         $this->expectException(\Laminas\ServiceManager\Exception\InvalidServiceException::class);
-        $this->expectExceptionMessage('Plugin ArrayObject does not belong to VuFind\\Hierarchy\\TreeRenderer\\AbstractBase');
+        $this->expectExceptionMessage(
+            'Plugin ArrayObject does not belong to VuFind\\Hierarchy\\TreeRenderer\\AbstractBase'
+        );
 
         $pm = new PluginManager(new \VuFindTest\Container\MockContainer($this));
         $pm->validate(new \ArrayObject());

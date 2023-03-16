@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Horizon ILS Driver
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use Laminas\Log\LoggerAwareInterface;
@@ -175,32 +177,32 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             }
         } else {
             switch ($status) {
-            case 'i': // checked in
-                $available = 1;
-                $reserve   = 'N';
-                break;
-            case 'rb': // Reserve Bookroom
-                $available = 0;
-                $reserve   = 'Y';
-                break;
-            case 'h': // being held
-                $available = 0;
-                $reserve   = 'N';
-                break;
-            case 'l': // lost
-                $available = 0;
-                $reserve   = 'N';
-                $duedate   = ''; // No due date for lost items
-                break;
-            case 'm': // missing
-                $available = 0;
-                $reserve   = 'N';
-                $duedate   = ''; // No due date for missing items
-                break;
-            default:
-                $available = 0;
-                $reserve   = 'N';
-                break;
+                case 'i': // checked in
+                    $available = 1;
+                    $reserve   = 'N';
+                    break;
+                case 'rb': // Reserve Bookroom
+                    $available = 0;
+                    $reserve   = 'Y';
+                    break;
+                case 'h': // being held
+                    $available = 0;
+                    $reserve   = 'N';
+                    break;
+                case 'l': // lost
+                    $available = 0;
+                    $reserve   = 'N';
+                    $duedate   = ''; // No due date for lost items
+                    break;
+                case 'm': // missing
+                    $available = 0;
+                    $reserve   = 'N';
+                    $duedate   = ''; // No due date for missing items
+                    break;
+                default:
+                    $available = 0;
+                    $reserve   = 'N';
+                    break;
             }
         }
 
@@ -1059,7 +1061,6 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
         // This functionality first appeared in Horizon 7.4 - check our version
         $hzVersionRequired = "7.4.0.0";
         if ($this->checkHzVersion($hzVersionRequired)) {
-
             // Set the Sybase or MSSQL rowcount limit (TODO: account for $page)
             $limitsql = "set rowcount {$limit}";
             // for Sybase ASE 12.5 : "set rowcount $limit"

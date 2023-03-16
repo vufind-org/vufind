@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Metadata vocabulary base class
  * (provides results from available RecordDriver methods in a standardized form)
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\MetadataVocabulary;
 
 /**

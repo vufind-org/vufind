@@ -62,7 +62,7 @@
       <?php foreach ($this->recordList as $resource): ?>
         <?php $iteration++; ?>
         <?php $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
-        <li id="record<?=$this->escapeHtmlAttr($resource->getUniqueId()) ?>" class="result">
+        <li class="result">
           <?php if (($this->cancelForm && isset($ilsDetails['cancel_details'])) || ($this->updateForm && isset($ilsDetails['updateDetails']))): ?>
             <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['cancel_details'] ?? $ilsDetails['updateDetails']); ?>
             <?php if ($this->cancelForm && isset($ilsDetails['cancel_details'])): ?>
@@ -168,6 +168,12 @@
                 <strong><?=$this->transEsc('hold_expires') ?>:</strong> <?=$this->escapeHtml($ilsDetails['expire']) ?>
               <?php endif; ?>
               <br />
+              <?php if (!empty($ilsDetails['proxiedBy'])): ?>
+                <strong><?=$this->transEsc('hold_proxied_by')?>:</strong> <span class="hold-proxied-by"><?=$this->escapeHtml($ilsDetails['proxiedBy'])?></span><br />
+              <?php endif; ?>
+              <?php if (!empty($ilsDetails['proxiedFor'])): ?>
+                <strong><?=$this->transEsc('hold_proxied_for')?>:</strong> <span class="hold-proxied-for"><?=$this->escapeHtml($ilsDetails['proxiedFor'])?></span><br />
+              <?php endif; ?>
 
               <?php if (isset($ilsDetails['available']) && $ilsDetails['available'] == true): ?>
                 <div class="text-success">

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHP version 7
  *
@@ -26,6 +27,7 @@
  *           License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\DigitalContent;
 
 use Exception;
@@ -59,8 +61,10 @@ use VuFind\Exception\ILS as ILSException;
  *       provide option for asking about autocheckout for every hold
  *       provide config options for how to handle patrons with no access to OD
  */
-class OverdriveConnector implements LoggerAwareInterface,
-    AuthorizationServiceAwareInterface, \VuFindHttp\HttpServiceAwareInterface
+class OverdriveConnector implements
+    LoggerAwareInterface,
+    AuthorizationServiceAwareInterface,
+    \VuFindHttp\HttpServiceAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait {
         logError as error;

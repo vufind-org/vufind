@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Aleph ILS driver test
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\ILS\Driver;
 
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
@@ -56,14 +58,21 @@ class AlephTest extends \VuFindTest\Unit\ILSDriverTestCase
         $this->driver = new Aleph(new \VuFind\Date\Converter());
     }
 
+    /**
+     * Test the getMyFines() method
+     *
+     * @return void
+     */
     public function testGetMyFines(): void
     {
         $this->mockResponse('cash.xml');
-        $fines = $this->driver->getMyFines([
-            'cat_username' => 'my_login',
-            'cat_password' => 'my_password',
-            'id' => "patron_id",
-        ]);
+        $fines = $this->driver->getMyFines(
+            [
+                'cat_username' => 'my_login',
+                'cat_password' => 'my_password',
+                'id' => "patron_id",
+            ]
+        );
         $expected = [
             [
                 'title' => '',
@@ -146,6 +155,7 @@ class AlephTest extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @param string|array|null $fixture Fixture file
      *
+     * @return void
      * @throws InvalidArgumentException Fixture file does not exist
      */
     protected function mockResponse($fixture = null)

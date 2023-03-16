@@ -26,6 +26,7 @@
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Security;
 
 use Laminas\Http\Header\ContentSecurityPolicy;
@@ -59,6 +60,13 @@ class CspHeaderGenerator
     protected $nonce;
 
     /**
+     * List of directives that can work with nonce
+     *
+     * @var string[]
+     */
+    protected $scriptDirectives = ['script-src', 'script-src-elem'];
+
+    /**
      * CspHeaderGenerator constructor.
      *
      * @param \Laminas\Config\Config          $config         Configuration
@@ -84,7 +92,9 @@ class CspHeaderGenerator
         }
         foreach ($directives as $name => $value) {
             $sources = $value->toArray();
-            if ($name == "script-src" && $this->config->CSP->use_nonce) {
+            if (in_array($name, $this->scriptDirectives)
+                && $this->config->CSP->use_nonce
+            ) {
                 $sources[] = "'nonce-$this->nonce'";
             }
             // Add report-uri header for backwards compatibility

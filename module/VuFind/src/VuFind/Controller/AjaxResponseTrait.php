@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Trait to allow AJAX response generation.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
+
 namespace VuFind\Controller;
 
 use VuFind\AjaxHandler\AjaxHandlerInterface as Ajax;
@@ -74,20 +76,22 @@ trait AjaxResponseTrait
     protected function formatContent($type, $data, $httpCode)
     {
         switch ($type) {
-        case 'application/javascript':
-        case 'application/json':
-            $output = ['data' => $data];
-            if ('development' == APPLICATION_ENV && count(self::$php_errors) > 0) {
-                $output['php_errors'] = self::$php_errors;
-            }
-            return json_encode($output);
-        case 'text/plain':
-            return ((null !== $httpCode && $httpCode >= 400) ? 'ERROR ' : 'OK ')
-                . $data;
-        case 'text/html':
-            return $data ?: '';
-        default:
-            throw new \Exception("Unsupported content type: $type");
+            case 'application/javascript':
+            case 'application/json':
+                $output = ['data' => $data];
+                if ('development' == APPLICATION_ENV
+                    && count(self::$php_errors) > 0
+                ) {
+                    $output['php_errors'] = self::$php_errors;
+                }
+                return json_encode($output);
+            case 'text/plain':
+                return ((null !== $httpCode && $httpCode >= 400) ? 'ERROR ' : 'OK ')
+                    . $data;
+            case 'text/html':
+                return $data ?: '';
+            default:
+                throw new \Exception("Unsupported content type: $type");
         }
     }
 

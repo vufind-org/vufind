@@ -5,7 +5,7 @@
   <?php foreach ($this->results->getResults() as $current): ?>
     <?php $recordNumber = $this->results->getStartRecord() + $i - $this->indexStart; ?>
     <?php // Data-record-number attribute is for analytics use.  Do not remove. ?>
-    <li id="result<?=$i++ ?>" class="result<?=$current->supportsAjaxStatus()?' ajaxItem':''?>" data-record-number="<?=$this->escapeHtmlAttr($recordNumber)?>">
+    <li<?php if (empty($this->excludeResultIds)): ?> id="result<?=$i++ ?>"<?php endif; ?> class="result<?=$current->supportsAjaxStatus()?' ajaxItem':''?>" data-record-number="<?=$this->escapeHtmlAttr($recordNumber)?>">
       <?php if (isset($this->showCheckboxes) && $this->showCheckboxes): ?>
         <?=$this->record($current)->getCheckbox('', 'search-cart-form', $recordNumber)?>
       <?php endif; ?>

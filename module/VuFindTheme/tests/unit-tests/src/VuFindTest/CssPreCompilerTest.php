@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CssPreCompilerTest Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest;
 
 use VuFindTheme\ScssCompiler;
@@ -68,6 +70,8 @@ class CssPreCompilerTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Create fixture files in temp folder
+     *
+     * @param string $ext Extension directory
      *
      * @return void
      */
@@ -141,19 +145,25 @@ class CssPreCompilerTest extends \PHPUnit\Framework\TestCase
     /**
      * Assign appropriate values to $this->testDest and $this->compiler
      *
+     * @param string $ext   Extension directory
+     * @param string $class Name of compiler class
+     *
      * @return void
      */
     protected function setupCompiler($ext, $class)
     {
         $temp = sys_get_temp_dir();
-        $this->testDest = "$temp/vufind_${ext}_comp_test/";
+        $this->testDest = "$temp/vufind_{$ext}_comp_test/";
         $this->compiler = new $class();
-        $this->compiler->setBasePath("$temp/vufind_${ext}_comp_test");
-        $this->compiler->setTempPath("$temp/vufind_${ext}_comp_test/cache");
+        $this->compiler->setBasePath("$temp/vufind_{$ext}_comp_test");
+        $this->compiler->setTempPath("$temp/vufind_{$ext}_comp_test/cache");
     }
 
     /**
      * Test compiling a single theme.
+     *
+     * @param string $ext   Extension directory
+     * @param string $class Name of compiler class
      *
      * @dataProvider extClassProvider
      *
@@ -170,6 +180,9 @@ class CssPreCompilerTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test compiling all themes (default).
+     *
+     * @param string $ext   Extension directory
+     * @param string $class Name of compiler class
      *
      * @dataProvider extClassProvider
      *

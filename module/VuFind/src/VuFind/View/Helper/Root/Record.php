@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Record driver view helper
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use VuFind\Cover\Router as CoverRouter;
@@ -556,12 +558,12 @@ class Record extends \Laminas\View\Helper\AbstractHelper
         }
 
         switch ($context) {
-        case "core":
-        case "results":
-            $key = 'showIn' . ucwords(strtolower($context));
-            break;
-        default:
-            return false;
+            case "core":
+            case "results":
+                $key = 'showIn' . ucwords(strtolower($context));
+                break;
+            default:
+                return false;
         }
 
         if (!isset($this->config->QRCode->$key)

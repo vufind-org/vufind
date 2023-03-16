@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Export support class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind;
 
 use Laminas\Config\Config;
@@ -115,25 +117,25 @@ class Export
         foreach ($matches[1] as $current) {
             $parts = explode('|', $current);
             switch ($parts[0]) {
-            case 'config':
-            case 'encodedConfig':
-                if (isset($this->mainConfig->{$parts[1]}->{$parts[2]})) {
-                    $value = $this->mainConfig->{$parts[1]}->{$parts[2]};
-                } else {
-                    $value = $parts[3];
-                }
-                if ($parts[0] == 'encodedConfig') {
-                    $value = urlencode($value);
-                }
-                $template = str_replace('{' . $current . '}', $value, $template);
-                break;
-            case 'encodedCallback':
-                $template = str_replace(
-                    '{' . $current . '}',
-                    urlencode($callback),
-                    $template
-                );
-                break;
+                case 'config':
+                case 'encodedConfig':
+                    if (isset($this->mainConfig->{$parts[1]}->{$parts[2]})) {
+                        $value = $this->mainConfig->{$parts[1]}->{$parts[2]};
+                    } else {
+                        $value = $parts[3];
+                    }
+                    if ($parts[0] == 'encodedConfig') {
+                        $value = urlencode($value);
+                    }
+                    $template = str_replace('{' . $current . '}', $value, $template);
+                    break;
+                case 'encodedCallback':
+                    $template = str_replace(
+                        '{' . $current . '}',
+                        urlencode($callback),
+                        $template
+                    );
+                    break;
             }
         }
         return $template;

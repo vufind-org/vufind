@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OAuth2 refresh token repository implementation.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\OAuth2\Repository;
 
 use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
@@ -41,8 +43,7 @@ use VuFind\OAuth2\Entity\RefreshTokenEntity;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class RefreshTokenRepository extends AbstractTokenRepository
-    implements RefreshTokenRepositoryInterface
+class RefreshTokenRepository extends AbstractTokenRepository implements RefreshTokenRepositoryInterface
 {
     /**
      * Constructor

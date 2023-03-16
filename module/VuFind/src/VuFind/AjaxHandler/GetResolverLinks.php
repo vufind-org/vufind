@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Get Resolver Links" AJAX handler
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\AjaxHandler;
 
 use Laminas\Config\Config;
@@ -123,21 +125,24 @@ class GetResolverLinks extends AbstractBase implements TranslatorAwareInterface
         // Sort the returned links into categories based on service type:
         $electronic = $print = $services = [];
         foreach ($result as $link) {
-            switch ($link['service_type'] ?? '') {
-            case 'getHolding':
-                $print[] = $link;
-                break;
-            case 'getWebService':
-                $services[] = $link;
-                break;
-            case 'getDOI':
-                // Special case -- modify DOI text for special display:
+            $serviceType = $link['service_type'] ?? '';
+            // Special case -- modify DOI text for special display, then apply
+            // default $electronic behavior below:
+            if ($serviceType === 'getDOI') {
                 $link['title'] = $this->translate('Get full text');
                 $link['coverage'] = '';
-            case 'getFullTxt':
-            default:
-                $electronic[] = $link;
-                break;
+            }
+            switch ($serviceType) {
+                case 'getHolding':
+                    $print[] = $link;
+                    break;
+                case 'getWebService':
+                    $services[] = $link;
+                    break;
+                case 'getFullTxt':
+                default:
+                    $electronic[] = $link;
+                    break;
             }
         }
 

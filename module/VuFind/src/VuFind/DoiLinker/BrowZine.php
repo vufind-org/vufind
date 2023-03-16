@@ -1,4 +1,5 @@
 <?php
+
 /**
  * BrowZine DOI linker
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\DoiLinker;
 
 use VuFind\I18n\Translator\TranslatorAwareInterface;
@@ -96,11 +98,11 @@ class BrowZine implements DoiLinkerInterface, TranslatorAwareInterface
             return false;
         }
         switch (strtolower(trim($this->config['filterType'] ?? 'none'))) {
-        case 'include':
-            return in_array($key, (array)($this->config['filter'] ?? []));
-        case 'exclude':
-            return !in_array($key, (array)($this->config['filter'] ?? []));
-        default:
+            case 'include':
+                return in_array($key, (array)($this->config['filter'] ?? []));
+            case 'exclude':
+                return !in_array($key, (array)($this->config['filter'] ?? []));
+            default:
         }
         // If we got this far, no filter setting is applied, so the option is legal:
         return true;

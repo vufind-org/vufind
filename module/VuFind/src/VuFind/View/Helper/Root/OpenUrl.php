@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OpenUrl view helper
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use VuFind\Resolver\Driver\PluginManager;
@@ -127,7 +129,7 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
      *
      * @return void
      */
-    protected function addImageBasedParams($imagebased, & $params)
+    protected function addImageBasedParams($imagebased, &$params)
     {
         $params['openUrlImageBasedMode'] = $this->getImageBasedLinkingMode();
         $params['openUrlImageBasedSrc'] = null;

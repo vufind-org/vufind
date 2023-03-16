@@ -1,4 +1,5 @@
 <?php
+
 /**
  * III Sierra REST API driver
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use Laminas\Log\LoggerAwareInterface;
@@ -42,8 +44,10 @@ use VuFindHttp\HttpServiceAwareInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class SierraRest extends AbstractBase implements TranslatorAwareInterface,
-    HttpServiceAwareInterface, LoggerAwareInterface,
+class SierraRest extends AbstractBase implements
+    TranslatorAwareInterface,
+    HttpServiceAwareInterface,
+    LoggerAwareInterface,
     \VuFind\I18n\HasSorterInterface
 {
     public const HOLDINGS_LINE_NUMBER = 40;
@@ -829,6 +833,9 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         if ($this->apiVersion >= 5) {
             $fields .= ',pickupByDate';
         }
+        if ($this->apiVersion >= 6) {
+            $fields .= ',notNeededAfterDate';
+        }
         $freezeEnabled = in_array(
             'frozen',
             explode(':', $this->config['Holds']['updateFields'] ?? '')
@@ -918,6 +925,11 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                     'Y-m-d',
                     $entry['placed']
                 ),
+                'expire' => !empty($entry['notNeededAfterDate'])
+                    ? $this->dateConverter->convertToDisplayDate(
+                        'Y-m-d',
+                        $entry['notNeededAfterDate']
+                    ) : null,
                 'last_pickup_date' => $lastPickup,
                 'position' => $position,
                 'available' => $available,
@@ -1217,36 +1229,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         $comment = $holdDetails['comment'] ?? '';
         $bibId = $this->extractBibId($holdDetails['id']);
 
-        // Convert last interest date from Display Format to Sierra's required format
-        try {
-            $lastInterestDate = $this->dateConverter->convertFromDisplayDate(
-                'Y-m-d',
-                $holdDetails['requiredBy']
-            );
-        } catch (DateException $e) {
-            // Hold Date is invalid
-            return $this->holdError('hold_date_invalid');
-        }
-
         if ($level == 'copy' && empty($itemId)) {
             throw new ILSException("Hold level is 'copy', but item ID is empty");
-        }
-
-        try {
-            $checkTime = $this->dateConverter->convertFromDisplayDate(
-                'U',
-                $holdDetails['requiredBy']
-            );
-            if (!is_numeric($checkTime)) {
-                throw new DateException('Result should be numeric');
-            }
-        } catch (DateException $e) {
-            throw new ILSException('Problem parsing required by date.', 0, $e);
-        }
-
-        if (time() > $checkTime) {
-            // Hold Date is in the past
-            return $this->holdError('hold_date_past');
         }
 
         // Make sure pickup location is valid
@@ -1258,8 +1242,10 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             'recordType' => $level == 'copy' ? 'i' : 'b',
             'recordNumber' => (int)($level == 'copy' ? $itemId : $bibId),
             'pickupLocation' => $pickUpLocation,
-            'neededBy' => $lastInterestDate
         ];
+        if (!empty($holdDetails['requiredByTS'])) {
+            $request['neededBy'] = gmdate('Y-m-d', $holdDetails['requiredByTS']);
+        }
         if ($comment) {
             $request['note'] = $comment;
         }
@@ -1322,9 +1308,9 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 $description .= $entry['description'];
             }
             switch ($description) {
-            case 'Overdue Renewal':
-                $description = 'Overdue';
-                break;
+                case 'Overdue Renewal':
+                    $description = 'Overdue';
+                    break;
             }
             $bibId = null;
             $title = null;
@@ -2474,12 +2460,12 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             $status = $this->mapStatusCode('Charged');
         } else {
             switch ($status) {
-            case '-':
-                $status = $this->mapStatusCode('-');
-                break;
-            case 'Lib Use Only':
-                $status = $this->mapStatusCode('o');
-                break;
+                case '-':
+                    $status = $this->mapStatusCode('-');
+                    break;
+                case 'Lib Use Only':
+                    $status = $this->mapStatusCode('o');
+                    break;
             }
         }
         if ($status == $this->mapStatusCode('-')) {

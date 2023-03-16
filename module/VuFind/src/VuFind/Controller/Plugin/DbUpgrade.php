@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Action Helper - Database upgrade tools
  *
@@ -26,10 +27,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Controller\Plugin;
 
 use Laminas\Db\Adapter\Adapter as DbAdapter;
-use Laminas\Db\Metadata\Metadata as DbMetadata;
+use Laminas\Db\Metadata\Source\Factory as DbMetadataSourceFactory;
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 
 /**
@@ -64,6 +66,15 @@ class DbUpgrade extends AbstractPlugin
      * @var array
      */
     protected $tableInfo = false;
+
+    /**
+     * Deprecated columns, keyed by table name
+     *
+     * @var array
+     */
+    protected $deprecatedColumns = [
+        'search' => ['folder_id'],
+    ];
 
     /**
      * Given a SQL file, parse it for table creation commands.
@@ -150,7 +161,9 @@ class DbUpgrade extends AbstractPlugin
     protected function getTableInfo($reload = false)
     {
         if ($reload || !$this->tableInfo) {
-            $metadata = new DbMetadata($this->getAdapter());
+            $metadata = DbMetadataSourceFactory::createSourceFromAdapter(
+                $this->getAdapter()
+            );
             $tables = $metadata->getTables();
             $this->tableInfo = [];
             foreach ($tables as $current) {
@@ -388,24 +401,24 @@ class DbUpgrade extends AbstractPlugin
                 'updateRule' => $current->getUpdateRule()
             ];
             switch ($current->getType()) {
-            case 'FOREIGN KEY':
-                $retVal['foreign'][$current->getName()] = $fields;
-                break;
-            case 'PRIMARY KEY':
-                $retVal['primary']['primary'] = $fields;
-                break;
-            case 'UNIQUE':
-                $retVal['unique'][$current->getName()] = $fields;
-                break;
-            case 'CHECK':
-                // We don't get enough information from getConstraints() to handle
-                // CHECK constraints, so just ignore them for now:
-                break;
-            default:
-                throw new \Exception(
-                    'Unexpected constraint type: ' . $current->getType()
-                );
-                break;
+                case 'FOREIGN KEY':
+                    $retVal['foreign'][$current->getName()] = $fields;
+                    break;
+                case 'PRIMARY KEY':
+                    $retVal['primary']['primary'] = $fields;
+                    break;
+                case 'UNIQUE':
+                    $retVal['unique'][$current->getName()] = $fields;
+                    break;
+                case 'CHECK':
+                    // We don't get enough information from getConstraints() to
+                    // handle CHECK constraints, so just ignore them for now:
+                    break;
+                default:
+                    throw new \Exception(
+                        'Unexpected constraint type: ' . $current->getType()
+                    );
+                    break;
             }
         }
         return $retVal;
@@ -446,6 +459,28 @@ class DbUpgrade extends AbstractPlugin
         $sqlcommands = '';
         foreach ($tables as $table) {
             $sqlcommands .= $this->query($this->dbCommands[$table][0], $logsql);
+        }
+        return $sqlcommands;
+    }
+
+    /**
+     * Remove deprecated columns based on the output of getDeprecatedColumns().
+     *
+     * @param array $details Output of getDeprecatedColumns()
+     * @param bool  $logsql  Should we return the SQL as a string rather than
+     * execute it?
+     *
+     * @throws \Exception
+     * @return string       SQL if $logsql is true, empty string otherwise
+     */
+    public function removeDeprecatedColumns($details, $logsql = false)
+    {
+        $sqlcommands = '';
+        foreach ($details as $table => $columns) {
+            foreach ($columns as $column) {
+                $query = "ALTER TABLE `$table` DROP COLUMN `$column`;";
+                $sqlcommands .= $this->query($query, $logsql);
+            }
         }
         return $sqlcommands;
     }
@@ -903,6 +938,25 @@ class DbUpgrade extends AbstractPlugin
             }
         }
         return false;
+    }
+
+    /**
+     * Get a list of deprecated columns found in the database.
+     *
+     * @return array
+     */
+    public function getDeprecatedColumns()
+    {
+        $result = [];
+        foreach ($this->deprecatedColumns as $table => $columns) {
+            $tableData = $this->getTableColumns(($table));
+            foreach ($columns as $column) {
+                if (isset($tableData[$column])) {
+                    $result[$table] = array_merge($result[$table] ?? [], [$column]);
+                }
+            }
+        }
+        return $result;
     }
 
     /**

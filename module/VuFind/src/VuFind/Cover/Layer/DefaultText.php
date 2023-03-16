@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Default cover text layer
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
+
 namespace VuFind\Cover\Layer;
 
 /**
@@ -157,7 +159,7 @@ class DefaultText extends AbstractTextLayer
             );
         } while ($textWidth > $settings->wrapWidth &&
               $fontSize > $settings->minAuthorFontSize
-          );
+        );
         // Too small to read? Align left
         $textWidth = $this->textWidth(
             $author,

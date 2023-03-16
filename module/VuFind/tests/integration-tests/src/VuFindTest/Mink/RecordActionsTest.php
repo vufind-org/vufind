@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink record actions test class.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 /**
@@ -460,6 +462,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test record view print button.
+     *
+     * @return void
      */
     public function testPrint(): void
     {
@@ -512,6 +516,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test star ratings on records.
+     *
+     * @param bool $allowRemove Value for remove_rating config
      *
      * @dataProvider getTestRatingData
      *

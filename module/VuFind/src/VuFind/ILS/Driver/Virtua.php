@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VTLS Virtua Driver
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use VuFind\Exception\ILS as ILSException;
@@ -157,75 +159,75 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                     ];
 
                 switch ($result[0]['CALL_NUMBER']) {
-                case 'ELECTRONIC RESOURCE':
-                    $new_holding['availability'] = true;
-                    $new_holding['status']       = null;
-                    $new_holding['location']     = "Online";
-                    $new_holding['reserve']      = "N";
-                    $holding[] = $new_holding;
-                    return $holding;
-                    break;
-                case 'ON ORDER':
-                    $new_holding['status']       = "ON ORDER";
-                    $new_holding['location']     = "Pending...";
-                    $holding[] = $new_holding;
-                    return $holding;
-                    break;
-                case 'ORDER CANCELLED':
-                    $new_holding['status']       = "ORDER CANCELLED";
-                    $new_holding['location']     = "None";
-                    $holding[] = $new_holding;
-                    return $holding;
-                    break;
-                case 'MISSING':
-                    $new_holding['status']       = "MISSING";
-                    $new_holding['location']     = "Unknown";
-                    $holding[] = $new_holding;
-                    return $holding;
-                    break;
+                    case 'ELECTRONIC RESOURCE':
+                        $new_holding['availability'] = true;
+                        $new_holding['status']       = null;
+                        $new_holding['location']     = "Online";
+                        $new_holding['reserve']      = "N";
+                        $holding[] = $new_holding;
+                        return $holding;
+                        break;
+                    case 'ON ORDER':
+                        $new_holding['status']       = "ON ORDER";
+                        $new_holding['location']     = "Pending...";
+                        $holding[] = $new_holding;
+                        return $holding;
+                        break;
+                    case 'ORDER CANCELLED':
+                        $new_holding['status']       = "ORDER CANCELLED";
+                        $new_holding['location']     = "None";
+                        $holding[] = $new_holding;
+                        return $holding;
+                        break;
+                    case 'MISSING':
+                        $new_holding['status']       = "MISSING";
+                        $new_holding['location']     = "Unknown";
+                        $holding[] = $new_holding;
+                        return $holding;
+                        break;
 
-                // Still haven't find it. Let's check if it has a serials holding
-                // location
-                default:
-                    $call_number = $result[0]['CALL_NUMBER'];
-                    $sql = "SELECT l.name, " .
-                        "SUBSTR(l.location_id, 0, 1) as camp_id " .
-                        "FROM dbadmin.holdlink h, location l " .
-                        "WHERE h.location = l.location_id " .
-                        "AND h.bibid = :bib_id";
-                    $result = $this->db->simpleSelect($sql, $fields);
+                    default:
+                        // Still haven't found it. Let's check if it has a serials
+                        // holding location
+                        $call_number = $result[0]['CALL_NUMBER'];
+                        $sql = "SELECT l.name, " .
+                            "SUBSTR(l.location_id, 0, 1) as camp_id " .
+                            "FROM dbadmin.holdlink h, location l " .
+                            "WHERE h.location = l.location_id " .
+                            "AND h.bibid = :bib_id";
+                        $result = $this->db->simpleSelect($sql, $fields);
 
-                    if (count($result) > 0) {
-                        foreach ($result as $r) {
-                            $tmp_holding = $new_holding;
-                            // TODO: create a configuration file mechanism for
-                            // specifying locations so we can eliminate these
-                            // hard-coded USQ-specific values.
-                            switch ($r["CAMP_ID"]) {
-                            case 4:
-                                $campus = "Fraser Coast";
-                                break;
-                            case 5:
-                                $campus = "Springfield";
-                                break;
-                            default:
-                                $campus = "Toowoomba";
-                                break;
+                        if (count($result) > 0) {
+                            foreach ($result as $r) {
+                                $tmp_holding = $new_holding;
+                                // TODO: create a configuration file mechanism for
+                                // specifying locations so we can eliminate these
+                                // hard-coded USQ-specific values.
+                                switch ($r["CAMP_ID"]) {
+                                    case 4:
+                                        $campus = "Fraser Coast";
+                                        break;
+                                    case 5:
+                                        $campus = "Springfield";
+                                        break;
+                                    default:
+                                        $campus = "Toowoomba";
+                                        break;
+                                }
+
+                                $tmp_holding['status']     = "Not For Loan";
+                                $tmp_holding['location']   = $r['NAME'];
+                                $tmp_holding['reserve']    = "N";
+                                $tmp_holding['campus']     = $campus;
+                                $tmp_holding['callnumber'] = $call_number;
+                                $holding[] = $tmp_holding;
                             }
-
-                            $tmp_holding['status']     = "Not For Loan";
-                            $tmp_holding['location']   = $r['NAME'];
-                            $tmp_holding['reserve']    = "N";
-                            $tmp_holding['campus']     = $campus;
-                            $tmp_holding['callnumber'] = $call_number;
-                            $holding[] = $tmp_holding;
+                            return $holding;
+                        } else {
+                            // Still haven't found anything? Return nothing then...
+                            return $holding;
                         }
-                        return $holding;
-                    } else {
-                        // Still haven't found anything? Return nothing then...
-                        return $holding;
-                    }
-                    break;
+                        break;
                 }
             } else {
                 // Still haven't found anything? Return nothing then...
@@ -238,15 +240,15 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             // TODO: create a configuration file mechanism for specifying locations
             // so we can eliminate these hard-coded USQ-specific values.
             switch ($row["CAMP_ID"]) {
-            case 4:
-                $campus = "Fraser Coast";
-                break;
-            case 5:
-                $campus = "Springfield";
-                break;
-            default:
-                $campus = "Toowoomba";
-                break;
+                case 4:
+                    $campus = "Fraser Coast";
+                    break;
+                case 5:
+                    $campus = "Springfield";
+                    break;
+                default:
+                    $campus = "Toowoomba";
+                    break;
             }
 
             // If it has a due date... not available
@@ -256,31 +258,31 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                 // All these statuses are also unavailable
                 // TODO: make these configurable through Virtua.ini.
                 switch ($row['STATUS_CODE']) {
-                case '5402':  // '24 hour hold'
-                case '4401':  // 'At Repair'
-                case '5400':  // 'Being Processed'
-                case '2101':  // 'Damaged Item'
-                case '7400':  // 'Fraser Coast only'
-                case '5700':  // 'IN TRANSIT'
-                case '7700':  // 'Invoiced'
-                case '3400':  // 'Invoiced - Re-ordered'
-                case '4600':  // 'LONG OVERDUE'
-                case '4700':  // 'MISSING'
-                case '4705':  // 'ON HOLD'
-                case '5710':  // 'REQUESTED FOR HOLD'
-                case '5401':  // 'Staff Use'
-                    $available = false;
-                    break;
+                    case '5402':  // '24 hour hold'
+                    case '4401':  // 'At Repair'
+                    case '5400':  // 'Being Processed'
+                    case '2101':  // 'Damaged Item'
+                    case '7400':  // 'Fraser Coast only'
+                    case '5700':  // 'IN TRANSIT'
+                    case '7700':  // 'Invoiced'
+                    case '3400':  // 'Invoiced - Re-ordered'
+                    case '4600':  // 'LONG OVERDUE'
+                    case '4700':  // 'MISSING'
+                    case '4705':  // 'ON HOLD'
+                    case '5710':  // 'REQUESTED FOR HOLD'
+                    case '5401':  // 'Staff Use'
+                        $available = false;
+                        break;
                 // Otherwise it's available
-                case '7200':  // 'External Loan Only'
-                case '3100':  // 'In Library use only'
-                case '2700':  // 'Limited Loan'
-                case '2701':  // 'Not For Loan'
-                case '2100':  // 'Not for loan'
-                case '5401':  // 'On Display'
-                default:
-                    $available = true;
-                    break;
+                    case '7200':  // 'External Loan Only'
+                    case '3100':  // 'In Library use only'
+                    case '2700':  // 'Limited Loan'
+                    case '2701':  // 'Not For Loan'
+                    case '2100':  // 'Not for loan'
+                    case '5401':  // 'On Display'
+                    default:
+                        $available = true;
+                        break;
                 }
             }
 
@@ -412,26 +414,26 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                 // All these statuses are also unavailable
                 // TODO: Make this configurable through Virtua.ini.
                 switch ($row['STATUS']) {
-                case 'Fraser Coast only':
-                case 'Being Processed':
-                case 'Not For Loan':
-                case 'Not for loan':
-                case 'Invoiced':
-                case 'IN TRANSIT':
-                case 'Staff Use':
-                case 'MISSING':
-                case 'Damaged Item':
-                case 'At Repair':
-                case 'ON ORDER':
-                case 'ON HOLD':
-                case 'Springfield Only':
-                case 'Part Order Received':
-                    $available = false;
-                    break;
-                // Otherwise it's available
-                default:
-                    $available = true;
-                    break;
+                    case 'Fraser Coast only':
+                    case 'Being Processed':
+                    case 'Not For Loan':
+                    case 'Not for loan':
+                    case 'Invoiced':
+                    case 'IN TRANSIT':
+                    case 'Staff Use':
+                    case 'MISSING':
+                    case 'Damaged Item':
+                    case 'At Repair':
+                    case 'ON ORDER':
+                    case 'ON HOLD':
+                    case 'Springfield Only':
+                    case 'Part Order Received':
+                        $available = false;
+                        break;
+                        // Otherwise it's available
+                    default:
+                        $available = true;
+                        break;
                 }
             }
 
@@ -690,140 +692,148 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                 $i++;
             }
 
-            // Chrono
-            // Important note: strtotime() expects
-            // 01/02/2000 = 2nd Jan 2000
-            // 01-02-2000 = 1st Feb 2000 <= Use hyphens
+        // Chrono
+        // Important note: strtotime() expects
+        // 01/02/2000 = 2nd Jan 2000
+        // 01-02-2000 = 1st Feb 2000 <= Use hyphens
         } else {
             $pattern = implode("", $data['pattern']);
             switch (strtolower(trim($pattern))) {
-            // Error case
-            case "":
-                return null;
-                break;
-            // Year only
-            case "(year)":
-                return $data['data'][0] . " ";
-                break;
-            // Year + Month
-            case "(year)(month)":
-                $months = explode("-", $data['data'][1]); $m = count($months);
-                $years  = explode("-", $data['data'][0]); $y = count($years);
-                $my = $m . $y;
+                // Error case
+                case "":
+                    return null;
+                    break;
+                    // Year only
+                case "(year)":
+                    return $data['data'][0] . " ";
+                    break;
+                    // Year + Month
+                case "(year)(month)":
+                    $months = explode("-", $data['data'][1]);
+                    $m = count($months);
+                    $years  = explode("-", $data['data'][0]);
+                    $y = count($years);
+                    $my = $m . $y;
 
-                $start_time = strtotime("01-" . $months[0] . "-" . $years[0]);
-                $end_string = "F Y";
+                    $start_time = strtotime("01-" . $months[0] . "-" . $years[0]);
+                    $end_string = "F Y";
 
-                switch ($my) {
-                // January 2000 - February 2001
-                case "22":
-                    $start_string = "F Y";
-                    $end_time = strtotime("01-" . $months[1] . "-" . $years[1]);
+                    switch ($my) {
+                        // January 2000 - February 2001
+                        case "22":
+                            $start_string = "F Y";
+                            $end_time
+                                = strtotime("01-" . $months[1] . "-" . $years[1]);
+                            break;
+                            // January - February 2000
+                        case "21":
+                            $start_string = "F";
+                            $end_time
+                                = strtotime("01-" . $months[1] . "-" . $years[0]);
+                            break;
+                            // January 2000
+                        case "11":
+                            $start_string = "F Y";
+                            $end_time = null;
+                            break;
+                            // January 2000 - January 2001
+                        case "12":
+                            $start_string = "F Y";
+                            $end_time
+                                = strtotime("01-" . $months[0] . "-" . $years[1]);
+                            break;
+                    }
+                    if ($end_time != null) {
+                        return date($start_string, $start_time) . " - " .
+                            date($end_string, $end_time);
+                    } else {
+                        return date($start_string, $start_time);
+                    }
                     break;
-                // January - February 2000
-                case "21":
-                    $start_string = "F";
-                    $end_time = strtotime("01-" . $months[1] . "-" . $years[0]);
-                    break;
-                // January 2000
-                case "11":
-                    $start_string = "F Y";
-                    $end_time = null;
-                    break;
-                // January 2000 - January 2001
-                case "12":
-                    $start_string = "F Y";
-                    $end_time = strtotime("01-" . $months[0] . "-" . $years[1]);
-                    break;
-                }
-                if ($end_time != null) {
-                    return date($start_string, $start_time) . " - " .
-                        date($end_string, $end_time);
-                } else {
-                    return date($start_string, $start_time);
-                }
-                break;
-            // Year + Month + Day
-            case "(year)(month)(day)":
-                $days   = explode("-", $data['data'][2]); $d = count($days);
-                $months = explode("-", $data['data'][1]); $m = count($months);
-                $years  = explode("-", $data['data'][0]); $y = count($years);
-                $dmy = $d . $m . $y;
+                    // Year + Month + Day
+                case "(year)(month)(day)":
+                    $days   = explode("-", $data['data'][2]);
+                    $d = count($days);
+                    $months = explode("-", $data['data'][1]);
+                    $m = count($months);
+                    $years  = explode("-", $data['data'][0]);
+                    $y = count($years);
+                    $dmy = $d . $m . $y;
 
-                $start_time
-                    = strtotime($days[0] . "-" . $months[0] . "-" . $years[0]);
-                $end_string = "jS F Y";
+                    $start_time
+                        = strtotime($days[0] . "-" . $months[0] . "-" . $years[0]);
+                    $end_string = "jS F Y";
 
-                switch ($dmy) {
-                // 01 January 2000
-                case "111":
-                    $start_string = "jS F Y";
-                    $end_time = null;
+                    switch ($dmy) {
+                        // 01 January 2000
+                        case "111":
+                            $start_string = "jS F Y";
+                            $end_time = null;
+                            break;
+                            // 01 January 2000 - 01 January 2001
+                        case "112":
+                            $start_string = "jS F Y";
+                            $end_time = strtotime(
+                                $days[0] . "-" . $months[0] . "-" . $years[1]
+                            );
+                            break;
+                            // 01 January - 01 February 2000
+                        case "121":
+                            $start_string = "jS F";
+                            $end_time = strtotime(
+                                $days[0] . "-" . $months[1] . "-" . $years[0]
+                            );
+                            break;
+                            // 01 January 2000 - 01 February 2001
+                        case "122":
+                            $start_string = "jS F Y";
+                            $end_time = strtotime(
+                                $days[0] . "-" . $months[1] . "-" . $years[1]
+                            );
+                            break;
+                            // 01 - 02 January 2000
+                        case "211":
+                            $start_string = "jS";
+                            $end_time = strtotime(
+                                $days[1] . "-" . $months[0] . "-" . $years[0]
+                            );
+                            break;
+                            // 01 January 2000 - 02 January 2001
+                        case "212":
+                            $start_string = "jS F Y";
+                            $end_time = strtotime(
+                                $days[1] . "-" . $months[0] . "-" . $years[1]
+                            );
+                            break;
+                            // 01 January - 02 February 2000
+                        case "221":
+                            $start_string = "jS F";
+                            $end_time = strtotime(
+                                $days[1] . "-" . $months[1] . "-" . $years[0]
+                            );
+                            break;
+                            // 01 January 2000 - 02 February 2001
+                        case "222":
+                            $start_string = "jS F Y";
+                            $end_time = strtotime(
+                                $days[1] . "-" . $months[1] . "-" . $years[1]
+                            );
+                            break;
+                    }
+                    if ($end_time != null) {
+                        return date($start_string, $start_time) . " - " .
+                            date($end_string, $end_time);
+                    } else {
+                        return date($start_string, $start_time);
+                    }
                     break;
-                // 01 January 2000 - 01 January 2001
-                case "112":
-                    $start_string = "jS F Y";
-                    $end_time = strtotime(
-                        $days[0] . "-" . $months[0] . "-" . $years[1]
-                    );
+                default:
+                    $i = 0;
+                    foreach ($data['pattern'] as $d) {
+                        $return_string .= $d . " " . $data['data'][$i] . " ";
+                        $i++;
+                    }
                     break;
-                // 01 January - 01 February 2000
-                case "121":
-                    $start_string = "jS F";
-                    $end_time = strtotime(
-                        $days[0] . "-" . $months[1] . "-" . $years[0]
-                    );
-                    break;
-                // 01 January 2000 - 01 February 2001
-                case "122":
-                    $start_string = "jS F Y";
-                    $end_time = strtotime(
-                        $days[0] . "-" . $months[1] . "-" . $years[1]
-                    );
-                    break;
-                // 01 - 02 January 2000
-                case "211":
-                    $start_string = "jS";
-                    $end_time = strtotime(
-                        $days[1] . "-" . $months[0] . "-" . $years[0]
-                    );
-                    break;
-                // 01 January 2000 - 02 January 2001
-                case "212":
-                    $start_string = "jS F Y";
-                    $end_time = strtotime(
-                        $days[1] . "-" . $months[0] . "-" . $years[1]
-                    );
-                    break;
-                // 01 January - 02 February 2000
-                case "221":
-                    $start_string = "jS F";
-                    $end_time = strtotime(
-                        $days[1] . "-" . $months[1] . "-" . $years[0]
-                    );
-                    break;
-                // 01 January 2000 - 02 February 2001
-                case "222":
-                    $start_string = "jS F Y";
-                    $end_time = strtotime(
-                        $days[1] . "-" . $months[1] . "-" . $years[1]
-                    );
-                    break;
-                }
-                if ($end_time != null) {
-                    return date($start_string, $start_time) . " - " .
-                        date($end_string, $end_time);
-                } else {
-                    return date($start_string, $start_time);
-                }
-                break;
-            default:
-                $i = 0;
-                foreach ($data['pattern'] as $d) {
-                    $return_string .= $d . " " . $data['data'][$i] . " ";
-                    $i++;
-                }
-                break;
             }
         }
 
@@ -892,12 +902,12 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         $i = 0;
         foreach ($data['data'] as $d) {
             switch ($data['pattern_code'][$i]) {
-            case "z":
-                $return['notes'][] = $d;
-                break;
-            default:
-                $return[$data['pattern_code'][$i]][] = $d;
-                break;
+                case "z":
+                    $return['notes'][] = $d;
+                    break;
+                default:
+                    $return[$data['pattern_code'][$i]][] = $d;
+                    break;
             }
             $i++;
         }

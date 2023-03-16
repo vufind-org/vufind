@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CheckRequestIsValid test class.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\AjaxHandler;
 
 use VuFind\AjaxHandler\AbstractIlsAndUserActionFactory;
@@ -91,6 +93,9 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTest
 
     /**
      * Generic support function for successful request tests.
+     *
+     * @param string  $ilsMethod   ILS method to mock
+     * @param ?string $requestType Request type for params helper
      *
      * @return array
      */

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PrintArrayHtml Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper\Root;
 
 use VuFind\View\Helper\Root\PrintArrayHtml;
@@ -64,11 +66,11 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
     public function getPrintArrayHtmlData(): array
     {
         return [
-            [ # Set 0
+            [ // Set 0
                 [],
                 ''
             ],
-            [ # Set 1
+            [ // Set 1
                 [
                     'KeyA' => "ValueA",
                 ],
@@ -77,14 +79,14 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
 
                 END
             ],
-            [ # Set 2
+            [ // Set 2
                 "Value0",
                 <<<END
                 <span class="detail">Value0</span><br/>
 
                 END
             ],
-            [ # Set 3
+            [ // Set 3
                 [
                     0 => "Value0",
                 ],
@@ -93,7 +95,7 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
 
                 END
             ],
-            [ # Set 4
+            [ // Set 4
                 [
                     0 => "Value0",
                     1 => "Value1",
@@ -104,7 +106,7 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
 
                 END
             ],
-            [ # Set 5
+            [ // Set 5
                 [
                     0 => "Escaped vals <>&'\"",
                 ],
@@ -113,7 +115,7 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
 
                 END
             ],
-            [ # Set 6
+            [ // Set 6
                 [
                     "KeyA" => [
                         0 => "Value0",
@@ -127,7 +129,7 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
 
                 END
             ],
-            [ # Set 7
+            [ // Set 7
                 [
                     0 => [
                         0 => "Value0",
@@ -140,7 +142,7 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
 
                 END
             ],
-            [ # Set 8
+            [ // Set 8
                 [
                     "KeyA" => [
                         0 => "Value0",
@@ -161,7 +163,7 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
 
                 END
             ],
-            [ # Set 9
+            [ // Set 9
                 [
                     0 => [
                         0 => "Value0",
@@ -182,7 +184,7 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
 
                 END
             ],
-            [ # Set 10
+            [ // Set 10
                 [
                     "KeyA" => [
                         0 => "Value0",
@@ -205,7 +207,7 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
 
                 END
             ],
-            [ # Set 11
+            [ // Set 11
                 [
                     "KeyA" => [
                         0 => "Value0",
@@ -240,7 +242,7 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
 
                 END
             ],
-            [ # Set 12
+            [ // Set 12
                 [
                     "001" => ["Value0"],
                     "002" => [
@@ -264,7 +266,7 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
 
                 END
             ],
-            [ # Set 13
+            [ // Set 13
                 [
                     ["001" => ["Value0"]],
                     ["002" => ["Value1"]],
@@ -279,7 +281,7 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
 
                 END
             ],
-            [ # Set 14
+            [ // Set 14
                 [
                     "KeyA" => [0 => "Value0"],
                 ],
@@ -288,7 +290,7 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
 
                 END
             ],
-            [ # Set 15
+            [ // Set 15
                 [
                     "KeyA" => ["000" => "Value0"],
                 ],
@@ -298,7 +300,7 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
 
                 END
             ],
-            [ # Set 16
+            [ // Set 16
                 [
                     "KeyA" => [0 => [0 => "Value0"]],
                 ],
@@ -308,7 +310,7 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
 
                 END
             ],
-            [ # Set 17
+            [ // Set 17
                 [
                     "KeyA" => [0 => [0 => [0 => [0 => "Value0"]]]],
                 ],
@@ -318,7 +320,7 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
 
                 END
             ],
-            [ # Set 18
+            [ // Set 18
                 [
                     "KeyA" => [
                         0 => [0 => "Value0"],
@@ -334,7 +336,7 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
 
                 END
             ],
-            [ # Set 19
+            [ // Set 19
                 [
                     "KeyA" => [
                         0 => [
@@ -362,8 +364,8 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
     /**
      * Test PrintArrayHtml.
      *
-     * @param array|string  $entry    Array to print
-     * @param string        $expected Expected HTML
+     * @param array|string $entry    Array to print
+     * @param string       $expected Expected HTML
      *
      * @return void
      *

@@ -27,13 +27,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Backend\Primo;
 
 use InvalidArgumentException;
-
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
 use Laminas\Http\Client as HttpClient;
-
 use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Primo\Connector;
 

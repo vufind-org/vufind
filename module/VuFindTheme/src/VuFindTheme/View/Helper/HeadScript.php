@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Head script view helper (extended for VuFind's theme system)
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindTheme\View\Helper;
 
 use VuFindTheme\ThemeInfo;
@@ -42,8 +44,7 @@ use VuFindTheme\ThemeInfo;
  * @method getIndent()
  * @method getSeparator()
  */
-class HeadScript extends \Laminas\View\Helper\HeadScript
-    implements \Laminas\Log\LoggerAwareInterface
+class HeadScript extends \Laminas\View\Helper\HeadScript implements \Laminas\Log\LoggerAwareInterface
 {
     use ConcatTrait {
         getMinifiedData as getBaseMinifiedData;

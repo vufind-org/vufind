@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Amicus ILS Driver
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use PDO;
@@ -161,12 +163,12 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
         $otherStatuses = [];
         foreach ($statusArray as $status) {
             switch ($status) {
-            case 'Disponible':
-                $notCharged = true;
-                break;
-            default:
-                $otherStatuses[] = $status;
-                break;
+                case 'Disponible':
+                    $notCharged = true;
+                    break;
+                default:
+                    $otherStatuses[] = $status;
+                    break;
             }
         }
 

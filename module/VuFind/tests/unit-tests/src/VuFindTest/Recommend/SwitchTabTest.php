@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SwitchTab Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Recommend;
 
 use VuFind\Recommend\SwitchTab;
@@ -90,7 +92,7 @@ class SwitchTabTest extends \PHPUnit\Framework\TestCase
     /**
      * Test getting the active tab.
      *
-     * @param array $tabEnv tabConfig
+     * @param array $tabEnv         tabConfig
      * @param array $expectedResult expected result from getActiveTab
      *
      * @return void
@@ -137,7 +139,7 @@ class SwitchTabTest extends \PHPUnit\Framework\TestCase
     /**
      * Test getting the active tab.
      *
-     * @param array $tabEnv tabConfig
+     * @param array $tabEnv         tabConfig
      * @param array $expectedResult expected result from getInactiveTabs
      *
      * @return void

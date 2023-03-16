@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Oracle support code for VTLS Virtua Driver
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Connection;
 
 /**
@@ -159,24 +161,24 @@ class Oracle
     protected function getDataTypeConstant($data_type)
     {
         switch ($data_type) {
-        case 'integer':
-            return SQLT_INT;
-        case 'float':
-            return SQLT_FLT;
-        case 'long':
-            return SQLT_LNG;
-        case 'row_id':
-            return SQLT_RDD;
-        case 'clob':
-            return SQLT_CLOB;
-        case 'blob':
-            return SQLT_BLOB;
-        case 'string':
-        case 'date':
-        default:
-            // Date and string are redundant since default is varchar,
-            //  but they're here for clarity.
-            return SQLT_CHR;
+            case 'integer':
+                return SQLT_INT;
+            case 'float':
+                return SQLT_FLT;
+            case 'long':
+                return SQLT_LNG;
+            case 'row_id':
+                return SQLT_RDD;
+            case 'clob':
+                return SQLT_CLOB;
+            case 'blob':
+                return SQLT_BLOB;
+            case 'string':
+            case 'date':
+            default:
+                // Date and string are redundant since default is varchar,
+                //  but they're here for clarity.
+                return SQLT_CHR;
         }
     }
 
@@ -567,31 +569,31 @@ class Oracle
 
         // Anything special for this error type?
         switch ($this->lastErrorType) {
-        case 'parsing':
-            $output .= "=============<br />\n";
-            $output .= "Offset into SQL:<br />\n";
-            $output .=
-                substr($this->lastError['sqltext'], $this->lastError['offset']) .
-                "\n";
-            break;
-        case 'executing':
-            $output .= "=============<br />\n";
-            $output .= "Offset into SQL:<br />\n";
-            $output .=
-                substr($this->lastError['sqltext'], $this->lastError['offset']) .
-                "<br />\n";
-            if (count($this->lastErrorFields) > 0) {
+            case 'parsing':
                 $output .= "=============<br />\n";
-                $output .= "Bind Variables:<br />\n";
-                foreach ($this->lastErrorFields as $k => $l) {
-                    if (is_array($l)) {
-                        $output .= "$k => (" . join(", ", $l) . ")<br />\n";
-                    } else {
-                        $output .= "$k => $l<br />\n";
+                $output .= "Offset into SQL:<br />\n";
+                $output .=
+                    substr($this->lastError['sqltext'], $this->lastError['offset']) .
+                    "\n";
+                break;
+            case 'executing':
+                $output .= "=============<br />\n";
+                $output .= "Offset into SQL:<br />\n";
+                $output .=
+                    substr($this->lastError['sqltext'], $this->lastError['offset']) .
+                    "<br />\n";
+                if (count($this->lastErrorFields) > 0) {
+                    $output .= "=============<br />\n";
+                    $output .= "Bind Variables:<br />\n";
+                    foreach ($this->lastErrorFields as $k => $l) {
+                        if (is_array($l)) {
+                            $output .= "$k => (" . join(", ", $l) . ")<br />\n";
+                        } else {
+                            $output .= "$k => $l<br />\n";
+                        }
                     }
                 }
-            }
-            break;
+                break;
         }
 
         $this->clearError();

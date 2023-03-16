@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 
 /**
  * Class KohaILSDITest
@@ -27,6 +26,9 @@ declare(strict_types=1);
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://knihovny.cz Main Page
  */
+
+declare(strict_types=1);
+
 namespace VuFindTest\ILS\Driver;
 
 use VuFind\ILS\Driver\KohaILSDI;
@@ -55,6 +57,7 @@ class KohaILSDITest extends \VuFindTest\Unit\ILSDriverTestCase
     /**
      * Test toKohaDate method
      *
+     * @return void
      * @throws \ReflectionException
      */
     public function testToKohaDate(): void

@@ -26,12 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Solr\V3;
 
 use Laminas\EventManager\EventInterface;
-
 use VuFind\Search\Solr\AbstractErrorListener;
-
 use VuFindSearch\Backend\Exception\HttpErrorException;
 
 /**

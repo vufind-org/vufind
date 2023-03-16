@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SirsiDynix Unicorn ILS Driver (VuFind side)
  *
@@ -24,6 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://code.google.com/p/vufind-unicorn/ vufind-unicorn project
  */
+
 namespace VuFind\ILS\Driver;
 
 use VuFind\Exception\ILS as ILSException;
@@ -45,7 +47,8 @@ use VuFind\Marc\MarcReader;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://code.google.com/p/vufind-unicorn/ vufind-unicorn project
  **/
-class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface,
+class Unicorn extends AbstractBase implements
+    \VuFindHttp\HttpServiceAwareInterface,
     \VuFind\I18n\HasSorterInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
@@ -502,7 +505,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         }
 
         [$user_key, $alt_id, $barcode, $name, $library, $profile, $cat1, $cat2,
-        $cat3, $cat4, $cat5, $expiry, $holds, $status] = explode('|', $response);
+            $cat3, $cat4, $cat5, $expiry, $holds, $status] = explode('|', $response);
 
         [$last, $first] = explode(',', $name);
         $first = rtrim($first, " ");
@@ -559,7 +562,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $response = $this->querySirsi($params);
 
         [, , , , $library, $profile, , , , , , , , $email, $address1, $zip, $phone,
-        $address2] = explode('|', $response);
+            $address2] = explode('|', $response);
 
         return [
             'firstname' => $patron['firstname'],
@@ -601,8 +604,8 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $items = [];
         foreach ($lines as $item) {
             [$catkey, $amount, $balance, $date_billed, $number_of_payments,
-            $with_items, $reason, $date_charged, $duedate, $date_recalled]
-                = explode('|', $item);
+                $with_items, $reason, $date_charged, $duedate, $date_recalled]
+                    = explode('|', $item);
 
             // the amount and balance are in cents, so we need to turn them into
             // dollars if configured
@@ -659,7 +662,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $items = [];
         foreach ($lines as $item) {
             [$catkey, $holdkey, $available, , $date_expires, , $date_created, ,
-            $type, $pickup_library, , , , , , , $barcode] = explode('|', $item);
+                $type, $pickup_library, , , , , , , $barcode] = explode('|', $item);
 
             $date_created = $this->parseDateTime($date_created);
             $date_expires = $this->parseDateTime($date_expires);
@@ -788,9 +791,9 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $items = [];
         foreach ($item_lines as $item) {
             [$catkey, $date_charged, $duedate, $date_renewed, $accrued_fine,
-            $overdue, $number_of_renewals, $date_recalled, $charge_key1,
-            $charge_key2, $charge_key3, $charge_key4, $recall_period, $callnum]
-                = explode('|', $item);
+                $overdue, $number_of_renewals, $date_recalled, $charge_key1,
+                $charge_key2, $charge_key3, $charge_key4, $recall_period, $callnum]
+                    = explode('|', $item);
 
             $duedate = $original_duedate = $this->parseDateTime($duedate);
             $recall_duedate = false;
@@ -1053,11 +1056,11 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected function parseStatusLine($line)
     {
         [$catkey, $shelving_key, $callnum, $itemkey1, $itemkey2, $itemkey3,
-        $barcode, $reserve, $number_of_charges, $item_type, $recirculate_flag,
-        $holdcount, $library_code, $library, $location_code, $location,
-        $currLocCode, $current_location, $holdable, $circulation_rule, $duedate,
-        $date_recalled, $recall_period, $format, $title_holds]
-            = explode("|", $line);
+            $barcode, $reserve, $number_of_charges, $item_type, $recirculate_flag,
+            $holdcount, $library_code, $library, $location_code, $location,
+            $currLocCode, $current_location, $holdable, $circulation_rule, $duedate,
+            $date_recalled, $recall_period, $format, $title_holds]
+                = explode("|", $line);
 
         // availability
         $availability = ($number_of_charges == 0) ? 1 : 0;
@@ -1334,24 +1337,25 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $fields = array_merge($record->getFields('852'), $record->getFields('866'));
         foreach ($fields as $field) {
             switch ($field['tag']) {
-            case '852':
-                $locations[] = $this->processMarcHoldingLocation($record, $field);
-                break;
-            case '866':
-                $linking_fields = $record->getSubfields($field, '8');
-                if ($linking_fields === false) {
-                    // Skip textual holdings fields with no linking
-                    continue 2;
-                }
-                foreach ($linking_fields as $linking_field) {
-                    $linking = explode('.', $linking_field);
-                    // Only the linking part is used in textual
-                    // holdings...
-                    $linking = $linking[0];
-                    // and it should be an int.
-                    $textuals[(int)($linking)] = &$field;
-                }
-                break;
+                case '852':
+                    $locations[]
+                        = $this->processMarcHoldingLocation($record, $field);
+                    break;
+                case '866':
+                    $linking_fields = $record->getSubfields($field, '8');
+                    if ($linking_fields === false) {
+                        // Skip textual holdings fields with no linking
+                        continue 2;
+                    }
+                    foreach ($linking_fields as $linking_field) {
+                        $linking = explode('.', $linking_field);
+                        // Only the linking part is used in textual
+                        // holdings...
+                        $linking = $linking[0];
+                        // and it should be an int.
+                        $textuals[(int)($linking)] = &$field;
+                    }
+                    break;
             }
         }
 
@@ -1362,10 +1366,8 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         // PS: Does this make this implementation year-3K safe?
         $link_digits = floor(strlen((string)PHP_INT_MAX) / 2);
 
-        foreach ((array_key_exists(0, $textuals)
-                  ? []
-                  : $record->getFields('863'))
-                 as $field) {
+        $data863 = array_key_exists(0, $textuals) ? [] : $record->getFields('863');
+        foreach ($data863 as $field) {
             $linking_field = $record->getSubfield($field, '8');
 
             if ($linking_field === false) {

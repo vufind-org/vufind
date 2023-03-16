@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ComponentParts Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\RecordTab;
 
 use VuFind\RecordTab\ComponentParts;
@@ -78,7 +80,7 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
     /**
      * Test if the tab is active.
      *
-     * @param int  $childCount   Child count for record driver to report
+     * @param int  $childCount     Child count for record driver to report
      * @param bool $expectedResult Expected return value from isActive
      *
      * @return void
@@ -144,7 +146,7 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * get a Service object
+     * Get a Service object
      *
      * @return Service
      */

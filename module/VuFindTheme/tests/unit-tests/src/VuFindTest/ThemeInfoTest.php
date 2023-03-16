@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ThemeInfo Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest;
 
 use Laminas\Cache\Storage\StorageInterface;
@@ -52,7 +54,9 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     protected $fixturePath;
 
     /**
-     * Constructor
+     * Generic setup function
+     *
+     * @return void
      */
     public function setUp(): void
     {
@@ -163,8 +167,15 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
         $ti->setTheme('child');
         $this->assertEquals('child', $ti->findContainingTheme('child.txt'));
         $this->assertEquals('parent', $ti->findContainingTheme('parent.txt'));
-        $this->assertEquals($this->fixturePath . '/parent/parent.txt', $ti->findContainingTheme('parent.txt', true));
-        $expected = ['theme' => 'parent', 'path' => $this->fixturePath . '/parent/parent.txt', 'relativePath' => 'parent.txt'];
+        $this->assertEquals(
+            $this->fixturePath . '/parent/parent.txt',
+            $ti->findContainingTheme('parent.txt', true)
+        );
+        $expected = [
+            'theme' => 'parent',
+            'path' => $this->fixturePath . '/parent/parent.txt',
+            'relativePath' => 'parent.txt'
+        ];
         $this->assertEquals($expected, $ti->findContainingTheme('parent.txt', ThemeInfo::RETURN_ALL_DETAILS));
     }
 
@@ -303,6 +314,9 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Stress-test our merging algorithm
+     *
+     * @param array $test     Test data
+     * @param array $expected Expected response
      *
      * @dataProvider mergeEdgeCasesProvider
      *

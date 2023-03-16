@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTest\Search\Solr;
 
 use Laminas\Config\Config;
@@ -566,6 +567,8 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Get a fixture object
+     *
+     * @param string $file Name of fixture file
      *
      * @return mixed
      */

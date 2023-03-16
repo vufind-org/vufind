@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Evergreen ILS Driver
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use PDO;
@@ -162,18 +164,18 @@ HERE;
         // Build Holdings Array
         while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
             switch ($row['status']) {
-            case 'Available':
-                $available = true;
-                $reserve = false;
-                break;
-            case 'On holds shelf':
-                $available = false;
-                $reserve = true;
-                break;
-            default:
-                $available = false;
-                $reserve = false;
-                break;
+                case 'Available':
+                    $available = true;
+                    $reserve = false;
+                    break;
+                case 'On holds shelf':
+                    $available = false;
+                    $reserve = true;
+                    break;
+                default:
+                    $available = false;
+                    $reserve = false;
+                    break;
             }
 
             $holding[] = [
@@ -262,23 +264,23 @@ HERE;
         // Build Holdings Array
         while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
             switch ($row['status']) {
-            case 'Available':
-                $available = true;
-                $reserve = false;
-                break;
-            case 'On holds shelf':
-                // Instead of relying on status = 'On holds shelf',
-                // I might want to see if:
-                // action.hold_request.current_copy = asset.copy.id
-                // and action.hold_request.capture_time is not null
-                // and I think action.hold_request.fulfillment_time is null
-                $available = false;
-                $reserve = true;
-                break;
-            default:
-                $available = false;
-                $reserve = false;
-                break;
+                case 'Available':
+                    $available = true;
+                    $reserve = false;
+                    break;
+                case 'On holds shelf':
+                    // Instead of relying on status = 'On holds shelf',
+                    // I might want to see if:
+                    // action.hold_request.current_copy = asset.copy.id
+                    // and action.hold_request.capture_time is not null
+                    // and I think action.hold_request.fulfillment_time is null
+                    $available = false;
+                    $reserve = true;
+                    break;
+                default:
+                    $available = false;
+                    $reserve = false;
+                    break;
             }
 
             if ($row['due_year']) {

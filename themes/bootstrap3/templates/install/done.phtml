@@ -3,7 +3,7 @@
     $this->headTitle($this->translate('auto_configure_title'));
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<a href="' . $this->url('install-home') . '">' . $this->transEsc('auto_configure_title') . '</a>';
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('install-home') . '">' . $this->transEsc('auto_configure_title') . '</a></li>';
 ?>
 <h2><?=$this->transEsc('auto_configure_title')?></h2>
 
