@@ -817,7 +817,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                     'TestSubjectEmailWithoutPlaceholders',
                     'Subject without placeholders'
                 ],
-       ];
+        ];
     }
 
     /**

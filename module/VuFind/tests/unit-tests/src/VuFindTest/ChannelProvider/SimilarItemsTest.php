@@ -82,7 +82,7 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
         $recordDriver = $this->getDriver();
         $results->expects($this->once())->method('getResults')
             ->willReturn([$recordDriver]);
-        [$similar, $expectedResult]= $this->configureTestTargetAndExpectations();
+        [$similar, $expectedResult] = $this->configureTestTargetAndExpectations();
         $this->assertSame($expectedResult, $similar->getFromSearch($results));
     }
 
