@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SitemapIndex Test Class
  *

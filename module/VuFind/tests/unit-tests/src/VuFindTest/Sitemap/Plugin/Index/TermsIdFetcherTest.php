@@ -1,4 +1,5 @@
 <?php
+
 /**
  * GetIdsWithTermsCommand Test Class
  *

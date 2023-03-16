@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Abstract helper to get IDs for a sitemap from a backend (if supported).
  *
