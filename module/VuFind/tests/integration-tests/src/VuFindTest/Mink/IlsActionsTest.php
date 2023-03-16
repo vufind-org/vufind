@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Mink;
 
+use Behat\Mink\Element\DocumentElement;
 use Behat\Mink\Element\Element;
 
 /**
@@ -581,13 +582,13 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test transaction history.
+     * Test loan history.
      *
      * @depends testProfile
      *
      * @return void
      */
-    public function testTransactionHistory(): void
+    public function testLoanHistory(): void
     {
         $this->changeConfigs(
             [
@@ -596,14 +597,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
 
-        // Go to user profile screen:
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Checkouts/ListHistory');
-        $page = $session->getPage();
-
-        // Log in
-        $this->fillInLoginForm($page, 'username1', 'test', false);
-        $this->submitLoginForm($page, false);
+        $page = $this->goToLoanHistory();
 
         // Test sorting
         $titles = [
@@ -652,6 +646,73 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCss($page, '.alert.alert-info')->getText()
         );
         $this->unFindCss($page, '.checkbox-select-item');
+    }
+
+    /**
+     * Data provider for testLoanHistoryWithPurgeDisabled
+     *
+     * @return array
+     */
+    public function loanHistoryWithPurgeDisabledProvider(): array
+    {
+        return [
+            [false, false],
+            [false, true],
+            [true, false],
+        ];
+    }
+
+    /**
+     * Test transaction history with purge option(s) disabled.
+     *
+     * @dataProvider loanHistoryWithPurgeDisabledProvider
+     * @depends      testProfile
+     *
+     * @return void
+     */
+    public function testLoanHistoryWithPurgeDisabled(bool $selected, bool $all): void
+    {
+        $demoConfig = $this->getDemoIniOverrides();
+        $demoConfig['TransactionHistory']['purgeSelected'] = $selected;
+        $demoConfig['TransactionHistory']['purgeAll'] = $all;
+        $this->changeConfigs(
+            [
+                'config' => $this->getConfigIniOverrides(),
+                'Demo' => $demoConfig,
+            ]
+        );
+
+        $page = $this->goToLoanHistory();
+
+        if ($selected) {
+            $this->findCss($page, '#purgeSelected');
+        } else {
+            $this->unFindCss($page, '#purgeSelected');
+        }
+        if ($all) {
+            $this->findCss($page, '#purgeAll');
+        } else {
+            $this->unFindCss($page, '#purgeAll');
+        }
+    }
+
+    /**
+     * Log in and open loan history page
+     *
+     * @return DocumentElement
+     */
+    protected function goToLoanHistory(): DocumentElement
+    {
+        // Go to user profile screen:
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Checkouts/ListHistory');
+        $page = $session->getPage();
+
+        // Log in
+        $this->fillInLoginForm($page, 'username1', 'test', false);
+        $this->submitLoginForm($page, false);
+
+        return $page;
     }
 
     /**
