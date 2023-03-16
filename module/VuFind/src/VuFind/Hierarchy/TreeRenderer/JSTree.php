@@ -201,7 +201,7 @@ class JSTree extends AbstractBase implements \VuFind\I18n\Translator\TranslatorA
         ];
         if (isset($node->children)) {
             $ret['children'] = [];
-            for ($i = 0;$i < count($node->children);$i++) {
+            for ($i = 0; $i < count($node->children); $i++) {
                 $ret['children'][$i] = $this
                     ->buildNodeArray($node->children[$i], $context, $hierarchyID);
             }
