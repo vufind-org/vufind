@@ -108,7 +108,7 @@ class FakeOverdriveConnector extends OverdriveConnector
      */
     public function getAvailability($overDriveId)
     {
-        return new \stdClass;
+        return new \stdClass();
     }
 
     /**
@@ -190,7 +190,7 @@ class FakeOverdriveConnector extends OverdriveConnector
      */
     public function placeOverDriveHold($overDriveId, $email)
     {
-        return new \stdClass;
+        return new \stdClass();
     }
 
     /**
@@ -203,7 +203,7 @@ class FakeOverdriveConnector extends OverdriveConnector
      */
     public function cancelHold($overDriveId)
     {
-        return new \stdClass;
+        return new \stdClass();
     }
 
     /**
@@ -216,7 +216,7 @@ class FakeOverdriveConnector extends OverdriveConnector
      */
     public function returnResource($resourceID)
     {
-        return new \stdClass;
+        return new \stdClass();
     }
 
     /**
@@ -231,7 +231,7 @@ class FakeOverdriveConnector extends OverdriveConnector
      */
     public function getDownloadLink($overDriveId, $format, $errorURL)
     {
-        return new \stdClass;
+        return new \stdClass();
     }
 
     /**
@@ -244,7 +244,7 @@ class FakeOverdriveConnector extends OverdriveConnector
      */
     public function lockinResource($overDriveId, $format)
     {
-        return new \stdClass;
+        return new \stdClass();
     }
 
     /**

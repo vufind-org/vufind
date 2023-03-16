@@ -505,7 +505,7 @@ class AlmaController extends AbstractBase
                         JSON_UNESCAPED_SLASHES
                 ) . '"'
             );
-            throw new \VuFind\Exception\Forbidden;
+            throw new \VuFind\Exception\Forbidden();
         }
     }
 }
