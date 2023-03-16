@@ -687,7 +687,7 @@ class Folio extends AbstractAPI implements
             'duedate' => $dueDateValue,
             'availability' => $item->status->name == 'Available',
             'is_holdable' => $this->isHoldable($locationName),
-            'holdings_notes'=> $holdingDetails['hasHoldingNotes']
+            'holdings_notes' => $holdingDetails['hasHoldingNotes']
                 ? $holdingDetails['holdingNotes'] : null,
             'item_notes' => !empty(implode($itemNotes)) ? $itemNotes : null,
             'issues' => $holdingDetails['holdingsStatements'],

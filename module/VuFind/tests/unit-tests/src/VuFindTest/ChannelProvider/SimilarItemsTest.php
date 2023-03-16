@@ -224,7 +224,7 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
             ],
 
         ]];
-        $routeDetails = ['route' => 'test_route', 'params' => ['id'=> 'route_id']];
+        $routeDetails = ['route' => 'test_route', 'params' => ['id' => 'route_id']];
         $router->expects($this->once())->method('getRouteDetails')
             ->with($this->equalTo($recordDriver))
             ->willReturn($routeDetails);
