@@ -810,7 +810,7 @@ class Folio extends AbstractAPI implements
     protected function getDateTimeFromString(string $str): DateTime
     {
         $dateTime = new DateTime($str, new DateTimeZone('UTC'));
-        $localTimezone = (new DateTime)->getTimezone();
+        $localTimezone = (new DateTime())->getTimezone();
         $dateTime->setTimezone($localTimezone);
         return $dateTime;
     }
