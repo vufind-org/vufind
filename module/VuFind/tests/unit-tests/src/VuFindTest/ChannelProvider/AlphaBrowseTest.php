@@ -239,7 +239,7 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo($driver), $this->equalTo('medium'))
             ->willReturn('foo_Thumbnail');
         $alpha->setCoverRouter($coverRouter);
-        $routeDetails = ['route' => 'test_route', 'params' => ['id'=> 'route_id']];
+        $routeDetails = ['route' => 'test_route', 'params' => ['id' => 'route_id']];
         $router->expects($this->once())->method('getRouteDetails')
             ->with($this->equalTo($driver))
             ->willReturn($routeDetails);

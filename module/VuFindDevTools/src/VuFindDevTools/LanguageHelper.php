@@ -286,7 +286,7 @@ class LanguageHelper
             }
             $data[] = [
                 "lang" => $langCode,
-                "name"=> $diffs['name'],
+                "name" => $diffs['name'],
                 "langtitle" => $langCode . (($langCode != $diffs['name'])
                     ? " (" . $diffs['name'] . ")" : ''),
                 "missing" => count($diffs['notInL2']),
