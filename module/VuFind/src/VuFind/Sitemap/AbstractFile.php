@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Abstract class for representing XML sitemaps
  *

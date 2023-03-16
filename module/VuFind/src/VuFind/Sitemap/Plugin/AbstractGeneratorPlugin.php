@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Base class for sitemap generator plugins
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ContentPages Plugin Test Class
  *
