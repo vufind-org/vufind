@@ -7,7 +7,7 @@ class AjaxRequestQueue {
 
     // Debounce
     this.timeout = null;
-    this.delay = delay ?? 300;
+    this.delay = delay || 300;
 
     // Function definitions
     const noop = () => {};
@@ -30,10 +30,10 @@ class AjaxRequestQueue {
 
   runPayload() {
     clearTimeout(this.timeout);
-    this.timeout = setTimeout(() => this.#runPayloadImpl(), this.delay);
+    this.timeout = setTimeout(() => this.runPayloadImpl(), this.delay);
   }
 
-  #runPayloadImpl() {
+  runPayloadImpl() {
     this.isRunning = true;
 
     this.runFn(this.payload)
