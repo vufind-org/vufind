@@ -46,7 +46,7 @@ use VuFind\View\Helper\Root\SearchTabs;
  */
 class SearchTabsTest extends \PHPUnit\Framework\TestCase
 {
-    use  \VuFindTest\Feature\ViewTrait;
+    use \VuFindTest\Feature\ViewTrait;
 
     /**
      * Data provider for testGetCurrentHiddenFilterParams

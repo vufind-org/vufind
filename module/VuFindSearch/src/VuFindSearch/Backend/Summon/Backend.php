@@ -33,10 +33,8 @@ use SerialsSolutions\Summon\Laminas as Connector;
 use SerialsSolutions_Summon_Exception as SummonException;
 use SerialsSolutions_Summon_Query as SummonQuery;
 use VuFindSearch\Backend\AbstractBackend;
-
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Feature\RetrieveBatchInterface;
-
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;

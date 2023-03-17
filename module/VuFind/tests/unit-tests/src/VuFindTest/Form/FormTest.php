@@ -807,17 +807,15 @@ class FormTest extends \PHPUnit\Framework\TestCase
     public function getEmailSubjectsData(): array
     {
         return [
-            'with placeholders'
-                => [
-                    'TestSubjectEmailWithPlaceholders',
-                    'Subject One Two option-1'
-                ],
-            'without placeholders'
-                => [
-                    'TestSubjectEmailWithoutPlaceholders',
-                    'Subject without placeholders'
-                ],
-       ];
+            'with placeholders' => [
+                'TestSubjectEmailWithPlaceholders',
+                'Subject One Two option-1'
+            ],
+            'without placeholders' => [
+                'TestSubjectEmailWithoutPlaceholders',
+                'Subject without placeholders'
+            ],
+        ];
     }
 
     /**
