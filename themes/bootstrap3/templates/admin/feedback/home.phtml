@@ -110,7 +110,7 @@ $this->headTitle($this->translate('VuFind Administration - Feedback Management')
                         <?php endforeach; ?>
                         <strong><?=$this->transEsc('Created')?></strong>:
                         <?=$this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime('Y-m-d H:i:s', $feedbackItem->created))?>
-                        <?=$feedbackItem->user_name ? (' ' . $this->transEsc('by') . ' ' . $this->escapeHtml($feedbackItem->user_name) . ' (' . $feedbackItem->user_id . ')'): ''?>
+                        <?=$feedbackItem->user_name ? (' ' . $this->transEsc('by') . ' ' . $this->escapeHtml($feedbackItem->user_name) . ' (' . $feedbackItem->user_id . ')') : ''?>
                         <br>
                         <strong><?=$this->transEsc('Updated')?></strong>:
                         <?=$this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime('Y-m-d H:i:s', $feedbackItem->updated))?>
