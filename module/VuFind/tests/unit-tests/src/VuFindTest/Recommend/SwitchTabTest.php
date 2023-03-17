@@ -49,44 +49,57 @@ class SwitchTabTest extends \PHPUnit\Framework\TestCase
      */
     public function tabConfigProvider(): array
     {
-        return ['First tab selected' => [[["id" => "A01",
-                            "class" => "class01",
-                            "label" => "label01",
-                            "permission" => "permission01",
-                            "selected" => true,
-                            "url" => "http://newurl1"
-                            ],
-                            ["id" => "A02",
-                            "class" => "class02",
-                            "label" => "label02",
-                            "permission" => "permission02",
-                            "selected" => false,
-                            "url" => "http://newurl2"
-                            ],],
-                            ["id" => "A01",
-                            "class" => "class01",
-                            "label" => "label01",
-                            "permission" => "permission01",
-                            "selected" => true,
-                            "url" => "http://newurl1"
-                ]],
-                'No tab selected' => [[["id" => "A01",
-                            "class" => "class01",
-                            "label" => "label01",
-                            "permission" => "permission01",
-                            "selected" => false,
-                            "url" => "http://newurl1"
-                            ],
-                            ["id" => "A02",
-                            "class" => "class02",
-                            "label" => "label02",
-                            "permission" => "permission02",
-                            "selected" => false,
-                            "url" => "http://newurl2"
-                            ],],
-                            null
-                            ],
-            ];
+        return [
+            'First tab selected' => [
+                [
+                    [
+                        "id" => "A01",
+                        "class" => "class01",
+                        "label" => "label01",
+                        "permission" => "permission01",
+                        "selected" => true,
+                        "url" => "http://newurl1"
+                    ],
+                    [
+                        "id" => "A02",
+                        "class" => "class02",
+                        "label" => "label02",
+                        "permission" => "permission02",
+                        "selected" => false,
+                        "url" => "http://newurl2"
+                    ],
+                ],
+                [
+                    "id" => "A01",
+                    "class" => "class01",
+                    "label" => "label01",
+                    "permission" => "permission01",
+                    "selected" => true,
+                    "url" => "http://newurl1"
+                ]
+            ],
+            'No tab selected' => [
+                [
+                    [
+                        "id" => "A01",
+                        "class" => "class01",
+                        "label" => "label01",
+                        "permission" => "permission01",
+                        "selected" => false,
+                        "url" => "http://newurl1"
+                    ],
+                    [
+                        "id" => "A02",
+                        "class" => "class02",
+                        "label" => "label02",
+                        "permission" => "permission02",
+                        "selected" => false,
+                        "url" => "http://newurl2"
+                    ],
+                ],
+                null
+            ],
+        ];
     }
 
     /**
@@ -112,28 +125,38 @@ class SwitchTabTest extends \PHPUnit\Framework\TestCase
      */
     public function inactiveTabConfigProvider(): array
     {
-        return ['Test1' => [[["id" => "A01",
-                            "class" => "class01",
-                            "label" => "label01",
-                            "permission" => "permission01",
-                            "selected" => true,
-                            "url" => "http://newurl1"
-                            ],
-                            ["id" => "A02",
-                            "class" => "class02",
-                            "label" => "label02",
-                            "permission" => "permission02",
-                            "selected" => false,
-                            "url" => "http://newurl2"
-                            ],],
-                            [["id" => "A02",
-                            "class" => "class02",
-                            "label" => "label02",
-                            "permission" => "permission02",
-                            "selected" => false,
-                            "url" => "http://newurl2"
-                            ]]],
-            ];
+        return [
+            'Test1' => [
+                [
+                    [
+                        "id" => "A01",
+                        "class" => "class01",
+                        "label" => "label01",
+                        "permission" => "permission01",
+                        "selected" => true,
+                        "url" => "http://newurl1"
+                    ],
+                    [
+                        "id" => "A02",
+                        "class" => "class02",
+                        "label" => "label02",
+                        "permission" => "permission02",
+                        "selected" => false,
+                        "url" => "http://newurl2"
+                    ],
+                ],
+                [
+                    [
+                        "id" => "A02",
+                        "class" => "class02",
+                        "label" => "label02",
+                        "permission" => "permission02",
+                        "selected" => false,
+                        "url" => "http://newurl2"
+                    ]
+                ]
+            ],
+        ];
     }
 
     /**

@@ -62,19 +62,20 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      *
      * @var array[]
      */
-    protected $transactionsTests
-        = [
-            [
-                'file' => [
-                    'lookupUserResponse.xml', 'LookupItem.xml',
-                ], 'result' => [
+    protected $transactionsTests = [
+        [
+            'file' => [
+                'lookupUserResponse.xml', 'LookupItem.xml',
+            ],
+            'result' => [
                 [
                     'id' => 'MZK01000847602-MZK50000847602000090',
                     'item_agency_id' => 'My Agency',
                     'patronAgencyId' => 'Test agency', 'duedate' => '11-19-2014',
                     'title' => 'Jahrbücher der Deutschen Malakozoologischen Gesellschaft ...',
                     'item_id' => '104', 'renewable' => false,
-                ], [
+                ],
+                [
                     'id' => 'KN3183000000046386',
                     'item_agency_id' => 'Agency from lookup item',
                     'patronAgencyId' => 'Test agency', 'duedate' => '11-26-2014',
@@ -82,61 +83,64 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                         . 'z něm. přel. Ivana Víz',
                     'item_id' => '105', 'renewable' => true,
                 ],
-                ],
-            ], [
-                'file' => [
-                    'LookupUserResponseWithoutNamespacePrefix.xml',
-                ], 'result' => [
-                    [
-                        'id' => 'MZK01000847602-MZK50000847602000090',
-                        'item_agency_id' => 'My Agency',
-                        'patronAgencyId' => 'Test agency', 'duedate' => '11-19-2014',
-                        'title' => 'Jahrbücher der Deutschen Malakozoologischen Gesellschaft ...',
-                        'item_id' => '104', 'renewable' => true,
-                    ], [
-                        'id' => 'MZK01000000456-MZK50000000456000440',
-                        'item_agency_id' => 'My Agency',
-                        'patronAgencyId' => 'Test agency', 'duedate' => '11-26-2014',
-                        'title' => 'Anna Nahowská a císař František Josef : zápisky / Friedrich Saathen ; '
-                            . 'z něm. přel. Ivana Víz',
-                        'item_id' => '105', 'renewable' => true,
-                    ],
-                ],
-            ], [
-                'file' => [
-                    'LookupUserResponseWithoutNamespaceDefinition.xml',
-                ], 'result' => [
-                    [
-                        'id' => 'MZK01000847602-MZK50000847602000090',
-                        'item_agency_id' => 'My Agency',
-                        'patronAgencyId' => 'Test agency', 'duedate' => '11-19-2014',
-                        'title' => 'Jahrbücher der Deutschen Malakozoologischen Gesellschaft ...',
-                        'item_id' => '104', 'renewable' => true,
-                    ], [
-                        'id' => 'MZK01000000456-MZK50000000456000440',
-                        'item_agency_id' => 'My Agency',
-                        'patronAgencyId' => 'Test agency', 'duedate' => '11-26-2014',
-                        'title' => 'Anna Nahowská a císař František Josef : zápisky / Friedrich Saathen ; '
-                            . 'z něm. přel. Ivana Víz',
-                        'item_id' => '105', 'renewable' => true,
-                    ],
+            ],
+        ], [
+            'file' => [
+                'LookupUserResponseWithoutNamespacePrefix.xml',
+            ],
+            'result' => [
+                [
+                    'id' => 'MZK01000847602-MZK50000847602000090',
+                    'item_agency_id' => 'My Agency',
+                    'patronAgencyId' => 'Test agency', 'duedate' => '11-19-2014',
+                    'title' => 'Jahrbücher der Deutschen Malakozoologischen Gesellschaft ...',
+                    'item_id' => '104', 'renewable' => true,
+                ], [
+                    'id' => 'MZK01000000456-MZK50000000456000440',
+                    'item_agency_id' => 'My Agency',
+                    'patronAgencyId' => 'Test agency', 'duedate' => '11-26-2014',
+                    'title' => 'Anna Nahowská a císař František Josef : zápisky / Friedrich Saathen ; '
+                        . 'z něm. přel. Ivana Víz',
+                    'item_id' => '105', 'renewable' => true,
                 ],
             ],
-        ];
+        ], [
+            'file' => [
+                'LookupUserResponseWithoutNamespaceDefinition.xml',
+            ],
+            'result' => [
+                [
+                    'id' => 'MZK01000847602-MZK50000847602000090',
+                    'item_agency_id' => 'My Agency',
+                    'patronAgencyId' => 'Test agency', 'duedate' => '11-19-2014',
+                    'title' => 'Jahrbücher der Deutschen Malakozoologischen Gesellschaft ...',
+                    'item_id' => '104', 'renewable' => true,
+                ], [
+                    'id' => 'MZK01000000456-MZK50000000456000440',
+                    'item_agency_id' => 'My Agency',
+                    'patronAgencyId' => 'Test agency', 'duedate' => '11-26-2014',
+                    'title' => 'Anna Nahowská a císař František Josef : zápisky / Friedrich Saathen ; '
+                        . 'z něm. přel. Ivana Víz',
+                    'item_id' => '105', 'renewable' => true,
+                ],
+            ],
+        ],
+    ];
 
-    protected $notRenewableTransactionsTests
-        = [
-            [
-                'file' => [
-                    'lookupUserResponse.xml', 'LookupItem.xml',
-                ], 'result' => [
+    protected $notRenewableTransactionsTests = [
+        [
+            'file' => [
+                'lookupUserResponse.xml', 'LookupItem.xml',
+            ],
+            'result' => [
                 [
                     'id' => 'MZK01000847602-MZK50000847602000090',
                     'item_agency_id' => 'My Agency',
                     'patronAgencyId' => 'Test agency', 'duedate' => '11-19-2014',
                     'title' => 'Jahrbücher der Deutschen Malakozoologischen Gesellschaft ...',
                     'item_id' => '104', 'renewable' => false,
-                ], [
+                ],
+                [
                     'id' => 'KN3183000000046386',
                     'item_agency_id' => 'Agency from lookup item',
                     'patronAgencyId' => 'Test agency', 'duedate' => '11-26-2014',
@@ -144,71 +148,71 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                         . 'z něm. přel. Ivana Víz',
                     'item_id' => '105', 'renewable' => false,
                 ],
-                ],
             ],
-        ];
+        ],
+    ];
 
     /**
      * Test definition for testGetMyFines
      *
      * @var array[]
      */
-    protected $finesTests
-        = [
-            [
-                'file' => 'lookupUserResponse.xml', 'result' => [
+    protected $finesTests = [
+        [
+            'file' => 'lookupUserResponse.xml',
+            'result' => [
                 [
                     'id' => '8071750247', 'duedate' => '', 'amount' => 25,
                     'balance' => 25, 'checkout' => '', 'fine' => 'Service Charge',
                     'createdate' => '11-14-2014',
                 ],
-                ],
-            ], [
-                'file' => 'LookupUserResponseWithoutNamespacePrefix.xml',
-                'result' => [
-                    [
-                        'id' => '', 'duedate' => '', 'amount' => 25, 'balance' => 25,
-                        'checkout' => '', 'fine' => 'Service Charge',
-                        'createdate' => '11-14-2014',
-                    ],
+            ],
+        ], [
+            'file' => 'LookupUserResponseWithoutNamespacePrefix.xml',
+            'result' => [
+                [
+                    'id' => '', 'duedate' => '', 'amount' => 25, 'balance' => 25,
+                    'checkout' => '', 'fine' => 'Service Charge',
+                    'createdate' => '11-14-2014',
                 ],
             ],
-        ];
+        ],
+    ];
 
     /**
      * Test definition for testPatronLogin
      *
      * @var array[]
      */
-    protected $loginTests
-        = [
-            [
-                'file' => 'lookupUserResponse.xml', 'result' => [
+    protected $loginTests = [
+        [
+            'file' => 'lookupUserResponse.xml',
+            'result' => [
                 'id' => '700', 'patronAgencyId' => 'MZK',
                 'cat_username' => 'my_login', 'cat_password' => 'my_password',
                 'email' => 'test@mzk.cz', 'major' => null, 'college' => null,
                 'firstname' => 'John', 'lastname' => 'Smith',
-                ],
-            ], [
-                'file' => 'LookupUserResponseWithoutNamespacePrefix.xml',
-                'result' => [
-                    'id' => '700', 'patronAgencyId' => 'MZK',
-                    'cat_username' => 'my_login', 'cat_password' => 'my_password',
-                    'email' => 'test@mzk.cz', 'major' => null, 'college' => null,
-                    'firstname' => 'John', 'lastname' => 'Smith',
-                ],
             ],
-        ];
+        ], [
+            'file' => 'LookupUserResponseWithoutNamespacePrefix.xml',
+            'result' => [
+                'id' => '700', 'patronAgencyId' => 'MZK',
+                'cat_username' => 'my_login', 'cat_password' => 'my_password',
+                'email' => 'test@mzk.cz', 'major' => null, 'college' => null,
+                'firstname' => 'John', 'lastname' => 'Smith',
+            ],
+        ],
+    ];
 
     /**
      * Test definition for testGetMyHolds
      *
      * @var array[]
      */
-    protected $holdsTests
-        = [
-            [
-                'file' => 'lookupUserResponse.xml', 'result' => [
+    protected $holdsTests = [
+        [
+            'file' => 'lookupUserResponse.xml',
+            'result' => [
                 [
                     'id' => '111',
                     'title' => 'Ahoj, Blanko! : dívčí román / Eva Bernardinová',
@@ -219,7 +223,8 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'item_agency_id' => null, 'canceled' => false,
                     'available' => false,
 
-                ], [
+                ],
+                [
                     'id' => '112',
                     'title' => 'Aktiv revizních techniků elektrických zařízení',
                     'item_id' => 'MZK01000065021-MZK50000065021000010',
@@ -229,90 +234,90 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'item_agency_id' => null, 'canceled' => false,
                     'available' => false,
                 ],
-                ],
-            ], [
-                'file' => 'LookupUserResponseWithoutNamespacePrefix.xml',
-                'result' => [
-                    [
-                        'id' => '111',
-                        'title' => 'Ahoj, Blanko! : dívčí román / Eva Bernardinová',
-                        'item_id' => 'MZK01000353880-MZK50000353880000040',
-                        'create' => '10-10-2014', 'expire' => null,
-                        'position' => null, 'requestId' => null,
-                        'location' => 'Loan Department - Ground floor',
-                        'item_agency_id' => null, 'canceled' => false,
-                        'available' => false,
+            ],
+        ], [
+            'file' => 'LookupUserResponseWithoutNamespacePrefix.xml',
+            'result' => [
+                [
+                    'id' => '111',
+                    'title' => 'Ahoj, Blanko! : dívčí román / Eva Bernardinová',
+                    'item_id' => 'MZK01000353880-MZK50000353880000040',
+                    'create' => '10-10-2014', 'expire' => null,
+                    'position' => null, 'requestId' => null,
+                    'location' => 'Loan Department - Ground floor',
+                    'item_agency_id' => null, 'canceled' => false,
+                    'available' => false,
 
-                    ], [
-                        'id' => '112',
-                        'title' => 'Aktiv revizních techniků elektrických zařízení',
-                        'item_id' => 'MZK01000065021-MZK50000065021000010',
-                        'create' => '10-23-2014', 'expire' => null,
-                        'position' => null, 'requestId' => null,
-                        'location' => 'Loan Department - Ground floor',
-                        'item_agency_id' => null, 'canceled' => false,
-                        'available' => false,
-                    ],
+                ], [
+                    'id' => '112',
+                    'title' => 'Aktiv revizních techniků elektrických zařízení',
+                    'item_id' => 'MZK01000065021-MZK50000065021000010',
+                    'create' => '10-23-2014', 'expire' => null,
+                    'position' => null, 'requestId' => null,
+                    'location' => 'Loan Department - Ground floor',
+                    'item_agency_id' => null, 'canceled' => false,
+                    'available' => false,
                 ],
             ],
-        ];
+        ],
+    ];
 
     /**
      * Test definition for testGetMyProfile
      *
      * @var array[]
      */
-    protected $profileTests
-        = [
-            [
-                'file' => 'lookupUserResponse.xml', 'result' => [
+    protected $profileTests = [
+        [
+            'file' => 'lookupUserResponse.xml',
+            'result' => [
                 'firstname' => 'John', 'lastname' => 'Smith',
                 'address1' => 'Trvalá ulice 123, Big City, 12345', 'address2' => '',
                 'zip' => '', 'phone' => '', 'group' => '',
                 'expiration_date' => '12-30-2099',
-                ],
-            ], [
-                'file' => 'LookupUserResponseWithoutNamespacePrefix.xml',
-                'result' => [
-                    'firstname' => 'John', 'lastname' => 'Smith',
-                    'address1' => 'Trvalá ulice 123, Big City, 12345',
-                    'address2' => '', 'zip' => '', 'phone' => '', 'group' => '',
-                    'expiration_date' => '12-30-2099',
-                ],
-            ], [
-                'file' => 'lookupUserResponseStructuredAddress.xml', 'result' => [
-                    'firstname' => 'John', 'lastname' => 'Smith',
-                    'address1' => 'Trvalá ulice 123', 'address2' => '12345 Big City',
-                    'zip' => '', 'phone' => '', 'group' => '',
-                    'expiration_date' => '12-30-2099',
-                ],
-            ], [
-                'file' => 'lookupUserResponseStructuredAddressDetail.xml',
-                'result' => [
-                    'firstname' => 'John', 'lastname' => 'Smith',
-                    'address1' => 'Trvalá ulice 123', 'address2' => 'Big City',
-                    'zip' => '12345', 'phone' => '', 'group' => '',
-                    'expiration_date' => '12-30-2099',
-                ],
-            ], [
-                'file' => 'lookupUserResponseUnstructuredName.xml', 'result' => [
-                    'firstname' => '', 'lastname' => 'John Smith Jr.',
-                    'address1' => 'Trvalá ulice 123', 'address2' => '12345 Big City',
-                    'zip' => '', 'phone' => '', 'group' => '',
-                    'expiration_date' => '12-30-2099'
-                ],
             ],
-        ];
+        ], [
+            'file' => 'LookupUserResponseWithoutNamespacePrefix.xml',
+            'result' => [
+                'firstname' => 'John', 'lastname' => 'Smith',
+                'address1' => 'Trvalá ulice 123, Big City, 12345',
+                'address2' => '', 'zip' => '', 'phone' => '', 'group' => '',
+                'expiration_date' => '12-30-2099',
+            ],
+        ], [
+            'file' => 'lookupUserResponseStructuredAddress.xml', 'result' => [
+                'firstname' => 'John', 'lastname' => 'Smith',
+                'address1' => 'Trvalá ulice 123', 'address2' => '12345 Big City',
+                'zip' => '', 'phone' => '', 'group' => '',
+                'expiration_date' => '12-30-2099',
+            ],
+        ], [
+            'file' => 'lookupUserResponseStructuredAddressDetail.xml',
+            'result' => [
+                'firstname' => 'John', 'lastname' => 'Smith',
+                'address1' => 'Trvalá ulice 123', 'address2' => 'Big City',
+                'zip' => '12345', 'phone' => '', 'group' => '',
+                'expiration_date' => '12-30-2099',
+            ],
+        ], [
+            'file' => 'lookupUserResponseUnstructuredName.xml', 'result' => [
+                'firstname' => '', 'lastname' => 'John Smith Jr.',
+                'address1' => 'Trvalá ulice 123', 'address2' => '12345 Big City',
+                'zip' => '', 'phone' => '', 'group' => '',
+                'expiration_date' => '12-30-2099'
+            ],
+        ],
+    ];
 
     /**
      * Test definition for testGetMyStorageRetrievalRequests
      *
      * @var array[]
      */
-    protected $storageRetrievalTests
-        = [
-            [
-                'file' => 'lookupUserResponse.xml', 'result' => [
+    protected $storageRetrievalTests = [
+        [
+            'file' => 'lookupUserResponse.xml',
+            'result' => [
                 [
                     'id' => '155',
                     'title' => 'Listen and play : with magicians! : 3. ročník / Věra Štiková ; '
@@ -324,34 +329,34 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'item_id' => 'MZK01001333770-MZK50001370317000020',
                     'available' => false,
                 ],
-                ],
-            ], [
-                'file' => 'LookupUserResponseWithoutNamespacePrefix.xml',
-                'result' => [
-                    [
-                        'id' => '155',
-                        'title' => 'Listen and play : with magicians! : 3. ročník / Věra Štiková ; '
-                            . '[ilustrace Andrea Schindlerová]',
-                        'create' => '11-09-2014', 'expire' => null,
-                        'position' => null, 'requestId' => null,
-                        'location' => 'Loan Department - Ground floor',
-                        'item_agency_id' => null, 'canceled' => false,
-                        'item_id' => 'MZK01001333770-MZK50001370317000020',
-                        'available' => false,
-                    ],
+            ],
+        ], [
+            'file' => 'LookupUserResponseWithoutNamespacePrefix.xml',
+            'result' => [
+                [
+                    'id' => '155',
+                    'title' => 'Listen and play : with magicians! : 3. ročník / Věra Štiková ; '
+                        . '[ilustrace Andrea Schindlerová]',
+                    'create' => '11-09-2014', 'expire' => null,
+                    'position' => null, 'requestId' => null,
+                    'location' => 'Loan Department - Ground floor',
+                    'item_agency_id' => null, 'canceled' => false,
+                    'item_id' => 'MZK01001333770-MZK50001370317000020',
+                    'available' => false,
                 ],
             ],
-        ];
+        ],
+    ];
 
     /**
      * Test definition for testGetStatuses
      *
      * @var array[]
      */
-    protected $statusesTests
-        = [
-            [
-                'file' => 'lookupItemSet.xml', 'result' => [
+    protected $statusesTests = [
+        [
+            'file' => 'lookupItemSet.xml',
+            'result' => [
                 'MZK01000000421' => [
                     [
                         'status' => 'Available on shelf', 'location' => null,
@@ -377,47 +382,47 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                         'id' => 'MZK01000000425', 'use_unknown_message' => true,
                     ],
                 ],
-                ],
-            ], [
-                'file' => 'lookupItemSetWithoutNamespacePrefix.xml', 'result' => [
-                    'MZK01000000421' => [
-                        [
-                            'status' => 'Available on shelf', 'location' => null,
-                            'callnumber' => '621.3 ANG', 'availability' => true,
-                            'reserve' => 'N', 'id' => 'MZK01000000421',
-                        ],
-                    ], 'MZK01000062021' => [
-                        [
-                            'status' => 'Available On Shelf', 'location' => null,
-                            'callnumber' => 'PK-0083.568', 'availability' => true,
-                            'reserve' => 'N', 'id' => 'MZK01000062021',
-                        ],
-                    ], 'MZK01000000425' => [
-                        [
-                            'status' => 'Available On Shelf',
-                            'location' => 'Some holding location',
-                            'callnumber' => '2-0997.767,2', 'availability' => true,
-                            'reserve' => 'N', 'id' => 'MZK01000000425',
-                        ], [
-                            'status' => 'Available On Shelf',
-                            'location' => 'Some holding location',
-                            'callnumber' => null, 'availability' => true,
-                            'reserve' => 'N', 'id' => 'MZK01000000425',
-                        ],
+            ],
+        ], [
+            'file' => 'lookupItemSetWithoutNamespacePrefix.xml', 'result' => [
+                'MZK01000000421' => [
+                    [
+                        'status' => 'Available on shelf', 'location' => null,
+                        'callnumber' => '621.3 ANG', 'availability' => true,
+                        'reserve' => 'N', 'id' => 'MZK01000000421',
+                    ],
+                ], 'MZK01000062021' => [
+                    [
+                        'status' => 'Available On Shelf', 'location' => null,
+                        'callnumber' => 'PK-0083.568', 'availability' => true,
+                        'reserve' => 'N', 'id' => 'MZK01000062021',
+                    ],
+                ], 'MZK01000000425' => [
+                    [
+                        'status' => 'Available On Shelf',
+                        'location' => 'Some holding location',
+                        'callnumber' => '2-0997.767,2', 'availability' => true,
+                        'reserve' => 'N', 'id' => 'MZK01000000425',
+                    ], [
+                        'status' => 'Available On Shelf',
+                        'location' => 'Some holding location',
+                        'callnumber' => null, 'availability' => true,
+                        'reserve' => 'N', 'id' => 'MZK01000000425',
                     ],
                 ],
             ],
-        ];
+        ],
+    ];
 
     /**
      * Test definition for testGetHolding
      *
      * @var array[]
      */
-    protected $holdingTests
-        = [
-            [
-                'file' => 'lookupItemSet.xml', 'result' => [
+    protected $holdingTests = [
+        [
+            'file' => 'lookupItemSet.xml',
+            'result' => [
                 [
                     'status' => 'Available on shelf', 'location' => null,
                     'callnumber' => '621.3 ANG', 'availability' => true,
@@ -466,277 +471,279 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'addStorageRetrievalRequestLink' => 'true', 'eresource' => '',
                     'collection_desc' => 'Some holding sublocation',
                 ],
-                ],
             ],
-        ];
+        ],
+    ];
 
     /**
      * Test definition for testPlaceHold
      *
      * @var array[]
      */
-    protected $placeHoldTests
-        = [
-            [
-                'file' => 'RequestItemResponseAcceptedWithItemId.xml',
-                'result' => [
-                  'success' => true,
-                ],
-            ], [
-                'file' => 'RequestItemResponseAcceptedWithRequestId.xml',
-                'result' => [
-                    'success' => true,
-                ],
-            ], [
-                'file' => 'RequestItemResponseDenied.xml', 'result' => [
-                    'success' => false, 'sysMessage' => 'Temporary Processing Failure'
-                ],
-            ], [
-                'file' => 'RequestItemResponseDeniedWithIdentifiers.xml',
-                'result' => [
-                    'success' => false, 'sysMessage' => 'Temporary Processing Failure'
-                ],
-            ], [
-                'file' => 'RequestItemResponseDeniedNotFullProblemElement.xml',
-                'result' => [
-                    'success' => false, 'sysMessage' => 'User Blocked'
-                ],
-            ], [
-                'file' => 'RequestItemResponseDeniedEmpty.xml', 'result' => [
-                    'success' => false,
-                ],
+    protected $placeHoldTests = [
+        [
+            'file' => 'RequestItemResponseAcceptedWithItemId.xml',
+            'result' => [
+                'success' => true,
             ],
-        ];
+        ], [
+            'file' => 'RequestItemResponseAcceptedWithRequestId.xml',
+            'result' => [
+                'success' => true,
+            ],
+        ], [
+            'file' => 'RequestItemResponseDenied.xml', 'result' => [
+                'success' => false, 'sysMessage' => 'Temporary Processing Failure'
+            ],
+        ], [
+            'file' => 'RequestItemResponseDeniedWithIdentifiers.xml',
+            'result' => [
+                'success' => false, 'sysMessage' => 'Temporary Processing Failure'
+            ],
+        ], [
+            'file' => 'RequestItemResponseDeniedNotFullProblemElement.xml',
+            'result' => [
+                'success' => false, 'sysMessage' => 'User Blocked'
+            ],
+        ], [
+            'file' => 'RequestItemResponseDeniedEmpty.xml', 'result' => [
+                'success' => false,
+            ],
+        ],
+    ];
 
     /**
      * Test definition for testPlaceStorageRetrievalRequest
      *
      * @var array[]
      */
-    protected $placeStorageRetrievalRequestTests
-        = [
-            [
-                'file' => 'RequestItemResponseAcceptedWithItemId.xml', 'result' => [
+    protected $placeStorageRetrievalRequestTests = [
+        [
+            'file' => 'RequestItemResponseAcceptedWithItemId.xml',
+            'result' => [
                 'success' => true,
-                ],
-            ], [
-                'file' => 'RequestItemResponseAcceptedWithRequestId.xml',
-                'result' => [
-                    'success' => true,
-                ],
-            ], [
-                'file' => 'RequestItemResponseDenied.xml', 'result' => [
-                    'success' => false,
-                    'sysMessage' => 'Temporary Processing Failure'
-                ],
-            ], [
-                'file' => 'RequestItemResponseDeniedWithIdentifiers.xml',
-                'result' => [
-                    'success' => false,
-                    'sysMessage' => 'Temporary Processing Failure'
-                ],
-            ], [
-                'file' => 'RequestItemResponseDeniedNotFullProblemElement.xml',
-                'result' => [
-                    'success' => false,
-                    'sysMessage' => 'User Blocked'
-                ],
-            ], [
-                'file' => 'RequestItemResponseDeniedEmpty.xml', 'result' => [
-                    'success' => false,
-                ],
             ],
-        ];
+        ], [
+            'file' => 'RequestItemResponseAcceptedWithRequestId.xml',
+            'result' => [
+                'success' => true,
+            ],
+        ], [
+            'file' => 'RequestItemResponseDenied.xml', 'result' => [
+                'success' => false,
+                'sysMessage' => 'Temporary Processing Failure'
+            ],
+        ], [
+            'file' => 'RequestItemResponseDeniedWithIdentifiers.xml',
+            'result' => [
+                'success' => false,
+                'sysMessage' => 'Temporary Processing Failure'
+            ],
+        ], [
+            'file' => 'RequestItemResponseDeniedNotFullProblemElement.xml',
+            'result' => [
+                'success' => false,
+                'sysMessage' => 'User Blocked'
+            ],
+        ], [
+            'file' => 'RequestItemResponseDeniedEmpty.xml', 'result' => [
+                'success' => false,
+            ],
+        ],
+    ];
 
     /**
      * Test definition for testCancelHolds
      *
      * @var array[]
      */
-    protected $cancelHoldsTests
-        = [
-            [
-                'file' => 'CancelRequestItemResponseAccepted.xml', 'result' => [
+    protected $cancelHoldsTests = [
+        [
+            'file' => 'CancelRequestItemResponseAccepted.xml',
+            'result' => [
                 'count' => 1, 'items' => [
                     'Item1' => [
                         'success' => true, 'status' => 'hold_cancel_success',
                     ],
                 ],
-                ],
-            ], [
-                'file' => 'CancelRequestItemResponseDenied.xml', 'result' => [
-                    'count' => 0, 'items' => [
-                        'Item1' => [
-                            'success' => false, 'status' => 'hold_cancel_fail',
-                        ],
-                    ],
-                ],
-            ], [
-                'file' => 'CancelRequestItemResponseDeniedWithUserId.xml',
-                'result' => [
-                    'count' => 0, 'items' => [
-                        'Item1' => [
-                            'success' => false, 'status' => 'hold_cancel_fail',
-                        ],
+            ],
+        ], [
+            'file' => 'CancelRequestItemResponseDenied.xml', 'result' => [
+                'count' => 0, 'items' => [
+                    'Item1' => [
+                        'success' => false, 'status' => 'hold_cancel_fail',
                     ],
                 ],
             ],
-        ];
+        ], [
+            'file' => 'CancelRequestItemResponseDeniedWithUserId.xml',
+            'result' => [
+                'count' => 0, 'items' => [
+                    'Item1' => [
+                        'success' => false, 'status' => 'hold_cancel_fail',
+                    ],
+                ],
+            ],
+        ],
+    ];
 
     /**
      * Test definition for testCancelStorageRetrievalRequests
      *
      * @var array[]
      */
-    protected $cancelStorageRetrievalTests
-        = [
-            [
-                'file' => 'CancelRequestItemResponseAccepted.xml', 'result' => [
+    protected $cancelStorageRetrievalTests = [
+        [
+            'file' => 'CancelRequestItemResponseAccepted.xml',
+            'result' => [
                 'count' => 1, 'items' => [
                     'Item1' => [
                         'success' => true,
                         'status' => 'storage_retrieval_request_cancel_success',
                     ],
                 ],
-                ],
-            ], [
-                'file' => 'CancelRequestItemResponseDenied.xml', 'result' => [
-                    'count' => 0, 'items' => [
-                        'Item1' => [
-                            'success' => false,
-                            'status' => 'storage_retrieval_request_cancel_fail',
-                        ],
-                    ],
-                ],
-            ], [
-                'file' => 'CancelRequestItemResponseDeniedWithUserId.xml',
-                'result' => [
-                    'count' => 0, 'items' => [
-                        'Item1' => [
-                            'success' => false,
-                            'status' => 'storage_retrieval_request_cancel_fail',
-                        ],
+            ],
+        ], [
+            'file' => 'CancelRequestItemResponseDenied.xml', 'result' => [
+                'count' => 0, 'items' => [
+                    'Item1' => [
+                        'success' => false,
+                        'status' => 'storage_retrieval_request_cancel_fail',
                     ],
                 ],
             ],
-        ];
+        ], [
+            'file' => 'CancelRequestItemResponseDeniedWithUserId.xml',
+            'result' => [
+                'count' => 0, 'items' => [
+                    'Item1' => [
+                        'success' => false,
+                        'status' => 'storage_retrieval_request_cancel_fail',
+                    ],
+                ],
+            ],
+        ],
+    ];
 
     /**
      * Test definition for testRenewMyItems
      *
      * @var array[]
      */
-    protected $renewMyItemsTests
-        = [
-            [
-                'file' => 'RenewItemResponseAccepted.xml', 'result' => [
+    protected $renewMyItemsTests = [
+        [
+            'file' => 'RenewItemResponseAccepted.xml',
+            'result' => [
                 'blocks' => false, 'details' => [
                     'Item1' => [
                         'success' => true, 'new_date' => '09-08-2020',
                         'new_time' => '20:00', 'item_id' => 'Item1'
                     ],
                 ],
-                ],
-            ], [
-                'file' => 'RenewItemResponseAcceptedAlternativeDateFormat.xml',
-                'result' => [
-                    'blocks' => false, 'details' => [
-                        'Item1' => [
-                            'success' => true, 'new_date' => '08-31-2020',
-                            'new_time' => '17:59', 'item_id' => 'Item1'
-                        ],
-                    ],
-                ],
-            ], [
-                'file' => 'RenewItemResponseDenied.xml', 'result' => [
-                    'blocks' => false, 'details' => [
-                        'Item1' => [
-                            'success' => false, 'item_id' => 'Item1'
-                        ],
-                    ],
-                ],
-            ], [
-                'file' => 'RenewItemResponseDeniedInvalidMessage.xml', 'result' => [
-                    'blocks' => false, 'details' => [
-                        'Item1' => [
-                            'success' => false, 'item_id' => 'Item1'
-                        ],
+            ],
+        ], [
+            'file' => 'RenewItemResponseAcceptedAlternativeDateFormat.xml',
+            'result' => [
+                'blocks' => false, 'details' => [
+                    'Item1' => [
+                        'success' => true, 'new_date' => '08-31-2020',
+                        'new_time' => '17:59', 'item_id' => 'Item1'
                     ],
                 ],
             ],
-        ];
-
-    protected $renewMyItemsWithDisabledRenewals
-        = [
-            [
-                'file' => 'RenewItemResponseAccepted.xml', 'result' => [
+        ], [
+            'file' => 'RenewItemResponseDenied.xml', 'result' => [
                 'blocks' => false, 'details' => [
                     'Item1' => [
                         'success' => false, 'item_id' => 'Item1'
                     ],
                 ],
-                ],
-            ], [
-                'file' => 'RenewItemResponseAcceptedAlternativeDateFormat.xml',
-                'result' => [
-                    'blocks' => false, 'details' => [
-                        'Item1' => [
-                            'success' => false, 'item_id' => 'Item1'
-                        ],
-                    ],
-                ],
-            ], [
-                'file' => 'RenewItemResponseDenied.xml', 'result' => [
-                    'blocks' => false, 'details' => [
-                        'Item1' => [
-                            'success' => false, 'item_id' => 'Item1'
-                        ],
-                    ],
-                ],
-            ], [
-                'file' => 'RenewItemResponseDeniedInvalidMessage.xml', 'result' => [
-                    'blocks' => false, 'details' => [
-                        'Item1' => [
-                            'success' => false, 'item_id' => 'Item1'
-                        ],
+            ],
+        ], [
+            'file' => 'RenewItemResponseDeniedInvalidMessage.xml', 'result' => [
+                'blocks' => false, 'details' => [
+                    'Item1' => [
+                        'success' => false, 'item_id' => 'Item1'
                     ],
                 ],
             ],
-        ];
+        ],
+    ];
+
+    /**
+     * Test definitions for renewing when renewals are disabled
+     *
+     * @var array
+     */
+    protected $renewMyItemsWithDisabledRenewals = [
+        [
+            'file' => 'RenewItemResponseAccepted.xml',
+            'result' => [
+                'blocks' => false, 'details' => [
+                    'Item1' => [
+                        'success' => false, 'item_id' => 'Item1'
+                    ],
+                ],
+            ],
+        ], [
+            'file' => 'RenewItemResponseAcceptedAlternativeDateFormat.xml',
+            'result' => [
+                'blocks' => false, 'details' => [
+                    'Item1' => [
+                        'success' => false, 'item_id' => 'Item1'
+                    ],
+                ],
+            ],
+        ], [
+            'file' => 'RenewItemResponseDenied.xml', 'result' => [
+                'blocks' => false, 'details' => [
+                    'Item1' => [
+                        'success' => false, 'item_id' => 'Item1'
+                    ],
+                ],
+            ],
+        ], [
+            'file' => 'RenewItemResponseDeniedInvalidMessage.xml', 'result' => [
+                'blocks' => false, 'details' => [
+                    'Item1' => [
+                        'success' => false, 'item_id' => 'Item1'
+                    ],
+                ],
+            ],
+        ],
+    ];
 
     /**
      * Test definitions for getPatronBlocks tests
      *
      * @var array
      */
-    protected $patronBlocksTests
-        = [
-            [
-                'file' => 'lookupUserResponse.xml', 'result' => [],
-            ], [
-                'file' => 'lookupUserResponseWithBlocks.xml', 'result' => [
-                    'Block Request Item', 'Block Renewal',
-                ],
+    protected $patronBlocksTests = [
+        [
+            'file' => 'lookupUserResponse.xml', 'result' => [],
+        ], [
+            'file' => 'lookupUserResponseWithBlocks.xml', 'result' => [
+                'Block Request Item', 'Block Renewal',
             ],
-        ];
+        ],
+    ];
 
     /**
      * Test definitions for getAccountBlocks tests
      *
      * @var array
      */
-    protected $accountBlocksTests
-        = [
-            [
-                'file' => 'lookupUserResponse.xml', 'result' => false,
-            ], [
-                'file' => 'lookupUserResponseWithAllBlocks.xml', 'result' => [
-                    'requests_blocked', 'renewal_block', 'checkout_block',
-                    'electronic_resources_block', 'lost_card',
-                    'message_from_library', 'available_for_pickup_notification',
-                ],
+    protected $accountBlocksTests = [
+        [
+            'file' => 'lookupUserResponse.xml', 'result' => false,
+        ], [
+            'file' => 'lookupUserResponseWithAllBlocks.xml', 'result' => [
+                'requests_blocked', 'renewal_block', 'checkout_block',
+                'electronic_resources_block', 'lost_card',
+                'message_from_library', 'available_for_pickup_notification',
             ],
-        ];
+        ],
+    ];
 
     /**
      * Test getMyTransactions
