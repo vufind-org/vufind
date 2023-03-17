@@ -8,11 +8,11 @@
       <div class="date-fields">
         <div class="date-from">
           <label for="<?=$escField?>from" id="<?=$escField?>from-label"><?=$this->transEsc('date_from')?>:</label>
-          <input type="text" name="<?=$escField?>from" id="<?=$escField?>from" value="<?=isset($current['values'][0])?$this->escapeHtmlAttr($current['values'][0]):''?>" class="form-control" <?=$extraInputAttribs?>/>
+          <input type="text" name="<?=$escField?>from" id="<?=$escField?>from" value="<?=isset($current['values'][0]) ? $this->escapeHtmlAttr($current['values'][0]) : ''?>" class="form-control" <?=$extraInputAttribs?>/>
         </div>
         <div class="date-to">
           <label for="<?=$escField?>to" id="<?=$escField?>to-label"><?=$this->transEsc('date_to')?>:</label>
-          <input type="text" name="<?=$escField?>to" id="<?=$escField?>to" value="<?=isset($current['values'][1])?$this->escapeHtmlAttr($current['values'][1]):''?>" class="form-control" <?=$extraInputAttribs?>/>
+          <input type="text" name="<?=$escField?>to" id="<?=$escField?>to" value="<?=isset($current['values'][1]) ? $this->escapeHtmlAttr($current['values'][1]) : ''?>" class="form-control" <?=$extraInputAttribs?>/>
         </div>
       </div>
       <?php if ($current['type'] == 'date'): ?>

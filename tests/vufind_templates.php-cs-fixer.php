@@ -63,7 +63,7 @@ $rules = [
     'standardize_not_equals' => true,
     'switch_case_semicolon_to_colon' => true,
     'switch_case_space' => true,
-    //'ternary_operator_spaces' => true, // disabled due to bug in php-cs-fixer 2.7.1
+    'ternary_operator_spaces' => true,
     'ternary_to_null_coalescing' => true,
     'visibility_required' => true,
 ];
