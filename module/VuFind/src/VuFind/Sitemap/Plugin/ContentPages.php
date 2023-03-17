@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Content pages generator plugin
  *

@@ -30,13 +30,9 @@
 namespace VuFindTest\Search\Solr\V4;
 
 use Laminas\EventManager\Event;
-
 use Laminas\Http\Response;
-
 use PHPUnit\Framework\TestCase;
-
 use VuFind\Search\Solr\V4\ErrorListener;
-
 use VuFindSearch\Backend\Exception\HttpErrorException;
 
 /**

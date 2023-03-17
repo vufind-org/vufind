@@ -3,7 +3,7 @@
   <description>Coding standards for VuFind.</description>
   <file>../module</file>
   <exclude-pattern>module/[^/]+/config/*</exclude-pattern>
-  <exclude-pattern>module/[^/]+/tests/*</exclude-pattern>
+  <exclude-pattern>module/[^/]+/tests/fixtures/*</exclude-pattern>
   <arg name="extensions" value="php"/>
   <rule ref="PEAR">
     <exclude name="PEAR.Commenting.FunctionComment.ParamCommentAlignment" />
@@ -13,6 +13,13 @@
   <rule ref="PEAR.WhiteSpace.ObjectOperatorIndent">
     <properties>
       <property name="multilevel" value="true" />
+    </properties>
+  </rule>
+  <!-- Lines can be 120 chars long, but never show errors -->
+  <rule ref="Generic.Files.LineLength">
+    <properties>
+      <property name="lineLimit" value="120"/>
+      <property name="absoluteLineLimit" value="0"/>
     </properties>
   </rule>
 </ruleset>

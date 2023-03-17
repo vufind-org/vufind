@@ -56,7 +56,7 @@ class NonceGenerator
      * @return string
      * @throws \Exception
      */
-    public function getNonce() : String
+    public function getNonce(): string
     {
         if (!$this->nonce) {
             $this->nonce = base64_encode(random_bytes(32));

@@ -69,10 +69,11 @@ class CartTest extends \PHPUnit\Framework\TestCase
     /**
      * Build a mock cookie manager.
      *
-     * @param array  $cookies Current cookie values
-     * @param string $path    Cookie base path (default = /)
-     * @param string $domain  Cookie domain
-     * @param bool   $secure  Are cookies secure only? (default = false)
+     * @param array  $cookies  Current cookie values
+     * @param string $path     Cookie base path (default = /)
+     * @param string $domain   Cookie domain
+     * @param bool   $secure   Are cookies secure only? (default = false)
+     * @param bool   $httpOnly Are cookes HTTP only? (default = false)
      *
      * @return CookieManager
      */

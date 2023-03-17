@@ -43,6 +43,11 @@ use VuFind\Exception\HttpDownloadException;
  */
 class HttpDownloadExceptionTest extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * Test the exception
+     *
+     * @return void
+     */
     public function testException()
     {
         $message = 'Not Found';

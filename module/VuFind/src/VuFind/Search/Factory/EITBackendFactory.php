@@ -31,11 +31,9 @@
 namespace VuFind\Search\Factory;
 
 use Psr\Container\ContainerInterface;
-
 use VuFindSearch\Backend\EIT\Backend;
 use VuFindSearch\Backend\EIT\Connector;
 use VuFindSearch\Backend\EIT\QueryBuilder;
-
 use VuFindSearch\Backend\EIT\Response\XML\RecordCollectionFactory;
 
 /**

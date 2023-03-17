@@ -54,7 +54,9 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     protected $fixturePath;
 
     /**
-     * Constructor
+     * Generic setup function
+     *
+     * @return void
      */
     public function setUp(): void
     {
@@ -312,6 +314,9 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Stress-test our merging algorithm
+     *
+     * @param array $test     Test data
+     * @param array $expected Expected response
      *
      * @dataProvider mergeEdgeCasesProvider
      *

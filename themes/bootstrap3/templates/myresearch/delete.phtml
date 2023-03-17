@@ -21,6 +21,6 @@
     <?php foreach ($this->deleteIDS as $deleteID): ?>
       <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($deleteID)?>" />
     <?php endforeach; ?>
-      <input type="hidden" name="listID" value="<?=$this->list?$this->escapeHtmlAttr($this->list->id):''?>" />
+      <input type="hidden" name="listID" value="<?=$this->list ? $this->escapeHtmlAttr($this->list->id) : ''?>" />
   </div>
 </form>

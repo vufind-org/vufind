@@ -48,7 +48,7 @@ class HtmlSafeJsonEncodeTest extends \PHPUnit\Framework\TestCase
     /**
      * Get helper to test
      *
-     * @param array $plugins  Array of extra plugins for renderer
+     * @param array $plugins Array of extra plugins for renderer
      *
      * @return HtmlSafeJsonEncode
      */

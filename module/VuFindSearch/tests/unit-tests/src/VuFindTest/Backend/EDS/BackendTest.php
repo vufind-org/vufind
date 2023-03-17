@@ -268,6 +268,8 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      * @param array                                                   $settings  Additional settings
      * @param array                                                   $mock      Methods to mock (or null for a
      * real object)
+     *
+     * @return \VuFindSearch\Backend\EDS\Backend
      */
     protected function getBackend(
         $connector,

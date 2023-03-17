@@ -44,7 +44,8 @@ use Laminas\Http\PhpEnvironment\Request;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class ServerParam implements PermissionProviderInterface,
+class ServerParam implements
+    PermissionProviderInterface,
     \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;

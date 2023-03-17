@@ -31,7 +31,6 @@ namespace VuFindSearch\Backend\Solr;
 
 use InvalidArgumentException;
 use RuntimeException;
-
 use VuFindSearch\Backend\AbstractHandlerMap;
 use VuFindSearch\ParamBag;
 

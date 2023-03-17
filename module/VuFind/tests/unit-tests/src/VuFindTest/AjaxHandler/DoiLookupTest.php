@@ -195,6 +195,10 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
     /**
      * Test a single DOI lookup.
      *
+     * @param array  $config     Configuration
+     * @param bool   $newWindow  Expected "new window" setting
+     * @param string $remoteIcon Expected icon value
+     *
      * @dataProvider getTestSingleLookupData
      *
      * @return void

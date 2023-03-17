@@ -65,13 +65,14 @@ class ParentTemplateTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a populated resource container for testing.
      *
+     * @param array $stack Path stack
+     *
      * @return ParentTemplate
      */
     protected function getHelper($stack)
     {
         // Get mock TemplateStack
-        $stackMock =
-            $this->getMockBuilder(\Laminas\View\Resolver\TemplatePathStack::class)
+        $stackMock = $this->getMockBuilder(\Laminas\View\Resolver\TemplatePathStack::class)
             ->disableOriginalConstructor()->getMock();
 
         $return = new \SplStack();

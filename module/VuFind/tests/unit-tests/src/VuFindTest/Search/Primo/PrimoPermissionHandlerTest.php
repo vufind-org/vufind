@@ -937,6 +937,8 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      * Helper function (Callback) to inject different return values
      * for the mock object with different parameters
      *
+     * @param string $param Parameter name
+     *
      * @return bool
      */
     public function handlerMemberAuthNotSuccessfullCallback($param): bool
@@ -950,6 +952,8 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
     /**
      * Helper function (Callback) to inject different return values
      * for the mock object with different parameters
+     *
+     * @param string $param Parameter name
      *
      * @return bool
      */
@@ -965,6 +969,8 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      * Helper function (Callback) to inject different return values
      * for the mock object with different parameters
      *
+     * @param string $param Parameter name
+     *
      * @return bool
      */
     public function handlerDefaultAuthSuccessfullCallback($param): bool
@@ -979,6 +985,8 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      * Helper function (Callback) to inject different return values
      * for the mock object with different parameters
      *
+     * @param string $param Parameter name
+     *
      * @return bool
      */
     public function handlerDefaultAuthNotSuccessfullCallback($param): bool
@@ -992,6 +1000,8 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
     /**
      * Helper function (Callback) to inject different return values
      * for the mock object with different parameters
+     *
+     * @param string $param Parameter name
      *
      * @return bool
      */
@@ -1013,6 +1023,8 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      * Helper function (Callback) to inject different return values
      * for the mock object with different parameters
      *
+     * @param string $param Parameter name
+     *
      * @return bool
      */
     public function handlerMemberIsNotOnCampusCallback($param): bool
@@ -1033,6 +1045,8 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      * Helper function (Callback) to inject different return values
      * for the mock object with different parameters
      *
+     * @param string $param Parameter name
+     *
      * @return bool
      */
     public function handlerIsNotAMemberCallback($param): bool
@@ -1049,6 +1063,8 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
     /**
      * Helper function (Callback) to inject different return values
      * for the mock object with different parameters
+     *
+     * @param string $param Parameter name
      *
      * @return bool
      */

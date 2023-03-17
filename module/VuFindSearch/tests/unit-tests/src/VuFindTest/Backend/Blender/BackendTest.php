@@ -464,6 +464,15 @@ class BackendTest extends TestCase
     /**
      * Test search.
      *
+     * @param int    $start           Start position
+     * @param int    $limit           Result limit
+     * @param array  $expectedRecords Expected records
+     * @param ?array $config          Blender configuration, overrides defaults
+     * @param array  $filters         Filters
+     * @param int    $expectedSolr    Expected Solr count
+     * @param int    $expectedEDS     Expected EDS count
+     * @param Query  $query           Override query
+     *
      * @dataProvider getSearchTestData
      *
      * @return void
@@ -568,8 +577,7 @@ class BackendTest extends TestCase
                 $expectedCounts = [];
                 foreach ($active as $source) {
                     foreach ($expectedCountsForSources[$source] as $field => $count) {
-                        $expectedCounts[$field] =
-                            ($expectedCounts[$field] ?? 0) + $count;
+                        $expectedCounts[$field] = ($expectedCounts[$field] ?? 0) + $count;
                     }
                 }
                 $expectedCounts = array_filter($expectedCounts);
@@ -837,6 +845,8 @@ class BackendTest extends TestCase
     /**
      * Test invalid adaptive block size configuration.
      *
+     * @param array $blockSizes Adaptive block size configuration
+     *
      * @dataProvider getInvalidBlockSizes
      *
      * @return void
@@ -996,6 +1006,9 @@ class BackendTest extends TestCase
     /**
      * Create a backend that returns the given values for facets and errors
      *
+     * @param array $facets Facet data
+     * @param array $errors Error data
+     *
      * @return object
      */
     protected function getBackendForFacetsAndErrors($facets, $errors)
@@ -1025,8 +1038,8 @@ class BackendTest extends TestCase
     /**
      * Return search params
      *
-     * @param array $filters   Blender filters
-     * @param Query $query     Query
+     * @param array $filters Blender filters
+     * @param Query $query   Query
      *
      * @return ParamBag
      */
@@ -1050,7 +1063,7 @@ class BackendTest extends TestCase
      *
      * @param array $config   Blender configuration, overrides defaults
      * @param array $mappings Blender mappings, overrides defaults
-     * @param array $backend  Actual backends, overrides defaults
+     * @param array $backends Actual backends, overrides defaults
      *
      * @return Backend
      */

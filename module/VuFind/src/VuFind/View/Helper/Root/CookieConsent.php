@@ -43,8 +43,7 @@ use VuFind\I18n\Translator\TranslatorAwareTrait;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class CookieConsent extends \Laminas\View\Helper\AbstractHelper
-implements TranslatorAwareInterface
+class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements TranslatorAwareInterface
 {
     use TranslatorAwareTrait;
 

@@ -12,7 +12,7 @@ $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
 $recordLinker = $this->recordLinker($this->results);
 ?>
 
-<div class="grid-result<?=$this->driver->supportsAjaxStatus()?' ajaxItem':''?>">
+<div class="grid-result<?=$this->driver->supportsAjaxStatus() ? ' ajaxItem' : ''?>">
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
   <?php if (isset($this->showCheckboxes) && $this->showCheckboxes): ?>
     <label class="grid-checkbox">
@@ -50,6 +50,6 @@ $recordLinker = $this->recordLinker($this->results);
     </div>
   </div>
 
-  <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>':''?>
+  <?=$this->driver->supportsCoinsOpenUrl() ? '<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>' : ''?>
 </div>
 

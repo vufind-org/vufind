@@ -35,7 +35,6 @@ namespace VuFindSearch\Backend\EIT;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
-
 use VuFindSearch\Query\QueryGroup;
 
 /**

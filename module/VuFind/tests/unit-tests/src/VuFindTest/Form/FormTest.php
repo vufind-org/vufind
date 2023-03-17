@@ -425,8 +425,8 @@ class FormTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock Form object.
      *
-     * @param string $formId Form identifier
-     * @param array  $params Parameters to pass to setFormId
+     * @param string $formId  Form identifier
+     * @param array  $params  Parameters to pass to setFormId
      * @param array  $prefill Prefill data to pass to setFormId
      *
      * @return Form
@@ -807,17 +807,15 @@ class FormTest extends \PHPUnit\Framework\TestCase
     public function getEmailSubjectsData(): array
     {
         return [
-            'with placeholders'
-                => [
-                    'TestSubjectEmailWithPlaceholders',
-                    'Subject One Two option-1'
-                ],
-            'without placeholders'
-                => [
-                    'TestSubjectEmailWithoutPlaceholders',
-                    'Subject without placeholders'
-                ],
-       ];
+            'with placeholders' => [
+                'TestSubjectEmailWithPlaceholders',
+                'Subject One Two option-1'
+            ],
+            'without placeholders' => [
+                'TestSubjectEmailWithoutPlaceholders',
+                'Subject without placeholders'
+            ],
+        ];
     }
 
     /**

@@ -38,8 +38,7 @@ namespace VuFind\Content\Covers;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:content_provider_components
  */
-class Orb extends \VuFind\Content\AbstractCover
-implements \VuFindHttp\HttpServiceAwareInterface
+class Orb extends \VuFind\Content\AbstractCover implements \VuFindHttp\HttpServiceAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
 
