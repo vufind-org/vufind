@@ -177,7 +177,8 @@ class Ratings extends Gateway
             ++$groupCount;
             if ($groups) {
                 foreach ($groups as $key => $range) {
-                    if ($rating->rating >= $range[0] && $rating->rating <= $range[1]
+                    if (
+                        $rating->rating >= $range[0] && $rating->rating <= $range[1]
                     ) {
                         $result['groups'][$key] = ($result['groups'][$key] ?? 0)
                             + $rating->count;

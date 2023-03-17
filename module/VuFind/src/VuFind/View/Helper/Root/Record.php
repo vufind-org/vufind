@@ -504,7 +504,8 @@ class Record extends \Laminas\View\Helper\AbstractHelper
      */
     protected function getCoverSize($context, $default = 'medium')
     {
-        if (isset($this->config->Content->coversize)
+        if (
+            isset($this->config->Content->coversize)
             && !$this->config->Content->coversize
         ) {
             // covers disabled entirely
@@ -566,7 +567,8 @@ class Record extends \Laminas\View\Helper\AbstractHelper
                 return false;
         }
 
-        if (!isset($this->config->QRCode->$key)
+        if (
+            !isset($this->config->QRCode->$key)
             || !$this->config->QRCode->$key
         ) {
             return false;

@@ -209,7 +209,8 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
     public function isServiceAllowed(string $service): bool
     {
         foreach ($this->getControlledVuFindServices() as $category => $services) {
-            if (in_array($service, $services)
+            if (
+                in_array($service, $services)
                 && $this->isCategoryAccepted($category)
             ) {
                 return true;
@@ -238,7 +239,8 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
     public function getConsentInformation(): ?array
     {
         if ($result = $this->getCurrentConsent()) {
-            if (!empty($result['consentId'])
+            if (
+                !empty($result['consentId'])
                 && !empty($result['lastConsentTimestamp'])
                 && !empty($result['categories'])
             ) {

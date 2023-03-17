@@ -65,7 +65,8 @@ class RelaisAvailability extends AbstractRelaisAction
 
         // Search
         $responseText = $this->relais->search($oclcNumber, $authorizationId);
-        if (strpos($responseText, 'error') !== false
+        if (
+            strpos($responseText, 'error') !== false
             || strpos($responseText, 'ErrorMessage') !== false
             || strpos($responseText, 'false') !== false
         ) {

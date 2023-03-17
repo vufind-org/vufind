@@ -78,7 +78,8 @@ class ApiController extends \VuFind\Controller\AbstractBase
         // Disable session writes
         $this->disableSessionWrites();
 
-        if (null === $this->getRequest()->getQuery('swagger')
+        if (
+            null === $this->getRequest()->getQuery('swagger')
             && null === $this->getRequest()->getQuery('openapi')
         ) {
             $urlHelper = $this->getViewRenderer()->plugin('url');

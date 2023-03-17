@@ -229,7 +229,8 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
 
         if (isset($data->formats[0]->samples[0])) {
             foreach ($data->formats[0]->samples as $format) {
-                if ($format->formatType == 'audiobook-overdrive'
+                if (
+                    $format->formatType == 'audiobook-overdrive'
                     || $format->formatType == 'ebook-overdrive'
                 ) {
                     $results = $format;

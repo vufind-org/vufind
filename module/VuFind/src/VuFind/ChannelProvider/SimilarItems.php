@@ -168,7 +168,8 @@ class SimilarItems extends AbstractChannelProvider implements TranslatorAwareInt
         }
         // If the search results did not include the object we were looking for,
         // we need to fetch it from the search service:
-        if (empty($channels)
+        if (
+            empty($channels)
             && is_object($driver ?? null)
             && $channelToken !== null
         ) {

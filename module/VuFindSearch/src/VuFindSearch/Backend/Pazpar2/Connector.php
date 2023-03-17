@@ -136,7 +136,8 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         $xml = simplexml_load_string($xmlStr);
 
         // If our session has expired, start a new session
-        if ($command !== 'init'
+        if (
+            $command !== 'init'
             && $xml->session == $this->session && isset($this->session)
         ) {
             $this->init();

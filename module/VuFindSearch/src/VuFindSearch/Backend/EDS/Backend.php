@@ -305,7 +305,8 @@ class Backend extends AbstractBackend
             $hlTerms = (null !== $params)
                 ? $params->get('highlightterms') : null;
             $extras = [];
-            if (null !== $params
+            if (
+                null !== $params
                 && ($eBookFormat = $params->get('ebookpreferredformat'))
             ) {
                 $extras['ebookpreferredformat'] = $eBookFormat;
@@ -548,7 +549,8 @@ class Backend extends AbstractBackend
             $results = $this->client
                 ->authenticate($username, $password, $this->orgId, ['autocomplete']);
             $autoresult = $results['Autocomplete'] ?? [];
-            if (isset($autoresult['Token']) && isset($autoresult['TokenTimeOut'])
+            if (
+                isset($autoresult['Token']) && isset($autoresult['TokenTimeOut'])
                 && isset($autoresult['CustId']) && isset($autoresult['Url'])
             ) {
                 $token = $autoresult['Token'];
@@ -589,7 +591,8 @@ class Backend extends AbstractBackend
     {
         // check to see if the user has logged in/out between the creation
         // of this session token and now
-        if (!$isInvalid && !empty($this->session->sessionID)
+        if (
+            !$isInvalid && !empty($this->session->sessionID)
             && $this->session->sessionGuest == $this->isGuest()
         ) {
             return $this->session->sessionID;

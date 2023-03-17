@@ -189,7 +189,8 @@ class LanguageHelper
             $dir = opendir($base);
             $domains = [];
             while ($current = readdir($dir)) {
-                if ($current != '.' && $current != '..'
+                if (
+                    $current != '.' && $current != '..'
                     && is_dir("$base/$current")
                     && !in_array($current, $filter)
                 ) {

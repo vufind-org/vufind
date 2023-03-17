@@ -189,7 +189,8 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
                      ')' .
                    ')';
             try {
-                if ((!defined('PHP_MAJOR_VERSION') || PHP_MAJOR_VERSION >= 8)
+                if (
+                    (!defined('PHP_MAJOR_VERSION') || PHP_MAJOR_VERSION >= 8)
                     && empty($this->config['Catalog']['forceOCI8Support'])
                 ) {
                     $this->error(
@@ -895,7 +896,8 @@ EOT;
                     if ($subfields = $field['subfields'] ?? []) {
                         $line = '';
                         foreach ($subfields as $subfield) {
-                            if (false === strpos($subfieldCodes, $subfield['code'])
+                            if (
+                                false === strpos($subfieldCodes, $subfield['code'])
                             ) {
                                 continue;
                             }
@@ -1090,7 +1092,8 @@ EOT;
 
         // Build Holdings Array
         $purchaseHistory = [];
-        if (isset($this->config['Holdings']['purchase_history'])
+        if (
+            isset($this->config['Holdings']['purchase_history'])
             && $this->config['Holdings']['purchase_history'] === 'split'
         ) {
             $purchaseHistory = $this->getPurchaseHistoryData($id);
@@ -1320,7 +1323,8 @@ EOT;
                     ? mb_strtolower(utf8_encode($row['FALLBACK_LOGIN']), 'UTF-8')
                     : null;
 
-                if ((null !== $primary && ($primary == $compareLogin
+                if (
+                    (null !== $primary && ($primary == $compareLogin
                     || $primary == $this->sanitizePIN($compareLogin)))
                     || ($fallbackLoginField && null === $primary
                     && $fallback == $compareLogin)
@@ -1499,7 +1503,8 @@ EOT;
                 $this->pickTransactionStatus(explode(chr(9), $sqlRow['STATUS'])),
         ];
         // Display due time only if loan interval is not in days if configured
-        if (empty($this->displayDueTimeIntervals)
+        if (
+            empty($this->displayDueTimeIntervals)
             || in_array($sqlRow['LOAN_INTERVAL'], $this->displayDueTimeIntervals)
         ) {
             $transaction['dueTime'] = $dueTime;
@@ -2249,7 +2254,8 @@ EOT;
             $sqlStmt = $this->executeSQL($sql, $bindParams);
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
                 // Process inclusion/exclusion lists to skip illegal values:
-                if ((is_array($exclude) && in_array($row['NAME'], $exclude))
+                if (
+                    (is_array($exclude) && in_array($row['NAME'], $exclude))
                     || (is_array($include) && !in_array($row['NAME'], $include))
                 ) {
                     continue;
@@ -2535,7 +2541,8 @@ EOT;
             . "order by RETURNED desc";
         try {
             $sqlStmt = $this->executeSQL($sql, [':maxage' => $maxage]);
-            while (count($recordList) < $limit
+            while (
+                count($recordList) < $limit
                 && $row = $sqlStmt->fetch(PDO::FETCH_ASSOC)
             ) {
                 $recordList[] = ['id' => $row['BIB_ID']];
@@ -2586,7 +2593,8 @@ EOT;
             . "order by RECENT desc, OVERALL desc";
         try {
             $sqlStmt = $this->executeSQL($sql, [':maxage' => $maxage]);
-            while (count($recordList) < $limit
+            while (
+                count($recordList) < $limit
                 && $row = $sqlStmt->fetch(PDO::FETCH_ASSOC)
             ) {
                 $recordList[] = ['id' => $row['BIB_ID']];

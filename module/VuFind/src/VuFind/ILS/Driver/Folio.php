@@ -167,7 +167,8 @@ class Folio extends AbstractAPI implements
     protected function debugRequest($method, $path, $params, $req_headers)
     {
         // Only log non-GET requests, unless configured otherwise
-        if ($method == 'GET'
+        if (
+            $method == 'GET'
             && !($this->config['API']['debug_get_requests'] ?? false)
         ) {
             return;
@@ -505,10 +506,12 @@ class Folio extends AbstractAPI implements
         $locationMap = $this->getCachedData($cacheKey);
         if (null === $locationMap) {
             $locationMap = [];
-            foreach ($this->getPagedResults(
-                'locations',
-                '/locations'
-            ) as $location) {
+            foreach (
+                $this->getPagedResults(
+                    'locations',
+                    '/locations'
+                ) as $location
+            ) {
                 $name = $location->discoveryDisplayName ?? $location->name;
                 $code = $location->code;
                 $locationMap[$location->id] = compact('name', 'code');
@@ -750,11 +753,13 @@ class Folio extends AbstractAPI implements
         $items = [];
         $folioItemSort = $this->config['Holdings']['folio_sort'] ?? '';
         $vufindItemSort = $this->config['Holdings']['vufind_sort'] ?? '';
-        foreach ($this->getPagedResults(
-            'holdingsRecords',
-            '/holdings-storage/holdings',
-            $query
-        ) as $holding) {
+        foreach (
+            $this->getPagedResults(
+                'holdingsRecords',
+                '/holdings-storage/holdings',
+                $query
+            ) as $holding
+        ) {
             $rawQuery = '(holdingsRecordId=="' . $holding->id
                 . '" NOT discoverySuppress==true)';
             if (!empty($folioItemSort)) {
@@ -765,14 +770,17 @@ class Folio extends AbstractAPI implements
             $nextBatch = [];
             $sortNeeded = false;
             $number = 0;
-            foreach ($this->getPagedResults(
-                'items',
-                '/item-storage/items',
-                $query
-            ) as $item) {
+            foreach (
+                $this->getPagedResults(
+                    'items',
+                    '/item-storage/items',
+                    $query
+                ) as $item
+            ) {
                 $number++;
                 $dueDateValue = '';
-                if ($item->status->name == 'Checked out'
+                if (
+                    $item->status->name == 'Checked out'
                     && $showDueDate
                     && $dueDateItemCount < $maxNumDueDateItems
                 ) {
@@ -828,11 +836,13 @@ class Folio extends AbstractAPI implements
     protected function getDueDate($itemId, $showTime)
     {
         $query = 'itemId==' . $itemId;
-        foreach ($this->getPagedResults(
-            'loans',
-            '/circulation/loans',
-            compact('query')
-        ) as $loan) {
+        foreach (
+            $this->getPagedResults(
+                'loans',
+                '/circulation/loans',
+                compact('query')
+            ) as $loan
+        ) {
             // many loans are returned for an item, the one we want
             // is the one without a returnDate
             if (!isset($loan->returnDate) && isset($loan->dueDate)) {
@@ -1121,11 +1131,13 @@ class Folio extends AbstractAPI implements
     {
         $query = ['query' => 'userId==' . $patron['id'] . ' and status.name==Open'];
         $transactions = [];
-        foreach ($this->getPagedResults(
-            'loans',
-            '/circulation/loans',
-            $query
-        ) as $trans) {
+        foreach (
+            $this->getPagedResults(
+                'loans',
+                '/circulation/loans',
+                $query
+            ) as $trans
+        ) {
             $dueStatus = false;
             $date = $this->getDateTimeFromString($trans->dueDate);
             $dueDateTimestamp = $date->getTimestamp();
@@ -1257,11 +1269,13 @@ class Folio extends AbstractAPI implements
     {
         $query = ['query' => 'pickupLocation=true'];
         $locations = [];
-        foreach ($this->getPagedResults(
-            'servicepoints',
-            '/service-points',
-            $query
-        ) as $servicepoint) {
+        foreach (
+            $this->getPagedResults(
+                'servicepoints',
+                '/service-points',
+                $query
+            ) as $servicepoint
+        ) {
             $locations[] = [
                 'locationID' => $servicepoint->id,
                 'locationDisplay' => $servicepoint->discoveryDisplayName
@@ -1316,11 +1330,13 @@ class Folio extends AbstractAPI implements
             . 'or proxyUserId == "' . $patron['id'] . '")';
         $query = ['query' => '(' . $userQuery . ' and status == Open*)'];
         $holds = [];
-        foreach ($this->getPagedResults(
-            'requests',
-            '/request-storage/requests',
-            $query
-        ) as $hold) {
+        foreach (
+            $this->getPagedResults(
+                'requests',
+                '/request-storage/requests',
+                $query
+            ) as $hold
+        ) {
             $requestDate = $this->dateConverter->convertToDisplayDate(
                 "Y-m-d H:i",
                 $hold->requestDate
@@ -1367,7 +1383,8 @@ class Folio extends AbstractAPI implements
             ];
             // If this request was created by a proxy user, and the proxy user
             // is not the current user, we need to indicate their name.
-            if (($hold->proxyUserId ?? $patron['id']) !== $patron['id']
+            if (
+                ($hold->proxyUserId ?? $patron['id']) !== $patron['id']
                 && isset($hold->proxy)
             ) {
                 $currentHold['proxiedBy']
@@ -1375,7 +1392,8 @@ class Folio extends AbstractAPI implements
             }
             // If this request was not created for the current user, it must be
             // a proxy request created by the current user. We should indicate this.
-            if (($hold->requesterId ?? $patron['id']) !== $patron['id']
+            if (
+                ($hold->requesterId ?? $patron['id']) !== $patron['id']
                 && isset($hold->requester)
             ) {
                 $currentHold['proxiedFor']
@@ -1400,7 +1418,8 @@ class Folio extends AbstractAPI implements
     public function placeHold($holdDetails)
     {
         $default_request = $this->config['Holds']['default_request'] ?? 'Hold';
-        if (!empty($holdDetails['requiredByTS'])
+        if (
+            !empty($holdDetails['requiredByTS'])
             && !is_int($holdDetails['requiredByTS'])
         ) {
             throw new ILSException('hold_date_invalid');
@@ -1507,7 +1526,8 @@ class Folio extends AbstractAPI implements
             $request_json = json_decode($response->getBody());
 
             // confirm request belongs to signed in patron
-            if ($request_json->requesterId != $patron['id']
+            if (
+                $request_json->requesterId != $patron['id']
                 && ($request_json->proxyUserId ?? null) != $patron['id']
             ) {
                 throw new ILSException("Invalid Request");
@@ -1562,10 +1582,12 @@ class Folio extends AbstractAPI implements
         $retVal = [];
 
         // Results can be paginated, so let's loop until we've gotten everything:
-        foreach ($this->getPagedResults(
-            $responseKey ?? $type,
-            '/coursereserves/' . $type
-        ) as $item) {
+        foreach (
+            $this->getPagedResults(
+                $responseKey ?? $type,
+                '/coursereserves/' . $type
+            ) as $item
+        ) {
             $callback = function ($key) use ($item) {
                 return $item->$key ?? '';
             };
@@ -1688,10 +1710,12 @@ class Folio extends AbstractAPI implements
         $retVal = [];
 
         // Results can be paginated, so let's loop until we've gotten everything:
-        foreach ($this->getPagedResults(
-            'reserves',
-            '/coursereserves/reserves'
-        ) as $item) {
+        foreach (
+            $this->getPagedResults(
+                'reserves',
+                '/coursereserves/reserves'
+            ) as $item
+        ) {
             $idProperty = $this->getBibIdType() === 'hrid'
                 ? 'instanceHrid' : 'instanceId';
             $bibId = $item->copiedItem->$idProperty ?? null;
@@ -1739,11 +1763,13 @@ class Folio extends AbstractAPI implements
     {
         $query = ['query' => 'userId==' . $patron['id'] . ' and status.name==Open'];
         $fines = [];
-        foreach ($this->getPagedResults(
-            'accounts',
-            '/accounts',
-            $query
-        ) as $fine) {
+        foreach (
+            $this->getPagedResults(
+                'accounts',
+                '/accounts',
+                $query
+            ) as $fine
+        ) {
             $date = date_create($fine->metadata->createdDate);
             $title = $fine->title ?? null;
             $bibId = isset($fine->instanceId)
@@ -1811,7 +1837,8 @@ class Folio extends AbstractAPI implements
         $results = [];
         $proxies = $this->getPagedResults('proxiesFor', '/proxiesfor', $query);
         foreach ($proxies as $current) {
-            if ($current->status ?? '' === 'Active'
+            if (
+                $current->status ?? '' === 'Active'
                 && $current->requestForSponsor ?? '' === 'Yes'
                 && isset($current->userId)
             ) {

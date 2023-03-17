@@ -142,7 +142,8 @@ class TagsController extends AbstractAdmin
         $confirm = $this->params()->fromPost('confirm', false);
 
         // Delete All
-        if ("manage" == $origin
+        if (
+            "manage" == $origin
             || null !== $this->getRequest()->getPost('deleteFilter')
             || null !== $this->getRequest()->getQuery('deleteFilter')
         ) {

@@ -150,7 +150,8 @@ trait ConcatTrait
         if ($config === false || $config == 'off') {
             return false;
         }
-        if ($config == '*' || $config == 'on'
+        if (
+            $config == '*' || $config == 'on'
             || $config == 'true' || $config === true
         ) {
             return true;
@@ -461,7 +462,8 @@ trait ConcatTrait
     {
         // toString must not throw exception
         try {
-            if (!$this->isPipelineActive() || !$this->filterItems()
+            if (
+                !$this->isPipelineActive() || !$this->filterItems()
                 || count($this) == 1
             ) {
                 return parent::toString($indent);

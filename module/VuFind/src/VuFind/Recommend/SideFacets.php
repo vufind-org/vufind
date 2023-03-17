@@ -207,7 +207,8 @@ class SideFacets extends AbstractFacets
         if ($flipCheckboxes) {
             $this->checkboxFacets = array_flip($this->checkboxFacets);
         }
-        if (!$showDynamicCheckboxFacets
+        if (
+            !$showDynamicCheckboxFacets
             || strtolower(trim($showDynamicCheckboxFacets)) === 'false'
         ) {
             $this->showDynamicCheckboxFacets = false;

@@ -253,7 +253,8 @@ abstract class AbstractRequestBase extends AbstractPlugin
         if (!in_array('requestGroup', $extraHoldFields)) {
             return true;
         }
-        if (!isset($gatheredDetails['level'])
+        if (
+            !isset($gatheredDetails['level'])
             || $gatheredDetails['level'] !== 'title'
         ) {
             return true;

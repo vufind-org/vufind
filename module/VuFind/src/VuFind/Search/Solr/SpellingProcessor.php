@@ -175,7 +175,8 @@ class SpellingProcessor
     {
         $allSuggestions = [];
         foreach ($spellcheck as $term => $info) {
-            if (!$this->shouldSkipTerm($query, $term, false)
+            if (
+                !$this->shouldSkipTerm($query, $term, false)
                 && ($suggestions = $this->formatAndFilterSuggestions($query, $info))
             ) {
                 $allSuggestions[$term] = [

@@ -590,7 +590,8 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                     // The item is on loan ...
                     if ($item_is_out) {
                         // ... and has a requestable status or no status ...
-                        if (in_array($item_stat_code, $status_list)
+                        if (
+                            in_array($item_stat_code, $status_list)
                             || $item_stat_code === null
                         ) {
                             // ... can this user borrow on loan items at this
@@ -976,7 +977,8 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         // Convert to one line per tag
         $data_set = [];
         foreach ($holdings_marc as $row) {
-            if ($row['SUBFIELD_DATA'] != null
+            if (
+                $row['SUBFIELD_DATA'] != null
                 && trim($row['SUBFIELD_DATA']) != ""
             ) {
                 $data_set[$row['FIELD_SEQUENCE']][] = [
@@ -1115,7 +1117,8 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
 
         $data_set = [];
         foreach ($hresult as $row) {
-            if ($row['SUBFIELD_DATA'] != null
+            if (
+                $row['SUBFIELD_DATA'] != null
                 && trim($row['SUBFIELD_DATA']) != ""
             ) {
                 $data_set[$row['ID'] . "_" . $row['FIELD_SEQUENCE']][] = [

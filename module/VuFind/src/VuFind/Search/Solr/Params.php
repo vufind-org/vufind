@@ -151,7 +151,8 @@ class Params extends \VuFind\Search\Base\Params
         if (isset($config->LegacyFields)) {
             $this->facetAliases = $config->LegacyFields->toArray();
         }
-        if (isset($config->Results_Settings->sorted_by_index)
+        if (
+            isset($config->Results_Settings->sorted_by_index)
             && count($config->Results_Settings->sorted_by_index) > 0
         ) {
             $this->setIndexSortedFacets(
@@ -182,7 +183,8 @@ class Params extends \VuFind\Search\Base\Params
                 // Special case -- complex filter, that should be taken as-is:
                 if ($field == '#') {
                     $q = $value;
-                } elseif (substr($value, -1) == '*'
+                } elseif (
+                    substr($value, -1) == '*'
                     || preg_match('/\[[^\]]+\s+TO\s+[^\]]+\]/', $value)
                 ) {
                     // Special case -- allow trailing wildcards and ranges
@@ -562,7 +564,8 @@ class Params extends \VuFind\Search\Base\Params
             // field, see if there is an override configured:
             $sortFields = explode(',', $sort);
             $allTerms = trim($this->getQuery()->getAllTerms() ?? '');
-            if ('relevance' === $sortFields[0]
+            if (
+                'relevance' === $sortFields[0]
                 && ('' === $allTerms || '*:*' === $allTerms || $this->searchingById)
                 && ($relOv = $this->getOptions()->getEmptySearchRelevanceOverride())
             ) {
@@ -638,7 +641,8 @@ class Params extends \VuFind\Search\Base\Params
         } elseif (preg_match($caseInsensitiveRegex, $value, $matches)) {
             // Case insensitive case: [x TO y] OR [X TO Y]; convert
             // only if values in both ranges match up!
-            if (strtolower($matches[3]) == strtolower($matches[1])
+            if (
+                strtolower($matches[3]) == strtolower($matches[1])
                 && strtolower($matches[4]) == strtolower($matches[2])
             ) {
                 $filter['displayText'] = $matches[1] . '-' . $matches[2];
@@ -706,7 +710,8 @@ class Params extends \VuFind\Search\Base\Params
         foreach ($facets as $i => $facet) {
             // Append colon on end to ensure that $customFilter is always set.
             [$field, $customFilter] = explode(':', $facet['filter'] . ':');
-            if ($field == $filterField
+            if (
+                $field == $filterField
                 && isset($config->CustomFilters->inverted_filters[$customFilter])
             ) {
                 $facets[$i]['alwaysVisible'] = true;

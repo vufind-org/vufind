@@ -152,7 +152,8 @@ class SearchController extends AbstractSolrSearch
 
         // Force login if necessary:
         $config = $this->getConfig();
-        if ((!isset($config->Mail->require_login) || $config->Mail->require_login)
+        if (
+            (!isset($config->Mail->require_login) || $config->Mail->require_login)
             && !$this->getUser()
         ) {
             return $this->forceLogin(null, ['emailurl' => $view->url]);
@@ -333,7 +334,8 @@ class SearchController extends AbstractSolrSearch
     public function reservesAction()
     {
         // Search parameters set?  Process results.
-        if ($this->params()->fromQuery('inst') !== null
+        if (
+            $this->params()->fromQuery('inst') !== null
             || $this->params()->fromQuery('course') !== null
             || $this->params()->fromQuery('dept') !== null
         ) {

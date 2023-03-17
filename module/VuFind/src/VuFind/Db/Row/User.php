@@ -682,7 +682,8 @@ class User extends RowGateway implements
 
         // If this is the first or active library card, or no credentials are
         // currently set, activate the card now
-        if ($this->getLibraryCards()->count() == 1 || empty($this->cat_username)
+        if (
+            $this->getLibraryCards()->count() == 1 || empty($this->cat_username)
             || $this->cat_username === $row->cat_username
         ) {
             $this->activateLibraryCard($row->id);

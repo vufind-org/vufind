@@ -296,7 +296,8 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
         $request = $this->getRequest()->getQuery()->toArray()
             + $this->getRequest()->getPost()->toArray();
 
-        if (isset($request['limit'])
+        if (
+            isset($request['limit'])
             && (!ctype_digit($request['limit'])
             || $request['limit'] < 0 || $request['limit'] > $this->maxLimit)
         ) {
@@ -320,7 +321,11 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
             $results = $runner->run(
                 $request,
                 $this->searchClassId,
-                function ($runner, $params, $searchId) use (
+                function (
+                    $runner,
+                    $params,
+                    $searchId
+                ) use (
                     $hierarchicalFacets,
                     $request,
                     $requestedFields

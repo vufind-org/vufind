@@ -377,7 +377,8 @@ class UrlQueryHelper
     protected function parseFilter($filter)
     {
         // Simplistic explode/trim behavior if no callback is provided:
-        if (!isset($this->config['parseFilterCallback'])
+        if (
+            !isset($this->config['parseFilterCallback'])
             || !is_callable($this->config['parseFilterCallback'])
         ) {
             $parts = explode(':', $filter, 2);
@@ -398,7 +399,8 @@ class UrlQueryHelper
     protected function getAliasesForFacetField($field)
     {
         // If no callback is provided, aliases are unsupported:
-        if (!isset($this->config['getAliasesForFacetFieldCallback'])
+        if (
+            !isset($this->config['getAliasesForFacetFieldCallback'])
             || !is_callable($this->config['getAliasesForFacetFieldCallback'])
         ) {
             return [$field];
@@ -437,7 +439,8 @@ class UrlQueryHelper
             foreach ($params['filter'] as $current) {
                 [$currentField, $currentValue]
                     = $this->parseFilter($current);
-                if (!in_array($currentField, $fieldAliases)
+                if (
+                    !in_array($currentField, $fieldAliases)
                     || $currentValue != $value
                 ) {
                     $newFilter[] = $current;

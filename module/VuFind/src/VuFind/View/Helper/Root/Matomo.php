@@ -500,7 +500,8 @@ EOT;
         $path = $this->request->getUri()->toString();
         // Replace 'AjaxTab' with tab name in record page URLs:
         $routeMatch = $this->router->match($this->request);
-        if ($routeMatch
+        if (
+            $routeMatch
             && substr($routeMatch->getMatchedRouteName(), -8) === '-ajaxtab'
             && null !== ($pos = strrpos($path, '/AjaxTab'))
             && ($tab = $this->request->getPost('tab'))

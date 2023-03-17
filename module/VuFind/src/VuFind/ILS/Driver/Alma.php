@@ -1078,7 +1078,8 @@ class Alma extends AbstractBase implements
         $holdList = [];
         for ($i = 0; $i < count($xml->user_requests); $i++) {
             $request = $xml->user_requests[$i];
-            if (!isset($request->item_policy)
+            if (
+                !isset($request->item_policy)
                 || $request->item_policy !== 'Archive'
             ) {
                 continue;
@@ -1118,7 +1119,8 @@ class Alma extends AbstractBase implements
         $holdList = [];
         for ($i = 0; $i < count($xml->user_requests); $i++) {
             $request = $xml->user_requests[$i];
-            if (!isset($request->item_policy)
+            if (
+                !isset($request->item_policy)
                 || $request->item_policy !== 'InterlibraryLoan'
             ) {
                 continue;

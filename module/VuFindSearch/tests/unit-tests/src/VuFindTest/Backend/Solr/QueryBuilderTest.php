@@ -153,7 +153,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     protected function runBasicQuestionTest($qb, $handler, $test)
     {
         [$input, $output, $flags] = $test;
-        if ($handler === 'standard'
+        if (
+            $handler === 'standard'
             || ($handler === 'dismax' && empty($flags['basic']))
         ) {
             // We expect an extra set of parentheses to be added, unless the
@@ -184,7 +185,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     protected function runAdvancedQuestionTest($qb, $handler, $test)
     {
         [$input, $output, $flags] = $test;
-        if ($handler === 'standard'
+        if (
+            $handler === 'standard'
             || ($handler === 'dismax' && empty($flags['basic']))
         ) {
             $advOutput = '((' . $output . '))';

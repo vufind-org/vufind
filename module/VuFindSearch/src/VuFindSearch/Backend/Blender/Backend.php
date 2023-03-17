@@ -559,7 +559,8 @@ class Backend extends AbstractBackend
     protected function triggerSearchEvent(EventInterface $event)
     {
         $command = $event->getParam('command');
-        if ($command->getTargetIdentifier() !== $this->getIdentifier()
+        if (
+            $command->getTargetIdentifier() !== $this->getIdentifier()
             || !($command instanceof SearchCommand)
         ) {
             return $event;

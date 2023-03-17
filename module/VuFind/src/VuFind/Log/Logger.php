@@ -139,7 +139,8 @@ class Logger extends BaseLogger
             return $error->getSeverityLevel();
         }
         // Treat unexpected or 5xx errors as more severe than 4xx errors.
-        if ($error instanceof \VuFind\Exception\HttpStatusInterface
+        if (
+            $error instanceof \VuFind\Exception\HttpStatusInterface
             && in_array($error->getHttpStatus(), [403, 404])
         ) {
             return BaseLogger::WARN;

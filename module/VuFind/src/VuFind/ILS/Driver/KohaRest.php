@@ -923,7 +923,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         $locations = [];
         foreach ($this->getLibraries() as $library) {
             $code = $library['library_id'];
-            if ((null === $included && !$library['pickup_location'])
+            if (
+                (null === $included && !$library['pickup_location'])
                 || in_array($code, $excluded)
                 || (null !== $included && !in_array($code, $included))
             ) {
@@ -1356,7 +1357,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
     {
-        if (!isset($this->config['StorageRetrievalRequests'])
+        if (
+            !isset($this->config['StorageRetrievalRequests'])
             || $this->getPatronBlocks($patron)
         ) {
             return false;
@@ -1413,7 +1415,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         }
 
         // Make sure pickup location is valid
-        if (null !== $pickUpLocation
+        if (
+            null !== $pickUpLocation
             && !$this->pickUpLocationIsValid($pickUpLocation, $patron, $details)
         ) {
             return [
@@ -1631,7 +1634,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     {
         $client = $this->httpService->createClient($url);
 
-        if (isset($this->config['Http']['ssl_verify_peer_name'])
+        if (
+            isset($this->config['Http']['ssl_verify_peer_name'])
             && !$this->config['Http']['ssl_verify_peer_name']
         ) {
             $adapter = $client->getAdapter();
@@ -1775,7 +1779,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         // Handle errors as complete failures only if the API call didn't return
         // valid JSON that the caller can handle
         $decodedResult = json_decode($result, true);
-        if (empty($request['errors']) && !$response->isSuccess()
+        if (
+            empty($request['errors']) && !$response->isSuccess()
             && (null === $decodedResult || !empty($decodedResult['error'])
             || !empty($decodedResult['errors']))
         ) {
@@ -2101,7 +2106,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         if (isset($unavail['ArticleRequest::NotAllowed'])) {
             return false;
         }
-        if (empty($this->config['StorageRetrievalRequests']['allow_checked_out'])
+        if (
+            empty($this->config['StorageRetrievalRequests']['allow_checked_out'])
             && isset($unavail['Item::CheckedOut'])
         ) {
             return false;
@@ -2382,7 +2388,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected function getHoldBlockReason($result)
     {
         if (!empty($result['availability']['unavailabilities'])) {
-            foreach (array_keys($result['availability']['unavailabilities']) as $key
+            foreach (
+                array_keys($result['availability']['unavailabilities']) as $key
             ) {
                 switch ($key) {
                     case 'Biblio::NoAvailableItems':

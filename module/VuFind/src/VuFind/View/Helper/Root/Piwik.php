@@ -466,7 +466,8 @@ EOT;
     {
         $path = $this->request->getUri()->toString();
         $routeMatch = $this->router->match($this->request);
-        if ($routeMatch
+        if (
+            $routeMatch
             && $routeMatch->getMatchedRouteName() == 'vufindrecord-ajaxtab'
         ) {
             // Replace 'AjaxTab' with tab name in record page URLs

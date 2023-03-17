@@ -115,7 +115,8 @@ class AlmaController extends AbstractBase
 
         // Get request body if method is POST and is not empty
         $requestBodyJson = null;
-        if ($request->getContent() != null
+        if (
+            $request->getContent() != null
             && !empty($request->getContent())
             && $requestMethod == 'POST'
         ) {
@@ -205,7 +206,8 @@ class AlmaController extends AbstractBase
             $idTypeConfig = $this->configAlma->NewUser->idType ?? null;
             foreach ($userIdentifiers as $userIdentifier) {
                 $idTypeHook = $userIdentifier->id_type->value ?? null;
-                if ($idTypeHook != null
+                if (
+                    $idTypeHook != null
                     && $idTypeHook == $idTypeConfig
                     && $username == null
                 ) {

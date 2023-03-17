@@ -75,7 +75,8 @@ class Options extends \VuFind\Search\Base\Options
         if (isset($searchSettings->General->default_sort)) {
             $this->defaultSort = $searchSettings->General->default_sort;
         }
-        if (isset($searchSettings->DefaultSortingByType)
+        if (
+            isset($searchSettings->DefaultSortingByType)
             && count($searchSettings->DefaultSortingByType) > 0
         ) {
             foreach ($searchSettings->DefaultSortingByType as $key => $val) {

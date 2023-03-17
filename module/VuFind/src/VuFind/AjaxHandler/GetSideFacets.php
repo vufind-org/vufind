@@ -313,7 +313,8 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
             false
         );
 
-        if (!empty($this->facetConfig->FacetFilters->$facet)
+        if (
+            !empty($this->facetConfig->FacetFilters->$facet)
             || !empty($this->facetConfig->ExcludeFilters->$facet)
         ) {
             $filters = !empty($this->facetConfig->FacetFilters->$facet)

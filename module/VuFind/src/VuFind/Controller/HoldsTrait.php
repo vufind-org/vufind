@@ -107,7 +107,8 @@ trait HoldsTrait
                     || count($requestGroups) > 1));
 
         $pickupDetails = $gatheredDetails;
-        if (!$requestGroupNeeded && !empty($requestGroups)
+        if (
+            !$requestGroupNeeded && !empty($requestGroups)
             && count($requestGroups) == 1
         ) {
             // Request group selection is not required, but we have a single request
@@ -125,7 +126,8 @@ trait HoldsTrait
         }
 
         $proxiedUsers = [];
-        if (in_array('proxiedUsers', $extraHoldFields)
+        if (
+            in_array('proxiedUsers', $extraHoldFields)
             && $catalog->checkCapability(
                 'getProxiedUsers',
                 [$driver->getUniqueID(), $patron, $gatheredDetails]
@@ -168,7 +170,8 @@ trait HoldsTrait
                 // if successful, we will redirect and can stop here.
 
                 // Pass start date to the driver only if it's in the future:
-                if (!empty($gatheredDetails['startDate'])
+                if (
+                    !empty($gatheredDetails['startDate'])
                     && $dateValidationResults['startDateTS'] < strtotime('+1 day')
                 ) {
                     $gatheredDetails['startDate'] = '';

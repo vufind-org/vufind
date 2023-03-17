@@ -259,7 +259,8 @@ class BrowseController extends AbstractBase implements
         $view->categoryList = $facets;
 
         // SEARCH (Tag does its own search)
-        if ($this->params()->fromQuery('query')
+        if (
+            $this->params()->fromQuery('query')
             && $this->getCurrentAction() != 'Tag'
         ) {
             $results = $this->getFacetList(
@@ -657,7 +658,8 @@ class BrowseController extends AbstractBase implements
         $result = $results->getFacetList();
         if (isset($result[$facet])) {
             // Sort facets alphabetically if configured to do so:
-            if (isset($this->config->Browse->alphabetical_order)
+            if (
+                isset($this->config->Browse->alphabetical_order)
                 && $this->config->Browse->alphabetical_order
             ) {
                 $callback = function ($a, $b) {

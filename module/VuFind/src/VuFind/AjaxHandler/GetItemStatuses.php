@@ -285,7 +285,8 @@ class GetItemStatuses extends AbstractBase implements
                 $available = true;
             }
             // Check for a use_unknown_message flag
-            if (isset($info['use_unknown_message'])
+            if (
+                isset($info['use_unknown_message'])
                 && $info['use_unknown_message'] == true
             ) {
                 $use_unknown_status = true;
@@ -372,7 +373,8 @@ class GetItemStatuses extends AbstractBase implements
                 $available = $locations[$info['location']]['available'] = true;
             }
             // Check for a use_unknown_message flag
-            if (isset($info['use_unknown_message'])
+            if (
+                isset($info['use_unknown_message'])
                 && $info['use_unknown_message'] == true
             ) {
                 $use_unknown_status = true;

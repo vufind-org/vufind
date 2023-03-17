@@ -75,7 +75,8 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $links = $page->findAll('css', '.adv_search_links a');
         $isAdv = false;
         foreach ($links as $link) {
-            if ($this->checkVisibility($link)
+            if (
+                $this->checkVisibility($link)
                 && $link->getHtml() == 'Edit this Advanced Search'
             ) {
                 $isAdv = true;
@@ -96,7 +97,8 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
     {
         $links = $page->findAll('css', '.adv_search_links a');
         foreach ($links as $link) {
-            if ($this->checkVisibility($link)
+            if (
+                $this->checkVisibility($link)
                 && $link->getHtml() == 'Edit this Advanced Search'
             ) {
                 $link->click();

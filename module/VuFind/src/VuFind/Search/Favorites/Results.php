@@ -186,7 +186,8 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
                 'Cannot retrieve favorites without logged in user.'
             );
         }
-        if (null !== $list && !$list->public
+        if (
+            null !== $list && !$list->public
             && (!$this->user || $list->user_id != $this->user->id)
         ) {
             throw new ListPermissionException(

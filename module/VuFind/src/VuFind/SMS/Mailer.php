@@ -99,7 +99,8 @@ class Mailer extends AbstractBase
             = $options['defaultFrom'] ?? '';
 
         // Make sure mailer dependency has been injected:
-        if (!isset($options['mailer'])
+        if (
+            !isset($options['mailer'])
             || !($options['mailer'] instanceof \VuFind\Mailer\Mailer)
         ) {
             throw new \Exception(

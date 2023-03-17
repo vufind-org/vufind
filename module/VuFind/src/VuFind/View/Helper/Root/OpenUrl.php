@@ -190,7 +190,8 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
         $embedAutoLoad = $this->config->embed_auto_load ?? false;
         // ini values 'true'/'false' are provided via ini reader as 1/0
         // only check embedAutoLoad for area if the current area passed checkContext
-        if (!($embedAutoLoad === "1" || $embedAutoLoad === "0")
+        if (
+            !($embedAutoLoad === "1" || $embedAutoLoad === "0")
             && !empty($this->area)
         ) {
             // embedAutoLoad is neither true nor false, so check if it contains an
@@ -250,7 +251,8 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
      */
     public function getImageBasedLinkingMode()
     {
-        if ($this->imageBasedLinkingIsActive()
+        if (
+            $this->imageBasedLinkingIsActive()
             && isset($this->config->image_based_linking_mode)
         ) {
             return $this->config->image_based_linking_mode;
@@ -278,7 +280,8 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
         // check first if OpenURLs are enabled for this RecordDriver
         // check second if OpenURLs are enabled for this context
         // check last if any rules apply
-        if (!$this->recordDriver->getOpenUrl()
+        if (
+            !$this->recordDriver->getOpenUrl()
             || !$this->checkContext()
             || !$this->checkIfRulesApply()
         ) {
@@ -324,7 +327,8 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
             return true;
         }
         foreach ($this->openUrlRules as $rules) {
-            if (!$this->checkExcludedRecordsRules($rules)
+            if (
+                !$this->checkExcludedRecordsRules($rules)
                 && $this->checkSupportedRecordsRules($rules)
             ) {
                 return true;
@@ -409,14 +413,16 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
                     // and still have something left behind, then the match fails
                     // as long as SOME non-empty value was provided.
                     $requiredValues = array_diff($value, ['*']);
-                    if (!count(array_diff($requiredValues, $recordValue))
+                    if (
+                        !count(array_diff($requiredValues, $recordValue))
                         && $this->hasNonEmptyValue($recordValue)
                     ) {
                         $ruleMatchCounter++;
                     }
                 } else {
                     $valueCount = count($value);
-                    if ($valueCount == count($recordValue)
+                    if (
+                        $valueCount == count($recordValue)
                         && $valueCount == count(
                             array_intersect($value, $recordValue)
                         )
@@ -444,7 +450,8 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
         // check each rule - first rule-match
         foreach ($ruleset as $rule) {
             // skip this rule if it's not relevant for the current RecordDriver
-            if (isset($rule['recorddriver'])
+            if (
+                isset($rule['recorddriver'])
                 && !($this->recordDriver instanceof $rule['recorddriver'])
             ) {
                 continue;

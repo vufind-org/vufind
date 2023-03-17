@@ -109,7 +109,8 @@ class SystemStatus extends AbstractBase
     public function handleRequest(Params $params)
     {
         // Check system status
-        if (!empty($this->config->System->healthCheckFile)
+        if (
+            !empty($this->config->System->healthCheckFile)
             && file_exists($this->config->System->healthCheckFile)
         ) {
             return $this->formatResponse(

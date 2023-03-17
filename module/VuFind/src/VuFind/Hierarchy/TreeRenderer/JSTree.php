@@ -91,7 +91,8 @@ class JSTree extends AbstractBase implements \VuFind\I18n\Translator\TranslatorA
 
         if ($hierarchyID) {
             // Specific Hierarchy Supplied
-            if (in_array($hierarchyID, $inHierarchies)
+            if (
+                in_array($hierarchyID, $inHierarchies)
                 && $this->getDataSource()->supports($hierarchyID)
             ) {
                 return [

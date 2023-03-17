@@ -504,7 +504,8 @@ class XCNCIP2 extends AbstractBase implements
             }
         }
 
-        if (!$result->isSuccess()
+        if (
+            !$result->isSuccess()
             && !in_array(
                 $result->getStatusCode(),
                 $this->otherAcceptedHttpStatusCodes
@@ -973,7 +974,8 @@ class XCNCIP2 extends AbstractBase implements
                     $chunk['eresource'] = $eResource;
                     $chunk['location'] = $chunk['location']
                         ?? $holdingLocation ?? null;
-                    if (!isset($chunk['collection_desc'])
+                    if (
+                        !isset($chunk['collection_desc'])
                         && !empty($collection)
                     ) {
                         $chunk['collection_desc'] = $collection;

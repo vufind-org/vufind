@@ -57,7 +57,8 @@ class Options extends \VuFind\Search\Base\Options
     {
         parent::__construct($configLoader);
         $config = $configLoader->get($this->mainIni);
-        if (isset($config->Social->show_solr_options_in_tag_search)
+        if (
+            isset($config->Social->show_solr_options_in_tag_search)
             && $config->Social->show_solr_options_in_tag_search
         ) {
             $this->useSolrSearchOptions = true;

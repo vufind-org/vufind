@@ -137,7 +137,8 @@ class SolrDefault extends DefaultRecord implements
         // Load snippet settings:
         $this->snippet = !isset($searchSettings->General->snippets)
             ? false : $searchSettings->General->snippets;
-        if (isset($searchSettings->Snippet_Captions)
+        if (
+            isset($searchSettings->Snippet_Captions)
             && count($searchSettings->Snippet_Captions) > 0
         ) {
             foreach ($searchSettings->Snippet_Captions as $key => $value) {
@@ -229,7 +230,8 @@ class SolrDefault extends DefaultRecord implements
             }
 
             // No preferred field found, so try for a non-forbidden field:
-            if (isset($this->highlightDetails)
+            if (
+                isset($this->highlightDetails)
                 && is_array($this->highlightDetails)
             ) {
                 foreach ($this->highlightDetails as $key => $value) {
@@ -283,7 +285,8 @@ class SolrDefault extends DefaultRecord implements
     {
         // Shortcut: if this record is not the top record, let's not find out the
         // count. This assumes that contained records cannot contain more records.
-        if (!$this->containerLinking
+        if (
+            !$this->containerLinking
             || empty($this->fields['is_hierarchy_id'])
             || null === $this->searchService
         ) {

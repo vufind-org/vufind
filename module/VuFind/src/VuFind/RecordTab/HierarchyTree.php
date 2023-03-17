@@ -146,7 +146,8 @@ class HierarchyTree extends AbstractBase
         if (is_object($hierarchyDriver)) {
             // No setting, or true setting -- use default setting:
             $settings = $hierarchyDriver->getTreeSettings();
-            if (!isset($settings['fullHierarchyRecordView'])
+            if (
+                !isset($settings['fullHierarchyRecordView'])
                 || $settings['fullHierarchyRecordView']
             ) {
                 return true;

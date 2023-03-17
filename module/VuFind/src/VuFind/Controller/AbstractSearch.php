@@ -194,11 +194,13 @@ class AbstractSearch extends AbstractBase
         // Enable recommendations unless explicitly told to disable them:
         $all = ['top', 'side', 'noresults', 'bottom'];
         $noRecommend = $this->params()->fromQuery('noRecommend', false);
-        if ($noRecommend === 1 || $noRecommend === '1'
+        if (
+            $noRecommend === 1 || $noRecommend === '1'
             || $noRecommend === 'true' || $noRecommend === true
         ) {
             return [];
-        } elseif ($noRecommend === 0 || $noRecommend === '0'
+        } elseif (
+            $noRecommend === 0 || $noRecommend === '0'
             || $noRecommend === 'false' || $noRecommend === false
         ) {
             return $all;
@@ -455,7 +457,8 @@ class AbstractSearch extends AbstractBase
      */
     protected function processJumpToOnlyResult($results)
     {
-        if (($this->getConfig()->Record->jump_to_single_search_result ?? false)
+        if (
+            ($this->getConfig()->Record->jump_to_single_search_result ?? false)
             && $results->getResultTotal() == 1
         ) {
             $recordList = $results->getResults();

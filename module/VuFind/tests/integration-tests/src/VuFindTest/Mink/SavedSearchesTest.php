@@ -69,7 +69,8 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
     {
         $links = $page->findAll('css', '.searchtools a');
         foreach ($links as $link) {
-            if ($this->checkVisibility($link)
+            if (
+                $this->checkVisibility($link)
                 && str_contains($link->getHtml(), 'Save Search')
             ) {
                 $link->click();

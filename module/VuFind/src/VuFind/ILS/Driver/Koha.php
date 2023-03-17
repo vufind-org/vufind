@@ -229,7 +229,8 @@ class Koha extends AbstractBase
                         }
                         break;
                     case 1: // The item is not available for loan
-                    default: $available = false;
+                    default:
+                        $available = false;
                         $status = 'Not for loan';
                         $duedate = '';
                         break;
@@ -494,7 +495,8 @@ class Koha extends AbstractBase
                     ? [$row['TYPE']]
                     : [$this->blockTerms[$row['TYPE']]];
 
-                if (!empty($this->showBlockComments[$row['TYPE']])
+                if (
+                    !empty($this->showBlockComments[$row['TYPE']])
                     && !empty($row['COMMENT'])
                 ) {
                     $block[] = $row['COMMENT'];

@@ -230,7 +230,8 @@ class Shibboleth extends AbstractBase
                 $value = $this->getAttribute($request, $shib[$attribute]);
                 if ($attribute == 'email') {
                     $user->updateEmail($value);
-                } elseif ($attribute == 'cat_username' && isset($shib['prefix'])
+                } elseif (
+                    $attribute == 'cat_username' && isset($shib['prefix'])
                     && !empty($value)
                 ) {
                     $user->cat_username = $shib['prefix'] . '.' . $value;
@@ -300,7 +301,8 @@ class Shibboleth extends AbstractBase
     public function isExpired()
     {
         $config = $this->getConfig();
-        if (!isset($this->shibSessionId)
+        if (
+            !isset($this->shibSessionId)
             || !($config->Shibboleth->checkExpiredSession ?? true)
         ) {
             return false;
@@ -321,7 +323,8 @@ class Shibboleth extends AbstractBase
     {
         // If single log-out is enabled, use a special URL:
         $config = $this->getConfig();
-        if (isset($config->Shibboleth->logout)
+        if (
+            isset($config->Shibboleth->logout)
             && !empty($config->Shibboleth->logout)
         ) {
             $append = (strpos($config->Shibboleth->logout, '?') !== false) ? '&'

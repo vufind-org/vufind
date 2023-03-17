@@ -123,7 +123,8 @@ abstract class AbstractBase implements \VuFind\I18n\HasSorterInterface
     protected function getHierarchyPositionsInParents($fields)
     {
         $retVal = [];
-        if (isset($fields->hierarchy_parent_id)
+        if (
+            isset($fields->hierarchy_parent_id)
             && isset($fields->hierarchy_sequence)
         ) {
             foreach ($fields->hierarchy_parent_id as $key => $val) {
@@ -144,7 +145,8 @@ abstract class AbstractBase implements \VuFind\I18n\HasSorterInterface
     protected function getTitlesInHierarchy($fields)
     {
         $retVal = [];
-        if (isset($fields->title_in_hierarchy)
+        if (
+            isset($fields->title_in_hierarchy)
             && is_array($fields->title_in_hierarchy)
         ) {
             $titles = $fields->title_in_hierarchy;

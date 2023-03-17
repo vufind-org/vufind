@@ -544,10 +544,11 @@ trait MarcAdvancedTrait
     public function getTOC()
     {
         $toc = [];
-        if ($fields = $this->getMarcReader()->getFields(
-            '505',
-            ['a', 'g', 'r', 't', 'u']
-        )
+        if (
+            $fields = $this->getMarcReader()->getFields(
+                '505',
+                ['a', 'g', 'r', 't', 'u']
+            )
         ) {
             foreach ($fields as $field) {
                 // Implode all the subfields into a single string, then explode
@@ -1005,7 +1006,8 @@ trait MarcAdvancedTrait
     {
         $fields024 = $this->getMarcReader()->getFields('024');
         foreach ($fields024 as $field) {
-            if ($field['i1'] == 2
+            if (
+                $field['i1'] == 2
                 && $subfield = $this->getSubfield($field, 'a')
             ) {
                 return $subfield;

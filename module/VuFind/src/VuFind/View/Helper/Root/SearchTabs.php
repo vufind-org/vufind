@@ -132,7 +132,8 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
             }
             $class = $this->helper->extractClassName($key);
             $filters = isset($allFilters[$key]) ? (array)$allFilters[$key] : [];
-            if ($class == $activeSearchClass
+            if (
+                $class == $activeSearchClass
                 && $this->helper->filtersMatch($class, $hiddenFilters, $filters)
             ) {
                 $retVal['selected'] = $this

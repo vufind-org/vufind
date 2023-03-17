@@ -207,7 +207,8 @@ class CAS extends AbstractBase
     public function isExpired()
     {
         $config = $this->getConfig();
-        if (isset($config->CAS->username)
+        if (
+            isset($config->CAS->username)
             && isset($config->CAS->logout)
         ) {
             $casauth = $this->setupCAS();
@@ -230,7 +231,8 @@ class CAS extends AbstractBase
     {
         // If single log-out is enabled, use a special URL:
         $config = $this->getConfig();
-        if (isset($config->CAS->logout)
+        if (
+            isset($config->CAS->logout)
             && !empty($config->CAS->logout)
         ) {
             $url = $config->CAS->logout . '?service=' . urlencode($url);
@@ -282,7 +284,8 @@ class CAS extends AbstractBase
         // client can only be called once.
         if (!$this->phpCASSetup) {
             $cas = $this->getConfig()->CAS;
-            if (isset($cas->log)
+            if (
+                isset($cas->log)
                 && !empty($cas->log) && isset($cas->debug) && ($cas->debug)
             ) {
                 $casauth->setDebug($cas->log);

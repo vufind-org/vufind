@@ -295,7 +295,8 @@ class AuthorityRecommend implements RecommendInterface
         }
 
         // check result limit before proceeding...
-        if ($this->resultLimit > 0
+        if (
+            $this->resultLimit > 0
             && $this->resultLimit < $results->getResultTotal()
         ) {
             return;

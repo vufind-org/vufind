@@ -283,7 +283,8 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $copy_count++;
 
             $availability = 0;
-            if (($holdings_response->CircStatus == 'In')
+            if (
+                ($holdings_response->CircStatus == 'In')
                 || ($holdings_response->CircStatus == 'Just Returned')
                 || ($holdings_response->CircStatus == 'On Shelf')
                 || ($holdings_response->CircStatus == 'Available - Check shelves')

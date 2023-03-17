@@ -149,7 +149,8 @@ class ThemeGenerator extends AbstractThemeUtility implements GeneratorInterface
             $themes = explode(',', $config->Site->selectable_themes);
             foreach ($themes as $t) {
                 $parts = explode(':', $t);
-                if ($parts[0] !== $settingPrefixes['bootstrap']
+                if (
+                    $parts[0] !== $settingPrefixes['bootstrap']
                     && $parts[0] !== $settingPrefixes['custom']
                 ) {
                     $dropSetting[] = $t;

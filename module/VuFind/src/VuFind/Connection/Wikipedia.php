@@ -269,7 +269,8 @@ class Wikipedia implements TranslatorAwareInterface
             foreach ($new_matches as $nm) {
                 foreach ((array)$nm as $n) {
                     // If it's a file link get rid of it
-                    if (strtolower(substr($n, 0, 7)) == "[[file:"
+                    if (
+                        strtolower(substr($n, 0, 7)) == "[[file:"
                         || strtolower(substr($n, 0, 8)) == "[[image:"
                     ) {
                         $body = str_replace($n, "", $body);
@@ -492,7 +493,8 @@ class Wikipedia implements TranslatorAwareInterface
 
         if ($response = $result->getBody()) {
             if ($imageinfo = unserialize($response)) {
-                if (isset($imageinfo['query']['pages']['-1']['imageinfo'][0]['url'])
+                if (
+                    isset($imageinfo['query']['pages']['-1']['imageinfo'][0]['url'])
                 ) {
                     $imageUrl
                         = $imageinfo['query']['pages']['-1']['imageinfo'][0]['url'];

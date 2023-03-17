@@ -234,14 +234,16 @@ class Initializer
         }
 
         // Do we have a non-standard selection?
-        if ($selectedUI != 'standard'
+        if (
+            $selectedUI != 'standard'
             && isset($this->config->alternate_themes)
         ) {
             // Check the alternate theme settings for a match:
             $parts = explode(',', $this->config->alternate_themes);
             foreach ($parts as $part) {
                 $subparts = explode(':', $part);
-                if ((trim($subparts[0]) == trim($selectedUI))
+                if (
+                    (trim($subparts[0]) == trim($selectedUI))
                     && isset($subparts[1]) && !empty($subparts[1])
                 ) {
                     return $subparts[1];

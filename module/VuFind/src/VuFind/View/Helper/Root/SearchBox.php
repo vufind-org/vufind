@@ -210,7 +210,8 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
             $normalized
                 = preg_match($regex, $current['filter'], $match)
                 ? "{$match[1]}:\"{$match[2]}\"" : $current['filter'];
-            if ($current['selected'] && !in_array($normalized, $results)
+            if (
+                $current['selected'] && !in_array($normalized, $results)
                 && !in_array($current['filter'], $results)
             ) {
                 $results[] = $current['filter'];
@@ -317,7 +318,8 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
                 throw new \Exception('CombinedHandlers configuration missing.');
             }
             $typeCount = count($settings['type']);
-            if ($typeCount != count($settings['target'])
+            if (
+                $typeCount != count($settings['target'])
                 || $typeCount != count($settings['label'])
             ) {
                 throw new \Exception('CombinedHandlers configuration incomplete.');
@@ -406,7 +408,8 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
                         && $activeHandler == $searchVal;
                     if ($selected) {
                         $selectedFound = true;
-                    } elseif ($backupSelectedIndex === false
+                    } elseif (
+                        $backupSelectedIndex === false
                         && $target == $activeSearchClass
                     ) {
                         $backupSelectedIndex = count($handlers);

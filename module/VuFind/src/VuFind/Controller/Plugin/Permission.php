@@ -122,7 +122,8 @@ class Permission extends AbstractPlugin implements
     ) {
         // If no permission rule is defined and we're only checking defined
         // permissions, bail out now....
-        if (!$this->permissionManager->permissionRuleExists($permission)
+        if (
+            !$this->permissionManager->permissionRuleExists($permission)
             && $passIfUndefined
         ) {
             return null;

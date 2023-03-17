@@ -98,7 +98,8 @@ class Options extends \VuFind\Search\Base\Options
             $this->emptySearchRelevanceOverride
                 = $searchSettings->General->empty_search_relevance_override;
         }
-        if (isset($searchSettings->DefaultSortingByType)
+        if (
+            isset($searchSettings->DefaultSortingByType)
             && count($searchSettings->DefaultSortingByType) > 0
         ) {
             foreach ($searchSettings->DefaultSortingByType as $key => $val) {
@@ -161,7 +162,8 @@ class Options extends \VuFind\Search\Base\Options
 
         // Load facet preferences
         $facetSettings = $configLoader->get($this->facetsIni);
-        if (isset($facetSettings->Advanced_Settings->translated_facets)
+        if (
+            isset($facetSettings->Advanced_Settings->translated_facets)
             && count($facetSettings->Advanced_Settings->translated_facets) > 0
         ) {
             $this->setTranslatedFacets(
@@ -173,7 +175,8 @@ class Options extends \VuFind\Search\Base\Options
                 $facetSettings->Advanced_Settings->delimiter
             );
         }
-        if (isset($facetSettings->Advanced_Settings->delimited_facets)
+        if (
+            isset($facetSettings->Advanced_Settings->delimited_facets)
             && count($facetSettings->Advanced_Settings->delimited_facets) > 0
         ) {
             $this->setDelimitedFacets(
@@ -201,7 +204,8 @@ class Options extends \VuFind\Search\Base\Options
         }
 
         // Turn on first/last navigation if configured:
-        if (isset($config->Record->first_last_navigation)
+        if (
+            isset($config->Record->first_last_navigation)
             && $config->Record->first_last_navigation
         ) {
             $this->firstlastNavigation = true;
@@ -219,14 +223,16 @@ class Options extends \VuFind\Search\Base\Options
         $this->configureAutocomplete($searchSettings);
 
         // Load shard settings
-        if (isset($searchSettings->IndexShards)
+        if (
+            isset($searchSettings->IndexShards)
             && !empty($searchSettings->IndexShards)
         ) {
             foreach ($searchSettings->IndexShards as $k => $v) {
                 $this->shards[$k] = $v;
             }
             // If we have a default from the configuration, use that...
-            if (isset($searchSettings->ShardPreferences->defaultChecked)
+            if (
+                isset($searchSettings->ShardPreferences->defaultChecked)
                 && !empty($searchSettings->ShardPreferences->defaultChecked)
             ) {
                 $defaultChecked

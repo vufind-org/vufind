@@ -275,7 +275,8 @@ class Aleph extends AbstractBase implements
         $this->bib = explode(',', $this->config['Catalog']['bib']);
         $this->useradm = $this->config['Catalog']['useradm'];
         $this->admlib = $this->config['Catalog']['admlib'];
-        if (isset($this->config['Catalog']['wwwuser'])
+        if (
+            isset($this->config['Catalog']['wwwuser'])
             && isset($this->config['Catalog']['wwwpasswd'])
         ) {
             $this->wwwuser = $this->config['Catalog']['wwwuser'];
@@ -295,12 +296,14 @@ class Aleph extends AbstractBase implements
         $this->quick_availability
             = $this->config['Catalog']['quick_availability'] ?? false;
         $this->debug_enabled = $this->config['Catalog']['debug'] ?? false;
-        if (isset($this->config['util']['tab40'])
+        if (
+            isset($this->config['util']['tab40'])
             && isset($this->config['util']['tab15'])
             && isset($this->config['util']['tab_sub_library'])
         ) {
             $cache = null;
-            if (isset($this->config['Cache']['type'])
+            if (
+                isset($this->config['Cache']['type'])
                 && null !== $this->cacheManager
             ) {
                 $cache = $this->cacheManager

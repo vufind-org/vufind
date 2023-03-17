@@ -940,7 +940,8 @@ class InstallCommand extends Command
 
         // Collect and process parameters, and stop if an error is encountered
         // along the way....
-        if ($this->collectParameters($input, $output) !== 0
+        if (
+            $this->collectParameters($input, $output) !== 0
             || $this->processParameters($output) !== 0
         ) {
             return 1;

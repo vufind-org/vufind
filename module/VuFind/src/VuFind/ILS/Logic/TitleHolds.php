@@ -176,7 +176,8 @@ class TitleHolds
      */
     protected function checkOverrideMode($id, $mode)
     {
-        if (isset($this->config->Catalog->allow_holds_override)
+        if (
+            isset($this->config->Catalog->allow_holds_override)
             && $this->config->Catalog->allow_holds_override
         ) {
             $holdings = $this->getHoldings($id);
@@ -186,7 +187,8 @@ class TitleHolds
             // may eventually want to address other scenarios as well.
             $allDisabled = true;
             foreach ($holdings as $holding) {
-                if (!isset($holding['holdOverride'])
+                if (
+                    !isset($holding['holdOverride'])
                     || 'disabled' != $holding['holdOverride']
                 ) {
                     $allDisabled = false;
@@ -216,7 +218,8 @@ class TitleHolds
         if (isset($checkHolds['HMACKeys'])) {
             $data = ['id' => $id, 'level' => 'title'];
             $result = $this->catalog->checkRequestIsValid($id, $data, $patron);
-            if ((is_array($result) && $result['valid'])
+            if (
+                (is_array($result) && $result['valid'])
                 || (is_bool($result) && $result)
             ) {
                 return $this->getHoldDetails($data, $checkHolds['HMACKeys']);
@@ -257,7 +260,8 @@ class TitleHolds
             } elseif ($type == 'availability') {
                 $holdings = $this->getHoldings($id);
                 foreach ($holdings as $holding) {
-                    if ($holding['availability']
+                    if (
+                        $holding['availability']
                         && !in_array($holding['location'], $this->hideHoldings)
                     ) {
                         $any_available = true;

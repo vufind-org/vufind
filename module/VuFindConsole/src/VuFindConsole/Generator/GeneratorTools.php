@@ -584,7 +584,8 @@ class GeneratorTools
         // either be a [controller, method] array or a "controller::method"
         // string; anything else will cause a problem.
         $parts = is_string($factory) ? explode('::', $factory) : $factory;
-        if (!is_array($parts) || count($parts) != 2 || !class_exists($parts[0])
+        if (
+            !is_array($parts) || count($parts) != 2 || !class_exists($parts[0])
             || !is_callable($parts)
         ) {
             throw new \Exception('Unexpected factory configuration format.');

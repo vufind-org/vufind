@@ -766,7 +766,8 @@ EOS
      */
     protected function validateHtml(?Element $page = null): void
     {
-        if ((!$this->session && !$page)
+        if (
+            (!$this->session && !$page)
             || !($nuAddress = getenv('VUFIND_HTML_VALIDATOR'))
         ) {
             return;
@@ -775,7 +776,8 @@ EOS
             static::class,
             $this->getName(false)
         );
-        if (($annotations['method']['skip_html_validation'][0] ?? false)
+        if (
+            ($annotations['method']['skip_html_validation'][0] ?? false)
             || ($annotations['class']['skip_html_validation'][0] ?? false)
         ) {
             return;
@@ -926,7 +928,8 @@ EOS
         // Take screenshot of failed test, if we have a screenshot directory set
         // and we have run out of retries ($this->retriesLeft is set by the
         // AutoRetryTrait):
-        if ($this->hasFailed()
+        if (
+            $this->hasFailed()
             && ($imageDir = getenv('VUFIND_SCREENSHOT_DIR'))
         ) {
             $filename = $this->getName() . '-' . $this->retriesLeft . '-'

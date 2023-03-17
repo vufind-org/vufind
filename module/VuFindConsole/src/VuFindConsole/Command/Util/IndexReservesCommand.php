@@ -243,7 +243,8 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
 
         // Make sure we have reserves and at least one of: instructors, courses,
         // departments:
-        if ((!empty($instructors) || !empty($courses) || !empty($departments))
+        if (
+            (!empty($instructors) || !empty($courses) || !empty($departments))
             && !empty($reserves)
         ) {
             // Delete existing records

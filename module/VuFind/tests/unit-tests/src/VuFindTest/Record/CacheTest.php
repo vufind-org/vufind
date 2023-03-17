@@ -237,7 +237,8 @@ class CacheTest extends \PHPUnit\Framework\TestCase
         $findRecordsCallback = function (array $ids, string $source): array {
             $results = [];
             foreach ($this->recordTable as $row) {
-                if (in_array($row['record_id'], $ids)
+                if (
+                    in_array($row['record_id'], $ids)
                     && $row['source'] == $source
                 ) {
                     $results[] = $row;
@@ -248,7 +249,8 @@ class CacheTest extends \PHPUnit\Framework\TestCase
 
         $findRecordCallback = function ($id, $source) {
             foreach ($this->recordTable as $row) {
-                if ($row['record_id'] == $id
+                if (
+                    $row['record_id'] == $id
                     && $row['source'] == $source
                 ) {
                     return $row;

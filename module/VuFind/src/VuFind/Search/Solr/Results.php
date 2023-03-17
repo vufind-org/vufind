@@ -177,7 +177,8 @@ class Results extends \VuFind\Search\Base\Results
             $collection = $searchService->invoke($command)->getResult();
         } catch (\VuFindSearch\Backend\Exception\BackendException $e) {
             // If the query caused a parser error, see if we can clean it up:
-            if ($e->hasTag(ErrorListener::TAG_PARSER_ERROR)
+            if (
+                $e->hasTag(ErrorListener::TAG_PARSER_ERROR)
                 && $newQuery = $this->fixBadQuery($query)
             ) {
                 // We need to get a fresh set of $params, since the previous one was
@@ -377,7 +378,8 @@ class Results extends \VuFind\Search\Base\Results
         foreach ($result as $key => $value) {
             // Detect next page and crop results if necessary
             $more = false;
-            if (isset($page) && count($value['list']) > 0
+            if (
+                isset($page) && count($value['list']) > 0
                 && count($value['list']) == $limit + 1
             ) {
                 $more = true;
