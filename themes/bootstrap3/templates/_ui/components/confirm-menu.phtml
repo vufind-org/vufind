@@ -3,17 +3,17 @@
     throw new \Exception('label undefined for confirm-menu component.');
   }
 
-  $toggleLabel = $this->transEsc($this->label);
-  $toggleClass = trim('confirm__toggle ' . $this->escapeHtmlAttr(($this->toggleClass ?? 'btn')));
+  $toggleLabelEsc = $this->transEsc($this->label);
+  $toggleClassAttr = trim('confirm__toggle ' . $this->escapeHtmlAttr(($this->toggleClassAttr ?? 'btn')));
 
   $actionType = $this->action->type ?? 'submit';
 
-  $confirmLabel = $this->transEsc($this->confirm ?? 'confirm_dialog_yes');
-  $cancelLabel = $this->transEsc($this->cancel ?? 'confirm_dialog_no');
+  $confirmLabelEsc = $this->transEsc($this->confirm ?? 'confirm_dialog_yes');
+  $cancelLabelEsc = $this->transEsc($this->cancel ?? 'confirm_dialog_no');
 ?>
 
 <div class="confirm-menu">
-  <button class="<?=$toggleClass ?>"><?=$toggleLabel ?></button>
+  <button class="<?=$toggleClassAttr ?>"><?=$toggleLabelEsc ?></button>
 
   <div class="confirm__options">
     <?php if ($this->description): ?>
@@ -25,12 +25,12 @@
         <?php if ($actionType == 'link'): ?>
           <a role="menuitem" class="confirm__confirm" href="<?=$this->escapeHtmlAttr($this->action->value) ?>">
             <?=$this->icon('ui-success', 'confirm__icon') ?>
-            <?=$confirmLabel ?>
+            <?=$confirmLabelEsc ?>
           </a>
         <?php else: ?>
           <button role="menuitem" type="submit" class="confirm__confirm">
             <?=$this->icon('ui-success', 'confirm__icon') ?>
-            <?=$confirmLabel ?>
+            <?=$confirmLabelEsc ?>
           </button>
         <?php endif; ?>
       </li>
@@ -38,7 +38,7 @@
       <li role="none">
         <button type="button" role="menuitem" class="confirm__cancel">
           <?=$this->icon('ui-failure', 'confirm__icon') ?>
-          <?=$cancelLabel ?>
+          <?=$cancelLabelEsc ?>
         </button>
       </li>
     </ul>
