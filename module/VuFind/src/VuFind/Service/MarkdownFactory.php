@@ -249,9 +249,8 @@ class MarkdownFactory implements FactoryInterface
         }
         $markdown = $this->config['Markdown'] ?? [];
         $config['commonmark']['unordered_list_markers']
-            = $config['commonmark']['unordered_list_markers']
-                ?? $markdown['unordered_list_markers']
-                ?? ['-', '*', '+'];
+            ??= $markdown['unordered_list_markers']
+            ?? ['-', '*', '+'];
         unset($this->config['Markdown']['unordered_list_markers']);
 
         return $config;

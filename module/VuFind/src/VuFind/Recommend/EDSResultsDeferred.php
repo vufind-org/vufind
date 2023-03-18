@@ -97,7 +97,7 @@ class EDSResultsDeferred implements RecommendInterface
         // with a blank string, so we can rebuild the parameters to pass through
         // AJAX later on!
         for ($i = 0; $i < 2; $i++) {
-            $settings[$i] = $settings[$i] ?? '';
+            $settings[$i] ??= '';
         }
 
         // Map the user-specified query field to 'lookfor' for simplicity:
