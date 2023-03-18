@@ -87,13 +87,13 @@
     $this->inlineScript()->appendFile('hold.js');
 
     $js = <<<JS
-        if ($.isReady) {
-            setupHoldEditForm();
-        } else {
-            $(document).ready(function() {
-                setupHoldEditForm();
-            });
-        }
-JS;
+                if ($.isReady) {
+                    setupHoldEditForm();
+                } else {
+                    $(document).ready(function() {
+                        setupHoldEditForm();
+                    });
+                }
+        JS;
     echo $this->inlineScript()->appendScript($js);
 ?>

@@ -38,9 +38,9 @@
 </div>
 <?php
   $script = <<<JS
-$(document).ready(function () {
-  initFacetTree($('#facet_{$this->escapeHtml($this->title)}'), true);
-});
-JS;
+      $(document).ready(function () {
+        initFacetTree($('#facet_{$this->escapeHtml($this->title)}'), true);
+      });
+      JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>

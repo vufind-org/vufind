@@ -51,15 +51,15 @@ class LoggerTest extends \PHPUnit\Framework\TestCase
     {
         $callback = function ($a): bool {
             $expectedContext = <<<CONTEXT
-Server Context:
-Array
-(
-    [REMOTE_ADDR] => 5.6.7.8
-    [HTTP_USER_AGENT] => Fake browser
-    [HTTP_HOST] => localhost:80
-    [REQUEST_URI] => /foo/bar
-)
-CONTEXT;
+                Server Context:
+                Array
+                (
+                    [REMOTE_ADDR] => 5.6.7.8
+                    [HTTP_USER_AGENT] => Fake browser
+                    [HTTP_HOST] => localhost:80
+                    [REQUEST_URI] => /foo/bar
+                )
+                CONTEXT;
             $expectedA2 = 'Exception : test'
                 . '(Server: IP = 1.2.3.4, Referer = none, User Agent = Fake browser, '
                 . 'Host = localhost:80, Request URI = /foo/bar)';

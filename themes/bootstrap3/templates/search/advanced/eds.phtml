@@ -103,25 +103,25 @@
         $high = intval($high);
         $init = !empty($current['values'][0]) ? 'fillTexts()' : '';
         $script = <<<JS
-$(document).ready(function() {
-  var fillTexts = function() {
-    var v = PublicationDateSlider.getValue();
-    $('#PublicationDatefrom').val(v[0]);
-    $('#PublicationDateto').val(v[1]);
-  };
-  var PublicationDateSlider = $('#PublicationDateSlider')
-    .slider({
-       'min':{$min},
-       'max':{$max},
-       'handle':"square",
-       'tooltip':"hide",
-       'value':[{$low},{$high}]
-    })
-    .on('change', fillTexts)
-    .data('slider');
-  {$init}
-});
-JS;
+            $(document).ready(function() {
+              var fillTexts = function() {
+                var v = PublicationDateSlider.getValue();
+                $('#PublicationDatefrom').val(v[0]);
+                $('#PublicationDateto').val(v[1]);
+              };
+              var PublicationDateSlider = $('#PublicationDateSlider')
+                .slider({
+                   'min':{$min},
+                   'max':{$max},
+                   'handle':"square",
+                   'tooltip':"hide",
+                   'value':[{$low},{$high}]
+                })
+                .on('change', fillTexts)
+                .data('slider');
+              {$init}
+            });
+            JS;
     ?>
     <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
   </fieldset>

@@ -53,9 +53,9 @@
 <?php endif; ?>
 <?php
 $script = <<<JS
-VuFind.truncate.initTruncate('.top-facets-contents');
-// Close with JS (ensures content is shown to non-JS users)
-$(this).find('.collapse').removeClass('in');
-JS;
+                      VuFind.truncate.initTruncate('.top-facets-contents');
+                      // Close with JS (ensures content is shown to non-JS users)
+                      $(this).find('.collapse').removeClass('in');
+                      JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');?>

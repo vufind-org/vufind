@@ -128,27 +128,27 @@ if ($avail->code == 'od_code_login_for_avail') {
     if ($button) {
         $button1Icon = $this->icon($button->icon);
         $button1Markup = <<<BTN1MARKUP
-            <a class="btn btn-primary {$button->class}"
-               data-lightbox title="{$button->text}"
-               href="{$button->url}">{$button1Icon}&nbsp;{$button->text}</a>
-BTN1MARKUP;
+                        <a class="btn btn-primary {$button->class}"
+                           data-lightbox title="{$button->text}"
+                           href="{$button->url}">{$button1Icon}&nbsp;{$button->text}</a>
+            BTN1MARKUP;
     }
 
     if ($button2) {
         $button2Icon = $this->icon($button2->icon);
         $button2Markup = <<<BTN2MARKUP
-             <a class="btn btn-primary {$button2->class}"
-                data-lightbox title="{$button2->text}"
-                href="{$button2->url}">{$button2Icon}&nbsp;{$button2->text}</a>
-BTN2MARKUP;
+                         <a class="btn btn-primary {$button2->class}"
+                            data-lightbox title="{$button2->text}"
+                            href="{$button2->url}">{$button2Icon}&nbsp;{$button2->text}</a>
+            BTN2MARKUP;
     }
 
     $extraControls['actionControls'] = <<<ACTIONMARKUP
-        <div class="pull-right">
-           $notification
-           $button1Markup $button2Markup
-        </div>
-ACTIONMARKUP;
+                <div class="pull-right">
+                   $notification
+                   $button1Markup $button2Markup
+                </div>
+        ACTIONMARKUP;
 
     $extraControls['availabilityInfo'] = "
        <div class=\"availability\">

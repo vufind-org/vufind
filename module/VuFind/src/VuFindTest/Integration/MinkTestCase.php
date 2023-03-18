@@ -660,10 +660,10 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         // Finally, make sure all jQuery ready handlers are done:
         $session->evaluateScript(
             <<<EOS
-if (window.__documentIsReady !== true) {
-    $(document).ready(function() { window.__documentIsReady = true; });
-}
-EOS
+                if (window.__documentIsReady !== true) {
+                    $(document).ready(function() { window.__documentIsReady = true; });
+                }
+                EOS
         );
         $session->wait(
             $timeout,

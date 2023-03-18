@@ -150,29 +150,29 @@ $formName = $this->escapeHtmlAttr($this->params['form_name'] ?? '');
 $siteUrl = $this->escapeHtmlAttr($this->params['site_url'] ?? '');
 $status = $this->escapeHtmlAttr($this->params['status'] ?? '');
 $js = <<<JS
-$(document).ready(function() {
-    $('.status_update').change(function() {
-        const id = $(this).closest('tr').find('input[name="ids[]"]').val();
-        const new_status = $(this).val();
-        const form = $('<form action="$url" method="post">' +
-            '<input type="hidden" name="id" value="' + id + '" />' +
-            '<input type="hidden" name="new_status" value="' + new_status + '" />' +
-            '<input type="hidden" name="form_name" value="$formName" />' +
-            '<input type="hidden" name="site_url" value="$siteUrl" />' +
-            '<input type="hidden" name="status" value="$status" />' +
-            '</form>');
-        $('body').append(form);
-        form.submit();
-    });
+    $(document).ready(function() {
+        $('.status_update').change(function() {
+            const id = $(this).closest('tr').find('input[name="ids[]"]').val();
+            const new_status = $(this).val();
+            const form = $('<form action="$url" method="post">' +
+                '<input type="hidden" name="id" value="' + id + '" />' +
+                '<input type="hidden" name="new_status" value="' + new_status + '" />' +
+                '<input type="hidden" name="form_name" value="$formName" />' +
+                '<input type="hidden" name="site_url" value="$siteUrl" />' +
+                '<input type="hidden" name="status" value="$status" />' +
+                '</form>');
+            $('body').append(form);
+            form.submit();
+        });
 
-    $('.fullMessage').on('show.bs.collapse', function() {
-        const id = $(this).closest('tr').find('input[name="ids[]"]').val();
-        $('#toggleButton_' + id).text(VuFind.translate('less_ellipsis'));
-    }).on('hide.bs.collapse', function() {
-        const id = $(this).closest('tr').find('input[name="ids[]"]').val();
-        $('#toggleButton_' + id).text(VuFind.translate('more_ellipsis'));
+        $('.fullMessage').on('show.bs.collapse', function() {
+            const id = $(this).closest('tr').find('input[name="ids[]"]').val();
+            $('#toggleButton_' + id).text(VuFind.translate('less_ellipsis'));
+        }).on('hide.bs.collapse', function() {
+            const id = $(this).closest('tr').find('input[name="ids[]"]').val();
+            $('#toggleButton_' + id).text(VuFind.translate('more_ellipsis'));
+        });
     });
-});
-JS;
+    JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $js, 'SET');?>

@@ -64,8 +64,8 @@
 
 <?php
   $script = <<<JS
-  $('button.btn.hidden').removeClass('hidden');
-  $('#itemhide').removeClass('in');
-JS;
+        $('button.btn.hidden').removeClass('hidden');
+        $('#itemhide').removeClass('in');
+      JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>

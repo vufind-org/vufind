@@ -115,14 +115,14 @@
     $this->inlineScript()->appendFile('ill.js');
 
     $js = <<<JS
-        if ($.isReady) {
-            setUpILLRequestForm("{$this->escapeHtml($this->driver->getUniqueId())}");
-        } else {
-            $(document).ready(function() {
-                setUpILLRequestForm("{$this->escapeHtml($this->driver->getUniqueId())}");
-            });
-        }
-JS;
+                if ($.isReady) {
+                    setUpILLRequestForm("{$this->escapeHtml($this->driver->getUniqueId())}");
+                } else {
+                    $(document).ready(function() {
+                        setUpILLRequestForm("{$this->escapeHtml($this->driver->getUniqueId())}");
+                    });
+                }
+        JS;
 
     echo $this->inlineScript()->appendScript($js);
 ?>

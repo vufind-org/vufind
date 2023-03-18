@@ -316,10 +316,10 @@ class IconTest extends \PHPUnit\Framework\TestCase
         $plugins = ['imageLink' => $this->getMockImageLink('mysprites.svg')];
         $helper = $this->getIconHelper(null, null, $plugins);
         $expected = <<<EXPECTED
-<svg class="icon icon--svg" aria-hidden="true">
-    <use xlink:href="mysprites.svg#sprite"></use>
-</svg>
-EXPECTED;
+            <svg class="icon icon--svg" aria-hidden="true">
+                <use xlink:href="mysprites.svg#sprite"></use>
+            </svg>
+            EXPECTED;
         $this->assertEquals($expected, $helper('xyzzy'));
     }
 
@@ -333,10 +333,10 @@ EXPECTED;
         $plugins = ['imageLink' => $this->getMockImageLink('mysprites.svg')];
         $helper = $this->getIconHelper(null, null, $plugins);
         $expected = <<<EXPECTED
-<svg class="icon icon--svg myclass" data-foo="bar" aria-hidden="true">
-    <use xlink:href="mysprites.svg#sprite"></use>
-</svg>
-EXPECTED;
+            <svg class="icon icon--svg myclass" data-foo="bar" aria-hidden="true">
+                <use xlink:href="mysprites.svg#sprite"></use>
+            </svg>
+            EXPECTED;
         $this->assertEquals(
             trim($expected),
             $helper('xyzzy', ['class' => 'myclass', 'data-foo' => 'bar'])
