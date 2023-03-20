@@ -184,7 +184,7 @@ class Unicorn extends AbstractBase implements
             [$code, $name] = explode('|', $line);
             $libraries[] = [
                 'locationID' => $code,
-                'locationDisplay' => empty($name) ? $code : $name
+                'locationDisplay' => empty($name) ? $code : $name,
             ];
         }
         return $libraries;
@@ -251,7 +251,7 @@ class Unicorn extends AbstractBase implements
         $params = [
           'query' => 'renew_items', 'chargeKeys' => $chargeKeys,
           'patronId' => $patron['cat_username'], 'pin' => $patron['cat_password'],
-          'library' => $patron['library']
+          'library' => $patron['library'],
         ];
         $response = $this->querySirsi($params);
 
@@ -354,7 +354,7 @@ class Unicorn extends AbstractBase implements
     {
         $statuses = [];
         $params = [
-            'query' => 'multiple', 'ids' => implode("|", array_unique($idList))
+            'query' => 'multiple', 'ids' => implode("|", array_unique($idList)),
         ];
         $response = $this->querySirsi($params);
         if (empty($response)) {
@@ -454,7 +454,7 @@ class Unicorn extends AbstractBase implements
             'comments' => $holdDetails['comment'],
             'holdType' => $holdDetails['level'],
             'callnumber' => $holdDetails['callnumber'],
-            'override' => $holdDetails['override']
+            'override' => $holdDetails['override'],
         ];
         $response = $this->querySirsi($params);
 
@@ -497,7 +497,7 @@ class Unicorn extends AbstractBase implements
     {
         //query sirsi
         $params = [
-            'query' => 'login', 'patronId' => $username, 'pin' => $password
+            'query' => 'login', 'patronId' => $username, 'pin' => $password,
         ];
         $response = $this->querySirsi($params);
 
@@ -537,7 +537,7 @@ class Unicorn extends AbstractBase implements
             'expired' => $expired,
             'number_of_holds' => $holds,
             'status' => $status,
-            'user_key' => $user_key
+            'user_key' => $user_key,
         ];
     }
 
@@ -558,7 +558,7 @@ class Unicorn extends AbstractBase implements
 
         //query sirsi
         $params = [
-            'query' => 'profile', 'patronId' => $username, 'pin' => $password
+            'query' => 'profile', 'patronId' => $username, 'pin' => $password,
         ];
         $response = $this->querySirsi($params);
 
@@ -574,7 +574,7 @@ class Unicorn extends AbstractBase implements
             'phone' => $phone,
             'email' => $email,
             'group' => $profile,
-            'library' => $library
+            'library' => $library,
         ];
     }
 
@@ -595,7 +595,7 @@ class Unicorn extends AbstractBase implements
         $password = $patron['cat_password'];
 
         $params = [
-            'query' => 'fines', 'patronId' => $username, 'pin' => $password
+            'query' => 'fines', 'patronId' => $username, 'pin' => $password,
         ];
         $response = $this->querySirsi($params);
         if (empty($response)) {
@@ -629,7 +629,7 @@ class Unicorn extends AbstractBase implements
                 'fine' => $reason,
                 'checkout' => $this->formatDateTime($date_charged),
                 'duedate' => $this->formatDateTime($duedate),
-                'date_recalled' => $this->formatDateTime($date_recalled)
+                'date_recalled' => $this->formatDateTime($date_recalled),
             ];
         }
 
@@ -653,7 +653,7 @@ class Unicorn extends AbstractBase implements
         $password = $patron['cat_password'];
 
         $params = [
-            'query' => 'getholds', 'patronId' => $username, 'pin' => $password
+            'query' => 'getholds', 'patronId' => $username, 'pin' => $password,
         ];
         $response = $this->querySirsi($params);
         if (empty($response)) {
@@ -676,7 +676,7 @@ class Unicorn extends AbstractBase implements
                 'type' => $type,
                 'location' => $pickup_library,
                 'item_id' => $holdkey,
-                'barcode' => trim($barcode)
+                'barcode' => trim($barcode),
             ];
         }
 
@@ -721,7 +721,7 @@ class Unicorn extends AbstractBase implements
         $params = [
             'query' => 'cancelHolds',
             'patronId' => $patron['cat_username'], 'pin' => $patron['cat_password'],
-            'holdId' => implode('|', $details)
+            'holdId' => implode('|', $details),
         ];
         $response = $this->querySirsi($params);
 
@@ -751,12 +751,12 @@ class Unicorn extends AbstractBase implements
         foreach ($details as $holdKey) {
             if (in_array($holdKey, $failures)) {
                 $items[$holdKey] = [
-                    'success' => false, 'status' => "hold_cancel_fail"
+                    'success' => false, 'status' => "hold_cancel_fail",
                 ];
             } else {
                 $count++;
                 $items[$holdKey] = [
-                  'success' => true, 'status' => "hold_cancel_success"
+                  'success' => true, 'status' => "hold_cancel_success",
                 ];
             }
         }
@@ -782,7 +782,7 @@ class Unicorn extends AbstractBase implements
         $password = $patron['cat_password'];
 
         $params = [
-            'query' => 'transactions', 'patronId' => $username, 'pin' => $password
+            'query' => 'transactions', 'patronId' => $username, 'pin' => $password,
         ];
         $response = $this->querySirsi($params);
         if (empty($response)) {
@@ -825,7 +825,7 @@ class Unicorn extends AbstractBase implements
                 'charge_key' => $charge_key,
                 'item_id' => $charge_key,
                 'callnum' => $callnum,
-                'dueStatus' => $overdue == 'Y' ? 'overdue' : ''
+                'dueStatus' => $overdue == 'Y' ? 'overdue' : '',
             ];
         }
 
@@ -939,22 +939,22 @@ class Unicorn extends AbstractBase implements
         if ($courseId) {
             $params = [
                 'query' => 'reserves', 'course' => $courseId, 'instructor' => '',
-                'desk' => ''
+                'desk' => '',
             ];
         } elseif ($instructorId) {
             $params = [
                 'query' => 'reserves', 'course' => '', 'instructor' => $instructorId,
-                'desk' => ''
+                'desk' => '',
             ];
         } elseif ($departmentId) {
             $params = [
                 'query' => 'reserves', 'course' => '', 'instructor' => '',
-                'desk' => $departmentId
+                'desk' => $departmentId,
             ];
         } else {
             $params = [
                 'query' => 'reserves', 'course' => '', 'instructor' => '',
-                'desk' => ''
+                'desk' => '',
             ];
         }
 
@@ -974,7 +974,7 @@ class Unicorn extends AbstractBase implements
                     'BIB_ID' => $bib_id,
                     'INSTRUCTOR_ID' => $instructor_id,
                     'COURSE_ID' => $course_id,
-                    'DEPARTMENT_ID' => $dept_id
+                    'DEPARTMENT_ID' => $dept_id,
                 ];
             }
         }
@@ -1017,7 +1017,7 @@ class Unicorn extends AbstractBase implements
         foreach ($item_lines as $item) {
             $item = rtrim($item, '|');
             $items[$item] = [
-                'id' => $item
+                'id' => $item,
             ];
             $rescount++;
         }
@@ -1127,7 +1127,7 @@ class Unicorn extends AbstractBase implements
             'circulation_rule' => $circulation_rule,
             'date_recalled' => $this->formatDateTime($date_recalled),
             'item_key' => $itemkey1 . '|' . $itemkey2 . '|' . $itemkey3 . '|',
-            'format' => $format
+            'format' => $format,
             ];
 
         return $item;
@@ -1312,7 +1312,7 @@ class Unicorn extends AbstractBase implements
             'location_code' => $location_code,
             'location'      => $this->mapLocation($location_code),
             'notes'         => $record->getSubfields($field, 'z'),
-            'marc852'       => $field
+            'marc852'       => $field,
         ];
         return $location;
     }

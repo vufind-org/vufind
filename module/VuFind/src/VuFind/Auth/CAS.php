@@ -138,7 +138,7 @@ class CAS extends AbstractBase
         // Has the user configured attributes to use for populating the user table?
         $attribsToCheck = [
             "cat_username", "cat_password", "email", "lastname", "firstname",
-            "college", "major", "home_library"
+            "college", "major", "home_library",
         ];
         $catPassword = null;
         foreach ($attribsToCheck as $attribute) {

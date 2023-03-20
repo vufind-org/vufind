@@ -55,8 +55,8 @@ class IntervalTest extends \PHPUnit\Framework\TestCase
         $config = new \Laminas\Config\Config(
             [
                 'Captcha' => [
-                    'time_from_session_start' => 20
-                ]
+                    'time_from_session_start' => 20,
+                ],
             ]
         );
 

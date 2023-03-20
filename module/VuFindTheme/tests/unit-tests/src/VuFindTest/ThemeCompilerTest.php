@@ -122,7 +122,7 @@ class ThemeCompilerTest extends \PHPUnit\Framework\TestCase
                 ],
                 'aliases' => [
                     'xyzzy' => 'Xyzzy',
-                ]
+                ],
             ],
             'doctype' => 'HTML5',
         ];
@@ -181,7 +181,7 @@ class ThemeCompilerTest extends \PHPUnit\Framework\TestCase
                 ],
                 'aliases' => [
                     'xyzzy' => 'Xyzzy',
-                ]
+                ],
             ],
             'doctype' => 'HTML5',
         ];

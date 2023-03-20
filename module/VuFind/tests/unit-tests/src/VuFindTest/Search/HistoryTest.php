@@ -67,7 +67,7 @@ class HistoryTest extends \PHPUnit\Framework\TestCase
             [
                 'Account' => [
                     'schedule_searches' => false,
-                ]
+                ],
             ]
         );
         $history = $this->getHistory(null, null, $config);
@@ -86,7 +86,7 @@ class HistoryTest extends \PHPUnit\Framework\TestCase
             [
                 'Account' => [
                     'schedule_searches' => true,
-                ]
+                ],
             ]
         );
         $history = $this->getHistory(null, null, $config);
@@ -107,8 +107,8 @@ class HistoryTest extends \PHPUnit\Framework\TestCase
             [
                 'Account' => [
                     'schedule_searches' => true,
-                    'scheduled_search_frequencies' => 'Always'
-                ]
+                    'scheduled_search_frequencies' => 'Always',
+                ],
             ]
         );
         $history = $this->getHistory(null, null, $config);
@@ -127,9 +127,9 @@ class HistoryTest extends \PHPUnit\Framework\TestCase
                 'Account' => [
                     'schedule_searches' => true,
                     'scheduled_search_frequencies' => [
-                        1 => 'One', 2 => 'Two'
-                    ]
-                ]
+                        1 => 'One', 2 => 'Two',
+                    ],
+                ],
             ]
         );
         $history = $this->getHistory(null, null, $config);

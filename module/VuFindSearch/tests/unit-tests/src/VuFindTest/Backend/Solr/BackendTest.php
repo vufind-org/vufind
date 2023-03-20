@@ -204,7 +204,7 @@ class BackendTest extends TestCase
                     'Adult children of aging parents' => 7,
                     'Automobile drivers\' tests' => 7,
                     'Fathers and daughters' => 7,
-                ]
+                ],
             ],
             $facets
         );
@@ -666,7 +666,7 @@ class BackendTest extends TestCase
                         // If client is provided, return it since it may have test
                         // expectations:
                         return $client ?? new \Laminas\Http\Client();
-                    }
+                    },
                 ]
             )
             ->getMock();

@@ -642,7 +642,7 @@ class Server
         if ($this->supportsVuFindMetadata()) {
             $this->metadataFormats['oai_vufind_json'] = [
                 'schema' => 'https://vufind.org/xsd/oai_vufind_json-1.0.xsd',
-                'namespace' => 'http://vufind.org/oai_vufind_json-1.0'
+                'namespace' => 'http://vufind.org/oai_vufind_json-1.0',
             ];
         } else {
             unset($this->metadataFormats['oai_vufind_json']);

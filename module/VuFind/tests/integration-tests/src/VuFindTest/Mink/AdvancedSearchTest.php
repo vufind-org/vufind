@@ -298,10 +298,10 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
                 'facets' => [
                     'Advanced_Settings' => [
                         'limitOrderOverride' => [
-                            'format' => 'Book::eBook'
-                        ]
-                    ]
-                ]
+                            'format' => 'Book::eBook',
+                        ],
+                    ],
+                ],
             ]
         );
         $session = $this->getMinkSession();

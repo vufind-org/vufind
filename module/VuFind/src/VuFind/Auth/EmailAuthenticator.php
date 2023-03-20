@@ -175,7 +175,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
             'timestamp' => time(),
             'data' => $data,
             'email' => $email,
-            'ip' => $this->remoteAddress->getIpAddress()
+            'ip' => $this->remoteAddress->getIpAddress(),
         ];
         $hash = $this->csrf->getHash(true);
 

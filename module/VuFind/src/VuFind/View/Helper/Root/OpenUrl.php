@@ -234,7 +234,7 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
             'openUrlGraphicHeight' => empty($this->config->graphic_height)
                 ? false : $this->config->graphic_height,
             'openUrlEmbed' => $embed,
-            'openUrlEmbedAutoLoad' => $embedAutoLoad
+            'openUrlEmbedAutoLoad' => $embedAutoLoad,
         ];
         $this->addImageBasedParams($imagebased, $params);
 

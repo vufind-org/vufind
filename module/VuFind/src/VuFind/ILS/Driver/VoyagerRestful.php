@@ -568,7 +568,7 @@ class VoyagerRestful extends Voyager implements
                 'storageRetrievalRequest' => $storageRetrieval,
                 'addStorageRetrievalRequestLink' => $addStorageRetrievalLink,
                 'ILLRequest' => $ILLRequest,
-                'addILLRequestLink' => $addILLRequestLink
+                'addILLRequestLink' => $addILLRequestLink,
             ];
             unset($holding[$i]['_fullRow']);
         }
@@ -705,7 +705,7 @@ class VoyagerRestful extends Voyager implements
             foreach ($this->ws_pickUpLocations as $code => $library) {
                 $pickResponse[] = [
                     'locationID' => $code,
-                    'locationDisplay' => $library
+                    'locationDisplay' => $library,
                 ];
             }
         } else {
@@ -743,7 +743,7 @@ class VoyagerRestful extends Voyager implements
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
                 $pickResponse[] = [
                     'locationID' => $row['LOCATION_ID'],
-                    'locationDisplay' => utf8_encode($row['LOCATION_NAME'])
+                    'locationDisplay' => utf8_encode($row['LOCATION_NAME']),
                 ];
             }
         }
@@ -875,7 +875,7 @@ class VoyagerRestful extends Voyager implements
             'rg.GROUP_NAME',
         ];
         $sqlFrom = [
-            "$this->dbName.REQUEST_GROUP rg"
+            "$this->dbName.REQUEST_GROUP rg",
 
         ];
         $sqlWhere = [];
@@ -921,7 +921,7 @@ class VoyagerRestful extends Voyager implements
             $subExpressions = [
                 'sub_rgl.GROUP_ID',
                 'sub_i.ITEM_ID',
-                'max(sub_ist.ITEM_STATUS) as STATUS'
+                'max(sub_ist.ITEM_STATUS) as STATUS',
             ];
 
             $subFrom = [
@@ -930,7 +930,7 @@ class VoyagerRestful extends Voyager implements
                 "$this->dbName.ITEM sub_i",
                 "$this->dbName.REQUEST_GROUP_LOCATION sub_rgl",
                 "$this->dbName.MFHD_ITEM sub_mi",
-                "$this->dbName.MFHD_MASTER sub_mm"
+                "$this->dbName.MFHD_MASTER sub_mm",
             ];
 
             $subWhere = [
@@ -940,12 +940,12 @@ class VoyagerRestful extends Voyager implements
                 'sub_mi.ITEM_ID=sub_i.ITEM_ID',
                 'sub_mm.MFHD_ID=sub_mi.MFHD_ID',
                 'sub_rgl.LOCATION_ID=sub_mm.LOCATION_ID',
-                "sub_mm.SUPPRESS_IN_OPAC='N'"
+                "sub_mm.SUPPRESS_IN_OPAC='N'",
             ];
 
             $subGroup = [
                 'sub_rgl.GROUP_ID',
-                'sub_i.ITEM_ID'
+                'sub_i.ITEM_ID',
             ];
 
             $sqlBind['subBibId'] = $bibId;
@@ -955,7 +955,7 @@ class VoyagerRestful extends Voyager implements
                 'from' => $subFrom,
                 'where' => $subWhere,
                 'group' => $subGroup,
-                'bind' => []
+                'bind' => [],
             ];
 
             $subSql = $this->buildSqlFromArray($subArray);
@@ -988,7 +988,7 @@ class VoyagerRestful extends Voyager implements
             'expressions' => $sqlExpressions,
             'from' => $sqlFrom,
             'where' => $sqlWhere,
-            'bind' => $sqlBind
+            'bind' => $sqlBind,
         ];
 
         $sql = $this->buildSqlFromArray($sqlArray);
@@ -1003,7 +1003,7 @@ class VoyagerRestful extends Voyager implements
         while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
             $results[] = [
                 'id' => $row['GROUP_ID'],
-                'name' => utf8_encode($row['GROUP_NAME'])
+                'name' => utf8_encode($row['GROUP_NAME']),
             ];
         }
 
@@ -1229,13 +1229,13 @@ class VoyagerRestful extends Voyager implements
             // Build Hierarchy
             $hierarchy = [
                 'patron' =>  $patronId,
-                'patronStatus' => 'blocks'
+                'patronStatus' => 'blocks',
             ];
 
             // Add Required Params
             $params = [
                 'patron_homedb' => $this->ws_patronHomeUbId,
-                'view' => 'full'
+                'view' => 'full',
             ];
 
             $blocks = $this->makeRequest($hierarchy, $params);
@@ -1454,7 +1454,7 @@ class VoyagerRestful extends Voyager implements
             $params = [
                 'patron' => $patronId,
                 'patron_homedb' => $this->ws_patronHomeUbId,
-                'view' => 'full'
+                'view' => 'full',
             ];
 
             $check = $this->makeRequest($hierarchy, $params, 'GET', false);
@@ -1577,7 +1577,7 @@ class VoyagerRestful extends Voyager implements
             if ($message->attributes()->type == 'success') {
                 return [
                     'success' => true,
-                    'status' => 'hold_request_success'
+                    'status' => 'hold_request_success',
                 ];
             }
             if ($message->attributes()->type == 'system') {
@@ -1639,7 +1639,7 @@ class VoyagerRestful extends Voyager implements
     {
         return [
             'success' => false,
-            'sysMessage' => $msg
+            'sysMessage' => $msg,
         ];
     }
 
@@ -1655,18 +1655,18 @@ class VoyagerRestful extends Voyager implements
     protected function isRecordOnLoan($patronId, $bibId, $itemId = null)
     {
         $sqlExpressions = [
-            'count(cta.ITEM_ID) CNT'
+            'count(cta.ITEM_ID) CNT',
         ];
 
         $sqlFrom = [
             "$this->dbName.BIB_ITEM bi",
-            "$this->dbName.CIRC_TRANSACTIONS cta"
+            "$this->dbName.CIRC_TRANSACTIONS cta",
         ];
 
         $sqlWhere = [
             'cta.PATRON_ID=:patronId',
             'bi.BIB_ID=:bibId',
-            'bi.ITEM_ID=cta.ITEM_ID'
+            'bi.ITEM_ID=cta.ITEM_ID',
         ];
 
         if ($this->requestGroupsEnabled) {
@@ -1691,7 +1691,7 @@ class VoyagerRestful extends Voyager implements
             'expressions' => $sqlExpressions,
             'from' => $sqlFrom,
             'where' => $sqlWhere,
-            'bind' => $sqlBind
+            'bind' => $sqlBind,
         ];
 
         $sql = $this->buildSqlFromArray($sqlArray);
@@ -1716,14 +1716,14 @@ class VoyagerRestful extends Voyager implements
     protected function itemsExist($bibId, ?int $requestGroupId = null)
     {
         $sqlExpressions = [
-            'count(i.ITEM_ID) CNT'
+            'count(i.ITEM_ID) CNT',
         ];
 
         $sqlFrom = [
             "$this->dbName.BIB_ITEM bi",
             "$this->dbName.ITEM i",
             "$this->dbName.MFHD_ITEM mi",
-            "$this->dbName.MFHD_MASTER mm"
+            "$this->dbName.MFHD_MASTER mm",
         ];
 
         $sqlWhere = [
@@ -1731,7 +1731,7 @@ class VoyagerRestful extends Voyager implements
             'i.ITEM_ID=bi.ITEM_ID',
             'mi.ITEM_ID=i.ITEM_ID',
             'mm.MFHD_ID=mi.MFHD_ID',
-            "mm.SUPPRESS_IN_OPAC='N'"
+            "mm.SUPPRESS_IN_OPAC='N'",
         ];
 
         if ($this->excludedItemLocations) {
@@ -1754,7 +1754,7 @@ class VoyagerRestful extends Voyager implements
             'expressions' => $sqlExpressions,
             'from' => $sqlFrom,
             'where' => $sqlWhere,
-            'bind' => $sqlBind
+            'bind' => $sqlBind,
         ];
 
         $sql = $this->buildSqlFromArray($sqlArray);
@@ -1780,7 +1780,7 @@ class VoyagerRestful extends Voyager implements
         // Build inner query first
         $sqlExpressions = [
             'i.ITEM_ID',
-            'max(ist.ITEM_STATUS) as STATUS'
+            'max(ist.ITEM_STATUS) as STATUS',
         ];
 
         $sqlFrom = [
@@ -1788,7 +1788,7 @@ class VoyagerRestful extends Voyager implements
             "$this->dbName.BIB_ITEM bi",
             "$this->dbName.ITEM i",
             "$this->dbName.MFHD_ITEM mi",
-            "$this->dbName.MFHD_MASTER mm"
+            "$this->dbName.MFHD_MASTER mm",
         ];
 
         $sqlWhere = [
@@ -1797,7 +1797,7 @@ class VoyagerRestful extends Voyager implements
             'ist.ITEM_ID=i.ITEM_ID',
             'mi.ITEM_ID=i.ITEM_ID',
             'mm.MFHD_ID=mi.MFHD_ID',
-            "mm.SUPPRESS_IN_OPAC='N'"
+            "mm.SUPPRESS_IN_OPAC='N'",
         ];
 
         if ($this->excludedItemLocations) {
@@ -1806,7 +1806,7 @@ class VoyagerRestful extends Voyager implements
         }
 
         $sqlGroup = [
-            'i.ITEM_ID'
+            'i.ITEM_ID',
         ];
 
         $sqlBind = ['bibId' => $bibId];
@@ -1825,7 +1825,7 @@ class VoyagerRestful extends Voyager implements
             'from' => $sqlFrom,
             'where' => $sqlWhere,
             'group' => $sqlGroup,
-            'bind' => $sqlBind
+            'bind' => $sqlBind,
         ];
 
         $sql = $this->buildSqlFromArray($sqlArray);
@@ -1871,7 +1871,7 @@ class VoyagerRestful extends Voyager implements
             "HOLD_RECALL_ITEMS.HOLD_RECALL_STATUS < 3)",
             "HOLD_RECALL.BIB_ID = BIB_TEXT.BIB_ID(+)",
             "HOLD_RECALL.REQUEST_GROUP_ID = REQUEST_GROUP.GROUP_ID(+)",
-            "HOLD_RECALL.HOLDING_DB_ID = VOYAGER_DATABASES.DB_ID(+)"
+            "HOLD_RECALL.HOLDING_DB_ID = VOYAGER_DATABASES.DB_ID(+)",
         ];
 
         return $sqlArray;
@@ -1920,7 +1920,7 @@ class VoyagerRestful extends Voyager implements
             $copyFields = [
                 'id', 'item_id', 'volume', 'publication_year', 'title',
                 'institution_id', 'institution_name',
-                'institution_dbkey', 'in_transit'
+                'institution_dbkey', 'in_transit',
             ];
             $apiHolds = $this->getHoldsFromApi($patron, true);
             foreach ($apiHolds as $apiHold) {
@@ -2063,7 +2063,7 @@ class VoyagerRestful extends Voyager implements
             'bibId' => $bibId,
             'PICK' => $pickUpLocation,
             'REQNNA' => $lastInterestDate,
-            'REQCOMMENTS' => $comment
+            'REQCOMMENTS' => $comment,
         ];
         if ($level == 'copy' && $itemId) {
             $requestData['itemId'] = $itemId;
@@ -2108,13 +2108,13 @@ class VoyagerRestful extends Voyager implements
             $hierarchy = [
                 'patron' => $patron['id'],
                  'circulationActions' => 'requests',
-                 'holds' => $cancelID
+                 'holds' => $cancelID,
             ];
 
             // Add Required Params
             $params = [
                 'patron_homedb' => $this->ws_patronHomeUbId,
-                'view' => 'full'
+                'view' => 'full',
             ];
 
             // Get Data
@@ -2135,7 +2135,7 @@ class VoyagerRestful extends Voyager implements
                 ];
             } else {
                 $response[$itemId] = [
-                    'success' => false, 'status' => 'hold_cancel_fail'
+                    'success' => false, 'status' => 'hold_cancel_fail',
                 ];
             }
         }
@@ -2207,13 +2207,13 @@ class VoyagerRestful extends Voyager implements
         // Build Hierarchy
         $hierarchy = [
             'patron' =>  $patron['id'],
-            'circulationActions' => 'loans'
+            'circulationActions' => 'loans',
         ];
 
         // Add Required Params
         $params = [
             'patron_homedb' => $this->ws_patronHomeUbId,
-            'view' => 'full'
+            'view' => 'full',
         ];
 
         $results = $this->makeRequest($hierarchy, $params);
@@ -2316,13 +2316,13 @@ class VoyagerRestful extends Voyager implements
         $hierarchy = [
             'patron' =>  $patron['id'],
             'circulationActions' => 'requests',
-            'holds' => false
+            'holds' => false,
         ];
 
         // Add Required Params
         $params = [
             'patron_homedb' => $this->ws_patronHomeUbId,
-            'view' => 'full'
+            'view' => 'full',
         ];
 
         $results = $this->makeRequest($hierarchy, $params);
@@ -2380,7 +2380,7 @@ class VoyagerRestful extends Voyager implements
                         'in_transit' => (substr((string)$item->statusText, 0, 13)
                             == 'In transit to')
                           ? substr((string)$item->statusText, 14)
-                          : ''
+                          : '',
                     ];
                 }
             }
@@ -2405,13 +2405,13 @@ class VoyagerRestful extends Voyager implements
         $hierarchy = [
             'patron' =>  $patron['id'],
             'circulationActions' => 'requests',
-            'callslips' => false
+            'callslips' => false,
         ];
 
         // Add Required Params
         $params = [
             'patron_homedb' => $this->ws_patronHomeUbId,
-            'view' => 'full'
+            'view' => 'full',
         ];
 
         $results = $this->makeRequest($hierarchy, $params);
@@ -2474,7 +2474,7 @@ class VoyagerRestful extends Voyager implements
                                 'Y-m-d',
                                 substr((string)$item->statusText, 9)
                             )
-                            : ''
+                            : '',
                     ];
                 }
             }
@@ -2531,7 +2531,7 @@ class VoyagerRestful extends Voyager implements
         $params = [
             'patron' => $patron['id'],
             'patron_homedb' => $this->ws_patronHomeUbId,
-            'view' => 'full'
+            'view' => 'full',
         ];
 
         $xml = [];
@@ -2542,7 +2542,7 @@ class VoyagerRestful extends Voyager implements
                 'reqinput field="2"' => $details['issue'],
                 'reqinput field="3"' => $details['year'],
                 'dbkey' => $this->ws_dbKey,
-                'mfhdId' => $mfhdId
+                'mfhdId' => $mfhdId,
             ];
             if (isset($details['pickUpLocation'])) {
                 $xml['call-slip-title-parameters']['pickup-location']
@@ -2551,7 +2551,7 @@ class VoyagerRestful extends Voyager implements
         } else {
             $xml['call-slip-parameters'] = [
                 'comment' => $comment,
-                'dbkey' => $this->ws_dbKey
+                'dbkey' => $this->ws_dbKey,
             ];
             if (isset($details['pickUpLocation'])) {
                 $xml['call-slip-parameters']['pickup-location']
@@ -2620,13 +2620,13 @@ class VoyagerRestful extends Voyager implements
             $hierarchy = [
                 'patron' => $patron['id'],
                 'circulationActions' => 'requests',
-                'callslips' => $cancelID
+                'callslips' => $cancelID,
             ];
 
             // Add Required Params
             $params = [
                 'patron_homedb' => $this->ws_patronHomeUbId,
-                'view' => 'full'
+                'view' => 'full',
             ];
 
             // Get Data
@@ -2648,7 +2648,7 @@ class VoyagerRestful extends Voyager implements
             } else {
                 $response[$itemId] = [
                     'success' => false,
-                    'status' => 'storage_retrieval_request_cancel_fail'
+                    'status' => 'storage_retrieval_request_cancel_fail',
                 ];
             }
         }
@@ -2842,7 +2842,7 @@ class VoyagerRestful extends Voyager implements
                     foreach ($field->xpath('./req:select/req:option') as $option) {
                         $items[] = [
                             'id' => (string)$option->attributes()->id,
-                            'name' => (string)$option
+                            'name' => (string)$option,
                         ];
                     }
                     break;
@@ -2851,7 +2851,7 @@ class VoyagerRestful extends Voyager implements
                         $libraries[] = [
                             'id' => (string)$option->attributes()->id,
                             'name' => (string)$option,
-                            'isDefault' => $option->attributes()->isDefault == 'Y'
+                            'isDefault' => $option->attributes()->isDefault == 'Y',
                         ];
                     }
                     break;
@@ -2860,7 +2860,7 @@ class VoyagerRestful extends Voyager implements
                         $locations[] = [
                             'id' => (string)$option->attributes()->id,
                             'name' => (string)$option,
-                            'isDefault' => $option->attributes()->isDefault == 'Y'
+                            'isDefault' => $option->attributes()->isDefault == 'Y',
                         ];
                     }
                     break;
@@ -2877,7 +2877,7 @@ class VoyagerRestful extends Voyager implements
             'items' => $items,
             'libraries' => $libraries,
             'locations' => $locations,
-            'requiredBy' => $requiredByDate
+            'requiredBy' => $requiredByDate,
         ];
         $this->putCachedData($cacheId, $results);
         return $results;
@@ -3038,7 +3038,7 @@ class VoyagerRestful extends Voyager implements
             $locations[] = [
                 'id' => (string)$location->attributes()->id,
                 'name' => (string)$location,
-                'isDefault' => $location->attributes()->isDefault == 'Y'
+                'isDefault' => $location->attributes()->isDefault == 'Y',
             ];
         }
         return $locations;
@@ -3108,7 +3108,7 @@ class VoyagerRestful extends Voyager implements
         if (!$pickupLocationValid) {
             return [
                 'success' => false,
-                'sysMessage' => 'ill_request_place_fail_missing'
+                'sysMessage' => 'ill_request_place_fail_missing',
             ];
         }
 
@@ -3182,7 +3182,7 @@ class VoyagerRestful extends Voyager implements
             if ($message->attributes()->type == 'success') {
                 return [
                     'success' => true,
-                    'status' => 'ill_request_place_success'
+                    'status' => 'ill_request_place_success',
                 ];
             }
             if ($message->attributes()->type == 'system') {
@@ -3239,7 +3239,7 @@ class VoyagerRestful extends Voyager implements
             // Build Hierarchy
             $hierarchy = [
                 'patron' => $patron['id'],
-                 'circulationActions' => 'requests'
+                 'circulationActions' => 'requests',
             ];
             // An UB request is
             if ($type == 'C') {
@@ -3251,7 +3251,7 @@ class VoyagerRestful extends Voyager implements
             // Add Required Params
             $params = [
                 'patron_homedb' => $this->ws_patronHomeUbId,
-                'view' => 'full'
+                'view' => 'full',
             ];
 
             // Get Data
@@ -3273,7 +3273,7 @@ class VoyagerRestful extends Voyager implements
             } else {
                 $response[$itemId] = [
                     'success' => false,
-                    'status' => 'ill_request_cancel_fail'
+                    'status' => 'ill_request_cancel_fail',
                 ];
             }
         }
@@ -3364,7 +3364,7 @@ class VoyagerRestful extends Voyager implements
                 || null !== $row['PATRON_PIN']
             ) {
                 return [
-                    'success' => false, 'status' => 'authentication_error_invalid'
+                    'success' => false, 'status' => 'authentication_error_invalid',
                 ];
             }
         }
@@ -3377,7 +3377,7 @@ class VoyagerRestful extends Voyager implements
         );
         if ($newPIN === '') {
             return [
-                'success' => false, 'status' => 'password_error_invalid'
+                'success' => false, 'status' => 'password_error_invalid',
             ];
         }
         $barcode = htmlspecialchars($patron['cat_username'], ENT_COMPAT, 'UTF-8');
@@ -3418,19 +3418,19 @@ class VoyagerRestful extends Voyager implements
             $exceptionNamespace = 'com.endinfosys.voyager.patronpin.PatronPIN.';
             if ($code == $exceptionNamespace . 'ValidateException') {
                 return [
-                    'success' => false, 'status' => 'authentication_error_invalid'
+                    'success' => false, 'status' => 'authentication_error_invalid',
                 ];
             }
             if ($code == $exceptionNamespace . 'ValidateUniqueException') {
                 return [
-                    'success' => false, 'status' => 'password_error_not_unique'
+                    'success' => false, 'status' => 'password_error_not_unique',
                 ];
             }
             if ($code == $exceptionNamespace . 'ValidateLengthException') {
                 // This error may happen even with correct settings if the new PIN
                 // contains invalid characters.
                 return [
-                    'success' => false, 'status' => 'password_error_invalid'
+                    'success' => false, 'status' => 'password_error_invalid',
                 ];
             }
             throw new ILSException((string)$error);

@@ -85,17 +85,17 @@ class SitemapTest extends \PHPUnit\Framework\TestCase
             [
                 'url' => 'http://foo',
                 'languages' => [
-                    'en' => 'en', 'en-GB' => 'en-gb', 'fi' => 'fi', 'x-default' => null
-                ]
+                    'en' => 'en', 'en-GB' => 'en-gb', 'fi' => 'fi', 'x-default' => null,
+                ],
             ]
         );
         $sm->addUrl(
             [
                 'url' => 'http://bar?t=1',
                 'languages' => [
-                  'en' => 'en', 'en-GB' => 'en-gb', 'fi' => 'fi', 'x-default' => null
+                  'en' => 'en', 'en-GB' => 'en-gb', 'fi' => 'fi', 'x-default' => null,
                 ],
-                'frequency' => 'daily'
+                'frequency' => 'daily',
             ]
         );
         $sm->addUrl('http://baz');

@@ -266,7 +266,7 @@ class LDAP extends AbstractBase
         // Database fields that we may be able to load from LDAP:
         $fields = [
             'firstname', 'lastname', 'email', 'cat_username', 'cat_password',
-            'college', 'major'
+            'college', 'major',
         ];
 
         // User object to populate from LDAP:

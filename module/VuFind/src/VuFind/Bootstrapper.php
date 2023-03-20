@@ -158,7 +158,7 @@ class Bootstrapper
             [
                 "{$this->config->Site->locale}.UTF8",
                 "{$this->config->Site->locale}.UTF-8",
-                $this->config->Site->locale
+                $this->config->Site->locale,
             ]
         );
         date_default_timezone_set($this->config->Site->timezone);

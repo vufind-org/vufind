@@ -10,6 +10,6 @@ return [
         ],
         'aliases' => [
             'xyzzy' => 'Xyzzy',
-        ]
+        ],
     ],
 ];

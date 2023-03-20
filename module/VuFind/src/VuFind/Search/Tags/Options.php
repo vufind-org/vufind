@@ -76,7 +76,7 @@ class Options extends \VuFind\Search\Base\Options
         $this->defaultSort = 'title';
         $this->sortOptions = [
             'title' => 'sort_title', 'author' => 'sort_author',
-            'year DESC' => 'sort_year', 'year' => 'sort_year asc'
+            'year DESC' => 'sort_year', 'year' => 'sort_year asc',
         ];
         // Load autocomplete preferences:
         $this->configureAutocomplete($searchSettings);

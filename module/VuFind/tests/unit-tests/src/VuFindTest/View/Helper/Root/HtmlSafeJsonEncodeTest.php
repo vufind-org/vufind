@@ -86,7 +86,7 @@ class HtmlSafeJsonEncodeTest extends \PHPUnit\Framework\TestCase
                 => ['<\'">', '"\u003C\u0027\u0022\u003E"'],
             'array of special characters' => [
                 ['<', '"', "'", '>', '&'],
-                '["\u003C","\u0022","\u0027","\u003E","\u0026"]'
+                '["\u003C","\u0022","\u0027","\u003E","\u0026"]',
             ],
         ];
     }

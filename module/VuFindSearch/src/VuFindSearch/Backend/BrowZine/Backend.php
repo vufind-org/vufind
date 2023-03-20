@@ -118,7 +118,7 @@ class Backend extends AbstractBackend
             [
                 'offset' => $offset,
                 'recordCount' => count($results),
-                'data' => array_slice($results, $offset, $limit)
+                'data' => array_slice($results, $offset, $limit),
             ]
         );
         $this->injectSourceIdentifier($collection);

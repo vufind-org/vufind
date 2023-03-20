@@ -610,7 +610,7 @@ class AbstractSearch extends AbstractBase
             $parts[] = [
                 'field' => $field,
                 'type' => $type,
-                'values' => [$from, $to]
+                'values' => [$from, $to],
             ];
         }
 

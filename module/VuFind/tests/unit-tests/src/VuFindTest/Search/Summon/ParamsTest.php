@@ -61,7 +61,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     'holdingsOnly:false' => 'add_other_libraries',
                     'queryExpansion:true' => 'include_synonyms',
                 ],
-            ]
+            ],
         ];
         $configManager = $this->getMockConfigPluginManager($config);
         $params = $this->getParams(null, $configManager);

@@ -132,7 +132,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                         'inverted' => 'foo:bar',
                     ],
                 ],
-            ]
+            ],
         ];
         $configManager = $this->getMockConfigPluginManager($config);
         $params = $this->getParams(null, $configManager);

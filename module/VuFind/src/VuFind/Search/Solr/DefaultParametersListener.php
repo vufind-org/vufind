@@ -68,7 +68,7 @@ class DefaultParametersListener
     protected $contextMap = [
         'getIds' => 'search',
         'random' => 'retrieve',
-        'retrieveBatch' => 'retrieve'
+        'retrieveBatch' => 'retrieve',
     ];
 
     /**

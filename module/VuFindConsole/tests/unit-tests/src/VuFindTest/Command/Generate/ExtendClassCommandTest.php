@@ -90,7 +90,7 @@ class ExtendClassCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester->execute(
             [
                 'class_name' => 'Foo',
-                'target_module' => 'Bar'
+                'target_module' => 'Bar',
             ]
         );
         $this->assertEquals(0, $commandTester->getStatusCode());
@@ -146,7 +146,7 @@ class ExtendClassCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester->execute(
             [
                 'class_name' => 'Foo',
-                'target_module' => 'Bar'
+                'target_module' => 'Bar',
             ]
         );
         $this->assertEquals("Foo!\n", $commandTester->getDisplay());

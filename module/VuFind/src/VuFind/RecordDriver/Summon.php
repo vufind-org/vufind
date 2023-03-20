@@ -88,7 +88,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
                     ? [
                         'heading' => [$topic],
                         'type' => $fieldType,
-                        'source' => ''
+                        'source' => '',
                     ] : [$topic];
             }
         }
@@ -186,7 +186,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
         return isset($this->fields['Snippet'][0])
             ? [
                 'snippet' => trim($this->fields['Snippet'][0], '.'),
-                'caption' => ''
+                'caption' => '',
             ]
             : false;
     }
@@ -511,7 +511,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
         if (isset($this->fields['link'])) {
             $msg = $this->hasFullText() ? 'Get full text' : 'Get more information';
             return [
-                ['url' => $this->fields['link'], 'desc' => $this->translate($msg)]
+                ['url' => $this->fields['link'], 'desc' => $this->translate($msg)],
             ];
         }
         $retVal = [];

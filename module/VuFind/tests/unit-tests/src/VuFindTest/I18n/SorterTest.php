@@ -58,7 +58,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
                     'locale' => 'en',
                     'respectLocale' => false,
                 ],
-                -1
+                -1,
             ],
             [
                 [
@@ -66,7 +66,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
                     'locale' => 'en',
                     'respectLocale' => false,
                 ],
-                0
+                0,
             ],
             [
                 [
@@ -74,7 +74,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
                     'locale' => 'en',
                     'respectLocale' => false,
                 ],
-                1
+                1,
             ],
             [
                 [
@@ -82,7 +82,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
                     'locale' => 'en',
                     'respectLocale' => false,
                 ],
-                0
+                0,
             ],
             [
                 [
@@ -90,7 +90,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
                     'locale' => 'en',
                     'respectLocale' => true,
                 ],
-                -1
+                -1,
             ],
             [
                 [
@@ -98,7 +98,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
                     'locale' => 'en',
                     'respectLocale' => true,
                 ],
-                0
+                0,
             ],
             [
                 [
@@ -106,7 +106,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
                     'locale' => 'en',
                     'respectLocale' => true,
                 ],
-                1
+                1,
             ],
             [
                 [
@@ -114,7 +114,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
                     'locale' => 'en',
                     'respectLocale' => true,
                 ],
-                0
+                0,
             ],
             [
                 [
@@ -122,7 +122,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
                     'locale' => 'cs',
                     'respectLocale' => false,
                 ],
-                1
+                1,
             ],
             [
                 [
@@ -130,7 +130,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
                     'locale' => 'cs',
                     'respectLocale' => true,
                 ],
-                -1
+                -1,
             ],
             [
                 [
@@ -138,7 +138,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
                     'locale' => 'cs',
                     'respectLocale' => true,
                 ],
-                0
+                0,
             ],
         ];
     }

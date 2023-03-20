@@ -508,7 +508,7 @@ class ResultScroller extends AbstractPlugin
         $retVal = [
             'firstRecord' => null, 'lastRecord' => null,
             'previousRecord' => null, 'nextRecord' => null,
-            'currentPosition' => null, 'resultTotal' => null
+            'currentPosition' => null, 'resultTotal' => null,
         ];
 
         $searchId = $this->searchMemory->getLastSearchId();

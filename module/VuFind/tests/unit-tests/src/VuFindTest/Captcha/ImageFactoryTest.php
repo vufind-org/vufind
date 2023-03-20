@@ -99,7 +99,7 @@ class ImageFactoryTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue(file_exists($expectedFont));
         $expected = [
             'font' => $expectedFont,
-            'imgDir' => $options->getCacheDir()
+            'imgDir' => $options->getCacheDir(),
         ];
         $this->assertEquals($expected, $result->constructorArgs[0]->getOptions());
         $this->assertEquals($expectedCache, $result->constructorArgs[1]);

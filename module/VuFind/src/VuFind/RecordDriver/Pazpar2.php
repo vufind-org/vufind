@@ -106,7 +106,7 @@ class Pazpar2 extends DefaultRecord
                     // Convert for multiple children
                     $array[$key] = [
                         $array[$key],
-                        $children
+                        $children,
                     ];
                 }
             }

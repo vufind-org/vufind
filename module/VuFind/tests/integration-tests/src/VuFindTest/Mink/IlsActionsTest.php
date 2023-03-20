@@ -71,7 +71,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
                 'driver' => 'Demo',
                 'holds_mode' => 'driver',   // needed to display login link
                 'renewals_enabled' => true,
-            ]
+            ],
         ];
     }
 
@@ -383,7 +383,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Confirm that demo driver expected values are present:
         $this->waitForPageLoad($page);
         $texts = [
-            'Lib-catuser', 'Somewhere...', 'Over the Rainbow'
+            'Lib-catuser', 'Somewhere...', 'Over the Rainbow',
         ];
         foreach ($texts as $text) {
             $this->assertTrue($this->hasElementsMatchingText($page, 'td', $text));

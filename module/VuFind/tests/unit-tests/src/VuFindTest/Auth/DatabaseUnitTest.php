@@ -226,7 +226,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
     ): void {
         $config = new Config(
             [
-                'Authentication' => $authConfig
+                'Authentication' => $authConfig,
             ]
         );
         $db = new Database();
@@ -249,8 +249,8 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
         $config = new Config(
             [
                 'Authentication' => [
-                    'password_pattern' => 'a/'
-                ]
+                    'password_pattern' => 'a/',
+                ],
             ]
         );
         $db = new Database();
@@ -271,7 +271,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
     {
         $defaultConfig = [
             'username_pattern' => "([\\x21\\x23-\\x2B\\x2D-\\x2F\\x3D\\x3F\\x40"
-            . "\\x5E-\\x60\\x7B-\\x7E\\p{L}\\p{Nd}]+)"
+            . "\\x5E-\\x60\\x7B-\\x7E\\p{L}\\p{Nd}]+)",
         ];
         $numericConfig = [
             'minimum_username_length' => 4,
@@ -421,7 +421,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
     ): void {
         $config = new Config(
             [
-                'Authentication' => $authConfig
+                'Authentication' => $authConfig,
             ]
         );
         $db = new Database();

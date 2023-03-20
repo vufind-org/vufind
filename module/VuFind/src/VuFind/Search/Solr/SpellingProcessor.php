@@ -181,7 +181,7 @@ class SpellingProcessor
             ) {
                 $allSuggestions[$term] = [
                     'freq' => $info['origFreq'],
-                    'suggestions' => $suggestions
+                    'suggestions' => $suggestions,
                 ];
             }
         }
@@ -331,7 +331,7 @@ class SpellingProcessor
             // Basic spelling suggestion data
             $returnArray[$targetTerm]['suggestions'][$label] = [
                 'freq' => $freq,
-                'new_term' => $replacement
+                'new_term' => $replacement,
             ];
 
             // Only generate expansions if enabled in config

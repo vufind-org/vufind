@@ -395,7 +395,7 @@ abstract class Base
         $headers = [
             'Accept' => $this->accept,
             'Content-Type' => $this->contentType,
-            'Accept-Encoding' => 'gzip,deflate'
+            'Accept-Encoding' => 'gzip,deflate',
         ];
         if (null != $headerParams) {
             foreach ($headerParams as $key => $value) {

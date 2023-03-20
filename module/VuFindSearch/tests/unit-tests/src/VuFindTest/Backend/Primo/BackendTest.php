@@ -186,9 +186,9 @@ class BackendTest extends \PHPUnit\Framework\TestCase
             'query' => [
                 [
                     'index' => null,
-                    'lookfor' => 'baz'
-                ]
-            ]
+                    'lookfor' => 'baz',
+                ],
+            ],
         ];
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
@@ -212,39 +212,39 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         return [
             [
                 '',
-                true
+                true,
             ],
             [
                 true,
-                true
+                true,
             ],
             [
                 1,
-                true
+                true,
             ],
             [
                 '1',
-                true
+                true,
             ],
             [
                 'true',
-                true
+                true,
             ],
             [
                 false,
-                false
+                false,
             ],
             [
                 0,
-                false
+                false,
             ],
             [
                 '0',
-                false
+                false,
             ],
             [
                 'false',
-                false
+                false,
             ],
         ];
     }
@@ -266,10 +266,10 @@ class BackendTest extends \PHPUnit\Framework\TestCase
                 'filterList' => [
                     'pcAvailability' => [
                         'values' => [
-                            $value
-                        ]
-                    ]
-                ]
+                            $value,
+                        ],
+                    ],
+                ],
             ]
         );
         $expectedParams = [
@@ -280,9 +280,9 @@ class BackendTest extends \PHPUnit\Framework\TestCase
             'query' => [
                 [
                     'index' => null,
-                    'lookfor' => 'foo'
-                ]
-            ]
+                    'lookfor' => 'foo',
+                ],
+            ],
         ];
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())

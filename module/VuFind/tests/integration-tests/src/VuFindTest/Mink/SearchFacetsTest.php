@@ -197,8 +197,8 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
                 'searches' => [
                     'General' => [
                         'default_side_recommend[]' => 'SideFacetsDeferred:Results:CheckboxFacets',
-                    ]
-                ]
+                    ],
+                ],
             ]
         );
         $page = $this->performSearch('building:weird_ids.mrc');
@@ -224,9 +224,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
                 'facets' => [
                     'Results_Settings' => [
                         'showMoreInLightbox[*]' => true,
-                        'lightboxLimit' => $limit
-                    ]
-                ]
+                        'lightboxLimit' => $limit,
+                    ],
+                ],
             ]
         );
         $page = $this->performSearch('building:weird_ids.mrc');
@@ -253,9 +253,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
                 'facets' => [
                     'Results_Settings' => [
                         'showMoreInLightbox[*]' => 'more',
-                        'lightboxLimit' => $limit
-                    ]
-                ]
+                        'lightboxLimit' => $limit,
+                    ],
+                ],
             ]
         );
         $page = $this->performSearch('building:weird_ids.mrc');
@@ -285,8 +285,8 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
                         'showMoreInLightbox[*]' => true,
                         'lightboxLimit' => $limit,
                         'exclude' => '*',
-                    ]
-                ]
+                    ],
+                ],
             ]
         );
         $page = $this->performSearch('building:weird_ids.mrc');
@@ -326,12 +326,12 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             [
                 'facets' => [
                     'Results' => [
-                        'hierarchical_facet_str_mv' => 'hierarchy'
+                        'hierarchical_facet_str_mv' => 'hierarchy',
                     ],
                     'SpecialFacets' => [
-                        'hierarchical[]' => 'hierarchical_facet_str_mv'
-                    ]
-                ]
+                        'hierarchical[]' => 'hierarchical_facet_str_mv',
+                    ],
+                ],
             ]
         );
         $page = $this->performSearch('building:"hierarchy.mrc"');
@@ -349,15 +349,15 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             [
                 'facets' => [
                     'Results' => [
-                        'hierarchical_facet_str_mv' => 'hierarchy'
+                        'hierarchical_facet_str_mv' => 'hierarchy',
                     ],
                     'SpecialFacets' => [
-                        'hierarchical[]' => 'hierarchical_facet_str_mv'
+                        'hierarchical[]' => 'hierarchical_facet_str_mv',
                     ],
                     'Results_Settings' => [
                         'exclude' => 'hierarchical_facet_str_mv',
-                    ]
-                ]
+                    ],
+                ],
             ]
         );
         $extractCount = function ($str) {
@@ -395,15 +395,15 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             [
                 'facets' => [
                     'Results' => [
-                        'hierarchical_facet_str_mv' => 'hierarchy'
+                        'hierarchical_facet_str_mv' => 'hierarchy',
                     ],
                     'Results_Settings' => [
-                        'collapsedFacets' => '*'
+                        'collapsedFacets' => '*',
                     ],
                     'SpecialFacets' => [
-                        'hierarchical[]' => 'hierarchical_facet_str_mv'
-                    ]
-                ]
+                        'hierarchical[]' => 'hierarchical_facet_str_mv',
+                    ],
+                ],
             ]
         );
         $page = $this->performSearch('building:"hierarchy.mrc"');
@@ -528,8 +528,8 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->changeConfigs(
             [
                 'searches' => [
-                    'General' => ['retain_filters_by_default' => false]
-                ]
+                    'General' => ['retain_filters_by_default' => false],
+                ],
             ]
         );
         $page = $this->getFilteredSearch();
@@ -554,8 +554,8 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->changeConfigs(
             [
                 'searches' => [
-                    'General' => ['default_filters' => ['building:weird_ids.mrc']]
-                ]
+                    'General' => ['default_filters' => ['building:weird_ids.mrc']],
+                ],
             ]
         );
 
@@ -590,8 +590,8 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->changeConfigs(
             [
                 'facets' => [
-                    'Results_Settings' => ['orFacets' => 'building']
-                ]
+                    'Results_Settings' => ['orFacets' => 'building'],
+                ],
             ]
         );
 

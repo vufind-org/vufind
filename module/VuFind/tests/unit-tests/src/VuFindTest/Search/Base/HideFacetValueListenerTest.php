@@ -76,7 +76,7 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
                 'Book' => 124,
                 'Unknown' => 16,
                 'Fake' => 3,
-            ]
+            ],
         ];
     }
 

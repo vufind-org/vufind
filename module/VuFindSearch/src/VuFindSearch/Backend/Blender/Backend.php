@@ -160,7 +160,7 @@ class Backend extends AbstractBackend
             $backendDetails[$backendId] = [
                 'backend' => $backend,
                 'query' => $params->get("query_$backendId")[0],
-                'params' => $params->get("params_$backendId")[0]
+                'params' => $params->get("params_$backendId")[0],
             ];
         }
         if (!$backendDetails) {
@@ -252,8 +252,8 @@ class Backend extends AbstractBackend
                 [
                     'msg' => 'search_backend_partial_failure',
                     'tokens' => [
-                        '%%sources%%' => implode(', ', $failedBackends)
-                    ]
+                        '%%sources%%' => implode(', ', $failedBackends),
+                    ],
                 ]
             );
         }

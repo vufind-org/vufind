@@ -60,7 +60,7 @@ class ThemeInjectTemplateListenerFactoryTest extends TestCase
             'vufind' => [
                 'extra_theme_prefixes' => ['Extra/'],
                 'excluded_theme_prefixes' => ['Laminas'],
-            ]
+            ],
         ];
         $container->set('config', $testConfig);
         $modules = ['Laminas\Foo', 'LaminasBar', 'VuFind\Foo', 'VuFind'];

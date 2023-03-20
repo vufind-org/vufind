@@ -145,7 +145,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
 
         // Apply all supported configurations:
         $configKeys = [
-            'recordAccessPermission', 'searchAccessPermission', 'maxLimit'
+            'recordAccessPermission', 'searchAccessPermission', 'maxLimit',
         ];
         foreach ($configKeys as $key) {
             if (isset($settings[$key])) {
@@ -266,7 +266,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
         }
 
         $response = [
-            'resultCount' => count($results)
+            'resultCount' => count($results),
         ];
         $requestedFields = $this->getFieldList($request);
         if ($records = $this->recordFormatter->format($results, $requestedFields)) {

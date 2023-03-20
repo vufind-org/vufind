@@ -85,7 +85,7 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
         $record->setRawData(
             [
                 'HierarchyType' => 'foo',
-                'HierarchyDriver' => $driver ?? $this->getMockHierarchyDriver()
+                'HierarchyDriver' => $driver ?? $this->getMockHierarchyDriver(),
             ]
         );
         return $record;
@@ -126,10 +126,10 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
                         [
                             'value' => 'recordid',
                             'count' => 5,
-                        ]
-                    ]
-                ]
-            ]
+                        ],
+                    ],
+                ],
+            ],
         ];
         $results->expects($this->once())->method('getFullFieldFacets')
             ->with($this->equalTo(['hierarchy_top_id']))

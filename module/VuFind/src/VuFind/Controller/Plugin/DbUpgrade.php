@@ -399,7 +399,7 @@ class DbUpgrade extends AbstractPlugin
             $fields = [
                 'fields' => $current->getColumns(),
                 'deleteRule' => $current->getDeleteRule(),
-                'updateRule' => $current->getUpdateRule()
+                'updateRule' => $current->getUpdateRule(),
             ];
             switch ($current->getType()) {
                 case 'FOREIGN KEY':
@@ -785,7 +785,7 @@ class DbUpgrade extends AbstractPlugin
                     'sql' => $sql,
                     'fields' => $this->explodeFields($foreignKeyMatches[2][$i]),
                     'deleteRule' => $deleteRule,
-                    'updateRule' => $updateRule
+                    'updateRule' => $updateRule,
                 ];
             }
 

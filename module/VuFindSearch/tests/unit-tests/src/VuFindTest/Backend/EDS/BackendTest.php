@@ -71,7 +71,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
             ['getAutocompleteData']
         );
         $autocompleteData = [
-            'custid' => 'foo', 'url' => 'http://foo', 'token' => 'auth1234'
+            'custid' => 'foo', 'url' => 'http://foo', 'token' => 'auth1234',
         ];
         $back->expects($this->any())
             ->method('getAutocompleteData')
@@ -211,8 +211,8 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $config = [
             'EBSCO_Account' => [
                 'user_name' => 'un', 'password' => 'pw', 'ip_auth' => true,
-                'profile' => 'pr', 'organization_id' => 'oi'
-            ]
+                'profile' => 'pr', 'organization_id' => 'oi',
+            ],
         ];
         $back = $this->getBackend($conn, $fact, null, null, $config);
         $this->assertEquals($fact, $back->getRecordCollectionFactory());

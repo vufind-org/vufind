@@ -198,7 +198,7 @@ class Wikipedia implements TranslatorAwareInterface
         foreach ($matches[1] as $m) {
             // Check if this is the Infobox; name may vary by language
             $infoboxTags = [
-                'Bio', 'Ficha de escritor', 'Infobox', 'Info/Biografia'
+                'Bio', 'Ficha de escritor', 'Infobox', 'Info/Biografia',
             ];
             foreach ($infoboxTags as $tag) {
                 if (substr($m, 0, strlen($tag) + 1) == '{' . $tag) {
@@ -223,7 +223,7 @@ class Wikipedia implements TranslatorAwareInterface
         $imageName = $imageCaption = null;
         // The tag marking image files will vary depending on API language:
         $tags = [
-            'Archivo', 'Bestand', 'Datei', 'Ficheiro', 'Fichier', 'File', 'Image'
+            'Archivo', 'Bestand', 'Datei', 'Ficheiro', 'Fichier', 'File', 'Image',
         ];
         $pattern = '/(\x5b\x5b)('
             . implode('|', $tags)

@@ -712,7 +712,7 @@ class DAIA extends AbstractBase implements
         $restructure = function ($array) use (&$restructure) {
             $elements = [
                 'document', 'item', 'available', 'unavailable', 'limitation',
-                'message'
+                'message',
             ];
             foreach ($array as $key => $value) {
                 if (is_array($value)) {

@@ -215,7 +215,7 @@ class EIT extends DefaultRecord
     {
         if (isset($this->controlInfo['pubinfo']['dt']['@attributes']['year'])) {
             return [
-                $this->controlInfo['pubinfo']['dt']['@attributes']['year']
+                $this->controlInfo['pubinfo']['dt']['@attributes']['year'],
             ];
         } elseif (isset($this->controlInfo['pubinfo']['dt'])) {
             return [$this->controlInfo['pubinfo']['dt']];

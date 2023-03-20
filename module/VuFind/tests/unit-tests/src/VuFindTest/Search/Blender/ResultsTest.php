@@ -81,7 +81,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
             new \VuFind\Search\Primo\Params(
                 new \VuFind\Search\Primo\Options($configMgr),
                 $configMgr
-            )
+            ),
         ];
 
         $params = new Params(
@@ -116,7 +116,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     protected function getConfigManager()
     {
         $configs = [
-            'Primo' => new Config([])
+            'Primo' => new Config([]),
         ];
 
         $callback = function (string $configName) use ($configs) {

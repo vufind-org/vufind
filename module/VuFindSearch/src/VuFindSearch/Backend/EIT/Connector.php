@@ -125,7 +125,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         return [
             'docs' => $finalDocs,
             'offset' => $offset,
-            'total' => (int)$xml->Hits
+            'total' => (int)$xml->Hits,
         ];
     }
 
@@ -217,7 +217,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         return [
             'docs' => $finalDocs,
             'offset' => 0,
-            'total' => (int)$xml->Hits
+            'total' => (int)$xml->Hits,
         ];
     }
 }

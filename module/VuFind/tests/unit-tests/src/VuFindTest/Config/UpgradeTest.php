@@ -99,7 +99,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         // theme:
         $expectedWarnings = [
             'The Statistics module has been removed from VuFind. '
-            . 'For usage tracking, please configure Google Analytics or Matomo.'
+            . 'For usage tracking, please configure Google Analytics or Matomo.',
         ];
         if ((float)$version < 1.3) {
             $expectedWarnings[] = "WARNING: This version of VuFind does not support "
@@ -139,7 +139,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             [
                 'Author' => ['AuthorFacets', 'SpellingSuggestions'],
                 'CallNumber' => ['TopFacets:ResultsTop'],
-                'WorkKeys' => ['']
+                'WorkKeys' => [''],
             ],
             $results['searches.ini']['TopRecommendations']
         );
@@ -189,7 +189,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             [
                 'institution', 'building', 'format', 'callnumber-first',
                 'author_facet', 'language', 'genre_facet', 'era_facet',
-                'geographic_facet', 'publishDate'
+                'geographic_facet', 'publishDate',
             ],
             array_keys($results['facets.ini']['Results'])
         );
@@ -354,7 +354,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $adminConfig = [
             'ipRegEx' => '/1\.2\.3\.4|1\.2\.3\.5/',
             'username' => ['username1', 'username2'],
-            'permission' => 'access.AdminModule'
+            'permission' => 'access.AdminModule',
         ];
         $this->assertEquals(
             $adminConfig,
@@ -367,7 +367,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             'role' => ['loggedin'],
             'ipRegEx' => '/1\.2\.3\.4|1\.2\.3\.5/',
             'boolean' => 'OR',
-            'permission' => 'access.SummonExtendedResults'
+            'permission' => 'access.SummonExtendedResults',
         ];
         $this->assertEquals(
             $summonConfig,
@@ -390,7 +390,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         );
         $expectedRegex = [
             'MEMBER1' => '/^1\.2\..*/',
-            'MEMBER2' => ['/^2\.3\..*/', '/^3\.4\..*/']
+            'MEMBER2' => ['/^2\.3\..*/', '/^3\.4\..*/'],
         ];
         foreach ($expectedRegex as $code => $regex) {
             $perm = "access.PrimoInstitution.$code";
@@ -400,7 +400,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             );
             $permDetails = [
                 'ipRegEx' => $regex,
-                'permission' => $perm
+                'permission' => $perm,
             ];
             $this->assertEquals($permDetails, $results['permissions.ini'][$perm]);
         }

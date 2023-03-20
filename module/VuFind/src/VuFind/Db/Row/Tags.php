@@ -81,7 +81,7 @@ class Tags extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface
                         'DISTINCT(?)',
                         ['resource.id'],
                         [Expression::TYPE_IDENTIFIER]
-                    ), Select::SQL_STAR
+                    ), Select::SQL_STAR,
                 ]
             );
             $select->join(

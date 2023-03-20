@@ -303,7 +303,7 @@ class PAIA extends DAIA
             $details[] = [
                 'success' => false,
                 'status' => $array_response['error_description'],
-                'sysMessage' => $array_response['error']
+                'sysMessage' => $array_response['error'],
             ];
         } else {
             $elements = $array_response['doc'];
@@ -313,13 +313,13 @@ class PAIA extends DAIA
                     $details[$item_id] = [
                         'success' => false,
                         'status' => $element['error'],
-                        'sysMessage' => 'Cancel request rejected'
+                        'sysMessage' => 'Cancel request rejected',
                     ];
                 } else {
                     $details[$item_id] = [
                         'success' => true,
                         'status' => 'Success',
-                        'sysMessage' => 'Successfully cancelled'
+                        'sysMessage' => 'Successfully cancelled',
                     ];
                     $count++;
 
@@ -365,7 +365,7 @@ class PAIA extends DAIA
             "patron"       => $details['patron']['cat_username'],
             "username"     => $details['patron']['cat_username'],
             "old_password" => $details['oldPassword'],
-            "new_password" => $details['newPassword']
+            "new_password" => $details['newPassword'],
         ];
 
         try {
@@ -376,7 +376,7 @@ class PAIA extends DAIA
         } catch (AuthException $e) {
             return [
                 'success' => false,
-                'status' => 'password_error_auth_old'
+                'status' => 'password_error_auth_old',
             ];
         } catch (\Exception $e) {
             $this->debug($e->getMessage());
@@ -395,7 +395,7 @@ class PAIA extends DAIA
                 'status'     => $array_response['error'],
                 'sysMessage' =>
                     $array_response['error'] ?? ' ' .
-                    $array_response['error_description'] ?? ' '
+                    $array_response['error_description'] ?? ' ',
             ];
         } elseif (
             isset($array_response['patron'])
@@ -404,13 +404,13 @@ class PAIA extends DAIA
             // on success patron_id is returned
             $details = [
                 'success' => true,
-                'status' => 'Successfully changed'
+                'status' => 'Successfully changed',
             ];
         } else {
             $details = [
                 'success' => false,
                 'status' => 'Failure changing password',
-                'sysMessage' => serialize($array_response)
+                'sysMessage' => serialize($array_response),
             ];
         }
         return $details;
@@ -1146,7 +1146,7 @@ class PAIA extends DAIA
         if (isset($array_response['error'])) {
             $details = [
                 'success' => false,
-                'sysMessage' => $array_response['error_description']
+                'sysMessage' => $array_response['error_description'],
             ];
         } else {
             $elements = $array_response['doc'];
@@ -1154,12 +1154,12 @@ class PAIA extends DAIA
                 if (isset($element['error'])) {
                     $details = [
                         'success' => false,
-                        'sysMessage' => $element['error']
+                        'sysMessage' => $element['error'],
                     ];
                 } else {
                     $details = [
                         'success' => true,
-                        'sysMessage' => 'Successfully requested'
+                        'sysMessage' => 'Successfully requested',
                     ];
                     // if caching is enabled for DAIA remove the cached data for the
                     // current item otherwise the changed status will not be shown
@@ -1250,7 +1250,7 @@ class PAIA extends DAIA
         if (isset($array_response['error'])) {
             $details[] = [
                 'success' => false,
-                'sysMessage' => $array_response['error_description']
+                'sysMessage' => $array_response['error_description'],
             ];
         } else {
             $elements = $array_response['doc'];
@@ -1261,7 +1261,7 @@ class PAIA extends DAIA
                     if (isset($element['error'])) {
                         $details[$element['item']] = [
                             'success' => false,
-                            'sysMessage' => $element['error']
+                            'sysMessage' => $element['error'],
                         ];
                     } elseif ($element['status'] == '3') {
                         $details[$element['item']] = [
@@ -1269,7 +1269,7 @@ class PAIA extends DAIA
                             'new_date' => isset($element['endtime'])
                                 ? $this->convertDatetime($element['endtime']) : '',
                             'item_id'  => 0,
-                            'sysMessage' => 'Successfully renewed'
+                            'sysMessage' => 'Successfully renewed',
                         ];
                     } else {
                         $details[$element['item']] = [
@@ -1277,7 +1277,7 @@ class PAIA extends DAIA
                             'item_id'  => 0,
                             'new_date' => isset($element['endtime'])
                                 ? $this->convertDatetime($element['endtime']) : '',
-                            'sysMessage' => 'Request rejected'
+                            'sysMessage' => 'Request rejected',
                         ];
                     }
                 }

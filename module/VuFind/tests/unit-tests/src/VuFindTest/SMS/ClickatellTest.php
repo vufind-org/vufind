@@ -70,7 +70,7 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
     public function testCarriers()
     {
         $expected = [
-            'Clickatell' => ['name' => 'Clickatell', 'domain' => null]
+            'Clickatell' => ['name' => 'Clickatell', 'domain' => null],
         ];
         $obj = $this->getClickatell();
         $this->assertEquals($expected, $obj->getCarriers());

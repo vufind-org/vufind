@@ -171,8 +171,8 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
                 'config' => [
                     'Authentication' => [
                         'change_email' => true,
-                    ]
-                ]
+                    ],
+                ],
             ]
         );
 
@@ -225,7 +225,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
                 ],
                 'config' => [
                     'Catalog' => ['driver' => 'Demo'],
-                ]
+                ],
             ]
         );
 
@@ -240,7 +240,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
             $page,
             [
                 'username' => 'username2',
-                'email' => "username2@ignore.com"
+                'email' => "username2@ignore.com",
             ]
         );
         $this->clickCss($page, '.modal-body .btn.btn-primary');

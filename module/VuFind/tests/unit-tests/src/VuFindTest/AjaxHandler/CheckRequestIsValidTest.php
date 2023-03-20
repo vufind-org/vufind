@@ -151,7 +151,7 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTest
     {
         $this->assertEquals(
             [
-                ['status' => true, 'msg' => 'storage_retrieval_request_place_text']
+                ['status' => true, 'msg' => 'storage_retrieval_request_place_text'],
             ],
             $this->runSuccessfulTest(
                 'checkStorageRetrievalRequestIsValid',

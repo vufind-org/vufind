@@ -74,9 +74,9 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
                 'Catalog' => ['driver' => 'Demo'],
                 'Authentication' => [
                     'enableAjax' => true,
-                    'enableDropdown' => false
-                ]
-            ]
+                    'enableDropdown' => false,
+                ],
+            ],
             ]
         );
     }
@@ -180,9 +180,9 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
                 'config' => [
                     'Authentication' => [
                         'enableAjax' => false,
-                        'enableDropdown' => false
-                    ]
-                ]
+                        'enableDropdown' => false,
+                    ],
+                ],
             ]
         );
         $this->login();
@@ -208,9 +208,9 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
                 'config' => [
                     'Authentication' => [
                         'enableAjax' => false,
-                        'enableDropdown' => true
-                    ]
-                ]
+                        'enableDropdown' => true,
+                    ],
+                ],
             ]
         );
         $this->login();
@@ -236,9 +236,9 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
                 'config' => [
                     'Authentication' => [
                         'enableAjax' => true,
-                        'enableDropdown' => true
-                    ]
-                ]
+                        'enableDropdown' => true,
+                    ],
+                ],
             ]
         );
         $this->login();
@@ -344,33 +344,33 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
             [
                 'fines' => [
                     'total' => 0,
-                    'display' => 'ZILTCH'
-                ]
+                    'display' => 'ZILTCH',
+                ],
             ],
             // Holds in transit only
             [
                 'holds' => [
                     'in_transit' => 1,
                     'available' => 0,
-                    'other' => 0
-                ]
+                    'other' => 0,
+                ],
             ],
             // ILL Requests in transit only
             [
                 'illRequests' => [
                     'in_transit' => 1,
                     'available' => 0,
-                    'other' => 0
-                ]
+                    'other' => 0,
+                ],
             ],
             // Storage Retrievals in transit only
             [
                 'storageRetrievalRequests' => [
                     'in_transit' => 1,
                     'available' => 0,
-                    'other' => 0
-                ]
-            ]
+                    'other' => 0,
+                ],
+            ],
         ];
         $this->checkIcon($storage, '.account-status-none');
     }
@@ -389,7 +389,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
             // ILL Requests available
             ['illRequests' => ['in_transit' => 0, 'available' => 1]],
             // Storage Retrievals available
-            ['storageRetrievalRequests' => ['in_transit' => 0, 'available' => 1]]
+            ['storageRetrievalRequests' => ['in_transit' => 0, 'available' => 1]],
         ];
         $this->checkIcon($storage, '.account-status-good');
     }
@@ -404,7 +404,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
         $this->login();
         $storage = [
             // Checked out due soon
-            ['checkedOut' => ['warn' => 1]]
+            ['checkedOut' => ['warn' => 1]],
         ];
         $this->checkIcon($storage, '.account-status-warning');
     }
@@ -446,8 +446,8 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
             [
                 [
                     'checkedOut' => ['overdue' => 1],
-                    'holds' => ['available' => 1]
-                ]
+                    'holds' => ['available' => 1],
+                ],
             ],
             '.account-status-danger'
         );
@@ -456,8 +456,8 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
             [
                 [
                     'checkedOut' => ['warn' => 1],
-                    'holds' => ['available' => 1]
-                ]
+                    'holds' => ['available' => 1],
+                ],
             ],
             '.account-status-warning'
         );
@@ -466,8 +466,8 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
             [
                 [
                     'holds' => ['available' => 1],
-                    'fines' => ['total' => 0, 'display' => 'none']
-                ]
+                    'fines' => ['total' => 0, 'display' => 'none'],
+                ],
             ],
             '.account-status-good'
         );

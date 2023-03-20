@@ -64,7 +64,7 @@ class SolrDefault extends DefaultRecord implements
      * @var array
      */
     protected $preferredSnippetFields = [
-        'contents', 'topic'
+        'contents', 'topic',
     ];
 
     /**
@@ -224,7 +224,7 @@ class SolrDefault extends DefaultRecord implements
                 if (isset($this->highlightDetails[$current][0])) {
                     return [
                         'snippet' => $this->highlightDetails[$current][0],
-                        'caption' => $this->getSnippetCaption($current)
+                        'caption' => $this->getSnippetCaption($current),
                     ];
                 }
             }
@@ -238,7 +238,7 @@ class SolrDefault extends DefaultRecord implements
                     if ($value && !in_array($key, $this->forbiddenSnippetFields)) {
                         return [
                             'snippet' => $value[0],
-                            'caption' => $this->getSnippetCaption($key)
+                            'caption' => $this->getSnippetCaption($key),
                         ];
                     }
                 }

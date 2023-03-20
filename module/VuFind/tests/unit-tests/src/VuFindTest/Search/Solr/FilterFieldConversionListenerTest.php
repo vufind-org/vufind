@@ -81,7 +81,7 @@ class FilterFieldConversionListenerTest extends \PHPUnit\Framework\TestCase
                     "foo\\:value",
                     'baz:value OR foo:value',
                     '(foo:value)',
-                ]
+                ],
             ]
         );
         $listener = new FilterFieldConversionListener(

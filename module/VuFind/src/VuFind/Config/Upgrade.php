@@ -814,7 +814,7 @@ class Upgrade
         // exactly as-is
         $facetGroups = [
             'Results', 'ResultsTop', 'Advanced', 'Author', 'CheckboxFacets',
-            'HomePage'
+            'HomePage',
         ];
         $this->applyOldSettings('facets.ini', $facetGroups);
         $this->applyOldSettings('Collection.ini', ['Facets', 'Sort']);
@@ -859,7 +859,7 @@ class Upgrade
         // we want to retain the old installation's Basic/Advanced search settings
         // and sort settings exactly as-is
         $groups = [
-            'Basic_Searches', 'Advanced_Searches', 'Sorting', 'DefaultSortingByType'
+            'Basic_Searches', 'Advanced_Searches', 'Sorting', 'DefaultSortingByType',
         ];
         $this->applyOldSettings('searches.ini', $groups);
 
@@ -993,7 +993,7 @@ class Upgrade
         // we want to retain the old installation's search and facet settings
         // exactly as-is
         $groups = [
-            'Facets', 'Basic_Searches', 'Advanced_Searches', 'Sorting'
+            'Facets', 'Basic_Searches', 'Advanced_Searches', 'Sorting',
         ];
         $this->applyOldSettings('authority.ini', $groups);
 
@@ -1020,7 +1020,7 @@ class Upgrade
         // we want to retain the old installation's search and facet settings
         // exactly as-is
         $groups = [
-            'Facets', 'Basic_Searches', 'Advanced_Searches', 'Sorting'
+            'Facets', 'Basic_Searches', 'Advanced_Searches', 'Sorting',
         ];
         $this->applyOldSettings('reserves.ini', $groups);
 
@@ -1045,7 +1045,7 @@ class Upgrade
         // we want to retain the old installation's search and facet settings
         // exactly as-is
         $groups = [
-            'Facets', 'FacetsTop', 'Basic_Searches', 'Advanced_Searches', 'Sorting'
+            'Facets', 'FacetsTop', 'Basic_Searches', 'Advanced_Searches', 'Sorting',
         ];
         $this->applyOldSettings('Summon.ini', $groups);
 
@@ -1116,7 +1116,7 @@ class Upgrade
         // we want to retain the old installation's search and facet settings
         // exactly as-is
         $groups = [
-            'Facets', 'FacetsTop', 'Basic_Searches', 'Advanced_Searches', 'Sorting'
+            'Facets', 'FacetsTop', 'Basic_Searches', 'Advanced_Searches', 'Sorting',
         ];
         $this->applyOldSettings('Primo.ini', $groups);
 
@@ -1225,7 +1225,7 @@ class Upgrade
 
         // we want to retain the old installation's search settings exactly as-is
         $groups = [
-            'Basic_Searches', 'Advanced_Searches', 'Sorting'
+            'Basic_Searches', 'Advanced_Searches', 'Sorting',
         ];
         $this->applyOldSettings('WorldCat.ini', $groups);
 

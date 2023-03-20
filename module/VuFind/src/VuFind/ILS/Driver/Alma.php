@@ -358,7 +358,7 @@ class Alma extends AbstractBase implements
                     'holdtype' => 'auto',
                     'addLink' => $patron ? 'check' : false,
                     // For Alma title-level hold requests
-                    'description' => $description ?? null
+                    'description' => $description ?? null,
                 ];
             }
         }
@@ -542,7 +542,7 @@ class Alma extends AbstractBase implements
         // Check if config params are all set
         $configParams = [
             'recordType', 'userGroup', 'preferredLanguage',
-            'accountType', 'status', 'emailType', 'idType'
+            'accountType', 'status', 'emailType', 'idType',
         ];
         foreach ($configParams as $configParam) {
             if (empty(trim($newUserConfig[$configParam] ?? ''))) {
@@ -657,7 +657,7 @@ class Alma extends AbstractBase implements
             [$response, $status] = $this->makeRequest(
                 '/users/' . rawurlencode($username),
                 [
-                    'view' => 'full'
+                    'view' => 'full',
                 ],
                 [],
                 'GET',
@@ -670,12 +670,12 @@ class Alma extends AbstractBase implements
                 $patron = [
                     'id' => (string)$response->primary_id,
                     'cat_username' => trim($username),
-                    'email' => $this->getPreferredEmail($response)
+                    'email' => $this->getPreferredEmail($response),
                 ];
             } else {
                 // Try to find the user in Alma by unique email address
                 $getParams = [
-                    'q' => 'email~' . $username
+                    'q' => 'email~' . $username,
                 ];
 
                 $response = $this->makeRequest(
@@ -698,7 +698,7 @@ class Alma extends AbstractBase implements
                     $patron = [
                         'id' => (string)$user->primary_id,
                         'cat_username' => trim($username),
-                        'email' => trim($username)
+                        'email' => trim($username),
                     ];
                 }
             }
@@ -712,7 +712,7 @@ class Alma extends AbstractBase implements
             $getParams = [
                 'user_id_type' => 'all_unique',
                 'op' => 'auth',
-                'password' => $password
+                'password' => $password,
             ];
 
             // Try to authenticate the user with Alma
@@ -738,7 +738,7 @@ class Alma extends AbstractBase implements
         $getParams = [
             'user_id_type' => 'all_unique',
             'view' => 'full',
-            'expand' => 'none'
+            'expand' => 'none',
         ];
 
         // Check for patron in Alma
@@ -795,7 +795,7 @@ class Alma extends AbstractBase implements
                 : null,
             'group_code' => (isset($xml->user_group))
                 ? (string)$xml->user_group
-                : null
+                : null,
         ];
         $contact = $xml->contact_info;
         if ($contact) {
@@ -863,7 +863,7 @@ class Alma extends AbstractBase implements
                 "balance"  => round(floatval($fee->balance) * 100),
                 "createdate" => $this->parseDate($created, true),
                 "checkout" => $this->parseDate($checkout, true),
-                "fine"     => $this->getTranslatableString($fee->type)
+                "fine"     => $this->getTranslatableString($fee->type),
             ];
         }
         return $fineList;
@@ -977,7 +977,7 @@ class Alma extends AbstractBase implements
                 $count++;
                 $item[$requestId] = [
                     'success' => true,
-                    'status' => 'hold_cancel_success'
+                    'status' => 'hold_cancel_success',
                 ];
             } catch (ILSException $e) {
                 if (isset($apiResult['xml'])) {
@@ -993,7 +993,7 @@ class Alma extends AbstractBase implements
                     'status' => 'hold_cancel_fail',
                     'sysMessage' => $sysMessage . '. ' .
                          'Alma request ID: ' . $requestId . '. ' .
-                         'Alma error code: ' . $almaErrorCode
+                         'Alma error code: ' . $almaErrorCode,
                 ];
             }
 
@@ -1046,11 +1046,11 @@ class Alma extends AbstractBase implements
                     ?? 'hold_error_fail';
                 $results[$requestId] = [
                     'success' => false,
-                    'status' => (string)$error
+                    'status' => (string)$error,
                 ];
             } else {
                 $results[$requestId] = [
-                    'success' => true
+                    'success' => true,
                 ];
             }
         }
@@ -1182,7 +1182,7 @@ class Alma extends AbstractBase implements
                 ? ($params['page'] - 1) * $pageSize : 0,
             'order_by' => $sortKey,
             'direction' => $direction,
-            'expand' => 'renewable'
+            'expand' => 'renewable',
         ];
 
         // Get user loans from Alma API
@@ -1243,7 +1243,7 @@ class Alma extends AbstractBase implements
 
         return [
             'count' => $totalCount,
-            'records' => $returnArray
+            'records' => $returnArray,
         ];
     }
 
@@ -1301,7 +1301,7 @@ class Alma extends AbstractBase implements
                         true
                     ),
                     'item_id' => (string)$apiResult->loan_id,
-                    'sysMessage' => 'renew_success'
+                    'sysMessage' => 'renew_success',
                 ];
 
                 // Add the renewal to the return array
@@ -1309,7 +1309,7 @@ class Alma extends AbstractBase implements
             } catch (ILSException $ilsEx) {
                 // Add the empty renewal array to the return array
                 $returnArray['details'][$loanId] = [
-                    'success' => false
+                    'success' => false,
                 ];
             }
         }
@@ -1381,7 +1381,7 @@ class Alma extends AbstractBase implements
     {
         if ($function == 'patronLogin') {
             return [
-                'loginMethod' => $this->config['Catalog']['loginMethod'] ?? 'vufind'
+                'loginMethod' => $this->config['Catalog']['loginMethod'] ?? 'vufind',
             ];
         }
         if (isset($this->config[$function])) {
@@ -1402,9 +1402,9 @@ class Alma extends AbstractBase implements
                     'checkout asc' => 'sort_checkout_date_asc',
                     'due desc' => 'sort_due_date_desc',
                     'due asc' => 'sort_due_date_asc',
-                    'title asc' => 'sort_title'
+                    'title asc' => 'sort_title',
                 ],
-                'default_sort' => 'due asc'
+                'default_sort' => 'due asc',
             ];
         } else {
             $functionConfig = false;
@@ -1487,7 +1487,7 @@ class Alma extends AbstractBase implements
         $client->setHeaders(
             [
             'Content-type: application/json',
-            'Accept: application/json'
+            'Accept: application/json',
             ]
         );
 
@@ -1521,7 +1521,7 @@ class Alma extends AbstractBase implements
         return [
             'success' => false,
             'sysMessage' => $error->errorList->error[0]->errorMessage
-                ?? 'hold_error_fail'
+                ?? 'hold_error_fail',
         ];
     }
 
@@ -1553,7 +1553,7 @@ class Alma extends AbstractBase implements
         foreach ($xml as $library) {
             $libraries[] = [
                 'locationID' => (string)$library->code,
-                'locationDisplay' => (string)$library->name
+                'locationDisplay' => (string)$library->name,
             ];
         }
         return $libraries;
@@ -1710,7 +1710,7 @@ class Alma extends AbstractBase implements
         $map = [
             'physical' => 'p_avail',
             'digital' => 'd_avail',
-            'electronic' => 'e_avail'
+            'electronic' => 'e_avail',
         ];
         $types = array_flip($types);
         foreach ($map as $src => $dest) {
@@ -1738,7 +1738,7 @@ class Alma extends AbstractBase implements
         $results = [];
         $params = [
             'mms_id' => implode(',', $ids),
-            'expand' => implode(',', $types)
+            'expand' => implode(',', $types),
         ];
         if ($bibs = $this->makeRequest('/bibs', $params)) {
             foreach ($bibs as $bib) {

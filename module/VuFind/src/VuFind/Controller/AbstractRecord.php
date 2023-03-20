@@ -269,7 +269,7 @@ class AbstractRecord extends AbstractBase
             $this->flashMessenger()->addMessage(
                 [
                     'msg' => 'tags_deleted',
-                    'tokens' => ['%count%' => 1]
+                    'tokens' => ['%count%' => 1],
                 ],
                 'success'
             );
@@ -316,7 +316,7 @@ class AbstractRecord extends AbstractBase
         // Display the "add rating" form:
         $view = $this->createViewModel(
             [
-                'currentRating' => $user ? $driver->getRatingData($user->id) : null
+                'currentRating' => $user ? $driver->getRatingData($user->id) : null,
             ]
         );
         return $view;
@@ -407,7 +407,7 @@ class AbstractRecord extends AbstractBase
             'html' => true,
             'msg' => $this->translate('bulk_save_success') . '. '
             . '<a href="' . $listUrl . '" class="gotolist">'
-            . $this->translate('go_to_list') . '</a>.'
+            . $this->translate('go_to_list') . '</a>.',
         ];
         $this->flashMessenger()->addMessage($message, 'success');
 
@@ -495,7 +495,7 @@ class AbstractRecord extends AbstractBase
         $view = $this->createViewModel(
             [
                 'containingLists' => $containingLists,
-                'nonContainingLists' => $nonContainingLists
+                'nonContainingLists' => $nonContainingLists,
             ]
         );
         $view->setTemplate('record/save');
@@ -700,14 +700,14 @@ class AbstractRecord extends AbstractBase
                 'postData' => $exportedRecord,
                 'targetWindow' => $export->getTargetWindow($format),
                 'url' => $export->getRedirectUrl($format, ''),
-                'format' => $format
+                'format' => $format,
             ];
             $msg = [
                 'translate' => false, 'html' => true,
                 'msg' => $this->getViewRenderer()->render(
                     'cart/export-success.phtml',
                     $params
-                )
+                ),
             ];
             $this->flashMessenger()->addSuccessMessage($msg);
             return $this->redirectToRecord();

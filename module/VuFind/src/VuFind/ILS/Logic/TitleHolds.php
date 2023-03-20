@@ -245,7 +245,7 @@ class TitleHolds
 
         $data = [
             'id' => $id,
-            'level' => 'title'
+            'level' => 'title',
         ];
 
         // Are holds allows?
@@ -314,7 +314,7 @@ class TitleHolds
         // Build Params
         return [
             'action' => 'Hold', 'record' => $data['id'], 'query' => $queryString,
-            'anchor' => '#tabnav'
+            'anchor' => '#tabnav',
         ];
     }
 }

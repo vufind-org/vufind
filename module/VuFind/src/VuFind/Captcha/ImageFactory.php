@@ -73,7 +73,7 @@ class ImageFactory implements FactoryInterface
             'font' => APPLICATION_PATH
                     . '/vendor/webfontkit/open-sans/fonts/opensans-regular.ttf',
             'imgDir' => $container->get(\VuFind\Cache\Manager::class)
-                ->getCache('public')->getOptions()->getCacheDir()
+                ->getCache('public')->getOptions()->getCacheDir(),
         ];
 
         $config = $container->get(\VuFind\Config\PluginManager::class)

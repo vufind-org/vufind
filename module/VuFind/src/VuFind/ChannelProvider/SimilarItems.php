@@ -205,7 +205,7 @@ class SimilarItems extends AbstractChannelProvider implements TranslatorAwareInt
         $retVal = [
             'title' => "{$heading}: {$driver->getBreadcrumb()}",
             'providerId' => $this->providerId,
-            'links' => []
+            'links' => [],
         ];
         if ($tokenOnly) {
             $retVal['token'] = $driver->getUniqueID();
@@ -223,14 +223,14 @@ class SimilarItems extends AbstractChannelProvider implements TranslatorAwareInt
                 'label' => 'View Record',
                 'icon' => 'fa-file-text-o',
                 'url' => $this->url
-                    ->fromRoute($route['route'], $route['params'])
+                    ->fromRoute($route['route'], $route['params']),
             ];
             $retVal['links'][] = [
                 'label' => 'channel_expand',
                 'icon' => 'fa-search-plus',
                 'url' => $this->url->fromRoute('channels-record')
                     . '?id=' . urlencode($driver->getUniqueID())
-                    . '&source=' . urlencode($driver->getSourceIdentifier())
+                    . '&source=' . urlencode($driver->getSourceIdentifier()),
             ];
         }
         return $retVal;

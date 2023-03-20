@@ -159,7 +159,7 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             [
                 'Overridden' => [
-                    'Original' => 'Not so original'
+                    'Original' => 'Not so original',
                 ],
                 'Other' => [
                     'Merged' => [
@@ -168,12 +168,12 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
                         'Child' => ['Foo', 'Baz'],
                     ],
                     'NonMerged' => [
-                        'Original' => 'Not so original either'
+                        'Original' => 'Not so original either',
                     ],
-                    'ParentOnly' => [true]
+                    'ParentOnly' => [true],
                 ],
                 'ChildOnly' => [
-                    'Child' => 'true'
+                    'Child' => 'true',
                 ],
             ],
             $config

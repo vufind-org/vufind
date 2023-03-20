@@ -206,7 +206,7 @@ class Translator
         $key = trim($lib) . "|" . trim($no1) . "|" . trim($no2);
         $tab15[trim($key)] = [
             "desc" => trim($desc), "loan" => $matches[6], "request" => $matches[8],
-            "opac" => $matches[10]
+            "opac" => $matches[10],
         ];
     }
 

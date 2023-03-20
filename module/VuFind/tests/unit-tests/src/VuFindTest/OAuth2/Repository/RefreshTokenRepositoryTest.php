@@ -75,8 +75,8 @@ class RefreshTokenRepositoryTest extends AbstractTokenRepositoryTest
                     'type' => 'oauth2_refresh_token',
                     'revoked' => false,
                     'data' => json_encode($token),
-                    'user_id' => '2'
-                ]
+                    'user_id' => '2',
+                ],
             ],
             $this->accessTokenTable
         );
@@ -90,8 +90,8 @@ class RefreshTokenRepositoryTest extends AbstractTokenRepositoryTest
                     'type' => 'oauth2_refresh_token',
                     'revoked' => true,
                     'data' => json_encode($token),
-                    'user_id' => '2'
-                ]
+                    'user_id' => '2',
+                ],
             ],
             $this->accessTokenTable
         );
