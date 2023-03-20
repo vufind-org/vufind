@@ -142,13 +142,13 @@
     $this->inlineScript()->appendFile('hold.js');
 
     $js = <<<JS
-                if ($.isReady) {
-                    setUpHoldRequestForm("{$this->escapeHtml($this->driver->getUniqueId())}");
-                } else {
-                    $(document).ready(function() {
-                        setUpHoldRequestForm("{$this->escapeHtml($this->driver->getUniqueId())}");
-                    });
-                }
+        if ($.isReady) {
+            setUpHoldRequestForm("{$this->escapeHtml($this->driver->getUniqueId())}");
+        } else {
+            $(document).ready(function() {
+                setUpHoldRequestForm("{$this->escapeHtml($this->driver->getUniqueId())}");
+            });
+        }
         JS;
 
     echo $this->inlineScript()->appendScript($js);

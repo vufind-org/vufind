@@ -45,12 +45,12 @@
     );
 
     $script = <<<JS
-          VuFind.addTranslations($translations);
-          var pivotdata = $pivotData;
-          jQuery(document).ready(function(data) {
-              showVisualFacets(pivotdata);
+        VuFind.addTranslations($translations);
+        var pivotdata = $pivotData;
+        jQuery(document).ready(function(data) {
+          showVisualFacets(pivotdata);
         });
         JS;
-?>
+  ?>
   <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');?>
 <?php endif; ?>
