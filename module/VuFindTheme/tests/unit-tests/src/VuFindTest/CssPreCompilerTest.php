@@ -174,7 +174,7 @@ class CssPreCompilerTest extends \PHPUnit\Framework\TestCase
         $this->setupCompiler($ext, $class);
         $this->compiler->compile(['child']);
         $this->assertFileExists($this->testDest . 'themes/child/css/compiled.css');
-        $this->assertFileNotExists($this->testDest . 'themes/parent/css/compiled.css');
+        $this->assertFileDoesNotExist($this->testDest . 'themes/parent/css/compiled.css');
         unlink($this->testDest . 'themes/child/css/compiled.css');
     }
 

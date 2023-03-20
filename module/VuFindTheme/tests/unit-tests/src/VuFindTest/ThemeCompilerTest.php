@@ -217,7 +217,7 @@ class ThemeCompilerTest extends \PHPUnit\Framework\TestCase
         // Now recompile with "force" set to true, confirm that this succeeds,
         // and make sure the marker file is now gone:
         $this->assertTrue($compiler->compile('child', 'compiled', true));
-        $this->assertFileNotExists($markerFile);
+        $this->assertFileDoesNotExist($markerFile);
     }
 
     /**
