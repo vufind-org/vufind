@@ -240,7 +240,7 @@ class EuropeanaResults implements
                 $resultsProcessed[] = [
                     'title' => $value->getTitle(),
                     'link' => $link,
-                    'enclosure' => $value->getEnclosure()['url'] ?? null
+                    'enclosure' => $value->getEnclosure()['url'] ?? null,
                 ];
             }
             if (count($resultsProcessed) == $this->limit) {
@@ -252,7 +252,7 @@ class EuropeanaResults implements
             $this->results = [
                 'worksArray' => $resultsProcessed,
                 'feedTitle' => $this->searchSite,
-                'sourceLink' => $this->sitePath
+                'sourceLink' => $this->sitePath,
             ];
         } else {
             $this->results = false;

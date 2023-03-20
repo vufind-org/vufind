@@ -74,7 +74,7 @@ class PiwikFactory implements FactoryInterface
         $settings = [
             'siteId' => $config->Piwik->site_id ?? 1,
             'searchPrefix' => $config->Piwik->searchPrefix ?? null,
-            'disableCookies' => $config->Piwik->disableCookies ?? false
+            'disableCookies' => $config->Piwik->disableCookies ?? false,
         ];
         $customVars = $config->Piwik->custom_variables ?? false;
         $request = $container->get('Request');

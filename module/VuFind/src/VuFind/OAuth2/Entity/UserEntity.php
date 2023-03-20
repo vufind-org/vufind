@@ -193,7 +193,8 @@ class UserEntity implements UserEntityInterface, ClaimSetInterface
                     }
                     break;
                 default:
-                    if (($value = $this->user->{$field} ?? null)
+                    if (
+                        ($value = $this->user->{$field} ?? null)
                         || ($value = $profile[$field] ?? null)
                     ) {
                         $result[$claim] = $value;

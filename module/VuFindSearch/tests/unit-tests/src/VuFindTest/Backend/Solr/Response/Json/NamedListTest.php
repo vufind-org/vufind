@@ -98,7 +98,7 @@ class NamedListTest extends TestCase
             [
                 ['first term', 'info'],
                 ['second term', 'info2'],
-                ['third term', 'info3']
+                ['third term', 'info3'],
             ]
         );
         $list->removeKeys(['first term', 'second term']);
@@ -116,7 +116,7 @@ class NamedListTest extends TestCase
             [
                 ['first term', 'info'],
                 ['second term', 'info2'],
-                ['third term', 'info3']
+                ['third term', 'info3'],
             ]
         );
         $list->removeKeys(['first term', 'second term']);

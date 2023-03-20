@@ -1,4 +1,5 @@
 <?php
+
 /**
  * StartPage Plugin Test Class
  *

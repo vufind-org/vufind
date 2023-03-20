@@ -69,7 +69,7 @@ class CheckoutsControllerFactory extends AbstractBaseFactory
             $requestedName,
             [
                 $container->get(\VuFind\Validator\CsrfInterface::class),
-                $container->get(\Laminas\Session\SessionManager::class)
+                $container->get(\Laminas\Session\SessionManager::class),
             ]
         );
     }

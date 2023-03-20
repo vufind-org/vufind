@@ -232,7 +232,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
         $ils = $this->getMockIlsConnection();
         $instructors = ['inst1' => 'inst1', 'inst2' => 'inst2', 'inst3' => 'inst3'];
         $courses = [
-            'course1' => 'course1', 'course2' => 'course2', 'course3' => 'course3'
+            'course1' => 'course1', 'course2' => 'course2', 'course3' => 'course3',
         ];
         $departments = ['dept1' => 'dept1', 'dept2' => 'dept2', 'dept3' => 'dept3'];
         $reserves = [

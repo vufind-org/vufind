@@ -125,7 +125,8 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     public function setConfig($settings)
     {
         $parts = explode(':', $settings);
-        if (isset($parts[0]) && !empty($parts[0])
+        if (
+            isset($parts[0]) && !empty($parts[0])
             && strtolower(trim($parts[0])) !== 'false'
         ) {
             $this->useViaf = true;

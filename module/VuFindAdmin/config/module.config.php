@@ -33,7 +33,7 @@ $config = [
                     'defaults' => [
                         'controller' => 'Admin',
                         'action'     => 'Home',
-                    ]
+                    ],
                 ],
                 'may_terminate' => true,
                 'child_routes' => [
@@ -44,8 +44,8 @@ $config = [
                             'defaults' => [
                                 'controller' => 'Admin',
                                 'action'     => 'Disabled',
-                            ]
-                        ]
+                            ],
+                        ],
                     ],
                     'config' => [
                         'type' => 'Laminas\Router\Http\Segment',
@@ -54,8 +54,8 @@ $config = [
                             'defaults' => [
                                 'controller' => 'AdminConfig',
                                 'action'     => 'Home',
-                            ]
-                        ]
+                            ],
+                        ],
                     ],
                     'feedback' => [
                         'type' => 'Laminas\Router\Http\Segment',
@@ -64,8 +64,8 @@ $config = [
                             'defaults' => [
                                 'controller' => 'AdminFeedback',
                                 'action'     => 'Home',
-                            ]
-                        ]
+                            ],
+                        ],
                     ],
                     'maintenance' => [
                         'type' => 'Laminas\Router\Http\Segment',
@@ -74,8 +74,8 @@ $config = [
                             'defaults' => [
                                 'controller' => 'AdminMaintenance',
                                 'action'     => 'Home',
-                            ]
-                        ]
+                            ],
+                        ],
                     ],
                     'social' => [
                         'type' => 'Laminas\Router\Http\Segment',
@@ -84,8 +84,8 @@ $config = [
                             'defaults' => [
                                 'controller' => 'AdminSocial',
                                 'action'     => 'Home',
-                            ]
-                        ]
+                            ],
+                        ],
                     ],
                     'tags' => [
                         'type' => 'Laminas\Router\Http\Segment',
@@ -94,8 +94,8 @@ $config = [
                             'defaults' => [
                                 'controller' => 'AdminTags',
                                 'action'     => 'Home',
-                            ]
-                        ]
+                            ],
+                        ],
                     ],
                     'overdrive' => [
                         'type' => 'Laminas\Router\Http\Segment',
@@ -104,8 +104,8 @@ $config = [
                             'defaults' => [
                                 'controller' => 'AdminOverdrive',
                                 'action'     => 'Home',
-                            ]
-                        ]
+                            ],
+                        ],
                     ],
                 ],
             ],

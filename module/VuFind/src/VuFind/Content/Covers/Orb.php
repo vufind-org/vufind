@@ -120,7 +120,8 @@ class Orb extends \VuFind\Content\AbstractCover implements \VuFindHttp\HttpServi
             $data = $result->getBody();
             $json = json_decode($data, true);
             foreach ($json['data'] as $title) {
-                if ($title['ean13'] == $ean
+                if (
+                    $title['ean13'] == $ean
                     && isset($title['images']['front'][$imageVersion]['src'])
                 ) {
                     return $title['images']['front'][$imageVersion]['src'];

@@ -74,7 +74,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         $command = $this->getCommand(
             [
                 'searchTable' => $searchTable,
-                'scheduleOptions' => []
+                'scheduleOptions' => [],
             ]
         );
         $commandTester = new CommandTester($command);
@@ -99,7 +99,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
                         'search_object' => null,
                     ]
                 ),
-                'scheduleOptions' => [1 => 'Daily']
+                'scheduleOptions' => [1 => 'Daily'],
             ]
         );
         $commandTester = new CommandTester($command);
@@ -371,7 +371,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     protected function getMockSearchResultsSet($record = null)
     {
         return [
-            $record ?? $this->container->createMock(\VuFind\RecordDriver\SolrDefault::class)
+            $record ?? $this->container->createMock(\VuFind\RecordDriver\SolrDefault::class),
         ];
     }
 
@@ -534,7 +534,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
                         'institution' => 'My Institution',
                         'title' => 'My Site',
                         'email' => 'admin@myuniversity.edu',
-                    ]
+                    ],
                 ]
             ),
             $options['mailer'] ?? $this->container->createMock(\VuFind\Mailer\Mailer::class),

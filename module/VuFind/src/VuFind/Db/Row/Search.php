@@ -153,7 +153,7 @@ class Search extends RowGateway
         $data = [
             'id' => $this->id,
             'user_id' => $user->id,
-            'created' => $user->created
+            'created' => $user->created,
         ];
         return $hmac->generate(array_keys($data), $data);
     }

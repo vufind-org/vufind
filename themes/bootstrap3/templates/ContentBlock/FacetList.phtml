@@ -15,11 +15,11 @@
           $this->headScript()->appendFile('facets.js');
           $sort = $hierarchicalFacetSortOptions[$field] ?? $hierarchicalFacetSortOptions['*'] ?? 'all';
           $script = <<<JS
-$(document).ready(function() {
-  $('#facet_{$this->escapeHtml($field)}_container').removeClass('hide');
-  loadFacetTree($('#facet_{$this->escapeHtml($field)}'), false);
-});
-JS;
+              $(document).ready(function() {
+                $('#facet_{$this->escapeHtml($field)}_container').removeClass('hide');
+                loadFacetTree($('#facet_{$this->escapeHtml($field)}'), false);
+              });
+              JS;
           echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
         ?>
         <div id="facet_<?=$this->escapeHtml($field)?>_container" role="listbox" class="home-facet <?=$this->escapeHtmlAttr($field)?> hide">

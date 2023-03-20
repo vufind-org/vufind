@@ -89,7 +89,8 @@ class ObalkyKnihService implements
      */
     public function __construct(\Laminas\Config\Config $config)
     {
-        if (!isset($config->base_url) || count($config->base_url) < 1
+        if (
+            !isset($config->base_url) || count($config->base_url) < 1
             || !isset($config->books_endpoint)
         ) {
             throw new \Exception(
@@ -189,7 +190,7 @@ class ObalkyKnihService implements
         } elseif (!empty($ids['isbn'])) {
             $isbn = $ids['isbn']->get13();
         }
-        $isbn = $isbn ?? $ids['upc'] ?? $ids['issn'] ?? null;
+        $isbn ??= $ids['upc'] ?? $ids['issn'] ?? null;
         $oclc = $ids['oclc'] ?? null;
         $isbn = $isbn ?? (isset($ids['ismn']) ? $ids['ismn']->get13() : null);
         $ismn = isset($ids['ismn']) ? $ids['ismn']->get10() : null;

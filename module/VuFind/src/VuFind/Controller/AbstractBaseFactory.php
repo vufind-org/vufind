@@ -76,7 +76,8 @@ class AbstractBaseFactory implements FactoryInterface
             // or a string), that means it has no internally configured default, and
             // setAccessPermission was not called above; thus, we should apply the
             // default value:
-            if (isset($permissions['*'])
+            if (
+                isset($permissions['*'])
                 && $controller->getAccessPermission() === null
             ) {
                 $controller->setAccessPermission($permissions['*']);

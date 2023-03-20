@@ -90,7 +90,7 @@ class GetIdsCommand extends CallMethodCommand
             $this->getQuery(),
             $this->getOffset(),
             $this->getLimit(),
-            $this->getSearchParameters()
+            $this->getSearchParameters(),
         ];
     }
 

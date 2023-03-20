@@ -60,7 +60,8 @@ class InstallController extends AbstractBase
         // If auto-configuration is disabled, prevent any other action from being
         // accessed:
         $config = $this->getConfig();
-        if (!isset($config->System->autoConfigure)
+        if (
+            !isset($config->System->autoConfigure)
             || !$config->System->autoConfigure
         ) {
             $routeMatch = $e->getRouteMatch();
@@ -130,7 +131,7 @@ class InstallController extends AbstractBase
 
         return [
             'title' => 'Basic Configuration', 'status' => $status,
-            'fix' => 'fixbasicconfig'
+            'fix' => 'fixbasicconfig',
         ];
     }
 
@@ -156,7 +157,8 @@ class InstallController extends AbstractBase
             }
         } catch (\Exception $e) {
             $view->configDir = dirname($config);
-            if (function_exists('posix_getpwuid')
+            if (
+                function_exists('posix_getpwuid')
                 && function_exists('posix_geteuid')
             ) {
                 $processUser = posix_getpwuid(posix_geteuid());
@@ -177,7 +179,7 @@ class InstallController extends AbstractBase
         return [
             'title' => 'Cache',
             'status' => !$cache->hasDirectoryCreationError(),
-            'fix' => 'fixcache'
+            'fix' => 'fixcache',
         ];
     }
 
@@ -214,7 +216,7 @@ class InstallController extends AbstractBase
             $status = false;
         }
         return [
-            'title' => 'Database', 'status' => $status, 'fix' => 'fixdatabase'
+            'title' => 'Database', 'status' => $status, 'fix' => 'fixdatabase',
         ];
     }
 
@@ -252,7 +254,7 @@ class InstallController extends AbstractBase
         return [
             'title' => 'Dependencies',
             'status' => $requiredFunctionsExist && $this->phpVersionIsNewEnough(),
-            'fix' => 'fixdependencies'
+            'fix' => 'fixdependencies',
         ];
     }
 
@@ -579,7 +581,8 @@ class InstallController extends AbstractBase
                 'Sample.php', 'Demo.php', 'DriverInterface.php', 'PluginManager.php',
             ];
             while ($line = readdir($dir)) {
-                if (stristr($line, '.php') && !in_array($line, $excludeList)
+                if (
+                    stristr($line, '.php') && !in_array($line, $excludeList)
                     && substr($line, 0, 8) !== 'Abstract'
                     && substr($line, -11) !== 'Factory.php'
                     && substr($line, -9) !== 'Trait.php'
@@ -679,7 +682,7 @@ class InstallController extends AbstractBase
         return [
             'title' => 'Security',
             'status' => $this->hasSecureDatabase(),
-            'fix' => 'fixsecurity'
+            'fix' => 'fixsecurity',
         ];
     }
 
@@ -696,7 +699,8 @@ class InstallController extends AbstractBase
     {
         $changed = false;
 
-        if (!($config->Authentication->hash_passwords ?? false)
+        if (
+            !($config->Authentication->hash_passwords ?? false)
             || !($config->Authentication->encrypt_ils_password ?? false)
         ) {
             $writer->set('Authentication', 'hash_passwords', true);
@@ -807,7 +811,7 @@ class InstallController extends AbstractBase
         }
 
         return [
-            'title' => 'SSL', 'status' => $status, 'fix' => 'fixsslcerts'
+            'title' => 'SSL', 'status' => $status, 'fix' => 'fixsslcerts',
         ];
     }
 

@@ -62,7 +62,7 @@ class ClientRepositoryTest extends \PHPUnit\Framework\TestCase
                     'redirectUri' => 'http://localhost/secure',
                     'isConfidential' => true,
                 ],
-            ]
+            ],
         ];
         $repo = new ClientRepository($config);
         $this->assertFalse(
@@ -137,7 +137,7 @@ class ClientRepositoryTest extends \PHPUnit\Framework\TestCase
                 'openid_test' => [
                     'name' => 'OpenID Tester',
                 ],
-            ]
+            ],
         ];
         $repo = new ClientRepository($config);
         $this->expectExceptionMessage("OAuth2 client config missing 'redirectUri'");
@@ -156,9 +156,9 @@ class ClientRepositoryTest extends \PHPUnit\Framework\TestCase
                 'openid_test' => [
                     'name' => 'OpenID Tester',
                     'redirectUri' => 'http://localhost/callback',
-                    'secret' => 'this should not be specified'
+                    'secret' => 'this should not be specified',
                 ],
-            ]
+            ],
         ];
         $repo = new ClientRepository($config);
         $this->expectExceptionMessage(

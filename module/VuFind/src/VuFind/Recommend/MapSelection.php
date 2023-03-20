@@ -192,11 +192,12 @@ class MapSelection implements
         foreach ($filters as $key => $value) {
             if ($key == $this->geoField) {
                 $match = [];
-                if (preg_match(
-                    '/Intersects\(ENVELOPE\((.*), (.*), (.*), (.*)\)\)/',
-                    $value[0],
-                    $match
-                )
+                if (
+                    preg_match(
+                        '/Intersects\(ENVELOPE\((.*), (.*), (.*), (.*)\)\)/',
+                        $value[0],
+                        $match
+                    )
                 ) {
                     array_push(
                         $this->bboxSearchCoords,
@@ -259,7 +260,7 @@ class MapSelection implements
     {
         return [
             $this->basemapOptions['basemap_url'],
-            $this->basemapOptions['basemap_attribution']
+            $this->basemapOptions['basemap_attribution'],
         ];
     }
 
@@ -321,7 +322,7 @@ class MapSelection implements
             return [
                 $current->id,
                 $current->{$this->geoField},
-                $current->title ?? $defaultTitle
+                $current->title ?? $defaultTitle,
             ];
         };
         return array_map($callback, $response->response->docs);
@@ -364,7 +365,7 @@ class MapSelection implements
                     $recCoords = [$floats[1], $floats[2], $floats[3], $floats[4]];
                 }
                 $results[] = [$recId, $title, $recCoords[0],
-                    $recCoords[1], $recCoords[2], $recCoords[3]
+                    $recCoords[1], $recCoords[2], $recCoords[3],
                 ];
             }
         }

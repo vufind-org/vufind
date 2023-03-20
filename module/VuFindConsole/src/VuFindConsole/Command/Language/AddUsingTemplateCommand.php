@@ -101,7 +101,7 @@ class AddUsingTemplateCommand extends AbstractCommand
             [$sourceDomain, $sourceKey] = $this->extractTextDomain($key);
             $lookups[$sourceDomain][$current] = [
                 'key' => $sourceKey,
-                'translations' => []
+                'translations' => [],
             ];
         }
 

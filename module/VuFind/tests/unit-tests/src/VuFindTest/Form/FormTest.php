@@ -223,13 +223,13 @@ class FormTest extends \PHPUnit\Framework\TestCase
         $postParams = [
             'message' => 'x',
             'name' => 'y',
-            'email' => 'z@foo.com'
+            'email' => 'z@foo.com',
         ];
 
         $this->assertEquals(
             [
                 $expectedFields,
-                'Email/form.phtml'
+                'Email/form.phtml',
             ],
             $form->formatEmailMessage($postParams)
         );
@@ -381,7 +381,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                     'label' => 'feedback_email',
                     'settings' => [
                         'size' => 254,
-                        'aria-label' => 'Test label'
+                        'aria-label' => 'Test label',
                     ],
                 ],
                 [
@@ -469,12 +469,12 @@ class FormTest extends \PHPUnit\Framework\TestCase
             [
                 'o1' => [
                     'value' => 'value-1',
-                    'label' => 'label-1'
+                    'label' => 'label-1',
                 ],
                 'o2' => [
                     'value' => 'value-2',
-                    'label' => 'label-2'
-                ]
+                    'label' => 'label-2',
+                ],
             ],
             $el['optionGroups']['group-1']['options']
         );
@@ -485,12 +485,12 @@ class FormTest extends \PHPUnit\Framework\TestCase
             [
                 'o1' => [
                     'value' => 'option-1',
-                    'label' => 'option-1'
+                    'label' => 'option-1',
                 ],
                 'o2' => [
                     'value' => 'option-2',
-                    'label' => 'option-2'
-                ]
+                    'label' => 'option-2',
+                ],
             ],
             $el['optionGroups']['group-1']['options']
         );
@@ -501,12 +501,12 @@ class FormTest extends \PHPUnit\Framework\TestCase
             [
                 'o1' => [
                     'label' => 'label-1',
-                    'value' => 'value-1'
+                    'value' => 'value-1',
                 ],
                 'o2' => [
                     'label' => 'label-2',
-                    'value' => 'value-2'
-                ]
+                    'value' => 'value-2',
+                ],
             ],
             $el['options']
         );
@@ -517,12 +517,12 @@ class FormTest extends \PHPUnit\Framework\TestCase
             [
                 'o1' => [
                     'label' => 'option-1',
-                    'value' => 'option-1'
+                    'value' => 'option-1',
                 ],
                 'o2' => [
                     'label' => 'option-2',
-                    'value' => 'option-2'
-                ]
+                    'value' => 'option-2',
+                ],
             ],
             $el['options']
         );
@@ -533,12 +533,12 @@ class FormTest extends \PHPUnit\Framework\TestCase
             [
                 'o1' => [
                     'label' => 'label-1',
-                    'value' => 'value-1'
+                    'value' => 'value-1',
                 ],
                 'o2' => [
                     'label' => 'label-2',
-                    'value' => 'value-2'
-                ]
+                    'value' => 'value-2',
+                ],
             ],
             $el['options']
         );
@@ -549,12 +549,12 @@ class FormTest extends \PHPUnit\Framework\TestCase
             [
                 'o1' => [
                     'label' => 'option-1',
-                    'value' => 'option-1'
+                    'value' => 'option-1',
                 ],
                 'o2' => [
                     'label' => 'option-2',
-                    'value' => 'option-2'
-                ]
+                    'value' => 'option-2',
+                ],
             ],
             $el['options']
         );
@@ -565,12 +565,12 @@ class FormTest extends \PHPUnit\Framework\TestCase
             [
                 'o1' => [
                     'label' => 'label-1',
-                    'value' => 'value-1'
+                    'value' => 'value-1',
                 ],
                 'o2' => [
                     'label' => 'label-2',
-                    'value' => 'value-2'
-                ]
+                    'value' => 'value-2',
+                ],
             ],
             $el['options']
         );
@@ -581,12 +581,12 @@ class FormTest extends \PHPUnit\Framework\TestCase
             [
                 'o1' => [
                     'label' => 'option-1',
-                    'value' => 'option-1'
+                    'value' => 'option-1',
                 ],
                 'o2' => [
                     'label' => 'option-2',
-                    'value' => 'option-2'
-                ]
+                    'value' => 'option-2',
+                ],
             ],
             $el['options']
         );
@@ -680,7 +680,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
         // Test checkbox with all options required
         $ids = [
             'TestCheckboxWithAllOptionsRequired',  // options with value
-            'TestCheckboxWithAllOptionsRequired-2' // options with label and value
+            'TestCheckboxWithAllOptionsRequired-2', // options with label and value
         ];
 
         foreach ($ids as $id) {
@@ -710,7 +710,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
         // Test checkbox with one required option
         $ids = [
             'TestCheckboxWithOneOptionRequired',  // options with value
-            'TestCheckboxWithOneOptionRequired-2' // options with label and value
+            'TestCheckboxWithOneOptionRequired-2', // options with label and value
         ];
 
         foreach ($ids as $id) {
@@ -746,7 +746,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
             // options with value
             'TestCheckboxWithOneOptionThatIsRequired',
             // options with label and value
-            'TestCheckboxWithOneOptionThatIsRequired-2'
+            'TestCheckboxWithOneOptionThatIsRequired-2',
         ];
 
         foreach ($ids as $id) {
@@ -807,17 +807,15 @@ class FormTest extends \PHPUnit\Framework\TestCase
     public function getEmailSubjectsData(): array
     {
         return [
-            'with placeholders'
-                => [
-                    'TestSubjectEmailWithPlaceholders',
-                    'Subject One Two option-1'
-                ],
-            'without placeholders'
-                => [
-                    'TestSubjectEmailWithoutPlaceholders',
-                    'Subject without placeholders'
-                ],
-       ];
+            'with placeholders' => [
+                'TestSubjectEmailWithPlaceholders',
+                'Subject One Two option-1',
+            ],
+            'without placeholders' => [
+                'TestSubjectEmailWithoutPlaceholders',
+                'Subject without placeholders',
+            ],
+        ];
     }
 
     /**
@@ -839,7 +837,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
             [
                 'text1' => 'One',
                 'text2' => 'Two',
-                'checkbox' => ['o1']
+                'checkbox' => ['o1'],
             ]
         );
         $this->assertTrue($form->isValid());

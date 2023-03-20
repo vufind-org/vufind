@@ -66,7 +66,7 @@ trait DemoDriverTestTrait
                     'source' => 'Solr',
                     'item_id' => 0,
                     'renewable' => true,
-                ]
+                ],
             ]
         );
     }
@@ -115,7 +115,7 @@ trait DemoDriverTestTrait
                     'source' => 'Solr',
                     'item_id' => 0,
                     'row_id' => 21212,
-                ]
+                ],
             ]
         );
     }

@@ -152,7 +152,7 @@ class Params extends \VuFind\Search\Base\Params
             }
             $result[$field] = [
                 'facetOp' => $facetOp,
-                'values' => $filter
+                'values' => $filter,
             ];
         }
         return $result;

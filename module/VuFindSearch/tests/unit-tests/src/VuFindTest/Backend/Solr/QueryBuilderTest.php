@@ -153,7 +153,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     protected function runBasicQuestionTest($qb, $handler, $test)
     {
         [$input, $output, $flags] = $test;
-        if ($handler === 'standard'
+        if (
+            $handler === 'standard'
             || ($handler === 'dismax' && empty($flags['basic']))
         ) {
             // We expect an extra set of parentheses to be added, unless the
@@ -184,7 +185,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     protected function runAdvancedQuestionTest($qb, $handler, $test)
     {
         [$input, $output, $flags] = $test;
-        if ($handler === 'standard'
+        if (
+            $handler === 'standard'
             || ($handler === 'dismax' && empty($flags['basic']))
         ) {
             $advOutput = '((' . $output . '))';
@@ -228,7 +230,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     {
         $this->runQuestionTests(
             [
-                'test' => []
+                'test' => [],
             ],
             'standard'
         );
@@ -243,7 +245,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     {
         $this->runQuestionTests(
             [
-                'test' => ['DismaxHandler' => 'dismax', 'DismaxFields' => ['foo']]
+                'test' => ['DismaxHandler' => 'dismax', 'DismaxFields' => ['foo']],
             ],
             'dismax'
         );
@@ -258,7 +260,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     {
         $this->runQuestionTests(
             [
-                'test' => ['DismaxHandler' => 'edismax', 'DismaxFields' => ['foo']]
+                'test' => ['DismaxHandler' => 'edismax', 'DismaxFields' => ['foo']],
             ],
             'edismax'
         );
@@ -277,9 +279,9 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 'test' => [
                     'DismaxFields' => ['a', 'b'],
                     'ExactSettings' => [
-                        'DismaxFields' => ['c', 'd']
-                    ]
-                ]
+                        'DismaxFields' => ['c', 'd'],
+                    ],
+                ],
             ]
         );
 
@@ -305,7 +307,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     {
         $qb = new QueryBuilder(
             [
-                'test' => ['DismaxFields' => ['a'], 'FilterQuery' => 'a:filter']
+                'test' => ['DismaxFields' => ['a'], 'FilterQuery' => 'a:filter'],
             ]
         );
         $q = new Query('q', 'test');
@@ -323,7 +325,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     {
         $qb = new QueryBuilder(
             [
-                'test' => ['FilterQuery' => 'a:filter']
+                'test' => ['FilterQuery' => 'a:filter'],
             ]
         );
         $q = new Query('q', 'test');
@@ -342,7 +344,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     {
         $qb = new QueryBuilder(
             [
-                'test' => ['FilterQuery' => 'a:filter']
+                'test' => ['FilterQuery' => 'a:filter'],
             ]
         );
         $q = new Query('*:*', 'test');
@@ -367,7 +369,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                     'DismaxFields' => ['test'],
                     'DismaxHandler' => 'dismax',
                     'DismaxParams' => [['bq', 'boost']],
-                ]
+                ],
             ]
         );
 
@@ -393,7 +395,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 'test' => [
                     'QueryFields' => ['test1' => []],
                     'DismaxFields' => ['test2', 'test3^10000'],
-                ]
+                ],
             ]
         );
 
@@ -433,8 +435,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
             [
                 'test' => [
                     'DismaxFields' => ['test1'],
-                    'DismaxParams' => [['bq', 'boost']]
-                ]
+                    'DismaxParams' => [['bq', 'boost']],
+                ],
             ]
         );
 
@@ -467,7 +469,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 ],
                 'b' => [
                     'DismaxFields' => ['field_b'],
-                ]
+                ],
             ]
         );
 
@@ -497,12 +499,12 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                     'DismaxFields' => ['field_a'],
                     'QueryFields' => [
                         'field_a' => [['and', 100]],
-                        'field_c' => [['and', 200]]
-                    ]
+                        'field_c' => [['and', 200]],
+                    ],
                 ],
                 'b' => [
                     'DismaxFields' => ['field_b'],
-                ]
+                ],
             ]
         );
 
@@ -531,8 +533,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 'a' => [
                     'QueryFields' => [
                         'field_a' => [['or', '~']],
-                    ]
-                ]
+                    ],
+                ],
             ]
         );
 
@@ -555,8 +557,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 'a' => [
                     'QueryFields' => [
                         'field_a' => [['or', '~']],
-                    ]
-                ]
+                    ],
+                ],
             ]
         );
 
@@ -579,8 +581,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 'a' => [
                     'QueryFields' => [
                         'field_a' => [['or', '~']],
-                    ]
-                ]
+                    ],
+                ],
             ]
         );
 
@@ -614,16 +616,16 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 'GlobalExtraParams' => [
                     [
                         'param' => 'bq',
-                        'value' => 'a:foo'
-                    ]
+                        'value' => 'a:foo',
+                    ],
                 ],
                 'expected1' => [
                     'bf' => ['a:filter'],
-                    'bq' => ['a:foo']
+                    'bq' => ['a:foo'],
                 ],
                 'expected2' => [
                     'bf' => null,
-                    'bq' => ['a:foo']
+                    'bq' => ['a:foo'],
                 ],
             ],
             'Two values' => [
@@ -632,23 +634,23 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                         'param' => 'bq',
                         'value' => [
                             'a:foo',
-                            'a:bar'
-                        ]
-                    ]
+                            'a:bar',
+                        ],
+                    ],
                 ],
                 'expected1' => [
                     'bf' => ['a:filter'],
                     'bq' => [
                         'a:foo',
-                        'a:bar'
-                    ]
+                        'a:bar',
+                    ],
                 ],
                 'expected2' => [
                     'bf' => null,
                     'bq' => [
                         'a:foo',
-                        'a:bar'
-                    ]
+                        'a:bar',
+                    ],
                 ],
             ],
             'Value with SearchTypeIn condition' => [
@@ -659,20 +661,20 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                         'conditions' => [
                             [
                                 'SearchTypeIn' => [
-                                    'test'
-                                ]
-                            ]
-                        ]
-                    ]
+                                    'test',
+                                ],
+                            ],
+                        ],
+                    ],
                 ],
                 'expected1' => [
                     'bf' => ['a:filter'],
-                    'bq' => ['a:foo']
+                    'bq' => ['a:foo'],
                 ],
                 'expected2' => [
                     'bf' => null,
-                    'bq' => null
-                ]
+                    'bq' => null,
+                ],
             ],
             'Value with SearchTypeNotIn condition' => [
                 'GlobalExtraParams' => [
@@ -682,19 +684,19 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                         'conditions' => [
                             [
                                 'SearchTypeNotIn' => [
-                                    'test'
-                                ]
-                            ]
-                        ]
-                    ]
+                                    'test',
+                                ],
+                            ],
+                        ],
+                    ],
                 ],
                 'expected1' => [
                     'bf' => ['a:filter'],
-                    'bq' => null
+                    'bq' => null,
                 ],
                 'expected2' => [
                     'bf' => null,
-                    'bq' => ['a:foo']
+                    'bq' => ['a:foo'],
                 ],
             ],
             'Value with NoDisMaxParams = [bf] condition' => [
@@ -704,18 +706,18 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                         'value' => 'a:foo',
                         'conditions' => [
                             [
-                                'NoDismaxParams' => ['bf']
-                            ]
-                        ]
-                    ]
+                                'NoDismaxParams' => ['bf'],
+                            ],
+                        ],
+                    ],
                 ],
                 'expected1' => [
                     'bf' => ['a:filter'],
-                    'bq' => null
+                    'bq' => null,
                 ],
                 'expected2' => [
                     'bf' => null,
-                    'bq' => ['a:foo']
+                    'bq' => ['a:foo'],
                 ],
             ],
         ];
@@ -744,8 +746,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
             'test' => [
                 'DismaxFields' => ['a'],
                 'DismaxParams' => [
-                    ['bf', 'a:filter']
-                ]
+                    ['bf', 'a:filter'],
+                ],
             ],
         ];
         if (!empty($globalExtraParams)) {
@@ -788,13 +790,13 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                         'value' => 'a:foo',
                         'conditions' => [
                             [
-                                'SearchTypeIn' => ['test']
-                            ]
-                        ]
-                    ]
+                                'SearchTypeIn' => ['test'],
+                            ],
+                        ],
+                    ],
                 ],
                 'expected' => [
-                    'bq' => ['a:foo']
+                    'bq' => ['a:foo'],
                 ],
             ],
             'All search types in [test, test2]' => [
@@ -804,13 +806,13 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                         'value' => 'a:foo',
                         'conditions' => [
                             [
-                                'AllSearchTypesIn' => ['test', 'test2']
-                            ]
-                        ]
-                    ]
+                                'AllSearchTypesIn' => ['test', 'test2'],
+                            ],
+                        ],
+                    ],
                 ],
                 'expected' => [
-                    'bq' => ['a:foo']
+                    'bq' => ['a:foo'],
                 ],
             ],
             'All search types in [test, no]' => [
@@ -820,13 +822,13 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                         'value' => 'a:foo',
                         'conditions' => [
                             [
-                                'AllSearchTypesIn' => ['test', 'no']
-                            ]
-                        ]
-                    ]
+                                'AllSearchTypesIn' => ['test', 'no'],
+                            ],
+                        ],
+                    ],
                 ],
                 'expected' => [
-                    'bq' => null
+                    'bq' => null,
                 ],
             ],
             'All search types in [test, test2, no]' => [
@@ -836,13 +838,13 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                         'value' => 'a:foo',
                         'conditions' => [
                             [
-                                'AllSearchTypesIn' => ['test', 'test2', 'no']
-                            ]
-                        ]
-                    ]
+                                'AllSearchTypesIn' => ['test', 'test2', 'no'],
+                            ],
+                        ],
+                    ],
                 ],
                 'expected' => [
-                    'bq' => ['a:foo']
+                    'bq' => ['a:foo'],
                 ],
             ],
         ];
@@ -869,8 +871,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
             'test' => [
                 'DismaxFields' => ['a'],
                 'DismaxParams' => [
-                    ['bf', 'a:filter']
-                ]
+                    ['bf', 'a:filter'],
+                ],
             ],
         ];
         if (!empty($globalExtraParams)) {

@@ -127,7 +127,7 @@ class Holds
             $retVal[$groupKey] = [
                 'items' => $items,
                 'location' => $items[0]['location'] ?? '',
-                'locationhref' => $items[0]['locationhref'] ?? ''
+                'locationhref' => $items[0]['locationhref'] ?? '',
             ];
             // Copy all text fields from the item to the holdings level
             foreach ($items as $item) {
@@ -135,12 +135,14 @@ class Holds
                     if (in_array($fieldName, ['notes', 'holdings_notes'])) {
                         if (empty($item[$fieldName])) {
                             // begin aliasing
-                            if ($fieldName == 'notes'
+                            if (
+                                $fieldName == 'notes'
                                 && !empty($item['holdings_notes'])
                             ) {
                                 // using notes as alias for holdings_notes
                                 $item[$fieldName] = $item['holdings_notes'];
-                            } elseif ($fieldName == 'holdings_notes'
+                            } elseif (
+                                $fieldName == 'holdings_notes'
                                 && !empty($item['notes'])
                             ) {
                                 // using holdings_notes as alias for notes
@@ -292,7 +294,8 @@ class Holds
                 if ($show) {
                     if ($holdConfig) {
                         // Is this copy holdable / linkable
-                        if (!$requestsBlocked
+                        if (
+                            !$requestsBlocked
                             && ($copy['addLink'] ?? false)
                             && ($copy['is_holdable'] ?? true)
                         ) {
@@ -442,7 +445,8 @@ class Holds
         foreach ($holdings as &$location) {
             foreach ($location as &$copy) {
                 // Is this copy requestable
-                if (!$requestsBlocked
+                if (
+                    !$requestsBlocked
                     && isset($copy['addStorageRetrievalRequestLink'])
                     && $copy['addStorageRetrievalRequestLink']
                 ) {
@@ -492,7 +496,8 @@ class Holds
         foreach ($holdings as &$location) {
             foreach ($location as &$copy) {
                 // Is this copy requestable
-                if (!$requestsBlocked && isset($copy['addILLRequestLink'])
+                if (
+                    !$requestsBlocked && isset($copy['addILLRequestLink'])
                     && $copy['addILLRequestLink']
                 ) {
                     $copy['ILLRequestLink'] = $this->getRequestDetails(
@@ -546,7 +551,7 @@ class Holds
         return [
             'action' => $action, 'record' => $details['id'],
             'source' => $details['source'] ?? DEFAULT_SEARCH_BACKEND,
-            'query' => $queryString, 'anchor' => "#tabnav"
+            'query' => $queryString, 'anchor' => "#tabnav",
         ];
     }
 

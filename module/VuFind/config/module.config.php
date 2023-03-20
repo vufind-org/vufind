@@ -43,7 +43,7 @@ $config = [
                     'defaults' => [
                         'controller' => 'Content',
                         'action'     => 'Content',
-                    ]
+                    ],
                 ],
             ],
             'shortlink' => [
@@ -56,7 +56,7 @@ $config = [
                     'defaults' => [
                         'controller' => 'Shortlink',
                         'action'     => 'redirect',
-                    ]
+                    ],
                 ],
             ],
             'legacy-alphabrowse-results' => [
@@ -66,8 +66,8 @@ $config = [
                     'defaults' => [
                         'controller' => 'Alphabrowse',
                         'action'     => 'Home',
-                    ]
-                ]
+                    ],
+                ],
             ],
             'legacy-bookcover' => [
                 'type' => 'Laminas\Router\Http\Literal',
@@ -76,8 +76,8 @@ $config = [
                     'defaults' => [
                         'controller' => 'Cover',
                         'action'     => 'Show',
-                    ]
-                ]
+                    ],
+                ],
             ],
             'legacy-summonrecord' => [
                 'type' => 'Laminas\Router\Http\Literal',
@@ -86,8 +86,8 @@ $config = [
                     'defaults' => [
                         'controller' => 'SummonRecord',
                         'action'     => 'Home',
-                    ]
-                ]
+                    ],
+                ],
             ],
             'legacy-worldcatrecord' => [
                 'type' => 'Laminas\Router\Http\Literal',
@@ -96,8 +96,8 @@ $config = [
                     'defaults' => [
                         'controller' => 'WorldcatRecord',
                         'action'     => 'Home',
-                    ]
-                ]
+                    ],
+                ],
             ],
             'soap-shibboleth-logout-notification-handler' => [
                 'type' => 'Laminas\Router\Http\Literal',
@@ -105,8 +105,8 @@ $config = [
                     'route' => '/soap/shiblogout',
                     'defaults' => [
                         'controller' => 'ShibbolethLogoutNotification',
-                        'action' => 'index'
-                    ]
+                        'action' => 'index',
+                    ],
                 ],
                 'child_routes' => [
                     'get' => [
@@ -114,7 +114,7 @@ $config = [
                         'options' => [
                             'verb' => 'get',
                             'defaults' => [
-                                'action' => 'get'
+                                'action' => 'get',
                             ],
                         ],
                     ],
@@ -123,12 +123,12 @@ $config = [
                         'options' => [
                             'verb' => 'post',
                             'defaults' => [
-                                'action' => 'post'
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+                                'action' => 'post',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
@@ -557,7 +557,7 @@ $config = [
             'VuFind\I18n\Translator\Loader\ExtendedIni' => 'VuFind\I18n\Translator\Loader\ExtendedIniFactory',
         ],
         'aliases' => [
-            'ExtendedIni' => 'VuFind\I18n\Translator\Loader\ExtendedIni'
+            'ExtendedIni' => 'VuFind\I18n\Translator\Loader\ExtendedIni',
         ],
     ],
     'view_helpers' => [
@@ -686,7 +686,7 @@ $recordRoutes = [
 $nonTabRecordActions = [
     'AddComment', 'DeleteComment', 'AddTag', 'DeleteTag', 'Save', 'Email', 'SMS',
     'Cite', 'Export', 'RDF', 'Hold', 'Home', 'StorageRetrievalRequest',
-    'AjaxTab', 'ILLRequest', 'PDF', 'Epub', 'LinkedText', 'Permalink', 'Rating'
+    'AjaxTab', 'ILLRequest', 'PDF', 'Epub', 'LinkedText', 'Permalink', 'Rating',
 ];
 
 // Define dynamic routes -- controller => [route name => action]
@@ -756,7 +756,7 @@ $staticRoutes = [
     'Upgrade/Reset', 'Upgrade/ShowSQL', 'Upgrade/CriticalFixBlowfish',
     'Upgrade/CriticalFixInsecureDatabase',
     'Web/Home', 'Web/FacetList', 'Web/Results',
-    'Worldcat/Advanced', 'Worldcat/Home', 'Worldcat/Search'
+    'Worldcat/Advanced', 'Worldcat/Home', 'Worldcat/Search',
 ];
 
 $routeGenerator = new \VuFind\Route\RouteGenerator();
@@ -773,8 +773,8 @@ $config['router']['routes']['home'] = [
         'defaults' => [
             'controller' => 'index',
             'action'     => 'Home',
-        ]
-    ]
+        ],
+    ],
 ];
 
 return $config;

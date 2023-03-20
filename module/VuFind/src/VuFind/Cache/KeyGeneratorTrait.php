@@ -56,7 +56,8 @@ trait KeyGeneratorTrait
         $key = get_class($this) . (!empty($suffix) ? '_' . $suffix : '');
 
         // Test the build key
-        if ($this->cache
+        if (
+            $this->cache
             && !preg_match($this->cache->getOptions()->getKeyPattern(), $key)
         ) {
             // The key violates the currently set StorageAdapter key_pattern. Our

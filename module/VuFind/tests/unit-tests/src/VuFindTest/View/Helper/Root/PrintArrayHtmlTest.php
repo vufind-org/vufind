@@ -68,32 +68,32 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
         return [
             [ // Set 0
                 [],
-                ''
+                '',
             ],
             [ // Set 1
                 [
                     'KeyA' => "ValueA",
                 ],
                 <<<END
-                <span class="term">KeyA:</span> <span class="detail">ValueA</span><br/>
+                    <span class="term">KeyA:</span> <span class="detail">ValueA</span><br/>
 
-                END
+                    END,
             ],
             [ // Set 2
                 "Value0",
                 <<<END
-                <span class="detail">Value0</span><br/>
+                    <span class="detail">Value0</span><br/>
 
-                END
+                    END,
             ],
             [ // Set 3
                 [
                     0 => "Value0",
                 ],
                 <<<END
-                <span class="detail">Value0</span><br/>
+                    <span class="detail">Value0</span><br/>
 
-                END
+                    END,
             ],
             [ // Set 4
                 [
@@ -101,19 +101,19 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
                     1 => "Value1",
                 ],
                 <<<END
-                <span class="detail">Value0</span><br/>
-                <span class="detail">Value1</span><br/>
+                    <span class="detail">Value0</span><br/>
+                    <span class="detail">Value1</span><br/>
 
-                END
+                    END,
             ],
             [ // Set 5
                 [
                     0 => "Escaped vals <>&'\"",
                 ],
                 <<<END
-                <span class="detail">Escaped vals &lt;&gt;&amp;&#039;&quot;</span><br/>
+                    <span class="detail">Escaped vals &lt;&gt;&amp;&#039;&quot;</span><br/>
 
-                END
+                    END,
             ],
             [ // Set 6
                 [
@@ -123,11 +123,11 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
                     ],
                 ],
                 <<<END
-                <span class="term">KeyA:</span><br/>
-                &ensp;&ensp;<span class="detail">Value0</span><br/>
-                &ensp;&ensp;<span class="detail">Value1</span><br/>
+                    <span class="term">KeyA:</span><br/>
+                    &ensp;&ensp;<span class="detail">Value0</span><br/>
+                    &ensp;&ensp;<span class="detail">Value1</span><br/>
 
-                END
+                    END,
             ],
             [ // Set 7
                 [
@@ -137,10 +137,10 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
                     ],
                 ],
                 <<<END
-                &ndash;&ensp;<span class="detail">Value0</span><br/>
-                &ensp;&ensp;<span class="detail">Value1</span><br/>
+                    &ndash;&ensp;<span class="detail">Value0</span><br/>
+                    &ensp;&ensp;<span class="detail">Value1</span><br/>
 
-                END
+                    END,
             ],
             [ // Set 8
                 [
@@ -154,14 +154,14 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
                     ],
                 ],
                 <<<END
-                <span class="term">KeyA:</span><br/>
-                &ensp;&ensp;<span class="detail">Value0</span><br/>
-                &ensp;&ensp;<span class="detail">Value1</span><br/>
-                <span class="term">KeyB:</span><br/>
-                &ensp;&ensp;<span class="term">KeyX:</span> <span class="detail">Value2</span><br/>
-                &ensp;&ensp;<span class="term">KeyY:</span> <span class="detail">Value3</span><br/>
+                    <span class="term">KeyA:</span><br/>
+                    &ensp;&ensp;<span class="detail">Value0</span><br/>
+                    &ensp;&ensp;<span class="detail">Value1</span><br/>
+                    <span class="term">KeyB:</span><br/>
+                    &ensp;&ensp;<span class="term">KeyX:</span> <span class="detail">Value2</span><br/>
+                    &ensp;&ensp;<span class="term">KeyY:</span> <span class="detail">Value3</span><br/>
 
-                END
+                    END,
             ],
             [ // Set 9
                 [
@@ -176,13 +176,13 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
                     2 => "Value4",
                 ],
                 <<<END
-                &ndash;&ensp;<span class="detail">Value0</span><br/>
-                &ensp;&ensp;<span class="detail">Value1</span><br/>
-                &ndash;&ensp;<span class="term">KeyX:</span> <span class="detail">Value2</span><br/>
-                &ensp;&ensp;<span class="term">KeyY:</span> <span class="detail">Value3</span><br/>
-                &ndash;&ensp;<span class="detail">Value4</span><br/>
+                    &ndash;&ensp;<span class="detail">Value0</span><br/>
+                    &ensp;&ensp;<span class="detail">Value1</span><br/>
+                    &ndash;&ensp;<span class="term">KeyX:</span> <span class="detail">Value2</span><br/>
+                    &ensp;&ensp;<span class="term">KeyY:</span> <span class="detail">Value3</span><br/>
+                    &ndash;&ensp;<span class="detail">Value4</span><br/>
 
-                END
+                    END,
             ],
             [ // Set 10
                 [
@@ -196,16 +196,16 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
                     ],
                 ],
                 <<<END
-                <span class="term">KeyA:</span><br/>
-                &ensp;&ensp;<span class="detail">Value0</span><br/>
-                &ensp;&ensp;<span class="detail">Value1</span><br/>
-                <span class="term">KeyB:</span><br/>
-                &ensp;&ensp;&ndash;&ensp;<span class="term">KeyW:</span> <span class="detail">Value2</span><br/>
-                &ensp;&ensp;&ensp;&ensp;<span class="term">KeyX:</span> <span class="detail">Value3</span><br/>
-                &ensp;&ensp;&ndash;&ensp;<span class="term">KeyY:</span> <span class="detail">Value4</span><br/>
-                &ensp;&ensp;&ensp;&ensp;<span class="term">KeyZ:</span> <span class="detail">Value5</span><br/>
+                    <span class="term">KeyA:</span><br/>
+                    &ensp;&ensp;<span class="detail">Value0</span><br/>
+                    &ensp;&ensp;<span class="detail">Value1</span><br/>
+                    <span class="term">KeyB:</span><br/>
+                    &ensp;&ensp;&ndash;&ensp;<span class="term">KeyW:</span> <span class="detail">Value2</span><br/>
+                    &ensp;&ensp;&ensp;&ensp;<span class="term">KeyX:</span> <span class="detail">Value3</span><br/>
+                    &ensp;&ensp;&ndash;&ensp;<span class="term">KeyY:</span> <span class="detail">Value4</span><br/>
+                    &ensp;&ensp;&ensp;&ensp;<span class="term">KeyZ:</span> <span class="detail">Value5</span><br/>
 
-                END
+                    END,
             ],
             [ // Set 11
                 [
@@ -227,20 +227,20 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
                     ],
                 ],
                 <<<END
-                <span class="term">KeyA:</span><br/>
-                &ensp;&ensp;<span class="detail">Value0</span><br/>
-                &ensp;&ensp;<span class="detail">Value1</span><br/>
-                <span class="term">001:</span><br/>
-                &ensp;&ensp;<span class="detail">Value2</span><br/>
-                &ensp;&ensp;<span class="detail">Value3</span><br/>
-                <span class="term">100:</span><br/>
-                &ensp;&ensp;<span class="detail">Value4</span><br/>
-                &ensp;&ensp;<span class="detail">Value5</span><br/>
-                <span class="term">101:</span><br/>
-                &ensp;&ensp;<span class="term">KeyB:</span> <span class="detail">Value6</span><br/>
-                &ensp;&ensp;<span class="term">200:</span> <span class="detail">Value7</span><br/>
+                    <span class="term">KeyA:</span><br/>
+                    &ensp;&ensp;<span class="detail">Value0</span><br/>
+                    &ensp;&ensp;<span class="detail">Value1</span><br/>
+                    <span class="term">001:</span><br/>
+                    &ensp;&ensp;<span class="detail">Value2</span><br/>
+                    &ensp;&ensp;<span class="detail">Value3</span><br/>
+                    <span class="term">100:</span><br/>
+                    &ensp;&ensp;<span class="detail">Value4</span><br/>
+                    &ensp;&ensp;<span class="detail">Value5</span><br/>
+                    <span class="term">101:</span><br/>
+                    &ensp;&ensp;<span class="term">KeyB:</span> <span class="detail">Value6</span><br/>
+                    &ensp;&ensp;<span class="term">200:</span> <span class="detail">Value7</span><br/>
 
-                END
+                    END,
             ],
             [ // Set 12
                 [
@@ -255,16 +255,16 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
                     "100" => ["Value6"],
                 ],
                 <<<END
-                <span class="term">001:</span> <span class="detail">Value0</span><br/>
-                <span class="term">002:</span><br/>
-                &ensp;&ensp;<span class="term">020:</span> <span class="detail">Value1</span><br/>
-                &ensp;&ensp;<span class="term">040:</span> <span class="detail">Value2</span><br/>
-                &ensp;&ensp;<span class="term">200:</span> <span class="detail">Value3</span><br/>
-                &ensp;&ensp;<span class="term">201:</span> <span class="detail">Value4</span><br/>
-                <span class="term">003:</span> <span class="detail">Value5</span><br/>
-                <span class="term">100:</span> <span class="detail">Value6</span><br/>
+                    <span class="term">001:</span> <span class="detail">Value0</span><br/>
+                    <span class="term">002:</span><br/>
+                    &ensp;&ensp;<span class="term">020:</span> <span class="detail">Value1</span><br/>
+                    &ensp;&ensp;<span class="term">040:</span> <span class="detail">Value2</span><br/>
+                    &ensp;&ensp;<span class="term">200:</span> <span class="detail">Value3</span><br/>
+                    &ensp;&ensp;<span class="term">201:</span> <span class="detail">Value4</span><br/>
+                    <span class="term">003:</span> <span class="detail">Value5</span><br/>
+                    <span class="term">100:</span> <span class="detail">Value6</span><br/>
 
-                END
+                    END,
             ],
             [ // Set 13
                 [
@@ -274,51 +274,51 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
                     ["100" => ["Value3"]],
                 ],
                 <<<END
-                &ndash;&ensp;<span class="term">001:</span> <span class="detail">Value0</span><br/>
-                &ndash;&ensp;<span class="term">002:</span> <span class="detail">Value1</span><br/>
-                &ndash;&ensp;<span class="term">049:</span> <span class="detail">Value2</span><br/>
-                &ndash;&ensp;<span class="term">100:</span> <span class="detail">Value3</span><br/>
+                    &ndash;&ensp;<span class="term">001:</span> <span class="detail">Value0</span><br/>
+                    &ndash;&ensp;<span class="term">002:</span> <span class="detail">Value1</span><br/>
+                    &ndash;&ensp;<span class="term">049:</span> <span class="detail">Value2</span><br/>
+                    &ndash;&ensp;<span class="term">100:</span> <span class="detail">Value3</span><br/>
 
-                END
+                    END,
             ],
             [ // Set 14
                 [
                     "KeyA" => [0 => "Value0"],
                 ],
                 <<<END
-                <span class="term">KeyA:</span> <span class="detail">Value0</span><br/>
+                    <span class="term">KeyA:</span> <span class="detail">Value0</span><br/>
 
-                END
+                    END,
             ],
             [ // Set 15
                 [
                     "KeyA" => ["000" => "Value0"],
                 ],
                 <<<END
-                <span class="term">KeyA:</span><br/>
-                &ensp;&ensp;<span class="term">000:</span> <span class="detail">Value0</span><br/>
+                    <span class="term">KeyA:</span><br/>
+                    &ensp;&ensp;<span class="term">000:</span> <span class="detail">Value0</span><br/>
 
-                END
+                    END,
             ],
             [ // Set 16
                 [
                     "KeyA" => [0 => [0 => "Value0"]],
                 ],
                 <<<END
-                <span class="term">KeyA:</span><br/>
-                &ensp;&ensp;<span class="detail">Value0</span><br/>
+                    <span class="term">KeyA:</span><br/>
+                    &ensp;&ensp;<span class="detail">Value0</span><br/>
 
-                END
+                    END,
             ],
             [ // Set 17
                 [
                     "KeyA" => [0 => [0 => [0 => [0 => "Value0"]]]],
                 ],
                 <<<END
-                <span class="term">KeyA:</span><br/>
-                &ensp;&ensp;&ndash;&ensp;&ndash;&ensp;<span class="detail">Value0</span><br/>
+                    <span class="term">KeyA:</span><br/>
+                    &ensp;&ensp;&ndash;&ensp;&ndash;&ensp;<span class="detail">Value0</span><br/>
 
-                END
+                    END,
             ],
             [ // Set 18
                 [
@@ -329,12 +329,12 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
                     ],
                 ],
                 <<<END
-                <span class="term">KeyA:</span><br/>
-                &ensp;&ensp;<span class="detail">Value0</span><br/>
-                &ensp;&ensp;<span class="detail">Value1</span><br/>
-                &ensp;&ensp;<span class="detail">Value2</span><br/>
+                    <span class="term">KeyA:</span><br/>
+                    &ensp;&ensp;<span class="detail">Value0</span><br/>
+                    &ensp;&ensp;<span class="detail">Value1</span><br/>
+                    &ensp;&ensp;<span class="detail">Value2</span><br/>
 
-                END
+                    END,
             ],
             [ // Set 19
                 [
@@ -350,13 +350,13 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
                     ],
                 ],
                 <<<END
-                <span class="term">KeyA:</span><br/>
-                &ensp;&ensp;&ndash;&ensp;<span class="detail">Value0</span><br/>
-                &ensp;&ensp;&ensp;&ensp;<span class="detail">Value1</span><br/>
-                &ensp;&ensp;&ndash;&ensp;<span class="detail">Value2</span><br/>
-                &ensp;&ensp;&ensp;&ensp;<span class="detail">Value3</span><br/>
+                    <span class="term">KeyA:</span><br/>
+                    &ensp;&ensp;&ndash;&ensp;<span class="detail">Value0</span><br/>
+                    &ensp;&ensp;&ensp;&ensp;<span class="detail">Value1</span><br/>
+                    &ensp;&ensp;&ndash;&ensp;<span class="detail">Value2</span><br/>
+                    &ensp;&ensp;&ensp;&ensp;<span class="detail">Value3</span><br/>
 
-                END
+                    END,
             ],
         ];
     }

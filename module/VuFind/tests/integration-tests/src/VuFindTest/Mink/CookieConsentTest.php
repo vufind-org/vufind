@@ -58,8 +58,8 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
                 'config' => [
                     'Matomo' => [
                         'url' => $this->getVuFindUrl() . '/Content/faq',
-                    ]
-                ]
+                    ],
+                ],
             ]
         );
         $page = $this->getStartPage();
@@ -88,8 +88,8 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
                     ],
                     'Matomo' => [
                         'url' => $this->getVuFindUrl() . '/Content/faq',
-                    ]
-                ]
+                    ],
+                ],
             ]
         );
         // Make sure the cookie dialog is not hidden from a headless client:
@@ -97,9 +97,9 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
             [
                 'CookieConsent' => [
                     'CookieConsent' => [
-                        'HideFromBots' => false
-                    ]
-                ]
+                        'HideFromBots' => false,
+                    ],
+                ],
             ]
         );
 

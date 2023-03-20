@@ -133,7 +133,8 @@ class UpgradeController extends AbstractBase
         // If auto-configuration is disabled, prevent any other action from being
         // accessed:
         $config = $this->getConfig();
-        if (!isset($config->System->autoConfigure)
+        if (
+            !isset($config->System->autoConfigure)
             || !$config->System->autoConfigure
         ) {
             $routeMatch = $e->getRouteMatch();
@@ -717,7 +718,7 @@ class UpgradeController extends AbstractBase
 
         return $this->createViewModel(
             [
-                'anonymousTags' => $this->params()->fromQuery('anonymousCnt')
+                'anonymousTags' => $this->params()->fromQuery('anonymousCnt'),
             ]
         );
     }
@@ -896,14 +897,16 @@ class UpgradeController extends AbstractBase
         }
 
         // First find out which version we are upgrading:
-        if (!isset($this->cookie->sourceDir)
+        if (
+            !isset($this->cookie->sourceDir)
             || !is_dir($this->cookie->sourceDir)
         ) {
             return $this->forwardTo('Upgrade', 'GetSourceDir');
         }
 
         // Next figure out which version(s) are involved:
-        if (!isset($this->cookie->oldVersion)
+        if (
+            !isset($this->cookie->oldVersion)
             || !isset($this->cookie->newVersion)
         ) {
             return $this->forwardTo('Upgrade', 'EstablishVersions');
@@ -947,7 +950,7 @@ class UpgradeController extends AbstractBase
                 'configDir'
                     => dirname($this->getForcedLocalConfigPath('config.ini')),
                 'importDir' => LOCAL_OVERRIDE_DIR . '/import',
-                'oldVersion' => $this->cookie->oldVersion
+                'oldVersion' => $this->cookie->oldVersion,
             ]
         );
     }

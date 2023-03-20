@@ -104,8 +104,8 @@ class Relais implements \Laminas\Log\LoggerAwareInterface
                 [
                     'Type' => 'OCLC',
                     'Value' => $oclc,
-                ]
-            ]
+                ],
+            ],
         ];
     }
 

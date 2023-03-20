@@ -57,7 +57,7 @@ class QueryBuilderTest extends TestCase
         // @codingStandardsIgnoreStart
         $tests = [
             ['basic', 'Author:(john smith)'],
-            ['advanced', '(Title:(bananas)) AND (SubjectTerms:(oranges) OR apples) NOT ((PublicationSeriesTitle:(pears)))']
+            ['advanced', '(Title:(bananas)) AND (SubjectTerms:(oranges) OR apples) NOT ((PublicationSeriesTitle:(pears)))'],
         ];
         // @codingStandardsIgnoreEnd
 

@@ -18,7 +18,7 @@
         // Enable bulk options if appropriate:
         'showBulkOptions' => $this->supportsCartOptions[$columnIndex] && $this->showBulkOptions,
         // Other params
-        'domId' => $currentSearch['domId']
+        'domId' => $currentSearch['domId'],
       ];
       if (isset($currentSearch['ajax'])) {
         $colParams['ajax'] = $currentSearch['ajax'];

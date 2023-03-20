@@ -69,7 +69,8 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
     {
         $links = $page->findAll('css', '.searchtools a');
         foreach ($links as $link) {
-            if ($this->checkVisibility($link)
+            if (
+                $this->checkVisibility($link)
                 && str_contains($link->getHtml(), 'Save Search')
             ) {
                 $link->click();
@@ -284,7 +285,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
     {
         $this->changeConfigs(
             [
-                'config' => ['Account' => ['schedule_searches' => true]]
+                'config' => ['Account' => ['schedule_searches' => true]],
             ]
         );
         $session = $this->getMinkSession();

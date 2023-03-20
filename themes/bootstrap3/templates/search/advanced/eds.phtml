@@ -5,7 +5,7 @@
       $value = $expander['Value'] ?>
       <div class="checkbox">
         <label for="expand_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>">
-          <input id="expand_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>" type="checkbox" <?=(isset($expander['selected']) && $expander['selected'])?'checked="checked" data-checked-by-default="true"':''?> name="filter[]" value="EXPAND:<?=$this->escapeHtmlAttr($value)?>">
+          <input id="expand_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>" type="checkbox" <?=(isset($expander['selected']) && $expander['selected']) ? 'checked="checked" data-checked-by-default="true"' : ''?> name="filter[]" value="EXPAND:<?=$this->escapeHtmlAttr($value)?>">
           <?=$this->transEsc('eds_expander_' . $value, [], $expander['Label'])?>
         </label>
       </div>
@@ -15,7 +15,7 @@
     <select id="searchMode_<?=$this->escapeHtmlAttr($field)?>" name="filter[]" class="form-control">
       <?php foreach ($this->searchModes as $field => $searchMode):
         $value = $searchMode['Value'] ?>
-        <option <?=(isset($searchMode['selected']) && $searchMode['selected'])?'selected="selected"':''?> value="SEARCHMODE:<?=$this->escapeHtmlAttr($value)?>">
+        <option <?=(isset($searchMode['selected']) && $searchMode['selected']) ? 'selected="selected"' : ''?> value="SEARCHMODE:<?=$this->escapeHtmlAttr($value)?>">
           <?= /* 'Label' comes from API and is always in English; try to translate structured value before using it: */ $this->transEsc('eds_mode_' . $value, [], $searchMode['Label']) ?>
         </option>
       <?php endforeach; ?>
@@ -33,7 +33,7 @@
             <select id="limit_<?=$this->escapeHtmlAttr($field)?>" name="filter[]" multiple="multiple" size="10" class="form-control">
               <?php foreach ($facet['LimiterValues'] as $id => $facetValue): ?>
                 <?php $value = $facetValue['Value']; ?>
-                <option value="<?='LIMIT|' . $this->escapeHtmlAttr($field . ':' . $facetValue['Value'])?>"<?=(isset($facetValue['selected']) && $facetValue['selected'])?' selected="selected"':''?>><?=$this->escapeHtml($facetValue['Value'])?></option>
+                <option value="<?='LIMIT|' . $this->escapeHtmlAttr($field . ':' . $facetValue['Value'])?>"<?=(isset($facetValue['selected']) && $facetValue['selected']) ? ' selected="selected"' : ''?>><?=$this->escapeHtml($facetValue['Value'])?></option>
               <?php endforeach; ?>
             </select>
             <!-- <br/> -->
@@ -42,7 +42,7 @@
             $value = $facet['LimiterValues'][0]['Value'] ?>
             <div class="checkbox">
               <label for="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>">
-                <input id="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>" type="checkbox" <?=(isset($facet['LimiterValues'][0]['selected']) && $facet['LimiterValues'][0]['selected'])?'checked="checked" data-checked-by-default="true"':''?> name="filter[]" value="<?=$this->escapeHtmlAttr('LIMIT|' . $field . ':' . $value)?>">
+                <input id="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>" type="checkbox" <?=(isset($facet['LimiterValues'][0]['selected']) && $facet['LimiterValues'][0]['selected']) ? 'checked="checked" data-checked-by-default="true"' : ''?> name="filter[]" value="<?=$this->escapeHtmlAttr('LIMIT|' . $field . ':' . $value)?>">
                 <?=$this->transEsc($facet['Label'])?>
               </label>
             </div>
@@ -86,42 +86,42 @@
         <input type="text" name="PublicationDateto" id="PublicationDateto" value="<?=$this->escapeHtmlAttr($this->dateRangeLimit[1])?>" class="form-control"/>
       </div>
     </div>
-      <div class="slider-container">
-        <input type="text" id="PublicationDateSlider">
-      </div>
-      <?php
-        $this->headScript()->appendFile('vendor/bootstrap-slider.min.js');
-        $this->headLink()->appendStylesheet('vendor/bootstrap-slider.min.css');
-        $min = !empty($current['values'][0]) ? min($current['values'][0], 1400) : 1400;
-        $future = date('Y', time() + 31536000);
-        $max = !empty($current['values'][1]) ? max($future, $current['values'][1]) : $future;
-        $low = !empty($current['values'][0]) ? $current['values'][0] : $min;
-        $high = !empty($current['values'][1]) ? $current['values'][1] : $max;
-        $min = intval($min);
-        $max = intval($max);
-        $low = intval($low);
-        $high = intval($high);
-        $init = !empty($current['values'][0]) ? 'fillTexts()' : '';
-        $script = <<<JS
-$(document).ready(function() {
-  var fillTexts = function() {
-    var v = PublicationDateSlider.getValue();
-    $('#PublicationDatefrom').val(v[0]);
-    $('#PublicationDateto').val(v[1]);
-  };
-  var PublicationDateSlider = $('#PublicationDateSlider')
-    .slider({
-       'min':{$min},
-       'max':{$max},
-       'handle':"square",
-       'tooltip':"hide",
-       'value':[{$low},{$high}]
-    })
-    .on('change', fillTexts)
-    .data('slider');
-  {$init}
-});
-JS;
+    <div class="slider-container">
+      <input type="text" id="PublicationDateSlider">
+    </div>
+    <?php
+      $this->headScript()->appendFile('vendor/bootstrap-slider.min.js');
+      $this->headLink()->appendStylesheet('vendor/bootstrap-slider.min.css');
+      $min = !empty($current['values'][0]) ? min($current['values'][0], 1400) : 1400;
+      $future = date('Y', time() + 31536000);
+      $max = !empty($current['values'][1]) ? max($future, $current['values'][1]) : $future;
+      $low = !empty($current['values'][0]) ? $current['values'][0] : $min;
+      $high = !empty($current['values'][1]) ? $current['values'][1] : $max;
+      $min = intval($min);
+      $max = intval($max);
+      $low = intval($low);
+      $high = intval($high);
+      $init = !empty($current['values'][0]) ? 'fillTexts()' : '';
+      $script = <<<JS
+          $(document).ready(function() {
+            var fillTexts = function() {
+              var v = PublicationDateSlider.getValue();
+              $('#PublicationDatefrom').val(v[0]);
+              $('#PublicationDateto').val(v[1]);
+            };
+            var PublicationDateSlider = $('#PublicationDateSlider')
+              .slider({
+                  'min':{$min},
+                  'max':{$max},
+                  'handle':"square",
+                  'tooltip':"hide",
+                  'value':[{$low},{$high}]
+              })
+              .on('change', fillTexts)
+              .data('slider');
+            {$init}
+          });
+          JS;
     ?>
     <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
   </fieldset>

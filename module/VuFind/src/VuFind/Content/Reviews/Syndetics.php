@@ -78,7 +78,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
         'KIREVIEW' => ['title' => 'Kirkus Book Review',
                             'file' => 'KIREVIEW.XML'],
         'CRITICASEREVIEW' => ['title' => 'Criti Case Review',
-                            'file' => 'CRITICASEREVIEW.XML']
+                            'file' => 'CRITICASEREVIEW.XML'],
     ];
 
     /**

@@ -91,7 +91,7 @@ class DatabaseTest extends TestCase
                 [
                     'beginTransaction', 'commit', 'connect', 'getResource',
                     'isConnected', 'getCurrentSchema', 'disconnect', 'rollback',
-                    'execute', 'getLastGeneratedValue'
+                    'execute', 'getLastGeneratedValue',
                 ]
             )->disableOriginalConstructor()
             ->getMock();
@@ -102,7 +102,7 @@ class DatabaseTest extends TestCase
                 [
                     'getConnection', 'getDatabasePlatformName', 'checkEnvironment',
                     'createStatement', 'createResult', 'getPrepareType',
-                    'formatParameterName', 'getLastGeneratedValue'
+                    'formatParameterName', 'getLastGeneratedValue',
                 ]
             )->disableOriginalConstructor()
             ->getMock();

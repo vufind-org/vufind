@@ -73,7 +73,7 @@ class AlmaTest extends \PHPUnit\Framework\TestCase
             'show_in_record' => false,
             'show_in_holdings' => true,
             'embed' => true,
-            'replace_other_urls' => true
+            'replace_other_urls' => true,
         ],
     ];
 

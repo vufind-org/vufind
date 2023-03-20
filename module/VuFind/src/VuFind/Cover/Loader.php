@@ -216,7 +216,8 @@ class Loader extends \VuFind\ImageLoader
     {
         $settings = isset($this->config->DynamicCovers)
             ? $this->config->DynamicCovers->toArray() : [];
-        if (!isset($settings['backgroundMode'])
+        if (
+            !isset($settings['backgroundMode'])
             && isset($this->config->Content->makeDynamicCovers)
         ) {
             $settings['backgroundMode'] = $this->config->Content->makeDynamicCovers;
@@ -357,7 +358,8 @@ class Loader extends \VuFind\ImageLoader
         // are able to display an ISBN or content-type-based image.
         if (!in_array($this->size, $this->validSizes)) {
             $this->loadUnavailable();
-        } elseif (!$this->fetchFromAPI()
+        } elseif (
+            !$this->fetchFromAPI()
             && !$this->fetchFromContentType()
         ) {
             if ($this->generator) {
@@ -643,7 +645,8 @@ class Loader extends \VuFind\ImageLoader
                 ? trim(strtolower($this->config->Content->coverimagesCache)) : true;
             if ($conf === true || $conf === 1 || $conf === '1' || $conf === 'true') {
                 $cache = true;
-            } elseif ($conf === false || $conf === 0 || $conf === '0'
+            } elseif (
+                $conf === false || $conf === 0 || $conf === '0'
                 || $conf === 'false'
             ) {
                 $cache = false;

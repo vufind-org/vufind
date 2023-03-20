@@ -31,7 +31,6 @@ namespace VuFindSearch\Backend\Primo;
 
 use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\Backend\Exception\BackendException;
-
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
@@ -239,7 +238,7 @@ class Backend extends AbstractBackend
         // Most parameters need to be flattened from array format, but a few
         // should remain as arrays:
         $arraySettings = [
-            'query', 'facets', 'filterList', 'groupFilters', 'rangeFilters'
+            'query', 'facets', 'filterList', 'groupFilters', 'rangeFilters',
         ];
         foreach ($params as $key => $param) {
             $options[$key] = in_array($key, $arraySettings) ? $param : $param[0];

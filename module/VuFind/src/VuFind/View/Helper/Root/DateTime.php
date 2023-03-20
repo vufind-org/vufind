@@ -88,7 +88,7 @@ class DateTime extends \Laminas\View\Helper\AbstractHelper
         $replace = [
             $this->view->translate("date_month_placeholder"),
             $this->view->translate("date_day_placeholder"),
-            $this->view->translate("date_year_placeholder")
+            $this->view->translate("date_year_placeholder"),
         ];
 
         return str_replace($search, $replace, $dueDateHelpString);

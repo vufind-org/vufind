@@ -313,8 +313,8 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
             "rft.isbn" => "8820737493",
             "rft_id" => [
                 "info:doi/xxx",
-                "pmid:yyy"
-            ]
+                "pmid:yyy",
+            ],
         ];
 
         $fixture = $this->getJsonFixture('misc/testbug2.json');

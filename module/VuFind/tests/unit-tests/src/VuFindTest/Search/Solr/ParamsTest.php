@@ -132,7 +132,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                         'inverted' => 'foo:bar',
                     ],
                 ],
-            ]
+            ],
         ];
         $configManager = $this->getMockConfigPluginManager($config);
         $params = $this->getParams(null, $configManager);
@@ -215,7 +215,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         Options $options = null,
         PluginManager $mockConfig = null
     ): Params {
-        $mockConfig = $mockConfig ?? $this->createMock(PluginManager::class);
+        $mockConfig ??= $this->createMock(PluginManager::class);
         return new Params(
             $options ?? new Options($mockConfig),
             $mockConfig

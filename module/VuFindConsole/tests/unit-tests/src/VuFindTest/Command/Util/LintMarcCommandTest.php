@@ -73,11 +73,11 @@ class LintMarcCommandTest extends \PHPUnit\Framework\TestCase
         $filename = __DIR__ . '/../../../../../../../../tests/data/heb.mrc';
         $commandTester->execute(compact('filename'));
         $expected = <<<EXPECTED
-Checking record 1 (001 = testbug1)...
-Warnings: 245: Must end with . (period).
-245: Subfield _b should be preceded by space-colon, space-semicolon, or space-equals sign.
+            Checking record 1 (001 = testbug1)...
+            Warnings: 245: Must end with . (period).
+            245: Subfield _b should be preceded by space-colon, space-semicolon, or space-equals sign.
 
-EXPECTED;
+            EXPECTED;
         $this->assertEquals($expected, $commandTester->getDisplay());
         $this->assertEquals(0, $commandTester->getStatusCode());
     }

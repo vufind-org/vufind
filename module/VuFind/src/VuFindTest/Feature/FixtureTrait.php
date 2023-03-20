@@ -66,7 +66,8 @@ trait FixtureTrait
     protected function getFixturePath($filename, $module = 'VuFind')
     {
         $realFilename = realpath($this->getFixtureDir($module) . $filename);
-        if (!$realFilename || !file_exists($realFilename)
+        if (
+            !$realFilename || !file_exists($realFilename)
             || !is_readable($realFilename)
         ) {
             throw new RuntimeException(

@@ -202,7 +202,7 @@ class Solr extends AbstractBase
                     // Override any default timeAllowed since it cannot be used with
                     // cursorMark
                     'timeAllowed' => -1,
-                    'cursorMark' => $cursorMark
+                    'cursorMark' => $cursorMark,
                 ]
             );
             $command = new RawJsonSearchCommand(
@@ -352,7 +352,8 @@ class Solr extends AbstractBase
         $useCache = isset($options['refresh']) ? !$options['refresh'] : true;
         $cacheTime = $this->getHierarchyDriver()->getTreeCacheTime();
 
-        if ($useCache && file_exists($cacheFile)
+        if (
+            $useCache && file_exists($cacheFile)
             && ($cacheTime < 0 || filemtime($cacheFile) > (time() - $cacheTime))
         ) {
             $this->debug("Using cached data from $cacheFile");
@@ -403,7 +404,8 @@ class Solr extends AbstractBase
     {
         $settings = $this->hierarchyDriver->getTreeSettings();
 
-        if (!isset($settings['checkAvailability'])
+        if (
+            !isset($settings['checkAvailability'])
             || $settings['checkAvailability'] == 1
         ) {
             if (!$this->getRecord($id)) {

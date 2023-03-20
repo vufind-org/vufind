@@ -229,7 +229,8 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
 
         if (isset($data->formats[0]->samples[0])) {
             foreach ($data->formats[0]->samples as $format) {
-                if ($format->formatType == 'audiobook-overdrive'
+                if (
+                    $format->formatType == 'audiobook-overdrive'
                     || $format->formatType == 'ebook-overdrive'
                 ) {
                     $results = $format;
@@ -438,7 +439,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         $coverMap = [
             'large' => 'cover300Wide',
             'medium' => 'cover150Wide',
-            'small' => 'thumbnail'
+            'small' => 'thumbnail',
         ];
         $cover = $coverMap[$size] ?? 'cover';
 
@@ -556,7 +557,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
             'action' => 'Hold',
             'record' => $rec_id,
             'query' => "od_id=$od_id&rec_id=$rec_id",
-            'anchor' => ''
+            'anchor' => '',
         ];
         return $urlDetails;
     }

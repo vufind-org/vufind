@@ -201,7 +201,8 @@ class CheckoutsController extends AbstractBase
             return $patron;
         }
 
-        if ($this->formWasSubmitted('purgeSelected', false)
+        if (
+            $this->formWasSubmitted('purgeSelected', false)
             || $this->formWasSubmitted('purgeAll', false)
         ) {
             $csrfToken = $this->getRequest()->getPost()->get('csrf');

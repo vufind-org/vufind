@@ -82,8 +82,8 @@ class RouteGenerator
                 'defaults' => [
                     'controller' => $controller,
                     'action'     => $actionName,
-                ]
-            ]
+                ],
+            ],
         ];
     }
 
@@ -165,8 +165,8 @@ class RouteGenerator
                 'defaults' => [
                     'controller' => $controller,
                     'action'     => 'Home',
-                ]
-            ]
+                ],
+            ],
         ];
         // special non-tab actions that each need their own route:
         foreach (self::$nonTabRecordActions as $action) {
@@ -181,8 +181,8 @@ class RouteGenerator
                     'defaults' => [
                         'controller' => $controller,
                         'action'     => $action,
-                    ]
-                ]
+                    ],
+                ],
             ];
         }
 
@@ -229,8 +229,8 @@ class RouteGenerator
                 'defaults' => [
                     'controller' => $controller,
                     'action'     => $action,
-                ]
-            ]
+                ],
+            ],
         ];
     }
 

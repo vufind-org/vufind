@@ -157,7 +157,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
         $context = [
             'recommend' => $recommend,
             'params' => $results->getParams(),
-            'searchClassId' => $request['searchClassId'] ?? DEFAULT_SEARCH_BACKEND
+            'searchClassId' => $request['searchClassId'] ?? DEFAULT_SEARCH_BACKEND,
         ];
         if (isset($request['enabledFacets'])) {
             // Render requested facets separately
@@ -313,7 +313,8 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
             false
         );
 
-        if (!empty($this->facetConfig->FacetFilters->$facet)
+        if (
+            !empty($this->facetConfig->FacetFilters->$facet)
             || !empty($this->facetConfig->ExcludeFilters->$facet)
         ) {
             $filters = !empty($this->facetConfig->FacetFilters->$facet)

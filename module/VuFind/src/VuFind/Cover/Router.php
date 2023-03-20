@@ -160,7 +160,8 @@ class Router implements \Laminas\Log\LoggerAwareInterface
             }
             try {
                 // Is the current provider appropriate for the available data?
-                if ($handler['handler']->supports($ids)
+                if (
+                    $handler['handler']->supports($ids)
                     && $handler['handler']->useDirectUrls()
                 ) {
                     $nextMetadata = $handler['handler']
