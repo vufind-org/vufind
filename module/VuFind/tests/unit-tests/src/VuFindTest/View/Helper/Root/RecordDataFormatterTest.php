@@ -368,9 +368,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'a' => 'a',
             'b' => 'b',
         ];
-
-        // Check that the function is callable in this test.
-        $this->assertIsCallable([$this, $function]);
+        // Call the method specified by the data provider
         $results = $this->$function($driver, $spec);
         // Check for expected array keys
         $this->assertEquals(array_keys($expected), $this->getLabels($results));
