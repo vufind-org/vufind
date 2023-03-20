@@ -382,8 +382,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $results = $page->findAll('css', $selector);
         $this->assertIsArray($results, "Selector not found: $selector");
         $result = $results[$index] ?? null;
-        $this->assertTrue(
-            is_object($result),
+        $this->assertIsObject($result,
             "Element not found: $selector index $index"
         );
         return $result;
@@ -548,7 +547,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     protected function findAndAssertLink(Element $page, $text)
     {
         $link = $page->findLink($text);
-        $this->assertTrue(is_object($link));
+        $this->assertIsObject($link);
         return $link;
     }
 

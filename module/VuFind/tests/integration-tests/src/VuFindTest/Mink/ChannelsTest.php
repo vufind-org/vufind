@@ -68,7 +68,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, 'div.channel-wrapper');
         // Check number of channels
         $channels = $page->findAll('css', 'div.channel-wrapper');
-        $this->assertEquals(6, count($channels));
+        $this->assertCount(6, $channels);
         // Make sure search input matches url
         $this->assertEquals(
             'building:"weird_ids.mrc"',
@@ -86,15 +86,15 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->getChannelsPage();
         $channel = $this->findCss($page, 'div.channel-wrapper');
         // Initial counts
-        $this->assertEquals(6, count($page->findAll('css', 'div.channel-wrapper')));
-        $this->assertEquals(8, count($channel->findAll('css', '.channel-add-menu .dropdown-menu li')));
+        $this->assertCount(6, $page->findAll('css', 'div.channel-wrapper'));
+        $this->assertCount(8, $channel->findAll('css', '.channel-add-menu .dropdown-menu li'));
         // Click first add button
         $this->clickCss($channel, '.add-btn');
         // Post count
         $this->waitStatement('$("div.channel-wrapper").length === 8');
         $this->waitStatement('$(".channel-add-menu:first .dropdown-menu li").length === 6');
-        $this->assertEquals(8, count($page->findAll('css', 'div.channel-wrapper')));
-        $this->assertEquals(6, count($channel->findAll('css', '.channel-add-menu .dropdown-menu li')));
+        $this->assertCount(8, $page->findAll('css', 'div.channel-wrapper'));
+        $this->assertCount(6, $channel->findAll('css', '.channel-add-menu .dropdown-menu li'));
     }
 
     /**

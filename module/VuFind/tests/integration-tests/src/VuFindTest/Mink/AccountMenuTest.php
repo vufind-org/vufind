@@ -159,9 +159,9 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
         // Seed some fines
         $page = $this->setUpFinesEnvironment();
         $menu = $page->findAll('css', '#login-dropdown');
-        $this->assertEquals(0, count($menu));
+        $this->assertCount(0, $menu);
         $stati = $page->findAll('css', '.account-menu .fines-status.hidden');
-        $this->assertEquals(0, count($stati));
+        $this->assertCount(0, $stati);
     }
 
     /**
@@ -188,9 +188,9 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
         $this->login();
         $page = $this->setUpFinesEnvironment();
         $menu = $page->findAll('css', '#login-dropdown');
-        $this->assertEquals(0, count($menu));
+        $this->assertCount(0, $menu);
         $stati = $page->findAll('css', '.account-menu .fines-status.hidden');
-        $this->assertEquals(1, count($stati));
+        $this->assertCount(1, $stati);
     }
 
     /**
@@ -216,9 +216,9 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
         $this->login();
         $page = $this->setUpFinesEnvironment();
         $menu = $page->findAll('css', '#login-dropdown');
-        $this->assertEquals(1, count($menu));
+        $this->assertCount(1, $menu);
         $stati = $page->findAll('css', '.account-menu .fines-status.hidden');
-        $this->assertEquals(2, count($stati)); // one in menu, one in dropdown
+        $this->assertCount(2, $stati); // one in menu, one in dropdown
     }
 
     /**
@@ -244,7 +244,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
         $this->login();
         $page = $this->setUpFinesEnvironment();
         $menu = $page->findAll('css', '#login-dropdown');
-        $this->assertEquals(1, count($menu));
+        $this->assertCount(1, $menu);
         $this->unFindCss($page, '.account-menu .fines-status.hidden');
     }
 

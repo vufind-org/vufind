@@ -92,7 +92,7 @@ class CollectionsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->goToCollection();
         $results = $page->findAll('css', '.result');
-        $this->assertEquals(7, count($results));
+        $this->assertCount(7, $results);
     }
 
     /**

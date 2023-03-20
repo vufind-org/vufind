@@ -138,7 +138,7 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
         $helper->setTranslator($this->getMockTranslator());
         $helper->setView($this->getPhpRenderer($this->getPlugins()));
         $feed = $helper($results, '/test/path');
-        $this->assertTrue(is_object($feed));
+        $this->assertIsObject($feed);
         $rss = $feed->export('rss');
 
         // Make sure it's really an RSS feed:

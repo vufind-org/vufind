@@ -7,6 +7,7 @@ $finder->in(__DIR__ . '/../config')
 
 $rules = [
     '@PHP74Migration' => true,
+    '@PHPUnit84Migration:risky' => true,
     '@PSR12' => true,
     'align_multiline_comment' => true,
     'binary_operator_spaces' => [
@@ -41,11 +42,7 @@ $rules = [
     'non_printable_character' => true,
     'ordered_imports' => true,
     'phpdoc_no_access' => true,
-    'php_unit_dedicate_assert_internal_type' => true,
-    'php_unit_expectation' => true,
     'php_unit_method_casing' => true,
-    'php_unit_mock' => true,
-    'php_unit_no_expectation_annotation' => true,
     'pow_to_exponentiation' => true,
     'single_line_after_imports' => true,
     'standardize_not_equals' => true,
