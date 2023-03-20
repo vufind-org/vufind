@@ -56,7 +56,7 @@ class QueryBuilderTest extends TestCase
         // (queries):
         // @codingStandardsIgnoreStart
         $tests = [
-            ['advanced', '((TX cheese) AND (AU cross)) NOT (((TI expansion)))']
+            ['advanced', '((TX cheese) AND (AU cross)) NOT (((TI expansion)))'],
         ];
         // @codingStandardsIgnoreEnd
 

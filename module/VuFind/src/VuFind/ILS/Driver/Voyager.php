@@ -398,7 +398,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
             "MFHD_MASTER.DISPLAY_CALL_NO as callnumber",
             "ITEM.TEMP_LOCATION", "ITEM.ITEM_TYPE_ID",
             "ITEM.ITEM_SEQUENCE_NUMBER",
-            $this->getItemSortSequenceSQL('ITEM.PERM_LOCATION')
+            $this->getItemSortSequenceSQL('ITEM.PERM_LOCATION'),
         ];
 
         // From
@@ -407,7 +407,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
             $this->dbName . ".ITEM_STATUS_TYPE",
             $this->dbName . ".ITEM_STATUS",
             $this->dbName . ".LOCATION", $this->dbName . ".MFHD_ITEM",
-            $this->dbName . ".MFHD_MASTER"
+            $this->dbName . ".MFHD_MASTER",
         ];
 
         // Where
@@ -419,7 +419,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
             "LOCATION.LOCATION_ID = ITEM.PERM_LOCATION",
             "MFHD_ITEM.ITEM_ID = ITEM.ITEM_ID",
             "MFHD_MASTER.MFHD_ID = MFHD_ITEM.MFHD_ID",
-            "MFHD_MASTER.SUPPRESS_IN_OPAC='N'"
+            "MFHD_MASTER.SUPPRESS_IN_OPAC='N'",
         ];
 
         // Bind
@@ -461,7 +461,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
         // From
         $sqlFrom = [
             $this->dbName . ".BIB_MFHD", $this->dbName . ".LOCATION",
-            $this->dbName . ".MFHD_MASTER"
+            $this->dbName . ".MFHD_MASTER",
         ];
 
         // Where
@@ -471,7 +471,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
             "MFHD_MASTER.MFHD_ID = BIB_MFHD.MFHD_ID",
             "MFHD_MASTER.SUPPRESS_IN_OPAC='N'",
             "NOT EXISTS (SELECT MFHD_ID FROM {$this->dbName}.MFHD_ITEM " .
-            "WHERE MFHD_ITEM.MFHD_ID=MFHD_MASTER.MFHD_ID)"
+            "WHERE MFHD_ITEM.MFHD_ID=MFHD_MASTER.MFHD_ID)",
         ];
 
         // Bind
@@ -512,7 +512,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
                     'reserve' => $row['ON_RESERVE'],
                     'callnumber' => $row['CALLNUMBER'],
                     'item_sort_seq' => $row['ITEM_SEQUENCE_NUMBER'],
-                    'sort_seq' => $row['SORT_SEQ'] ?? PHP_INT_MAX
+                    'sort_seq' => $row['SORT_SEQ'] ?? PHP_INT_MAX,
                 ];
             } else {
                 $statusFound = in_array(
@@ -593,7 +593,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
         $sqlArrayNoItems = $this->getStatusNoItemsSQL($id);
         $possibleQueries = [
             $this->buildSqlFromArray($sqlArrayItems),
-            $this->buildSqlFromArray($sqlArrayNoItems)
+            $this->buildSqlFromArray($sqlArrayNoItems),
         ];
 
         // Loop through the possible queries and merge results.
@@ -670,7 +670,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
             "to_char(CIRC_TRANSACTIONS.CURRENT_DUE_DATE, 'MM-DD-YY') as duedate",
             $returnDate,
             "ITEM.ITEM_SEQUENCE_NUMBER",
-            $this->getItemSortSequenceSQL('ITEM.PERM_LOCATION')
+            $this->getItemSortSequenceSQL('ITEM.PERM_LOCATION'),
         ];
 
         // From
@@ -681,7 +681,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
             $this->dbName . ".LOCATION", $this->dbName . ".MFHD_ITEM",
             $this->dbName . ".MFHD_MASTER", $this->dbName . ".MFHD_DATA",
             $this->dbName . ".CIRC_TRANSACTIONS",
-            $this->dbName . ".ITEM_BARCODE"
+            $this->dbName . ".ITEM_BARCODE",
         ];
 
         // Where
@@ -696,12 +696,12 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
             "MFHD_ITEM.ITEM_ID = ITEM.ITEM_ID",
             "MFHD_MASTER.MFHD_ID = MFHD_ITEM.MFHD_ID",
             "MFHD_DATA.MFHD_ID = MFHD_ITEM.MFHD_ID",
-            "MFHD_MASTER.SUPPRESS_IN_OPAC='N'"
+            "MFHD_MASTER.SUPPRESS_IN_OPAC='N'",
         ];
 
         // Order
         $sqlOrder = [
-            "ITEM.ITEM_SEQUENCE_NUMBER", "MFHD_DATA.MFHD_ID", "MFHD_DATA.SEQNUM"
+            "ITEM.ITEM_SEQUENCE_NUMBER", "MFHD_DATA.MFHD_ID", "MFHD_DATA.SEQNUM",
         ];
 
         // Bind
@@ -740,13 +740,13 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
             "null as duedate", "null as RETURNDATE", "0 AS TEMP_LOCATION",
             "0 as PERM_LOCATION",
             "0 as ITEM_SEQUENCE_NUMBER",
-            $this->getItemSortSequenceSQL('LOCATION.LOCATION_ID')
+            $this->getItemSortSequenceSQL('LOCATION.LOCATION_ID'),
         ];
 
         // From
         $sqlFrom = [
             $this->dbName . ".BIB_MFHD", $this->dbName . ".LOCATION",
-            $this->dbName . ".MFHD_MASTER", $this->dbName . ".MFHD_DATA"
+            $this->dbName . ".MFHD_MASTER", $this->dbName . ".MFHD_DATA",
         ];
 
         // Where
@@ -757,7 +757,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
             "MFHD_DATA.MFHD_ID = BIB_MFHD.MFHD_ID",
             "MFHD_MASTER.SUPPRESS_IN_OPAC='N'",
             "NOT EXISTS (SELECT MFHD_ID FROM {$this->dbName}.MFHD_ITEM"
-            . " WHERE MFHD_ITEM.MFHD_ID=MFHD_MASTER.MFHD_ID)"
+            . " WHERE MFHD_ITEM.MFHD_ID=MFHD_MASTER.MFHD_ID)",
         ];
 
         // Order
@@ -1031,7 +1031,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
             'use_unknown_message' =>
                 in_array('No information available', $sqlRow['STATUS_ARRAY']),
             'item_sort_seq' => $sqlRow['ITEM_SEQUENCE_NUMBER'],
-            'sort_seq' => $sqlRow['SORT_SEQ'] ?? PHP_INT_MAX
+            'sort_seq' => $sqlRow['SORT_SEQ'] ?? PHP_INT_MAX,
         ];
     }
 
@@ -1131,7 +1131,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
                     'number' => $number,
                     'requests_placed' => $requests_placed,
                     'returnDate' => $this->processHoldingReturnDate($row),
-                    'purchase_history' => $purchases
+                    'purchase_history' => $purchases,
                 ];
 
                 // Parse Holding Record
@@ -1375,7 +1375,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
             "MAX(CIRC_TRANSACTIONS.RENEWAL_COUNT) AS RENEWAL_COUNT",
             "MAX(CIRC_POLICY_MATRIX.RENEWAL_COUNT) as RENEWAL_LIMIT",
             "MAX(LOCATION.LOCATION_DISPLAY_NAME) as BORROWING_LOCATION",
-            "MAX(CIRC_POLICY_MATRIX.LOAN_INTERVAL) as LOAN_INTERVAL"
+            "MAX(CIRC_POLICY_MATRIX.LOAN_INTERVAL) as LOAN_INTERVAL",
         ];
 
         // From
@@ -1389,7 +1389,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
             $this->dbName . ".MFHD_ITEM",
             $this->dbName . ".BIB_TEXT",
             $this->dbName . ".CIRC_POLICY_MATRIX",
-            $this->dbName . ".LOCATION"
+            $this->dbName . ".LOCATION",
         ];
 
         // Where
@@ -1408,7 +1408,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
             "(ITEM_BARCODE.BARCODE_STATUS IS NULL OR " .
             "ITEM_BARCODE.BARCODE_STATUS IN (SELECT BARCODE_STATUS_TYPE FROM " .
             "$this->dbName.ITEM_BARCODE_STATUS " .
-            " WHERE BARCODE_STATUS_DESC = 'Active'))"
+            " WHERE BARCODE_STATUS_DESC = 'Active'))",
         ];
 
         // Order
@@ -1423,7 +1423,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
             'where' => $sqlWhere,
             'order' => $sqlOrder,
             'bind' => $sqlBind,
-            'group' => ['CIRC_TRANSACTIONS.ITEM_ID']
+            'group' => ['CIRC_TRANSACTIONS.ITEM_ID'],
         ];
 
         return $sqlArray;
@@ -1566,13 +1566,13 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
             "to_char(FINE_FEE.CREATE_DATE, 'MM-DD-YY HH:MI:SS') as CREATEDATE",
             "to_char(FINE_FEE.ORIG_CHARGE_DATE, 'MM-DD-YY') as CHARGEDATE",
             "to_char(FINE_FEE.DUE_DATE, 'MM-DD-YY') as DUEDATE",
-            "BIB_ITEM.BIB_ID"
+            "BIB_ITEM.BIB_ID",
         ];
 
         // From
         $sqlFrom = [
             $this->dbName . ".FINE_FEE", $this->dbName . ".FINE_FEE_TYPE",
-            $this->dbName . ".PATRON", $this->dbName . ".BIB_ITEM"
+            $this->dbName . ".PATRON", $this->dbName . ".BIB_ITEM",
         ];
 
         // Where
@@ -1581,7 +1581,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
             "FINE_FEE.FINE_FEE_TYPE = FINE_FEE_TYPE.FINE_FEE_TYPE",
             "FINE_FEE.PATRON_ID  = PATRON.PATRON_ID",
             "FINE_FEE.ITEM_ID = BIB_ITEM.ITEM_ID(+)",
-            "FINE_FEE.FINE_FEE_BALANCE > 0"
+            "FINE_FEE.FINE_FEE_BALANCE > 0",
         ];
 
         // Bind
@@ -1591,7 +1591,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
             'expressions' => $sqlExpressions,
             'from' => $sqlFrom,
             'where' => $sqlWhere,
-            'bind' => $sqlBind
+            'bind' => $sqlBind,
         ];
 
         return $sqlArray;
@@ -1700,7 +1700,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
             "MFHD_ITEM.YEAR",
             "BIB_TEXT.TITLE_BRIEF",
             "BIB_TEXT.TITLE",
-            "REQUEST_GROUP.GROUP_NAME as REQUEST_GROUP_NAME"
+            "REQUEST_GROUP.GROUP_NAME as REQUEST_GROUP_NAME",
         ];
 
         // From
@@ -1710,7 +1710,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
             $this->dbName . ".MFHD_ITEM",
             $this->dbName . ".BIB_TEXT",
             $this->dbName . ".VOYAGER_DATABASES",
-            $this->dbName . ".REQUEST_GROUP"
+            $this->dbName . ".REQUEST_GROUP",
         ];
 
         // Where
@@ -1724,7 +1724,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
             "(HOLD_RECALL.HOLDING_DB_ID IS NULL OR HOLD_RECALL.HOLDING_DB_ID = 0 " .
             "OR (HOLD_RECALL.HOLDING_DB_ID = " .
             "VOYAGER_DATABASES.DB_ID AND VOYAGER_DATABASES.DB_CODE = 'LOCAL'))",
-            "HOLD_RECALL.REQUEST_GROUP_ID = REQUEST_GROUP.GROUP_ID(+)"
+            "HOLD_RECALL.REQUEST_GROUP_ID = REQUEST_GROUP.GROUP_ID(+)",
         ];
 
         // Bind
@@ -1735,7 +1735,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
             'expressions' => $sqlExpressions,
             'from' => $sqlFrom,
             'where' => $sqlWhere,
-            'bind' => $sqlBind
+            'bind' => $sqlBind,
         ];
 
         return $sqlArray;
@@ -1784,7 +1784,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
             'volume' => str_replace("v.", "", utf8_encode($sqlRow['ITEM_ENUM'])),
             'publication_year' => $sqlRow['YEAR'],
             'title' => empty($sqlRow['TITLE_BRIEF'])
-                ? $sqlRow['TITLE'] : $sqlRow['TITLE_BRIEF']
+                ? $sqlRow['TITLE'] : $sqlRow['TITLE_BRIEF'],
         ];
     }
 
@@ -1884,7 +1884,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
             'MFHD_ITEM.ITEM_ENUM',
             'MFHD_ITEM.YEAR',
             'BIB_TEXT.TITLE_BRIEF',
-            'BIB_TEXT.TITLE'
+            'BIB_TEXT.TITLE',
         ];
 
         // From
@@ -1892,7 +1892,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
             $this->dbName . '.CALL_SLIP',
             $this->dbName . '.CALL_SLIP_STATUS_TYPE',
             $this->dbName . '.MFHD_ITEM',
-            $this->dbName . '.BIB_TEXT'
+            $this->dbName . '.BIB_TEXT',
         ];
 
         // Where
@@ -1900,7 +1900,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
             'CALL_SLIP.PATRON_ID = :id',
             'CALL_SLIP.STATUS = CALL_SLIP_STATUS_TYPE.STATUS_TYPE(+)',
             'CALL_SLIP.ITEM_ID = MFHD_ITEM.ITEM_ID(+)',
-            'BIB_TEXT.BIB_ID = CALL_SLIP.BIB_ID'
+            'BIB_TEXT.BIB_ID = CALL_SLIP.BIB_ID',
         ];
 
         if (!empty($this->config['StorageRetrievalRequests']['display_statuses'])) {
@@ -1917,7 +1917,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
 
         // Order by
         $sqlOrderBy = [
-            "to_char(CALL_SLIP.DATE_REQUESTED, 'YYYY-MM-DD HH24:MI:SS')"
+            "to_char(CALL_SLIP.DATE_REQUESTED, 'YYYY-MM-DD HH24:MI:SS')",
         ];
 
         // Bind
@@ -1929,7 +1929,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
             'from' => $sqlFrom,
             'where' => $sqlWhere,
             'order' => $sqlOrderBy,
-            'bind' => $sqlBind
+            'bind' => $sqlBind,
         ];
 
         return $sqlArray;
@@ -1992,7 +1992,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
             'issue' => utf8_encode($sqlRow['ITEM_CHRON']),
             'year' => utf8_encode($sqlRow['ITEM_YEAR']),
             'title' => empty($sqlRow['TITLE_BRIEF'])
-                ? $sqlRow['TITLE'] : $sqlRow['TITLE_BRIEF']
+                ? $sqlRow['TITLE'] : $sqlRow['TITLE_BRIEF'],
         ];
     }
 
@@ -2147,7 +2147,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
 
         $bindParams = [
             ':enddate' => date('d-m-Y', strtotime('now')),
-            ':startdate' => date('d-m-Y', strtotime("-$daysOld day"))
+            ':startdate' => date('d-m-Y', strtotime("-$daysOld day")),
         ];
 
         $sql = "select count(distinct LINE_ITEM.BIB_ID) as count " .

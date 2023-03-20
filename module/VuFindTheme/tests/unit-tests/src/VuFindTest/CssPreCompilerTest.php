@@ -64,7 +64,7 @@ class CssPreCompilerTest extends \PHPUnit\Framework\TestCase
     public static function extClassProvider()
     {
         return [
-            ['scss', ScssCompiler::class]
+            ['scss', ScssCompiler::class],
         ];
     }
 

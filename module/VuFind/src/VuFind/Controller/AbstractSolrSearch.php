@@ -97,13 +97,13 @@ class AbstractSolrSearch extends AbstractSearch
     protected function getIllustrationSettings($savedSearch = false)
     {
         $illYes = [
-            'text' => 'Has Illustrations', 'value' => 1, 'selected' => false
+            'text' => 'Has Illustrations', 'value' => 1, 'selected' => false,
         ];
         $illNo = [
-            'text' => 'Not Illustrated', 'value' => 0, 'selected' => false
+            'text' => 'Not Illustrated', 'value' => 0, 'selected' => false,
         ];
         $illAny = [
-            'text' => 'No Preference', 'value' => -1, 'selected' => false
+            'text' => 'No Preference', 'value' => -1, 'selected' => false,
         ];
 
         // Find the selected value by analyzing facets -- if we find match, remove

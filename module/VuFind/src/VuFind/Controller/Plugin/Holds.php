@@ -139,7 +139,7 @@ class Holds extends AbstractRequestBase
                         'confirm_hold_cancel_all_text',
                         [
                             'cancelAll' => 1,
-                            'cancelAllIDS' => $params->fromPost('cancelAllIDS')
+                            'cancelAllIDS' => $params->fromPost('cancelAllIDS'),
                         ]
                     );
                 } else {
@@ -151,7 +151,7 @@ class Holds extends AbstractRequestBase
                         [
                             'cancelSelected' => 1,
                             'cancelSelectedIDS' =>
-                                $params->fromPost('cancelSelectedIDS')
+                                $params->fromPost('cancelSelectedIDS'),
                         ]
                     );
                 }

@@ -63,17 +63,17 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
                     $this->isInstanceOf(InputInterface::class),
                     $this->isInstanceOf(OutputInterface::class),
                     'Where would you like to store your local settings? '
-                    . "[$expectedBaseDir/local] "
+                    . "[$expectedBaseDir/local] ",
                 ],
                 [
                     $this->isInstanceOf(InputInterface::class),
                     $this->isInstanceOf(OutputInterface::class),
-                    "\nWhat module name would you like to use? [blank for none] "
+                    "\nWhat module name would you like to use? [blank for none] ",
                 ],
                 [
                     $this->isInstanceOf(InputInterface::class),
                     $this->isInstanceOf(OutputInterface::class),
-                    'What base path should be used in VuFind\'s URL? [/vufind] '
+                    'What base path should be used in VuFind\'s URL? [/vufind] ',
                 ]
             )->willReturnOnConsecutiveCalls($localFixtures, '', '/bar');
         $expectedDirs = [

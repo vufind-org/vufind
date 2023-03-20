@@ -310,9 +310,9 @@ class FakeOverdriveConnector extends OverdriveConnector
                 (object)[
                     'reserveId' => 'overdrive1',
                     'expires' => date('Y-m-d'),
-                    'isReturnable' => true
+                    'isReturnable' => true,
                 ],
-            ]
+            ],
         ];
     }
 
@@ -342,7 +342,7 @@ class FakeOverdriveConnector extends OverdriveConnector
                     'numberOfHolds' => 1,
                     'emailAddress' => 'foo@example.com',
                 ],
-            ]
+            ],
         ];
     }
 }

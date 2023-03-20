@@ -292,7 +292,7 @@ class Initializer
                 if (!empty($name)) {
                     $options[] = [
                         'name' => $name, 'desc' => $desc,
-                        'selected' => ($this->cookieManager->get('ui') == $name)
+                        'selected' => ($this->cookieManager->get('ui') == $name),
                     ];
                 }
             }

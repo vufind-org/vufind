@@ -178,7 +178,7 @@ trait ConcatTrait
             if ($this->isExcludedFromConcat($item)) {
                 $this->groups[] = [
                     'other' => true,
-                    'item' => $item
+                    'item' => $item,
                 ];
                 $groupTypes[] = 'other';
                 continue;
@@ -196,7 +196,7 @@ trait ConcatTrait
                     ? $this->logError($errorMsg) : error_log($errorMsg);
                 $this->groups[] = [
                     'other' => true,
-                    'item' => $item
+                    'item' => $item,
                 ];
                 $groupTypes[] = 'other';
                 continue;
@@ -207,7 +207,7 @@ trait ConcatTrait
             if ($index === false) {
                 $this->groups[] = [
                     'items' => [$item],
-                    'key' => $details['path'] . filemtime($details['path'])
+                    'key' => $details['path'] . filemtime($details['path']),
                 ];
                 $groupTypes[] = $type;
             } else {

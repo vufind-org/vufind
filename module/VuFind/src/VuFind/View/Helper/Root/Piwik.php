@@ -368,7 +368,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
             'Sort' => $params->getSort(),
             'Page' => $params->getPage(),
             'Limit' => $params->getLimit(),
-            'View' => $params->getView()
+            'View' => $params->getView(),
         ];
     }
 
@@ -405,7 +405,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
         return [
             'RecordFormat' => $formats,
             'RecordData' => "$id|$author|$title",
-            'RecordInstitution' => $institutions
+            'RecordInstitution' => $institutions,
         ];
     }
 

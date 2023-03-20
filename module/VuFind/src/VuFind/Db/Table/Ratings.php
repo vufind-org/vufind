@@ -80,7 +80,7 @@ class Ratings extends Gateway
         if (empty($resource)) {
             return [
                 'count' => 0,
-                'rating' => 0
+                'rating' => 0,
             ];
         }
 
@@ -114,7 +114,7 @@ class Ratings extends Gateway
         $result = $this->select($callback)->current();
         return [
             'count' => $result->count,
-            'rating' => $result->rating ?? 0
+            'rating' => $result->rating ?? 0,
         ];
     }
 
@@ -248,7 +248,7 @@ class Ratings extends Gateway
                     ['resource_id'],
                     [Expression::TYPE_IDENTIFIER]
                 ),
-                'total' => new Expression('COUNT(*)')
+                'total' => new Expression('COUNT(*)'),
             ]
         );
         $statement = $this->sql->prepareStatementForSqlObject($select);

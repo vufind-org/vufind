@@ -53,7 +53,7 @@ abstract class AbstractMakeTagTest extends \PHPUnit\Framework\TestCase
             'escapehtml' => new \Laminas\View\Helper\EscapeHtml(),
             'escapehtmlattr' => new \Laminas\View\Helper\EscapeHtmlAttr(),
             'htmlattributes' => new \Laminas\View\Helper\HtmlAttributes(),
-            'maketag' => new \VuFind\View\Helper\Root\MakeTag()
+            'maketag' => new \VuFind\View\Helper\Root\MakeTag(),
         ];
 
         $view = $this->createMock(\Laminas\View\Renderer\PhpRenderer::class);

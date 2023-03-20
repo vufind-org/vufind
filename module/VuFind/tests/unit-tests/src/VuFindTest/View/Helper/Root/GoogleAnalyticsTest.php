@@ -80,7 +80,7 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
         $createJs = "{cookieFlags: 'max-age=7200;secure;samesite=none'}";
         $options = [
             'universal' => true,
-            'create_options_js' => $createJs
+            'create_options_js' => $createJs,
         ];
         $output = $this->renderGA('myfakekey', $options);
         // Confirm that the custom JS appears in the output, and that the

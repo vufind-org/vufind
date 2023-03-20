@@ -391,7 +391,7 @@ class User extends RowGateway implements
                         'COUNT(DISTINCT(?))',
                         ['ur.resource_id'],
                         [Expression::TYPE_IDENTIFIER]
-                    )
+                    ),
                 ]
             );
             $select->join(
@@ -404,7 +404,7 @@ class User extends RowGateway implements
             $select->group(
                 [
                     'user_list.id', 'user_list.user_id', 'title', 'description',
-                    'created', 'public'
+                    'created', 'public',
                 ]
             );
             $select->order(['title']);

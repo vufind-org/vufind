@@ -119,7 +119,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected $statusRankings = [
         'Charged' => 1,
-        'On Hold' => 2
+        'On Hold' => 2,
     ];
 
     /**
@@ -139,7 +139,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         'ODUE' => 'Overdue',
         'Res' => 'Hold Fee',
         'HE' => 'Hold Expired',
-        'RENT' => 'Rental'
+        'RENT' => 'Rental',
     ];
 
     /**
@@ -157,7 +157,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         'cardlost' => 'renew_card_lost',
         'gonenoaddress' => 'patron_status_address_missing',
         'debarred' => 'patron_status_card_blocked',
-        'debt' => 'renew_debt'
+        'debt' => 'renew_debt',
     ];
 
     /**
@@ -168,7 +168,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected $permanentRenewalBlocks = [
         'onsite_checkout',
         'on_reserve',
-        'too_many'
+        'too_many',
     ];
 
     /**
@@ -509,7 +509,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         $result = $this->makeRequest(
             [
                 'path' => 'v1/contrib/kohasuomi/coursereserves',
-                'query' => $params
+                'query' => $params,
             ]
         );
         if (200 !== $result['code']) {
@@ -573,7 +573,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             'email' => $result['email'],
             'major' => null,
             'college' => null,
-            'home_library' => $result['library_id']
+            'home_library' => $result['library_id'],
         ];
     }
 
@@ -634,7 +634,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             'city' => $result['city'],
             'country' => $result['country'],
             'expiration_date' => $this->convertDate($result['expiry_date'] ?? null),
-            'birthdate' => $result['date_of_birth'] ?? ''
+            'birthdate' => $result['date_of_birth'] ?? '',
         ];
     }
 
@@ -688,7 +688,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             $result = $this->makeRequest(
                 [
                     'path' => ['v1', 'checkouts', $checkoutId, 'renewal'],
-                    'method' => 'POST'
+                    'method' => 'POST',
                 ]
             );
             if (201 === $result['code']) {
@@ -697,12 +697,12 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 $finalResult['details'][$itemId] = [
                     'item_id' => $itemId,
                     'success' => true,
-                    'new_date' => $newDate
+                    'new_date' => $newDate,
                 ];
             } else {
                 $finalResult['details'][$itemId] = [
                     'item_id' => $itemId,
-                    'success' => false
+                    'success' => false,
                 ];
             }
         }
@@ -747,8 +747,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 'query' => [
                     'patron_id' => $patron['id'],
                     '_match' => 'exact',
-                    '_per_page' => -1
-                ]
+                    '_per_page' => -1,
+                ],
             ]
         );
 
@@ -820,21 +820,21 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 [
                     'path' => ['v1', 'holds', $holdId],
                     'method' => 'DELETE',
-                    'errors' => true
+                    'errors' => true,
                 ]
             );
 
             if (200 === $result['code'] || 204 === $result['code']) {
                 $response[$holdId] = [
                     'success' => true,
-                    'status' => 'hold_cancel_success'
+                    'status' => 'hold_cancel_success',
                 ];
                 ++$count;
             } else {
                 $response[$holdId] = [
                     'success' => false,
                     'status' => 'hold_cancel_fail',
-                    'sysMessage' => false
+                    'sysMessage' => false,
                 ];
             }
         }
@@ -883,12 +883,12 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     [
                         'path' => [
                             'v1', 'contrib', 'kohasuomi', 'availability', 'items',
-                            $itemId, 'hold'
+                            $itemId, 'hold',
                         ],
                         'query' => [
                             'patron_id' => (int)$patron['id'],
                             'query_pickup_locations' => 1,
-                        ]
+                        ],
                     ]
                 );
                 if (empty($result['data'])) {
@@ -901,13 +901,13 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     [
                         'path' => [
                             'v1', 'contrib', 'kohasuomi', 'availability', 'biblios',
-                            $bibId, 'hold'
+                            $bibId, 'hold',
                         ],
                         'query' => [
                             'patron_id' => (int)$patron['id'],
                             'query_pickup_locations' => 1,
                             'ignore_patron_holds' => $requestId ? 1 : 0,
-                        ]
+                        ],
                     ]
                 );
                 if (empty($result['data'])) {
@@ -932,7 +932,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             }
             $locations[] = [
                 'locationID' => $code,
-                'locationDisplay' => $library['name']
+                'locationDisplay' => $library['name'],
             ];
         }
 
@@ -1012,20 +1012,20 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 [
                     'path' => [
                         'v1', 'contrib', 'kohasuomi', 'availability', 'biblios', $id,
-                        'hold'
+                        'hold',
                     ],
-                    'query' => ['patron_id' => $patron['id']]
+                    'query' => ['patron_id' => $patron['id']],
                 ]
             );
             if (!empty($result['data']['availability']['available'])) {
                 return [
                     'valid' => true,
-                    'status' => 'title_hold_place'
+                    'status' => 'title_hold_place',
                 ];
             }
             return [
                 'valid' => false,
-                'status' => $this->getHoldBlockReason($result['data'])
+                'status' => $this->getHoldBlockReason($result['data']),
             ];
         }
 
@@ -1038,20 +1038,20 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             [
                 'path' => [
                     'v1', 'contrib', 'kohasuomi', 'availability', 'items',
-                    $data['item_id'], 'hold'
+                    $data['item_id'], 'hold',
                 ],
-                'query' => ['patron_id' => $patron['id']]
+                'query' => ['patron_id' => $patron['id']],
             ]
         );
         if (!empty($result['data']['availability']['available'])) {
             return [
                 'valid' => true,
-                'status' => 'hold_place'
+                'status' => 'hold_place',
             ];
         }
         return [
             'valid' => false,
-            'status' => $this->getHoldBlockReason($result['data'])
+            'status' => $this->getHoldBlockReason($result['data']),
         ];
     }
 
@@ -1106,7 +1106,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 'path' => 'v1/holds',
                 'json' => $request,
                 'method' => 'POST',
-                'errors' => true
+                'errors' => true,
             ]
         );
 
@@ -1121,14 +1121,14 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 'suspended_until' => \DateTime::createFromFormat(
                     'U',
                     $holdDetails['startDateTS']
-                )->modify('-1 DAY')->format('Y-m-d') . ' 23:59:59'
+                )->modify('-1 DAY')->format('Y-m-d') . ' 23:59:59',
             ];
             $result = $this->makeRequest(
                 [
                     'path' => ['v1', 'holds', $holdId],
                     'json' => $request,
                     'method' => 'PUT',
-                    'errors' => true
+                    'errors' => true,
                 ]
             );
             if ($result['code'] >= 300) {
@@ -1136,7 +1136,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 // about the modification failure:
                 return [
                     'success' => true,
-                    'warningMessage' => 'hold_error_update_failed'
+                    'warningMessage' => 'hold_error_update_failed',
                 ];
             }
         }
@@ -1185,7 +1185,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                                 'path' => ['v1', 'holds', $requestId, 'suspension'],
                                 'method' => 'POST',
                                 'json' => new \stdClass(), // For empty JSON object
-                                'errors' => true
+                                'errors' => true,
                             ]
                         );
                     }
@@ -1195,7 +1195,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                             'path' => ['v1', 'holds', $requestId, 'suspension'],
                             'method' => 'DELETE',
                             'json' => new \stdClass(), // For empty JSON object
-                            'errors' => true
+                            'errors' => true,
                         ]
                     );
                 }
@@ -1214,7 +1214,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                             'path' => ['v1', 'holds', $requestId],
                             'method' => 'PUT',
                             'json' => $updateFields,
-                            'errors' => true
+                            'errors' => true,
                         ]
                     );
                     if ($result['code'] >= 300) {
@@ -1244,7 +1244,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         $result = $this->makeRequest(
             [
                 'v1', 'contrib', 'kohasuomi', 'patrons', $patron['id'],
-                'articlerequests'
+                'articlerequests',
             ]
         );
         if (empty($result)) {
@@ -1320,10 +1320,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 [
                     'path' => [
                         'v1', 'contrib', 'kohasuomi', 'patrons', $patron['id'],
-                        'articlerequests', $id
+                        'articlerequests', $id,
                     ],
                     'method' => 'DELETE',
-                    'errors' => true
+                    'errors' => true,
                 ]
             );
 
@@ -1331,12 +1331,12 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 $response[$id] = [
                     'success' => false,
                     'status' => 'storage_retrieval_request_cancel_fail',
-                    'sysMessage' => false
+                    'sysMessage' => false,
                 ];
             } else {
                 $response[$id] = [
                     'success' => true,
-                    'status' => 'storage_retrieval_request_cancel_success'
+                    'status' => 'storage_retrieval_request_cancel_success',
                 ];
                 ++$count;
             }
@@ -1371,9 +1371,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 [
                     'path' => [
                         'v1', 'contrib', 'kohasuomi', 'availability', 'biblios', $id,
-                        'articlerequest'
+                        'articlerequest',
                     ],
-                    'query' => ['patron_id' => $patron['id']]
+                    'query' => ['patron_id' => $patron['id']],
                 ]
             );
         } else {
@@ -1381,9 +1381,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 [
                     'path' => [
                         'v1', 'contrib', 'kohasuomi', 'availability', 'items',
-                        $data['item_id'], 'articlerequest'
+                        $data['item_id'], 'articlerequest',
                     ],
-                    'query' => ['patron_id' => $patron['id']]
+                    'query' => ['patron_id' => $patron['id']],
                 ]
             );
         }
@@ -1421,7 +1421,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         ) {
             return [
                 'success' => false,
-                'sysMessage' => 'storage_retrieval_request_invalid_pickup'
+                'sysMessage' => 'storage_retrieval_request_invalid_pickup',
             ];
         }
 
@@ -1441,11 +1441,11 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             [
                 'path' => [
                     'v1', 'contrib', 'kohasuomi', 'patrons', $patron['id'],
-                    'articlerequests'
+                    'articlerequests',
                 ],
                 'json' => $request,
                 'method' => 'POST',
-                'errors' => true
+                'errors' => true,
             ]
         );
 
@@ -1454,12 +1454,12 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 ?? 'storage_retrieval_request_error_fail';
             return [
                 'success' => false,
-                'sysMessage' => $message
+                'sysMessage' => $message,
             ];
         }
         return [
             'success' => true,
-            'status' => 'storage_retrieval_request_place_success'
+            'status' => 'storage_retrieval_request_place_success',
         ];
     }
 
@@ -1528,7 +1528,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         $patron = $details['patron'];
         $request = [
             'password' => $details['newPassword'],
-            'password_2' => $details['newPassword']
+            'password_2' => $details['newPassword'],
         ];
 
         $result = $this->makeRequest(
@@ -1536,7 +1536,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 'path' => ['v1', 'patrons', $patron['id'], 'password'],
                 'json' => $request,
                 'method' => 'POST',
-                'errors' => true
+                'errors' => true,
             ]
         );
 
@@ -1547,7 +1547,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 $message = 'An error has occurred';
             }
             return [
-                'success' => false, 'status' => $message
+                'success' => false, 'status' => $message,
             ];
         }
         return ['success' => true, 'status' => 'change_password_ok'];
@@ -1580,9 +1580,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     '+checkin_date' => 'sort_return_date_asc',
                     '-due_date' => 'sort_due_date_desc',
                     '+due_date' => 'sort_due_date_asc',
-                    '+title' => 'sort_title'
+                    '+title' => 'sort_title',
                 ],
-                'default_sort' => '-checkout_date'
+                'default_sort' => '-checkout_date',
             ];
         } elseif ('getMyTransactions' === $function) {
             $limit = $this->config['Loans']['max_page_size'] ?? 100;
@@ -1593,9 +1593,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     '+checkout_date' => 'sort_checkout_date_asc',
                     '-due_date' => 'sort_due_date_desc',
                     '+due_date' => 'sort_due_date_asc',
-                    '+title' => 'sort_title'
+                    '+title' => 'sort_title',
                 ],
-                'default_sort' => '+due_date'
+                'default_sort' => '+due_date',
             ];
         }
 
@@ -1700,7 +1700,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         // Handle the simple case of just a path in $request
         if (is_string($request) || !isset($request['path'])) {
             $request = [
-                'path' => $request
+                'path' => $request,
             ];
         }
 
@@ -1863,9 +1863,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             [
                 'path' => [
                     'v1', 'contrib', 'kohasuomi', 'availability', 'biblios', $id,
-                    'search'
+                    'search',
                 ],
-                'errors' => true
+                'errors' => true,
             ]
         );
         if (404 == $result['code']) {
@@ -1910,7 +1910,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 'requests_placed' => max(
                     [$item['hold_queue_length'],
                     $result['data']['hold_queue_length']]
-                )
+                ),
             ];
             if (!empty($item['public_notes'])) {
                 $entry['item_notes'] = [$item['public_notes']];
@@ -2201,9 +2201,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             $result = $this->makeRequest(
                 [
                     'path' => [
-                        'v1', 'contrib', 'kohasuomi', 'patrons', $patron['id']
+                        'v1', 'contrib', 'kohasuomi', 'patrons', $patron['id'],
                     ],
-                    'query' => ['query_blocks' => 1]
+                    'query' => ['query_blocks' => 1],
                 ]
             );
             $blockReason = [];
@@ -2309,7 +2309,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         }
         return [
             'success' => false,
-            'sysMessage' => $error
+            'sysMessage' => $error,
         ];
     }
 
@@ -2429,7 +2429,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             'checkout' => 'issuedate',
             'return' => 'returndate',
             'lastrenewed' => 'lastreneweddate',
-            'title' => 'title'
+            'title' => 'title',
         ];
 
         return $params[$key] ?? $default;
@@ -2497,7 +2497,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         $queryParams = [
             '_order_by' => $sort,
             '_page' => $params['page'] ?? 1,
-            '_per_page' => $pageSize
+            '_per_page' => $pageSize,
         ];
         if ($checkedIn) {
             $queryParams['checked_in'] = '1';
@@ -2509,9 +2509,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             [
                 'path' => [
                     'v1', 'contrib', 'kohasuomi', 'patrons', $patron['id'],
-                    'checkouts'
+                    'checkouts',
                 ],
-                'query' => $queryParams
+                'query' => $queryParams,
             ]
         );
 
@@ -2522,7 +2522,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         if (empty($result['data'])) {
             return [
                 'count' => 0,
-                $arrayKey => []
+                $arrayKey => [],
             ];
         }
         $transactions = [];
@@ -2578,7 +2578,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 'renew' => $renewals,
                 'renewLimit' => $renewLimit,
                 'renewable' => $renewable,
-                'message' => $message
+                'message' => $message,
             ];
 
             $transactions[] = $transaction;
@@ -2586,7 +2586,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
 
         return [
             'count' => $result['headers']['X-Total-Count'] ?? count($transactions),
-            $arrayKey => $transactions
+            $arrayKey => $transactions,
         ];
     }
 
@@ -2605,7 +2605,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             case 'Hold::MaximumHoldsReached':
                 $params = [
                     '%%blockCount%%' => $details['current_hold_count'],
-                    '%%blockLimit%%' => $details['max_holds_allowed']
+                    '%%blockLimit%%' => $details['max_holds_allowed'],
                 ];
                 break;
             case 'Patron::Debt':

@@ -1155,7 +1155,7 @@ class Params
                 $translateFormat,
                 [
                     '%%raw%%' => $text,
-                    '%%translated%%' => $translated
+                    '%%translated%%' => $translated,
                 ]
             ) : $translated;
     }
@@ -1726,7 +1726,7 @@ class Params
         foreach ($this->getOptions()->getViewOptions() as $key => $value) {
             $list[$key] = [
                 'desc' => $value,
-                'selected' => ($key == $this->getView())
+                'selected' => ($key == $this->getView()),
             ];
         }
         return $list;
@@ -1746,7 +1746,7 @@ class Params
         foreach ($valid as $limit) {
             $list[$limit] = [
                 'desc' => $limit,
-                'selected' => ($limit == $this->getLimit())
+                'selected' => ($limit == $this->getLimit()),
             ];
         }
         return $list;
@@ -1766,7 +1766,7 @@ class Params
         foreach ($valid as $sort => $desc) {
             $list[$sort] = [
                 'desc' => $desc,
-                'selected' => ($sort == $this->getSort())
+                'selected' => ($sort == $this->getSort()),
             ];
         }
         return $list;

@@ -296,10 +296,10 @@ class VuFind
         $descriptorspec = [
             0 => ['pipe', 'r'],
             1 => ['file', $output, 'w'],
-            2 => ['pipe', 'w']
+            2 => ['pipe', 'w'],
         ];
         return [
-            "java -jar $tika $arg -eUTF8 $input", $descriptorspec, []
+            "java -jar $tika $arg -eUTF8 $input", $descriptorspec, [],
         ];
     }
 

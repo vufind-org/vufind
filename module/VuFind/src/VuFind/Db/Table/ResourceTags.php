@@ -179,7 +179,7 @@ class ResourceTags extends Gateway
                         'DISTINCT(?)',
                         ['resource_tags.resource_id'],
                         [Expression::TYPE_IDENTIFIER]
-                    ), Select::SQL_STAR
+                    ), Select::SQL_STAR,
                 ]
             );
             $select->join(
@@ -241,7 +241,7 @@ class ResourceTags extends Gateway
                 'resource_tags.tag_id = t.id',
                 [
                     'tag' =>
-                        $this->caseSensitive ? 'tag' : new Expression('lower(tag)')
+                        $this->caseSensitive ? 'tag' : new Expression('lower(tag)'),
                 ]
             );
             $select->join(
@@ -322,7 +322,7 @@ class ResourceTags extends Gateway
                     ['resource_id'],
                     [Expression::TYPE_IDENTIFIER]
                 ),
-                'total' => new Expression('COUNT(*)')
+                'total' => new Expression('COUNT(*)'),
             ]
         );
         $statement = $this->sql->prepareStatementForSqlObject($select);
@@ -509,7 +509,7 @@ class ResourceTags extends Gateway
                         'MAX(?)',
                         ['resource_tags.id'],
                         [Expression::TYPE_IDENTIFIER]
-                    )
+                    ),
                 ]
             );
             $select->join(
@@ -570,7 +570,7 @@ class ResourceTags extends Gateway
                         'MAX(?)',
                         ['resource_tags.id'],
                         [Expression::TYPE_IDENTIFIER]
-                    )
+                    ),
                 ]
             );
             $select->join(
@@ -578,7 +578,7 @@ class ResourceTags extends Gateway
                 'resource_tags.tag_id = t.id',
                 [
                     'tag' =>
-                        $this->caseSensitive ? 'tag' : new Expression('lower(tag)')
+                        $this->caseSensitive ? 'tag' : new Expression('lower(tag)'),
                 ]
             );
             if (null !== $userId) {
@@ -634,7 +634,7 @@ class ResourceTags extends Gateway
                         'MAX(?)',
                         ['resource_tags.id'],
                         [Expression::TYPE_IDENTIFIER]
-                    )
+                    ),
                 ]
             );
             $select->join(
@@ -709,7 +709,7 @@ class ResourceTags extends Gateway
             'resource_tags.tag_id = t.id',
             [
                 'tag' =>
-                    $this->caseSensitive ? 'tag' : new Expression('lower(tag)')
+                    $this->caseSensitive ? 'tag' : new Expression('lower(tag)'),
             ]
         );
         $select->join(
@@ -808,7 +808,7 @@ class ResourceTags extends Gateway
                         'MIN(?)',
                         ['id'],
                         [Expression::TYPE_IDENTIFIER]
-                    )
+                    ),
                 ]
             );
             $select->group(['resource_id', 'tag_id', 'list_id', 'user_id']);

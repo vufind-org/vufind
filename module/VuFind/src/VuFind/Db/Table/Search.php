@@ -306,7 +306,7 @@ class Search extends Gateway
         $this->insert(
             [
                 'created' => date('Y-m-d H:i:s'),
-                'checksum' => $normalized->getChecksum()
+                'checksum' => $normalized->getChecksum(),
             ]
         );
         $row = $this->getRowById($this->getLastInsertValue());

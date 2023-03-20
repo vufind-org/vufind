@@ -167,7 +167,7 @@ class Options extends \VuFind\Search\Base\Options
         $this->viewOptions = [
             'list|title' => 'Title View',
             'list|brief' => 'Brief View',
-            'list|detailed' => 'Detailed View'
+            'list|detailed' => 'Detailed View',
         ];
         // If we get the API info as a callback, defer until it's actually needed to
         // avoid calling the API:
@@ -568,7 +568,7 @@ class Options extends \VuFind\Search\Base\Options
             if (isset($availCriteria['AvailableSearchModes'])) {
                 foreach ($availCriteria['AvailableSearchModes'] as $mode) {
                     $this->modeOptions[$mode['Mode']] = [
-                        'Label' => $mode['Label'], 'Value' => $mode['Mode']
+                        'Label' => $mode['Label'], 'Value' => $mode['Mode'],
                     ];
                     if (
                         isset($mode['DefaultOn'])
@@ -585,7 +585,7 @@ class Options extends \VuFind\Search\Base\Options
             if (isset($availCriteria['AvailableExpanders'])) {
                 foreach ($availCriteria['AvailableExpanders'] as $expander) {
                     $this->expanderOptions[$expander['Id']] = [
-                        'Label' => $expander['Label'], 'Value' => $expander['Id']
+                        'Label' => $expander['Label'], 'Value' => $expander['Id'],
                     ];
                     if (
                         isset($expander['DefaultOn'])
@@ -636,7 +636,7 @@ class Options extends \VuFind\Search\Base\Options
                 'LimiterValues' => isset($limiterValue['LimiterValues'])
                     ? $this
                         ->populateLimiterValues($limiterValue['LimiterValues'])
-                    : null
+                    : null,
             ];
         }
         return empty($availableLimiterValues) ? null : $availableLimiterValues;
@@ -759,7 +759,7 @@ class Options extends \VuFind\Search\Base\Options
                     'eds_limiter_' . $key,
                     $limiter['Label']
                 ),
-                'selected' => ('y' == $limiter['DefaultOn']) ? true : false
+                'selected' => ('y' == $limiter['DefaultOn']) ? true : false,
             ];
         }
         return $ssLimiterOptions;

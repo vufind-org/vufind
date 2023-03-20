@@ -53,7 +53,7 @@ class LocalFile extends \VuFind\Content\AbstractCover
      * @var array
      */
     protected $allowedMimeTypes = [
-        "image/gif", "image/jpeg", "image/png", "image/tiff"
+        "image/gif", "image/jpeg", "image/png", "image/tiff",
     ];
 
     /**

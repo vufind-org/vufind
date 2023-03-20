@@ -263,7 +263,7 @@ class Manager
     {
         $this->cacheSettings[$cacheName] = [
             'adapter' => \Laminas\Cache\Storage\Adapter\BlackHole::class,
-            'options' => []
+            'options' => [],
         ];
     }
 

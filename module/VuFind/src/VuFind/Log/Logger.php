@@ -116,7 +116,7 @@ class Logger extends BaseLogger
                         'priority'     => (int)$priority,
                         'priorityName' => $this->priorities[$priority],
                         'message'      => $message,
-                        'extra'        => $extra
+                        'extra'        => $extra,
                     ]
                 );
             }
@@ -211,7 +211,7 @@ class Logger extends BaseLogger
             2 => $baseError . $basicServer,
             3 => $baseError . $basicServer . $basicBacktrace,
             4 => $baseError . $detailedServer . $basicBacktrace,
-            5 => $baseError . $detailedServer . $detailedBacktrace
+            5 => $baseError . $detailedServer . $detailedBacktrace,
         ];
 
         $this->log($this->getSeverityFromException($error), $errorDetails);

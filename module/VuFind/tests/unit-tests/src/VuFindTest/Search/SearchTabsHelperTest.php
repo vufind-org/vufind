@@ -47,17 +47,17 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
             'Solr' => 'Local Index',
             'Solr:video' => 'Local Videos',
             'Primo' => 'Primo Central',
-            'Primo:dissertation' => 'Dissertations in Primo Central'
+            'Primo:dissertation' => 'Dissertations in Primo Central',
         ],
         'default_filtered' => [
             'Solr:main' => 'Main Library',
             'Solr:mainvideo' => 'Main Library Videos',
             'Solr:branch' => 'Branch Library',
             'Primo' => 'Primo Central',
-            'Primo:dissertation' => 'Dissertations in Primo Central'
+            'Primo:dissertation' => 'Dissertations in Primo Central',
         ],
         'no_tabs' => [
-        ]
+        ],
     ];
 
     protected $filterConfig = [
@@ -65,7 +65,7 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
         'Solr:main' => ['building:main'],
         'Solr:mainvideo' => ['building:main', 'format:video'],
         'Solr:branch' => ['building:branch'],
-        'Primo:dissertation' => ['rtype:Dissertations']
+        'Primo:dissertation' => ['rtype:Dissertations'],
     ];
 
     /**

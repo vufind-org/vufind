@@ -131,7 +131,7 @@ class InstallController extends AbstractBase
 
         return [
             'title' => 'Basic Configuration', 'status' => $status,
-            'fix' => 'fixbasicconfig'
+            'fix' => 'fixbasicconfig',
         ];
     }
 
@@ -179,7 +179,7 @@ class InstallController extends AbstractBase
         return [
             'title' => 'Cache',
             'status' => !$cache->hasDirectoryCreationError(),
-            'fix' => 'fixcache'
+            'fix' => 'fixcache',
         ];
     }
 
@@ -216,7 +216,7 @@ class InstallController extends AbstractBase
             $status = false;
         }
         return [
-            'title' => 'Database', 'status' => $status, 'fix' => 'fixdatabase'
+            'title' => 'Database', 'status' => $status, 'fix' => 'fixdatabase',
         ];
     }
 
@@ -254,7 +254,7 @@ class InstallController extends AbstractBase
         return [
             'title' => 'Dependencies',
             'status' => $requiredFunctionsExist && $this->phpVersionIsNewEnough(),
-            'fix' => 'fixdependencies'
+            'fix' => 'fixdependencies',
         ];
     }
 
@@ -682,7 +682,7 @@ class InstallController extends AbstractBase
         return [
             'title' => 'Security',
             'status' => $this->hasSecureDatabase(),
-            'fix' => 'fixsecurity'
+            'fix' => 'fixsecurity',
         ];
     }
 
@@ -811,7 +811,7 @@ class InstallController extends AbstractBase
         }
 
         return [
-            'title' => 'SSL', 'status' => $status, 'fix' => 'fixsslcerts'
+            'title' => 'SSL', 'status' => $status, 'fix' => 'fixsslcerts',
         ];
     }
 

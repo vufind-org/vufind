@@ -54,7 +54,7 @@ class SearchHandler
      */
     protected static $configKeys = [
         'CustomMunge', 'DismaxFields', 'DismaxHandler', 'QueryFields',
-        'DismaxParams', 'FilterQuery', 'DismaxMunge'
+        'DismaxParams', 'FilterQuery', 'DismaxMunge',
     ];
 
     /**

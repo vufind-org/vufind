@@ -439,7 +439,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         $coverMap = [
             'large' => 'cover300Wide',
             'medium' => 'cover150Wide',
-            'small' => 'thumbnail'
+            'small' => 'thumbnail',
         ];
         $cover = $coverMap[$size] ?? 'cover';
 
@@ -557,7 +557,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
             'action' => 'Hold',
             'record' => $rec_id,
             'query' => "od_id=$od_id&rec_id=$rec_id",
-            'anchor' => ''
+            'anchor' => '',
         ];
         return $urlDetails;
     }

@@ -551,9 +551,9 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
                     'return desc' => 'sort_return_date_desc',
                     'return asc' => 'sort_return_date_asc',
                     'due desc' => 'sort_due_date_desc',
-                    'due asc' => 'sort_due_date_asc'
+                    'due asc' => 'sort_due_date_asc',
                 ],
-                'default_sort' => 'checkout desc'
+                'default_sort' => 'checkout desc',
             ];
         }
         return $this->config[$function] ?? false;
@@ -710,7 +710,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
         } catch (\Exception $e) {
             return [
                 "success" => false,
-                "sysMessage" => "hold_date_invalid"
+                "sysMessage" => "hold_date_invalid",
             ];
         }
 
@@ -735,7 +735,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
             $this->debug("Fatal error: Patron has already reserved this item.");
             return [
                 "success" => false,
-                "sysMessage" => "It seems you have already reserved this item."
+                "sysMessage" => "It seems you have already reserved this item.",
             ];
         }
 
@@ -1079,7 +1079,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
         $rescount = 0;
         foreach ($itemSqlStmt->fetchAll() as $rowItem) {
             $items[] = [
-                'id' => $rowItem['id']
+                'id' => $rowItem['id'],
             ];
             $rescount++;
         }
@@ -1528,7 +1528,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
         }
         return [
             'count' => $totalCount,
-            'transactions' => $historicLoans
+            'transactions' => $historicLoans,
         ];
     }
 
@@ -1563,7 +1563,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
                 "GetServices",
                 [
                     "patron_id" => $id,
-                    "item_id" => $this->getField($loan->{'itemnumber'})
+                    "item_id" => $this->getField($loan->{'itemnumber'}),
                 ]
             );
             $end = microtime(true);
@@ -1990,7 +1990,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
         return [
             'success' => $result,
             'status' => $result ? 'new_password_success'
-                : 'password_error_not_unique'
+                : 'password_error_not_unique',
         ];
     }
 

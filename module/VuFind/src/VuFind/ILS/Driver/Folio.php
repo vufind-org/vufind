@@ -109,7 +109,7 @@ class Folio extends AbstractAPI implements
      */
     protected $defaultInTransitStatuses = [
         'Open - In transit',
-        'Open - Awaiting delivery'
+        'Open - Awaiting delivery',
     ];
 
     /**
@@ -404,7 +404,7 @@ class Folio extends AbstractAPI implements
         $idField = $idType === 'instance' ? 'id' : $idType;
 
         $query = [
-            'query' => '(' . $idField . '=="' . $this->escapeCql($bibId) . '")'
+            'query' => '(' . $idField . '=="' . $this->escapeCql($bibId) . '")',
         ];
         $response = $this->makeRequest('GET', '/instance-storage/instances', $query);
         $instances = json_decode($response->getBody());
@@ -666,7 +666,7 @@ class Folio extends AbstractAPI implements
                 [
                     $item->volume ?? null,
                     $item->enumeration ?? null,
-                    $item->chronology ?? null
+                    $item->chronology ?? null,
                 ]
             )
         );
@@ -699,7 +699,7 @@ class Folio extends AbstractAPI implements
             'location' => $locationName,
             'location_code' => $locationCode,
             'reserve' => 'TODO',
-            'addLink' => true
+            'addLink' => true,
         ];
     }
 
@@ -748,7 +748,7 @@ class Folio extends AbstractAPI implements
         $instance = $this->getInstanceByBibId($bibId);
         $query = [
             'query' => '(instanceId=="' . $instance->id
-                . '" NOT discoverySuppress==true)'
+                . '" NOT discoverySuppress==true)',
         ];
         $items = [];
         $folioItemSort = $this->config['Holdings']['folio_sort'] ?? '';
@@ -1198,7 +1198,7 @@ class Folio extends AbstractAPI implements
         foreach ($renewDetails['details'] ?? [] as $loanId) {
             $requestbody = [
                 'itemId' => $loanId,
-                'userId' => $renewDetails['patron']['id']
+                'userId' => $renewDetails['patron']['id'],
             ];
             try {
                 $response = $this->makeRequest(
@@ -1221,14 +1221,14 @@ class Folio extends AbstractAPI implements
                             $json->dueDate
                         ),
                         'item_id' => $json->itemId,
-                        'sysMessage' => $json->action
+                        'sysMessage' => $json->action,
                     ];
                 } else {
                     $json = json_decode($response->getBody());
                     $sysMessage = $json->errors[0]->message;
                     $renewal = [
                         'success' => false,
-                        'sysMessage' => $sysMessage
+                        'sysMessage' => $sysMessage,
                     ];
                 }
             } catch (Exception $e) {
@@ -1278,7 +1278,7 @@ class Folio extends AbstractAPI implements
         ) {
             $locations[] = [
                 'locationID' => $servicepoint->id,
-                'locationDisplay' => $servicepoint->discoveryDisplayName
+                'locationDisplay' => $servicepoint->discoveryDisplayName,
             ];
         }
         return $locations;
@@ -1432,7 +1432,7 @@ class Folio extends AbstractAPI implements
             $instance = $this->getInstanceByBibId($holdDetails['id']);
             $baseParams = [
                 'instanceId' => $instance->id,
-                'requestLevel' => 'Title'
+                'requestLevel' => 'Title',
             ];
         } else {
             // Note: early Lotus releases require instanceId and holdingsRecordId
@@ -1449,7 +1449,7 @@ class Folio extends AbstractAPI implements
             'requestDate' => date('c'),
             'fulfilmentPreference' => 'Hold Shelf',
             'requestExpirationDate' => $requiredBy,
-            'pickupServicePointId' => $holdDetails['pickUpLocation']
+            'pickupServicePointId' => $holdDetails['pickUpLocation'],
         ];
         if (!empty($holdDetails['proxiedUser'])) {
             $requestBody['requesterId'] = $holdDetails['proxiedUser'];
@@ -1469,14 +1469,14 @@ class Folio extends AbstractAPI implements
             $json = json_decode($response->getBody());
             $result = [
                 'success' => true,
-                'status' => $json->status
+                'status' => $json->status,
             ];
         } else {
             try {
                 $json = json_decode($response->getBody());
                 $result = [
                     'success' => false,
-                    'status' => $json->errors[0]->message
+                    'status' => $json->errors[0]->message,
                 ];
             } catch (Exception $e) {
                 $this->throwAsIlsException($e, $response->getBody());
@@ -1782,7 +1782,7 @@ class Folio extends AbstractAPI implements
                 'status' => $fine->paymentStatus->name,
                 'type' => $fine->feeFineType,
                 'title' => $title,
-                'createdate' => date_format($date, "j M Y")
+                'createdate' => date_format($date, "j M Y"),
             ];
         }
         return $fines;
@@ -1801,7 +1801,7 @@ class Folio extends AbstractAPI implements
             . ' ' . ($user->middleName ?? '');
         $parts = [
             trim($user->lastName ?? ''),
-            trim($firstParts)
+            trim($firstParts),
         ];
         return implode(', ', array_filter($parts));
     }
@@ -1832,7 +1832,7 @@ class Folio extends AbstractAPI implements
     public function getProxiedUsers(array $patron): array
     {
         $query = [
-            'query' => '(proxyUserId=="' . $patron['id'] . '")'
+            'query' => '(proxyUserId=="' . $patron['id'] . '")',
         ];
         $results = [];
         $proxies = $this->getPagedResults('proxiesFor', '/proxiesfor', $query);

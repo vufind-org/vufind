@@ -106,7 +106,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
                 'session_name' => 'vufindsession',
                 'consent' => true,
                 'consentCategories' => 'essential,matomo',
-            ]
+            ],
         ];
 
         $cookies = [
@@ -118,7 +118,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
                     'lastConsentTimestamp' => gmdate('Y-m-d\TH:i:s\Z'),
                     'revision' => 0,
                 ]
-            )
+            ),
         ];
         $expectedParams = $this->getExpectedRenderParams(
             'CookieConsent.yaml',
@@ -149,7 +149,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
                 'session_name' => 'vufindsession',
                 'consent' => true,
                 'consentCategories' => 'essential,matomo',
-            ]
+            ],
         ];
 
         $cookies = [
@@ -161,7 +161,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
                     'lastConsentTimestamp' => gmdate('Y-m-d\TH:i:s\Z'),
                     'revision' => -1,
                 ]
-            )
+            ),
         ];
 
         $helper = $this->getCookieConsent($config, $cookies);
@@ -386,7 +386,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
                 'matomo' => [
                     'matomo',
                 ],
-            ]
+            ],
         ];
     }
 

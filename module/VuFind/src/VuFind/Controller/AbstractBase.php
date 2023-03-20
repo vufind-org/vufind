@@ -597,8 +597,8 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
                     'confirm' => $yesTarget,
                     'cancel' => $noTarget,
                     'messages' => (array)$messages,
-                    'extras' => $extras
-                ]
+                    'extras' => $extras,
+                ],
             ]
         );
     }

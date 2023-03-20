@@ -315,7 +315,7 @@ class LanguageHelper
         $main = $this->loadLanguage($mainLanguage, $includeOptional);
         $details = $this->getAllLanguageDetails($main, $includeOptional);
         $dirHelpParts = [
-            APPLICATION_PATH, 'themes', 'root', 'templates', 'HelpTranslations'
+            APPLICATION_PATH, 'themes', 'root', 'templates', 'HelpTranslations',
         ];
         $dirLangParts = [APPLICATION_PATH, 'languages'];
         return compact('details', 'main', 'includeOptional') + [

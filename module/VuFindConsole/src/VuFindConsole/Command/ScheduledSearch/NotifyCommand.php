@@ -469,8 +469,8 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
                     $selectedCheckboxes
                 ),
                 'filters' => $params->getFilterList(true),
-                'userInstitution' => $userInstitution
-             ]
+                'userInstitution' => $userInstitution,
+             ],
         ];
         return $this->renderer
             ->render('Email/scheduled-alert.phtml', $viewParams);

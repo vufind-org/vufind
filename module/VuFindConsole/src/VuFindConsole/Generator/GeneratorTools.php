@@ -333,7 +333,7 @@ class GeneratorTools
                 );
                 $param1 = [
                     'name' => 'container',
-                    'type' => 'Psr\Container\ContainerInterface'
+                    'type' => 'Psr\Container\ContainerInterface',
                 ];
                 $param2 = [
                     'name' => 'requestedName',
@@ -868,7 +868,7 @@ class GeneratorTools
     {
         $generator = FileGenerator::fromArray(
             [
-                'body' => 'return ' . var_export($config, true) . ';'
+                'body' => 'return ' . var_export($config, true) . ';',
             ]
         );
         if (!file_put_contents($configPath, $generator->generate())) {

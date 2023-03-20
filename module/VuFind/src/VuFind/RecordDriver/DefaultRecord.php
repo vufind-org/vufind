@@ -799,7 +799,7 @@ class DefaultRecord extends AbstractBase
             'ctx_enc' => 'info:ofi/enc:UTF-8',
             'rfr_id' => 'info:sid/' . $this->getCoinsID() . ':generator',
             'rft.title' => $this->getTitle(),
-            'rft.date' => $pubDate
+            'rft.date' => $pubDate,
         ];
     }
 

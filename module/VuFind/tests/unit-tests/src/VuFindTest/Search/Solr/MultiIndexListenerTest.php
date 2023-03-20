@@ -61,7 +61,7 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
             'QueryFields' => [
                 'A' => [
                     ['onephrase', 500],
-                    ['and', 200]
+                    ['and', 200],
                 ],
                 'B' => [
                     ['and', 100],
@@ -76,12 +76,12 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
                         ['onephrase', 300],
                     ],
                     '-E' => [
-                        ['or', '~']
-                    ]
-                ]
+                        ['or', '~'],
+                    ],
+                ],
             ],
             'FilterQuery' => 'format:Book',
-        ]
+        ],
     ];
 
     /**
@@ -245,15 +245,15 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
                           0 => [
                               0 => ['AND', 50],
                               'C' => [
-                                  ['onephrase', 200]
+                                  ['onephrase', 200],
                               ],
                               'D' => [
-                                  ['onephrase', 300]
-                              ]
-                          ]
+                                  ['onephrase', 300],
+                              ],
+                          ],
                       ],
                       'FilterQuery' => 'format:Book',
-                  ]
+                  ],
             ],
             $specs
         );

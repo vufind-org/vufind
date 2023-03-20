@@ -177,7 +177,7 @@ class TagsController extends AbstractAdmin
         $this->flashMessenger()->addMessage(
             [
                 'msg' => 'tags_deleted',
-                'tokens' => ['%count%' => $delete]
+                'tokens' => ['%count%' => $delete],
             ],
             'success'
         );
@@ -229,8 +229,8 @@ class TagsController extends AbstractAdmin
         $messages = [
             [
                 'msg' => 'tag_delete_warning',
-                'tokens' => ['%count%' => $count]
-            ]
+                'tokens' => ['%count%' => $count],
+            ],
         ];
         if ($userId || $tagId || $resourceId) {
             $messages[] = [
@@ -238,8 +238,8 @@ class TagsController extends AbstractAdmin
                 'tokens' => [
                     '%username%' => $userMsg,
                     '%tag%' => $tagMsg,
-                    '%resource%' => $resourceMsg
-                ]
+                    '%resource%' => $resourceMsg,
+                ],
             ];
         }
         $messages[] = ['msg' => 'confirm_delete'];
@@ -271,9 +271,9 @@ class TagsController extends AbstractAdmin
                     'user_id' => $this->getParam('user_id'),
                     'tag_id' => $this->getParam('tag_id'),
                     'resource_id' => $this->getParam('resource_id'),
-                    'ids' => $ids
-                ]
-            ]
+                    'ids' => $ids,
+                ],
+            ],
         ];
 
         return $this->forwardTo('Confirm', 'Confirm', $data);
@@ -308,9 +308,9 @@ class TagsController extends AbstractAdmin
                     'user_id' => $this->getParam('user_id'),
                     'tag_id' => $this->getParam('tag_id'),
                     'resource_id' => $this->getParam('resource_id'),
-                    'deleteFilter' => $this->getParam('deleteFilter')
-                ]
-            ]
+                    'deleteFilter' => $this->getParam('deleteFilter'),
+                ],
+            ],
         ];
 
         return $this->forwardTo('Confirm', 'Confirm', $data);

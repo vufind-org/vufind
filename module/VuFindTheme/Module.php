@@ -87,7 +87,7 @@ class Module
                 // module.config.php configuration.
                 'excluded_theme_prefixes' => ['Laminas'],
                 'extra_theme_prefixes' => [],
-            ]
+            ],
         ];
     }
 

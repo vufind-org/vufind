@@ -106,7 +106,7 @@ class LoggerTest extends \PHPUnit\Framework\TestCase
                     'REMOTE_ADDR' => '5.6.7.8',
                     'HTTP_USER_AGENT' => 'Fake browser',
                     'HTTP_HOST' => 'localhost:80',
-                    'REQUEST_URI' => '/foo/bar'
+                    'REQUEST_URI' => '/foo/bar',
                 ]
             );
             $logger->logException($e, $fakeServer);

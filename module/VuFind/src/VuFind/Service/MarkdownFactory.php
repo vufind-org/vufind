@@ -76,7 +76,7 @@ class MarkdownFactory implements FactoryInterface
      * @var string[]
      */
     protected static $defaultExtensions = [
-        'Autolink', 'DisallowedRawHtml', 'Strikethrough', 'Table', 'TaskList'
+        'Autolink', 'DisallowedRawHtml', 'Strikethrough', 'Table', 'TaskList',
     ];
 
     /**
@@ -238,7 +238,7 @@ class MarkdownFactory implements FactoryInterface
             'enable_em',
             'enable_strong',
             'use_asterisk',
-            'use_underscore'
+            'use_underscore',
         ];
         foreach ($configOptions as $option) {
             $config['commonmark'][$option]

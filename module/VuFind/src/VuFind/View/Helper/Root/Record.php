@@ -239,7 +239,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
                 'driver' => $this->driver,
                 'list' => $list,
                 'user' => $user,
-                'lists' => $lists
+                'lists' => $lists,
             ]
         );
     }
@@ -582,7 +582,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
             $extra + ['driver' => $this->driver]
         );
         $qrcode = [
-            "text" => $text, 'level' => $level, 'size' => $size, 'margin' => $margin
+            "text" => $text, 'level' => $level, 'size' => $size, 'margin' => $margin,
         ];
 
         $urlHelper = $this->getView()->plugin('url');

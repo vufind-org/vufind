@@ -157,7 +157,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
         $context = [
             'recommend' => $recommend,
             'params' => $results->getParams(),
-            'searchClassId' => $request['searchClassId'] ?? DEFAULT_SEARCH_BACKEND
+            'searchClassId' => $request['searchClassId'] ?? DEFAULT_SEARCH_BACKEND,
         ];
         if (isset($request['enabledFacets'])) {
             // Render requested facets separately

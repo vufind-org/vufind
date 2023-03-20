@@ -106,9 +106,9 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
                             'label' => 'PDF Full Text',
                             'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
                             'data' => $rawData['data'],
-                        ]
-                    ]
-                ]
+                        ],
+                    ],
+                ],
             ],
             [
                 'config' => ['filterType' => 'exclude', 'filter' => ['browzineWebLink']],
@@ -119,9 +119,9 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
                             'label' => 'PDF Full Text',
                             'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
                             'data' => $rawData['data'],
-                        ]
-                    ]
-                ]
+                        ],
+                    ],
+                ],
             ],
             [
                 'config' => ['filterType' => 'include', 'filter' => ['browzineWebLink']],
@@ -132,9 +132,9 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
                             'label' => 'View Complete Issue',
                             'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-open-book-icon.svg',
                             'data' => $rawData['data'],
-                        ]
-                    ]
-                ]
+                        ],
+                    ],
+                ],
             ],
         ];
 

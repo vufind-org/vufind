@@ -55,12 +55,12 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $limiters = [
-            ['selectedvalue' => 'limitervalue', 'description' => 'limiter']
+            ['selectedvalue' => 'limitervalue', 'description' => 'limiter'],
         ];
         $options->expects($this->once())->method('getSearchScreenLimiters')
             ->will($this->returnValue($limiters));
         $expanders = [
-            ['selectedvalue' => 'expandervalue', 'description' => 'expander']
+            ['selectedvalue' => 'expandervalue', 'description' => 'expander'],
         ];
         $options->expects($this->once())->method('getSearchScreenExpanders')
             ->will($this->returnValue($expanders));

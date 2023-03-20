@@ -259,7 +259,7 @@ class Aleph extends AbstractBase implements
     {
         // Validate config
         $required = [
-            'host', 'bib', 'useradm', 'admlib', 'dlfport', 'available_statuses'
+            'host', 'bib', 'useradm', 'admlib', 'dlfport', 'available_statuses',
         ];
         foreach ($required as $current) {
             if (!isset($this->config['Catalog'][$current])) {
@@ -389,7 +389,7 @@ class Aleph extends AbstractBase implements
                 $url,
                 [
                     'user_name' => $this->wwwuser,
-                    'user_password' => $this->wwwpasswd
+                    'user_password' => $this->wwwpasswd,
                 ]
             );
         }
@@ -445,7 +445,7 @@ class Aleph extends AbstractBase implements
                 "DLF request failed",
                 [
                     'url' => $url, 'reply-code' => $replyCode,
-                    'reply-message' => $replyText
+                    'reply-message' => $replyText,
                 ]
             );
             $ex = new Aleph\RestfulException($replyText, $replyCode);
@@ -630,7 +630,7 @@ class Aleph extends AbstractBase implements
                     'location' => (string)$location[0],
                     'signature' => (string)$signature[0],
                     'reserve' => $reserve,
-                    'callnumber' => (string)$signature[0]
+                    'callnumber' => (string)$signature[0],
                 ];
             }
             $holding[] = $temp;
@@ -729,7 +729,7 @@ class Aleph extends AbstractBase implements
                     'opac'         => 'Y',
                     'request'      => 'C',
                     'desc'         => (string)$z30->{'z30-item-status'},
-                    'sub_lib_desc' => (string)$z30->{'z30-sub-library'}
+                    'sub_lib_desc' => (string)$z30->{'z30-sub-library'},
                 ];
             }
             if ($item_status['opac'] != 'Y') {
@@ -797,7 +797,7 @@ class Aleph extends AbstractBase implements
                 'callnumber_second' => (string)$z30->{'z30-call-no-2'},
                 'sub_lib_desc'      => (string)$item_status['sub_lib_desc'],
                 'no_of_loans'       => (string)$z30->{'$no_of_loans'},
-                'requested'         => (string)$requested
+                'requested'         => (string)$requested,
             ];
         }
         return $holding;
@@ -914,7 +914,7 @@ class Aleph extends AbstractBase implements
 
         return [
             'count' => $totalCount,
-            $key => $transList
+            $key => $transList,
         ];
     }
 
@@ -954,7 +954,7 @@ class Aleph extends AbstractBase implements
             try {
                 $xml = $this->doRestDLFRequest(
                     [
-                        'patron', $patron['id'], 'circulationActions', 'loans', $id
+                        'patron', $patron['id'], 'circulationActions', 'loans', $id,
                     ],
                     null,
                     'POST',
@@ -962,11 +962,11 @@ class Aleph extends AbstractBase implements
                 );
                 $due = (string)current($xml->xpath('//new-due-date'));
                 $result[$id] = [
-                    'success' => true, 'new_date' => $this->parseDate($due)
+                    'success' => true, 'new_date' => $this->parseDate($due),
                 ];
             } catch (Aleph\RestfulException $ex) {
                 $result[$id] = [
-                    'success' => false, 'sysMessage' => $ex->getMessage()
+                    'success' => false, 'sysMessage' => $ex->getMessage(),
                 ];
             }
         }
@@ -1091,7 +1091,7 @@ class Aleph extends AbstractBase implements
                 $result = $this->doRestDLFRequest(
                     [
                         'patron', $patronId, 'circulationActions', 'requests',
-                         'holds', $id
+                         'holds', $id,
                     ],
                     null,
                     "DELETE"
@@ -1206,7 +1206,7 @@ class Aleph extends AbstractBase implements
             "bor-info",
             [
                 'loans' => 'N', 'cash' => 'N', 'hold' => 'N',
-                'library' => $user['college'], 'bor_id' => $user['id']
+                'library' => $user['college'], 'bor_id' => $user['id'],
             ],
             true
         );
@@ -1313,7 +1313,7 @@ class Aleph extends AbstractBase implements
                 'bor-auth',
                 [
                     'library' => $this->useradm, 'bor_id' => $user,
-                    'verification' => $password
+                    'verification' => $password,
                 ],
                 true
             );
@@ -1392,7 +1392,7 @@ class Aleph extends AbstractBase implements
             . substr($date, 0, 4);
         return [
             'pickup-locations' => $locations, 'last-interest-date' => $date,
-            'order' => $requests + 1
+            'order' => $requests + 1,
         ];
     }
 
@@ -1466,7 +1466,7 @@ class Aleph extends AbstractBase implements
         } catch (DateException $de) {
             return [
                 'success'    => false,
-                'sysMessage' => 'hold_date_invalid'
+                'sysMessage' => 'hold_date_invalid',
             ];
         }
         $patronId = $patron['id'];
@@ -1485,7 +1485,7 @@ class Aleph extends AbstractBase implements
             $this->doRestDLFRequest(
                 [
                     'patron', $patronId, 'record', $recordId, 'items', $itemId,
-                    'hold'
+                    'hold',
                 ],
                 null,
                 "PUT",
@@ -1498,7 +1498,7 @@ class Aleph extends AbstractBase implements
             $note = $note[0];
             return [
                 'success' => false,
-                'sysMessage' => "$message ($note)"
+                'sysMessage' => "$message ($note)",
             ];
         }
         return ['success' => true];

@@ -536,7 +536,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             } else {
                 $cancelParams = [
                     $params ?: [],
-                    $params['patron'] ?? null
+                    $params['patron'] ?? null,
                 ];
                 $check2 = $this->checkCapability(
                     'getCancelStorageRetrievalRequestLink',
@@ -544,7 +544,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
                 );
                 if ($check2) {
                     $response = [
-                        'function' => 'getCancelStorageRetrievalRequestLink'
+                        'function' => 'getCancelStorageRetrievalRequestLink',
                     ];
                 }
             }
@@ -623,7 +623,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             } else {
                 $cancelParams = [
                     $params ?: [],
-                    $params['patron'] ?? null
+                    $params['patron'] ?? null,
                 ];
                 $check2 = $this->checkCapability(
                     'getCancelILLRequestLink',
@@ -631,7 +631,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
                 );
                 if ($check2) {
                     $response = [
-                        'function' => 'getCancelILLRequestLink'
+                        'function' => 'getCancelILLRequestLink',
                     ];
                 }
             }
@@ -1040,7 +1040,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         if (!isset($result['count'])) {
             $result = [
                 'count' => count($result),
-                'records' => $result
+                'records' => $result,
             ];
         }
 

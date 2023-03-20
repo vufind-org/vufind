@@ -76,8 +76,8 @@ class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
         return new Terms(
             [
                 'terms' => [
-                    $this->uniqueKey => $ids
-                ]
+                    $this->uniqueKey => $ids,
+                ],
             ]
         );
     }

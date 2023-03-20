@@ -304,7 +304,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'firstname' => '', 'lastname' => 'John Smith Jr.',
                 'address1' => 'Trvalá ulice 123', 'address2' => '12345 Big City',
                 'zip' => '', 'phone' => '', 'group' => '',
-                'expiration_date' => '12-30-2099'
+                'expiration_date' => '12-30-2099',
             ],
         ],
     ];
@@ -493,17 +493,17 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             ],
         ], [
             'file' => 'RequestItemResponseDenied.xml', 'result' => [
-                'success' => false, 'sysMessage' => 'Temporary Processing Failure'
+                'success' => false, 'sysMessage' => 'Temporary Processing Failure',
             ],
         ], [
             'file' => 'RequestItemResponseDeniedWithIdentifiers.xml',
             'result' => [
-                'success' => false, 'sysMessage' => 'Temporary Processing Failure'
+                'success' => false, 'sysMessage' => 'Temporary Processing Failure',
             ],
         ], [
             'file' => 'RequestItemResponseDeniedNotFullProblemElement.xml',
             'result' => [
-                'success' => false, 'sysMessage' => 'User Blocked'
+                'success' => false, 'sysMessage' => 'User Blocked',
             ],
         ], [
             'file' => 'RequestItemResponseDeniedEmpty.xml', 'result' => [
@@ -531,19 +531,19 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         ], [
             'file' => 'RequestItemResponseDenied.xml', 'result' => [
                 'success' => false,
-                'sysMessage' => 'Temporary Processing Failure'
+                'sysMessage' => 'Temporary Processing Failure',
             ],
         ], [
             'file' => 'RequestItemResponseDeniedWithIdentifiers.xml',
             'result' => [
                 'success' => false,
-                'sysMessage' => 'Temporary Processing Failure'
+                'sysMessage' => 'Temporary Processing Failure',
             ],
         ], [
             'file' => 'RequestItemResponseDeniedNotFullProblemElement.xml',
             'result' => [
                 'success' => false,
-                'sysMessage' => 'User Blocked'
+                'sysMessage' => 'User Blocked',
             ],
         ], [
             'file' => 'RequestItemResponseDeniedEmpty.xml', 'result' => [
@@ -637,7 +637,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'blocks' => false, 'details' => [
                     'Item1' => [
                         'success' => true, 'new_date' => '09-08-2020',
-                        'new_time' => '20:00', 'item_id' => 'Item1'
+                        'new_time' => '20:00', 'item_id' => 'Item1',
                     ],
                 ],
             ],
@@ -647,7 +647,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'blocks' => false, 'details' => [
                     'Item1' => [
                         'success' => true, 'new_date' => '08-31-2020',
-                        'new_time' => '17:59', 'item_id' => 'Item1'
+                        'new_time' => '17:59', 'item_id' => 'Item1',
                     ],
                 ],
             ],
@@ -655,7 +655,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             'file' => 'RenewItemResponseDenied.xml', 'result' => [
                 'blocks' => false, 'details' => [
                     'Item1' => [
-                        'success' => false, 'item_id' => 'Item1'
+                        'success' => false, 'item_id' => 'Item1',
                     ],
                 ],
             ],
@@ -663,7 +663,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             'file' => 'RenewItemResponseDeniedInvalidMessage.xml', 'result' => [
                 'blocks' => false, 'details' => [
                     'Item1' => [
-                        'success' => false, 'item_id' => 'Item1'
+                        'success' => false, 'item_id' => 'Item1',
                     ],
                 ],
             ],
@@ -681,7 +681,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             'result' => [
                 'blocks' => false, 'details' => [
                     'Item1' => [
-                        'success' => false, 'item_id' => 'Item1'
+                        'success' => false, 'item_id' => 'Item1',
                     ],
                 ],
             ],
@@ -690,7 +690,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             'result' => [
                 'blocks' => false, 'details' => [
                     'Item1' => [
-                        'success' => false, 'item_id' => 'Item1'
+                        'success' => false, 'item_id' => 'Item1',
                     ],
                 ],
             ],
@@ -698,7 +698,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             'file' => 'RenewItemResponseDenied.xml', 'result' => [
                 'blocks' => false, 'details' => [
                     'Item1' => [
-                        'success' => false, 'item_id' => 'Item1'
+                        'success' => false, 'item_id' => 'Item1',
                     ],
                 ],
             ],
@@ -706,7 +706,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             'file' => 'RenewItemResponseDeniedInvalidMessage.xml', 'result' => [
                 'blocks' => false, 'details' => [
                     'Item1' => [
-                        'success' => false, 'item_id' => 'Item1'
+                        'success' => false, 'item_id' => 'Item1',
                     ],
                 ],
             ],
@@ -1007,7 +1007,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 'locationDisplay' => 'Main Circulation Desk',
             ], [
                 'locationID' => 'My University|2', 'locationDisplay' => 'Stacks',
-            ]
+            ],
             ],
             $locations
         );
@@ -1030,7 +1030,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                 ],
                 [
                     'locationID' => 'My library|2', 'locationDisplay' => 'Stacks',
-                ]
+                ],
             ],
             $locations
         );
@@ -1125,7 +1125,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'patron' => [
                         'cat_username' => 'my_login',
                         'cat_password' => 'my_password',
-                        'patronAgencyId' => 'Test agency', 'id' => '123'
+                        'patronAgencyId' => 'Test agency', 'id' => '123',
                     ], 'details' => [
                         'My University|Request1|Item1',
                     ],
@@ -1154,7 +1154,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'patron' => [
                         'cat_username' => 'my_login',
                         'cat_password' => 'my_password',
-                        'patronAgencyId' => 'Test agency', 'id' => '123'
+                        'patronAgencyId' => 'Test agency', 'id' => '123',
                     ], 'details' => [
                         'My University|Request1|Item1',
                     ],
@@ -1221,13 +1221,13 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             ], '3' => [
                 'method' => 'getCancelRequest', 'params' => [
                     '', '', 'patron agency', 'item agency', 'rq1', 'Hold', 'item1',
-                    '12345'
-                ], 'result' => 'CancelRequestItemRequest.xml'
+                    '12345',
+                ], 'result' => 'CancelRequestItemRequest.xml',
             ], '4' => [
                 'method' => 'getCancelRequest', 'params' => [
                     'username', 'password', 'patron agency', 'item agency', 'rq1',
-                    'Hold', 'item1', '12345'
-                ], 'result' => 'CancelRequestItemRequestAuthInput.xml'
+                    'Hold', 'item1', '12345',
+                ], 'result' => 'CancelRequestItemRequestAuthInput.xml',
             ], '4.1' => [
                 'method' => 'getCancelRequest', 'config' => [
                     'Catalog' => [
@@ -1238,12 +1238,12 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     ], 'NCIP' => [],
                 ], 'params' => [
                     'username', 'password', 'patron agency', '', 'rq1', 'Hold',
-                    'item1', '12345'
-                ], 'result' => 'CancelRequestDefaultItemAgencyRequest.xml'
+                    'item1', '12345',
+                ], 'result' => 'CancelRequestDefaultItemAgencyRequest.xml',
             ], '5' => [
                 'method' => 'getRenewRequest', 'params' => [
-                    'username', 'password', 'item1', 'item agency', 'patron agency'
-                ], 'result' => 'RenewItemRequest.xml'
+                    'username', 'password', 'item1', 'item agency', 'patron agency',
+                ], 'result' => 'RenewItemRequest.xml',
             ], '5.1' => [
                 'method' => 'getRenewRequest', 'config' => [
                     'Catalog' => [
@@ -1254,12 +1254,12 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     ], 'NCIP' => [],
                 ],
                 'params' => ['username', 'password', 'item1', '', 'patron agency'],
-                'result' => 'RenewItemDefaultAgencyRequest.xml'
+                'result' => 'RenewItemDefaultAgencyRequest.xml',
             ], '5.2' => [
                 'method' => 'getRenewRequest', 'params' => [
                     'username', 'password', 'item1', 'item agency', 'patron agency',
-                    'username'
-                ], 'result' => 'RenewItemWithUserIdRequest.xml'
+                    'username',
+                ], 'result' => 'RenewItemWithUserIdRequest.xml',
             ], '6' => [
                 'method' => 'getRequest', 'config' => [
                     'Catalog' => [
@@ -1270,16 +1270,16 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     ], 'NCIP' => [],
                 ], 'params' => [
                     'username', '', 'bib1', 'item1', 'patron agency', 'item agency',
-                    'Hold', 'Item', '2020-12-20T00:00:00.000Z', null, 'patron1'
-                ], 'result' => 'RequestItemRequest.xml'
+                    'Hold', 'Item', '2020-12-20T00:00:00.000Z', null, 'patron1',
+                ], 'result' => 'RequestItemRequest.xml',
             ], '7' => [
                 'method' => 'getLookupUserRequest', 'params' => [
                     null, 'password', 'patron agency',
-                    ['<ns1:LoanedItemsDesired />'], 'patron1'
-                ], 'result' => 'LookupUserRequest.xml'
+                    ['<ns1:LoanedItemsDesired />'], 'patron1',
+                ], 'result' => 'LookupUserRequest.xml',
             ], '8' => [
                 'method' => 'getLookupAgencyRequest', 'params' => [null],
-                'result' => 'LookupAgencyRequest.xml'
+                'result' => 'LookupAgencyRequest.xml',
             ], '9' => [
                 'method' => 'getLookupItemRequest', 'config' => [
                     'Catalog' => [
@@ -1289,7 +1289,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                         'fromAgency' => 'My portal',
                     ], 'NCIP' => [],
                 ], 'params' => ['item1', 'Accession Number'],
-                'result' => 'LookupItemRequest.xml'
+                'result' => 'LookupItemRequest.xml',
             ],
         ];
 
@@ -1337,7 +1337,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             $this->driver,
             [
                 'username', 'password', 'patron agency', 'item agency', '', 'Hold', null,
-                '12345'
+                '12345',
             ]
         );
     }

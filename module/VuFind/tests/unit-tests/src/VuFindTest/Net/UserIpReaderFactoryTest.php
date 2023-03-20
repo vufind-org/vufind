@@ -128,7 +128,7 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
                 'Proxy' => [
                     'allow_forwarded_ips' => true,
                     'forwarded_ip_filter' => '1.2.3.4',
-                ]
+                ],
             ]
         );
         $reader = $factory($container, $this->getReaderClass());
@@ -151,7 +151,7 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
                 'Proxy' => [
                     'allow_forwarded_ips' => true,
                     'forwarded_ip_filter' => ['1.2.3.4', '5.6.7.8'],
-                ]
+                ],
             ]
         );
         $reader = $factory($container, $this->getReaderClass());

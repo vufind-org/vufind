@@ -295,7 +295,7 @@ class Jop extends AbstractBase
             '3'  => 'limited',
             '4'  => 'denied',
             '5'  => 'denied',
-            '10' => 'unknown'
+            '10' => 'unknown',
         ];
 
         $i = 0;
@@ -389,7 +389,7 @@ class Jop extends AbstractBase
             '2'  => 'open',
             '3'  => 'limited',
             '4'  => 'denied',
-            '10' => 'unknown'
+            '10' => 'unknown',
         ];
 
         $i = 0;
@@ -400,7 +400,7 @@ class Jop extends AbstractBase
             $resultXP = "/OpenURLResponseXML/Full/PrintData/ResultList/" .
                 "Result[@state={$state}][" . ($i + 1) . "]";
             $resultElements = [
-                'Title', 'Location', 'Signature', 'Period', 'Holding_comment'
+                'Title', 'Location', 'Signature', 'Period', 'Holding_comment',
             ];
             $elements = [];
             foreach ($resultElements as $element) {

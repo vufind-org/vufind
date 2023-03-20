@@ -476,7 +476,7 @@ class NewGenLib extends AbstractBase
             'cat_password' => $password,
             'email' => $row['email'],
             'major' => null,
-            'college' => null
+            'college' => null,
         ];
     }
 

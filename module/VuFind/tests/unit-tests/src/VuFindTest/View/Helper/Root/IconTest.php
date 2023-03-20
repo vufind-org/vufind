@@ -69,7 +69,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
                 'FakeSprite' => [
                     'template' => 'svg-sprite',
                     'src' => 'mysprites.svg',
-                ]
+                ],
             ],
             'aliases' => [
                 'bar' => 'Fugue:baz.png',
@@ -81,7 +81,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
                 'criminal' => 'Alias:illegal',
                 'foolish' => 'Alias:foolish',
                 'classy' => 'FontAwesome:spinner:extraClass',
-                'extraClassy' => 'Fugue:zzz.png:weird:class foo'
+                'extraClassy' => 'Fugue:zzz.png:weird:class foo',
             ],
         ];
     }

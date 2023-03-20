@@ -172,7 +172,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
         foreach ($this->consentConfig['Categories'] ?? [] as $name => $category) {
             if ($serviceNames = $category['ControlVuFindServices'] ?? []) {
                 $controlledVuFindServices[$name] = [
-                    ...$controlledVuFindServices[$name] ?? [], ...$serviceNames
+                    ...$controlledVuFindServices[$name] ?? [], ...$serviceNames,
                 ];
             }
         }
@@ -281,7 +281,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
             'name' => $this->consentCookieName,
             'path' => $this->cookieManager->getPath(),
             'expiresAfterDays' => $this->consentCookieExpiration,
-            'sameSite' => $this->cookieManager->getSameSite()
+            'sameSite' => $this->cookieManager->getSameSite(),
         ];
         // Set domain only if we have a value for it to avoid overriding the default
         // (i.e. window.location.hostname):
@@ -349,7 +349,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
                                     'description' => $this->translate(
                                         'CookieConsent::category_description_html',
                                         $descriptionPlaceholders
-                                    )
+                                    ),
                                 ],
                             ],
                         ],
@@ -414,7 +414,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
                     'name' => $name,
                     'domain' => $cookie['Domain'],
                     'desc' => $this->translate($cookie['Description'] ?? ''),
-                    'exp' => $expiration
+                    'exp' => $expiration,
                 ];
             }
             if ($autoClear = $categoryConfig['AutoClearCookies'] ?? []) {

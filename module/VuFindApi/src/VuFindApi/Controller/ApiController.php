@@ -105,7 +105,7 @@ class ApiController extends \VuFind\Controller\AbstractBase
         $config = $this->getConfig();
         $params = [
             'config' => $config,
-            'version' => \VuFind\Config\Version::getBuildVersion()
+            'version' => \VuFind\Config\Version::getBuildVersion(),
         ];
         return $this->getViewRenderer()->render('api/openapi', $params);
     }

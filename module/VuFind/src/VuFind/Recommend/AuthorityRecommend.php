@@ -224,7 +224,7 @@ class AuthorityRecommend implements RecommendInterface
             'type0' => ['Heading'],
             'bool1' => ['NOT'],
             'lookfor1' => [$this->lookfor],
-            'type1' => ['MainHeading']
+            'type1' => ['MainHeading'],
         ];
 
         // loop through records and assign id and headings to separate arrays defined
@@ -244,7 +244,7 @@ class AuthorityRecommend implements RecommendInterface
         // Build a simple "MainHeading" search.
         $params = [
             'lookfor' => [$this->lookfor],
-            'type' => ['MainHeading']
+            'type' => ['MainHeading'],
         ];
 
         // loop through records and assign id and headings to separate arrays defined

@@ -94,7 +94,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
      * @var string[]
      */
     protected $uncappedPhrases = [
-        'even if', 'if only', 'now that', 'on top of'
+        'even if', 'if only', 'now that', 'on top of',
     ];
 
     /**
@@ -178,7 +178,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
             'pubName' => $publishers[0] ?? null,
             'pubDate' => $pubDates[0] ?? null,
             'edition' => empty($edition) ? [] : [$edition],
-            'journal' => $driver->tryMethod('getContainerTitle')
+            'journal' => $driver->tryMethod('getContainerTitle'),
         ];
 
         return $this;
@@ -290,7 +290,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
         $apa = [
             'title' => $this->getAPATitle(),
             'authors' => $this->getAPAAuthors(),
-            'edition' => $this->getEdition()
+            'edition' => $this->getEdition(),
         ];
 
         // Show a period after the title if it does not already have punctuation

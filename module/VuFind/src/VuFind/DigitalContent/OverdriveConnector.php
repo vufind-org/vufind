@@ -737,7 +737,7 @@ class OverdriveConnector implements
             return $result;
         } else {
             $params = [
-                'reserveId' => $overDriveId, 'formatType' => $format
+                'reserveId' => $overDriveId, 'formatType' => $format,
             ];
         }
 
@@ -1185,7 +1185,7 @@ class OverdriveConnector implements
             );
             $headers = [
                 'Content-Type: application/x-www-form-urlencoded;charset=UTF-8',
-                "Authorization: Basic $authHeader"
+                "Authorization: Basic $authHeader",
             ];
 
             try {
@@ -1272,7 +1272,7 @@ class OverdriveConnector implements
             $headers = [
                 "Authorization: $authorizationData",
                 "User-Agent: VuFind",
-                "Content-Type: application/json"
+                "Content-Type: application/json",
             ];
             try {
                 $client = $this->getHttpClient();
@@ -1290,7 +1290,7 @@ class OverdriveConnector implements
                 foreach ($params as $key => $value) {
                     $jsonData['fields'][] = [
                         'name' => $key,
-                        'value' => $value
+                        'value' => $value,
                     ];
                 }
                 $postData = json_encode($jsonData);
@@ -1384,7 +1384,7 @@ class OverdriveConnector implements
             $headers = [
                 "Content-Type: application/x-www-form-urlencoded;charset=UTF-8",
                 "Authorization: Basic $authHeader",
-                "User-Agent: VuFind"
+                "User-Agent: VuFind",
             ];
             try {
                 $client = $this->getHttpClient($url);
@@ -1534,7 +1534,7 @@ class OverdriveConnector implements
         }
         $item = [
             'time' => time(),
-            'entry' => $entry
+            'entry' => $entry,
         ];
         $this->debug("putting item from cache for key $key : $entry");
         $this->cache->setItem($this->getCacheKey($key), $item);
@@ -1571,7 +1571,7 @@ class OverdriveConnector implements
             'status' => $status,
             'msg' => $msg,
             'data' => false,
-            'code' => $code
+            'code' => $code,
         ];
     }
 }

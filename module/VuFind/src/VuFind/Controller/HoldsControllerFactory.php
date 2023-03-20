@@ -69,7 +69,7 @@ class HoldsControllerFactory extends AbstractBaseFactory
             $requestedName,
             [
                 $container->get(\VuFind\Validator\CsrfInterface::class),
-                $container->get(\VuFind\Cache\Manager::class)->getCache('object')
+                $container->get(\VuFind\Cache\Manager::class)->getCache('object'),
             ]
         );
     }

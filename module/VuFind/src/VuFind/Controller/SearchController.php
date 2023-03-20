@@ -253,7 +253,7 @@ class SearchController extends AbstractSolrSearch
         return $this->createViewModel(
             [
                 'fundList' => $this->newItems()->getFundList(),
-                'ranges' => $this->newItems()->getRanges()
+                'ranges' => $this->newItems()->getRanges(),
             ]
         );
     }
@@ -355,7 +355,7 @@ class SearchController extends AbstractSolrSearch
             [
                 'deptList' => $catalog->getDepartments(),
                 'instList' => $catalog->getInstructors(),
-                'courseList' =>  $catalog->getCourses()
+                'courseList' =>  $catalog->getCourses(),
             ]
         );
     }

@@ -273,7 +273,7 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
                 $this->cachedHiddenFilterParams[$searchClassId]
                     = UrlQueryHelper::buildQueryString(
                         [
-                            'hiddenFilters' => $hiddenFilters
+                            'hiddenFilters' => $hiddenFilters,
                         ]
                     );
             } else {
@@ -300,7 +300,7 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
             'class' => $class,
             'label' => $label,
             'permission' => $permissionName,
-            'selected' => true
+            'selected' => true,
         ];
     }
 
@@ -360,7 +360,7 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
             'label' => $label,
             'permission' => $permissionName,
             'selected' => false,
-            'url' => $newUrl
+            'url' => $newUrl,
         ];
     }
 
@@ -388,7 +388,7 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
             'label' => $label,
             'permission' => $permissionName,
             'selected' => false,
-            'url' => $url
+            'url' => $url,
         ];
     }
 
@@ -423,7 +423,7 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
             'label' => $label,
             'permission' => $permissionName,
             'selected' => false,
-            'url' => $url
+            'url' => $url,
         ];
     }
 
@@ -450,7 +450,7 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
         if ($hiddenFilters = $params->getHiddenFiltersAsQueryParams()) {
             return $prepend . UrlQueryHelper::buildQueryString(
                 [
-                    'hiddenFilters' => $hiddenFilters
+                    'hiddenFilters' => $hiddenFilters,
                 ]
             );
         }

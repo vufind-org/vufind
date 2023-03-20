@@ -108,7 +108,7 @@ class HierarchyController extends AbstractBase
 
         $returnArray = [
             "limitReached" => $limitReached,
-            "results" => array_slice($resultIDs, 0, $limit)
+            "results" => array_slice($resultIDs, 0, $limit),
         ];
         return $this->outputJSON(json_encode($returnArray));
     }

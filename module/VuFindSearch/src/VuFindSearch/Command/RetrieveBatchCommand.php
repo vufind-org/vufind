@@ -84,7 +84,7 @@ class RetrieveBatchCommand extends CallMethodCommand
     {
         return [
             $this->getRecordIdentifiers(),
-            $this->getSearchParameters()
+            $this->getSearchParameters(),
         ];
     }
 

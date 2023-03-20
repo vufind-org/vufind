@@ -152,7 +152,7 @@ class XCNCIP2 extends AbstractBase implements
      * @var string[]
      */
     protected $notHoldableStatuses = [
-        'circulation status undefined', 'not available', 'lost'
+        'circulation status undefined', 'not available', 'lost',
     ];
 
     /**
@@ -419,7 +419,7 @@ class XCNCIP2 extends AbstractBase implements
                 $agencyId = $data[0] . '|' . $data[1];
                 $this->pickupLocations[$agencyId] = [
                     'locationID' => $agencyId,
-                    'locationDisplay' => $data[2]
+                    'locationDisplay' => $data[2],
                 ];
             }
             fclose($handle);
@@ -1255,7 +1255,7 @@ class XCNCIP2 extends AbstractBase implements
                 'fine' => $desc,
                 'duedate' => '',
                 'createdate' => $date,
-                'id' => $id
+                'id' => $id,
             ];
         }
         return $fines;
@@ -2286,7 +2286,7 @@ class XCNCIP2 extends AbstractBase implements
         $desiredElementTypes = [
             'Agency Address Information', 'Agency User Privilege Type',
             'Application Profile Supported Type', 'Authentication Prompt',
-            'Consortium Agreement', 'Organization Name Information'
+            'Consortium Agreement', 'Organization Name Information',
         ];
         foreach ($desiredElementTypes as $elementType) {
             $ret .= $this->element('AgencyElementType', $elementType);
@@ -2758,7 +2758,7 @@ class XCNCIP2 extends AbstractBase implements
     protected function getProblemDescription(
         \SimpleXMLElement $xml,
         array $elements = [
-            'ProblemType', 'ProblemDetail', 'ProblemElement', 'ProblemValue'
+            'ProblemType', 'ProblemDetail', 'ProblemElement', 'ProblemValue',
         ],
         bool $withElementNames = true
     ): string {

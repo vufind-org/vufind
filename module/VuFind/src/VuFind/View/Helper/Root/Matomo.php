@@ -373,7 +373,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
             'Page' => $params->getPage(),
             'Limit' => $params->getLimit(),
             'View' => $params->getView(),
-            'Context' => $this->context ?: 'page'
+            'Context' => $this->context ?: 'page',
         ];
     }
 
@@ -411,7 +411,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
             'Context' => $this->context ?: 'page',
             'RecordFormat' => $formats,
             'RecordData' => "$id|$author|$title",
-            'RecordInstitution' => $institutions
+            'RecordInstitution' => $institutions,
         ];
     }
 
@@ -423,7 +423,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
     protected function getLightboxCustomData(): array
     {
         return [
-            'Context' => $this->context ?: 'page'
+            'Context' => $this->context ?: 'page',
         ];
     }
 
@@ -435,7 +435,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
     protected function getGenericCustomData(): array
     {
         return [
-            'Context' => $this->context ?: 'page'
+            'Context' => $this->context ?: 'page',
         ];
     }
 

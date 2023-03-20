@@ -338,7 +338,7 @@ class Koha extends AbstractBase
                     'fine' => (null == $row['FINE']) ? 'Unknown' : $row['FINE'],
                     'balance' => (null == $row['BALANCE']) ? 0 : $row['BALANCE'],
                     'duedate' => $this->displayDate($row['DUEDATE']),
-                    'id' => $row['BIBNO']
+                    'id' => $row['BIBNO'],
                 ];
             }
             return $fineLst;
@@ -378,7 +378,7 @@ class Koha extends AbstractBase
                     'id' => $row['BIBNO'],
                     'location' => $row['BRNAME'],
                     'expire' => $this->displayDate($row['EXDATE']),
-                    'create' => $this->displayDate($row['RSVDATE'])
+                    'create' => $this->displayDate($row['RSVDATE']),
                 ];
             }
         } catch (PDOException $e) {
@@ -418,7 +418,7 @@ class Koha extends AbstractBase
                     'address2' => $row['ADDR2'],
                     'zip' => $row['ZIP'],
                     'phone' => $row['PHONE'],
-                    'group' => $row['GRP']
+                    'group' => $row['GRP'],
                 ];
                 return $profile;
             }
@@ -458,7 +458,7 @@ class Koha extends AbstractBase
                     'duedate' => $this->displayDateTime($row['DUEDATE']),
                     'id' => $row['BIBNO'],
                     'barcode' => $row['BARCODE'],
-                    'renew' => $row['RENEWALS']
+                    'renew' => $row['RENEWALS'],
                 ];
             }
         } catch (PDOException $e) {
@@ -587,7 +587,7 @@ class Koha extends AbstractBase
         }
         return [
             'count' => $totalCount,
-            'transactions' => $historicLoans
+            'transactions' => $historicLoans,
         ];
     }
 
@@ -733,7 +733,7 @@ class Koha extends AbstractBase
                     'cat_password' => $password,
                     'email' => $row['EMAIL'],
                     'major' => null,
-                    'college' => null
+                    'college' => null,
                 ];
 
                 return $patron;
@@ -815,9 +815,9 @@ class Koha extends AbstractBase
                     'return desc' => 'sort_return_date_desc',
                     'return asc' => 'sort_return_date_asc',
                     'due desc' => 'sort_due_date_desc',
-                    'due asc' => 'sort_due_date_asc'
+                    'due asc' => 'sort_due_date_asc',
                 ],
-                'default_sort' => 'checkout desc'
+                'default_sort' => 'checkout desc',
             ];
         }
         return $this->config[$function] ?? false;

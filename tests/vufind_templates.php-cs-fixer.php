@@ -5,9 +5,9 @@ $finder->in(__DIR__ . '/../themes')
     ->name('*.phtml');
 
 $rules = [
+    '@PHP74Migration' => true,
     '@PSR12' => true,
     'align_multiline_comment' => true,
-    'array_syntax' => ['syntax' => 'short'],
     'binary_operator_spaces' => [
         'default' => 'single_space',
     ],
@@ -19,7 +19,6 @@ $rules = [
     'ereg_to_preg' => true,
     'function_typehint_space' => true,
     'is_null' => true,
-    'list_syntax' => ['syntax' => 'short'],
     'lowercase_cast' => true,
     'magic_constant_casing' => true,
     'native_function_casing' => true,
@@ -38,17 +37,14 @@ $rules = [
     'no_unneeded_curly_braces' => true,
     'no_unused_imports' => true,
     'no_useless_return' => true,
-    'no_whitespace_before_comma_in_array' => true,
     'no_whitespace_in_blank_line' => true,
     'non_printable_character' => true,
     'ordered_imports' => true,
     'phpdoc_no_access' => true,
     'pow_to_exponentiation' => true,
     'single_line_after_imports' => true,
-    'short_scalar_cast' => true,
     'standardize_not_equals' => true,
     'ternary_operator_spaces' => true,
-    'ternary_to_null_coalescing' => true,
 ];
 
 $cacheDir = __DIR__ . '/../.php_cs_cache';

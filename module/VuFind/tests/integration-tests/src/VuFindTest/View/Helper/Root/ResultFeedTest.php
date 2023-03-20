@@ -76,7 +76,7 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
                 [
                     new \VuFind\Record\Router(
                         new \Laminas\Config\Config([])
-                    )
+                    ),
                 ]
             )->getMock();
         $recordLinker->expects($this->any())->method('getUrl')
@@ -99,7 +99,7 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
         $translations = [
             'Results for' => 'Results for',
             'showing_results_of_html' => 'Showing <strong>%%start%% - %%end%%'
-                . '</strong> results of <strong>%%total%%</strong>'
+                . '</strong> results of <strong>%%total%%</strong>',
         ];
         $mock = $this->getMockBuilder(\Laminas\I18n\Translator\TranslatorInterface::class)
             ->getMock();

@@ -285,7 +285,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
     {
         $this->changeConfigs(
             [
-                'config' => ['Account' => ['schedule_searches' => true]]
+                'config' => ['Account' => ['schedule_searches' => true]],
             ]
         );
         $session = $this->getMinkSession();

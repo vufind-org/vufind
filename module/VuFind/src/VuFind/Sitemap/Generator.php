@@ -453,7 +453,7 @@ class Generator
             [
                 'baseUrl' => $this->baseUrl,
                 'baseSitemapUrl' => $this->baseSitemapUrl,
-                'verboseMessageCallback' => $verboseCallback
+                'verboseMessageCallback' => $verboseCallback,
             ]
         );
         return $plugin;

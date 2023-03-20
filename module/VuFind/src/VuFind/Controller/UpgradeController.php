@@ -718,7 +718,7 @@ class UpgradeController extends AbstractBase
 
         return $this->createViewModel(
             [
-                'anonymousTags' => $this->params()->fromQuery('anonymousCnt')
+                'anonymousTags' => $this->params()->fromQuery('anonymousCnt'),
             ]
         );
     }
@@ -950,7 +950,7 @@ class UpgradeController extends AbstractBase
                 'configDir'
                     => dirname($this->getForcedLocalConfigPath('config.ini')),
                 'importDir' => LOCAL_OVERRIDE_DIR . '/import',
-                'oldVersion' => $this->cookie->oldVersion
+                'oldVersion' => $this->cookie->oldVersion,
             ]
         );
     }

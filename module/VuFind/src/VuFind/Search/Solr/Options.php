@@ -48,7 +48,7 @@ class Options extends \VuFind\Search\Base\Options
      * @var array
      */
     protected $facetSortOptions = [
-        '*' => ['count' => 'sort_count', 'index' => 'sort_alphabetic']
+        '*' => ['count' => 'sort_count', 'index' => 'sort_alphabetic'],
     ];
 
     /**

@@ -389,7 +389,7 @@ class Form extends \Laminas\Form\Form implements
     {
         return [
             $this->mapRequestParamsToFieldValues($requestParams),
-            'Email/form.phtml'
+            'Email/form.phtml',
         ];
     }
 
@@ -473,16 +473,16 @@ class Form extends \Laminas\Form\Form implements
                 'name' => EmailAddress::class,
                 'options' => [
                     'message' => $this->getValidationMessage('invalid_email'),
-                ]
+                ],
             ],
             'notEmpty' => [
                 'name' => NotEmpty::class,
                 'options' => [
                     'message' => [
                         NotEmpty::IS_EMPTY => $this->getValidationMessage('empty'),
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ];
 
         $elementObjects = $this->getElements();
@@ -508,8 +508,8 @@ class Form extends \Laminas\Form\Form implements
                                             $value
                                         )
                                     );
-                            }
-                         ]
+                            },
+                         ],
                     ];
                 } elseif ($required) {
                     $fieldValidators[] = [
@@ -517,11 +517,11 @@ class Form extends \Laminas\Form\Form implements
                         'options' => [
                             'message' => [
                                 Identical::MISSING_TOKEN
-                                => $this->getValidationMessage('empty')
+                                => $this->getValidationMessage('empty'),
                             ],
                             'strict' => true,
-                            'token' => array_keys($el['options'])
-                        ]
+                            'token' => array_keys($el['options']),
+                        ],
                     ];
                 }
             }
@@ -542,7 +542,7 @@ class Form extends \Laminas\Form\Form implements
                 [
                     'name' => $el['name'],
                     'required' => $required,
-                    'validators' => $fieldValidators
+                    'validators' => $fieldValidators,
                 ]
             );
         }
@@ -607,7 +607,7 @@ class Form extends \Laminas\Form\Form implements
     {
         $formConfig = [
            'id' => $formId,
-           'title' => !empty($config['name']) ?: $formId
+           'title' => !empty($config['name']) ?: $formId,
         ];
 
         foreach ($this->getFormSettingFields() as $key) {
@@ -630,8 +630,8 @@ class Form extends \Laminas\Form\Form implements
             'label' => $this->translate('feedback_name'),
             'group' => '__sender__',
             'settings' => [
-                'size' => 50
-            ]
+                'size' => 50,
+            ],
         ];
         $senderEmail = [
             'name' => 'email',
@@ -639,8 +639,8 @@ class Form extends \Laminas\Form\Form implements
             'label' => $this->translate('feedback_email'),
             'group' => '__sender__',
             'settings' => [
-                'size' => 254
-            ]
+                'size' => 254,
+            ],
         ];
         if ($formConfig['senderInfoRequired'] ?? false) {
             $senderEmail['required'] = $senderName['required'] = true;
@@ -769,7 +769,7 @@ class Form extends \Laminas\Form\Form implements
         $elements[] = [
             'type' => 'submit',
             'name' => 'submit',
-            'label' => 'Send'
+            'label' => 'Send',
         ];
 
         return $elements;
@@ -799,8 +799,8 @@ class Form extends \Laminas\Form\Form implements
                 'value' => '',
                 'label' => $placeholder,
                 'attributes' => [
-                    'selected' => 'selected', 'disabled' => 'disabled'
-                ]
+                    'selected' => 'selected', 'disabled' => 'disabled',
+                ],
             ];
         }
         $idx = 0;
@@ -810,7 +810,7 @@ class Form extends \Laminas\Form\Form implements
             $label = $option['label'] ?? $option;
             $options["o$idx"] = [
                 'value' => $value,
-                'label' => $label
+                'label' => $label,
             ];
         }
         return $options;
@@ -847,7 +847,7 @@ class Form extends \Laminas\Form\Form implements
             }
             $groups[$group['label']] = [
                 'label' => $group['label'],
-                'options' => $options
+                'options' => $options,
             ];
         }
         return $groups;
@@ -955,7 +955,7 @@ class Form extends \Laminas\Form\Form implements
 
         $attributes = [
             'id' => $this->getElementId($el['name']),
-            'class' => [$el['settings']['class'] ?? null]
+            'class' => [$el['settings']['class'] ?? null],
         ];
 
         if ($type !== 'submit') {
@@ -988,8 +988,8 @@ class Form extends \Laminas\Form\Form implements
                         'label' => $this->translate($item['label']),
                         'value' => $key,
                         'attributes' => [
-                            'id' => $this->getElementId($el['name'] . '_' . $key)
-                        ]
+                            'id' => $this->getElementId($el['name'] . '_' . $key),
+                        ],
                     ];
                 }
                 $conf['options'] = ['value_options' => $optionElements];
@@ -1016,9 +1016,9 @@ class Form extends \Laminas\Form\Form implements
                         'value' => $key,
                         'label_attributes' => ['for' => $elemId],
                         'attributes' => [
-                            'id' => $elemId
+                            'id' => $elemId,
                         ],
-                        'selected' => $first
+                        'selected' => $first,
                     ];
                     $first = false;
                 }

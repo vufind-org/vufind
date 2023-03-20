@@ -345,7 +345,7 @@ class GetItemStatuses extends AbstractBase implements
                 ? $this->translate('on_reserve')
                 : $this->translate('Not On Reserve'),
             'callnumber' => htmlentities($callNumber, ENT_COMPAT, 'UTF-8'),
-            'callnumber_handler' => $callnumberHandler
+            'callnumber_handler' => $callnumberHandler,
         ];
     }
 
@@ -412,7 +412,7 @@ class GetItemStatuses extends AbstractBase implements
                 'callnumbers' =>
                     htmlentities($locationCallnumbers, ENT_COMPAT, 'UTF-8'),
                 'status_unknown' => $details['status_unknown'] ?? false,
-                'callnumber_handler' => $callnumberHandler
+                'callnumber_handler' => $callnumberHandler,
             ];
             $locationList[] = $locationInfo;
         }
@@ -433,7 +433,7 @@ class GetItemStatuses extends AbstractBase implements
             'reserve_message' => $record[0]['reserve'] == 'Y'
                 ? $this->translate('on_reserve')
                 : $this->translate('Not On Reserve'),
-            'callnumber' => false
+            'callnumber' => false,
         ];
     }
 
@@ -456,7 +456,7 @@ class GetItemStatuses extends AbstractBase implements
             'locationList' => [],
             'reserve' => false,
             'reserve_message' => '',
-            'callnumber' => false
+            'callnumber' => false,
         ];
     }
 
@@ -473,7 +473,7 @@ class GetItemStatuses extends AbstractBase implements
         $values = array_merge(
             [
                 'statusItems' => $record,
-                'callnumberHandler' => $this->getCallnumberHandler()
+                'callnumberHandler' => $this->getCallnumberHandler(),
             ],
             $values
         );
@@ -503,8 +503,8 @@ class GetItemStatuses extends AbstractBase implements
                 $results[] = [
                     [
                         'id' => $id,
-                        'error' => 'An error has occurred'
-                    ]
+                        'error' => 'An error has occurred',
+                    ],
                 ];
             }
         }
@@ -526,7 +526,7 @@ class GetItemStatuses extends AbstractBase implements
             'available' => $this->renderer->render('ajax/status-available.phtml'),
             'unavailable' =>
                 $this->renderer->render('ajax/status-unavailable.phtml'),
-            'unknown' => $this->renderer->render('ajax/status-unknown.phtml')
+            'unknown' => $this->renderer->render('ajax/status-unknown.phtml'),
         ];
 
         // Load callnumber and location settings:
@@ -588,7 +588,7 @@ class GetItemStatuses extends AbstractBase implements
                 'reserve_message'      => $this->translate('Not On Reserve'),
                 'callnumber'           => '',
                 'missing_data'         => true,
-                'record_number'        => $recordNumber
+                'record_number'        => $recordNumber,
             ];
         }
 

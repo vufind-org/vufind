@@ -127,7 +127,7 @@ class Holds
             $retVal[$groupKey] = [
                 'items' => $items,
                 'location' => $items[0]['location'] ?? '',
-                'locationhref' => $items[0]['locationhref'] ?? ''
+                'locationhref' => $items[0]['locationhref'] ?? '',
             ];
             // Copy all text fields from the item to the holdings level
             foreach ($items as $item) {
@@ -551,7 +551,7 @@ class Holds
         return [
             'action' => $action, 'record' => $details['id'],
             'source' => $details['source'] ?? DEFAULT_SEARCH_BACKEND,
-            'query' => $queryString, 'anchor' => "#tabnav"
+            'query' => $queryString, 'anchor' => "#tabnav",
         ];
     }
 

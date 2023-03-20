@@ -86,7 +86,7 @@ class ScopeRepositoryTest extends AbstractTokenRepositoryTest
                     'description' => 'Phone',
                     'ils' => true,
                 ],
-            ]
+            ],
         ];
         $repo = new ScopeRepository($config);
 
@@ -114,7 +114,7 @@ class ScopeRepositoryTest extends AbstractTokenRepositoryTest
                 'openid' => [
                     'description' => 'OpenID',
                 ],
-            ]
+            ],
         ];
         $repo = new ScopeRepository($config);
 
@@ -131,7 +131,7 @@ class ScopeRepositoryTest extends AbstractTokenRepositoryTest
         $config = [
             'Scopes' => [
                 'openid' => [],
-            ]
+            ],
         ];
         $repo = new ScopeRepository($config);
 

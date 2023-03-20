@@ -52,12 +52,12 @@ class MapTest extends \PHPUnit\Framework\TestCase
         $mapTabDisplay = true;
         $basemapOptions = [
             'basemap_url' => "www.foo.com",
-            'basemap_attribution' => "bar"
+            'basemap_attribution' => "bar",
         ];
         $mapTabOptions = [
             'displayCoords' => true,
             'mapLabels'     => null,
-            'graticule'     => true
+            'graticule'     => true,
         ];
         $obj = new Map($mapTabDisplay, $basemapOptions, $mapTabOptions);
         return $obj;

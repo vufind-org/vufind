@@ -337,7 +337,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     {
         $configs = [
             '.ini' => $this->modifiedConfigs,
-            '.yaml' => $this->modifiedYamlConfigs
+            '.yaml' => $this->modifiedYamlConfigs,
         ];
         foreach ($configs as $extension => $files) {
             foreach ($files as $current) {
@@ -791,7 +791,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $client->setEncType(\Laminas\Http\Client::ENC_FORMDATA);
         $client->setParameterPost(
             [
-                'out' => 'json'
+                'out' => 'json',
             ]
         );
         $page ??= $this->session->getPage();

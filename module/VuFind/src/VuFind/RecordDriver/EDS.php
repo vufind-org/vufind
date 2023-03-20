@@ -260,7 +260,7 @@ class EDS extends DefaultRecord
                 'Group' => $item['Group'] ?? '',
                 'Name' => $item['Name'] ?? '',
                 'Data'  => isset($item['Data'])
-                    ? $this->toHTML($item['Data'], $item['Group']) : ''
+                    ? $this->toHTML($item['Data'], $item['Group']) : '',
             ];
             if (
                 !$this->itemIsExcluded($nextItem, $context)
@@ -571,7 +571,7 @@ class EDS extends DefaultRecord
                 '<superscript' => '<sup',
                 '</superscript' => '</sup',
                 '<relatesTo'   => '<sup',
-                '</relatesTo'  => '</sup'
+                '</relatesTo'  => '</sup',
         ];
 
         //  The XML data is escaped, let's unescape html entities (e.g. &lt; => <)

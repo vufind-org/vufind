@@ -60,7 +60,7 @@ trait HoldsTrait
             'Holds',
             [
                 'id' => $driver->getUniqueID(),
-                'patron' => $patron
+                'patron' => $patron,
             ]
         );
         if (!$checkHolds) {
@@ -197,7 +197,7 @@ trait HoldsTrait
                             ? 'hold_place_success_html'
                             : 'proxy_hold_place_success_html',
                         'tokens' => [
-                            '%%url%%' => $this->url()->fromRoute('holds-list')
+                            '%%url%%' => $this->url()->fromRoute('holds-list'),
                         ],
                     ];
                     $this->flashMessenger()->addMessage($msg, 'success');

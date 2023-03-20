@@ -123,7 +123,7 @@ class CombinedController extends AbstractSearch
                 'showCartControls' => $currentOptions->supportsCart()
                     && $cart->isActive(),
                 'showBulkOptions' => $currentOptions->supportsCart()
-                    && ($general->Site->showBulkOptions ?? false)
+                    && ($general->Site->showBulkOptions ?? false),
             ];
             // Load custom CSS, if necessary:
             $html = ($this->getViewRenderer()->plugin('headLink'))();
@@ -230,7 +230,7 @@ class CombinedController extends AbstractSearch
                 'results' => $results,
                 'supportsCart' => $supportsCart,
                 'supportsCartOptions' => $supportsCartOptions,
-                'showBulkOptions' => $settings->Site->showBulkOptions ?? false
+                'showBulkOptions' => $settings->Site->showBulkOptions ?? false,
             ]
         );
     }

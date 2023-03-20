@@ -202,7 +202,7 @@ class Solr extends AbstractBase
                     // Override any default timeAllowed since it cannot be used with
                     // cursorMark
                     'timeAllowed' => -1,
-                    'cursorMark' => $cursorMark
+                    'cursorMark' => $cursorMark,
                 ]
             );
             $command = new RawJsonSearchCommand(

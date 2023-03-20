@@ -184,7 +184,7 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
                 'status' => $row['status'],
                 'location' => $row['location'],
                 'reserve' => $reserve,
-                'callnumber' => $row['callnumber']
+                'callnumber' => $row['callnumber'],
             ];
         }
 
@@ -298,7 +298,7 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
                 'callnumber' => $row['callnumber'],
                 'duedate' => $due_date,
                 'number' => $row['copy_number'],
-                'barcode' => $row['barcode']
+                'barcode' => $row['barcode'],
             ];
         }
 
@@ -460,7 +460,7 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
                                     'institution_name' => $row['owning_library'],
                                     'borrowingLocation' =>
                                         $row['borrowing_location'],
-                                    'dueStatus' => $dueStatus
+                                    'dueStatus' => $dueStatus,
                                ];
             }
         } catch (PDOException $e) {
@@ -516,7 +516,7 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
                     'checkout' => $this->formatDate($row['checkout_time']),
                     'createdate' => $this->formatDate($row['last_billing_ts']),
                     'duedate' => $this->formatDate($row['due_date']),
-                    'id' => $row['record']
+                    'id' => $row['record'],
                 ];
             }
             return $fineList;

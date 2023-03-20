@@ -61,7 +61,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
             ->setConstructorArgs(
                 [
                 $this->createMock(\VuFindSearch\Service::class),
-                $this->createMock(\VuFind\RecordDriver\PluginManager::class)
+                $this->createMock(\VuFind\RecordDriver\PluginManager::class),
                 ]
             )->getMock();
     }
@@ -280,7 +280,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
     {
         $cookies = [
             'vufind_cart' => "Aa\tBb\tCc",
-            'vufind_cart_src' => "Solr\tSummon\tWorldCat"
+            'vufind_cart_src' => "Solr\tSummon\tWorldCat",
         ];
         $cart = $this->getCart(100, true, $cookies);
         $this->assertEquals(3, count($cart->getItems()));

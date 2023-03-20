@@ -81,7 +81,7 @@ class VersionsTest extends \PHPUnit\Framework\TestCase
         return ['Test1' => [true, 1, true],
                 'Test2' => [true, 0, false],
                 'Test3' => [false, 1, false],
-                'Test4' => [true, 0, false]
+                'Test4' => [true, 0, false],
             ];
     }
 

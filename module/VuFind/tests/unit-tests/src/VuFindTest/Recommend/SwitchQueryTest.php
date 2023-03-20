@@ -147,7 +147,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
         $sq = $this->getSwitchQuery($results);
         $this->assertEquals(
             [
-                'switchquery_unwantedquotes' => 'my phrase'
+                'switchquery_unwantedquotes' => 'my phrase',
             ],
             $sq->getSuggestions()
         );
@@ -164,7 +164,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
         $sq = $this->getSwitchQuery($results, ':wildcard:truncatechar');
         $this->assertEquals(
             [
-                'switchquery_truncatechar' => 'abc'
+                'switchquery_truncatechar' => 'abc',
             ],
             $sq->getSuggestions()
         );

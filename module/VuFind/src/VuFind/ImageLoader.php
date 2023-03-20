@@ -89,7 +89,7 @@ class ImageLoader implements \Laminas\Log\LoggerAwareInterface
         "gif" => "image/gif",
         "jpeg" => "image/jpeg", "jpg" => "image/jpeg",
         "png" => "image/png",
-        "tiff" => "image/tiff", "tif" => "image/tiff"
+        "tiff" => "image/tiff", "tif" => "image/tiff",
     ];
 
     /**

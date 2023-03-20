@@ -296,7 +296,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
         foreach ($options->getBasicHandlers() as $searchVal => $searchDesc) {
             $handlers[] = [
                 'value' => $searchVal, 'label' => $searchDesc, 'indent' => false,
-                'selected' => ($activeHandler == $searchVal)
+                'selected' => ($activeHandler == $searchVal),
             ];
         }
         return $handlers;

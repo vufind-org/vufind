@@ -134,7 +134,7 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
                 && $command->getArguments()[2] === 101
                 && $command->getArguments()[3]->getArrayCopy() === [
                     "hl" => ["false"],
-                    "sort" => ["hierarchy_sequence ASC,title ASC"]
+                    "sort" => ["hierarchy_sequence ASC,title ASC"],
                 ];
         };
         $service->expects($this->once())->method('invoke')

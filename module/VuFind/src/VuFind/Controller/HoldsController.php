@@ -381,7 +381,7 @@ class HoldsController extends AbstractBase
             );
         }
         $dateValidationResults = [
-            'errors' => []
+            'errors' => [],
         ];
         $frozenThroughValidationResults = [
             'frozenThroughTS' => null,

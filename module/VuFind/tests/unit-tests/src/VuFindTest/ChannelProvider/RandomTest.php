@@ -119,7 +119,7 @@ class RandomTest extends \PHPUnit\Framework\TestCase
                 'thumbnail' => 'foo_Thumbnail',
                 'routeDetails' => 'foo_Route',
                 'id' => 'foo_Id',
-            ]]
+            ]],
         ]];
         $random->setProviderId('foo_ProviderID');
         $coverRouter = $this->getConfiguredCoverRouterMock($recordDriver);
@@ -225,7 +225,7 @@ class RandomTest extends \PHPUnit\Framework\TestCase
             'Title' => 'foo_Title',
             'SourceIdentifier' => 'foo_Identifier',
             'Thumbnail' => 'foo_Thumbnail',
-            'UniqueID' => 'foo_Id'
+            'UniqueID' => 'foo_Id',
         ];
         $driver->setRawData($data);
         return $driver;

@@ -72,7 +72,7 @@ class LoggerFactory implements FactoryInterface
             'priority' => 'priority',
             'message' => 'message',
             'logtime' => 'timestamp',
-            'ident' => 'ident'
+            'ident' => 'ident',
         ];
 
         // Make Writers

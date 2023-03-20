@@ -118,7 +118,7 @@ class ThemeGenerator extends AbstractThemeUtility implements GeneratorInterface
         // Enable dropdown
         $settingPrefixes = [
             'bootstrap' => 'bs3',
-            'custom' => strtolower(str_replace(' ', '', $name))
+            'custom' => strtolower(str_replace(' ', '', $name)),
         ];
         // - Set alternate_themes
         $this->writeln("\t\t[Site] > alternate_themes");
@@ -143,7 +143,7 @@ class ThemeGenerator extends AbstractThemeUtility implements GeneratorInterface
         $this->writeln("\t\t[Site] > selectable_themes");
         $dropSetting = [
             $settingPrefixes['bootstrap'] . ':Bootstrap',
-            $settingPrefixes['custom'] . ':' . ucwords($name)
+            $settingPrefixes['custom'] . ':' . ucwords($name),
         ];
         if (isset($config->Site->selectable_themes)) {
             $themes = explode(',', $config->Site->selectable_themes);

@@ -143,8 +143,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->changeConfigs(
             [
                 'config' => [
-                    'Captcha' => ['types' => ['demo'], 'forms' => '*']
-                ]
+                    'Captcha' => ['types' => ['demo'], 'forms' => '*'],
+                ],
             ]
         );
         // Go to a record view
@@ -313,8 +313,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->changeConfigs(
             [
                 'config' => [
-                    'Social' => ['case_sensitive_tags' => 'true']
-                ]
+                    'Social' => ['case_sensitive_tags' => 'true'],
+                ],
             ]
         );
         // Login
@@ -349,7 +349,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
             [
                 'config' => [
                     'Mail' => ['testOnly' => 1],
-                ]
+                ],
             ]
         );
 
@@ -413,7 +413,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
             [
                 'config' => [
                     'Mail' => ['testOnly' => 1],
-                ]
+                ],
             ]
         );
 
@@ -534,8 +534,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
                     'Social' => [
                         'rating' => true,
                         'remove_rating' => $allowRemove,
-                    ]
-                ]
+                    ],
+                ],
             ]
         );
         $this->removeUsername2And3And4();

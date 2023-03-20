@@ -380,7 +380,7 @@ class AlmaController extends AbstractBase
                         'lastname' => $user->lastname,
                         'username' => $user->username,
                         'url' => $this->getServerUrl('myresearch-verify') . '?hash='
-                            . $user->verify_hash . '&auth_method=' . $method
+                            . $user->verify_hash . '&auth_method=' . $method,
                     ]
                 );
                 // Send the email
