@@ -193,7 +193,7 @@ class Params extends \VuFind\Search\Base\Params
                     $q = $field . ':"' . addcslashes($value, '"\\') . '"';
                 }
                 if ($orFacet) {
-                    $orFilters[$field] = $orFilters[$field] ?? [];
+                    $orFilters[$field] ??= [];
                     $orFilters[$field][] = $q;
                 } else {
                     $filterQuery[] = $q;

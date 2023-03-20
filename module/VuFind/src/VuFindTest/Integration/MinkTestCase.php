@@ -373,7 +373,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $timeout = null,
         $index = 0
     ) {
-        $timeout = $timeout ?? $this->getDefaultTimeout();
+        $timeout ??= $this->getDefaultTimeout();
         $session = $this->getMinkSession();
         $session->wait(
             $timeout,
@@ -401,7 +401,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function waitStatement($statement, $timeout = null)
     {
-        $timeout = $timeout ?? $this->getDefaultTimeout();
+        $timeout ??= $this->getDefaultTimeout();
         $session = $this->getMinkSession();
         $this->assertTrue(
             $session->wait(
@@ -428,7 +428,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $timeout = null,
         $index = 0
     ) {
-        $timeout = $timeout ?? $this->getDefaultTimeout();
+        $timeout ??= $this->getDefaultTimeout();
         $startTime = microtime(true);
         $exception = null;
         while ((microtime(true) - $startTime) * 1000 <= $timeout) {
@@ -441,7 +441,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
                 // This may happen e.g. if the page is reloaded right in the middle
                 // due to an event. Store the exception and throw later if we don't
                 // succeed with retries:
-                $exception = $exception ?? $e;
+                $exception ??= $e;
             }
             usleep(50000);
         }
@@ -505,7 +505,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $timeout = null,
         $retries = 6
     ) {
-        $timeout = $timeout ?? $this->getDefaultTimeout();
+        $timeout ??= $this->getDefaultTimeout();
         $field = $this->findCss($page, $selector, $timeout, 0);
 
         $session = $this->getMinkSession();
@@ -585,7 +585,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         callable $callback,
         int $timeout = null
     ) {
-        $timeout = $timeout ?? $this->getDefaultTimeout();
+        $timeout ??= $this->getDefaultTimeout();
         $result = null;
         $startTime = microtime(true);
         while ((microtime(true) - $startTime) * 1000 <= $timeout) {
@@ -633,7 +633,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         Element $page,
         int $timeout = null
     ) {
-        $timeout = $timeout ?? $this->getDefaultTimeout();
+        $timeout ??= $this->getDefaultTimeout();
         $session = $this->getMinkSession();
         // Wait for page load to complete:
         $session->wait($timeout, "document.readyState === 'complete'");
@@ -794,7 +794,7 @@ EOS
                 'out' => 'json'
             ]
         );
-        $page = $page ?? $this->session->getPage();
+        $page ??= $this->session->getPage();
         $this->waitForPageLoad($page);
         $client->setFileUpload(
             $this->session->getCurrentUrl(),

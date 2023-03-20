@@ -82,7 +82,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         ?Options $options = null,
         ?PluginManager $configManager = null
     ): Params {
-        $configManager = $configManager ?? $this->getMockConfigPluginManager([]);
+        $configManager ??= $this->getMockConfigPluginManager([]);
         return $this->getMockForAbstractClass(
             Params::class,
             [$options ?? $this->getMockOptions($configManager), $configManager]

@@ -719,13 +719,10 @@ class Options extends \VuFind\Search\Base\Options
     {
         $settings = $this->apiInfo['ViewResultSettings'] ?? [];
         // default result Limit
-        $this->defaultLimit = $this->defaultLimit
-            ?? $settings['ResultsPerPage']
-            ?? 20;
+        $this->defaultLimit ??= $settings['ResultsPerPage'] ?? 20;
 
         // default view
-        $this->defaultView = $this->defaultView
-            ?? 'list|' . ($settings['ResultListView'] ?? 'brief');
+        $this->defaultView ??= 'list|' . ($settings['ResultListView'] ?? 'brief');
     }
 
     /**

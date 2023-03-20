@@ -320,7 +320,7 @@ class Params extends \VuFind\Search\Base\Params
                             ->add('rangeFilters', "{$filt['field']},{$from}:{$to}");
                     } elseif ($filt['operator'] == 'OR') {
                         // Special case -- OR facets:
-                        $orFacets[$filt['field']] = $orFacets[$filt['field']] ?? [];
+                        $orFacets[$filt['field']] ??= [];
                         $orFacets[$filt['field']][] = $safeValue;
                     } else {
                         // Standard case:
