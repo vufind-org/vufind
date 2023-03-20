@@ -884,34 +884,34 @@ class VoyagerRestful extends Voyager implements
         if ($this->pickupLocationsInRequestGroup) {
             // Limit to request groups that have valid pickup locations
             $sqlWhere[] = <<<EOT
-rg.GROUP_ID IN (
-  SELECT rgl.GROUP_ID
-  FROM $this->dbName.REQUEST_GROUP_LOCATION rgl
-  WHERE rgl.LOCATION_ID IN (
-    SELECT cpl.LOCATION_ID
-    FROM $this->dbName.CIRC_POLICY_LOCS cpl
-    WHERE cpl.PICKUP_LOCATION='Y'
-  )
-)
-EOT;
+                rg.GROUP_ID IN (
+                  SELECT rgl.GROUP_ID
+                  FROM $this->dbName.REQUEST_GROUP_LOCATION rgl
+                  WHERE rgl.LOCATION_ID IN (
+                    SELECT cpl.LOCATION_ID
+                    FROM $this->dbName.CIRC_POLICY_LOCS cpl
+                    WHERE cpl.PICKUP_LOCATION='Y'
+                  )
+                )
+                EOT;
         }
 
         if ($this->checkItemsExist) {
             $sqlWhere[] = <<<EOT
-rg.GROUP_ID IN (
-  SELECT rgl.GROUP_ID
-  FROM $this->dbName.REQUEST_GROUP_LOCATION rgl
-  WHERE rgl.LOCATION_ID IN (
-    SELECT mm.LOCATION_ID FROM $this->dbName.MFHD_MASTER mm
-    WHERE mm.SUPPRESS_IN_OPAC='N'
-    AND mm.MFHD_ID IN (
-      SELECT mi.MFHD_ID
-      FROM $this->dbName.MFHD_ITEM mi, $this->dbName.BIB_ITEM bi
-      WHERE mi.ITEM_ID = bi.ITEM_ID AND bi.BIB_ID=:bibId
-    )
-  )
-)
-EOT;
+                rg.GROUP_ID IN (
+                  SELECT rgl.GROUP_ID
+                  FROM $this->dbName.REQUEST_GROUP_LOCATION rgl
+                  WHERE rgl.LOCATION_ID IN (
+                    SELECT mm.LOCATION_ID FROM $this->dbName.MFHD_MASTER mm
+                    WHERE mm.SUPPRESS_IN_OPAC='N'
+                    AND mm.MFHD_ID IN (
+                      SELECT mi.MFHD_ID
+                      FROM $this->dbName.MFHD_ITEM mi, $this->dbName.BIB_ITEM bi
+                      WHERE mi.ITEM_ID = bi.ITEM_ID AND bi.BIB_ID=:bibId
+                    )
+                  )
+                )
+                EOT;
             $sqlBind['bibId'] = $bibId;
         }
 
@@ -961,12 +961,12 @@ EOT;
             $subSql = $this->buildSqlFromArray($subArray);
 
             $itemWhere = <<<EOT
-rg.GROUP_ID NOT IN (
-  SELECT status.GROUP_ID
-  FROM ({$subSql['string']}) status
-  WHERE status.status=1
-)
-EOT;
+                rg.GROUP_ID NOT IN (
+                  SELECT status.GROUP_ID
+                  FROM ({$subSql['string']}) status
+                  WHERE status.status=1
+                )
+                EOT;
 
             $key = 'disableAvailabilityCheckForRequestGroups';
             if (isset($this->config['Holds'][$key])) {
@@ -1288,11 +1288,11 @@ EOT;
                 $dbKey = $this->encodeXML($dbKey);
 
                 $itemIdentifiers .= <<<EOT
-      <myac:itemIdentifier>
-       <myac:itemId>$loanId</myac:itemId>
-       <myac:ubId>$dbKey</myac:ubId>
-      </myac:itemIdentifier>
-EOT;
+                          <myac:itemIdentifier>
+                           <myac:itemId>$loanId</myac:itemId>
+                           <myac:ubId>$dbKey</myac:ubId>
+                          </myac:itemIdentifier>
+                    EOT;
             }
 
             $patronId = $this->encodeXML($patron['id']);
@@ -1307,14 +1307,14 @@ EOT;
             // Voyager 8.1, but who knows if it fails with UB or something, so let's
             // try to play along with the rules.
             $xml = <<<EOT
-<?xml version="1.0" encoding="UTF-8"?>
-<ser:serviceParameters
-xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
-  <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$localUbId">
-    <ser:authFactor type="B">$barcode</ser:authFactor>
-  </ser:patronIdentifier>
-</ser:serviceParameters>
-EOT;
+                <?xml version="1.0" encoding="UTF-8"?>
+                <ser:serviceParameters
+                xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
+                  <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$localUbId">
+                    <ser:authFactor type="B">$barcode</ser:authFactor>
+                  </ser:patronIdentifier>
+                </ser:serviceParameters>
+                EOT;
 
             $response = $this->makeRequest(
                 ['AuthenticatePatronService' => false],
@@ -1327,21 +1327,21 @@ EOT;
             }
 
             $xml = <<<EOT
-<?xml version="1.0" encoding="UTF-8"?>
-<ser:serviceParameters
-xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
-   <ser:parameters/>
-   <ser:definedParameters xsi:type="myac:myAccountServiceParametersType"
-   xmlns:myac="http://www.endinfosys.com/Voyager/myAccount"
-   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-$itemIdentifiers
-   </ser:definedParameters>
-  <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$localUbId"
-  patronId="$patronId">
-    <ser:authFactor type="B">$barcode</ser:authFactor>
-  </ser:patronIdentifier>
-</ser:serviceParameters>
-EOT;
+                <?xml version="1.0" encoding="UTF-8"?>
+                <ser:serviceParameters
+                xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
+                   <ser:parameters/>
+                   <ser:definedParameters xsi:type="myac:myAccountServiceParametersType"
+                   xmlns:myac="http://www.endinfosys.com/Voyager/myAccount"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                $itemIdentifiers
+                   </ser:definedParameters>
+                  <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$localUbId"
+                  patronId="$patronId">
+                    <ser:authFactor type="B">$barcode</ser:authFactor>
+                  </ser:patronIdentifier>
+                </ser:serviceParameters>
+                EOT;
 
             $response = $this->makeRequest(
                 ['RenewService' => false],
@@ -1518,41 +1518,41 @@ EOT;
 
         // Build request
         $xml = <<<EOT
-<?xml version="1.0" encoding="UTF-8"?>
-<ser:serviceParameters
-  xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
-  <ser:parameters>
-    <ser:parameter key="bibDbCode">
-      <ser:value>LOCAL</ser:value>
-    </ser:parameter>
-    <ser:parameter key="requestCode">
-      <ser:value>$type</ser:value>
-    </ser:parameter>
-    <ser:parameter key="requestSiteId">
-      <ser:value>$localUbId</ser:value>
-    </ser:parameter>
-    <ser:parameter key="CVAL">
-      <ser:value>$cval</ser:value>
-    </ser:parameter>
+            <?xml version="1.0" encoding="UTF-8"?>
+            <ser:serviceParameters
+              xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
+              <ser:parameters>
+                <ser:parameter key="bibDbCode">
+                  <ser:value>LOCAL</ser:value>
+                </ser:parameter>
+                <ser:parameter key="requestCode">
+                  <ser:value>$type</ser:value>
+                </ser:parameter>
+                <ser:parameter key="requestSiteId">
+                  <ser:value>$localUbId</ser:value>
+                </ser:parameter>
+                <ser:parameter key="CVAL">
+                  <ser:value>$cval</ser:value>
+                </ser:parameter>
 
-EOT;
+            EOT;
         foreach ($requestData as $key => $value) {
             $value = htmlspecialchars($value, ENT_COMPAT, 'UTF-8');
             $xml .= <<<EOT
-    <ser:parameter key="$key">
-      <ser:value>$value</ser:value>
-    </ser:parameter>
+                    <ser:parameter key="$key">
+                      <ser:value>$value</ser:value>
+                    </ser:parameter>
 
-EOT;
+                EOT;
         }
         $xml .= <<<EOT
-  </ser:parameters>
-  <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$localUbId"
-    patronId="$patronId">
-    <ser:authFactor type="B">$barcode</ser:authFactor>
-  </ser:patronIdentifier>
-</ser:serviceParameters>
-EOT;
+              </ser:parameters>
+              <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$localUbId"
+                patronId="$patronId">
+                <ser:authFactor type="B">$barcode</ser:authFactor>
+              </ser:patronIdentifier>
+            </ser:serviceParameters>
+            EOT;
 
         $response = $this->makeRequest(
             ['SendPatronRequestService' => false],
@@ -2727,23 +2727,23 @@ EOT;
         // type. Additionally, this seems to be mandatory, as PatronRequestService
         // may fail otherwise.
         $xml = <<<EOT
-<?xml version="1.0" encoding="UTF-8"?>
-<ser:serviceParameters
-xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
-  <ser:parameters>
-    <ser:parameter key="bibId">
-      <ser:value>$bibId</ser:value>
-    </ser:parameter>
-    <ser:parameter key="bibDbCode">
-      <ser:value>LOCAL</ser:value>
-    </ser:parameter>
-  </ser:parameters>
-  <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$patronHomeUbId"
-  patronId="$patronId">
-    <ser:authFactor type="B">$barcode</ser:authFactor>
-  </ser:patronIdentifier>
-</ser:serviceParameters>
-EOT;
+            <?xml version="1.0" encoding="UTF-8"?>
+            <ser:serviceParameters
+            xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
+              <ser:parameters>
+                <ser:parameter key="bibId">
+                  <ser:value>$bibId</ser:value>
+                </ser:parameter>
+                <ser:parameter key="bibDbCode">
+                  <ser:value>LOCAL</ser:value>
+                </ser:parameter>
+              </ser:parameters>
+              <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$patronHomeUbId"
+              patronId="$patronId">
+                <ser:authFactor type="B">$barcode</ser:authFactor>
+              </ser:patronIdentifier>
+            </ser:serviceParameters>
+            EOT;
 
         $response = $this->makeRequest(
             ['PatronRequestsService' => false],
@@ -2780,32 +2780,32 @@ EOT;
         }
 
         $xml = <<<EOT
-<?xml version="1.0" encoding="UTF-8"?>
-<ser:serviceParameters
-xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
-  <ser:parameters>
-    <ser:parameter key="bibId">
-      <ser:value>$bibId</ser:value>
-    </ser:parameter>
-    <ser:parameter key="bibDbCode">
-      <ser:value>LOCAL</ser:value>
-    </ser:parameter>
-    <ser:parameter key="bibDbName">
-      <ser:value>$bibDbName</ser:value>
-    </ser:parameter>
-    <ser:parameter key="requestCode">
-      <ser:value>UB</ser:value>
-    </ser:parameter>
-    <ser:parameter key="requestSiteId">
-      <ser:value>$localUbId</ser:value>
-    </ser:parameter>
-  </ser:parameters>
-  <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$patronHomeUbId"
-  patronId="$patronId">
-    <ser:authFactor type="B">$barcode</ser:authFactor>
-  </ser:patronIdentifier>
-</ser:serviceParameters>
-EOT;
+            <?xml version="1.0" encoding="UTF-8"?>
+            <ser:serviceParameters
+            xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
+              <ser:parameters>
+                <ser:parameter key="bibId">
+                  <ser:value>$bibId</ser:value>
+                </ser:parameter>
+                <ser:parameter key="bibDbCode">
+                  <ser:value>LOCAL</ser:value>
+                </ser:parameter>
+                <ser:parameter key="bibDbName">
+                  <ser:value>$bibDbName</ser:value>
+                </ser:parameter>
+                <ser:parameter key="requestCode">
+                  <ser:value>UB</ser:value>
+                </ser:parameter>
+                <ser:parameter key="requestSiteId">
+                  <ser:value>$localUbId</ser:value>
+                </ser:parameter>
+              </ser:parameters>
+              <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$patronHomeUbId"
+              patronId="$patronId">
+                <ser:authFactor type="B">$barcode</ser:authFactor>
+              </ser:patronIdentifier>
+            </ser:serviceParameters>
+            EOT;
 
         $response = $this->makeRequest(
             ['PatronRequestService' => false],
@@ -2995,20 +2995,20 @@ EOT;
         $pickupLib = $this->encodeXML($pickupLib);
 
         $xml = <<<EOT
-<?xml version="1.0" encoding="UTF-8"?>
-<ser:serviceParameters
-xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
-  <ser:parameters>
-    <ser:parameter key="pickupLibId">
-      <ser:value>$pickupLib</ser:value>
-    </ser:parameter>
-  </ser:parameters>
-  <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$patronHomeUbId"
-  patronId="$patronId">
-    <ser:authFactor type="B">$barcode</ser:authFactor>
-  </ser:patronIdentifier>
-</ser:serviceParameters>
-EOT;
+            <?xml version="1.0" encoding="UTF-8"?>
+            <ser:serviceParameters
+            xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
+              <ser:parameters>
+                <ser:parameter key="pickupLibId">
+                  <ser:value>$pickupLib</ser:value>
+                </ser:parameter>
+              </ser:parameters>
+              <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$patronHomeUbId"
+              patronId="$patronId">
+                <ser:authFactor type="B">$barcode</ser:authFactor>
+              </ser:patronIdentifier>
+            </ser:serviceParameters>
+            EOT;
 
         $response = $this->makeRequest(
             ['UBPickupLibService' => false],
@@ -3114,50 +3114,50 @@ EOT;
 
         // Attempt Request
         $xml = <<<EOT
-<?xml version="1.0" encoding="UTF-8"?>
-<ser:serviceParameters
-xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
-  <ser:parameters>
-    <ser:parameter key="bibId">
-      <ser:value>$bibId</ser:value>
-    </ser:parameter>
-    <ser:parameter key="bibDbCode">
-      <ser:value>LOCAL</ser:value>
-    </ser:parameter>
-    <ser:parameter key="bibDbName">
-      <ser:value>$bibDbName</ser:value>
-    </ser:parameter>
-    <ser:parameter key="Select_Library">
-      <ser:value>$localUbId</ser:value>
-    </ser:parameter>
-    <ser:parameter key="requestCode">
-      <ser:value>UB</ser:value>
-    </ser:parameter>
-    <ser:parameter key="requestSiteId">
-      <ser:value>$localUbId</ser:value>
-    </ser:parameter>
-    <ser:parameter key="itemId">
-      <ser:value>$itemId</ser:value>
-    </ser:parameter>
-    <ser:parameter key="Select_Pickup_Lib">
-      <ser:value>$pickupLibrary</ser:value>
-    </ser:parameter>
-    <ser:parameter key="PICK">
-      <ser:value>$pickupLocation</ser:value>
-    </ser:parameter>
-    <ser:parameter key="REQNNA">
-      <ser:value>$lastInterestDate</ser:value>
-    </ser:parameter>
-    <ser:parameter key="REQCOMMENTS">
-      <ser:value>$comment</ser:value>
-    </ser:parameter>
-  </ser:parameters>
-  <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$ubId"
-  patronId="$patronId">
-    <ser:authFactor type="B">$barcode</ser:authFactor>
-  </ser:patronIdentifier>
-</ser:serviceParameters>
-EOT;
+            <?xml version="1.0" encoding="UTF-8"?>
+            <ser:serviceParameters
+            xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
+              <ser:parameters>
+                <ser:parameter key="bibId">
+                  <ser:value>$bibId</ser:value>
+                </ser:parameter>
+                <ser:parameter key="bibDbCode">
+                  <ser:value>LOCAL</ser:value>
+                </ser:parameter>
+                <ser:parameter key="bibDbName">
+                  <ser:value>$bibDbName</ser:value>
+                </ser:parameter>
+                <ser:parameter key="Select_Library">
+                  <ser:value>$localUbId</ser:value>
+                </ser:parameter>
+                <ser:parameter key="requestCode">
+                  <ser:value>UB</ser:value>
+                </ser:parameter>
+                <ser:parameter key="requestSiteId">
+                  <ser:value>$localUbId</ser:value>
+                </ser:parameter>
+                <ser:parameter key="itemId">
+                  <ser:value>$itemId</ser:value>
+                </ser:parameter>
+                <ser:parameter key="Select_Pickup_Lib">
+                  <ser:value>$pickupLibrary</ser:value>
+                </ser:parameter>
+                <ser:parameter key="PICK">
+                  <ser:value>$pickupLocation</ser:value>
+                </ser:parameter>
+                <ser:parameter key="REQNNA">
+                  <ser:value>$lastInterestDate</ser:value>
+                </ser:parameter>
+                <ser:parameter key="REQCOMMENTS">
+                  <ser:value>$comment</ser:value>
+                </ser:parameter>
+              </ser:parameters>
+              <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$ubId"
+              patronId="$patronId">
+                <ser:authFactor type="B">$barcode</ser:authFactor>
+              </ser:patronIdentifier>
+            </ser:serviceParameters>
+            EOT;
 
         $response = $this->makeRequest(
             ['SendPatronRequestService' => false],
@@ -3383,22 +3383,22 @@ EOT;
         $barcode = htmlspecialchars($patron['cat_username'], ENT_COMPAT, 'UTF-8');
 
         $xml = <<<EOT
-<?xml version="1.0" encoding="UTF-8"?>
-<ser:serviceParameters
-xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
-   <ser:parameters>
-      <ser:parameter key="oldPatronPIN">
-         <ser:value>$oldPIN</ser:value>
-      </ser:parameter>
-      <ser:parameter key="newPatronPIN">
-         <ser:value>$newPIN</ser:value>
-      </ser:parameter>
-   </ser:parameters>
-   <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$ubId" patronId="$id">
-      <ser:authFactor type="B">$barcode</ser:authFactor>
-   </ser:patronIdentifier>
-</ser:serviceParameters>
-EOT;
+            <?xml version="1.0" encoding="UTF-8"?>
+            <ser:serviceParameters
+            xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
+               <ser:parameters>
+                  <ser:parameter key="oldPatronPIN">
+                     <ser:value>$oldPIN</ser:value>
+                  </ser:parameter>
+                  <ser:parameter key="newPatronPIN">
+                     <ser:value>$newPIN</ser:value>
+                  </ser:parameter>
+               </ser:parameters>
+               <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$ubId" patronId="$id">
+                  <ser:authFactor type="B">$barcode</ser:authFactor>
+               </ser:patronIdentifier>
+            </ser:serviceParameters>
+            EOT;
 
         $result = $this->makeRequest(
             ['ChangePINService' => false],

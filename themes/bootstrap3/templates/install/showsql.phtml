@@ -24,9 +24,9 @@
 
 <?php
 $script = <<<JS
-$('#sql_text').click(function(e) {
-  this.select();  
-});
-JS;
+    $('#sql_text').click(function(e) {
+      this.select();  
+    });
+    JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');

@@ -195,19 +195,19 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
                 ) {
                     $this->error(
                         <<<EOT
-Voyager connection is only supported on PHP 7 by default. To enable support, you
-will need to manually update the yajra/laravel-pdo-via-oci8 package using the
-following command:
+                            Voyager connection is only supported on PHP 7 by default. To enable support, you
+                            will need to manually update the yajra/laravel-pdo-via-oci8 package using the
+                            following command:
 
-php [path/to/]composer.phar update yajra/laravel-pdo-via-oci8 --ignore-platform-reqs
+                            php [path/to/]composer.phar update yajra/laravel-pdo-via-oci8 --ignore-platform-reqs
 
-Then force the Voyager driver to connect by adding the following setting to
-Voyager.ini or VoyagerRestful.ini:
+                            Then force the Voyager driver to connect by adding the following setting to
+                            Voyager.ini or VoyagerRestful.ini:
 
-[Catalog]
-forceOCI8Support = true
+                            [Catalog]
+                            forceOCI8Support = true
 
-EOT
+                            EOT
                     );
                     throw new ILSException('Unsupported PHP version');
                 }
@@ -649,12 +649,12 @@ EOT
     {
         // Expressions
         $returnDate = <<<EOT
-CASE WHEN ITEM_STATUS_TYPE.ITEM_STATUS_DESC = 'Discharged' THEN (
-  SELECT TO_CHAR(MAX(CIRC_TRANS_ARCHIVE.DISCHARGE_DATE), 'MM-DD-YY HH24:MI')
-    FROM $this->dbName.CIRC_TRANS_ARCHIVE
-    WHERE CIRC_TRANS_ARCHIVE.ITEM_ID = ITEM.ITEM_ID
-) ELSE NULL END RETURNDATE
-EOT;
+            CASE WHEN ITEM_STATUS_TYPE.ITEM_STATUS_DESC = 'Discharged' THEN (
+              SELECT TO_CHAR(MAX(CIRC_TRANS_ARCHIVE.DISCHARGE_DATE), 'MM-DD-YY HH24:MI')
+                FROM $this->dbName.CIRC_TRANS_ARCHIVE
+                WHERE CIRC_TRANS_ARCHIVE.ITEM_ID = ITEM.ITEM_ID
+            ) ELSE NULL END RETURNDATE
+            EOT;
         $sqlExpressions = [
             "BIB_ITEM.BIB_ID", "MFHD_ITEM.MFHD_ID",
             "ITEM_BARCODE.ITEM_BARCODE", "ITEM.ITEM_ID",

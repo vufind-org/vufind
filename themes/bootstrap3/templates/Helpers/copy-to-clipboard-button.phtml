@@ -8,25 +8,25 @@
 </p>
 <?php
 $script = <<<JS
-  $(document).ready(function copyToClipboard() {
-    if (navigator.clipboard) {
-      const button = $("#copyToClipboard${buttonNumber}");
-      button.removeClass('hidden');
-      button.click(function copyToClipboard() {
-        navigator.clipboard.writeText($('${selector}').text()).then(
-            function copySuccess() {
-                $("#copyFailureMessage${buttonNumber}").addClass("hidden");
-                $("#copySuccessMessage${buttonNumber}").removeClass("hidden");
-            },
-            function copyFailure() {
-                $("#copySuccessMessage${buttonNumber}").addClass("hidden");
-                $("#copyFailureMessage${buttonNumber}").removeClass("hidden");
-            }
-        );
+      $(document).ready(function copyToClipboard() {
+        if (navigator.clipboard) {
+          const button = $("#copyToClipboard${buttonNumber}");
+          button.removeClass('hidden');
+          button.click(function copyToClipboard() {
+            navigator.clipboard.writeText($('${selector}').text()).then(
+                function copySuccess() {
+                    $("#copyFailureMessage${buttonNumber}").addClass("hidden");
+                    $("#copySuccessMessage${buttonNumber}").removeClass("hidden");
+                },
+                function copyFailure() {
+                    $("#copySuccessMessage${buttonNumber}").addClass("hidden");
+                    $("#copyFailureMessage${buttonNumber}").removeClass("hidden");
+                }
+            );
+          });
+        }
       });
-    }
-  });
-JS;
+    JS;
 // Inline the script for lightbox compatibility
 echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');
 ?>

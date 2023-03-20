@@ -88,13 +88,13 @@
       $cspNonce = $this->cspNonce();
       $searchId = json_encode($this->layout()->searchId);
       $appendScripts[] = <<<JS
-VuFind.path = '{$root}';
-VuFind.defaultSearchBackend = '{$dsb}';
-VuFind.addTranslations({$translations});
-VuFind.addIcons({$icons});
-VuFind.setCspNonce('{$cspNonce}');
-VuFind.setCurrentSearchId($searchId);
-JS;
+          VuFind.path = '{$root}';
+          VuFind.defaultSearchBackend = '{$dsb}';
+          VuFind.addTranslations({$translations});
+          VuFind.addIcons({$icons});
+          VuFind.setCspNonce('{$cspNonce}');
+          VuFind.setCurrentSearchId($searchId);
+          JS;
       $this->headScript()->appendScript(implode("\n", $appendScripts));
 
       if ($this->config()->ajaxCoversEnabled()) {

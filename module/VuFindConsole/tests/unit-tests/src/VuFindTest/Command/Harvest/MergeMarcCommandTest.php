@@ -76,20 +76,20 @@ class MergeMarcCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester->execute(compact('directory'));
         $xmlns = MergeMarcCommand::MARC21_NAMESPACE;
         $expected = <<<EXPECTED
-<marc:collection xmlns:marc="$xmlns">
-<!-- $directory/a.xml -->
-<marc:record id="a"/>
-<!-- $directory/b.xml -->
-<marc:record xmlns="http://www.loc.gov/MARC21/slim" id="b"/>
-<!-- $directory/c.xml -->
-<marc:record id="c"/>
-<marc:record id="d"/>
-<!-- $directory/d.xml -->
-<marc:record id="e"/>
-<marc:record id="f"/>
-</marc:collection>
+            <marc:collection xmlns:marc="$xmlns">
+            <!-- $directory/a.xml -->
+            <marc:record id="a"/>
+            <!-- $directory/b.xml -->
+            <marc:record xmlns="http://www.loc.gov/MARC21/slim" id="b"/>
+            <!-- $directory/c.xml -->
+            <marc:record id="c"/>
+            <marc:record id="d"/>
+            <!-- $directory/d.xml -->
+            <marc:record id="e"/>
+            <marc:record id="f"/>
+            </marc:collection>
 
-EXPECTED;
+            EXPECTED;
         $this->assertEquals($expected, $commandTester->getDisplay());
         $this->assertEquals(0, $commandTester->getStatusCode());
     }

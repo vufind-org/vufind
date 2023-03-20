@@ -450,11 +450,11 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
         $cookieConsent = $this->getView()->plugin('cookieConsent');
         $pageUrl = $escape($this->getPageUrl());
         $code = <<<EOT
-var _paq = window._paq = window._paq || [];
-_paq.push(['enableLinkTracking']);
-_paq.push(['setCustomUrl', '$pageUrl']);
+            var _paq = window._paq = window._paq || [];
+            _paq.push(['enableLinkTracking']);
+            _paq.push(['setCustomUrl', '$pageUrl']);
 
-EOT;
+            EOT;
         if ($this->disableCookies) {
             $code .= "_paq.push(['disableCookies']);\n";
         } elseif ($cookieConsent->isEnabled()) {
@@ -475,19 +475,19 @@ EOT;
         $trackerUrl = $escape($this->getTrackerUrl());
         $url = $escape($this->getTrackerJsUrl());
         return <<<EOT
-(function() {
-  var d=document;
-  if (!d.getElementById('_matomo_js_script')) {
-    _paq.push(['setTrackerUrl', '$trackerUrl']);
-    _paq.push(['setSiteId', {$this->siteId}]);
-    var g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-    g.type='text/javascript'; g.async=true; g.src='$url';
-    g.id = '_matomo_js_script';
-    s.parentNode.insertBefore(g,s);
-  }
-})();
+            (function() {
+              var d=document;
+              if (!d.getElementById('_matomo_js_script')) {
+                _paq.push(['setTrackerUrl', '$trackerUrl']);
+                _paq.push(['setSiteId', {$this->siteId}]);
+                var g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+                g.type='text/javascript'; g.async=true; g.src='$url';
+                g.id = '_matomo_js_script';
+                s.parentNode.insertBefore(g,s);
+              }
+            })();
 
-EOT;
+            EOT;
     }
 
     /**
@@ -527,9 +527,9 @@ EOT;
 
         $escape = $this->getView()->plugin('escapejs');
         $code = <<<EOT
-_paq.push(['deleteCustomVariables','page']);
+            _paq.push(['deleteCustomVariables','page']);
 
-EOT;
+            EOT;
         $i = 0;
         foreach ($customData as $key => $value) {
             ++$i;
@@ -540,9 +540,9 @@ EOT;
             }
             $value = $escape($value);
             $code .= <<<EOT
-_paq.push(['setCustomVariable',$i,'$key','$value','page']);
+                _paq.push(['setCustomVariable',$i,'$key','$value','page']);
 
-EOT;
+                EOT;
         }
         return $code;
     }
@@ -663,26 +663,26 @@ EOT;
                     $title = $escape($driver->getBreadcrumb());
                     $titleJs = "var title = '$title';";
                     $titleJs .= <<<EOT
-var a = document.querySelector('.record-tabs ul.nav-tabs li.active a');
-if (a) { title = a.innerText + (title ? ': ' + title : ''); }
+                        var a = document.querySelector('.record-tabs ul.nav-tabs li.active a');
+                        if (a) { title = a.innerText + (title ? ': ' + title : ''); }
 
-EOT;
+                        EOT;
                 }
                 break;
             case 'lightbox':
                 $titleJs .= <<<EOT
-var h = document.getElementsByClassName('lightbox-header');
-if (h[0]) title = h[0].innerText;
+                    var h = document.getElementsByClassName('lightbox-header');
+                    if (h[0]) title = h[0].innerText;
 
-EOT;
+                    EOT;
                 break;
         }
 
         return <<<EOT
-$titleJs
-_paq.push(['trackPageView', title, $dimensions]);
+            $titleJs
+            _paq.push(['trackPageView', title, $dimensions]);
 
-EOT;
+            EOT;
     }
 
     /**
