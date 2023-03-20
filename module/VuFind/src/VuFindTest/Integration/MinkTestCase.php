@@ -382,7 +382,8 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $results = $page->findAll('css', $selector);
         $this->assertIsArray($results, "Selector not found: $selector");
         $result = $results[$index] ?? null;
-        $this->assertIsObject($result,
+        $this->assertIsObject(
+            $result,
             "Element not found: $selector index $index"
         );
         return $result;
