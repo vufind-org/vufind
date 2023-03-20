@@ -9,9 +9,9 @@
     . '<li class="active">' . $this->transEsc('Text this') . '</li>';
 ?>
 <?php $validatorCallback = <<<JS
-      function phoneNumberValidation() {
-        return phoneNumberFormHandler('sms_to', '{$this->validation}');
-      }
+    function phoneNumberValidation() {
+      return phoneNumberFormHandler('sms_to', '{$this->validation}');
+    }
     JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $validatorCallback, 'SET'); ?>

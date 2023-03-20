@@ -86,42 +86,42 @@
         <input type="text" name="PublicationDateto" id="PublicationDateto" value="<?=$this->escapeHtmlAttr($this->dateRangeLimit[1])?>" class="form-control"/>
       </div>
     </div>
-      <div class="slider-container">
-        <input type="text" id="PublicationDateSlider">
-      </div>
-      <?php
-        $this->headScript()->appendFile('vendor/bootstrap-slider.min.js');
-        $this->headLink()->appendStylesheet('vendor/bootstrap-slider.min.css');
-        $min = !empty($current['values'][0]) ? min($current['values'][0], 1400) : 1400;
-        $future = date('Y', time() + 31536000);
-        $max = !empty($current['values'][1]) ? max($future, $current['values'][1]) : $future;
-        $low = !empty($current['values'][0]) ? $current['values'][0] : $min;
-        $high = !empty($current['values'][1]) ? $current['values'][1] : $max;
-        $min = intval($min);
-        $max = intval($max);
-        $low = intval($low);
-        $high = intval($high);
-        $init = !empty($current['values'][0]) ? 'fillTexts()' : '';
-        $script = <<<JS
-            $(document).ready(function() {
-              var fillTexts = function() {
-                var v = PublicationDateSlider.getValue();
-                $('#PublicationDatefrom').val(v[0]);
-                $('#PublicationDateto').val(v[1]);
-              };
-              var PublicationDateSlider = $('#PublicationDateSlider')
-                .slider({
-                   'min':{$min},
-                   'max':{$max},
-                   'handle':"square",
-                   'tooltip':"hide",
-                   'value':[{$low},{$high}]
-                })
-                .on('change', fillTexts)
-                .data('slider');
-              {$init}
-            });
-            JS;
+    <div class="slider-container">
+      <input type="text" id="PublicationDateSlider">
+    </div>
+    <?php
+      $this->headScript()->appendFile('vendor/bootstrap-slider.min.js');
+      $this->headLink()->appendStylesheet('vendor/bootstrap-slider.min.css');
+      $min = !empty($current['values'][0]) ? min($current['values'][0], 1400) : 1400;
+      $future = date('Y', time() + 31536000);
+      $max = !empty($current['values'][1]) ? max($future, $current['values'][1]) : $future;
+      $low = !empty($current['values'][0]) ? $current['values'][0] : $min;
+      $high = !empty($current['values'][1]) ? $current['values'][1] : $max;
+      $min = intval($min);
+      $max = intval($max);
+      $low = intval($low);
+      $high = intval($high);
+      $init = !empty($current['values'][0]) ? 'fillTexts()' : '';
+      $script = <<<JS
+          $(document).ready(function() {
+            var fillTexts = function() {
+              var v = PublicationDateSlider.getValue();
+              $('#PublicationDatefrom').val(v[0]);
+              $('#PublicationDateto').val(v[1]);
+            };
+            var PublicationDateSlider = $('#PublicationDateSlider')
+              .slider({
+                  'min':{$min},
+                  'max':{$max},
+                  'handle':"square",
+                  'tooltip':"hide",
+                  'value':[{$low},{$high}]
+              })
+              .on('change', fillTexts)
+              .data('slider');
+            {$init}
+          });
+          JS;
     ?>
     <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
   </fieldset>
