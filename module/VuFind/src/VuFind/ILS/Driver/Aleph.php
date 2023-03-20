@@ -1185,7 +1185,7 @@ class Aleph extends AbstractBase implements
         } else {
             $profile = $this->getMyProfileDLF($user);
         }
-        $profile['cat_username'] = $profile['cat_username'] ?? $user['id'];
+        $profile['cat_username'] ??= $user['id'];
         return $profile;
     }
 

@@ -107,7 +107,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         Options $options = null,
         PluginManager $mockConfig = null
     ): Params {
-        $mockConfig = $mockConfig ?? $this->createMock(PluginManager::class);
+        $mockConfig ??= $this->createMock(PluginManager::class);
         return new Params(
             $options ?? new Options($mockConfig),
             $mockConfig

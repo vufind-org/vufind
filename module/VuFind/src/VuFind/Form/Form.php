@@ -182,7 +182,7 @@ class Form extends \Laminas\Form\Form implements
      */
     public function getDisplayString($translationKey, $escape = null)
     {
-        $escape = $escape ?? substr($translationKey, -5) !== '_html';
+        $escape ??= substr($translationKey, -5) !== '_html';
         $helper = $this->viewHelperManager->get($escape ? 'transEsc' : 'translate');
         return $helper($translationKey);
     }
@@ -265,11 +265,8 @@ class Form extends \Laminas\Form\Form implements
             ? [$recipient] : $recipient;
 
         foreach ($recipients as &$recipient) {
-            $recipient['email'] = $recipient['email']
-                ?? $this->defaultFormConfig['recipient_email'] ?? null;
-
-            $recipient['name'] = $recipient['name']
-                ?? $this->defaultFormConfig['recipient_name'] ?? null;
+            $recipient['email'] ??= $this->defaultFormConfig['recipient_email'] ?? null;
+            $recipient['name'] ??= $this->defaultFormConfig['recipient_name'] ?? null;
         }
 
         return $recipients;

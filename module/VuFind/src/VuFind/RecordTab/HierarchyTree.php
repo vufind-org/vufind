@@ -174,7 +174,7 @@ class HierarchyTree extends AbstractBase
      */
     public function renderTree($baseUrl, $id = null, $context = 'Record')
     {
-        $id = $id ?? $this->getActiveTree();
+        $id ??= $this->getActiveTree();
         $recordDriver = $this->getRecordDriver();
         $hierarchyDriver = $recordDriver->tryMethod('getHierarchyDriver');
         if (is_object($hierarchyDriver)) {
