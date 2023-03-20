@@ -873,8 +873,7 @@ class XCNCIP2 extends AbstractBase implements
                         if (!isset($status[$bibId])) {
                             $status[$bibId] = [];
                         }
-                        $chunk['location'] = $chunk['location']
-                            ?? $holdingLocation ?? null;
+                        $chunk['location'] ??= $holdingLocation ?? null;
                         $status[$bibId][] = $chunk;
                     }
                 }
@@ -972,8 +971,7 @@ class XCNCIP2 extends AbstractBase implements
                     $chunk['callnumber'] = empty($chunk['callnumber']) ?
                         $holdCallNo : $chunk['callnumber'];
                     $chunk['eresource'] = $eResource;
-                    $chunk['location'] = $chunk['location']
-                        ?? $holdingLocation ?? null;
+                    $chunk['location'] ??= $holdingLocation ?? null;
                     if (
                         !isset($chunk['collection_desc'])
                         && !empty($collection)
@@ -1438,7 +1436,7 @@ class XCNCIP2 extends AbstractBase implements
             if (isset($address[2])) {
                 $address2 .= ', ' . $address[2];
             }
-            $zip = $zip ?? $address[3] ?? null;
+            $zip ??= $address[3] ?? null;
         }
 
         $expirationDate = $response->xpath(

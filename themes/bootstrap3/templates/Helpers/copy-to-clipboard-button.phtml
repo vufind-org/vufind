@@ -1,5 +1,5 @@
 <?php
-  $buttonNumber = $buttonNumber ?? bin2hex(random_bytes(5));
+  $buttonNumber ??= bin2hex(random_bytes(5));
 ?>
 <p>
     <button type="button" id="copyToClipboard<?=$buttonNumber?>" class="btn btn-primary hidden" role="button" tabindex="0"><?=$this->translate("copy_to_clipboard_button_label")?></button>

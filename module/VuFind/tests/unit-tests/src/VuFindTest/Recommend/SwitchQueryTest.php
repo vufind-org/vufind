@@ -193,7 +193,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
      */
     protected function getSwitchQuery($results = null, $settings = '', $bm = null)
     {
-        $results = $results ?? $this->getMockResults();
+        $results ??= $this->getMockResults();
         $sq = new SwitchQuery(
             $this->getSearchService($bm ?? $this->getMockBackendManager())
         );
