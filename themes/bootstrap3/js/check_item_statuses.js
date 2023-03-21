@@ -190,7 +190,10 @@ VuFind.register('itemStatuses', function ItemStatuses() {
     el.classList.add("js-item-pending");
     el.classList.remove("hidden");
     el.querySelector(".callnumAndLocation").classList.remove("hidden");
-    el.querySelector(".callnumAndLocation .ajax-availability").classList.remove("hidden");
+    el.querySelectorAll(".callnumAndLocation .ajax-availability").forEach(
+      (ajaxEl) => ajaxEl.classList.remove("hidden")
+    );
+
     const statusEl = el.querySelector(".status");
     if (statusEl) {
       statusEl.classList.remove("hidden");
