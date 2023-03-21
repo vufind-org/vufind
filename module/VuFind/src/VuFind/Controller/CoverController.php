@@ -88,9 +88,20 @@ class CoverController extends \Laminas\Mvc\Controller\AbstractActionController
     protected function getImageParams()
     {
         $params = $this->params();  // shortcut for readability
+        $isbn = null;
+        foreach (['isbns', 'isbn', 'isn'] as $identification) {
+            $isbn = $params()->fromQuery($identification);
+            if (empty($isbn)) {
+                continue;
+            }
+            if (is_array($isbn)) {
+                $isbn = reset($isbn);
+            }
+            break;
+        }
         return [
             // Legacy support for "isn" param which has been superseded by isbn:
-            'isbn' => $params()->fromQuery('isbn') ?: $params()->fromQuery('isn'),
+            'isbn' => $isbn,
             'size' => $params()->fromQuery('size'),
             'type' => $params()->fromQuery('contenttype'),
             'title' => $params()->fromQuery('title'),
