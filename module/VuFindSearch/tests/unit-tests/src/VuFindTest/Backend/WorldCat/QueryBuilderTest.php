@@ -54,12 +54,14 @@ class QueryBuilderTest extends TestCase
     {
         // Set up an array of expected inputs (serialized objects) and outputs
         // (queries):
-        // @codingStandardsIgnoreStart
         $tests = [
             ['basic', '(srw.au all "john smith" OR srw.pn all "john smith" OR srw.cn all "john smith")'],
-            ['advanced', '((srw.ti all "bananas" OR srw.se all "bananas")) AND ((srw.su all "oranges") OR (srw.su all "apples")) NOT (((srw.se all "pears")))'],
+            [
+                'advanced',
+                '((srw.ti all "bananas" OR srw.se all "bananas")) AND ((srw.su all "oranges") OR (srw.su all "apples"))'
+                . ' NOT (((srw.se all "pears")))',
+            ],
         ];
-        // @codingStandardsIgnoreEnd
 
         $qb = new QueryBuilder();
         foreach ($tests as $test) {

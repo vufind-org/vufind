@@ -52,7 +52,6 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     public function testNormalization()
     {
         // Set up an array of expected inputs and outputs:
-        // @codingStandardsIgnoreStart
         $tests = [
             ["", "*:*"],                         // empty query
             ["()", "*:*"],                       // empty parens
@@ -92,7 +91,6 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
             // properly escaped floating braces/brackets:
             ['a:{a TO b} \[ \}', 'a:{a TO b} \[ \}'],
         ];
-        // @codingStandardsIgnoreEnd
 
         $qb = new QueryBuilder();
         foreach ($tests as $test) {
@@ -112,7 +110,6 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     protected function getQuestionTests()
     {
         // Format: [input, expected output, flags array]
-        // @codingStandardsIgnoreStart
         return [
             // trailing question mark:
             ['this?', '(this?) OR (this\?)', []],
@@ -138,7 +135,6 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
             // this does not contain any syntax unsupported by basic Dismax):
             ['"this? that?"', '"this? that?"', ['basic' => true]],
         ];
-        // @codingStandardsIgnoreEnd
     }
 
     /**
