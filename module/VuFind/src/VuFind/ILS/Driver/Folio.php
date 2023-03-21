@@ -1936,7 +1936,7 @@ class Folio extends AbstractAPI implements
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getNewItems($page, $limit, $daysOld, $fundID = null)
+    public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
         return [];
     }
