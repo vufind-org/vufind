@@ -1898,7 +1898,8 @@ class Alma extends AbstractBase implements
      *
      * @return array with key = course ID, value = course name
      */
-    public function getFunds() {
+    public function getFunds()
+    {
         // TODO: implement me!
         // https://developers.exlibrisgroup.com/alma/apis/acq
         // GET /almaws/v1/acq/funds

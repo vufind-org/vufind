@@ -1850,15 +1850,18 @@ class Folio extends AbstractAPI implements
         return $results;
     }
 
-    /** NOT FINISHED BELOW THIS LINE **/
+    /**
+     * NOT FINISHED BELOW THIS LINE
+     **/
 
     /**
      * Check for request blocks.
      *
      * @param array $patron The patron array with username and password
      *
-     * @return array|boolean    An array of block messages or false if there are no
-     *                          blocks
+     * @return array|bool An array of block messages or false if there are no blocks
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getRequestBlocks($patron)
     {
@@ -1866,16 +1869,18 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * This method returns information on recently received issues of a serial.
+     * Get Purchase History Data
      *
-     *     Input: Bibliographic record ID
-     *     Output: Array of associative arrays, each with a single key:
-     *         issue - String describing the issue
+     * This is responsible for retrieving the acquisitions history data for the
+     * specific record (usually recently received issues of a serial). It is used
+     * by getHoldings() and getPurchaseHistory() depending on whether the purchase
+     * history is displayed by holdings or in a separate list.
      *
-     * Currently, most drivers do not implement this method, instead always returning
-     * an empty array. It is only necessary to implement this in more detail if you
-     * want to populate the “Most Recent Received Issues” section of the record
-     * holdings tab.
+     * @param string $bibID The record id to retrieve the info for
+     *
+     * @return array An array with the acquisitions data on success.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPurchaseHistory($bibID)
     {
@@ -1883,23 +1888,11 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Get a list of funds that can be used to limit the “new item” search. Note that
-     * “fund” may be a misnomer – if funds are not an appropriate way to limit your
-     * new item results, you can return a different set of values from this function.
-     * For example, you might just make this a wrapper for getDepartments(). The
-     * important thing is that whatever you return from this function, the IDs can be
-     * used as a limiter to the getNewItems() function, and the names are appropriate
-     * for display on the new item search screen. If you do not want or support such
-     * limits, just return an empty array here and the limit control on the new item
-     * search screen will disappear.
+     * Get Funds
      *
-     *     Output: An associative array with key = fund ID, value = fund name.
+     * Return a list of funds which may be used to limit the getNewItems list.
      *
-     * IMPORTANT: The return value for this method changed in r2184. If you are using
-     * VuFind 1.0RC2 or earlier, this function returns a flat array of options
-     * (no ID-based keys), and empty return values may cause problems. It is
-     * recommended that you update to newer code before implementing the new item
-     * feature in your driver.
+     * @return array An associative array with key = fund ID, value = fund name.
      */
     public function getFunds()
     {
@@ -1907,69 +1900,41 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * This method retrieves a patron's historic transactions
-     * (previously checked out items).
+     * Get Patron Loan History
      *
-     * :!: The getConfig method must return a non-false value for this feature to be
-     * enabled. For privacy reasons, the entire feature should be disabled by default
-     * unless explicitly turned on in the driver's .ini file.
+     * This is responsible for retrieving all historic loans (i.e. items previously
+     * checked out and then returned), for a specific patron.
      *
-     * This feature was added in VuFind 5.0.
+     * @param array $patron The patron array from patronLogin
+     * @param array $params Parameters
      *
-     *     getConfig may return the following keys if the service supports paging on
-     * the ILS side:
-     *         max_results - Maximum number of results that can be requested at once.
-     * Overrides the config.ini Catalog section setting historic_loan_page_size.
-     *         page_size - An array of allowed page sizes
-     * (number of records per page)
-     *         default_page_size - Default number of records per page
-     *     getConfig may return the following keys if the service supports sorting:
-     *         sort - An associative array where each key is a sort key and its
-     * value is a translation key
-     *         default_sort - Default sort key
-     *     Input: Patron array returned by patronLogin method and an array of
-     * optional parameters (keys = 'limit', 'page', 'sort').
-     *     Output: Returns an array of associative arrays containing some or all of
-     * these keys:
-     *         title - item title
-     *         checkoutDate - date checked out
-     *         dueDate - date due
-     *         id - bibliographic ID
-     *         barcode - item barcode
-     *         returnDate - date returned
-     *         publication_year - publication year
-     *         volume - item volume
-     *         institution_name - owning institution
-     *         borrowingLocation - checkout location
-     *         message - message about the transaction
+     * @return array Array of the patron's transactions on success.
      *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getMyTransactionHistory($patron)
+    public function getMyTransactionHistory($patron, $params)
     {
         return[];
     }
 
     /**
-     * This method queries the ILS for new items
+     * Get New Items
      *
-     *     Input: getNewItems takes the following parameters:
-     *         page - page number of results to retrieve (counting starts at 1)
-     *         limit - the size of each page of results to retrieve
-     *         daysOld - the maximum age of records to retrieve in days (maximum 30)
-     *         fundID - optional fund ID to use for limiting results (use a value
-     * returned by getFunds, or exclude for no limit); note that “fund” may be a
-     * misnomer – if funds are not an appropriate way to limit your new item results,
-     * you can return a different set of values from getFunds. The important thing is
-     * that this parameter supports an ID returned by getFunds, whatever that may
-     * mean.
-     *     Output: An associative array with two keys: 'count' (the number of items
-     * in the 'results' array) and 'results' (an array of associative arrays, each
-     * with a single key: 'id', a record ID).
+     * Retrieve the IDs of items recently added to the catalog.
      *
-     * IMPORTANT: The fundID parameter changed behavior in r2184. In VuFind 1.0RC2
-     * and earlier versions, it receives one of the VALUES returned by getFunds();
-     * in more recent code, it receives one of the KEYS from getFunds(). See getFunds
-     * for additional notes.
+     * @param int $page    Page number of results to retrieve (counting starts at 1)
+     * @param int $limit   The size of each page of results to retrieve
+     * @param int $daysOld The maximum age of records to retrieve in days (max. 30)
+     * @param int $fundId  optional fund ID to use for limiting results (use a value
+     * returned by getFunds, or exclude for no limit); note that "fund" may be a
+     * misnomer - if funds are not an appropriate way to limit your new item
+     * results, you can return a different set of values from getFunds. The
+     * important thing is that this parameter supports an ID returned by getFunds,
+     * whatever that may mean.
+     *
+     * @return array Associative array with 'count' and 'results' keys
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getNewItems($page, $limit, $daysOld, $fundID = null)
     {
