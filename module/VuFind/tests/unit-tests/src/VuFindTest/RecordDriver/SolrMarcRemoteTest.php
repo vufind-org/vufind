@@ -82,7 +82,7 @@ class SolrMarcRemoteTest extends \PHPUnit\Framework\TestCase
         $driver = $this->getDriver();
         $driver->setHttpService($this->getMockHttpService());
         $driver->setRawData(['id' => 1]);
-        $this->assertEquals(4, count($driver->getTOC()));
+        $this->assertCount(4, $driver->getTOC());
     }
 
     /**

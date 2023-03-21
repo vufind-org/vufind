@@ -79,6 +79,6 @@ class SymphonyTest extends \PHPUnit\Framework\TestCase
         );
         $this->driver->init();
         $pickup = @$this->driver->getPickUpLocations();
-        $this->assertTrue(empty($pickup));
+        $this->assertEmpty($pickup);
     }
 }

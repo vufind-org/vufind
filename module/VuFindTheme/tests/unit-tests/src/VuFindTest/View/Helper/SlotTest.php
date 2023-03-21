@@ -51,7 +51,7 @@ class SlotTest extends \PHPUnit\Framework\TestCase
     {
         $helper = $this->getHelper();
         $ret = $helper('test');
-        $this->assertTrue($ret instanceof Slot);
+        $this->assertInstanceOf(Slot::class, $ret);
     }
 
     /**

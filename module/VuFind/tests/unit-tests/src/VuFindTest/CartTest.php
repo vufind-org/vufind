@@ -265,7 +265,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
     public function testVF1Cookie()
     {
         $cart = $this->getCart(100, true, ['vufind_cart' => "a\tb\tc"]);
-        $this->assertEquals(3, count($cart->getItems()));
+        $this->assertCount(3, $cart->getItems());
         $this->assertTrue($cart->contains('Solr|a'));
         $this->assertTrue($cart->contains('Solr|b'));
         $this->assertTrue($cart->contains('Solr|c'));
@@ -283,7 +283,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
             'vufind_cart_src' => "Solr\tSummon\tWorldCat",
         ];
         $cart = $this->getCart(100, true, $cookies);
-        $this->assertEquals(3, count($cart->getItems()));
+        $this->assertCount(3, $cart->getItems());
         $this->assertTrue($cart->contains('Solr|a'));
         $this->assertTrue($cart->contains('Summon|b'));
         $this->assertTrue($cart->contains('WorldCat|c'));

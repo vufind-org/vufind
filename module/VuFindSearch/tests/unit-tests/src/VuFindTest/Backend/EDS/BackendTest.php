@@ -163,10 +163,10 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(65924, $coll->getTotal());
         $this->assertEquals(0, $coll->getOffset());
         $rawFacets = $coll->getRawFacets();
-        $this->assertEquals(7, count($rawFacets));
+        $this->assertCount(7, $rawFacets);
         $this->assertEquals('SourceType', $rawFacets[0]['Id']);
         $this->assertEquals('Source Type', $rawFacets[0]['Label']);
-        $this->assertEquals(8, count($rawFacets[0]['AvailableFacetValues']));
+        $this->assertCount(8, $rawFacets[0]['AvailableFacetValues']);
         $expected = ['Value' => 'News', 'Count' => '12055', 'AddAction' => 'addfacetfilter(SourceType:News)'];
         $this->assertEquals($expected, $rawFacets[0]['AvailableFacetValues'][0]);
         $facets = $coll->getFacets();

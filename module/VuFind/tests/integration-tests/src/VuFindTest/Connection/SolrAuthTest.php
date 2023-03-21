@@ -71,6 +71,6 @@ class SolrAuthTest extends \PHPUnit\Framework\TestCase
         // Search for a term known to exist in the sample data; request just one
         // record -- we should get a single record back.
         $result = $solr->search(new Query('Dublin Society', 'AllFields'), 0, 1);
-        $this->assertEquals(1, count($result));
+        $this->assertCount(1, $result);
     }
 }

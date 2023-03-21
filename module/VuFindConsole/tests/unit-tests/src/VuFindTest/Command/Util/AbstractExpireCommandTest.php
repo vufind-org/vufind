@@ -138,7 +138,7 @@ class AbstractExpireCommandTest extends \PHPUnit\Framework\TestCase
         // The response contains date stamps that will vary every time the test
         // runs, so let's split things apart to work around that...
         $parts = explode("\n", trim($response));
-        $this->assertEquals(3, count($parts));
+        $this->assertCount(3, $parts);
         $this->assertEquals(
             "1000 {$this->rowLabel} deleted.",
             explode('] ', $parts[0])[1]
@@ -175,7 +175,7 @@ class AbstractExpireCommandTest extends \PHPUnit\Framework\TestCase
         // The response contains date stamps that will vary every time the test
         // runs, so let's split things apart to work around that...
         $parts = explode("\n", trim($response));
-        $this->assertEquals(1, count($parts));
+        $this->assertCount(1, $parts);
         $this->assertEquals(
             "Total 0 {$this->rowLabel} deleted.",
             explode('] ', $parts[0])[1]

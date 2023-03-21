@@ -85,7 +85,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function checkLink($link, $type)
     {
-        $this->assertTrue(is_object($link));
+        $this->assertIsObject($link);
         $href = $link->getAttribute('href');
         $this->assertStringContainsString($type, $href);
         $this->assertNotEquals('', $link->getText());
