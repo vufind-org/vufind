@@ -1850,7 +1850,6 @@ class Folio extends AbstractAPI implements
         return $results;
     }
 
-    // @codingStandardsIgnoreStart
     /** NOT FINISHED BELOW THIS LINE **/
 
     /**
@@ -1976,6 +1975,4 @@ class Folio extends AbstractAPI implements
     {
         return [];
     }
-
-    // @codingStandardsIgnoreEnd
 }
