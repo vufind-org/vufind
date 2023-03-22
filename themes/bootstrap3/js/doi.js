@@ -1,4 +1,4 @@
-/*global Hunt, VuFind */
+/*global VuFind, unwrapJQuery */
 VuFind.register('doi', function Doi() {
   function embedDoiLinks(el) {
     var element = $(el);
@@ -59,14 +59,15 @@ VuFind.register('doi', function Doi() {
   // Assign actions to the OpenURL links. This can be called with a container e.g. when
   // combined results fetched with AJAX are loaded.
   function init(_container) {
-    var container = _container || $('body');
+    var container = unwrapJQuery(_container || document.body);
     // assign action to the openUrlWindow link class
-    if (typeof Hunt === 'undefined' || VuFind.isPrinting()) {
+    if (VuFind.isPrinting()) {
       embedDoiLinks(container);
     } else {
-      new Hunt(
-        container.find('.doiLink').toArray(),
-        { enter: embedDoiLinks }
+      VuFind.observerManager.createIntersectionObserver(
+        'doiLinks',
+        embedDoiLinks,
+        Array.from(container.querySelectorAll('.ajaxItem'))
       );
     }
   }
