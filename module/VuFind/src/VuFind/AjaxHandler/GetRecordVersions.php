@@ -130,7 +130,7 @@ class GetRecordVersions extends \VuFind\AjaxHandler\AbstractBase
         }
 
         $htmlByRecord = [];
-        for ($i=0; $i < count($id); $i++) {
+        for ($i = 0; $i < count($id); $i++) {
             $key = $source[$i] . '|' . $id[$i];
 
             $htmlByRecord[$key] = $this->getVersionsLinkForRecord(
