@@ -1,160 +1,150 @@
-/*global htmlEncode, userIsLoggedIn, Hunt, VuFind */
-/*exported checkSaveStatuses, checkSaveStatusesCallback */
+/*global escapeHtmlAttr, htmlEncode, userIsLoggedIn, AjaxRequestQueue, VuFind, unwrapJQuery */
 
-function displaySaveStatus(itemLists, $item) {
-  if (itemLists.length > 0) {
-    // If we got lists back, display them!
-    var html = '<ul>' + itemLists.map(function convertToLi(l) {
-      return '<li><a href="' + l.list_url + '">' + htmlEncode(l.list_title) + '</a></li>';
-    }).join('') + '</ul>';
-    $item.find('.savedLists').addClass('loaded');
-    $item.find('.js-load').replaceWith(html);
-  } else {
-    // If we got nothing back, remove the pending status:
-    $item.find('.js-load').remove();
-  }
-  // No matter what, clear the flag that we have a pending save:
-  $item.removeClass('js-save-pending');
-}
+VuFind.register("saveStatuses", function ItemStatuses() {
+  function displaySaveStatus(itemLists, el) {
+    const $item = $(el);
 
-function saveStatusFail(response, textStatus) {
-  if (textStatus === 'abort' || typeof response.responseJSON === 'undefined') {
-    $('.js-save-pending .savedLists').addClass('hidden');
-    return;
-  }
-  // display the error message on each of the ajax status place holder
-  $('.js-save-pending .savedLists').addClass('alert-danger').append(response.responseJSON.data);
-}
-
-var saveStatusObjs = [];
-var saveStatusEls = {};
-var saveStatusTimer = null;
-var saveStatusDelay = 200;
-var saveStatusRunning = false;
-
-function runSaveAjaxForQueue() {
-  // Only run one save status AJAX request at a time:
-  if (saveStatusRunning) {
-    saveStatusTimer = setTimeout(runSaveAjaxForQueue, saveStatusDelay);
-    return;
-  }
-  saveStatusRunning = true;
-  var ids = [];
-  var sources = [];
-  for (var i = 0; i < saveStatusObjs.length; i++) {
-    ids.push(saveStatusObjs[i].id);
-    sources.push(saveStatusObjs[i].source);
-  }
-  $.ajax({
-    dataType: 'json',
-    method: 'POST',
-    url: VuFind.path + '/AJAX/JSON?method=getSaveStatuses',
-    data: {
-      'id': ids,
-      'source': sources
+    if (itemLists.length > 0) {
+      // If we got lists back, display them!
+      var html = '<ul>' + itemLists.map(function convertToLi(l) {
+        return '<li><a href="' + escapeHtmlAttr(l.list_url) + '">' +
+          htmlEncode(l.list_title) +
+          '</a></li>';
+      }).join('') + '</ul>';
+      $item.find('.savedLists').addClass('loaded');
+      $item.find('.js-load').replaceWith(html);
+    } else {
+      // If we got nothing back, remove the pending status:
+      $item.find('.js-load').remove();
     }
-  })
-    .done(function checkSaveStatusDone(response) {
-      for (var id in response.data.statuses) {
-        if (Object.prototype.hasOwnProperty.call(response.data.statuses, id)) {
-          displaySaveStatus(response.data.statuses[id], saveStatusEls[id]);
+    // No matter what, clear the flag that we have a pending save:
+    $item.removeClass('js-save-pending');
+  }
 
-          // Remove populated ids from the queue
-          for (var j = saveStatusObjs.length - 1; j >= 0; j--) {
-            var parts = id.split('|');
-            if (saveStatusObjs[j].id === parts[1] && saveStatusObjs[j].source === parts[0]) {
-              saveStatusObjs.splice(j, 1);
-            }
-          }
-        }
+  function checkSaveStatusSuccess(items, response) {
+    items.forEach(function displayEachSaveStatus(item) {
+      const key = item.source + "|" + item.id;
+
+      if (typeof response.data.statuses[key] !== "undefined") {
+        displaySaveStatus(response.data.statuses[key], item.el);
       }
-    })
-    .fail(function checkItemStatusFail(response, textStatus) {
-      saveStatusFail(response, textStatus);
-    })
-    .always(function saveStatusDoneEmit() {
-      saveStatusRunning = false;
-      VuFind.emit("save-status-done");
     });
-}
-function saveQueueAjax(obj, el) {
-  if (el.hasClass('js-save-pending')) {
-    return;
-  }
-  clearTimeout(saveStatusTimer);
-  saveStatusObjs.push(obj);
-  saveStatusEls[obj.source + '|' + obj.id] = el;
-  saveStatusTimer = setTimeout(runSaveAjaxForQueue, saveStatusDelay);
-  el.addClass('js-save-pending');
-  el.find('.savedLists')
-    .removeClass('loaded hidden')
-    .append('<span class="js-load">' + VuFind.translate('loading_ellipsis') + '</span>');
-  el.find('.savedLists ul').remove();
-}
 
-function checkSaveStatus(el) {
-  if (!userIsLoggedIn) {
-    return;
-  }
-  var $item = $(el);
-
-  var $id = $item.find('.hiddenId');
-  var $source = $item.find('.hiddenSource');
-  if ($id.length === 0 || $source.length === 0) {
-    return null;
-  }
-  saveQueueAjax({
-    id: $id.val() + '',
-    source: $source.val() + ''
-  }, $item);
-}
-
-var saveStatusObserver = null;
-function checkSaveStatuses(_container) {
-  // Stop looking for a scroll loader
-  if (saveStatusObserver) {
-    saveStatusObserver.disconnect();
-  }
-
-  if (!userIsLoggedIn) {
     VuFind.emit("save-status-done");
-    return;
   }
 
-  var container = _container || $('body');
+  function checkSaveStatusFailure(items, response, textStatus) {
+    if (
+      textStatus === "abort" ||
+      typeof response.responseJSON === "undefined"
+    ) {
+      items.forEach(function hideSaveStatus(item) {
+        $(item.el).find(".savedLists").addClass("hidden");
+      });
 
-  var ajaxItems = container.find('.result,.record');
+      VuFind.emit("save-status-done");
 
-  if (ajaxItems.length === 0) {
+      return;
+    }
+
+    // display the error message on each of the ajax status place holder
+    items.forEach(function displaySaveFailure(item) {
+      $(item.el)
+        .find(".savedLists")
+        .addClass("alert-danger")
+        .append(response.responseJSON.data);
+    });
+
     VuFind.emit("save-status-done");
-    return;
   }
 
-  for (var i = 0; i < ajaxItems.length; i++) {
-    var $id = $(ajaxItems[i]).find('.hiddenId');
-    var $source = $(ajaxItems[i]).find('.hiddenSource');
-    if ($id.length > 0 && $source.length > 0) {
-      var idval = $id.val();
-      saveQueueAjax({
-        id: idval,
-        source: $source.val()
-      }, $(ajaxItems[i]));
+  function runSaveAjaxQueue(items) {
+    return new Promise(function runSaveAjaxPromise(done, error) {
+      $.ajax({
+        url: VuFind.path + "/AJAX/JSON?method=getSaveStatuses",
+        data: {
+          id: items.map((item) => item.id),
+          source: items.map((item) => item.source),
+        },
+        dataType: "json",
+        method: "POST",
+      })
+        .done(done)
+        .catch(error);
+    });
+  }
+
+  const saveStatusQueue = new AjaxRequestQueue({
+    run: runSaveAjaxQueue,
+    success: checkSaveStatusSuccess,
+    failure: checkSaveStatusFailure,
+  });
+
+  function checkSaveStatus(el) {
+    if (!userIsLoggedIn) {
+      VuFind.emit("save-status-done");
+
+      return;
+    }
+
+    const hiddenIdEl = el.querySelector(".hiddenId");
+    const hiddenSourceEl = el.querySelector(".hiddenSource");
+
+    if (
+      hiddenIdEl === null ||
+      hiddenSourceEl === null ||
+      el.classList.contains("js-save-pending")
+    ) {
+      return;
+    }
+
+    el.classList.add("js-save-pending");
+
+    const savedListsEl = el.querySelector(".savedLists");
+    savedListsEl.classList.remove("loaded", "hidden");
+    savedListsEl.innerHTML +=
+      '<span class="js-load">' +
+      VuFind.translate("loading_ellipsis") +
+      "</span>";
+
+    const ulEl = savedListsEl.querySelector("ul");
+    if (ulEl !== null) {
+      savedListsEl.removeChild(ulEl);
+    }
+
+    saveStatusQueue.add({
+      id: hiddenIdEl.value,
+      source: hiddenSourceEl.value,
+      el,
+    });
+  }
+
+  function checkAllSaveStatuses(container = document) {
+    if (!userIsLoggedIn) {
+      return;
+    }
+
+    container.querySelectorAll(".result,.record").forEach(checkSaveStatus);
+  }
+
+  function refresh() {
+    // Make sure no event parameter etc. is passed to checkAllSaveStatuses()
+    checkAllSaveStatuses();
+  }
+
+  function init($container = document) {
+    const container = unwrapJQuery($container);
+
+    if (VuFind.isPrinting()) {
+      checkAllSaveStatuses(container);
+    } else {
+      VuFind.observerManager.createIntersectionObserver(
+        'saveStatuses',
+        checkSaveStatus,
+        container.querySelectorAll(".result,.record")
+      );
     }
   }
-}
 
-function checkSaveStatusesCallback() {
-  // Make sure no event parameter etc. is passed to checkSaveStatuses()
-  checkSaveStatuses();
-}
-
-$(document).ready(function checkSaveStatusFail() {
-  if (typeof Hunt === 'undefined' || VuFind.isPrinting()) {
-    checkSaveStatuses();
-  } else {
-    saveStatusObserver = new Hunt(
-      $('.result,.record').toArray(),
-      { enter: checkSaveStatus }
-    );
-  }
+  return { init, refresh };
 });

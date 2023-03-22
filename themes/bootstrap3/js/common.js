@@ -1,5 +1,5 @@
 /*global grecaptcha, isPhoneNumberValid */
-/*exported VuFind, htmlEncode, deparam, getUrlRoot, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, bulkFormHandler, setupMultiILSLoginFields */
+/*exported VuFind, htmlEncode, escapeHtmlAttr, deparam, getUrlRoot, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, bulkFormHandler, setupMultiILSLoginFields, unwrapJQuery */
 
 // IE 9< console polyfill
 window.console = window.console || { log: function polyfillLog() {} };
@@ -293,6 +293,56 @@ function htmlEncode(value) {
     return '';
   }
 }
+
+/**
+ * Adapted from Laminas.
+ * Source: https://github.com/laminas/laminas-escaper/blob/2.13.x/src/Escaper.php
+ *
+ * @param  {string} str Attribute
+ * @return {string}
+ */
+function escapeHtmlAttr(str) {
+  if (!str) {
+    return str;
+  }
+
+  const namedEntities = {
+    34: 'quot', // quotation mark
+    38: 'amp', // ampersand
+    60: 'lt', // less-than sign
+    62: 'gt', // greater-than sign
+  };
+
+  const regexp = new RegExp(/[^a-z0-9,\\.\\-_]/giu);
+  return str.replace(regexp, (char) => {
+    const code = char.charCodeAt(0);
+
+    // Named entities
+    if (code in namedEntities) {
+      return `&${namedEntities[code]};`;
+    }
+
+    /**
+     * The following replaces characters undefined in HTML with the
+     * hex entity for the Unicode replacement character.
+     */
+    if (
+      (code >= 0x7f && code <= 0x9f) ||
+      (code <= 0x1f && char !== "\t" && char !== "\n" && char !== "\r")
+    ) {
+      return '&#xFFFD;';
+    }
+
+    const hex = code.toString(16).toUpperCase();
+
+    if (code > 255) {
+      return `&#x${hex.padStart(4, 0)};`;
+    }
+
+    return `&#x${hex.padStart(2, 0)};`;
+  });
+}
+
 function extractClassParams(selector) {
   var str = $(selector).attr('class');
   if (typeof str === "undefined") {
@@ -527,6 +577,10 @@ function setupIeSupport() {
   if (ua.indexOf('MSIE') || ua.indexOf('Trident/')) {
     $.fn.modal.Constructor.prototype.enforceFocus = function emptyEnforceFocus() { };
   }
+}
+
+function unwrapJQuery(node) {
+  return node instanceof Node ? node : node[0];
 }
 
 function setupJumpMenus(_container) {
