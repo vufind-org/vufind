@@ -22,9 +22,9 @@ function bindAriaMenu(menuList, controller = null) {
   const menuitems = menuList.querySelectorAll(`[role="menuitem"]`);
   let currentIndex = 0;
 
-  function escape() {
+  function escape(event) {
     if (controller) {
-      controller.focus();
+      controller(event);
     }
   }
 
@@ -51,7 +51,7 @@ function bindAriaMenu(menuList, controller = null) {
     switch (event.key) {
     case "Esc":
     case "Escape":
-      escape();
+      escape(event);
       break;
 
     case "ArrowUp":
@@ -83,7 +83,7 @@ function bindAriaMenu(menuList, controller = null) {
     if (controller === null) {
       event.stopPropagation();
     }
-  }, false);
+  });
 
   return {
     focusFirst,
@@ -121,13 +121,28 @@ function bindConfirmMenus() {
     cancelEl.addEventListener("click", () => {
       ariaCollapse(menu, toggleEl, targetEl);
       toggleEl.focus();
-    }, false);
+    });
 
     // Menu: The menuitems contained in a menu are child elements of the containing menu or menubar and have any of the following roles: menuitem, menuitemcheckbox, menuitemradio
     confirmEl.setAttribute("role", "menuitem");
     cancelEl.setAttribute("role", "menuitem");
 
-    const ariaMenu = bindAriaMenu(document.querySelector(".confirm__menu"));
+    const ariaMenu = bindAriaMenu(
+      document.querySelector(".confirm__menu"),
+      // MenuButton: Escape: close menu, focus trigger
+      function menuListBubble(event) {
+        if (
+          event.key === "Esc" ||
+          event.key === "Escape"
+        ) {
+          ariaCollapse(menu, toggleEl, targetEl);
+          toggleEl.focus();
+
+          event.stopPropagation();
+          event.preventDefault();
+        }
+      }
+    );
 
     // MenuButton: click to toggle
     toggleEl.addEventListener("click", () => {
@@ -138,7 +153,7 @@ function bindConfirmMenus() {
         ariaExpand(menu, toggleEl, targetEl);
         ariaMenu.focusFirst();
       }
-    }, false);
+    });
 
     // MenuButton: Enter: opens the menu and places focus on the first menu item.
     // MenuButton: Space: Opens the menu and places focus on the first menu item.
@@ -164,27 +179,13 @@ function bindConfirmMenus() {
 
       event.stopPropagation();
       event.preventDefault();
-    }, false);
-
-    // MenuButton: Escape: close menu, focus trigger
-    menu.addEventListener("keydown", (event) => {
-      if (
-        event.key === "Esc" ||
-        event.key === "Escape"
-      ) {
-        ariaCollapse(menu, toggleEl, targetEl);
-        toggleEl.focus();
-
-        event.stopPropagation();
-        event.preventDefault();
-      }
-    }, false);
+    });
 
     // MenuButton: Optionally, the element with role button has a value specified for aria-controls that refers to the element with role menu.
     // MenuButton: Additional roles, states, and properties needed for the menu element are described in the Menu and Menubar Pattern.
   });
 }
 
-$(document).ready(function componentsReady() {
+document.addEventListener("DOMContentLoaded", function componentsReady() {
   bindConfirmMenus();
 });
