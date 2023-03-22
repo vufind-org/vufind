@@ -3,7 +3,6 @@
 VuFind.register('search', function search() {
   let jsRecordListSelector = '.js-record-list';
   let paginationLinksSelector = '.js-ajax-pagination a';
-  let recordListSelector = '.record-list';
   let scrollElementSelector = '.search-stats';
   let searchStatsSelector = '.js-search-stats';
   let searchControlFormSelector = '.search-controls form';
@@ -13,62 +12,8 @@ VuFind.register('search', function search() {
   let limitFormSortSelector = searchControlFormSelector + ' input[name=sort]';
   let viewTypeSelector = '.view-buttons a';
 
-  /**
-   * Load results and update associated elements.
-   *
-   * @param {string} pageUrl
-   * @param {string} addToHistory
-   */
-  function loadResults(pageUrl, addToHistory) {
-    const recordList = document.querySelector(recordListSelector);
-    const loadingOverlay = document.createElement('div');
-    loadingOverlay.classList = 'loading-overlay';
-    loadingOverlay.setAttribute('aria-live', 'polite');
-    loadingOverlay.innerHTML = VuFind.loading();
-    recordList.prepend(loadingOverlay);
-    document.querySelector(scrollElementSelector).scrollIntoView({behavior: 'smooth'});
-    const searchStats = document.querySelector(searchStatsSelector);
-    const statsKey = searchStats.dataset.key;
-
-    const backend = recordList.dataset.backend;
-    let url = VuFind.path + '/AJAX/JSON?method=getSearchResults&source='
-      + encodeURIComponent(backend) + '&statsKey=' + encodeURIComponent(statsKey);
-    let pageUrlParts = pageUrl.split('?');
-    if (typeof pageUrlParts[1] !== 'undefined') {
-      url += '&querystring=' + encodeURIComponent(pageUrlParts[1]);
-      if (addToHistory) {
-        window.history.pushState({url: pageUrl}, '', '?' + pageUrlParts[1]);
-      }
-    }
-    updateResultControls(pageUrl);
-    VuFind.emit('vf-results-load', {url: pageUrl, addToHistory: addToHistory});
-    fetch(url)
-      .then((response) => response.json())
-      .then((result) => {
-        // We expect to get the results list in elements, but reset it to hide spinner just in case:
-        recordList.innerHTML = '';
-        Object.entries(result.data.elements).forEach(([elementSelector, contents]) => {
-          document.querySelectorAll(elementSelector).forEach((element) => {
-            if (contents.target === 'inner') {
-              element.innerHTML = contents.html;
-            } else {
-              element.outerHTML = contents.html;
-            }
-            element.setAttribute('aria-live', 'polite');
-          });
-        });
-        VuFind.initResultScripts(recordListSelector);
-        initPagination();
-        VuFind.emit('vf-results-loaded', {url: pageUrl, addToHistory: addToHistory, data: result});
-      })
-      .catch((error) => {
-        let errorMsg = document.createElement('div');
-        errorMsg.classList = 'alert alert-danger';
-        errorMsg.textContent = VuFind.translate('error_occurred') + ' - ' + error;
-        recordList.innerHTML = '';
-        recordList.append(errorMsg);
-      });
-  }
+  // Forward declaration
+  let loadResults = function loadResultsForward() {};
 
   /**
    * Get the URL without any parameters
@@ -83,28 +28,12 @@ VuFind.register('search', function search() {
   }
 
   /**
-   * Handle history state change event and load results accordingly.
-   *
-   * @param {Event} event
-   */
-  function historyStateListener(event) {
-    if (event.state.url && getBaseUrl(window.location.href) === getBaseUrl(event.state.url)) {
-      event.preventDefault();
-      loadResults(event.state.url, false);
-    }
-  }
-
-  /**
    * Initialize pagination.
-   *
-   * @returns {boolean}
    */
   function initPagination() {
-    let active = false;
     document.querySelectorAll(paginationLinksSelector).forEach((element) => {
       if (!element.dataset.ajaxPagination) {
         element.dataset.ajaxPagination = true;
-        active = true;
         element.addEventListener('click', function handleClick(event) {
           event.preventDefault();
           const href = this.getAttribute('href');
@@ -112,11 +41,6 @@ VuFind.register('search', function search() {
         });
       }
     });
-    if (active) {
-      window.history.replaceState({url: window.location.href}, '', window.location.href);
-      window.addEventListener('popstate', historyStateListener);
-    }
-    return active;
   }
 
   /**
@@ -256,12 +180,83 @@ VuFind.register('search', function search() {
   }
 
   /**
+   * Load results and update associated elements.
+   *
+   * @param {string} pageUrl
+   * @param {string} addToHistory
+   */
+  loadResults = function loadResultsReal(pageUrl, addToHistory) {
+    const recordList = document.querySelector(jsRecordListSelector);
+    const loadingOverlay = document.createElement('div');
+    loadingOverlay.classList = 'loading-overlay';
+    loadingOverlay.setAttribute('aria-live', 'polite');
+    loadingOverlay.innerHTML = VuFind.loading();
+    recordList.prepend(loadingOverlay);
+    document.querySelector(scrollElementSelector).scrollIntoView({behavior: 'smooth'});
+    const searchStats = document.querySelector(searchStatsSelector);
+    const statsKey = searchStats.dataset.key;
+
+    const backend = recordList.dataset.backend;
+    let url = VuFind.path + '/AJAX/JSON?method=getSearchResults&source='
+      + encodeURIComponent(backend) + '&statsKey=' + encodeURIComponent(statsKey);
+    let pageUrlParts = pageUrl.split('?');
+    if (typeof pageUrlParts[1] !== 'undefined') {
+      url += '&querystring=' + encodeURIComponent(pageUrlParts[1]);
+      if (addToHistory) {
+        window.history.pushState({url: pageUrl}, '', '?' + pageUrlParts[1]);
+      }
+    }
+    updateResultControls(pageUrl);
+    VuFind.emit('vf-results-load', {url: pageUrl, addToHistory: addToHistory});
+    fetch(url)
+      .then((response) => response.json())
+      .then((result) => {
+        // We expect to get the results list in elements, but reset it to hide spinner just in case:
+        recordList.innerHTML = '';
+        Object.entries(result.data.elements).forEach(([elementSelector, contents]) => {
+          document.querySelectorAll(elementSelector).forEach((element) => {
+            if (contents.target === 'inner') {
+              element.innerHTML = contents.html;
+            } else {
+              element.outerHTML = contents.html;
+            }
+            element.setAttribute('aria-live', 'polite');
+          });
+        });
+        VuFind.initResultScripts(jsRecordListSelector);
+        initPagination();
+        VuFind.emit('vf-results-loaded', {url: pageUrl, addToHistory: addToHistory, data: result});
+      })
+      .catch((error) => {
+        let errorMsg = document.createElement('div');
+        errorMsg.classList = 'alert alert-danger';
+        errorMsg.textContent = VuFind.translate('error_occurred') + ' - ' + error;
+        recordList.innerHTML = '';
+        recordList.append(errorMsg);
+      });
+  };
+
+  /**
+   * Handle history state change event and load results accordingly.
+   *
+   * @param {Event} event
+   */
+  function historyStateListener(event) {
+    if (event.state.url && getBaseUrl(window.location.href) === getBaseUrl(event.state.url)) {
+      event.preventDefault();
+      loadResults(event.state.url, false);
+    }
+  }
+
+  /**
    * Initialize AJAX pagination if enabled
    */
   function init() {
     if (document.querySelector(jsRecordListSelector)) {
       initPagination();
       initResultControls();
+      window.history.replaceState({url: window.location.href}, '', window.location.href);
+      window.addEventListener('popstate', historyStateListener);
     }
   }
 

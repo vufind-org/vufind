@@ -8,13 +8,16 @@ $thumbnail-width-large:  160px;
   list-style: none;
   padding: 0;
   margin: 0;
-  position: relative;
 
   &.search-results-solr-auth {
     .media-left, .media-right {
       display: none;
     }
   }
+}
+
+.js-record-list {
+  position: relative;
 
   // Loading spinner
   .loading-overlay {

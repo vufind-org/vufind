@@ -107,31 +107,6 @@ var VuFind = (function VuFind() {
     );
   };
 
-  /**
-   * Initialize result page scripts.
-   *
-   * @param {string|JQuery} container
-   */
-  var initResultScripts = function initResultScripts(container) {
-    this.openurl.init($(container));
-    this.itemStatuses.init(container);
-    checkSaveStatuses($(container));
-    setupQRCodeLinks($(container));
-    this.recordVersions.init(container);
-  };
-
-  var init = function init() {
-    for (var i = 0; i < _submodules.length; i++) {
-      if (this[_submodules[i]].init) {
-        this[_submodules[i]].init();
-      }
-    }
-    _initialized = true;
-
-    initDisableSubmitOnClick();
-    initClickHandlers();
-  };
-
   var addTranslations = function addTranslations(s) {
     for (var i in s) {
       if (Object.prototype.hasOwnProperty.call(s, i)) {
@@ -269,6 +244,56 @@ var VuFind = (function VuFind() {
 
   var setCurrentSearchId = function setCurrentSearchId(searchId) {
     _searchId = searchId;
+  };
+
+  function setupQRCodeLinks(_container) {
+    var container = _container || $('body');
+
+    container.find('a.qrcodeLink').click(function qrcodeToggle() {
+      if ($(this).hasClass("active")) {
+        $(".result-link-label", this).html(VuFind.translate('qrcode_show'));
+        $(this).removeClass("active");
+      } else {
+        $(".result-link-label", this).html(VuFind.translate('qrcode_hide'));
+        $(this).addClass("active");
+      }
+
+      var holder = $(this).next('.qrcode');
+      if (holder.find('img').length === 0) {
+        // We need to insert the QRCode image
+        var template = holder.find('.qrCodeImgTag').html();
+        holder.html(template);
+      }
+      holder.toggleClass('hidden');
+      return false;
+    });
+  }
+
+  /**
+   * Initialize result page scripts.
+   *
+   * @param {string|JQuery} container
+   */
+  var initResultScripts = function initResultScripts(container) {
+    this.openurl.init($(container));
+    this.itemStatuses.init(container);
+    checkSaveStatuses($(container));
+    setupQRCodeLinks($(container));
+    this.recordVersions.init(container);
+  };
+
+  var init = function init() {
+    for (var i = 0; i < _submodules.length; i++) {
+      if (this[_submodules[i]].init) {
+        this[_submodules[i]].init();
+      }
+    }
+    _initialized = true;
+
+    initDisableSubmitOnClick();
+    initClickHandlers();
+    // handle QR code links
+    setupQRCodeLinks();
   };
 
   //Reveal
@@ -580,29 +605,6 @@ function setupMultiILSLoginFields(loginMethods, idPrefix) {
   }).change();
 }
 
-function setupQRCodeLinks(_container) {
-  var container = _container || $('body');
-
-  container.find('a.qrcodeLink').click(function qrcodeToggle() {
-    if ($(this).hasClass("active")) {
-      $(".result-link-label", this).html(VuFind.translate('qrcode_show'));
-      $(this).removeClass("active");
-    } else {
-      $(".result-link-label", this).html(VuFind.translate('qrcode_hide'));
-      $(this).addClass("active");
-    }
-
-    var holder = $(this).next('.qrcode');
-    if (holder.find('img').length === 0) {
-      // We need to insert the QRCode image
-      var template = holder.find('.qrCodeImgTag').html();
-      holder.html(template);
-    }
-    holder.toggleClass('hidden');
-    return false;
-  });
-}
-
 $(document).ready(function commonDocReady() {
   // Start up all of our submodules
   VuFind.init();
@@ -615,9 +617,6 @@ $(document).ready(function commonDocReady() {
 
   // support "jump menu" dropdown boxes
   setupJumpMenus();
-
-  // handle QR code links
-  setupQRCodeLinks();
 
   // Checkbox select all
   $('.checkbox-select-all').on('change', function selectAllCheckboxes() {
