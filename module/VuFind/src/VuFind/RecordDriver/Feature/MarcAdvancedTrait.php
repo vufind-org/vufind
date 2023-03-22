@@ -63,7 +63,7 @@ trait MarcAdvancedTrait
         '651' => 'geographic',
         '653' => '',
         '655' => 'genre/form',
-        '656' => 'occupation'
+        '656' => 'occupation',
     ];
 
     /**
@@ -81,7 +81,7 @@ trait MarcAdvancedTrait
         '3' => 'nal',
         '4' => 'unknown',
         '5' => 'cash',
-        '6' => 'rvm'
+        '6' => 'rvm',
     ];
 
     /**
@@ -154,7 +154,7 @@ trait MarcAdvancedTrait
                             'heading' => $current,
                             'type' => $fieldType,
                             'source' => $source,
-                            'id' => $this->getSubfield($result, '0')
+                            'id' => $this->getSubfield($result, '0'),
                         ];
                     } else {
                         $retval[] = $current;
@@ -544,10 +544,11 @@ trait MarcAdvancedTrait
     public function getTOC()
     {
         $toc = [];
-        if ($fields = $this->getMarcReader()->getFields(
-            '505',
-            ['a', 'g', 'r', 't', 'u']
-        )
+        if (
+            $fields = $this->getMarcReader()->getFields(
+                '505',
+                ['a', 'g', 'r', 't', 'u']
+            )
         ) {
             foreach ($fields as $field) {
                 // Implode all the subfields into a single string, then explode
@@ -613,7 +614,7 @@ trait MarcAdvancedTrait
         // Which fields/subfields should we check for URLs?
         $fieldsToCheck = [
             '856' => ['y', 'z', '3'],   // Standard URL
-            '555' => ['a']              // Cumulative index/finding aids
+            '555' => ['a'],              // Cumulative index/finding aids
         ];
 
         foreach ($fieldsToCheck as $field => $subfields) {
@@ -781,7 +782,7 @@ trait MarcAdvancedTrait
                     if ($isbn = $this->getSubfield($field, 'z')) {
                         $link = [
                             'type' => 'isn', 'value' => $isbn,
-                            'exclude' => $this->getUniqueId()
+                            'exclude' => $this->getUniqueId(),
                         ];
                     }
                     break;
@@ -789,7 +790,7 @@ trait MarcAdvancedTrait
                     if ($issn = $this->getSubfield($field, 'x')) {
                         $link = [
                             'type' => 'isn', 'value' => $issn,
-                            'exclude' => $this->getUniqueId()
+                            'exclude' => $this->getUniqueId(),
                         ];
                     }
                     break;
@@ -806,7 +807,7 @@ trait MarcAdvancedTrait
         return !isset($link) ? false : [
             'title' => $this->getRecordLinkNote($field),
             'value' => $title,
-            'link'  => $link
+            'link'  => $link,
         ];
     }
 
@@ -888,7 +889,7 @@ trait MarcAdvancedTrait
             $instructions[$key] = [
                 'mode' => $instructionParts[0],
                 'params' => $instructionParts[1] ?? null,
-                'field' => $instructionParts[2] ?? $defaultField
+                'field' => $instructionParts[2] ?? $defaultField,
             ];
         }
 
@@ -1005,7 +1006,8 @@ trait MarcAdvancedTrait
     {
         $fields024 = $this->getMarcReader()->getFields('024');
         foreach ($fields024 as $field) {
-            if ($field['i1'] == 2
+            if (
+                $field['i1'] == 2
                 && $subfield = $this->getSubfield($field, 'a')
             ) {
                 return $subfield;

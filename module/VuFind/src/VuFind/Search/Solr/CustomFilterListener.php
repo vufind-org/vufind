@@ -122,7 +122,8 @@ class CustomFilterListener
     public function onSearchPre(EventInterface $event)
     {
         $command = $event->getParam('command');
-        if ($command->getContext() === 'search'
+        if (
+            $command->getContext() === 'search'
             && $command->getTargetIdentifier() === $this->backend->getIdentifier()
             && ($params = $command->getSearchParameters())
         ) {

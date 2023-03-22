@@ -111,7 +111,8 @@ class VuFindWorkKeys
                 $excludeRegEx,
                 $transliterator
             );
-            if (empty($normalizedTitle)                          // skip empties
+            if (
+                empty($normalizedTitle)                          // skip empties
                 || in_array($normalizedTitle, $normalizedTitles) // avoid dupes
             ) {
                 continue;

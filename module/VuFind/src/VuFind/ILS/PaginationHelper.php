@@ -89,7 +89,7 @@ class PaginationHelper
                 $sortList[$key] = [
                     'desc' => $value,
                     'url' => '?sort=' . urlencode($key),
-                    'selected' => $sort == $key
+                    'selected' => $sort == $key,
                 ];
             }
         }

@@ -134,7 +134,7 @@ class CursorMarkIdFetcher extends AbstractIdFetcher
             $this->defaultParams + [
                 'rows' => $countPerPage,
                 'sort' => $key . ' asc',
-                'cursorMark' => $cursorMark
+                'cursorMark' => $cursorMark,
             ]
         );
         // Apply filters:

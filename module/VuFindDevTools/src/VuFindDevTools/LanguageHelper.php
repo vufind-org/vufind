@@ -189,7 +189,8 @@ class LanguageHelper
             $dir = opendir($base);
             $domains = [];
             while ($current = readdir($dir)) {
-                if ($current != '.' && $current != '..'
+                if (
+                    $current != '.' && $current != '..'
                     && is_dir("$base/$current")
                     && !in_array($current, $filter)
                 ) {
@@ -314,7 +315,7 @@ class LanguageHelper
         $main = $this->loadLanguage($mainLanguage, $includeOptional);
         $details = $this->getAllLanguageDetails($main, $includeOptional);
         $dirHelpParts = [
-            APPLICATION_PATH, 'themes', 'root', 'templates', 'HelpTranslations'
+            APPLICATION_PATH, 'themes', 'root', 'templates', 'HelpTranslations',
         ];
         $dirLangParts = [APPLICATION_PATH, 'languages'];
         return compact('details', 'main', 'includeOptional') + [

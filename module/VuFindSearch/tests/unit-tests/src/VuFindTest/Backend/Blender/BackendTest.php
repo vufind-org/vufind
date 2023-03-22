@@ -67,14 +67,14 @@ class BackendTest extends TestCase
     protected $config = [
         'Backends' => [
             'Solr' => 'Local',
-            'EDS' => 'Electronic Stuff'
+            'EDS' => 'Electronic Stuff',
         ],
         'Blending' => [
             'initialResults' => [
                 'Solr',
                 'Solr',
                 'EDS',
-                'EDS'
+                'EDS',
             ],
             'blockSize' => 7,
         ],
@@ -106,9 +106,9 @@ class BackendTest extends TestCase
                             'Values' => [
                                 'Business Source Premier' => 'Main',
                                 'Communication Abstracts' => '1/Main/Sub/',
-                                'EconLit with Full Text' => '1/Econlit/Foo/'
-                            ]
-                        ]
+                                'EconLit with Full Text' => '1/Econlit/Foo/',
+                            ],
+                        ],
                     ],
                 ],
                 'format' => [
@@ -161,7 +161,7 @@ class BackendTest extends TestCase
                         'EDS' => [
                             'Field' => 'LIMIT|FT',
                             'Values' => [
-                                'y' => '1'
+                                'y' => '1',
                             ],
                         ],
                     ],
@@ -169,10 +169,10 @@ class BackendTest extends TestCase
                 'language' => [
                     'Mappings' => [
                         'EDS' => [
-                            'Field' => ''
-                        ]
-                    ]
-                ]
+                            'Field' => '',
+                        ],
+                    ],
+                ],
             ],
         ],
         'Search' => [
@@ -181,14 +181,14 @@ class BackendTest extends TestCase
                     'Mappings' => [
                         'Solr' => 'AllFields',
                         'Primo' => 'AllFields',
-                        'EDS' => 'AllFields'
+                        'EDS' => 'AllFields',
                     ],
                 ],
                 'Title' => [
                     'Mappings' => [
                         'Solr' => 'Title',
                         'Primo' => 'Title',
-                        'EDS' => 'TI'
+                        'EDS' => 'TI',
                     ],
                 ],
             ],
@@ -240,45 +240,45 @@ class BackendTest extends TestCase
         $solrRecords = [
             [
                 'class' => SolrRecord::class,
-                'title' => 'The test /'
+                'title' => 'The test /',
             ],
             [
                 'class' => SolrRecord::class,
-                'title' => 'Of Money and Slashes'
+                'title' => 'Of Money and Slashes',
             ],
             [
                 'class' => SolrRecord::class,
-                'title' => 'Movie Quotes Thru The Ages'
+                'title' => 'Movie Quotes Thru The Ages',
             ],
             [
                 'class' => SolrRecord::class,
-                'title' => '<HTML> The Basics'
+                'title' => '<HTML> The Basics',
             ],
             [
                 'class' => SolrRecord::class,
-                'title' => 'Octothorpes: Why not?'
+                'title' => 'Octothorpes: Why not?',
             ],
             [
                 'class' => SolrRecord::class,
-                'title' => 'Questions about Percents'
+                'title' => 'Questions about Percents',
             ],
             [
                 'class' => SolrRecord::class,
-                'title' => 'Pluses and Minuses of Pluses and Minuses'
+                'title' => 'Pluses and Minuses of Pluses and Minuses',
             ],
             [
                 'class' => SolrRecord::class,
-                'title' => 'The test of the publication fields.'
+                'title' => 'The test of the publication fields.',
             ],
             [
                 'class' => SolrRecord::class,
-                'title' => 'Dewey browse test'
+                'title' => 'Dewey browse test',
             ],
         ];
         for ($i = 20001; $i <= 20031; $i++) {
             $solrRecords[] =             [
                 'class' => SolrRecord::class,
-                'title' => "Test Publication $i"
+                'title' => "Test Publication $i",
             ];
         }
 
@@ -286,7 +286,7 @@ class BackendTest extends TestCase
         for ($i = 1; $i <= 40; $i++) {
             $edsRecords[] = [
                 'class' => EdsRecord::class,
-                'title' => "Title $i"
+                'title' => "Title $i",
             ];
         }
 
@@ -315,7 +315,7 @@ class BackendTest extends TestCase
         );
         $adaptiveConfig = $this->config;
         $adaptiveConfig['Blending']['adaptiveBlockSizes'] = [
-            '5000-100000:5'
+            '5000-100000:5',
         ];
         $adaptiveConfigWithOrFacet = $adaptiveConfig;
         $adaptiveConfigWithOrFacet['Results_Settings']['orFacets']
@@ -348,49 +348,49 @@ class BackendTest extends TestCase
             [
                 0,
                 0,
-                []
+                [],
             ],
             [
                 0,
                 20,
-                array_slice($expectedRecords, 0, 20)
+                array_slice($expectedRecords, 0, 20),
             ],
             [
                 1,
                 20,
-                array_slice($expectedRecords, 1, 20)
+                array_slice($expectedRecords, 1, 20),
             ],
             [
                 2,
                 20,
-                array_slice($expectedRecords, 2, 20)
+                array_slice($expectedRecords, 2, 20),
             ],
             [
                 3,
                 20,
-                array_slice($expectedRecords, 3, 20)
+                array_slice($expectedRecords, 3, 20),
             ],
             [
                 19,
                 20,
-                array_slice($expectedRecords, 19, 20)
+                array_slice($expectedRecords, 19, 20),
             ],
             [
                 0,
                 40,
-                array_slice($expectedRecords, 0, 40)
+                array_slice($expectedRecords, 0, 40),
             ],
             [
                 0,
                 40,
                 array_slice($expectedRecordsNoBoost, 0, 40),
-                $noBoostConfig
+                $noBoostConfig,
             ],
             [
                 0,
                 40,
                 array_slice($expectedRecordsAdaptive, 0, 40),
-                $adaptiveConfig
+                $adaptiveConfig,
             ],
             [
                 0,
@@ -399,7 +399,7 @@ class BackendTest extends TestCase
                 $adaptiveConfig,
                 ['blender_backend:Solr'],
                 240,
-                null
+                null,
             ],
             [
                 0,
@@ -408,7 +408,7 @@ class BackendTest extends TestCase
                 $adaptiveConfigWithOrFacet,
                 ['-blender_backend:EDS'],
                 240,
-                0
+                0,
             ],
             [
                 0,
@@ -417,7 +417,7 @@ class BackendTest extends TestCase
                 $adaptiveConfigWithOrFacet,
                 ['blender_backend:EDS'],
                 0,
-                65924
+                65924,
             ],
             [
                 0,
@@ -426,8 +426,8 @@ class BackendTest extends TestCase
                 null,
                 [
                     '{!tag=blender_backend_filter}blender_backend:'
-                    . '(blender_backend:"Solr" OR blender_backend:"EDS")'
-                ]
+                    . '(blender_backend:"Solr" OR blender_backend:"EDS")',
+                ],
             ],
             [
                 0,
@@ -436,7 +436,7 @@ class BackendTest extends TestCase
                 null,
                 ['-blender_backend:Solr', '-blender_backend:EDS'],
                 0,
-                0
+                0,
             ],
             [
                 0,
@@ -446,7 +446,7 @@ class BackendTest extends TestCase
                 [],
                 5,
                 65924,
-                new Query('foo', 'Title')
+                new Query('foo', 'Title'),
             ],
             [
                 0,
@@ -456,7 +456,7 @@ class BackendTest extends TestCase
                 [],
                 2,
                 6,
-                new Query('foo', 'Author')
+                new Query('foo', 'Author'),
             ],
         ];
     }
@@ -531,7 +531,7 @@ class BackendTest extends TestCase
                         '0/Main/' => 231,
                         '1/Main/Sub/' => 7,
                         '0/Sub/' => 1,
-                        '1/Sub/Foo/' => 1
+                        '1/Sub/Foo/' => 1,
                     ],
                     'EDS' => [
                         '0/Main/' => 1861 + 2,
@@ -609,7 +609,7 @@ class BackendTest extends TestCase
             )->will($this->returnValue($collection));
 
         $backends = [
-            'EDS' => $eds
+            'EDS' => $eds,
         ];
         $eventManager = new EventManager($this->sharedEventManager);
         $backend = new Backend(
@@ -623,7 +623,7 @@ class BackendTest extends TestCase
         $params = new ParamBag(
             [
                 'query_EDS' => [$query],
-                'params_EDS' => [$edsParams]
+                'params_EDS' => [$edsParams],
             ]
         );
         $backend->search($query, 0, 20, $params);
@@ -681,7 +681,7 @@ class BackendTest extends TestCase
             null,
             [
                 'Solr' => $this->getSolrBackend(),
-                'EDS' => $this->getEDSBackendMock('')
+                'EDS' => $this->getEDSBackendMock(''),
             ]
         );
 
@@ -692,7 +692,7 @@ class BackendTest extends TestCase
                 [
                     'msg' => 'search_backend_partial_failure',
                     'tokens' => ['%%sources%%' => 'Electronic Stuff'],
-                ]
+                ],
             ],
             $result->getErrors()
         );
@@ -718,7 +718,7 @@ class BackendTest extends TestCase
             null,
             [
                 'Solr' => $this->getSolrBackend(''),
-                'EDS' => $this->getEDSBackendMock('')
+                'EDS' => $this->getEDSBackendMock(''),
             ]
         );
 
@@ -756,7 +756,7 @@ class BackendTest extends TestCase
                     ],
                     'translate' => true,
                     'translateTokens' => true,
-                ]
+                ],
             ],
             $result->getErrors()
         );
@@ -774,7 +774,7 @@ class BackendTest extends TestCase
             null,
             [
                 'Solr' => $this->getSolrBackend(),
-                'EDS' => $this->getBackendForFacetsAndErrors([], [])
+                'EDS' => $this->getBackendForFacetsAndErrors([], []),
             ]
         );
 
@@ -899,7 +899,7 @@ class BackendTest extends TestCase
             $postEventParams[$command->getTargetIdentifier()] = [
                 'target' => $event->getTarget(),
                 'params' => $command->getSearchParameters(),
-                'backend' => $event->getParam('backend')
+                'backend' => $event->getParam('backend'),
             ];
         };
 
@@ -1053,7 +1053,7 @@ class BackendTest extends TestCase
                 'query_Solr' => [$query ?? new Query()],
                 'query_EDS' => [$query ?? new Query()],
                 'params_Solr' => [new ParamBag()],
-                'params_EDS' => [new ParamBag()]
+                'params_EDS' => [new ParamBag()],
             ]
         );
     }
@@ -1075,7 +1075,7 @@ class BackendTest extends TestCase
         if (!$backends) {
             $backends = [
                 'Solr' => $this->getSolrBackend(),
-                'EDS' => $this->getEDSBackendMock()
+                'EDS' => $this->getEDSBackendMock(),
             ];
         }
         $eventManager = new EventManager($this->sharedEventManager);
@@ -1138,7 +1138,7 @@ class BackendTest extends TestCase
                     $map,
                     function () {
                         return $this->createMock(\Laminas\Http\Client::class);
-                    }
+                    },
                 ]
             )
             ->getMock();
@@ -1170,15 +1170,15 @@ class BackendTest extends TestCase
             [
                 'Title' => [
                     'DismaxFields' => [
-                        'title'
+                        'title',
                     ],
-                    'DismaxHandler' => 'edismax'
+                    'DismaxHandler' => 'edismax',
                 ],
                 'Author' => [
                     'DismaxFields' => [
-                        'author'
+                        'author',
                     ],
-                    'DismaxHandler' => 'edismax'
+                    'DismaxHandler' => 'edismax',
                 ],
             ]
         );
@@ -1248,7 +1248,7 @@ class BackendTest extends TestCase
             $this->getEDSRecordCollectionFactory(),
             $cache,
             $container,
-            new Config([])
+            new Config([]),
         ];
         $backend = $this->getMockBuilder(\VuFindSearch\Backend\EDS\Backend::class)
             ->onlyMethods(['getAuthenticationToken', 'getSessionToken'])

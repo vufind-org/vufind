@@ -13,14 +13,14 @@
     $lookforEncoded = urlencode($lookfor);
     $typeEncoded = urlencode($params->getSearchHandler() ?? '');
     $loadJs = <<<JS
-$(document).ready(function() {
-    var url = VuFind.path
-        + '/Combined/Result?id=$searchClassIdEncoded&lookfor=$lookforEncoded'
-        + '&type=$typeEncoded';
-    var container = $('$targetIdHtmlEscaped');
-    VuFind.combinedSearch.init(container, url);
-});
-JS;
+        $(document).ready(function() {
+            var url = VuFind.path
+                + '/Combined/Result?id=$searchClassIdEncoded&lookfor=$lookforEncoded'
+                + '&type=$typeEncoded';
+            var container = $('$targetIdHtmlEscaped');
+            VuFind.combinedSearch.init(container, url);
+        });
+        JS;
 
 ?>
 <h2><?=$this->transEsc($currentSearch['label'])?></h2>

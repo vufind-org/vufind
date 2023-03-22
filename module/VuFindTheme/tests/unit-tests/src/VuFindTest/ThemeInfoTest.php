@@ -140,7 +140,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
                 'mixin' => $expectedMixin,
                 'mixin_user' => $expectedMixinUser,
                 'child' => $expectedChild,
-                'parent' => $expectedParent
+                'parent' => $expectedParent,
             ],
             $ti->getThemeInfo()
         );
@@ -174,7 +174,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
         $expected = [
             'theme' => 'parent',
             'path' => $this->fixturePath . '/parent/parent.txt',
-            'relativePath' => 'parent.txt'
+            'relativePath' => 'parent.txt',
         ];
         $this->assertEquals($expected, $ti->findContainingTheme('parent.txt', ThemeInfo::RETURN_ALL_DETAILS));
     }
@@ -204,11 +204,11 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
         $files = $ti->findInThemes(
             [
                 'templates/content/*.phtml',
-                'templates/content/*.md'
+                'templates/content/*.md',
             ]
         );
         $this->assertIsArray($files);
-        $this->assertEquals(3, count($files));
+        $this->assertCount(3, $files);
         $this->assertEquals('parent', $files[0]['theme']);
         $this->assertEquals(
             'templates/content/page1.phtml',
@@ -400,7 +400,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
                     'not an array',
                 ],
                 [
-                    'mixed' => ['array']
+                    'mixed' => ['array'],
                 ],
             ],
         ];

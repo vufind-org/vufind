@@ -69,7 +69,8 @@ class File extends AbstractBase
         }
 
         // Die if the session directory does not exist and cannot be created.
-        if ((!file_exists($this->path) || !is_dir($this->path))
+        if (
+            (!file_exists($this->path) || !is_dir($this->path))
             && !mkdir($this->path)
         ) {
             throw new \Exception("Cannot access session save path: " . $this->path);

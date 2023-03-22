@@ -766,12 +766,14 @@ class DefaultRecord extends AbstractBase
         // Get the COinS ID -- it should be in the OpenURL section of config.ini,
         // but we'll also check the COinS section for compatibility with legacy
         // configurations (this moved between the RC2 and 1.0 releases).
-        if (isset($this->mainConfig->OpenURL->rfr_id)
+        if (
+            isset($this->mainConfig->OpenURL->rfr_id)
             && !empty($this->mainConfig->OpenURL->rfr_id)
         ) {
             return $this->mainConfig->OpenURL->rfr_id;
         }
-        if (isset($this->mainConfig->COinS->identifier)
+        if (
+            isset($this->mainConfig->COinS->identifier)
             && !empty($this->mainConfig->COinS->identifier)
         ) {
             return $this->mainConfig->COinS->identifier;
@@ -797,7 +799,7 @@ class DefaultRecord extends AbstractBase
             'ctx_enc' => 'info:ofi/enc:UTF-8',
             'rfr_id' => 'info:sid/' . $this->getCoinsID() . ':generator',
             'rft.title' => $this->getTitle(),
-            'rft.date' => $pubDate
+            'rft.date' => $pubDate,
         ];
     }
 

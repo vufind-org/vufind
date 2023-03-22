@@ -61,7 +61,7 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
                 'defaultTab' => 'zip',
                 'backgroundLoadedTabs' => ['xyzzy'],
             ],
-        ]
+        ],
     ];
 
     /**

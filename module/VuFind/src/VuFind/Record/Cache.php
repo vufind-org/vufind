@@ -206,7 +206,8 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
         }
         $this->cachableSources = isset($this->cacheConfig->$context)
             ? $this->cacheConfig->$context->toArray() : [];
-        if ($context != Cache::CONTEXT_DEFAULT
+        if (
+            $context != Cache::CONTEXT_DEFAULT
             && isset($this->cacheConfig->{Cache::CONTEXT_DEFAULT})
         ) {
             // Inherit settings from Default section

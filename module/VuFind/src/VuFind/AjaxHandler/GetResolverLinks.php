@@ -163,7 +163,7 @@ class GetResolverLinks extends AbstractBase implements TranslatorAwareInterface
             'openUrlBase' => $base, 'openUrl' => $openUrl, 'print' => $print,
             'electronic' => $electronic, 'services' => $services,
             'searchClassId' => $searchClassId,
-            'moreOptionsLink' => $moreOptionsLink
+            'moreOptionsLink' => $moreOptionsLink,
         ];
         $html = $this->renderer->render('ajax/resolverLinks.phtml', $view);
 

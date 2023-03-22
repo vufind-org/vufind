@@ -405,7 +405,8 @@ class VoyagerRestful extends Voyager implements
     protected function isStorageRetrievalRequestAllowed($holdingsRow)
     {
         $holdingsRow = $holdingsRow['_fullRow'];
-        if (!isset($holdingsRow['TEMP_ITEM_TYPE_ID'])
+        if (
+            !isset($holdingsRow['TEMP_ITEM_TYPE_ID'])
             || !isset($holdingsRow['ITEM_TYPE_ID'])
         ) {
             // Not a real item
@@ -529,7 +530,8 @@ class VoyagerRestful extends Voyager implements
 
             if ($isStorageRetrievalRequestAllowed) {
                 if ($patron) {
-                    if ($i < $this->callSlipCheckLimit
+                    if (
+                        $i < $this->callSlipCheckLimit
                         && $this->callSlipCheckLimit != '0'
                     ) {
                         $storageRetrieval = $this->checkItemRequests(
@@ -566,7 +568,7 @@ class VoyagerRestful extends Voyager implements
                 'storageRetrievalRequest' => $storageRetrieval,
                 'addStorageRetrievalRequestLink' => $addStorageRetrievalLink,
                 'ILLRequest' => $ILLRequest,
-                'addILLRequestLink' => $addILLRequestLink
+                'addILLRequestLink' => $addILLRequestLink,
             ];
             unset($holding[$i]['_fullRow']);
         }
@@ -620,7 +622,8 @@ class VoyagerRestful extends Voyager implements
      */
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
     {
-        if (!isset($this->config['StorageRetrievalRequests'])
+        if (
+            !isset($this->config['StorageRetrievalRequests'])
             || $this->checkAccountBlocks($patron['id'])
         ) {
             return false;
@@ -702,11 +705,12 @@ class VoyagerRestful extends Voyager implements
             foreach ($this->ws_pickUpLocations as $code => $library) {
                 $pickResponse[] = [
                     'locationID' => $code,
-                    'locationDisplay' => $library
+                    'locationDisplay' => $library,
                 ];
             }
         } else {
-            if ($this->requestGroupsEnabled
+            if (
+                $this->requestGroupsEnabled
                 && $this->pickupLocationsInRequestGroup
                 && !empty($holdDetails['requestGroupId'])
             ) {
@@ -739,7 +743,7 @@ class VoyagerRestful extends Voyager implements
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
                 $pickResponse[] = [
                     'locationID' => $row['LOCATION_ID'],
-                    'locationDisplay' => utf8_encode($row['LOCATION_NAME'])
+                    'locationDisplay' => utf8_encode($row['LOCATION_NAME']),
                 ];
             }
         }
@@ -871,7 +875,7 @@ class VoyagerRestful extends Voyager implements
             'rg.GROUP_NAME',
         ];
         $sqlFrom = [
-            "$this->dbName.REQUEST_GROUP rg"
+            "$this->dbName.REQUEST_GROUP rg",
 
         ];
         $sqlWhere = [];
@@ -880,34 +884,34 @@ class VoyagerRestful extends Voyager implements
         if ($this->pickupLocationsInRequestGroup) {
             // Limit to request groups that have valid pickup locations
             $sqlWhere[] = <<<EOT
-rg.GROUP_ID IN (
-  SELECT rgl.GROUP_ID
-  FROM $this->dbName.REQUEST_GROUP_LOCATION rgl
-  WHERE rgl.LOCATION_ID IN (
-    SELECT cpl.LOCATION_ID
-    FROM $this->dbName.CIRC_POLICY_LOCS cpl
-    WHERE cpl.PICKUP_LOCATION='Y'
-  )
-)
-EOT;
+                rg.GROUP_ID IN (
+                  SELECT rgl.GROUP_ID
+                  FROM $this->dbName.REQUEST_GROUP_LOCATION rgl
+                  WHERE rgl.LOCATION_ID IN (
+                    SELECT cpl.LOCATION_ID
+                    FROM $this->dbName.CIRC_POLICY_LOCS cpl
+                    WHERE cpl.PICKUP_LOCATION='Y'
+                  )
+                )
+                EOT;
         }
 
         if ($this->checkItemsExist) {
             $sqlWhere[] = <<<EOT
-rg.GROUP_ID IN (
-  SELECT rgl.GROUP_ID
-  FROM $this->dbName.REQUEST_GROUP_LOCATION rgl
-  WHERE rgl.LOCATION_ID IN (
-    SELECT mm.LOCATION_ID FROM $this->dbName.MFHD_MASTER mm
-    WHERE mm.SUPPRESS_IN_OPAC='N'
-    AND mm.MFHD_ID IN (
-      SELECT mi.MFHD_ID
-      FROM $this->dbName.MFHD_ITEM mi, $this->dbName.BIB_ITEM bi
-      WHERE mi.ITEM_ID = bi.ITEM_ID AND bi.BIB_ID=:bibId
-    )
-  )
-)
-EOT;
+                rg.GROUP_ID IN (
+                  SELECT rgl.GROUP_ID
+                  FROM $this->dbName.REQUEST_GROUP_LOCATION rgl
+                  WHERE rgl.LOCATION_ID IN (
+                    SELECT mm.LOCATION_ID FROM $this->dbName.MFHD_MASTER mm
+                    WHERE mm.SUPPRESS_IN_OPAC='N'
+                    AND mm.MFHD_ID IN (
+                      SELECT mi.MFHD_ID
+                      FROM $this->dbName.MFHD_ITEM mi, $this->dbName.BIB_ITEM bi
+                      WHERE mi.ITEM_ID = bi.ITEM_ID AND bi.BIB_ID=:bibId
+                    )
+                  )
+                )
+                EOT;
             $sqlBind['bibId'] = $bibId;
         }
 
@@ -917,7 +921,7 @@ EOT;
             $subExpressions = [
                 'sub_rgl.GROUP_ID',
                 'sub_i.ITEM_ID',
-                'max(sub_ist.ITEM_STATUS) as STATUS'
+                'max(sub_ist.ITEM_STATUS) as STATUS',
             ];
 
             $subFrom = [
@@ -926,7 +930,7 @@ EOT;
                 "$this->dbName.ITEM sub_i",
                 "$this->dbName.REQUEST_GROUP_LOCATION sub_rgl",
                 "$this->dbName.MFHD_ITEM sub_mi",
-                "$this->dbName.MFHD_MASTER sub_mm"
+                "$this->dbName.MFHD_MASTER sub_mm",
             ];
 
             $subWhere = [
@@ -936,12 +940,12 @@ EOT;
                 'sub_mi.ITEM_ID=sub_i.ITEM_ID',
                 'sub_mm.MFHD_ID=sub_mi.MFHD_ID',
                 'sub_rgl.LOCATION_ID=sub_mm.LOCATION_ID',
-                "sub_mm.SUPPRESS_IN_OPAC='N'"
+                "sub_mm.SUPPRESS_IN_OPAC='N'",
             ];
 
             $subGroup = [
                 'sub_rgl.GROUP_ID',
-                'sub_i.ITEM_ID'
+                'sub_i.ITEM_ID',
             ];
 
             $sqlBind['subBibId'] = $bibId;
@@ -951,18 +955,18 @@ EOT;
                 'from' => $subFrom,
                 'where' => $subWhere,
                 'group' => $subGroup,
-                'bind' => []
+                'bind' => [],
             ];
 
             $subSql = $this->buildSqlFromArray($subArray);
 
             $itemWhere = <<<EOT
-rg.GROUP_ID NOT IN (
-  SELECT status.GROUP_ID
-  FROM ({$subSql['string']}) status
-  WHERE status.status=1
-)
-EOT;
+                rg.GROUP_ID NOT IN (
+                  SELECT status.GROUP_ID
+                  FROM ({$subSql['string']}) status
+                  WHERE status.status=1
+                )
+                EOT;
 
             $key = 'disableAvailabilityCheckForRequestGroups';
             if (isset($this->config['Holds'][$key])) {
@@ -984,7 +988,7 @@ EOT;
             'expressions' => $sqlExpressions,
             'from' => $sqlFrom,
             'where' => $sqlWhere,
-            'bind' => $sqlBind
+            'bind' => $sqlBind,
         ];
 
         $sql = $this->buildSqlFromArray($sqlArray);
@@ -999,7 +1003,7 @@ EOT;
         while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
             $results[] = [
                 'id' => $row['GROUP_ID'],
-                'name' => utf8_encode($row['GROUP_NAME'])
+                'name' => utf8_encode($row['GROUP_NAME']),
             ];
         }
 
@@ -1225,17 +1229,18 @@ EOT;
             // Build Hierarchy
             $hierarchy = [
                 'patron' =>  $patronId,
-                'patronStatus' => 'blocks'
+                'patronStatus' => 'blocks',
             ];
 
             // Add Required Params
             $params = [
                 'patron_homedb' => $this->ws_patronHomeUbId,
-                'view' => 'full'
+                'view' => 'full',
             ];
 
             $blocks = $this->makeRequest($hierarchy, $params);
-            if ($blocks
+            if (
+                $blocks
                 && (string)$blocks->{'reply-text'} == 'ok'
                 && isset($blocks->blocks->institution->borrowingBlock)
             ) {
@@ -1283,11 +1288,11 @@ EOT;
                 $dbKey = $this->encodeXML($dbKey);
 
                 $itemIdentifiers .= <<<EOT
-      <myac:itemIdentifier>
-       <myac:itemId>$loanId</myac:itemId>
-       <myac:ubId>$dbKey</myac:ubId>
-      </myac:itemIdentifier>
-EOT;
+                          <myac:itemIdentifier>
+                           <myac:itemId>$loanId</myac:itemId>
+                           <myac:ubId>$dbKey</myac:ubId>
+                          </myac:itemIdentifier>
+                    EOT;
             }
 
             $patronId = $this->encodeXML($patron['id']);
@@ -1302,14 +1307,14 @@ EOT;
             // Voyager 8.1, but who knows if it fails with UB or something, so let's
             // try to play along with the rules.
             $xml = <<<EOT
-<?xml version="1.0" encoding="UTF-8"?>
-<ser:serviceParameters
-xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
-  <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$localUbId">
-    <ser:authFactor type="B">$barcode</ser:authFactor>
-  </ser:patronIdentifier>
-</ser:serviceParameters>
-EOT;
+                <?xml version="1.0" encoding="UTF-8"?>
+                <ser:serviceParameters
+                xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
+                  <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$localUbId">
+                    <ser:authFactor type="B">$barcode</ser:authFactor>
+                  </ser:patronIdentifier>
+                </ser:serviceParameters>
+                EOT;
 
             $response = $this->makeRequest(
                 ['AuthenticatePatronService' => false],
@@ -1322,21 +1327,21 @@ EOT;
             }
 
             $xml = <<<EOT
-<?xml version="1.0" encoding="UTF-8"?>
-<ser:serviceParameters
-xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
-   <ser:parameters/>
-   <ser:definedParameters xsi:type="myac:myAccountServiceParametersType"
-   xmlns:myac="http://www.endinfosys.com/Voyager/myAccount"
-   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-$itemIdentifiers
-   </ser:definedParameters>
-  <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$localUbId"
-  patronId="$patronId">
-    <ser:authFactor type="B">$barcode</ser:authFactor>
-  </ser:patronIdentifier>
-</ser:serviceParameters>
-EOT;
+                <?xml version="1.0" encoding="UTF-8"?>
+                <ser:serviceParameters
+                xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
+                   <ser:parameters/>
+                   <ser:definedParameters xsi:type="myac:myAccountServiceParametersType"
+                   xmlns:myac="http://www.endinfosys.com/Voyager/myAccount"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                $itemIdentifiers
+                   </ser:definedParameters>
+                  <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$localUbId"
+                  patronId="$patronId">
+                    <ser:authFactor type="B">$barcode</ser:authFactor>
+                  </ser:patronIdentifier>
+                </ser:serviceParameters>
+                EOT;
 
             $response = $this->makeRequest(
                 ['RenewService' => false],
@@ -1358,7 +1363,8 @@ EOT;
             // The service doesn't actually return messages (in Voyager 8.1),
             // but maybe in the future...
             foreach ($response->xpath('//ser:message') as $message) {
-                if ($message->attributes()->type == 'system'
+                if (
+                    $message->attributes()->type == 'system'
                     || $message->attributes()->type == 'error'
                 ) {
                     return false;
@@ -1448,7 +1454,7 @@ EOT;
             $params = [
                 'patron' => $patronId,
                 'patron_homedb' => $this->ws_patronHomeUbId,
-                'view' => 'full'
+                'view' => 'full',
             ];
 
             $check = $this->makeRequest($hierarchy, $params, 'GET', false);
@@ -1490,7 +1496,8 @@ EOT;
         $type,
         $requestData
     ) {
-        if (empty($patron) || empty($requestData) || empty($requestData['bibId'])
+        if (
+            empty($patron) || empty($requestData) || empty($requestData['bibId'])
             || empty($type)
         ) {
             return ['success' => false, 'status' => 'hold_error_fail'];
@@ -1511,41 +1518,41 @@ EOT;
 
         // Build request
         $xml = <<<EOT
-<?xml version="1.0" encoding="UTF-8"?>
-<ser:serviceParameters
-  xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
-  <ser:parameters>
-    <ser:parameter key="bibDbCode">
-      <ser:value>LOCAL</ser:value>
-    </ser:parameter>
-    <ser:parameter key="requestCode">
-      <ser:value>$type</ser:value>
-    </ser:parameter>
-    <ser:parameter key="requestSiteId">
-      <ser:value>$localUbId</ser:value>
-    </ser:parameter>
-    <ser:parameter key="CVAL">
-      <ser:value>$cval</ser:value>
-    </ser:parameter>
+            <?xml version="1.0" encoding="UTF-8"?>
+            <ser:serviceParameters
+              xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
+              <ser:parameters>
+                <ser:parameter key="bibDbCode">
+                  <ser:value>LOCAL</ser:value>
+                </ser:parameter>
+                <ser:parameter key="requestCode">
+                  <ser:value>$type</ser:value>
+                </ser:parameter>
+                <ser:parameter key="requestSiteId">
+                  <ser:value>$localUbId</ser:value>
+                </ser:parameter>
+                <ser:parameter key="CVAL">
+                  <ser:value>$cval</ser:value>
+                </ser:parameter>
 
-EOT;
+            EOT;
         foreach ($requestData as $key => $value) {
             $value = htmlspecialchars($value, ENT_COMPAT, 'UTF-8');
             $xml .= <<<EOT
-    <ser:parameter key="$key">
-      <ser:value>$value</ser:value>
-    </ser:parameter>
+                    <ser:parameter key="$key">
+                      <ser:value>$value</ser:value>
+                    </ser:parameter>
 
-EOT;
+                EOT;
         }
         $xml .= <<<EOT
-  </ser:parameters>
-  <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$localUbId"
-    patronId="$patronId">
-    <ser:authFactor type="B">$barcode</ser:authFactor>
-  </ser:patronIdentifier>
-</ser:serviceParameters>
-EOT;
+              </ser:parameters>
+              <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$localUbId"
+                patronId="$patronId">
+                <ser:authFactor type="B">$barcode</ser:authFactor>
+              </ser:patronIdentifier>
+            </ser:serviceParameters>
+            EOT;
 
         $response = $this->makeRequest(
             ['SendPatronRequestService' => false],
@@ -1570,7 +1577,7 @@ EOT;
             if ($message->attributes()->type == 'success') {
                 return [
                     'success' => true,
-                    'status' => 'hold_request_success'
+                    'status' => 'hold_request_success',
                 ];
             }
             if ($message->attributes()->type == 'system') {
@@ -1632,7 +1639,7 @@ EOT;
     {
         return [
             'success' => false,
-            'sysMessage' => $msg
+            'sysMessage' => $msg,
         ];
     }
 
@@ -1648,18 +1655,18 @@ EOT;
     protected function isRecordOnLoan($patronId, $bibId, $itemId = null)
     {
         $sqlExpressions = [
-            'count(cta.ITEM_ID) CNT'
+            'count(cta.ITEM_ID) CNT',
         ];
 
         $sqlFrom = [
             "$this->dbName.BIB_ITEM bi",
-            "$this->dbName.CIRC_TRANSACTIONS cta"
+            "$this->dbName.CIRC_TRANSACTIONS cta",
         ];
 
         $sqlWhere = [
             'cta.PATRON_ID=:patronId',
             'bi.BIB_ID=:bibId',
-            'bi.ITEM_ID=cta.ITEM_ID'
+            'bi.ITEM_ID=cta.ITEM_ID',
         ];
 
         if ($this->requestGroupsEnabled) {
@@ -1684,7 +1691,7 @@ EOT;
             'expressions' => $sqlExpressions,
             'from' => $sqlFrom,
             'where' => $sqlWhere,
-            'bind' => $sqlBind
+            'bind' => $sqlBind,
         ];
 
         $sql = $this->buildSqlFromArray($sqlArray);
@@ -1709,14 +1716,14 @@ EOT;
     protected function itemsExist($bibId, ?int $requestGroupId = null)
     {
         $sqlExpressions = [
-            'count(i.ITEM_ID) CNT'
+            'count(i.ITEM_ID) CNT',
         ];
 
         $sqlFrom = [
             "$this->dbName.BIB_ITEM bi",
             "$this->dbName.ITEM i",
             "$this->dbName.MFHD_ITEM mi",
-            "$this->dbName.MFHD_MASTER mm"
+            "$this->dbName.MFHD_MASTER mm",
         ];
 
         $sqlWhere = [
@@ -1724,7 +1731,7 @@ EOT;
             'i.ITEM_ID=bi.ITEM_ID',
             'mi.ITEM_ID=i.ITEM_ID',
             'mm.MFHD_ID=mi.MFHD_ID',
-            "mm.SUPPRESS_IN_OPAC='N'"
+            "mm.SUPPRESS_IN_OPAC='N'",
         ];
 
         if ($this->excludedItemLocations) {
@@ -1747,7 +1754,7 @@ EOT;
             'expressions' => $sqlExpressions,
             'from' => $sqlFrom,
             'where' => $sqlWhere,
-            'bind' => $sqlBind
+            'bind' => $sqlBind,
         ];
 
         $sql = $this->buildSqlFromArray($sqlArray);
@@ -1773,7 +1780,7 @@ EOT;
         // Build inner query first
         $sqlExpressions = [
             'i.ITEM_ID',
-            'max(ist.ITEM_STATUS) as STATUS'
+            'max(ist.ITEM_STATUS) as STATUS',
         ];
 
         $sqlFrom = [
@@ -1781,7 +1788,7 @@ EOT;
             "$this->dbName.BIB_ITEM bi",
             "$this->dbName.ITEM i",
             "$this->dbName.MFHD_ITEM mi",
-            "$this->dbName.MFHD_MASTER mm"
+            "$this->dbName.MFHD_MASTER mm",
         ];
 
         $sqlWhere = [
@@ -1790,7 +1797,7 @@ EOT;
             'ist.ITEM_ID=i.ITEM_ID',
             'mi.ITEM_ID=i.ITEM_ID',
             'mm.MFHD_ID=mi.MFHD_ID',
-            "mm.SUPPRESS_IN_OPAC='N'"
+            "mm.SUPPRESS_IN_OPAC='N'",
         ];
 
         if ($this->excludedItemLocations) {
@@ -1799,7 +1806,7 @@ EOT;
         }
 
         $sqlGroup = [
-            'i.ITEM_ID'
+            'i.ITEM_ID',
         ];
 
         $sqlBind = ['bibId' => $bibId];
@@ -1818,7 +1825,7 @@ EOT;
             'from' => $sqlFrom,
             'where' => $sqlWhere,
             'group' => $sqlGroup,
-            'bind' => $sqlBind
+            'bind' => $sqlBind,
         ];
 
         $sql = $this->buildSqlFromArray($sqlArray);
@@ -1864,7 +1871,7 @@ EOT;
             "HOLD_RECALL_ITEMS.HOLD_RECALL_STATUS < 3)",
             "HOLD_RECALL.BIB_ID = BIB_TEXT.BIB_ID(+)",
             "HOLD_RECALL.REQUEST_GROUP_ID = REQUEST_GROUP.GROUP_ID(+)",
-            "HOLD_RECALL.HOLDING_DB_ID = VOYAGER_DATABASES.DB_ID(+)"
+            "HOLD_RECALL.HOLDING_DB_ID = VOYAGER_DATABASES.DB_ID(+)",
         ];
 
         return $sqlArray;
@@ -1913,7 +1920,7 @@ EOT;
             $copyFields = [
                 'id', 'item_id', 'volume', 'publication_year', 'title',
                 'institution_id', 'institution_name',
-                'institution_dbkey', 'in_transit'
+                'institution_dbkey', 'in_transit',
             ];
             $apiHolds = $this->getHoldsFromApi($patron, true);
             foreach ($apiHolds as $apiHold) {
@@ -2003,7 +2010,8 @@ EOT;
             return $this->holdError('hold_invalid_pickup');
         }
 
-        if ($this->requestGroupsEnabled && !$itemId
+        if (
+            $this->requestGroupsEnabled && !$itemId
             && empty($holdDetails['requestGroupId'])
         ) {
             return $this->holdError('hold_invalid_request_group');
@@ -2027,7 +2035,8 @@ EOT;
             if (isset($this->config['Holds'][$key])) {
                 $disabledGroups = explode(':', $this->config['Holds'][$key]);
             }
-            if (!isset($holdDetails['requestGroupId'])
+            if (
+                !isset($holdDetails['requestGroupId'])
                 || !in_array($holdDetails['requestGroupId'], $disabledGroups)
             ) {
                 $available = $this->itemsAvailable(
@@ -2054,7 +2063,7 @@ EOT;
             'bibId' => $bibId,
             'PICK' => $pickUpLocation,
             'REQNNA' => $lastInterestDate,
-            'REQCOMMENTS' => $comment
+            'REQCOMMENTS' => $comment,
         ];
         if ($level == 'copy' && $itemId) {
             $requestData['itemId'] = $itemId;
@@ -2099,13 +2108,13 @@ EOT;
             $hierarchy = [
                 'patron' => $patron['id'],
                  'circulationActions' => 'requests',
-                 'holds' => $cancelID
+                 'holds' => $cancelID,
             ];
 
             // Add Required Params
             $params = [
                 'patron_homedb' => $this->ws_patronHomeUbId,
-                'view' => 'full'
+                'view' => 'full',
             ];
 
             // Get Data
@@ -2126,7 +2135,7 @@ EOT;
                 ];
             } else {
                 $response[$itemId] = [
-                    'success' => false, 'status' => 'hold_cancel_fail'
+                    'success' => false, 'status' => 'hold_cancel_fail',
                 ];
             }
         }
@@ -2198,13 +2207,13 @@ EOT;
         // Build Hierarchy
         $hierarchy = [
             'patron' =>  $patron['id'],
-            'circulationActions' => 'loans'
+            'circulationActions' => 'loans',
         ];
 
         // Add Required Params
         $params = [
             'patron_homedb' => $this->ws_patronHomeUbId,
-            'view' => 'full'
+            'view' => 'full',
         ];
 
         $results = $this->makeRequest($hierarchy, $params);
@@ -2226,7 +2235,8 @@ EOT;
                         $renewable = (string)$loan->attributes()->canRenew == 'Y';
 
                         foreach ($transactions as &$transaction) {
-                            if (!isset($transaction['institution_id'])
+                            if (
+                                !isset($transaction['institution_id'])
                                 && $transaction['item_id'] == (string)$loan->itemId
                             ) {
                                 $transaction['renewable'] = $renewable;
@@ -2306,13 +2316,13 @@ EOT;
         $hierarchy = [
             'patron' =>  $patron['id'],
             'circulationActions' => 'requests',
-            'holds' => false
+            'holds' => false,
         ];
 
         // Add Required Params
         $params = [
             'patron_homedb' => $this->ws_patronHomeUbId,
-            'view' => 'full'
+            'view' => 'full',
         ];
 
         $results = $this->makeRequest($hierarchy, $params);
@@ -2370,7 +2380,7 @@ EOT;
                         'in_transit' => (substr((string)$item->statusText, 0, 13)
                             == 'In transit to')
                           ? substr((string)$item->statusText, 14)
-                          : ''
+                          : '',
                     ];
                 }
             }
@@ -2395,13 +2405,13 @@ EOT;
         $hierarchy = [
             'patron' =>  $patron['id'],
             'circulationActions' => 'requests',
-            'callslips' => false
+            'callslips' => false,
         ];
 
         // Add Required Params
         $params = [
             'patron_homedb' => $this->ws_patronHomeUbId,
-            'view' => 'full'
+            'view' => 'full',
         ];
 
         $results = $this->makeRequest($hierarchy, $params);
@@ -2413,7 +2423,8 @@ EOT;
         $requests = [];
         if (isset($results->callslips->institution)) {
             foreach ($results->callslips->institution as $institution) {
-                if (!$local
+                if (
+                    !$local
                     && $this->isLocalInst((string)$institution->attributes()->id)
                 ) {
                     // Unless $local is set, ignore local callslips; we have them
@@ -2463,7 +2474,7 @@ EOT;
                                 'Y-m-d',
                                 substr((string)$item->statusText, 9)
                             )
-                            : ''
+                            : '',
                     ];
                 }
             }
@@ -2493,7 +2504,8 @@ EOT;
         $bibId = $details['id'];
 
         // Make Sure Pick Up Location is Valid
-        if (isset($details['pickUpLocation'])
+        if (
+            isset($details['pickUpLocation'])
             && !$this->pickUpLocationIsValid(
                 $details['pickUpLocation'],
                 $patron,
@@ -2519,7 +2531,7 @@ EOT;
         $params = [
             'patron' => $patron['id'],
             'patron_homedb' => $this->ws_patronHomeUbId,
-            'view' => 'full'
+            'view' => 'full',
         ];
 
         $xml = [];
@@ -2530,7 +2542,7 @@ EOT;
                 'reqinput field="2"' => $details['issue'],
                 'reqinput field="3"' => $details['year'],
                 'dbkey' => $this->ws_dbKey,
-                'mfhdId' => $mfhdId
+                'mfhdId' => $mfhdId,
             ];
             if (isset($details['pickUpLocation'])) {
                 $xml['call-slip-title-parameters']['pickup-location']
@@ -2539,7 +2551,7 @@ EOT;
         } else {
             $xml['call-slip-parameters'] = [
                 'comment' => $comment,
-                'dbkey' => $this->ws_dbKey
+                'dbkey' => $this->ws_dbKey,
             ];
             if (isset($details['pickUpLocation'])) {
                 $xml['call-slip-parameters']['pickup-location']
@@ -2608,13 +2620,13 @@ EOT;
             $hierarchy = [
                 'patron' => $patron['id'],
                 'circulationActions' => 'requests',
-                'callslips' => $cancelID
+                'callslips' => $cancelID,
             ];
 
             // Add Required Params
             $params = [
                 'patron_homedb' => $this->ws_patronHomeUbId,
-                'view' => 'full'
+                'view' => 'full',
             ];
 
             // Get Data
@@ -2636,7 +2648,7 @@ EOT;
             } else {
                 $response[$itemId] = [
                     'success' => false,
-                    'status' => 'storage_retrieval_request_cancel_fail'
+                    'status' => 'storage_retrieval_request_cancel_fail',
                 ];
             }
         }
@@ -2715,23 +2727,23 @@ EOT;
         // type. Additionally, this seems to be mandatory, as PatronRequestService
         // may fail otherwise.
         $xml = <<<EOT
-<?xml version="1.0" encoding="UTF-8"?>
-<ser:serviceParameters
-xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
-  <ser:parameters>
-    <ser:parameter key="bibId">
-      <ser:value>$bibId</ser:value>
-    </ser:parameter>
-    <ser:parameter key="bibDbCode">
-      <ser:value>LOCAL</ser:value>
-    </ser:parameter>
-  </ser:parameters>
-  <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$patronHomeUbId"
-  patronId="$patronId">
-    <ser:authFactor type="B">$barcode</ser:authFactor>
-  </ser:patronIdentifier>
-</ser:serviceParameters>
-EOT;
+            <?xml version="1.0" encoding="UTF-8"?>
+            <ser:serviceParameters
+            xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
+              <ser:parameters>
+                <ser:parameter key="bibId">
+                  <ser:value>$bibId</ser:value>
+                </ser:parameter>
+                <ser:parameter key="bibDbCode">
+                  <ser:value>LOCAL</ser:value>
+                </ser:parameter>
+              </ser:parameters>
+              <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$patronHomeUbId"
+              patronId="$patronId">
+                <ser:authFactor type="B">$barcode</ser:authFactor>
+              </ser:patronIdentifier>
+            </ser:serviceParameters>
+            EOT;
 
         $response = $this->makeRequest(
             ['PatronRequestsService' => false],
@@ -2768,32 +2780,32 @@ EOT;
         }
 
         $xml = <<<EOT
-<?xml version="1.0" encoding="UTF-8"?>
-<ser:serviceParameters
-xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
-  <ser:parameters>
-    <ser:parameter key="bibId">
-      <ser:value>$bibId</ser:value>
-    </ser:parameter>
-    <ser:parameter key="bibDbCode">
-      <ser:value>LOCAL</ser:value>
-    </ser:parameter>
-    <ser:parameter key="bibDbName">
-      <ser:value>$bibDbName</ser:value>
-    </ser:parameter>
-    <ser:parameter key="requestCode">
-      <ser:value>UB</ser:value>
-    </ser:parameter>
-    <ser:parameter key="requestSiteId">
-      <ser:value>$localUbId</ser:value>
-    </ser:parameter>
-  </ser:parameters>
-  <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$patronHomeUbId"
-  patronId="$patronId">
-    <ser:authFactor type="B">$barcode</ser:authFactor>
-  </ser:patronIdentifier>
-</ser:serviceParameters>
-EOT;
+            <?xml version="1.0" encoding="UTF-8"?>
+            <ser:serviceParameters
+            xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
+              <ser:parameters>
+                <ser:parameter key="bibId">
+                  <ser:value>$bibId</ser:value>
+                </ser:parameter>
+                <ser:parameter key="bibDbCode">
+                  <ser:value>LOCAL</ser:value>
+                </ser:parameter>
+                <ser:parameter key="bibDbName">
+                  <ser:value>$bibDbName</ser:value>
+                </ser:parameter>
+                <ser:parameter key="requestCode">
+                  <ser:value>UB</ser:value>
+                </ser:parameter>
+                <ser:parameter key="requestSiteId">
+                  <ser:value>$localUbId</ser:value>
+                </ser:parameter>
+              </ser:parameters>
+              <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$patronHomeUbId"
+              patronId="$patronId">
+                <ser:authFactor type="B">$barcode</ser:authFactor>
+              </ser:patronIdentifier>
+            </ser:serviceParameters>
+            EOT;
 
         $response = $this->makeRequest(
             ['PatronRequestService' => false],
@@ -2830,7 +2842,7 @@ EOT;
                     foreach ($field->xpath('./req:select/req:option') as $option) {
                         $items[] = [
                             'id' => (string)$option->attributes()->id,
-                            'name' => (string)$option
+                            'name' => (string)$option,
                         ];
                     }
                     break;
@@ -2839,7 +2851,7 @@ EOT;
                         $libraries[] = [
                             'id' => (string)$option->attributes()->id,
                             'name' => (string)$option,
-                            'isDefault' => $option->attributes()->isDefault == 'Y'
+                            'isDefault' => $option->attributes()->isDefault == 'Y',
                         ];
                     }
                     break;
@@ -2848,7 +2860,7 @@ EOT;
                         $locations[] = [
                             'id' => (string)$option->attributes()->id,
                             'name' => (string)$option,
-                            'isDefault' => $option->attributes()->isDefault == 'Y'
+                            'isDefault' => $option->attributes()->isDefault == 'Y',
                         ];
                     }
                     break;
@@ -2865,7 +2877,7 @@ EOT;
             'items' => $items,
             'libraries' => $libraries,
             'locations' => $locations,
-            'requiredBy' => $requiredByDate
+            'requiredBy' => $requiredByDate,
         ];
         $this->putCachedData($cacheId, $results);
         return $results;
@@ -2983,20 +2995,20 @@ EOT;
         $pickupLib = $this->encodeXML($pickupLib);
 
         $xml = <<<EOT
-<?xml version="1.0" encoding="UTF-8"?>
-<ser:serviceParameters
-xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
-  <ser:parameters>
-    <ser:parameter key="pickupLibId">
-      <ser:value>$pickupLib</ser:value>
-    </ser:parameter>
-  </ser:parameters>
-  <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$patronHomeUbId"
-  patronId="$patronId">
-    <ser:authFactor type="B">$barcode</ser:authFactor>
-  </ser:patronIdentifier>
-</ser:serviceParameters>
-EOT;
+            <?xml version="1.0" encoding="UTF-8"?>
+            <ser:serviceParameters
+            xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
+              <ser:parameters>
+                <ser:parameter key="pickupLibId">
+                  <ser:value>$pickupLib</ser:value>
+                </ser:parameter>
+              </ser:parameters>
+              <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$patronHomeUbId"
+              patronId="$patronId">
+                <ser:authFactor type="B">$barcode</ser:authFactor>
+              </ser:patronIdentifier>
+            </ser:serviceParameters>
+            EOT;
 
         $response = $this->makeRequest(
             ['UBPickupLibService' => false],
@@ -3026,7 +3038,7 @@ EOT;
             $locations[] = [
                 'id' => (string)$location->attributes()->id,
                 'name' => (string)$location,
-                'isDefault' => $location->attributes()->isDefault == 'Y'
+                'isDefault' => $location->attributes()->isDefault == 'Y',
             ];
         }
         return $locations;
@@ -3096,56 +3108,56 @@ EOT;
         if (!$pickupLocationValid) {
             return [
                 'success' => false,
-                'sysMessage' => 'ill_request_place_fail_missing'
+                'sysMessage' => 'ill_request_place_fail_missing',
             ];
         }
 
         // Attempt Request
         $xml = <<<EOT
-<?xml version="1.0" encoding="UTF-8"?>
-<ser:serviceParameters
-xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
-  <ser:parameters>
-    <ser:parameter key="bibId">
-      <ser:value>$bibId</ser:value>
-    </ser:parameter>
-    <ser:parameter key="bibDbCode">
-      <ser:value>LOCAL</ser:value>
-    </ser:parameter>
-    <ser:parameter key="bibDbName">
-      <ser:value>$bibDbName</ser:value>
-    </ser:parameter>
-    <ser:parameter key="Select_Library">
-      <ser:value>$localUbId</ser:value>
-    </ser:parameter>
-    <ser:parameter key="requestCode">
-      <ser:value>UB</ser:value>
-    </ser:parameter>
-    <ser:parameter key="requestSiteId">
-      <ser:value>$localUbId</ser:value>
-    </ser:parameter>
-    <ser:parameter key="itemId">
-      <ser:value>$itemId</ser:value>
-    </ser:parameter>
-    <ser:parameter key="Select_Pickup_Lib">
-      <ser:value>$pickupLibrary</ser:value>
-    </ser:parameter>
-    <ser:parameter key="PICK">
-      <ser:value>$pickupLocation</ser:value>
-    </ser:parameter>
-    <ser:parameter key="REQNNA">
-      <ser:value>$lastInterestDate</ser:value>
-    </ser:parameter>
-    <ser:parameter key="REQCOMMENTS">
-      <ser:value>$comment</ser:value>
-    </ser:parameter>
-  </ser:parameters>
-  <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$ubId"
-  patronId="$patronId">
-    <ser:authFactor type="B">$barcode</ser:authFactor>
-  </ser:patronIdentifier>
-</ser:serviceParameters>
-EOT;
+            <?xml version="1.0" encoding="UTF-8"?>
+            <ser:serviceParameters
+            xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
+              <ser:parameters>
+                <ser:parameter key="bibId">
+                  <ser:value>$bibId</ser:value>
+                </ser:parameter>
+                <ser:parameter key="bibDbCode">
+                  <ser:value>LOCAL</ser:value>
+                </ser:parameter>
+                <ser:parameter key="bibDbName">
+                  <ser:value>$bibDbName</ser:value>
+                </ser:parameter>
+                <ser:parameter key="Select_Library">
+                  <ser:value>$localUbId</ser:value>
+                </ser:parameter>
+                <ser:parameter key="requestCode">
+                  <ser:value>UB</ser:value>
+                </ser:parameter>
+                <ser:parameter key="requestSiteId">
+                  <ser:value>$localUbId</ser:value>
+                </ser:parameter>
+                <ser:parameter key="itemId">
+                  <ser:value>$itemId</ser:value>
+                </ser:parameter>
+                <ser:parameter key="Select_Pickup_Lib">
+                  <ser:value>$pickupLibrary</ser:value>
+                </ser:parameter>
+                <ser:parameter key="PICK">
+                  <ser:value>$pickupLocation</ser:value>
+                </ser:parameter>
+                <ser:parameter key="REQNNA">
+                  <ser:value>$lastInterestDate</ser:value>
+                </ser:parameter>
+                <ser:parameter key="REQCOMMENTS">
+                  <ser:value>$comment</ser:value>
+                </ser:parameter>
+              </ser:parameters>
+              <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$ubId"
+              patronId="$patronId">
+                <ser:authFactor type="B">$barcode</ser:authFactor>
+              </ser:patronIdentifier>
+            </ser:serviceParameters>
+            EOT;
 
         $response = $this->makeRequest(
             ['SendPatronRequestService' => false],
@@ -3170,7 +3182,7 @@ EOT;
             if ($message->attributes()->type == 'success') {
                 return [
                     'success' => true,
-                    'status' => 'ill_request_place_success'
+                    'status' => 'ill_request_place_success',
                 ];
             }
             if ($message->attributes()->type == 'system') {
@@ -3227,7 +3239,7 @@ EOT;
             // Build Hierarchy
             $hierarchy = [
                 'patron' => $patron['id'],
-                 'circulationActions' => 'requests'
+                 'circulationActions' => 'requests',
             ];
             // An UB request is
             if ($type == 'C') {
@@ -3239,7 +3251,7 @@ EOT;
             // Add Required Params
             $params = [
                 'patron_homedb' => $this->ws_patronHomeUbId,
-                'view' => 'full'
+                'view' => 'full',
             ];
 
             // Get Data
@@ -3261,7 +3273,7 @@ EOT;
             } else {
                 $response[$itemId] = [
                     'success' => false,
-                    'status' => 'ill_request_cancel_fail'
+                    'status' => 'ill_request_cancel_fail',
                 ];
             }
         }
@@ -3347,11 +3359,12 @@ EOT;
             $sql = "SELECT PATRON_PIN FROM {$this->dbName}.PATRON WHERE"
                 . ' PATRON_ID=:id';
             $sqlStmt = $this->executeSQL($sql, ['id' => $patron['id']]);
-            if (!($row = $sqlStmt->fetch(PDO::FETCH_ASSOC))
+            if (
+                !($row = $sqlStmt->fetch(PDO::FETCH_ASSOC))
                 || null !== $row['PATRON_PIN']
             ) {
                 return [
-                    'success' => false, 'status' => 'authentication_error_invalid'
+                    'success' => false, 'status' => 'authentication_error_invalid',
                 ];
             }
         }
@@ -3364,28 +3377,28 @@ EOT;
         );
         if ($newPIN === '') {
             return [
-                'success' => false, 'status' => 'password_error_invalid'
+                'success' => false, 'status' => 'password_error_invalid',
             ];
         }
         $barcode = htmlspecialchars($patron['cat_username'], ENT_COMPAT, 'UTF-8');
 
         $xml = <<<EOT
-<?xml version="1.0" encoding="UTF-8"?>
-<ser:serviceParameters
-xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
-   <ser:parameters>
-      <ser:parameter key="oldPatronPIN">
-         <ser:value>$oldPIN</ser:value>
-      </ser:parameter>
-      <ser:parameter key="newPatronPIN">
-         <ser:value>$newPIN</ser:value>
-      </ser:parameter>
-   </ser:parameters>
-   <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$ubId" patronId="$id">
-      <ser:authFactor type="B">$barcode</ser:authFactor>
-   </ser:patronIdentifier>
-</ser:serviceParameters>
-EOT;
+            <?xml version="1.0" encoding="UTF-8"?>
+            <ser:serviceParameters
+            xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
+               <ser:parameters>
+                  <ser:parameter key="oldPatronPIN">
+                     <ser:value>$oldPIN</ser:value>
+                  </ser:parameter>
+                  <ser:parameter key="newPatronPIN">
+                     <ser:value>$newPIN</ser:value>
+                  </ser:parameter>
+               </ser:parameters>
+               <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$ubId" patronId="$id">
+                  <ser:authFactor type="B">$barcode</ser:authFactor>
+               </ser:patronIdentifier>
+            </ser:serviceParameters>
+            EOT;
 
         $result = $this->makeRequest(
             ['ChangePINService' => false],
@@ -3405,19 +3418,19 @@ EOT;
             $exceptionNamespace = 'com.endinfosys.voyager.patronpin.PatronPIN.';
             if ($code == $exceptionNamespace . 'ValidateException') {
                 return [
-                    'success' => false, 'status' => 'authentication_error_invalid'
+                    'success' => false, 'status' => 'authentication_error_invalid',
                 ];
             }
             if ($code == $exceptionNamespace . 'ValidateUniqueException') {
                 return [
-                    'success' => false, 'status' => 'password_error_not_unique'
+                    'success' => false, 'status' => 'password_error_not_unique',
                 ];
             }
             if ($code == $exceptionNamespace . 'ValidateLengthException') {
                 // This error may happen even with correct settings if the new PIN
                 // contains invalid characters.
                 return [
-                    'success' => false, 'status' => 'password_error_invalid'
+                    'success' => false, 'status' => 'password_error_invalid',
                 ];
             }
             throw new ILSException((string)$error);

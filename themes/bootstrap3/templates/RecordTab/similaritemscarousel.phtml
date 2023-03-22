@@ -61,19 +61,19 @@
 <?php
   $script = $this->config()->ajaxCoversEnabled() ? "loadCovers();\n" : "";
   $script .= <<<JS
-var normalizeHeightCount = $('#similar-items-carousel img').length;
-function normalizeHeights() {
-  if (--normalizeHeightCount > 0) return;
-  var tallest = 0;
-  var items = $('#similar-items-carousel .hover-overlay');
-  items.each(function() { //add heights to array
-    if (tallest < $(this).height()) {
-      tallest = $(this).height();
-    }
-  });
-  items.css('min-height', (tallest+25) + 'px');
-}
-$('#similar-items-carousel img').on('load', normalizeHeights);
-JS;
+      var normalizeHeightCount = $('#similar-items-carousel img').length;
+      function normalizeHeights() {
+        if (--normalizeHeightCount > 0) return;
+        var tallest = 0;
+        var items = $('#similar-items-carousel .hover-overlay');
+        items.each(function() { //add heights to array
+          if (tallest < $(this).height()) {
+            tallest = $(this).height();
+          }
+        });
+        items.css('min-height', (tallest+25) + 'px');
+      }
+      $('#similar-items-carousel img').on('load', normalizeHeights);
+      JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>

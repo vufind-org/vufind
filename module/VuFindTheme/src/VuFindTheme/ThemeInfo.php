@@ -313,7 +313,8 @@ class ThemeInfo
 
             // from child to parent
             foreach ($currentThemeSet as $theme) {
-                if (isset($allThemeInfo[$theme])
+                if (
+                    isset($allThemeInfo[$theme])
                     && (empty($key) || isset($allThemeInfo[$theme][$key]))
                 ) {
                     $current = empty($key)

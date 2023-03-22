@@ -172,7 +172,8 @@ abstract class AbstractCssPreCompiler
         $dir = opendir($baseDir);
         $list = [];
         while ($line = readdir($dir)) {
-            if (is_dir($baseDir . $line)
+            if (
+                is_dir($baseDir . $line)
                 && file_exists($baseDir . $line . '/theme.config.php')
             ) {
                 $list[] = $line;

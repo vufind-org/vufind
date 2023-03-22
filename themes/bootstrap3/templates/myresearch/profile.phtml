@@ -48,7 +48,7 @@
                   <?=$this->transEsc('Always ask me')?>
                 </option>
                 <?php foreach ($this->pickup as $lib): ?>
-                  <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID'])?' selected="selected"':''?>><?=$this->transEscWithPrefix('location_', $lib['locationDisplay'])?></option>
+                  <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID']) ? ' selected="selected"' : ''?>><?=$this->transEscWithPrefix('location_', $lib['locationDisplay'])?></option>
                 <?php endforeach; ?>
               </select>
               <input class="btn btn-default" type="submit" value="<?=$this->transEscAttr('Save')?>" />
@@ -105,7 +105,7 @@
               $this->transEsc('Phone Number') => 'phone',
               $this->transEsc('Mobile Number') => 'mobile_phone',
               $this->transEsc('Group') => 'group',
-              $this->transEsc('patron_account_expires') => 'expiration_date'
+              $this->transEsc('patron_account_expires') => 'expiration_date',
             ]
         );
       ?>

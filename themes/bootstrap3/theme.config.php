@@ -61,8 +61,8 @@ return [
             'flashmessages' => 'VuFind\View\Helper\Bootstrap3\Flashmessages',
             'highlight' => 'VuFind\View\Helper\Bootstrap3\Highlight',
             'layoutClass' => 'VuFind\View\Helper\Bootstrap3\LayoutClass',
-            'search' => 'VuFind\View\Helper\Bootstrap3\Search'
-        ]
+            'search' => 'VuFind\View\Helper\Bootstrap3\Search',
+        ],
     ],
     'icons' => [
         'defaultSet' => 'FontAwesome',
@@ -281,5 +281,5 @@ return [
             'warning' => 'FontAwesome:exclamation-triangle',
         ],
     ],
-    'doctype' => 'HTML5'
+    'doctype' => 'HTML5',
 ];

@@ -118,7 +118,7 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
         $post = $overrides + [
             'username' => 'testuser', 'email' => 'user@test.com',
             'password' => 'testpass', 'password2' => 'testpass',
-            'firstname' => 'Test', 'lastname' => 'User'
+            'firstname' => 'Test', 'lastname' => 'User',
         ];
         return $this->getRequest($post);
     }
@@ -134,7 +134,7 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
     protected function getLoginRequest($overrides = [])
     {
         $post = $overrides + [
-            'username' => 'testuser', 'password' => 'testpass'
+            'username' => 'testuser', 'password' => 'testpass',
         ];
         return $this->getRequest($post);
     }

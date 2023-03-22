@@ -241,7 +241,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $loader = $this->getLoader($service, $factory);
         $input = [
             ['source' => 'Solr', 'id' => 'test1'],
-            'Solr|test2', 'Summon|test3', 'WorldCat|test4'
+            'Solr|test2', 'Summon|test3', 'WorldCat|test4',
         ];
         $this->assertEquals(
             [$driver1, $driver2, $driver3, $missing],
@@ -293,7 +293,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $loader = $this->getLoader($service, null, null, $fallbackLoader);
         $input = [
             ['source' => 'Solr', 'id' => 'test1'],
-            'Solr|test2', 'Summon|test3'
+            'Solr|test2', 'Summon|test3',
         ];
         $this->assertEquals(
             [$driver1, $driver2, $driver3],

@@ -79,7 +79,7 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCss($page, 'ul.breadcrumb li.active')->getText()
         );
         $results = $page->findAll('css', '.result');
-        $this->assertEquals(4, count($results));
+        $this->assertCount(4, $results);
     }
 
     /**
@@ -114,9 +114,9 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
         $extraConfigs = [
             'RecordTabs' => [
                 'VuFind\RecordDriver\SolrMarc' => [
-                    'tabs[Versions]' => false
-                ]
-            ]
+                    'tabs[Versions]' => false,
+                ],
+            ],
         ];
         $this->changeConfigs($extraConfigs);
         // Search for an item known to have other versions in test data:
@@ -139,7 +139,7 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCss($page, 'ul.breadcrumb li.active')->getText()
         );
         $results = $page->findAll('css', '.result');
-        $this->assertEquals(4, count($results));
+        $this->assertCount(4, $results);
     }
 
     /**
@@ -154,9 +154,9 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
         $extraConfigs = [
             'searches' => [
                 'General' => [
-                    'display_versions' => false
-                ]
-            ]
+                    'display_versions' => false,
+                ],
+            ],
         ];
         $this->changeConfigs($extraConfigs);
 
@@ -164,9 +164,9 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch('id:0001732009-0');
 
         // Click on the "other versions" link:
-        $this->assertEquals(
+        $this->assertCount(
             0,
-            count($page->findAll('css', 'div.record-versions a'))
+            $page->findAll('css', 'div.record-versions a')
         );
     }
 }

@@ -10,7 +10,7 @@
   $mapGraticule = $this->tab->getMapGraticule();
   $basemap = $this->tab->getBasemap();
   $params = [
-    json_encode($mapTabData), json_encode($mapGraticule), json_encode($basemap)
+    json_encode($mapTabData), json_encode($mapGraticule), json_encode($basemap),
   ];
   $jsParams = implode(', ', $params);
   $jsLoad = "loadMapTab(" . $jsParams . ");";

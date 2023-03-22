@@ -291,7 +291,7 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
 
         $urlParams = [
             'id' => $driver->getUniqueID(),
-            'keys' => $driver->tryMethod('getWorkKeys', [], [])
+            'keys' => $driver->tryMethod('getWorkKeys', [], []),
         ];
 
         $urlHelper = $this->getView()->plugin('url');

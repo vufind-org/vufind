@@ -271,7 +271,8 @@ class Importer
             )
         );
         $argCallback = function ($arg) use ($value, $fieldValues) {
-            if (substr($arg, 0, 2) == '$$'
+            if (
+                substr($arg, 0, 2) == '$$'
                 && substr($arg, -2) == '$$'
             ) {
                 $parts = explode(':', trim($arg, '$'), 2);

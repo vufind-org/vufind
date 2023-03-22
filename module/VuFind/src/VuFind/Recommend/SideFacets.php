@@ -207,7 +207,8 @@ class SideFacets extends AbstractFacets
         if ($flipCheckboxes) {
             $this->checkboxFacets = array_flip($this->checkboxFacets);
         }
-        if (!$showDynamicCheckboxFacets
+        if (
+            !$showDynamicCheckboxFacets
             || strtolower(trim($showDynamicCheckboxFacets)) === 'false'
         ) {
             $this->showDynamicCheckboxFacets = false;
@@ -364,7 +365,7 @@ class SideFacets extends AbstractFacets
             'date' => $this->getDateFacets(),
             'fulldate' => $this->getFullDateFacets(),
             'generic' => $this->getGenericRangeFacets(),
-            'numeric' => $this->getNumericRangeFacets()
+            'numeric' => $this->getNumericRangeFacets(),
         ];
         $processed = [];
         foreach ($raw as $type => $values) {

@@ -243,7 +243,7 @@ class Tags extends Gateway
                                 'MAX(?)',
                                 ['subq.tag_id'],
                                 [Expression::TYPE_IDENTIFIER]
-                            )
+                            ),
                         ],
                         Select::JOIN_LEFT
                     );
@@ -258,7 +258,7 @@ class Tags extends Gateway
                             'COUNT(DISTINCT(?))',
                             ["rt.user_id"],
                             [Expression::TYPE_IDENTIFIER]
-                        )
+                        ),
                     ]
                 );
                 $select->join(
@@ -332,7 +332,7 @@ class Tags extends Gateway
                         'COUNT(DISTINCT(?))',
                         ['rt.resource_id'],
                         [Expression::TYPE_IDENTIFIER]
-                    )
+                    ),
                 ]
             );
             $select->join(
@@ -394,7 +394,7 @@ class Tags extends Gateway
                         [Expression::TYPE_IDENTIFIER]
                     ),
                     'tag' => $this->caseSensitive
-                        ? 'tag' : new Expression('lower(tag)')
+                        ? 'tag' : new Expression('lower(tag)'),
                 ]
             );
             $select->join(
@@ -435,7 +435,7 @@ class Tags extends Gateway
                 [
                     'r.record_id' => $id,
                     'r.source' => $source,
-                    'user_id' => $userToCheck
+                    'user_id' => $userToCheck,
                 ]
             );
         return $sub;
@@ -468,7 +468,7 @@ class Tags extends Gateway
                         'MAX(?)',
                         ['resource_tags.posted'],
                         [Expression::TYPE_IDENTIFIER]
-                    )
+                    ),
                 ]
             );
             $select->join(
@@ -492,7 +492,7 @@ class Tags extends Gateway
                         [
                             'posted DESC',
                             'cnt DESC',
-                            new Expression('lower(tags.tag)')
+                            new Expression('lower(tags.tag)'),
                         ]
                     );
                     break;
@@ -507,7 +507,7 @@ class Tags extends Gateway
         foreach ($this->select($callback) as $t) {
             $tagList[] = [
                 'tag' => $t->tag,
-                'cnt' => $t->cnt
+                'cnt' => $t->cnt,
             ];
         }
         return $tagList;
@@ -558,7 +558,7 @@ class Tags extends Gateway
                         'MIN(?)',
                         ['id'],
                         [Expression::TYPE_IDENTIFIER]
-                    )
+                    ),
                 ]
             );
             $select->group(

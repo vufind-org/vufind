@@ -177,11 +177,11 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTest
         $post = [
             'id' => 'foo',
             'comment' => 'bar',
-            'rating' => '100'
+            'rating' => '100',
         ];
         $this->assertEquals(
             [
-                ['commentId' => true]
+                ['commentId' => true],
             ],
             $handler->handleRequest($this->getParamsHelper([], $post))
         );

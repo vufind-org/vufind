@@ -108,7 +108,7 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
                 'title' => 'nearby_items',
                 'providerId' => 'foo_ProviderId',
                 'links' => [],
-                'token' => 'foo_Id'
+                'token' => 'foo_Id',
             ]];
         $this->assertSame($expectedResult, $alpha->getFromSearch($results));
     }
@@ -167,11 +167,11 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
                            [
                             ['extras' =>
                                 ['title' => [['foo_title']],
-                                 'id' => [['foo_id']]
+                                 'id' => [['foo_id']],
                                 ],
-                            ]
-                           ]
-                        ]
+                            ],
+                           ],
+                        ],
                     ];
 
         $params = new ParamBag(['extras' => 'title:author:isbn:id']);
@@ -262,24 +262,24 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
                 [
                     'label' => 'View Record',
                     'icon' => 'fa-file-text-o',
-                    'url' => 'url_test'
+                    'url' => 'url_test',
                 ],
                 [
                     'label' => 'channel_expand',
                     'icon' => 'fa-search-plus',
-                    'url' => 'channels-record?id=foo_Id&source=foo_Identifier'
+                    'url' => 'channels-record?id=foo_Id&source=foo_Identifier',
                 ],
                 [
                     'label' => 'channel_browse',
                     'icon' => 'fa-list',
-                    'url' => 'alphabrowse-home?source=lcc&from=foo'
-                ]
+                    'url' => 'alphabrowse-home?source=lcc&from=foo',
+                ],
             ],
             'contents' => [[
                 'title' => 'foo_title',
                 'source' => 'Solr',
                 'thumbnail' => false,
-                'id' => 'foo_id']
+                'id' => 'foo_id'],
             ],
         ]];
         return [$alpha, $expectedResult];
@@ -321,7 +321,7 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
             'SourceIdentifier' => 'foo_Identifier',
             'Thumbnail' => 'foo_Thumbnail',
             'UniqueID' => 'foo_Id',
-            'callnumber-raw' => $data['solrField'] ?? null
+            'callnumber-raw' => $data['solrField'] ?? null,
         ];
         $driver->setRawData($data);
         return $driver;

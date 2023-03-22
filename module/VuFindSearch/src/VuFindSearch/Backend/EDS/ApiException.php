@@ -84,7 +84,8 @@ class ApiException extends \VuFindSearch\Backend\Exception\BackendException
             $this->apiErrorDetails['Description'] = $message['ErrorDescription'];
             $this->apiErrorDetails['DetailedDescription']
                 = $message['DetailedErrorDescription'];
-        } elseif (is_array($message['errors'] ?? null)
+        } elseif (
+            is_array($message['errors'] ?? null)
             && count($message['errors']) > 0
         ) {
             // Array of errors

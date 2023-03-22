@@ -66,17 +66,17 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
             [
                 'title' => 'A',
                 'value' => 'Bollettino della Unione matematica italiana',
-                'link' => ['type' => 'bib', 'value' => '000343528']
+                'link' => ['type' => 'bib', 'value' => '000343528'],
             ],
             [
                 'title' => 'B',
                 'value' => 'Bollettino della Unione matematica',
-                'link' => ['type' => 'bib', 'value' => '000343529']
+                'link' => ['type' => 'bib', 'value' => '000343529'],
             ],
             [
                 'title' => 'note_785_8',
                 'value' => 'Bollettino della Unione matematica italiana',
-                'link' => ['type' => 'bib', 'value' => '000394898']
+                'link' => ['type' => 'bib', 'value' => '000394898'],
             ],
         ];
         $this->assertEquals($expected, $record->getAllRecordLinks());
@@ -131,7 +131,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                     'heading' => ['Matematica', 'Periodici.'],
                     'type' => '',
                     'source' => '',
-                    'id' => ''
+                    'id' => '',
                 ],
             ],
             $record->getAllSubjectHeadings(true)
@@ -229,7 +229,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                     'default' => 'Bollettino della Unione matematica italiana.',
                     'emptySubfield' => '',
                     'pub' => 'Bologna : Zanichelli, 1922-1975.',
-                ]
+                ],
             ],
             $record->getFormattedMarcDetails('245', $input)
         );

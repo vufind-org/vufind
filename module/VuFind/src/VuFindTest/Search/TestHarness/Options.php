@@ -52,7 +52,8 @@ class Options extends \VuFind\Search\Base\Options
         parent::__construct($configLoader);
         // Turn on first/last navigation if configured:
         $config = $configLoader->get('config');
-        if (isset($config->Record->first_last_navigation)
+        if (
+            isset($config->Record->first_last_navigation)
             && $config->Record->first_last_navigation
         ) {
             $this->firstlastNavigation = true;

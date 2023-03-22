@@ -63,7 +63,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
                 'name' => 'foo',
                 'username' => 'vufinduser',
                 'password' => 'vufindpass',
-            ]
+            ],
         ];
         $cm = $this->getMockConfigPluginManager(compact('config'));
         $sm = new MockContainer($this);

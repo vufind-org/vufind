@@ -58,7 +58,7 @@ trait UserCreationTrait
             'email' => 'username1@ignore.com',
             'username' => 'username1',
             'password' => 'test',
-            'password2' => 'test'
+            'password2' => 'test',
         ];
 
         foreach ($defaults as $field => $default) {

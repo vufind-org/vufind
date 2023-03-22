@@ -91,7 +91,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         $options->setTranslator($mockTranslator);
         $options->setTranslatedFacets(
             [
-                'dewey-raw:DDC23:dewey_format_str'
+                'dewey-raw:DDC23:dewey_format_str',
             ]
         );
         $params = $this->getParams($options);
@@ -102,7 +102,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                 'facet_counts' => [
                     'facet_fields' => [
                         'dewey-raw' => [
-                            ["000", 100]
+                            ["000", 100],
                         ],
                     ],
                 ],
@@ -134,8 +134,9 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     {
         $results = $this->getResults();
         $defaultProcessor = $results->getSpellingProcessor();
-        $this->assertTrue(
-            $defaultProcessor instanceof SpellingProcessor,
+        $this->assertInstanceOf(
+            SpellingProcessor::class,
+            $defaultProcessor,
             'default spelling processor was created'
         );
         $mockProcessor = $this->createMock(SpellingProcessor::class);
@@ -221,7 +222,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         $results = $this->getResultsFromResponse(
             [
                 'response' => [
-                    'numFound' => 5
+                    'numFound' => 5,
                 ],
                 'facet_counts' => [
                     'facet_fields' => [
@@ -233,9 +234,9 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                             ['0/Main/', 11],
                             ['1/Main/Fiction/', 5],
                             ['0/Sub/', 2],
-                        ]
-                    ]
-                ]
+                        ],
+                    ],
+                ],
             ],
             $this->getParams(null, $config)
         );
@@ -272,7 +273,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                             'isApplied' => false,
                         ],
                     ],
-                ]
+                ],
             ],
             $facets
         );
@@ -300,7 +301,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                             'isApplied' => false,
                         ],
                     ],
-                ]
+                ],
             ],
             $facets
         );
@@ -328,7 +329,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                             'isApplied' => false,
                         ],
                     ],
-                ]
+                ],
             ],
             $facets
         );
@@ -371,7 +372,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                             'isApplied' => false,
                         ],
                     ],
-                ]
+                ],
             ],
             $facets
         );
@@ -407,7 +408,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                             'isApplied' => false,
                         ],
                     ],
-                ]
+                ],
             ],
             $facets
         );
@@ -488,7 +489,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         Options $options = null,
         PluginManager $mockConfig = null
     ): Params {
-        $mockConfig = $mockConfig ?? $this->createMock(PluginManager::class);
+        $mockConfig ??= $this->createMock(PluginManager::class);
         return new Params(
             $options ?? new Options($mockConfig),
             $mockConfig

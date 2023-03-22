@@ -29,7 +29,7 @@
             '%%start%%' => $this->localizedNumber($this->results->getStartRecord()),
             '%%end%%' => $this->localizedNumber($this->results->getEndRecord()),
             '%%total%%' => $this->localizedNumber($recordTotal),
-            '%%lookfor%%' => $this->escapeHtml($reservesLookfor)
+            '%%lookfor%%' => $this->escapeHtml($reservesLookfor),
           ];
         ?>
         <?=$this->translate('showing_results_of_for_html', $transParams); ?><?php if ($qtime): ?>,<?php endif; ?>

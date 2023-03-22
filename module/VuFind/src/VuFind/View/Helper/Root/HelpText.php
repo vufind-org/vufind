@@ -101,7 +101,8 @@ class HelpText extends \Laminas\View\Helper\AbstractHelper
 
         if (!$html) {
             $this->warnings[] = 'help_page_missing';
-        } elseif (isset($pageDetails['pageLocatorDetails']['matchType'])
+        } elseif (
+            isset($pageDetails['pageLocatorDetails']['matchType'])
             && $pageDetails['pageLocatorDetails']['matchType'] != 'language'
         ) {
             $this->warnings[] = 'Sorry, but the help you requested is '

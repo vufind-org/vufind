@@ -153,8 +153,8 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
                     'reserve' => $this->config['Status']['reserve'],
                     'callnumber' => $this->translate(
                         $this->config['Status']['callnumber']
-                    )
-                ]
+                    ),
+                ],
             ];
         } elseif ($useStatus == "marc") {
             // Retrieve record from index:
@@ -231,8 +231,8 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
                     ),
                     'barcode' => $this->config['Holdings']['barcode'],
                     'notes' => $this->config['Holdings']['notes'] ?? [],
-                    'summary' => $this->config['Holdings']['summary'] ?? []
-                ]
+                    'summary' => $this->config['Holdings']['summary'] ?? [],
+                ],
             ];
         } elseif ($useHoldings == "marc") {
             // Retrieve record from index:
@@ -266,7 +266,8 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
             // If the details coming back from the record driver include the
             // ID prefix, strip it off!
             $idPrefix = $this->getIdPrefix();
-            if (isset($result[0]['id']) && strlen($idPrefix)
+            if (
+                isset($result[0]['id']) && strlen($idPrefix)
                 && $idPrefix === substr($result[0]['id'], 0, strlen($idPrefix))
             ) {
                 $result[0]['id'] = substr($result[0]['id'], strlen($idPrefix));

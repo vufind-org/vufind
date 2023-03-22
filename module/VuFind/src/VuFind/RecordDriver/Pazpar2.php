@@ -97,7 +97,8 @@ class Pazpar2 extends DefaultRecord
             if (!isset($array[$key])) {
                 $array[$key] = $children;
             } else {
-                if (is_array($array[$key])
+                if (
+                    is_array($array[$key])
                     && is_numeric(current(array_keys($array[$key])))
                 ) {
                     $array[$key][] = $children;
@@ -105,7 +106,7 @@ class Pazpar2 extends DefaultRecord
                     // Convert for multiple children
                     $array[$key] = [
                         $array[$key],
-                        $children
+                        $children,
                     ];
                 }
             }
@@ -159,7 +160,8 @@ class Pazpar2 extends DefaultRecord
         }
         $providers = [];
         foreach ($this->pz2fields['location'] as $location) {
-            if (isset($location['_attr_']['name'])
+            if (
+                isset($location['_attr_']['name'])
                 && !in_array($location['_attr_']['name'], $providers)
             ) {
                 $providers[] = $location['_attr_']['name'];

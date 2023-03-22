@@ -322,7 +322,7 @@ class InstallCommand extends Command
                 $dir . '/cache',
                 $dir . '/config',
                 $dir . '/harvest',
-                $dir . '/import'
+                $dir . '/import',
             ]
         );
     }
@@ -454,7 +454,7 @@ class InstallCommand extends Command
         $legal = [
             self::MULTISITE_NONE,
             self::MULTISITE_DIR_BASED,
-            self::MULTISITE_HOST_BASED
+            self::MULTISITE_HOST_BASED,
         ];
         while (true) {
             $response = $this->getInput(
@@ -698,7 +698,7 @@ class InstallCommand extends Command
                 $moduleDir,
                 $moduleDir . '/config',
                 $moduleDir . '/src',
-                $moduleDir . '/src/' . $module
+                $moduleDir . '/src/' . $module,
             ]
         );
         if ($dirStatus !== true) {
@@ -940,7 +940,8 @@ class InstallCommand extends Command
 
         // Collect and process parameters, and stop if an error is encountered
         // along the way....
-        if ($this->collectParameters($input, $output) !== 0
+        if (
+            $this->collectParameters($input, $output) !== 0
             || $this->processParameters($output) !== 0
         ) {
             return 1;

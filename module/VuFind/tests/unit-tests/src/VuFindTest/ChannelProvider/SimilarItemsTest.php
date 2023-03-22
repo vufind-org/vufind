@@ -82,7 +82,7 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
         $recordDriver = $this->getDriver();
         $results->expects($this->once())->method('getResults')
             ->willReturn([$recordDriver]);
-        [$similar, $expectedResult]= $this->configureTestTargetAndExpectations();
+        [$similar, $expectedResult] = $this->configureTestTargetAndExpectations();
         $this->assertSame($expectedResult, $similar->getFromSearch($results));
     }
 
@@ -105,7 +105,7 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
             'title' => 'Similar Items: foo_Breadcrumb',
             'providerId' => 'foo_ProviderId',
             'links' => [],
-            'token' => 'foo_Id'
+            'token' => 'foo_Id',
         ]];
         $similar->setProviderId('foo_ProviderId');
         $this->assertSame($expectedResult, $similar->getFromSearch($results));
@@ -207,20 +207,20 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
                 [
                     'label' => 'View Record',
                     'icon' => 'fa-file-text-o',
-                    'url' => 'url_test'
+                    'url' => 'url_test',
                 ],
                 [
                     'label' => 'channel_expand',
                     'icon' => 'fa-search-plus',
-                    'url' => 'channels-record?id=foo_Id&source=Solr'
-                ]
+                    'url' => 'channels-record?id=foo_Id&source=Solr',
+                ],
             ],
             'contents' => [[
                 'title' => 'foo_Title',
                 'source' => 'Solr',
                 'thumbnail' => false,
                 'routeDetails' => 'foo_Route',
-                'id' => 'foo_Id']
+                'id' => 'foo_Id'],
             ],
 
         ]];

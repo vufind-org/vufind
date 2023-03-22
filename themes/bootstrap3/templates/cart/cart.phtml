@@ -64,16 +64,16 @@
 
 <?php
   $script = <<<'JS'
-  function submitFormWithButton(link, name) {
-    $('#dropdown_value').attr('name', name).val(1);
-    $(link).closest('form').submit();
-  }
-  $("#cart-confirm-delete").click(function($e) {
-      submitFormWithButton(this, 'delete');
-  });
-  $("#cart-confirm-empty").click(function($e) {
-      submitFormWithButton(this, 'empty');
-  });
-JS;
+        function submitFormWithButton(link, name) {
+          $('#dropdown_value').attr('name', name).val(1);
+          $(link).closest('form').submit();
+        }
+        $("#cart-confirm-delete").click(function($e) {
+            submitFormWithButton(this, 'delete');
+        });
+        $("#cart-confirm-empty").click(function($e) {
+            submitFormWithButton(this, 'empty');
+        });
+      JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>

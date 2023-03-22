@@ -94,7 +94,8 @@ class SimilarBuilder implements SimilarBuilderInterface
         $this->uniqueKey = $uniqueKey;
         if (isset($searchConfig->MoreLikeThis)) {
             $mlt = $searchConfig->MoreLikeThis;
-            if (isset($mlt->useMoreLikeThisHandler)
+            if (
+                isset($mlt->useMoreLikeThisHandler)
                 && $mlt->useMoreLikeThisHandler
             ) {
                 $this->useHandler = true;

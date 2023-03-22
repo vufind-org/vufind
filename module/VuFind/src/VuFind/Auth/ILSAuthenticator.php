@@ -104,7 +104,7 @@ class ILSAuthenticator
         if (($user = $this->auth->isLoggedIn()) && !empty($user->cat_username)) {
             return [
                 'cat_username' => $user->cat_username,
-                'cat_password' => $user->cat_password
+                'cat_password' => $user->cat_password,
             ];
         }
         return false;
