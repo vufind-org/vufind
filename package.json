@@ -9,6 +9,16 @@
   "bugs": {
     "url": "https://vufind.org/jira"
   },
+  "scripts": {
+    "less": "grunt less",
+    "lessdev": "grunt lessdev",
+    "scss": "grunt scss",
+    "lessToSass": "grunt lessToSass",
+    "watch:less": "grunt watch:less",
+    "watch:lessdev": "grunt watch:lessdev",
+    "watch:scss": "grunt watch:scss",
+    "watch:lessToSass": "grunt watch:lessToSass"
+  },
   "dependencies": {
     "grunt": "^1.0.4",
     "grunt-contrib-less": "^2.0.0",
