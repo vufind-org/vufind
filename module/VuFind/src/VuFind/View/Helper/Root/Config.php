@@ -82,13 +82,23 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Should be covers loaded via AJAX?
+     * Should covers be loaded via AJAX?
      *
      * @return bool
      */
     public function ajaxCoversEnabled()
     {
         return $this->get('config')->Content->ajaxcovers ?? false;
+    }
+
+    /**
+     * Should results be loaded via AJAX?
+     *
+     * @return bool
+     */
+    public function ajaxResultsEnabled(): bool
+    {
+        return (bool)($this->get('config')->Site->loadResultsWithAjax ?? true);
     }
 
     /**

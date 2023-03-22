@@ -44,7 +44,7 @@
 $translations = $this->jsTranslations()->getJSON();
 $script = <<<JS
     VuFind.addTranslations($translations);
-    VuFind.search.initResultScripts($('.results'));
+    VuFind.initResultScripts($('.results'));
     JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>

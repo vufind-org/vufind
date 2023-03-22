@@ -4,7 +4,7 @@
     <label for="sort_options_1"><?=$this->transEsc('Sort')?></label>
     <select id="sort_options_1" name="sort" class="jumpMenu form-control">
       <?php foreach ($list as $sortType => $sortData): ?>
-        <option value="<?=$this->escapeHtmlAttr($sortType)?>"<?=$sortData['selected'] ? ' selected="selected"' : ''?>><?=$this->transEsc($sortData['desc'])?></option>
+        <option value="<?=$sortData['default'] ? '' : $this->escapeHtmlAttr($sortType)?>"<?=$sortData['selected'] ? ' selected="selected"' : ''?>><?=$this->transEsc($sortData['desc'])?></option>
       <?php endforeach; ?>
     </select>
     <noscript><input type="submit" class="btn btn-default" value="<?=$this->transEscAttr("Set")?>" /></noscript>

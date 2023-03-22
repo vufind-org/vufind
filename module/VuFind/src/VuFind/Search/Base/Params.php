@@ -1742,11 +1742,13 @@ class Params
     {
         // Loop through all the current limits
         $valid = $this->getOptions()->getLimitOptions();
+        $defaultLimit = $this->getOptions()->getDefaultLimit();
         $list = [];
         foreach ($valid as $limit) {
             $list[$limit] = [
                 'desc' => $limit,
                 'selected' => ($limit == $this->getLimit()),
+                'default' => $limit == $defaultLimit,
             ];
         }
         return $list;
@@ -1762,11 +1764,13 @@ class Params
     {
         // Loop through all the current filter fields
         $valid = $this->getOptions()->getSortOptions();
+        $defaultSort = $this->getDefaultSort();
         $list = [];
         foreach ($valid as $sort => $desc) {
             $list[$sort] = [
                 'desc' => $desc,
                 'selected' => ($sort == $this->getSort()),
+                'default' => $sort == $defaultSort,
             ];
         }
         return $list;

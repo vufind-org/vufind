@@ -6,7 +6,7 @@ VuFind.combinedSearch = (function CombinedSearch() {
       if (responseText.length === 0) {
         container.hide();
       } else {
-        VuFind.search.initResultScripts(container);
+        VuFind.initResultScripts(container);
       }
     });
   }

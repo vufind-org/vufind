@@ -1,6 +1,6 @@
 <?php if ($this->pageCount): ?>
   <nav aria-label="<?=$this->transEscAttr('pagination_label')?>">
-    <ul class="pagination js-ajax-pagination">
+    <ul class="pagination<?=$this->config()->ajaxResultsEnabled() ? ' js-ajax-pagination' : ''?>">
       <?php if (isset($this->previous)): ?>
         <?php if (!isset($this->options['disableFirst']) || !$this->options['disableFirst']): ?>
           <li role="none">

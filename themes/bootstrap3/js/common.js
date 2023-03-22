@@ -1,4 +1,4 @@
-/*global grecaptcha, isPhoneNumberValid */
+/*global grecaptcha, isPhoneNumberValid, checkSaveStatuses */
 /*exported VuFind, htmlEncode, deparam, getUrlRoot, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, bulkFormHandler, setupMultiILSLoginFields */
 
 // IE 9< console polyfill
@@ -105,6 +105,19 @@ var VuFind = (function VuFind() {
         }
       }
     );
+  };
+
+  /**
+   * Initialize result page scripts.
+   *
+   * @param {string|JQuery} container
+   */
+  var initResultScripts = function initResultScripts(container) {
+    this.openurl.init($(container));
+    this.itemStatuses.init(container);
+    checkSaveStatuses($(container));
+    setupQRCodeLinks($(container));
+    this.recordVersions.init(container);
   };
 
   var init = function init() {
@@ -281,7 +294,8 @@ var VuFind = (function VuFind() {
     translate: translate,
     updateCspNonce: updateCspNonce,
     getCurrentSearchId: getCurrentSearchId,
-    setCurrentSearchId: setCurrentSearchId
+    setCurrentSearchId: setCurrentSearchId,
+    initResultScripts: initResultScripts
   };
 })();
 
