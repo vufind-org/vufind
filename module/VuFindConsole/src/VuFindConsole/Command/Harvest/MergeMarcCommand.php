@@ -126,6 +126,36 @@ class MergeMarcCommand extends Command
     }
 
     /**
+     * Load an XML file, and throw an exception if it is invalid.
+     *
+     * @param string $filePath File to load
+     *
+     * @throws \Exception
+     * @return SimpleXMLElement
+     */
+    protected function loadXmlContents(string $filePath): SimpleXMLElement
+    {
+        // Set up user error handling so we can capture XML errors
+        $prev = libxml_use_internal_errors(true);
+        $xml = @simplexml_load_file($filePath);
+        // Capture any errors before we restore previous error behavior (which will
+        // cause them to be lost).
+        $errors = libxml_get_errors();
+        libxml_use_internal_errors($prev);
+        // Build an exception if something has gone wrong
+        if ($xml === false) {
+            $msg = "Problem loading XML file: " . realpath($filePath);
+            foreach ($errors as $error) {
+                $msg .= "\n" . trim($error->message)
+                    . ' in ' . realpath($error->file)
+                    . ' line ' . $error->line . ' column ' . $error->column;
+            }
+            throw new \Exception($msg);
+        }
+        return $xml;
+    }
+
+    /**
      * Given the filename of an XML document, feed any MARC records from the file
      * to the output stream.
      *
@@ -142,19 +172,7 @@ class MergeMarcCommand extends Command
         // collection, we will search for namespaced and non-namespaced records
         // inside it. Otherwise, we'll just check the top-level tag to see if
         // it's a stand-alone record.
-        $prev = libxml_use_internal_errors(true);
-        $xml = @simplexml_load_file($filePath);
-        $errors = libxml_get_errors();
-        libxml_use_internal_errors($prev);
-        if ($xml === false) {
-            $msg = "Problem loading XML file: " . realpath($filePath);
-            foreach ($errors as $error) {
-                $msg .= "\n" . trim($error->message)
-                    . ' in ' . realpath($error->file)
-                    . ' line ' . $error->line . ' column ' . $error->column;
-            }
-            throw new \Exception($msg);
-        }
+        $xml = $this->loadXmlContents($filePath);
         $childSets = (stristr($xml->getName(), 'collection') !== false)
              ? [$xml->children(self::MARC21_NAMESPACE), $xml->children()]
              : [[$xml]];
