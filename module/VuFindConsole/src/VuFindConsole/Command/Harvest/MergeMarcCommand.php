@@ -142,9 +142,18 @@ class MergeMarcCommand extends Command
         // collection, we will search for namespaced and non-namespaced records
         // inside it. Otherwise, we'll just check the top-level tag to see if
         // it's a stand-alone record.
-        $xml = simplexml_load_file($filePath);
+        $prev = libxml_use_internal_errors(true);
+        $xml = @simplexml_load_file($filePath);
+        $errors = libxml_get_errors();
+        libxml_use_internal_errors($prev);
         if ($xml === false) {
-            throw new \Exception("Problem loading XML file: $filePath");
+            $msg = "Problem loading XML file: " . realpath($filePath);
+            foreach ($errors as $error) {
+                $msg .= "\n" . trim($error->message)
+                    . ' in ' . realpath($error->file)
+                    . ' line ' . $error->line . ' column ' . $error->column;
+            }
+            throw new \Exception($msg);
         }
         $childSets = (stristr($xml->getName(), 'collection') !== false)
              ? [$xml->children(self::MARC21_NAMESPACE), $xml->children()]
