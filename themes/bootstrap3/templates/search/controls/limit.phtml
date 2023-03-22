@@ -5,7 +5,7 @@
     <label for="limit"><?=$this->transEsc('Results per page')?></label>
     <select id="limit" name="limit" class="jumpMenu form-control">
       <?php foreach ($limitList as $limitVal => $limitData): ?>
-        <option value="<?=$this->escapeHtmlAttr($limitVal)?>"<?=$limitData['selected'] ? ' selected="selected"' : ''?>><?=$this->escapeHtml($limitData['desc'])?></option>
+        <option value="<?=$this->escapeHtmlAttr($limitVal)?>"<?=$limitData['selected'] ? ' selected="selected"' : ''?><?=$limitData['default'] ? ' data-default' : ''?>><?=$this->escapeHtml($limitData['desc'])?></option>
       <?php endforeach; ?>
     </select>
     <noscript><input type="submit" value="<?=$this->transEscAttr("Set")?>" /></noscript>

@@ -20,9 +20,13 @@ VuFind.register('search', function search() {
    * @param {string} addToHistory
    */
   function loadResults(pageUrl, addToHistory) {
-    document.querySelector(scrollElementSelector).scrollIntoView();
     const recordList = document.querySelector(recordListSelector);
-    recordList.innerHTML = VuFind.loading();
+    const loadingOverlay = document.createElement('div');
+    loadingOverlay.classList = 'loading-overlay';
+    loadingOverlay.setAttribute('aria-live', 'polite');
+    loadingOverlay.innerHTML = VuFind.loading();
+    recordList.prepend(loadingOverlay);
+    document.querySelector(scrollElementSelector).scrollIntoView({behavior: 'smooth'});
     const searchStats = document.querySelector(searchStatsSelector);
     const statsKey = searchStats.dataset.key;
 
@@ -36,7 +40,8 @@ VuFind.register('search', function search() {
         window.history.pushState({url: pageUrl}, '', '?' + pageUrlParts[1]);
       }
     }
-    updateResultControlUrls(pageUrl);
+    updateResultControls(pageUrl);
+    VuFind.emit('vf-results-load', {url: pageUrl, addToHistory: addToHistory});
     fetch(url)
       .then((response) => response.json())
       .then((result) => {
@@ -54,6 +59,7 @@ VuFind.register('search', function search() {
         });
         VuFind.initResultScripts(recordListSelector);
         initPagination();
+        VuFind.emit('vf-results-loaded', {url: pageUrl, addToHistory: addToHistory, data: result});
       })
       .catch((error) => {
         let errorMsg = document.createElement('div');
@@ -65,13 +71,24 @@ VuFind.register('search', function search() {
   }
 
   /**
+   * Get the URL without any parameters
+   *
+   * @param {string} url
+   *
+   * @returns string
+   */
+  function getBaseUrl(url) {
+    const parts = url.split('?');
+    return parts[0];
+  }
+
+  /**
    * Handle history state change event and load results accordingly.
    *
    * @param {Event} event
    */
   function historyStateListener(event) {
-    if (event.state.url) {
-      // TODO check that base address matches?
+    if (event.state.url && getBaseUrl(window.location.href) === getBaseUrl(event.state.url)) {
       event.preventDefault();
       loadResults(event.state.url, false);
     }
@@ -105,7 +122,7 @@ VuFind.register('search', function search() {
   /**
    * Initialize result controls that are not refreshed via AJAX.
    *
-   * Note that view type links are updated in updateResultControlUrls, but using them
+   * Note that view type links are updated in updateResultControls, but using them
    * will cause a reload since page contents may change.
    */
   function initResultControls() {
@@ -118,13 +135,14 @@ VuFind.register('search', function search() {
           jumpMenu.addEventListener('change', function handleSubmit(event) {
             event.preventDefault();
             // Build a URL from form action and fields and load results:
-            const query = new URLSearchParams();
+            let urlParts = form.getAttribute('action').split('?', 2);
+            const query = new URLSearchParams(urlParts.length > 1 ? urlParts[1] : '');
             Object.entries(form.elements).forEach(([, element]) => {
               query.set(element.name, element.value);
             });
-            let url = form.getAttribute('action');
-            url += url.indexOf('?') !== -1 ? '&' : '?';
-            url += query.toString();
+            // Remove page so that any change resets it:
+            query.delete('page');
+            const url = urlParts[0] + '?' + query.toString();
             loadResults(url, true);
           });
         });
@@ -135,18 +153,19 @@ VuFind.register('search', function search() {
   /**
    * Prepend a hidden field to a form.
    *
-   * @param {Element} form
+   * @param {?Element} form
    * @param {string} name
    * @param {string} value
    */
   function prependHiddenField(form, name, value) {
-    if (form) {
-      const input = document.createElement('input');
-      input.type = "hidden";
-      input.name = name;
-      input.value = value;
-      form.prepend(input);
+    if (!form) {
+      return;
     }
+    const input = document.createElement('input');
+    input.type = "hidden";
+    input.name = name;
+    input.value = value;
+    form.prepend(input);
   }
 
   /**
@@ -156,8 +175,8 @@ VuFind.register('search', function search() {
    *
    * @param {string} formSelector
    * @param {string} fieldName
-   * @param {Element} field
-   * @param {string} value
+   * @param {?Element} field
+   * @param {?string} value
    */
   function handleHiddenField(formSelector, fieldName, field, value) {
     if (field) {
@@ -172,6 +191,28 @@ VuFind.register('search', function search() {
   }
 
   /**
+   * Update value of a select field
+   *
+   * @param {?Element} select
+   * @param {?string} value
+   */
+  function updateSelectValue(select, value) {
+    if (!select) {
+      return;
+    }
+    if (select.value !== value) {
+      if (value) {
+        select.value = value;
+      } else {
+        const defaultValue = select.querySelector('option[data-default]');
+        if (defaultValue) {
+          select.value = defaultValue.value;
+        }
+      }
+    }
+  }
+
+  /**
    * Update URLs of result controls (sort, limit, view type)
    *
    * We will deliberately avoid replacing the controls for accessibility, so we need
@@ -179,17 +220,23 @@ VuFind.register('search', function search() {
    *
    * @param {string} pageUrl
    */
-  function updateResultControlUrls(pageUrl) {
+  function updateResultControls(pageUrl) {
     const parts = pageUrl.split('?', 2);
     const params = new URLSearchParams(parts.length > 1 ? parts[1] : '');
     const sort = params.get('sort');
     const limit = params.get('limit');
 
+    // Update hidden fields of forms:
     const limitField = document.querySelector(sortFormLimitSelector);
     handleHiddenField(sortFormSelector, 'limit', limitField, limit);
     const sortField = document.querySelector(limitFormSortSelector);
     handleHiddenField(limitFormSelector, 'sort', sortField, sort);
 
+    // Update currently selected values:
+    updateSelectValue(document.querySelector(sortFormSelector + ' select'), sort);
+    updateSelectValue(document.querySelector(limitFormSelector + ' select'), limit);
+
+    // Update view type links:
     document.querySelectorAll(viewTypeSelector).forEach((element) => {
       const url = element.getAttribute('href');
       const urlParts = url.split('?', 2);

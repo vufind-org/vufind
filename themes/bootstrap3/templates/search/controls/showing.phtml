@@ -22,7 +22,7 @@
 
   $this->layout()->srmessage = $showingResults;
 ?>
-<?php if ($qtime = $this->results->getQuerySpeed()): ?>
+<?php if (!$this->config()->ajaxResultsEnabled() && $qtime = $this->results->getQuerySpeed()): ?>
   <?=$showingResults; ?><span class="search-query-time">, <?=$this->transEsc('query time')?>: <?=$this->localizedNumber($qtime, 2) . $this->transEsc('seconds_abbrev')?></span>
 <?php else: ?>
   <?=$showingResults; ?>
