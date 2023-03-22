@@ -520,9 +520,10 @@ function setupAutocomplete() {
   // Bind autocomplete auto submit
   if ($searchbox.hasClass("ac-auto-submit")) {
     input.addEventListener("ac-select", (event) => {
-      input.value = typeof event.detail.value === "undefined"
-        ? event.detail.value
-        : event.detail;
+      const value = typeof event.detail === "string"
+        ? event.detail
+        : event.detail.value;
+      input.value = value;
       $("#searchForm").submit();
     });
   }
