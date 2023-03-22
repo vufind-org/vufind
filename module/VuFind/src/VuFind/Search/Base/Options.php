@@ -307,6 +307,20 @@ abstract class Options implements TranslatorAwareInterface
     protected $firstlastNavigation = false;
 
     /**
+     * Is loading of results with JavaScript enabled?
+     *
+     * @var bool
+     */
+    protected $loadResultsWithJs = true;
+
+    /**
+     * Top pagination control style (none, simple or full)
+     *
+     * @var string
+     */
+    protected $topPaginatorStyle = 'simple';
+
+    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Config loader
@@ -328,6 +342,11 @@ abstract class Options implements TranslatorAwareInterface
                 }
             }
         }
+
+        $searchSettings = $configLoader->get($this->searchIni);
+        $this->loadResultsWithJs = (bool)($searchSettings->General->load_results_with_js ?? true);
+        $this->topPaginatorStyle = $searchSettings->General->top_paginator
+            ?? ($this->loadResultsWithJs ? 'simple' : false);
     }
 
     /**
@@ -1066,6 +1085,26 @@ abstract class Options implements TranslatorAwareInterface
     {
         // Unsupported by default!
         return false;
+    }
+
+    /**
+     * Should we load results with JavaScript?
+     *
+     * @return bool
+     */
+    public function loadResultsWithJsEnabled(): bool
+    {
+        return $this->loadResultsWithJs;
+    }
+
+    /**
+     * Get top paginator style
+     *
+     * @return string
+     */
+    public function getTopPaginatorStyle(): string
+    {
+        return $this->topPaginatorStyle;
     }
 
     /**

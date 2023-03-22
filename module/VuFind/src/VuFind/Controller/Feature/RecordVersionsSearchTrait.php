@@ -48,30 +48,26 @@ trait RecordVersionsSearchTrait
      */
     public function versionsAction()
     {
-        $id = $this->params()->fromQuery('id');
-        $keys = $this->params()->fromQuery('keys');
-        $record = null;
-        if ($id) {
-            $loader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
-            $record = $loader->load($id, $this->searchClassId, true);
-            if ($record instanceof \VuFind\RecordDriver\Missing) {
-                $record = null;
-            } else {
-                $keys = $record->tryMethod('getWorkKeys');
-            }
+        $versionsHelper
+            = $this->serviceLocator->get(\VuFind\Record\VersionsHelper::class);
+        $driverAndKeys = $versionsHelper->getDriverAndWorkKeysFromParams(
+            $this->params()->fromQuery(),
+            $this->searchClassId
+        );
+        $record = $driverAndKeys['driver'];
+        if ($record instanceof \VuFind\RecordDriver\Missing) {
+            $record = null;
         }
 
-        if (empty($keys)) {
+        if (empty($driverAndKeys['keys'])) {
             return $this->forwardTo('Search', 'Home');
         }
 
-        $mapFunc = function ($val) {
-            return '"' . addcslashes($val, '"') . '"';
-        };
-
         $query = $this->getRequest()->getQuery();
-        $query->lookfor = implode(' OR ', array_map($mapFunc, (array)$keys));
-        $query->type = 'WorkKeys';
+        $query->lookfor = $versionsHelper->getSearchStringFromWorkKeys(
+            (array)$driverAndKeys['keys']
+        );
+        $query->type = $versionsHelper->getWorkKeysSearchType();
 
         // Don't save to history -- history page doesn't handle correctly:
         $this->saveToHistory = false;
@@ -94,8 +90,8 @@ trait RecordVersionsSearchTrait
         // won't in RSS mode):
         if (isset($view->results)) {
             $view->results->getUrlQuery()
-                ->setDefaultParameter('id', $id)
-                ->setDefaultParameter('keys', $keys)
+                ->setDefaultParameter('id', $this->params()->fromQuery('id'))
+                ->setDefaultParameter('keys', $this->params()->fromQuery('keys'))
                 ->setSuppressQuery(true);
             $view->driver = $record;
         }

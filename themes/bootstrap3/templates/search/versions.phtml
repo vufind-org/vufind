@@ -10,6 +10,8 @@
       $this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->transEsc('Versions')])
   );
 
+  $this->resultsAttrs = $this->htmlAttributes(['data-search-type' => 'versions',]);
+
   // Call the standard search template:
   echo $this->render('search/results.phtml');
 

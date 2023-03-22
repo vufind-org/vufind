@@ -1,7 +1,14 @@
 <?php
   $results = $this->driver->tryMethod('getVersions', [false, 20]);
   $view = 'list';
-  $this->render('search/results-scripts.phtml', ['displayVersions' => true]);
+  $this->render(
+      'search/results-scripts.phtml',
+      [
+          'displayVersions' => true,
+          'jsResults' => $this->searchOptions($this->driver->getSearchBackendIdentifier())->loadResultsWithJsEnabled(),
+      ]
+  );
+  $this->resultsAttrs = $this->htmlAttributes(['data-search-type' => 'versions',]);
 ?>
 <div class="results result-view-<?=$this->escapeHtmlAttr($view)?>">
   <nav class="search-header hidden-print">
