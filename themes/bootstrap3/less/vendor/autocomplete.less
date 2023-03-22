@@ -35,28 +35,19 @@
       background-color: @autocomplete-active-bg;
       color: contrast(@autocomplete-active-bg);
     }
-
-    small {
-      display: block;
-      color: @autocomplete-secondary;
-    }
-
-    .ac-header,
-    .ac-disabled,
-    [disabled] {
-      color: @autocomplete-secondary;
-    }
-
-    .ac-header {
-      font-weight: bold;
-    }
   }
+
+  .ac-disabled,
+  [disabled] {
+    color: @autocomplete-secondary;
+  }
+
   .ac-header {
-    float: right;
-    display: block;
-    margin-top: -1.75rem;
-    padding: 0 .5rem;
-    color: @autocomplete-border;
-    background-color: #fff;
+    font-size: smaller;
+    color: white;
+    text-transform: uppercase;
+    white-space: nowrap;
+    background-color: #718096;
+    cursor: default;
   }
 }
