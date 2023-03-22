@@ -225,7 +225,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCss($page, '.adv_search_terms strong')->getHtml()
         );
         $this->assertMatchesRegularExpression(
-            '/Showing 1 - 7 results of 7, query time: .*/',
+            '/Showing 1 - 7 results of 7/',
             trim($this->findCss($page, '.search-stats')->getText())
         );
     }
@@ -254,7 +254,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCss($page, '.adv_search_terms strong')->getHtml()
         );
         preg_match(
-            '/Showing \d+ - \d+ results of (\d+), query time: .*/',
+            '/Showing \d+ - \d+ results of (\d+)/',
             trim($this->findCss($page, '.search-stats')->getText()),
             $matches
         );
