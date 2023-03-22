@@ -72,7 +72,7 @@ class LoggerFactory implements FactoryInterface
             'priority' => 'priority',
             'message' => 'message',
             'logtime' => 'timestamp',
-            'ident' => 'ident'
+            'ident' => 'ident',
         ];
 
         // Make Writers
@@ -234,7 +234,8 @@ class LoggerFactory implements FactoryInterface
         // Query parameters do not apply in console mode; if we do have a debug
         // query parameter, and the appropriate permission is set, activate dynamic
         // debug:
-        if (PHP_SAPI !== 'cli'
+        if (
+            PHP_SAPI !== 'cli'
             && $container->get('Request')->getQuery()->get('debug')
         ) {
             return $container->get(\LmcRbacMvc\Service\AuthorizationService::class)
@@ -283,7 +284,8 @@ class LoggerFactory implements FactoryInterface
         }
 
         // Activate Office365 logging, if applicable:
-        if (isset($config->Logging->office365)
+        if (
+            isset($config->Logging->office365)
             && isset($config->Logging->office365_url)
         ) {
             $hasWriter = true;
@@ -435,7 +437,7 @@ class LoggerFactory implements FactoryInterface
         // Construct the logger as a lazy loading value holder so that
         // the object is not instantiated until it is called. This helps break
         // potential circular dependencies with other services.
-        $callback = function (& $wrapped, $proxy) use ($container, $requestedName) {
+        $callback = function (&$wrapped, $proxy) use ($container, $requestedName) {
             // Indicate that initialization is complete to avoid reinitialization:
             $proxy->setProxyInitializer(null);
 

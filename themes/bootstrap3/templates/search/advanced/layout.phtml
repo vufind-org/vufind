@@ -209,10 +209,10 @@
 </div>
 <?php
 $script = <<<JS
-$('#groupPlaceHolder').click(function(e) {
-  addGroup(null, null, null, true);
-  return false;
-})
-JS;
+    $('#groupPlaceHolder').click(function(e) {
+      addGroup(null, null, null, true);
+      return false;
+    })
+    JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');

@@ -570,7 +570,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $csrf = new \VuFind\Validator\SessionCsrf(
             [
                 'session' => new \Laminas\Session\Container('csrf', $sessionManager),
-                'salt' => 'csrftest'
+                'salt' => 'csrftest',
             ]
         );
         return new Manager(

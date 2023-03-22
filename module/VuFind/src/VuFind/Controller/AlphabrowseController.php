@@ -60,7 +60,7 @@ class AlphabrowseController extends AbstractBase
         'topic'  => 'By Topic',
         'author' => 'By Author',
         'title'  => 'By Title',
-        'lcc'    => 'By Call Number'
+        'lcc'    => 'By Call Number',
     ];
 
     /**
@@ -71,7 +71,7 @@ class AlphabrowseController extends AbstractBase
     protected $defaultExtras = [
         'title' => 'author:format:publishDate',
         'lcc' => 'title',
-        'dewey' => 'title'
+        'dewey' => 'title',
     ];
 
     /**

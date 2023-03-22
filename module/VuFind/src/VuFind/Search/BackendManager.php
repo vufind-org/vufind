@@ -30,12 +30,9 @@
 namespace VuFind\Search;
 
 use Laminas\EventManager\EventInterface;
-
 use Laminas\EventManager\SharedEventManagerInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
-
 use SplObjectStorage;
-
 use UnexpectedValueException;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Service;

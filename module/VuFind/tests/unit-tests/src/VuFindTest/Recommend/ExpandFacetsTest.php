@@ -68,7 +68,7 @@ class ExpandFacetsTest extends \PHPUnit\Framework\TestCase
                 'Results' => [
                     'format' => 'Format',
                 ],
-            ]
+            ],
         ];
         $results = $this->getMockResults();
         $params = $results->getParams();

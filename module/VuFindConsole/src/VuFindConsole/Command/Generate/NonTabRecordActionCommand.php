@@ -119,7 +119,8 @@ class NonTabRecordActionCommand extends AbstractCommand
         // Append the routes
         $config = include $configPath;
         foreach ($this->mainConfig['router']['routes'] as $key => $val) {
-            if (isset($val['options']['route'])
+            if (
+                isset($val['options']['route'])
                 && substr($val['options']['route'], -14) == '[:id[/[:tab]]]'
             ) {
                 $newRoute = $key . '-' . strtolower($action);

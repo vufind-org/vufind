@@ -313,8 +313,8 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
             "rft.isbn" => "8820737493",
             "rft_id" => [
                 "info:doi/xxx",
-                "pmid:yyy"
-            ]
+                "pmid:yyy",
+            ],
         ];
 
         $fixture = $this->getJsonFixture('misc/testbug2.json');
@@ -481,6 +481,11 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
         }
     }
 
+    /**
+     * Data provider for testGetCleanISBNs
+     *
+     * @return array
+     */
     public function getCleanISBNsProvider(): array
     {
         return [
@@ -519,6 +524,10 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test getCleanISBNs for a record.
+     *
+     * @param array  $result        Expected result
+     * @param string $mode          Retrieval mode
+     * @param bool   $filterInvalid Should we filter invalid ISBNs?
      *
      * @dataProvider getCleanISBNsProvider
      *

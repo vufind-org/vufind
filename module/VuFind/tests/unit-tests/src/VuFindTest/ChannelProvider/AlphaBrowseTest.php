@@ -108,7 +108,7 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
                 'title' => 'nearby_items',
                 'providerId' => 'foo_ProviderId',
                 'links' => [],
-                'token' => 'foo_Id'
+                'token' => 'foo_Id',
             ]];
         $this->assertSame($expectedResult, $alpha->getFromSearch($results));
     }
@@ -140,9 +140,10 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
     /**
      * Support method to mock objects.
      *
-     * @param array $options Set options for theprovider
-     * @param bool $fetchFromSearchService  flag indicating test case to fetch from
-     * search service when the search results do not include object we are looking for
+     * @param array $options                Set options for the provider
+     * @param bool  $fetchFromSearchService Flag indicating test case to fetch from
+     * search service when the search results do not include object we are looking
+     * for
      *
      * @return array
      */
@@ -166,11 +167,11 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
                            [
                             ['extras' =>
                                 ['title' => [['foo_title']],
-                                 'id' => [['foo_id']]
+                                 'id' => [['foo_id']],
                                 ],
-                            ]
-                           ]
-                        ]
+                            ],
+                           ],
+                        ],
                     ];
 
         $params = new ParamBag(['extras' => 'title:author:isbn:id']);
@@ -238,7 +239,7 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo($driver), $this->equalTo('medium'))
             ->willReturn('foo_Thumbnail');
         $alpha->setCoverRouter($coverRouter);
-        $routeDetails = ['route' => 'test_route', 'params' => ['id'=> 'route_id']];
+        $routeDetails = ['route' => 'test_route', 'params' => ['id' => 'route_id']];
         $router->expects($this->once())->method('getRouteDetails')
             ->with($this->equalTo($driver))
             ->willReturn($routeDetails);
@@ -261,24 +262,24 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
                 [
                     'label' => 'View Record',
                     'icon' => 'fa-file-text-o',
-                    'url' => 'url_test'
+                    'url' => 'url_test',
                 ],
                 [
                     'label' => 'channel_expand',
                     'icon' => 'fa-search-plus',
-                    'url' => 'channels-record?id=foo_Id&source=foo_Identifier'
+                    'url' => 'channels-record?id=foo_Id&source=foo_Identifier',
                 ],
                 [
                     'label' => 'channel_browse',
                     'icon' => 'fa-list',
-                    'url' => 'alphabrowse-home?source=lcc&from=foo'
-                ]
+                    'url' => 'alphabrowse-home?source=lcc&from=foo',
+                ],
             ],
             'contents' => [[
                 'title' => 'foo_title',
                 'source' => 'Solr',
                 'thumbnail' => false,
-                'id' => 'foo_id']
+                'id' => 'foo_id'],
             ],
         ]];
         return [$alpha, $expectedResult];
@@ -287,7 +288,7 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
     /**
      * Support method to test callbacks.
      *
-     * @param array $args    Command arguments
+     * @param array  $args   Command arguments
      * @param string $class  Command class
      * @param string $target Target identifier
      *
@@ -308,6 +309,8 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a fake record driver
      *
+     * @param array $data Test data (solrField is only supported field)
+     *
      * @return TestHarness
      */
     protected function getDriver($data = [])
@@ -318,7 +321,7 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
             'SourceIdentifier' => 'foo_Identifier',
             'Thumbnail' => 'foo_Thumbnail',
             'UniqueID' => 'foo_Id',
-            'callnumber-raw' => $data['solrField'] ?? null
+            'callnumber-raw' => $data['solrField'] ?? null,
         ];
         $driver->setRawData($data);
         return $driver;

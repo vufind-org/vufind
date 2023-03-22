@@ -12,7 +12,7 @@
             <?php if (is_array($this->hierarchicalFacets) && in_array($field, $this->hierarchicalFacets)): ?>
               <?php foreach ($list['list'] as $value): ?>
                 <?php $display = str_pad('', 4 * $value['level'] * 6, '&nbsp;', STR_PAD_LEFT) . $this->escapeHtml($value['displayText']); ?>
-                <option value="<?=$this->escapeHtmlAttr(($value['operator'] == 'OR' ? '~' : '') . $field . ':"' . $value['value'] . '"')?>"<?=(isset($value['selected']) && $value['selected'])?' selected="selected"':''?>><?=$display?></option>
+                <option value="<?=$this->escapeHtmlAttr(($value['operator'] == 'OR' ? '~' : '') . $field . ':"' . $value['value'] . '"')?>"<?=(isset($value['selected']) && $value['selected']) ? ' selected="selected"' : ''?>><?=$display?></option>
               <?php endforeach; ?>
             <?php else: ?>
               <?php
@@ -49,7 +49,7 @@
               ?>
               <?php foreach ($sorted as $i => $display): ?>
                 <?php $value = $list['list'][$i]; ?>
-                <option value="<?=$this->escapeHtmlAttr(($value['operator'] == 'OR' ? '~' : '') . $field . ':"' . $value['value'] . '"')?>"<?=(isset($value['selected']) && $value['selected'])?' selected="selected"':''?>><?=$this->escapeHtml($display)?></option>
+                <option value="<?=$this->escapeHtmlAttr(($value['operator'] == 'OR' ? '~' : '') . $field . ':"' . $value['value'] . '"')?>"<?=(isset($value['selected']) && $value['selected']) ? ' selected="selected"' : ''?>><?=$this->escapeHtml($display)?></option>
               <?php endforeach; ?>
             <?php endif; ?>
           </select>
@@ -62,7 +62,7 @@
   <fieldset class="solr">
     <legend><?=$this->transEsc("Illustrated")?>:</legend>
     <?php foreach ($this->illustratedLimit as $current): ?>
-      <input id="illustrated_<?=$this->escapeHtmlAttr($current['value'])?>" type="radio" name="illustration" value="<?=$this->escapeHtmlAttr($current['value'])?>"<?=$current['selected']?' checked="checked" data-checked-by-default="true"':''?>/>
+      <input id="illustrated_<?=$this->escapeHtmlAttr($current['value'])?>" type="radio" name="illustration" value="<?=$this->escapeHtmlAttr($current['value'])?>"<?=$current['selected'] ? ' checked="checked" data-checked-by-default="true"' : ''?>/>
       <label for="illustrated_<?=$this->escapeHtmlAttr($current['value'])?>"><?=$this->transEsc($current['text'])?></label><br/>
     <?php endforeach; ?>
   </fieldset>

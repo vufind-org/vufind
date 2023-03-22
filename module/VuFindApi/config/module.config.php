@@ -33,7 +33,7 @@ $config = [
             \VuFindApi\Controller\SearchApiController::class,
             \VuFindApi\Controller\Search2ApiController::class,
             \VuFindApi\Controller\WebApiController::class,
-        ]
+        ],
     ],
     'router' => [
         'routes' => [
@@ -45,8 +45,8 @@ $config = [
                     'defaults' => [
                         'controller' => 'AdminApi',
                         'action'     => 'clearCache',
-                    ]
-                ]
+                    ],
+                ],
             ],
             'apiHome' => [
                 'type' => 'Laminas\Router\Http\Segment',
@@ -56,7 +56,7 @@ $config = [
                     'defaults' => [
                         'controller' => 'Api',
                         'action'     => 'Index',
-                    ]
+                    ],
                 ],
             ],
             'searchApiv1' => [
@@ -67,8 +67,8 @@ $config = [
                     'defaults' => [
                         'controller' => 'SearchApi',
                         'action'     => 'search',
-                    ]
-                ]
+                    ],
+                ],
             ],
             'recordApiv1' => [
                 'type' => 'Laminas\Router\Http\Literal',
@@ -78,8 +78,8 @@ $config = [
                     'defaults' => [
                         'controller' => 'SearchApi',
                         'action'     => 'record',
-                    ]
-                ]
+                    ],
+                ],
             ],
             'search2Apiv1' => [
                 'type' => 'Laminas\Router\Http\Literal',
@@ -89,8 +89,8 @@ $config = [
                     'defaults' => [
                         'controller' => 'Search2Api',
                         'action'     => 'search',
-                    ]
-                ]
+                    ],
+                ],
             ],
             'record2Apiv1' => [
                 'type' => 'Laminas\Router\Http\Literal',
@@ -100,8 +100,8 @@ $config = [
                     'defaults' => [
                         'controller' => 'Search2Api',
                         'action'     => 'record',
-                    ]
-                ]
+                    ],
+                ],
             ],
             'websearchApiv1' => [
                 'type' => 'Laminas\Router\Http\Literal',
@@ -111,8 +111,8 @@ $config = [
                     'defaults' => [
                         'controller' => 'WebApi',
                         'action'     => 'search',
-                    ]
-                ]
+                    ],
+                ],
             ],
             'webrecordApiv1' => [
                 'type' => 'Laminas\Router\Http\Literal',
@@ -122,8 +122,8 @@ $config = [
                     'defaults' => [
                         'controller' => 'WebApi',
                         'action'     => 'record',
-                    ]
-                ]
+                    ],
+                ],
             ],
         ],
     ],

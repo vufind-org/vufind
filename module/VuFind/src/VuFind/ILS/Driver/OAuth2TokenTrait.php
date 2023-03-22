@@ -107,7 +107,8 @@ trait OAuth2TokenTrait
         }
         $tokenData = json_decode($response->getBody(), true);
 
-        if (empty($tokenData['token_type'])
+        if (
+            empty($tokenData['token_type'])
             || empty($tokenData['access_token'])
         ) {
             $this->logError(

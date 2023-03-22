@@ -84,8 +84,8 @@ class SimilarBuilderTest extends \PHPUnit\Framework\TestCase
     {
         $config = [
             'MoreLikeThis' => [
-                'count' => 10
-            ]
+                'count' => 10,
+            ],
         ];
         $sb = new SimilarBuilder(new \Laminas\Config\Config($config));
         $response = $sb->build('testrecord');

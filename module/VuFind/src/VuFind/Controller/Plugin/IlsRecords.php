@@ -88,7 +88,7 @@ class IlsRecords extends \Laminas\Mvc\Controller\Plugin\AbstractPlugin
             function ($current) {
                 return [
                     'id' => $current['id'] ?? '',
-                    'source' => $current['source'] ?? DEFAULT_SEARCH_BACKEND
+                    'source' => $current['source'] ?? DEFAULT_SEARCH_BACKEND,
                 ];
             },
             $records

@@ -31,10 +31,8 @@
 namespace VuFindTest\Backend\Primo;
 
 use InvalidArgumentException;
-
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
 use Laminas\Http\Client as HttpClient;
-
 use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Primo\Connector;
 
@@ -163,15 +161,15 @@ class ConnectorTest extends TestCase
 
         [, $expectedBody] = explode("\r\n\r\n", $this->response);
         $noResults = <<<EOT
-<sear:SEGMENTS xmlns:sear="http://www.exlibrisgroup.com/xsd/jaguar/search">
-  <sear:JAGROOT>
-    <sear:RESULT>
-      <sear:DOCSET HIT_TIME="20" TOTALHITS="0" FIRSTHIT="1" LASTHIT="1" TOTAL_TIME="49">
-      </sear:DOCSET>
-    </sear:RESULT>
-  </sear:JAGROOT>
-</sear:SEGMENTS>
-EOT;
+            <sear:SEGMENTS xmlns:sear="http://www.exlibrisgroup.com/xsd/jaguar/search">
+              <sear:JAGROOT>
+                <sear:RESULT>
+                  <sear:DOCSET HIT_TIME="20" TOTALHITS="0" FIRSTHIT="1" LASTHIT="1" TOTAL_TIME="49">
+                  </sear:DOCSET>
+                </sear:RESULT>
+              </sear:JAGROOT>
+            </sear:SEGMENTS>
+            EOT;
         $keyConstraint = new \PHPUnit\Framework\Constraint\IsType('string');
 
         $cache = $this->createMock(\Laminas\Cache\Storage\StorageInterface::class);

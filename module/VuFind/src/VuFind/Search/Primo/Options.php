@@ -59,7 +59,8 @@ class Options extends \VuFind\Search\Base\Options
 
         // Load facet preferences:
         $facetSettings = $configLoader->get($this->facetsIni);
-        if (isset($facetSettings->Advanced_Facet_Settings->translated_facets)
+        if (
+            isset($facetSettings->Advanced_Facet_Settings->translated_facets)
             && count($facetSettings->Advanced_Facet_Settings->translated_facets) > 0
         ) {
             $this->setTranslatedFacets(
@@ -129,7 +130,8 @@ class Options extends \VuFind\Search\Base\Options
         if (isset($searchSettings->General->default_sort)) {
             $this->defaultSort = $searchSettings->General->default_sort;
         }
-        if (isset($searchSettings->DefaultSortingByType)
+        if (
+            isset($searchSettings->DefaultSortingByType)
             && count($searchSettings->DefaultSortingByType) > 0
         ) {
             foreach ($searchSettings->DefaultSortingByType as $key => $val) {

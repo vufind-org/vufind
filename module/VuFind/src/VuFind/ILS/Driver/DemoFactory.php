@@ -77,7 +77,7 @@ class DemoFactory extends DriverWithDateConverterFactory
             [
                 $container->get(\VuFindSearch\Service::class),
                 $sessionFactory,
-                $container->get('Request')
+                $container->get('Request'),
             ]
         );
         $driver->setSorter($container->get(\VuFind\I18n\Sorter::class));

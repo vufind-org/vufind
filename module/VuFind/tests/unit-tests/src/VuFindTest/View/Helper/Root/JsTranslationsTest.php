@@ -85,16 +85,20 @@ class JsTranslationsTest extends \PHPUnit\Framework\TestCase
 
         // Stateless:
         $this->assertJsonStringEqualsJsonString(
-            json_encode([
-                '1key' => 'Translation 1&lt;p&gt;',
-                '2key' => '&lt;span&gt;translation&lt;/span&gt;',
-                '2key_html' => '<span>translation</span>'
-            ]),
-            $helper->getJSONFromArray([
-                '1key' => 'key1',
-                '2key' => 'key_html',
-                '2key_html' => 'key_html',
-            ])
+            json_encode(
+                [
+                    '1key' => 'Translation 1&lt;p&gt;',
+                    '2key' => '&lt;span&gt;translation&lt;/span&gt;',
+                    '2key_html' => '<span>translation</span>',
+                ]
+            ),
+            $helper->getJSONFromArray(
+                [
+                    '1key' => 'key1',
+                    '2key' => 'key_html',
+                    '2key_html' => 'key_html',
+                ]
+            )
         );
 
         // Verify that state hasn't changed:
@@ -113,8 +117,8 @@ class JsTranslationsTest extends \PHPUnit\Framework\TestCase
                 'default' => [
                     'key1' => 'Translation 1<p>',
                     'key_html' => '<span>translation</span>',
-                    'key2' => 'Translation 2'
-                ]
+                    'key2' => 'Translation 2',
+                ],
             ]
         );
         $translate = new Translate();

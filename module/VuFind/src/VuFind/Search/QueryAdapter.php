@@ -233,8 +233,8 @@ abstract class QueryAdapter
             return [
                 [
                     'l' => $query->getString(),
-                    'i' => $query->getHandler()
-                ]
+                    'i' => $query->getHandler(),
+                ],
             ];
         }
 
@@ -245,7 +245,7 @@ abstract class QueryAdapter
             if ($topLevel) {
                 $retVal[] = [
                     'g' => self::minify($current, false),
-                    'j' => $operator
+                    'j' => $operator,
                 ];
             } elseif ($current instanceof QueryGroup) {
                 throw new \Exception('Not sure how to minify this query!');
@@ -253,7 +253,7 @@ abstract class QueryAdapter
                 $currentArr = [
                     'f' => $current->getHandler(),
                     'l' => $current->getString(),
-                    'b' => $operator
+                    'b' => $operator,
                 ];
                 if (null !== ($op = $current->getOperator())) {
                     // Some search forms omit the operator for the first element;

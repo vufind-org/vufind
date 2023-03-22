@@ -30,7 +30,6 @@
 namespace VuFindTest\Search\Solr;
 
 use Laminas\EventManager\Event;
-
 use VuFind\Search\Solr\FilterFieldConversionListener;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Service;
@@ -82,7 +81,7 @@ class FilterFieldConversionListenerTest extends \PHPUnit\Framework\TestCase
                     "foo\\:value",
                     'baz:value OR foo:value',
                     '(foo:value)',
-                ]
+                ],
             ]
         );
         $listener = new FilterFieldConversionListener(

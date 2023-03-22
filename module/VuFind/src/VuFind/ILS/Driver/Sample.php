@@ -79,7 +79,7 @@ class Sample extends AbstractBase
                 'duedate' => '',
                 'number' => 1,
                 'barcode' => '1234567890',
-            ]
+            ],
         ];
     }
 

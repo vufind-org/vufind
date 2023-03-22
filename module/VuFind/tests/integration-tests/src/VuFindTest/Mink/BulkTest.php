@@ -81,7 +81,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    protected function setUpGenericBulkTest($checkBoxes = true)
+    protected function setUpGenericBulkTest()
     {
         // Activate the bulk options:
         $this->changeConfigs(
@@ -124,7 +124,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
     protected function checkForLoginMessage(Element $page)
     {
         $warning = $this->findCss($page, '.modal-body .alert-danger');
-        $this->assertTrue(is_object($warning));
+        $this->assertIsObject($warning);
         $this->assertEquals(
             'You must be logged in first',
             $warning->getText()

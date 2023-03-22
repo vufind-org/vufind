@@ -88,7 +88,7 @@
           $requireOne = $el['requireOne'] ?? false;
         ?>
         <?php if (in_array($el['type'], ['checkbox', 'radio'])): ?>
-          <p id="<?=$this->escapeHtmlAttr($formElement->getAttribute('id'))?>" class="control-label radio-label<?=$required && !$requireOne? ' required' : ''?><?=$requireOne ? ' require-one' : ''?>"><?=$this->transEsc($el['label'])?>:</p>
+          <p id="<?=$this->escapeHtmlAttr($formElement->getAttribute('id'))?>" class="control-label radio-label<?=$required && !$requireOne ? ' required' : ''?><?=$requireOne ? ' require-one' : ''?>"><?=$this->transEsc($el['label'])?>:</p>
         <?php elseif ('hidden' !== $el['type']): ?>
           <label for="<?=$this->escapeHtmlAttr($formElement->getAttribute('id'))?>" class="control-label<?=$required ? ' required' : ''?>"><?=$this->transEsc($el['label'])?>:</label>
         <?php endif ?>

@@ -100,7 +100,8 @@ class ChoiceAuth extends AbstractBase
      */
     protected function validateConfig()
     {
-        if (!isset($this->config->ChoiceAuth->choice_order)
+        if (
+            !isset($this->config->ChoiceAuth->choice_order)
             || !strlen($this->config->ChoiceAuth->choice_order)
         ) {
             throw new AuthException(

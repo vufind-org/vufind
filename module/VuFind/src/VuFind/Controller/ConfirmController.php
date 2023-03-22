@@ -59,7 +59,7 @@ class ConfirmController extends AbstractBase
                 $flash = (true === is_array($message))
                     ? [
                         'msg' => $message['msg'],
-                        'tokens' => $message['tokens'] ?? []
+                        'tokens' => $message['tokens'] ?? [],
                     ]
                     : $message;
                 $this->flashMessenger()->addMessage($flash, 'info');

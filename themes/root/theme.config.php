@@ -173,6 +173,6 @@ return [
             'userlist' => 'VuFind\View\Helper\Root\UserList',
             'usertags' => 'VuFind\View\Helper\Root\UserTags',
             'Laminas\View\Helper\Url' => 'VuFind\View\Helper\Root\Url',
-        ]
+        ],
     ],
 ];

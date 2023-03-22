@@ -56,17 +56,18 @@ class OAuth2TokenTraitTest extends \PHPUnit\Framework\TestCase
     /**
      * Test for getNewOauth2Token
      *
+     * @return void
      * @throws \VuFind\Exception\ILS
      */
     public function testGetNewOAuth2Token()
     {
         $response = <<<END
-HTTP/1.1 200 OK
-Content-Type: application/json
-Date: Wed, 18 Mar 2015 11:49:40 GMT
+            HTTP/1.1 200 OK
+            Content-Type: application/json
+            Date: Wed, 18 Mar 2015 11:49:40 GMT
 
-{"access_token": "some_access_token","expires_in": 3600,"token_type": "Bearer"}
-END;
+            {"access_token": "some_access_token","expires_in": 3600,"token_type": "Bearer"}
+            END;
 
         $this->configureDriver();
         $this->mockResponse($response);
@@ -78,20 +79,20 @@ END;
         $this->assertEquals('Bearer some_access_token', $token->getHeaderValue());
 
         $response = <<<END
-HTTP/1.1 403 Forbidden
-Content-Type: application/json
-Date: Wed, 18 Mar 2015 11:49:40 GMT
-END;
+            HTTP/1.1 403 Forbidden
+            Content-Type: application/json
+            Date: Wed, 18 Mar 2015 11:49:40 GMT
+            END;
         $this->configureDriver();
         $this->mockResponse($response);
         $this->expectExceptionMessage('Problem getting authorization token: Bad status code returned');
         $this->driver->getNewOAuth2Token('https://www.example.com/api/v1/oauth/token', 'some_client', 'some_secret');
 
         $response = <<<END
-HTTP/1.1 200 OK
-Content-Type: application/json
-Date: Wed, 18 Mar 2015 11:49:40 GMT
-END;
+            HTTP/1.1 200 OK
+            Content-Type: application/json
+            Date: Wed, 18 Mar 2015 11:49:40 GMT
+            END;
         $this->configureDriver();
         $this->mockResponse($response);
         $this->expectExceptionMessage('Problem getting authorization token: Empty data');
@@ -103,6 +104,8 @@ END;
      *
      * @param string|array|null $responseData String or array of string which
      * with raw http response
+     *
+     * @return void
      */
     protected function mockResponse($responseData)
     {
@@ -124,6 +127,8 @@ END;
 
     /**
      * Basic configuration for tested service
+     *
+     * @return void
      */
     public function configureDriver(): void
     {

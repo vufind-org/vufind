@@ -30,7 +30,6 @@
 namespace VuFindTest\Backend\Solr;
 
 use PHPUnit\Framework\TestCase;
-
 use VuFindSearch\Backend\Solr\HandlerMap;
 
 /**
@@ -134,7 +133,7 @@ class HandlerMapTest extends TestCase
                     'invariants' => ['p1' => 'v1'],
                     'defaults' => ['p2' => 'v2'],
                     'appends' => ['p3' => 'v3'],
-                ]
+                ],
             ]
         );
         $this->assertEquals(
@@ -167,7 +166,7 @@ class HandlerMapTest extends TestCase
                     'invariants' => ['p1' => 'v1'],
                     'defaults' => ['p2' => 'v2'],
                     'appends' => ['p3' => 'v3'],
-                ]
+                ],
             ]
         );
         $this->assertEquals(
@@ -196,7 +195,7 @@ class HandlerMapTest extends TestCase
                 'search' => [
                     'functions' => ['search'],
                     'invariants' => ['p1' => 'v1'],
-                ]
+                ],
             ]
         );
         $map->addParameter('search', 'invariants', 'p2', 'v2');

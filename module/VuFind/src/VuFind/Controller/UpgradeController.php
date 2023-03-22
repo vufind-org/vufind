@@ -133,7 +133,8 @@ class UpgradeController extends AbstractBase
         // If auto-configuration is disabled, prevent any other action from being
         // accessed:
         $config = $this->getConfig();
-        if (!isset($config->System->autoConfigure)
+        if (
+            !isset($config->System->autoConfigure)
             || !$config->System->autoConfigure
         ) {
             $routeMatch = $e->getRouteMatch();
@@ -364,6 +365,31 @@ class UpgradeController extends AbstractBase
         $this->dbUpgrade()
             ->setAdapter($adapter)
             ->loadSql(APPLICATION_PATH . '/module/VuFind/sql/mysql.sql');
+
+        // Check for deprecated columns. We prompt the user for action on this, so
+        // let's get that settled before doing further work.
+        $deprecatedColumns = $this->dbUpgrade()->getDeprecatedColumns();
+        if (!empty($deprecatedColumns)) {
+            if (!empty($this->session->deprecatedColumnsAction)) {
+                if ($this->session->deprecatedColumnsAction === 'delete') {
+                    // Only manipulate DB if we're not in logging mode:
+                    if (!$this->logsql) {
+                        if (!$this->hasDatabaseRootCredentials()) {
+                            return $this->forwardTo('Upgrade', 'GetDbCredentials');
+                        }
+                        $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
+                        $this->session->warnings->append(
+                            "Removed deprecated column(s) from table(s): "
+                            . implode(', ', array_keys($deprecatedColumns))
+                        );
+                    }
+                    $sql .= $this->dbUpgrade()
+                        ->removeDeprecatedColumns($deprecatedColumns, $this->logsql);
+                }
+            } else {
+                return $this->forwardTo('Upgrade', 'ConfirmDeprecatedColumns');
+            }
+        }
 
         // Check for missing tables.  Note that we need to finish dealing with
         // missing tables before we proceed to the missing columns check, or else
@@ -598,6 +624,23 @@ class UpgradeController extends AbstractBase
     }
 
     /**
+     * Prompt the user to confirm removal of deprecated columns.
+     *
+     * @return mixed
+     */
+    public function confirmdeprecatedcolumnsAction()
+    {
+        if ($action = $this->params()->fromQuery('action')) {
+            if ($action === 'keep' || $action === 'delete') {
+                $this->session->deprecatedColumnsAction = $action;
+                return $this->redirect()->toRoute('upgrade-fixdatabase');
+            }
+        }
+        $deprecated = $this->dbUpgrade()->getDeprecatedColumns();
+        return $this->createViewModel(compact('deprecated'));
+    }
+
+    /**
      * Prompt the user for database credentials.
      *
      * @return mixed
@@ -675,7 +718,7 @@ class UpgradeController extends AbstractBase
 
         return $this->createViewModel(
             [
-                'anonymousTags' => $this->params()->fromQuery('anonymousCnt')
+                'anonymousTags' => $this->params()->fromQuery('anonymousCnt'),
             ]
         );
     }
@@ -854,14 +897,16 @@ class UpgradeController extends AbstractBase
         }
 
         // First find out which version we are upgrading:
-        if (!isset($this->cookie->sourceDir)
+        if (
+            !isset($this->cookie->sourceDir)
             || !is_dir($this->cookie->sourceDir)
         ) {
             return $this->forwardTo('Upgrade', 'GetSourceDir');
         }
 
         // Next figure out which version(s) are involved:
-        if (!isset($this->cookie->oldVersion)
+        if (
+            !isset($this->cookie->oldVersion)
             || !isset($this->cookie->newVersion)
         ) {
             return $this->forwardTo('Upgrade', 'EstablishVersions');
@@ -905,7 +950,7 @@ class UpgradeController extends AbstractBase
                 'configDir'
                     => dirname($this->getForcedLocalConfigPath('config.ini')),
                 'importDir' => LOCAL_OVERRIDE_DIR . '/import',
-                'oldVersion' => $this->cookie->oldVersion
+                'oldVersion' => $this->cookie->oldVersion,
             ]
         );
     }

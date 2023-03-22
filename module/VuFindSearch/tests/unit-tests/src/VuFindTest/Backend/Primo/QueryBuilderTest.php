@@ -76,7 +76,7 @@ class QueryBuilderTest extends TestCase
         $qb = new QueryBuilder();
         $expected = [
             ['lookfor' => 'query1', 'index' => 'handler1', 'op' => 'OR'],
-            ['lookfor' => 'query2', 'index' => 'handler2', 'op' => 'AND']
+            ['lookfor' => 'query2', 'index' => 'handler2', 'op' => 'AND'],
         ];
         $result = $qb->build($q)->get('query');
         $this->assertEquals($expected, $result);

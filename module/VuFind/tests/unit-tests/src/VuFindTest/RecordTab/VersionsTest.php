@@ -50,7 +50,7 @@ class VersionsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetDescription(): void
     {
-        $count=5;
+        $count = 5;
         $som = $this->getMockPluginManager();
         $config = $this->getMockConfig();
         $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
@@ -59,7 +59,7 @@ class VersionsTest extends \PHPUnit\Framework\TestCase
         $recordDriver->expects($this->any())->method('tryMethod')
             ->with($this->equalTo('getOtherVersionCount'))
             ->will($this->returnValue($count));
-        $obj= new Versions($config, $som);
+        $obj = new Versions($config, $som);
         $obj->setRecordDriver($recordDriver);
         $translator = $this->getMockBuilder(\Laminas\I18n\Translator\TranslatorInterface::class)
             ->getMock();
@@ -81,15 +81,15 @@ class VersionsTest extends \PHPUnit\Framework\TestCase
         return ['Test1' => [true, 1, true],
                 'Test2' => [true, 0, false],
                 'Test3' => [false, 1, false],
-                'Test4' => [true, 0, false]
+                'Test4' => [true, 0, false],
             ];
     }
 
     /**
      * Test if the tab is active.
      *
-     * @param bool $versionAction Action from Plugin
-     * @param int  $versionCount  Version count from Record Driver
+     * @param bool $versionAction  Action from Plugin
+     * @param int  $versionCount   Version count from Record Driver
      * @param bool $expectedResult Expected return value from isActive
      *
      * @return void
@@ -116,7 +116,7 @@ class VersionsTest extends \PHPUnit\Framework\TestCase
         $recordDriver->expects($this->any())->method('tryMethod')
             ->with($this->equalTo('getOtherVersionCount'))
             ->will($this->returnValue($versionCount));
-        $obj= new Versions($config, $som);
+        $obj = new Versions($config, $som);
         $obj->setRecordDriver($recordDriver);
         $this->assertSame($expectedResult, $obj->isActive());
     }

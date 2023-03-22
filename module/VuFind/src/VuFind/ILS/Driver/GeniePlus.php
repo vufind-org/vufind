@@ -506,7 +506,7 @@ class GeniePlus extends AbstractAPI
             'cat_password' => trim($password),
             'email'        => $email,
             'major'        => null,
-            'college'      => null
+            'college'      => null,
         ];
     }
 

@@ -31,7 +31,6 @@ namespace VuFind\Search\Solr\V4;
 
 use Laminas\EventManager\EventInterface;
 use Laminas\Http\Response;
-
 use VuFind\Search\Solr\AbstractErrorListener;
 use VuFindSearch\Backend\Exception\HttpErrorException;
 
@@ -101,7 +100,8 @@ class ErrorListener extends AbstractErrorListener
         $tags = [];
         if (isset($body->error->msg)) {
             $reason = $body->error->msg;
-            if (stristr($reason, 'org.apache.solr.search.SyntaxError')
+            if (
+                stristr($reason, 'org.apache.solr.search.SyntaxError')
                 || stristr($reason, 'undefined field')
                 || stristr($reason, 'invalid date')
             ) {

@@ -65,17 +65,17 @@ class PathResolverTest extends \PHPUnit\Framework\TestCase
         $this->stackedResolver = new PathResolver(
             [
                 'directory' => APPLICATION_PATH,
-                'defaultConfigSubdir' => PathResolver::DEFAULT_CONFIG_SUBDIR
+                'defaultConfigSubdir' => PathResolver::DEFAULT_CONFIG_SUBDIR,
             ],
             [
                 [
                     'directory' => $fixtureDir . 'secondary',
-                    'defaultConfigSubdir' => 'config/custom'
+                    'defaultConfigSubdir' => 'config/custom',
                 ],
                 [
                     'directory' => $fixtureDir . 'primary',
-                    'defaultConfigSubdir' => PathResolver::DEFAULT_CONFIG_SUBDIR
-                ]
+                    'defaultConfigSubdir' => PathResolver::DEFAULT_CONFIG_SUBDIR,
+                ],
             ]
         );
     }
@@ -124,28 +124,31 @@ class PathResolverTest extends \PHPUnit\Framework\TestCase
             [
                 // A file that exists only in the primary path:
                 'only-primary.ini',
-                $fixtureDir . 'primary/config/vufind/only-primary.ini'
+                $fixtureDir . 'primary/config/vufind/only-primary.ini',
             ],
             [
                 // A file that exists both in the primary and secondary paths:
                 'both.ini',
-                $fixtureDir . 'primary/config/vufind/both.ini'
+                $fixtureDir . 'primary/config/vufind/both.ini',
             ],
             [
                 // A file that exists in the secondary path as well as base path:
                 'facets.ini',
-                $fixtureDir . 'secondary/config/custom/facets.ini'
+                $fixtureDir . 'secondary/config/custom/facets.ini',
             ],
             [
                 // A file that exists only in the base path:
                 'config.ini',
-                APPLICATION_PATH . '/config/vufind/config.ini'
+                APPLICATION_PATH . '/config/vufind/config.ini',
             ],
         ];
     }
 
     /**
      * Test stacked path resolution
+     *
+     * @param string $filename     Filename to check
+     * @param string $expectedPath Expected result
      *
      * @dataProvider getTestPathStackData
      *

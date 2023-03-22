@@ -57,8 +57,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'base_url' => 'localhost',
             'tenant' => 'config_tenant',
             'username' => 'config_username',
-            'password' => 'config_password'
-        ]
+            'password' => 'config_password',
+        ],
     ];
 
     /**
@@ -342,8 +342,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
      */
     public function testUnsuccessfulPlaceHoldInvalidExpirationDate(): void
     {
-        # Validates that the requiredByTS is an of type ?int, or throws an exception
-        # otherwise
+        // Validates that the requiredByTS is an of type ?int, or throws an exception
+        // otherwise
         $this->createConnector('unsuccessful-place-hold');
         $details = [
             'requiredBy' => '3333-33-33',
@@ -377,7 +377,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $result = $this->driver->placeHold($details);
         $expected = [
             'success' => false,
-            'status' => 'requestExpirationDate cannot be in the past'
+            'status' => 'requestExpirationDate cannot be in the past',
         ];
         $this->assertEquals($expected, $result);
     }
@@ -403,8 +403,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'new_date' => '01-01-2022',
                     'new_time' => '00:00',
                     'item_id' => 'record1',
-                ]
-            ]
+                ],
+            ],
         ];
         $this->assertEquals($expected, $result);
     }
@@ -418,7 +418,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     {
         $this->createConnector('get-my-holds-none');
         $patron = [
-            'id' => 'foo'
+            'id' => 'foo',
         ];
         $result = $this->driver->getMyHolds($patron);
         $expected = [];
@@ -434,7 +434,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     {
         $this->createConnector('get-my-holds-available');
         $patron = [
-            'id' => 'foo'
+            'id' => 'foo',
         ];
         $result = $this->driver->getMyHolds($patron);
         $expected[0] = [
@@ -448,7 +448,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'available' => true,
             'in_transit' => false,
             'last_pickup_date' => '12-29-2022',
-            'position' => 1
+            'position' => 1,
         ];
         $this->assertEquals($expected, $result);
     }
@@ -462,7 +462,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     {
         $this->createConnector('get-my-holds-available-proxy');
         $patron = [
-            'id' => 'bar'
+            'id' => 'bar',
         ];
         $result = $this->driver->getMyHolds($patron);
         $expected[0] = [
@@ -491,7 +491,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     {
         $this->createConnector('get-my-holds-in_transit');
         $patron = [
-            'id' => 'foo'
+            'id' => 'foo',
         ];
         $result = $this->driver->getMyHolds($patron);
         $expected[0] = [
@@ -505,7 +505,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'available' => false,
             'in_transit' => true,
             'last_pickup_date' => null,
-            'position' => 1
+            'position' => 1,
         ];
         $this->assertEquals($expected, $result);
     }
@@ -519,7 +519,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     {
         $this->createConnector('get-my-holds-single');
         $patron = [
-            'id' => 'foo'
+            'id' => 'foo',
         ];
         $result = $this->driver->getMyHolds($patron);
         $expected[0] = [
@@ -533,7 +533,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'available' => false,
             'in_transit' => false,
             'last_pickup_date' => null,
-            'position' => 3
+            'position' => 3,
         ];
         $this->assertEquals($expected, $result);
     }
@@ -668,7 +668,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     {
         $this->createConnector('get-my-profile');
         $patron = [
-            'id' => 'foo'
+            'id' => 'foo',
         ];
         $result = $this->driver->getMyProfile($patron);
         $expected = [
@@ -695,14 +695,14 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     {
         $this->createConnector('get-proxied-users');
         $patron = [
-            'id' => 'foo'
+            'id' => 'foo',
         ];
         $result = $this->driver->getProxiedUsers($patron);
         $expected = ['fakeid' => 'Lastname, Proxity P.'];
         $this->assertEquals($expected, $result);
     }
 
-    /*
+    /**
      * Test getHolding with HRID-based lookup
      *
      * @return void
@@ -735,7 +735,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                 'location_code' => 'DCOC',
                 'reserve' => 'TODO',
                 'addLink' => true,
-            ]
+            ],
         ];
         $this->assertEquals($expected, $this->driver->getHolding("foo"));
     }
@@ -776,8 +776,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'location_code' => 'DCOC',
                     'reserve' => 'TODO',
                     'addLink' => true,
-                ]
-            ]
+                ],
+            ],
         ];
         $this->assertEquals($expected, $this->driver->getStatuses(["foo"]));
     }
@@ -815,7 +815,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                 'location_code' => 'DCOC',
                 'reserve' => 'TODO',
                 'addLink' => true,
-            ]
+            ],
         ];
         $this->assertEquals($expected, $this->driver->getHolding("instanceid"));
     }
@@ -851,7 +851,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                 'location_code' => 'DCOC',
                 'reserve' => 'TODO',
                 'addLink' => true,
-            ]
+            ],
         ];
         $this->assertEquals($expected, $this->driver->getHolding("instanceid"));
     }
@@ -912,7 +912,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                 'location_code' => 'DCOC',
                 'reserve' => 'TODO',
                 'addLink' => true,
-            ]
+            ],
         ];
         $this->assertEquals($expected, $this->driver->getHolding("instanceid"));
     }

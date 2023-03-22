@@ -52,7 +52,7 @@ class VisualizationTest extends \VuFindTest\Integration\MinkTestCase
                 'default_top_recommend' => ['VisualFacets'],
             ],
             'Views' => ['list' => 'List', 'visual' => 'Visual'],
-        ]
+        ],
     ];
 
     /**

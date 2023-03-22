@@ -155,7 +155,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                     'status'       => null,
                     'location'     => "Toowoomba",
                     'campus'       => "Toowoomba",
-                    'callnumber'   => $result[0]['CALL_NUMBER']
+                    'callnumber'   => $result[0]['CALL_NUMBER'],
                     ];
 
                 switch ($result[0]['CALL_NUMBER']) {
@@ -293,7 +293,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                 'location'     => $row['LOCATION'],
                 'reserve'      => $row['RESERVE'],
                 'campus'       => $campus,
-                'callnumber'   => $row['BIB_CALL_NUM']
+                'callnumber'   => $row['BIB_CALL_NUM'],
                 ];
         }
 
@@ -458,7 +458,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                 "barcode"       => $row['BARCODE'],
                 "itemclass"     => $row['ITEM_CLASS'],
                 "units"         => $row['UNITS'],
-                "resitemclass"  => $row['RESERVE_ITEM_CLASS']
+                "resitemclass"  => $row['RESERVE_ITEM_CLASS'],
                 ];
 
             // Add to the holdings array
@@ -511,7 +511,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             '5' => ['US', 'ES', 'PS', 'AS', 'GS', 'TS', 'TAS', 'EPS', 'XVS',
                 'XPS'],
             // 4  => Fraser Coast
-            '4' => ['UF', 'PF', 'AF']
+            '4' => ['UF', 'PF', 'AF'],
             ];
         // Where is the patron from?
         $location = "";
@@ -528,25 +528,25 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             "5400", // Being Processed
             "5401", // On Display
             "5402", // 24 Hour Hold
-            "5700"  // IN TRANSIT
+            "5700",  // IN TRANSIT
             ];
         // Who can place reservations on available items
         $available_locs = [
             '1' => ['5', '4'],
             '4' => [],
-            '5' => []
+            '5' => [],
             ];
         // Who can place reservations on UNavailable items
         $unavailable_locs = [
             '1' => ['1', '5', '4'],
             '4' => [],
-            '5' => ['5']
+            '5' => ['5'],
             ];
         // Who can place reservations on STATUS items
         $status_locs = [
             '1' => ['1', '5', '4'],
             '4' => [],
-            '5' => ['5']
+            '5' => ['5'],
             ];
 
         // Set a flag for super users, better then
@@ -590,7 +590,8 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                     // The item is on loan ...
                     if ($item_is_out) {
                         // ... and has a requestable status or no status ...
-                        if (in_array($item_stat_code, $status_list)
+                        if (
+                            in_array($item_stat_code, $status_list)
                             || $item_stat_code === null
                         ) {
                             // ... can this user borrow on loan items at this
@@ -931,7 +932,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         if (isset($field['pattern']) && isset($patterns[$field['pattern']])) {
             // Enumeration, Chonology and Other fields
             $enum_chrono = [
-                'a', 'b', 'c', 'd', 'e', 'f', 'i', 'j', 'k', 'l', 'm'
+                'a', 'b', 'c', 'd', 'e', 'f', 'i', 'j', 'k', 'l', 'm',
             ];
             $this_en_ch  = ['pattern' => [], 'data' => []];
             $this_other  = ['pattern' => [], 'data' => []];
@@ -976,13 +977,14 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         // Convert to one line per tag
         $data_set = [];
         foreach ($holdings_marc as $row) {
-            if ($row['SUBFIELD_DATA'] != null
+            if (
+                $row['SUBFIELD_DATA'] != null
                 && trim($row['SUBFIELD_DATA']) != ""
             ) {
                 $data_set[$row['FIELD_SEQUENCE']][] = [
                     'tag'  => trim($row['FIELD_TAG']),
                     'code' => trim($row['SUBFIELD_CODE']),
-                    'data' => trim($row['SUBFIELD_DATA'])
+                    'data' => trim($row['SUBFIELD_DATA']),
                 ];
             }
         }
@@ -1009,13 +1011,13 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                     // Everything else goes in the data bucket
                     $data[] = [
                         'code' => $subfield['code'],
-                        'data' => $subfield['data']
+                        'data' => $subfield['data'],
                     ];
                 }
             }
             $sort_set[$sort_rule . "." . $sort_order] = [
                 'tag'  => $tag,
-                'data' => $data
+                'data' => $data,
             ];
         }
 
@@ -1033,7 +1035,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             } else {
                 $holdings_data[] = [
                     'pattern' => $rule[0],
-                    'data'    => $row['data']
+                    'data'    => $row['data'],
                 ];
             }
         }
@@ -1115,13 +1117,14 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
 
         $data_set = [];
         foreach ($hresult as $row) {
-            if ($row['SUBFIELD_DATA'] != null
+            if (
+                $row['SUBFIELD_DATA'] != null
                 && trim($row['SUBFIELD_DATA']) != ""
             ) {
                 $data_set[$row['ID'] . "_" . $row['FIELD_SEQUENCE']][] = [
                     'id'   => trim($row['ID']),
                     'code' => trim($row['SUBFIELD_CODE']),
-                    'data' => trim($row['SUBFIELD_DATA'])
+                    'data' => trim($row['SUBFIELD_DATA']),
                     ];
             }
         }
@@ -1232,7 +1235,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                 'address2'  => trim($result[0]['STREET_ADDRESS_2']),
                 'zip'       => trim($result[0]['POSTAL_CODE']),
                 'phone'     => trim($result[0]['TELEPHONE_PRIMARY']),
-                'group'     => trim($result[0]['PATRON_TYPE'])
+                'group'     => trim($result[0]['PATRON_TYPE']),
                 ];
 
             if ($result[0]['CITY'] != null) {
@@ -1283,7 +1286,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                     "fine"     => $row['DESCRIPTION'],
                     "balance"  => $row['BALANCE'] * 100,
                     "duedate"  => $row['DUE_DATE'],
-                    "id"       => "vtls" . sprintf("%09d", (int)$row['BIB_ID'])
+                    "id"       => "vtls" . sprintf("%09d", (int)$row['BIB_ID']),
                     ];
             }
         }
@@ -1321,7 +1324,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                     "location" => $row['PICKUP_LOCATION'],
                     "expire"   => $row['DATE_LAST_NEEDED'],
                     "create"   => $row['DATE_PLACED'],
-                    "reqnum"   => $row['REQUEST_CONTROL_NUMBER']
+                    "reqnum"   => $row['REQUEST_CONTROL_NUMBER'],
                     ];
             }
         }
@@ -1373,7 +1376,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                     'renew'   => $row['RENEW_COUNT'],
                     'request' => $row['REQ_COUNT'],
                     // IDs need to show as 'vtls000589589'
-                    'id'      => "vtls" . sprintf("%09d", (int)$row['BIBID'])
+                    'id'      => "vtls" . sprintf("%09d", (int)$row['BIBID']),
                     ];
             }
         }
@@ -1488,7 +1491,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                     date($time_format, strtotime($row['OPEN_TIME'])),
                 'close'  => "$today " .
                     date($time_format, strtotime($row['CLOSE_TIME'])),
-                'status' => $row['STATUS']
+                'status' => $row['STATUS'],
                 ];
         }
 
@@ -1520,7 +1523,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                 'close'  => "$today "
                     . date($time_format, strtotime($row['CLOSE_TIME'])),
                 'status' => $row['STATUS'],
-                'reason' => $row['REASON']
+                'reason' => $row['REASON'],
             ];
         }
         return $times;
@@ -1556,7 +1559,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         $allowed_req_levels = [
             'item'   => 0,
             'bib'    => 1,
-            'volume' => 2
+            'volume' => 2,
             ];
         if (!in_array($req_level, array_keys($allowed_req_levels))) {
             return $response;
@@ -1565,7 +1568,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         $allowed_pickup_locs = [
             'Toowoomba'    => '10000',
             'Fraser Coast' => '40000',
-            'Springfield'  => '50000'
+            'Springfield'  => '50000',
             ];
         if (!in_array($pickup_loc, array_keys($allowed_pickup_locs))) {
             return $response;
@@ -1712,7 +1715,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             "skin" => "homepage",
             "patronid" => $patron['cat_username'],
             "patronpassword" => $patron['cat_password'],
-            "patronhost" => $this->config['Catalog']['patron_host']
+            "patronhost" => $this->config['Catalog']['patron_host'],
         ];
 
         // Get the response

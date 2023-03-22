@@ -126,7 +126,7 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
         // By default, no OpenURL on record page:
         $page = $this->setupPage(
             [
-                'Captcha' => ['types' => ['demo'], 'forms' => 'feedback']
+                'Captcha' => ['types' => ['demo'], 'forms' => 'feedback'],
             ]
         );
         $this->fillInAndSubmitFeedbackForm($page);
@@ -157,8 +157,8 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
                 'Captcha' => [
                     'types' => ['interval'],
                     'forms' => 'feedback',
-                    'action_interval' => 60
-                ]
+                    'action_interval' => 60,
+                ],
             ]
         );
         // Test that submission is blocked:
@@ -174,8 +174,8 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
                 'Captcha' => [
                     'types' => ['interval'],
                     'forms' => 'feedback',
-                    'action_interval' => 1
-                ]
+                    'action_interval' => 1,
+                ],
             ]
         );
         $this->fillInAndSubmitFeedbackForm($page);

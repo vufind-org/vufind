@@ -263,7 +263,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
                         'msg' => '%%error%% -- %%label%%',
                         'tokens' => [
                             '%%error%%' => $error,
-                            '%%label%%' => $label
+                            '%%label%%' => $label,
                         ],
                         'translate' => true,
                         'translateTokens' => true,

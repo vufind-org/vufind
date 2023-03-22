@@ -52,14 +52,14 @@ class CspTest extends \PHPUnit\Framework\TestCase
                 'CSP' => [
                     'use_nonce' => true,
                     'enabled' => [
-                        'testing' => true
-                    ]
+                        'testing' => true,
+                    ],
                 ],
                 'Directives' => [
                     'script-src' => [
-                        "'unsafe-inline'"
-                    ]
-                ]
+                        "'unsafe-inline'",
+                    ],
+                ],
             ]
         );
         $nonceGenerator = new \VuFind\Security\NonceGenerator();
@@ -94,14 +94,14 @@ class CspTest extends \PHPUnit\Framework\TestCase
                 'CSP' => [
                     'use_nonce' => true,
                     'enabled' => [
-                        'testing' => 'report_only'
-                    ]
+                        'testing' => 'report_only',
+                    ],
                 ],
                 'Directives' => [
                     'script-src' => [
-                        "'unsafe-inline'"
-                    ]
-                ]
+                        "'unsafe-inline'",
+                    ],
+                ],
             ]
         );
         $nonceGenerator = new \VuFind\Security\NonceGenerator();
@@ -136,14 +136,14 @@ class CspTest extends \PHPUnit\Framework\TestCase
                 'CSP' => [
                     'use_nonce' => true,
                     'enabled' => [
-                        'testing' => false
-                    ]
+                        'testing' => false,
+                    ],
                 ],
                 'Directives' => [
                     'script-src' => [
-                        "'unsafe-inline'"
-                    ]
-                ]
+                        "'unsafe-inline'",
+                    ],
+                ],
             ]
         );
         $nonceGenerator = new \VuFind\Security\NonceGenerator();

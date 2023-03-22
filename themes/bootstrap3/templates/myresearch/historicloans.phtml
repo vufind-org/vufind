@@ -26,7 +26,7 @@
             $transParams = [
               '%%start%%' => $this->localizedNumber($this->paginator->getAbsoluteItemNumber(1)),
               '%%end%%' => $this->localizedNumber($end),
-              '%%total%%' => $this->localizedNumber($this->paginator->getTotalItemCount())
+              '%%total%%' => $this->localizedNumber($this->paginator->getTotalItemCount()),
             ];
           ?>
           <?=$this->translate('showing_items_of_html', $transParams); ?>
@@ -120,7 +120,7 @@
               <?=$thumbnail ?>
             <?php endif ?>
           </div>
-          <?=$resource->tryMethod('supportsCoinsOpenUrl')?'<span class="Z3988" title="' . $this->escapeHtmlAttr($resource->getCoinsOpenUrl()) . '"></span>':''?>
+          <?=$resource->tryMethod('supportsCoinsOpenUrl') ? '<span class="Z3988" title="' . $this->escapeHtmlAttr($resource->getCoinsOpenUrl()) . '"></span>' : ''?>
         </li>
       <?php endforeach; ?>
     </ul>

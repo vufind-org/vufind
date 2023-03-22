@@ -66,22 +66,22 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
         return [
             'Basic' => [
                 '<button class="btn" id="login">text</button>',
-                ['button', 'text', ['class' => 'btn', 'id' => 'login']]
+                ['button', 'text', ['class' => 'btn', 'id' => 'login']],
             ],
 
             'String' => [
                 '<i class="btn">text</i>',
-                ['i', 'text', 'btn']
+                ['i', 'text', 'btn'],
             ],
 
             'Empty text' => [
                 '<i class="fa&#x20;fa-awesome"></i>',
-                ['i', '', 'fa fa-awesome']
+                ['i', '', 'fa fa-awesome'],
             ],
 
             'Truthy attribute' => [
                 '<a href="&#x2F;login" data-lightbox="1">Login</a>',
-                ['a', 'Login', ['href' => '/login', 'data-lightbox' => true]]
+                ['a', 'Login', ['href' => '/login', 'data-lightbox' => true]],
             ],
         ];
     }
@@ -99,7 +99,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
                 [
                     'button',
                     'This link is <strong>important</strong>',
-                ]
+                ],
             ],
 
             'does not escape innerHTML with option' => [
@@ -108,8 +108,8 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
                     'button',
                     'This link is <strong>important</strong>',
                     [],
-                    ['escapeContent' => false]
-                ]
+                    ['escapeContent' => false],
+                ],
             ],
 
             'escape innerHTML with option' => [
@@ -118,8 +118,8 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
                     'button',
                     'This link is <strong>important</strong>',
                     [],
-                    ['escapeContent' => true]
-                ]
+                    ['escapeContent' => true],
+                ],
             ],
         ];
     }
@@ -137,8 +137,8 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
                 [
                     'img',
                     '',
-                    ['src' => 'book.gif']
-                ]
+                    ['src' => 'book.gif'],
+                ],
             ],
 
             'class only' => [
@@ -146,22 +146,25 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
                 [
                     'br',
                     '',
-                    'sm:hidden'
-                ]
+                    'sm:hidden',
+                ],
             ],
 
             'non-void tag' => [
                 '<span></span>',
                 [
                     'span',
-                    ''
-                ]
-            ]
+                    '',
+                ],
+            ],
         ];
     }
 
     /**
      * Test all data providers above
+     *
+     * @param string $expected Expected value
+     * @param array  $params   Parameters to test
      *
      * @dataProvider htmlAttributesTests
      * @dataProvider helperOptionTests
@@ -200,6 +203,8 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
     /**
      * Test tag name edge cases
      *
+     * @param string $tagName Tag name to use in test
+     *
      * @dataProvider validTags
      *
      * @return void
@@ -236,6 +241,8 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
 
     /**
      * Test exception on bad tag names
+     *
+     * @param string $tagName Tag name to use in test
      *
      * @dataProvider invalidTags
      *

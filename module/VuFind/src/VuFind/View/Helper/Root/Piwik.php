@@ -368,7 +368,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
             'Sort' => $params->getSort(),
             'Page' => $params->getPage(),
             'Limit' => $params->getLimit(),
-            'View' => $params->getView()
+            'View' => $params->getView(),
         ];
     }
 
@@ -405,7 +405,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
         return [
             'RecordFormat' => $formats,
             'RecordData' => "$id|$author|$title",
-            'RecordInstitution' => $institutions
+            'RecordInstitution' => $institutions,
         ];
     }
 
@@ -439,19 +439,19 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
         $escape = $this->getView()->plugin('escapejs');
         $code = <<<EOT
 
-function initVuFindPiwikTracker{$this->timestamp}(){
-    var VuFindPiwikTracker = Piwik.getTracker();
+            function initVuFindPiwikTracker{$this->timestamp}(){
+                var VuFindPiwikTracker = Piwik.getTracker();
 
-    VuFindPiwikTracker.setSiteId({$this->siteId});
-    VuFindPiwikTracker.setTrackerUrl('{$this->url}piwik.php');
-    VuFindPiwikTracker.setCustomUrl('{$escape($this->getCustomUrl())}');
+                VuFindPiwikTracker.setSiteId({$this->siteId});
+                VuFindPiwikTracker.setTrackerUrl('{$this->url}piwik.php');
+                VuFindPiwikTracker.setCustomUrl('{$escape($this->getCustomUrl())}');
 
-EOT;
+            EOT;
         if ($this->disableCookies) {
             $code .= <<<EOT
-    VuFindPiwikTracker.disableCookies();
+                    VuFindPiwikTracker.disableCookies();
 
-EOT;
+                EOT;
         }
 
         return $code;
@@ -466,7 +466,8 @@ EOT;
     {
         $path = $this->request->getUri()->toString();
         $routeMatch = $this->router->match($this->request);
-        if ($routeMatch
+        if (
+            $routeMatch
             && $routeMatch->getMatchedRouteName() == 'vufindrecord-ajaxtab'
         ) {
             // Replace 'AjaxTab' with tab name in record page URLs
@@ -487,21 +488,21 @@ EOT;
     protected function getClosingTrackingCode()
     {
         return <<<EOT
-    VuFindPiwikTracker.enableLinkTracking();
-};
-(function(){
-    if (typeof Piwik === 'undefined') {
-        var d=document, g=d.createElement('script'),
-            s=d.getElementsByTagName('script')[0];
-        g.type='text/javascript'; g.defer=true; g.async=true;
-        g.src='{$this->url}piwik.js';
-        g.onload=initVuFindPiwikTracker{$this->timestamp};
-        s.parentNode.insertBefore(g,s);
-    } else {
-        initVuFindPiwikTracker{$this->timestamp}();
-    }
-})();
-EOT;
+                VuFindPiwikTracker.enableLinkTracking();
+            };
+            (function(){
+                if (typeof Piwik === 'undefined') {
+                    var d=document, g=d.createElement('script'),
+                        s=d.getElementsByTagName('script')[0];
+                    g.type='text/javascript'; g.defer=true; g.async=true;
+                    g.src='{$this->url}piwik.js';
+                    g.onload=initVuFindPiwikTracker{$this->timestamp};
+                    s.parentNode.insertBefore(g,s);
+                } else {
+                    initVuFindPiwikTracker{$this->timestamp}();
+                }
+            })();
+            EOT;
     }
 
     /**
@@ -527,9 +528,9 @@ EOT;
 
             $value = $escape($value);
             $code .= <<<EOT
-    VuFindPiwikTracker.setCustomVariable($i, '$key', '$value', 'page');
+                    VuFindPiwikTracker.setCustomVariable($i, '$key', '$value', 'page');
 
-EOT;
+                EOT;
         }
         return $code;
     }
@@ -552,11 +553,11 @@ EOT;
 
         // Use trackSiteSearch *instead* of trackPageView in searches
         return <<<EOT
-    VuFindPiwikTracker.trackSiteSearch(
-        '{$this->searchPrefix}$backendId|$searchTerms', '$searchType', $resultCount
-    );
+                VuFindPiwikTracker.trackSiteSearch(
+                    '{$this->searchPrefix}$backendId|$searchTerms', '$searchType', $resultCount
+                );
 
-EOT;
+            EOT;
     }
 
     /**
@@ -587,11 +588,11 @@ EOT;
 
         // Use trackSiteSearch *instead* of trackPageView in searches
         return <<<EOT
-    VuFindPiwikTracker.trackSiteSearch(
-        '{$this->searchPrefix}Combined|$searchTerms', '$searchType', $resultCount
-    );
+                VuFindPiwikTracker.trackSiteSearch(
+                    '{$this->searchPrefix}Combined|$searchTerms', '$searchType', $resultCount
+                );
 
-EOT;
+            EOT;
     }
 
     /**
@@ -602,8 +603,8 @@ EOT;
     protected function getTrackPageViewCode()
     {
         return <<<EOT
-    VuFindPiwikTracker.trackPageView();
+                VuFindPiwikTracker.trackPageView();
 
-EOT;
+            EOT;
     }
 }

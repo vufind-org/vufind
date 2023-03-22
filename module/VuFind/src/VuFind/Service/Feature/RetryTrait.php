@@ -52,7 +52,7 @@ trait RetryTrait
         'subsequentBackoff' => 200,   // backoff (delay) before subsequent retries
                                       // (milliseconds)
         'exponentialBackoff' => true, // whether to use exponential backoff
-        'maximumBackoff' => 1000      // maximum backoff (milliseconds)
+        'maximumBackoff' => 1000,      // maximum backoff (milliseconds)
     ];
 
     /**

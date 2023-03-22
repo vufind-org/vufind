@@ -325,7 +325,8 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
         $this->getInjectHighlightingListener($backend, $search)->attach($events);
 
         // Conditional Filters
-        if (isset($search->ConditionalHiddenFilters)
+        if (
+            isset($search->ConditionalHiddenFilters)
             && $search->ConditionalHiddenFilters->count() > 0
         ) {
             $this->getInjectConditionalFilterListener($search)->attach($events);
@@ -577,8 +578,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      *
      * @return RecordCollectionFactoryInterface
      */
-    protected function createRecordCollectionFactory()
-    : RecordCollectionFactoryInterface
+    protected function createRecordCollectionFactory(): RecordCollectionFactoryInterface
     {
         return new $this->recordCollectionFactoryClass(
             $this->getCreateRecordCallback(),

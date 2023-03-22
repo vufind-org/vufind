@@ -49,8 +49,8 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
         'ANOTES' => [
             'title' => 'Author Notes',
             'file' => 'ANOTES.XML',
-            'div' => '<div id="syn_anotes"></div>'
-        ]
+            'div' => '<div id="syn_anotes"></div>',
+        ],
     ];
 
     /**

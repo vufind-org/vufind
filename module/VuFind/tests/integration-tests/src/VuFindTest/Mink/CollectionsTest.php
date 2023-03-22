@@ -48,7 +48,7 @@ class CollectionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    private function goToCollection()
+    protected function goToCollection()
     {
         $session = $this->getMinkSession();
         $path = '/Collection/topcollection1';
@@ -61,7 +61,7 @@ class CollectionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return Element
      */
-    private function goToCollectionHierarchy()
+    protected function goToCollectionHierarchy()
     {
         $session = $this->getMinkSession();
         $path = '/Collection/subcollection1/HierarchyTree';
@@ -80,19 +80,19 @@ class CollectionsTest extends \VuFindTest\Integration\MinkTestCase
             [
             'config' => [
                 'Collections' => [
-                    'collections' => true
+                    'collections' => true,
                 ],
             ],
             'HierarchyDefault' => [
                 'Collections' => [
-                    'link_type' => 'Top'
-                ]
-            ]
+                    'link_type' => 'Top',
+                ],
+            ],
             ]
         );
         $page = $this->goToCollection();
         $results = $page->findAll('css', '.result');
-        $this->assertEquals(7, count($results));
+        $this->assertCount(7, $results);
     }
 
     /**
@@ -106,14 +106,14 @@ class CollectionsTest extends \VuFindTest\Integration\MinkTestCase
             [
             'config' => [
                 'Collections' => [
-                    'collections' => true
+                    'collections' => true,
                 ],
             ],
             'HierarchyDefault' => [
                 'Collections' => [
-                    'link_type' => 'Top'
-                ]
-            ]
+                    'link_type' => 'Top',
+                ],
+            ],
             ]
         );
         $page = $this->goToCollection();
@@ -136,17 +136,17 @@ class CollectionsTest extends \VuFindTest\Integration\MinkTestCase
             [
             'config' => [
                 'Hierarchy' => [
-                    'showTree' => true
+                    'showTree' => true,
                 ],
                 'Collections' => [
-                    'collections' => true
+                    'collections' => true,
                 ],
             ],
             'HierarchyDefault' => [
                 'Collections' => [
-                    'link_type' => 'All'
-                ]
-            ]
+                    'link_type' => 'All',
+                ],
+            ],
             ]
         );
         $page = $this->goToCollection();

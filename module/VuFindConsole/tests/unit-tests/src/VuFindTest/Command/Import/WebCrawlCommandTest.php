@@ -74,7 +74,7 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo('SolrWeb'));
         $config = new Config(
             [
-                'Sitemaps' => ['url' => ['http://foo']]
+                'Sitemaps' => ['url' => ['http://foo']],
             ]
         );
         $command = $this->getMockCommand($importer, $solr, $config);

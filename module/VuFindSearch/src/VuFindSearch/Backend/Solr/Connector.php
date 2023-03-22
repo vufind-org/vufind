@@ -34,7 +34,6 @@ namespace VuFindSearch\Backend\Solr;
 use Laminas\Http\Client\Adapter\Exception\TimeoutException;
 use Laminas\Http\Client as HttpClient;
 use Laminas\Http\Request;
-
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Backend\Exception\HttpErrorException;
 use VuFindSearch\Backend\Exception\RemoteErrorException;
@@ -349,7 +348,8 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     protected function forceToBackendException($ex)
     {
         // Don't wrap specific backend exceptions....
-        if ($ex instanceof RemoteErrorException
+        if (
+            $ex instanceof RemoteErrorException
             || $ex instanceof RequestErrorException
             || $ex instanceof HttpErrorException
         ) {

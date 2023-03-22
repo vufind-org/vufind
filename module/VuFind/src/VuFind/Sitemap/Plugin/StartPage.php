@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Start page generator plugin
  *

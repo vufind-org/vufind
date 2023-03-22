@@ -136,7 +136,8 @@ class MultiAuth extends AbstractBase
                 explode(',', $config->MultiAuth->method_order)
             );
         }
-        if (isset($config->MultiAuth->filters)
+        if (
+            isset($config->MultiAuth->filters)
             && strlen($config->MultiAuth->filters)
         ) {
             $this->filters = array_map(

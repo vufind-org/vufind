@@ -87,7 +87,7 @@
       </div>
     <?php endif; ?>
 
-    <?=$this->driver->supportsCoinsOpenURL()?'<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenURL()) . '"></span>':''?>
+    <?=$this->driver->supportsCoinsOpenURL() ? '<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenURL()) . '"></span>' : ''?>
   </div>
 </div>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, '$(document).ready(recordDocReady);', 'SET'); ?>

@@ -40,17 +40,17 @@
           'visual_facet_parent' => 'visual_facet_parent',
           'items' => 'items',
           'more_topics_unescaped' => 'more_topics',
-          'on_topic_unescaped' => 'on_topic'
+          'on_topic_unescaped' => 'on_topic',
         ]
     );
 
     $script = <<<JS
-  VuFind.addTranslations($translations);
-  var pivotdata = $pivotData;
-  jQuery(document).ready(function(data) {
-      showVisualFacets(pivotdata);
-});
-JS;
-?>
+        VuFind.addTranslations($translations);
+        var pivotdata = $pivotData;
+        jQuery(document).ready(function(data) {
+          showVisualFacets(pivotdata);
+        });
+        JS;
+  ?>
   <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');?>
 <?php endif; ?>

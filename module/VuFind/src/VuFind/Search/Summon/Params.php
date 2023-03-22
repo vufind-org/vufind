@@ -212,7 +212,8 @@ class Params extends \VuFind\Search\Base\Params
         if ($sort) {
             // If we have an empty search with relevance sort, see if there is
             // an override configured:
-            if ($sort == 'relevance' && $this->getQuery()->getAllTerms() == ''
+            if (
+                $sort == 'relevance' && $this->getQuery()->getAllTerms() == ''
                 && ($relOv = $this->getOptions()->getEmptySearchRelevanceOverride())
             ) {
                 $sort = $relOv;
@@ -319,7 +320,7 @@ class Params extends \VuFind\Search\Base\Params
                             ->add('rangeFilters', "{$filt['field']},{$from}:{$to}");
                     } elseif ($filt['operator'] == 'OR') {
                         // Special case -- OR facets:
-                        $orFacets[$filt['field']] = $orFacets[$filt['field']] ?? [];
+                        $orFacets[$filt['field']] ??= [];
                         $orFacets[$filt['field']][] = $safeValue;
                     } else {
                         // Standard case:
@@ -369,7 +370,8 @@ class Params extends \VuFind\Search\Base\Params
         } elseif (preg_match($caseInsensitiveRegex, $value, $matches)) {
             // Case insensitive case: [x TO y] OR [X TO Y]; convert
             // only if values in both ranges match up!
-            if (strtolower($matches[3]) == strtolower($matches[1])
+            if (
+                strtolower($matches[3]) == strtolower($matches[1])
                 && strtolower($matches[4]) == strtolower($matches[2])
             ) {
                 $filter['displayText'] = $matches[1] . '-' . $matches[2];

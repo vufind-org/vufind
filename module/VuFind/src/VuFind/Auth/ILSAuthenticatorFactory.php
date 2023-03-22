@@ -73,7 +73,7 @@ class ILSAuthenticatorFactory implements FactoryInterface
         // potential circular dependency with the MultiBackend driver as well as
         // saving on initialization costs in cases where the authenticator is not
         // actually utilized.
-        $callback = function (& $wrapped, $proxy) use ($container, $requestedName) {
+        $callback = function (&$wrapped, $proxy) use ($container, $requestedName) {
             // Generate wrapped object:
             $auth = $container->get(\VuFind\Auth\Manager::class);
             $catalog = $container->get(\VuFind\ILS\Connection::class);

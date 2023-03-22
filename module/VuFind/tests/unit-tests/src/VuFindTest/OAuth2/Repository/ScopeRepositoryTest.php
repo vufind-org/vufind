@@ -59,6 +59,11 @@ class ScopeRepositoryTest extends AbstractTokenRepositoryTest
     /**
      * Test scope repository
      *
+     * @param string $scopeId Scope ID
+     * @param string $desc    Expected description
+     * @param bool   $hidden  Expected hidden value
+     * @param bool   $ils     Expected "ILS Needed" value
+     *
      * @dataProvider getTestScopeRepositoryData
      *
      * @return void
@@ -81,7 +86,7 @@ class ScopeRepositoryTest extends AbstractTokenRepositoryTest
                     'description' => 'Phone',
                     'ils' => true,
                 ],
-            ]
+            ],
         ];
         $repo = new ScopeRepository($config);
 
@@ -109,7 +114,7 @@ class ScopeRepositoryTest extends AbstractTokenRepositoryTest
                 'openid' => [
                     'description' => 'OpenID',
                 ],
-            ]
+            ],
         ];
         $repo = new ScopeRepository($config);
 
@@ -126,7 +131,7 @@ class ScopeRepositoryTest extends AbstractTokenRepositoryTest
         $config = [
             'Scopes' => [
                 'openid' => [],
-            ]
+            ],
         ];
         $repo = new ScopeRepository($config);
 

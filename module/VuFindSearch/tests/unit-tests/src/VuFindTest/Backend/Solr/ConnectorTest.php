@@ -339,7 +339,7 @@ class ConnectorTest extends TestCase
                         // If client is provided, return it since it may have test
                         // expectations:
                         return $client ?? new \Laminas\Http\Client();
-                    }
+                    },
                 ]
             )
             ->getMock();

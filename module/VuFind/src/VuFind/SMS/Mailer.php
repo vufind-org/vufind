@@ -55,7 +55,7 @@ class Mailer extends AbstractBase
         'sprint' => ['name' => 'Sprint', 'domain' => 'messaging.sprintpcs.com'],
         'tmobile' => ['name' => 'T Mobile', 'domain' => 'tmomail.net'],
         'alltel' => ['name' => 'Alltel', 'domain' => 'message.alltel.com'],
-        'Cricket' => ['name' => 'Cricket', 'domain' => 'mms.mycricket.com']
+        'Cricket' => ['name' => 'Cricket', 'domain' => 'mms.mycricket.com'],
     ];
 
     /**
@@ -99,7 +99,8 @@ class Mailer extends AbstractBase
             = $options['defaultFrom'] ?? '';
 
         // Make sure mailer dependency has been injected:
-        if (!isset($options['mailer'])
+        if (
+            !isset($options['mailer'])
             || !($options['mailer'] instanceof \VuFind\Mailer\Mailer)
         ) {
             throw new \Exception(

@@ -46,6 +46,8 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
     /**
      * Get mock URL helper.
      *
+     * @param string $expectedQuery Expected query
+     *
      * @return Url
      */
     protected function getMockUrlHelper($expectedQuery): Url
@@ -63,7 +65,7 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
     /**
      * Get configured AlphaBrowse helper for testing.
      *
-     * @param Url $ url      URL helper
+     * @param Url   $url     URL helper
      * @param array $options Extra options
      *
      * @return AlphaBrowse

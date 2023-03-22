@@ -671,7 +671,8 @@ class Manager implements
         }
 
         // Validate CSRF for form-based authentication methods:
-        if (!$this->getAuth()->getSessionInitiator('')
+        if (
+            !$this->getAuth()->getSessionInitiator('')
             && $this->getAuth()->needsCsrfCheck($request)
         ) {
             if (!$this->csrf->isValid($request->getPost()->get('csrf'))) {

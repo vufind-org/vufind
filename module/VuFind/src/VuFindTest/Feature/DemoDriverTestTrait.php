@@ -66,7 +66,7 @@ trait DemoDriverTestTrait
                     'source' => 'Solr',
                     'item_id' => 0,
                     'renewable' => true,
-                ]
+                ],
             ]
         );
     }

@@ -32,7 +32,6 @@
 namespace VuFindTest\Search\Solr;
 
 use Laminas\EventManager\Event;
-
 use VuFind\Search\Solr\DefaultParametersListener;
 use VuFindSearch\ParamBag;
 
@@ -76,8 +75,8 @@ class DefaultParametersListenerTest extends \PHPUnit\Framework\TestCase
         $params = new ParamBag(
             [
                 'fq' => [
-                    'foo:value'
-                ]
+                    'foo:value',
+                ],
             ]
         );
 
@@ -87,7 +86,7 @@ class DefaultParametersListenerTest extends \PHPUnit\Framework\TestCase
             $backend,
             [
                 'search' => 'foo=1&foo=2',
-                '*' => 'bar=3&bar'
+                '*' => 'bar=3&bar',
             ]
         );
 
@@ -139,8 +138,8 @@ class DefaultParametersListenerTest extends \PHPUnit\Framework\TestCase
         $params = new ParamBag(
             [
                 'fq' => [
-                    'foo:value'
-                ]
+                    'foo:value',
+                ],
             ]
         );
 

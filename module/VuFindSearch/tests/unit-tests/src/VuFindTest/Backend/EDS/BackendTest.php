@@ -71,7 +71,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
             ['getAutocompleteData']
         );
         $autocompleteData = [
-            'custid' => 'foo', 'url' => 'http://foo', 'token' => 'auth1234'
+            'custid' => 'foo', 'url' => 'http://foo', 'token' => 'auth1234',
         ];
         $back->expects($this->any())
             ->method('getAutocompleteData')
@@ -163,10 +163,10 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(65924, $coll->getTotal());
         $this->assertEquals(0, $coll->getOffset());
         $rawFacets = $coll->getRawFacets();
-        $this->assertEquals(7, count($rawFacets));
+        $this->assertCount(7, $rawFacets);
         $this->assertEquals('SourceType', $rawFacets[0]['Id']);
         $this->assertEquals('Source Type', $rawFacets[0]['Label']);
-        $this->assertEquals(8, count($rawFacets[0]['AvailableFacetValues']));
+        $this->assertCount(8, $rawFacets[0]['AvailableFacetValues']);
         $expected = ['Value' => 'News', 'Count' => '12055', 'AddAction' => 'addfacetfilter(SourceType:News)'];
         $this->assertEquals($expected, $rawFacets[0]['AvailableFacetValues'][0]);
         $facets = $coll->getFacets();
@@ -211,8 +211,8 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $config = [
             'EBSCO_Account' => [
                 'user_name' => 'un', 'password' => 'pw', 'ip_auth' => true,
-                'profile' => 'pr', 'organization_id' => 'oi'
-            ]
+                'profile' => 'pr', 'organization_id' => 'oi',
+            ],
         ];
         $back = $this->getBackend($conn, $fact, null, null, $config);
         $this->assertEquals($fact, $back->getRecordCollectionFactory());
@@ -268,6 +268,8 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      * @param array                                                   $settings  Additional settings
      * @param array                                                   $mock      Methods to mock (or null for a
      * real object)
+     *
+     * @return \VuFindSearch\Backend\EDS\Backend
      */
     protected function getBackend(
         $connector,

@@ -64,12 +64,14 @@ class CssPreCompilerTest extends \PHPUnit\Framework\TestCase
     public static function extClassProvider()
     {
         return [
-            ['scss', ScssCompiler::class]
+            ['scss', ScssCompiler::class],
         ];
     }
 
     /**
      * Create fixture files in temp folder
+     *
+     * @param string $ext Extension directory
      *
      * @return void
      */
@@ -143,19 +145,25 @@ class CssPreCompilerTest extends \PHPUnit\Framework\TestCase
     /**
      * Assign appropriate values to $this->testDest and $this->compiler
      *
+     * @param string $ext   Extension directory
+     * @param string $class Name of compiler class
+     *
      * @return void
      */
     protected function setupCompiler($ext, $class)
     {
         $temp = sys_get_temp_dir();
-        $this->testDest = "$temp/vufind_${ext}_comp_test/";
+        $this->testDest = "$temp/vufind_{$ext}_comp_test/";
         $this->compiler = new $class();
-        $this->compiler->setBasePath("$temp/vufind_${ext}_comp_test");
-        $this->compiler->setTempPath("$temp/vufind_${ext}_comp_test/cache");
+        $this->compiler->setBasePath("$temp/vufind_{$ext}_comp_test");
+        $this->compiler->setTempPath("$temp/vufind_{$ext}_comp_test/cache");
     }
 
     /**
      * Test compiling a single theme.
+     *
+     * @param string $ext   Extension directory
+     * @param string $class Name of compiler class
      *
      * @dataProvider extClassProvider
      *
@@ -165,13 +173,16 @@ class CssPreCompilerTest extends \PHPUnit\Framework\TestCase
     {
         $this->setupCompiler($ext, $class);
         $this->compiler->compile(['child']);
-        $this->assertTrue(file_exists($this->testDest . 'themes/child/css/compiled.css'));
-        $this->assertFalse(file_exists($this->testDest . 'themes/parent/css/compiled.css'));
+        $this->assertFileExists($this->testDest . 'themes/child/css/compiled.css');
+        $this->assertFileDoesNotExist($this->testDest . 'themes/parent/css/compiled.css');
         unlink($this->testDest . 'themes/child/css/compiled.css');
     }
 
     /**
      * Test compiling all themes (default).
+     *
+     * @param string $ext   Extension directory
+     * @param string $class Name of compiler class
      *
      * @dataProvider extClassProvider
      *
@@ -181,9 +192,9 @@ class CssPreCompilerTest extends \PHPUnit\Framework\TestCase
     {
         $this->setupCompiler($ext, $class);
         $this->compiler->compile([]);
-        $this->assertTrue(file_exists($this->testDest . 'themes/child/css/compiled.css'));
-        $this->assertTrue(file_exists($this->testDest . 'themes/parent/css/compiled.css'));
-        $this->assertTrue(file_exists($this->testDest . 'themes/parent/css/relative/relative.css'));
+        $this->assertFileExists($this->testDest . 'themes/child/css/compiled.css');
+        $this->assertFileExists($this->testDest . 'themes/parent/css/compiled.css');
+        $this->assertFileExists($this->testDest . 'themes/parent/css/relative/relative.css');
         unlink($this->testDest . 'themes/child/css/compiled.css');
         unlink($this->testDest . 'themes/parent/css/compiled.css');
         unlink($this->testDest . 'themes/parent/css/relative/relative.css');

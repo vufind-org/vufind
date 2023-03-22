@@ -31,10 +31,8 @@
 namespace VuFindTest\ILS\Driver;
 
 use InvalidArgumentException;
-
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
 use Laminas\Http\Response as HttpResponse;
-
 use VuFind\ILS\Driver\DAIA;
 
 /**
@@ -78,7 +76,7 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'addStorageRetrievalRequestLink' => true,
                 'customData' => [],
                 'limitation_types' => [],
-                'doc_id' => 'http://uri.gbv.de/document/opac-de-000:ppn:027586081'
+                'doc_id' => 'http://uri.gbv.de/document/opac-de-000:ppn:027586081',
             ],
         1 =>
             [
@@ -107,7 +105,7 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'addStorageRetrievalRequestLink' => false,
                 'customData' => [],
                 'limitation_types' => [],
-                'doc_id' => 'http://uri.gbv.de/document/opac-de-000:ppn:027586081'
+                'doc_id' => 'http://uri.gbv.de/document/opac-de-000:ppn:027586081',
             ],
         2 =>
             [
@@ -136,7 +134,7 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'addStorageRetrievalRequestLink' => false,
                 'customData' => [],
                 'limitation_types' => [],
-                'doc_id' => 'http://uri.gbv.de/document/opac-de-000:ppn:027586081'
+                'doc_id' => 'http://uri.gbv.de/document/opac-de-000:ppn:027586081',
             ],
     ];
 
@@ -165,7 +163,7 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                         'baseUrl'            => 'http://daia.gbv.de/',
                         'daiaIdPrefix'       => 'http://uri.gbv.de/document/opac-de-000:ppn:',
                         'daiaResponseFormat' => 'json',
-                    ]
+                    ],
             ]
         );
         $conn->init();
@@ -191,7 +189,7 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                         'baseUrl'            => 'http://daia.gbv.de/',
                         'daiaIdPrefix'       => 'http://uri.gbv.de/document/opac-de-000:ppn:',
                         'daiaResponseFormat' => 'xml',
-                    ]
+                    ],
             ]
         );
         $conn->init();

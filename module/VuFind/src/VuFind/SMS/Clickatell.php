@@ -101,7 +101,7 @@ class Clickatell extends AbstractBase
     public function getCarriers()
     {
         return [
-            'Clickatell' => ['name' => 'Clickatell', 'domain' => null]
+            'Clickatell' => ['name' => 'Clickatell', 'domain' => null],
         ];
     }
 

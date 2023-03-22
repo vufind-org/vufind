@@ -51,6 +51,11 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\ReflectionTrait;
 
+    /**
+     * Test performing a search
+     *
+     * @return void
+     */
     public function testPerformSearch()
     {
         $callback = function (CommandInterface $command): CommandInterface {
@@ -76,7 +81,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
             new \VuFind\Search\Primo\Params(
                 new \VuFind\Search\Primo\Options($configMgr),
                 $configMgr
-            )
+            ),
         ];
 
         $params = new Params(
@@ -111,7 +116,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     protected function getConfigManager()
     {
         $configs = [
-            'Primo' => new Config([])
+            'Primo' => new Config([]),
         ];
 
         $callback = function (string $configName) use ($configs) {

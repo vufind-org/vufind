@@ -207,8 +207,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
      * into the cart, then opening the lightbox so that additional actions may
      * be attempted.
      *
-     * @param array  $extraConfigs Extra config settings
-     * @param string $selectAllId  ID of select all checkbox
+     * @param array $extraConfigs Extra config settings
      *
      * @return Element
      */
@@ -271,7 +270,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
     protected function checkForLoginMessage(Element $page)
     {
         $warning = $page->find('css', '.modal-body .alert-danger');
-        $this->assertTrue(is_object($warning));
+        $this->assertIsObject($warning);
         $this->assertEquals(
             'You must be logged in first',
             $warning->getText()
@@ -304,9 +303,9 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
                 'config' => [
                     'Site' => [
                         'showBookBag' => true,
-                        'bookbagTogglesInSearch' => false
-                    ]
-                ]
+                        'bookbagTogglesInSearch' => false,
+                    ],
+                ],
             ]
         );
 
@@ -330,9 +329,9 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
                 'config' => [
                     'Site' => [
                         'showBookBag' => true,
-                        'bookbagTogglesInSearch' => false
-                    ]
-                ]
+                        'bookbagTogglesInSearch' => false,
+                    ],
+                ],
             ]
         );
 
@@ -359,9 +358,9 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
                     'Site' => [
                         'showBookBag' => true,
                         'bookBagMaxSize' => 1,
-                        'bookbagTogglesInSearch' => false
-                    ]
-                ]
+                        'bookbagTogglesInSearch' => false,
+                    ],
+                ],
             ]
         );
 
@@ -496,9 +495,9 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
                 'config' => [
                     'Site' => [
                         'showBookBag' => true,
-                        'bookbagTogglesInSearch' => false
-                    ]
-                ]
+                        'bookbagTogglesInSearch' => false,
+                    ],
+                ],
             ]
         );
         $page = $this->getSearchResultsPage();
@@ -764,14 +763,32 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         );
     }
 
+    /**
+     * Assert visibility
+     *
+     * @param array  $combo    Current Site configuration
+     * @param bool[] $elements Array of element visibilty states indexed by name
+     * @param string $name     Name of element to check
+     * @param string $exp      Expected visibility
+     *
+     * @return void
+     */
     protected function assertVisible($combo, $elements, $name, $exp)
     {
         $message = $elements[$name]
             ? $name . " should be hidden.\n" . print_r($combo, true)
             : $name . " should be visible.\n" . print_r($combo, true);
-        $this->assertEquals($elements[$name], $exp, $message);
+        $this->assertEquals($exp, $elements[$name], $message);
     }
 
+    /**
+     * Run tests on a specified configuration
+     *
+     * @param Element $page  Page element
+     * @param array   $combo Site configuration to test
+     *
+     * @return array
+     */
     protected function runConfigCombo($page, $combo)
     {
         $this->changeConfigs(['config' => ['Site' => $combo]]);
@@ -808,6 +825,11 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         return $elements;
     }
 
+    /**
+     * Test toolbar visibility configuration combinations
+     *
+     * @return void
+     */
     public function testToolbarVisibilityConfigCombinations()
     {
         $page = $this->getSearchResultsPage();

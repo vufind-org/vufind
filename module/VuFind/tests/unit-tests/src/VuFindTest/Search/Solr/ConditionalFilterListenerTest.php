@@ -33,7 +33,6 @@ use Laminas\EventManager\Event;
 use VuFind\Search\Solr\InjectConditionalFilterListener;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\Connector;
-
 use VuFindSearch\Backend\Solr\HandlerMap;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Service;
@@ -58,7 +57,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
      */
     protected static $searchConfig = [
         '0' => '-conditionalFilter.sample|(NOT institution:"MyInst")',
-        '1' => 'conditionalFilter.sample|institution:"MyInst"'
+        '1' => 'conditionalFilter.sample|institution:"MyInst"',
     ];
 
     /**
@@ -305,7 +304,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             [0 => 'fulltext:VuFind',
             1 => 'field2:novalue',
-            2 => '(NOT institution:"MyInst")'
+            2 => '(NOT institution:"MyInst")',
             ],
             $fq
         );
@@ -340,7 +339,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             [0 => 'fulltext:VuFind',
             1 => 'field2:novalue',
-            2 => 'institution:"MyInst"'
+            2 => 'institution:"MyInst"',
             ],
             $fq
         );

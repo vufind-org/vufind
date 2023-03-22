@@ -7,7 +7,7 @@ return [
         'factories' => [
             'foo' => 'fooFactory',
             'bar' => 'barFactory',
-        ]
+        ],
     ],
     'doctype' => 'HTML5',
 ];

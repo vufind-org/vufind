@@ -121,14 +121,14 @@ class Importer
         $xsl = $this->initProcessor($options);
 
         // Load up the style sheet
-        $style = new DOMDocument;
+        $style = new DOMDocument();
         if (!$style->load($xslFile)) {
             throw new \Exception("Problem loading XSL file: {$xslFile}.");
         }
         $xsl->importStyleSheet($style);
 
         // Load up the XML document
-        $xml = new DOMDocument;
+        $xml = new DOMDocument();
         if (!$xml->load($xmlFile)) {
             throw new \Exception("Problem loading XML file: {$xmlFile}.");
         }

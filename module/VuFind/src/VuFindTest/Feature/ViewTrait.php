@@ -60,7 +60,7 @@ trait ViewTrait
         $resolver->setPaths(
             [
                 $this->getPathForTheme('root'),
-                $this->getPathForTheme($theme)
+                $this->getPathForTheme($theme),
             ]
         );
         $renderer = new \Laminas\View\Renderer\PhpRenderer();

@@ -63,17 +63,17 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
                     $this->isInstanceOf(InputInterface::class),
                     $this->isInstanceOf(OutputInterface::class),
                     'Where would you like to store your local settings? '
-                    . "[$expectedBaseDir/local] "
+                    . "[$expectedBaseDir/local] ",
                 ],
                 [
                     $this->isInstanceOf(InputInterface::class),
                     $this->isInstanceOf(OutputInterface::class),
-                    "\nWhat module name would you like to use? [blank for none] "
+                    "\nWhat module name would you like to use? [blank for none] ",
                 ],
                 [
                     $this->isInstanceOf(InputInterface::class),
                     $this->isInstanceOf(OutputInterface::class),
-                    'What base path should be used in VuFind\'s URL? [/vufind] '
+                    'What base path should be used in VuFind\'s URL? [/vufind] ',
                 ]
             )->willReturnOnConsecutiveCalls($localFixtures, '', '/bar');
         $expectedDirs = [
@@ -100,23 +100,23 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
         $expectedOutput = <<<TEXT
-VuFind has been found in $expectedBaseDir.
+            VuFind has been found in $expectedBaseDir.
 
-VuFind supports use of a custom module for storing local code changes.
-If you do not plan to customize the code, you can skip this step.
-If you decide to use a custom module, the name you choose will be used for
-the module's directory name and its PHP namespace.
-Apache configuration written to $localFixtures/httpd-vufind.conf.
+            VuFind supports use of a custom module for storing local code changes.
+            If you do not plan to customize the code, you can skip this step.
+            If you decide to use a custom module, the name you choose will be used for
+            the module's directory name and its PHP namespace.
+            Apache configuration written to $localFixtures/httpd-vufind.conf.
 
-You now need to load this configuration into Apache.
-Once the configuration is linked, restart Apache.  You should now be able
-to access VuFind at http://localhost/bar
+            You now need to load this configuration into Apache.
+            Once the configuration is linked, restart Apache.  You should now be able
+            to access VuFind at http://localhost/bar
 
-For proper use of command line tools, you should also ensure that your
+            For proper use of command line tools, you should also ensure that your
 
-VUFIND_HOME and VUFIND_LOCAL_DIR environment variables are set to
-$expectedBaseDir and $localFixtures respectively.
-TEXT;
+            VUFIND_HOME and VUFIND_LOCAL_DIR environment variables are set to
+            $expectedBaseDir and $localFixtures respectively.
+            TEXT;
         $this->assertEquals(
             $expectedOutput,
             trim($commandTester->getDisplay())
@@ -162,18 +162,18 @@ TEXT;
             ['--non-interactive' => true, '--overridedir' => $localFixtures]
         );
         $expectedOutput = <<<EXPECTED
-VuFind has been found in $expectedBaseDir.
-Apache configuration written to $localFixtures/httpd-vufind.conf.
+            VuFind has been found in $expectedBaseDir.
+            Apache configuration written to $localFixtures/httpd-vufind.conf.
 
-You now need to load this configuration into Apache.
-Once the configuration is linked, restart Apache.  You should now be able
-to access VuFind at http://localhost/vufind
+            You now need to load this configuration into Apache.
+            Once the configuration is linked, restart Apache.  You should now be able
+            to access VuFind at http://localhost/vufind
 
-For proper use of command line tools, you should also ensure that your
+            For proper use of command line tools, you should also ensure that your
 
-VUFIND_HOME and VUFIND_LOCAL_DIR environment variables are set to
-$expectedBaseDir and $localFixtures respectively.
-EXPECTED;
+            VUFIND_HOME and VUFIND_LOCAL_DIR environment variables are set to
+            $expectedBaseDir and $localFixtures respectively.
+            EXPECTED;
         $this->assertEquals(
             $expectedOutput,
             trim($commandTester->getDisplay())

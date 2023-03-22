@@ -35,10 +35,8 @@
 namespace VuFindTest\Resolver\Driver;
 
 use InvalidArgumentException;
-
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
 use Laminas\Http\Response as HttpResponse;
-
 use VuFind\Resolver\Driver\Alma;
 
 /**
@@ -75,7 +73,7 @@ class AlmaTest extends \PHPUnit\Framework\TestCase
             'show_in_record' => false,
             'show_in_holdings' => true,
             'embed' => true,
-            'replace_other_urls' => true
+            'replace_other_urls' => true,
         ],
     ];
 
@@ -289,6 +287,7 @@ class AlmaTest extends \PHPUnit\Framework\TestCase
      * Create connector with fixture file.
      *
      * @param string $fixture Fixture file
+     * @param array  $options Connector options
      *
      * @return Connector
      *

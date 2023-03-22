@@ -76,7 +76,7 @@ class LanguageHelperTest extends \PHPUnit\Framework\TestCase
             'notInL1' => [4],
             'notInL2' => [1, 3],
             'l1Percent' => '150.00',
-            'l2Percent' => '66.67'
+            'l2Percent' => '66.67',
         ];
         $this->assertEquals($expected, $h->compareLanguages($l1, $l2));
     }
