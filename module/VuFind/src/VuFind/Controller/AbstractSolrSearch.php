@@ -97,24 +97,26 @@ class AbstractSolrSearch extends AbstractSearch
     protected function getIllustrationSettings($savedSearch = false)
     {
         $illYes = [
-            'text' => 'Has Illustrations', 'value' => 1, 'selected' => false
+            'text' => 'Has Illustrations', 'value' => 1, 'selected' => false,
         ];
         $illNo = [
-            'text' => 'Not Illustrated', 'value' => 0, 'selected' => false
+            'text' => 'Not Illustrated', 'value' => 0, 'selected' => false,
         ];
         $illAny = [
-            'text' => 'No Preference', 'value' => -1, 'selected' => false
+            'text' => 'No Preference', 'value' => -1, 'selected' => false,
         ];
 
         // Find the selected value by analyzing facets -- if we find match, remove
         // the offending facet to avoid inappropriate items appearing in the
         // "applied filters" sidebar!
-        if ($savedSearch
+        if (
+            $savedSearch
             && $savedSearch->getParams()->hasFilter('illustrated:Illustrated')
         ) {
             $illYes['selected'] = true;
             $savedSearch->getParams()->removeFilter('illustrated:Illustrated');
-        } elseif ($savedSearch
+        } elseif (
+            $savedSearch
             && $savedSearch->getParams()->hasFilter('illustrated:"Not Illustrated"')
         ) {
             $illNo['selected'] = true;
@@ -174,7 +176,8 @@ class AbstractSolrSearch extends AbstractSearch
                 // If we haven't already found a selected facet and the current
                 // facet has been applied to the search, we should store it as
                 // the selected facet for the current control.
-                if ($searchObject
+                if (
+                    $searchObject
                     && $searchObject->getParams()->hasFilter($fullFilter)
                 ) {
                     $list['list'][$key]['selected'] = true;

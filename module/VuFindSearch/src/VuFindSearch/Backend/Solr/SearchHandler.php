@@ -54,7 +54,7 @@ class SearchHandler
      */
     protected static $configKeys = [
         'CustomMunge', 'DismaxFields', 'DismaxHandler', 'QueryFields',
-        'DismaxParams', 'FilterQuery', 'DismaxMunge'
+        'DismaxParams', 'FilterQuery', 'DismaxMunge',
     ];
 
     /**
@@ -388,7 +388,8 @@ class SearchHandler
             // also omit quotes if the phrase is already quoted or if there is no
             // whitespace (in which case phrase searching is pointless and might
             // interfere with wildcard behavior):
-            if (strstr($search, '"') || strstr($search, ' NOT ')
+            if (
+                strstr($search, '"') || strstr($search, ' NOT ')
                 || !preg_match('/\s/', $search)
             ) {
                 $mungeValues['onephrase'] = $search;

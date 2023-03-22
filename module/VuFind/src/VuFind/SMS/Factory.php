@@ -77,7 +77,7 @@ class Factory implements FactoryInterface
                 return new Clickatell($smsConfig, ['client' => $client]);
             case 'mailer':
                 $options = [
-                    'mailer' => $container->get(\VuFind\Mailer\Mailer::class)
+                    'mailer' => $container->get(\VuFind\Mailer\Mailer::class),
                 ];
                 if (isset($mainConfig->Site->email)) {
                     $options['defaultFrom'] = $mainConfig->Site->email;

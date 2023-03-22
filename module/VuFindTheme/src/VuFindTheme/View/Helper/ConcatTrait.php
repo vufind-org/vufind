@@ -150,7 +150,8 @@ trait ConcatTrait
         if ($config === false || $config == 'off') {
             return false;
         }
-        if ($config == '*' || $config == 'on'
+        if (
+            $config == '*' || $config == 'on'
             || $config == 'true' || $config === true
         ) {
             return true;
@@ -177,7 +178,7 @@ trait ConcatTrait
             if ($this->isExcludedFromConcat($item)) {
                 $this->groups[] = [
                     'other' => true,
-                    'item' => $item
+                    'item' => $item,
                 ];
                 $groupTypes[] = 'other';
                 continue;
@@ -195,7 +196,7 @@ trait ConcatTrait
                     ? $this->logError($errorMsg) : error_log($errorMsg);
                 $this->groups[] = [
                     'other' => true,
-                    'item' => $item
+                    'item' => $item,
                 ];
                 $groupTypes[] = 'other';
                 continue;
@@ -206,7 +207,7 @@ trait ConcatTrait
             if ($index === false) {
                 $this->groups[] = [
                     'items' => [$item],
-                    'key' => $details['path'] . filemtime($details['path'])
+                    'key' => $details['path'] . filemtime($details['path']),
                 ];
                 $groupTypes[] = $type;
             } else {
@@ -461,7 +462,8 @@ trait ConcatTrait
     {
         // toString must not throw exception
         try {
-            if (!$this->isPipelineActive() || !$this->filterItems()
+            if (
+                !$this->isPipelineActive() || !$this->filterItems()
                 || count($this) == 1
             ) {
                 return parent::toString($indent);

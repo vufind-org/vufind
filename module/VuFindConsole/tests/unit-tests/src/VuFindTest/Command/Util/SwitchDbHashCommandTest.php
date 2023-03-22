@@ -177,7 +177,7 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
                     'encrypt_ils_password' => true,
                     'ils_encryption_algo' => $this->encryptionAlgorithm,
                     'ils_encryption_key' => 'bar',
-                ]
+                ],
             ]
         );
         $commandTester = new CommandTester($command);
@@ -229,7 +229,7 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
                 [
                     'Authentication',
                     'ils_encryption_algo',
-                    $this->encryptionAlgorithm
+                    $this->encryptionAlgorithm,
                 ],
                 ['Authentication', 'ils_encryption_key', 'foo']
             );
@@ -307,7 +307,7 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
                 [
                     'Authentication',
                     'ils_encryption_algo',
-                    $this->encryptionAlgorithm
+                    $this->encryptionAlgorithm,
                 ],
                 ['Authentication', 'ils_encryption_key', 'foo']
             );

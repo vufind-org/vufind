@@ -54,7 +54,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     public function testGetUniqueID(): void
     {
         $overrides = [
-            'Header' => ['DbId' => 'TDB123', 'An' => 'TAn456']
+            'Header' => ['DbId' => 'TDB123', 'An' => 'TAn456'],
         ];
         $driver = $this->getDriver($overrides);
         $this->assertEquals('TDB123,TAn456', $driver->getUniqueID());
@@ -351,31 +351,31 @@ class EDSTest extends \PHPUnit\Framework\TestCase
                                         'Identifiers' => [
                                             [
                                                 'Type' => 'issn-electronic',
-                                                'Value' => '1234-5678'
+                                                'Value' => '1234-5678',
                                             ],
                                             [
                                                 'Type' => 'issn-print',
-                                                'Value' => '5678-1234'
+                                                'Value' => '5678-1234',
                                             ],
                                             [
                                                 'Type' => 'isbn-electronic',
-                                                'Value' => '0123456789X'
+                                                'Value' => '0123456789X',
                                             ],
                                             [
                                                 'Type' => 'isbn-print',
-                                                'Value' => 'fakeisbnxxx'
+                                                'Value' => 'fakeisbnxxx',
                                             ],
                                             [
                                                 'Type' => 'meaningless-noise',
-                                                'Value' => 'should never be seen'
+                                                'Value' => 'should never be seen',
                                             ],
-                                        ]
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
             ]
         );
     }

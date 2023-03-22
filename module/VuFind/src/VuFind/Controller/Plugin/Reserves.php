@@ -120,7 +120,7 @@ class Reserves extends AbstractPlugin
                     'BIB_ID' => $bib_id,
                     'bib_id' => $bib_id,
                     'course' => $course,
-                    'instructor' => $instructor
+                    'instructor' => $instructor,
                 ];
             }
             return $bibs;

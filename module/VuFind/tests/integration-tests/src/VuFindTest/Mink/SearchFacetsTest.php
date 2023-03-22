@@ -77,7 +77,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             $stats->getText()
         );
         $items = $page->findAll('css', $this->activeFilterSelector);
-        $this->assertEquals(0, count($items));
+        $this->assertCount(0, $items);
 
         // Facet to Fiction (after making sure we picked the right link):
         $facetList = $this->findCss($page, '#side-collapse-genre_facet a[data-title="Fiction"]');
@@ -93,7 +93,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             $stats->getText()
         );
         $items = $page->findAll('css', $this->activeFilterSelector);
-        $this->assertEquals(1, count($items));
+        $this->assertCount(1, $items);
     }
 
     /**
@@ -109,7 +109,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     {
         $this->waitForPageLoad($page);
         $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
-        $this->assertEquals($limit, count($items));
+        $this->assertCount($limit, $items);
         $excludes = $page
             ->findAll('css', '#modal #facet-list-count .exclude');
         $this->assertEquals($exclusionActive ? $limit : 0, count($excludes));
@@ -139,7 +139,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '[data-sort="index"]');
         $this->waitForPageLoad($page);
         $items = $page->findAll('css', '#modal #facet-list-index .js-facet-item');
-        $this->assertEquals($limit, count($items)); // reset number of items
+        $this->assertCount($limit, $items); // reset number of items
         $this->assertEquals(
             'Fiction 7 results 7 ' . $excludeControl
             . 'The Study Of P|pes 1 results 1 ' . $excludeControl
@@ -179,7 +179,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Confirm that we are NOT using the AJAX sidebar:
         $ajaxContainer = $page->findAll('css', '.side-facets-container-ajax');
-        $this->assertEquals(0, count($ajaxContainer));
+        $this->assertCount(0, $ajaxContainer);
 
         // Now run the body of the test procedure:
         $this->facetApplyProcedure($page);
@@ -197,15 +197,15 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
                 'searches' => [
                     'General' => [
                         'default_side_recommend[]' => 'SideFacetsDeferred:Results:CheckboxFacets',
-                    ]
-                ]
+                    ],
+                ],
             ]
         );
         $page = $this->performSearch('building:weird_ids.mrc');
 
         // Confirm that we ARE using the AJAX sidebar:
         $ajaxContainer = $page->findAll('css', '.side-facets-container-ajax');
-        $this->assertEquals(1, count($ajaxContainer));
+        $this->assertCount(1, $ajaxContainer);
 
         // Now run the body of the test procedure:
         $this->facetApplyProcedure($page);
@@ -224,9 +224,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
                 'facets' => [
                     'Results_Settings' => [
                         'showMoreInLightbox[*]' => true,
-                        'lightboxLimit' => $limit
-                    ]
-                ]
+                        'lightboxLimit' => $limit,
+                    ],
+                ],
             ]
         );
         $page = $this->performSearch('building:weird_ids.mrc');
@@ -253,9 +253,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
                 'facets' => [
                     'Results_Settings' => [
                         'showMoreInLightbox[*]' => 'more',
-                        'lightboxLimit' => $limit
-                    ]
-                ]
+                        'lightboxLimit' => $limit,
+                    ],
+                ],
             ]
         );
         $page = $this->performSearch('building:weird_ids.mrc');
@@ -285,15 +285,15 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
                         'showMoreInLightbox[*]' => true,
                         'lightboxLimit' => $limit,
                         'exclude' => '*',
-                    ]
-                ]
+                    ],
+                ],
             ]
         );
         $page = $this->performSearch('building:weird_ids.mrc');
         // Open the genre facet
         $this->clickCss($page, '#side-collapse-genre_facet .more-facets');
         $this->facetListProcedure($page, $limit, true);
-        $this->assertEquals(1, count($page->findAll('css', $this->activeFilterSelector)));
+        $this->assertCount(1, $page->findAll('css', $this->activeFilterSelector));
     }
 
     /**
@@ -326,12 +326,12 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             [
                 'facets' => [
                     'Results' => [
-                        'hierarchical_facet_str_mv' => 'hierarchy'
+                        'hierarchical_facet_str_mv' => 'hierarchy',
                     ],
                     'SpecialFacets' => [
-                        'hierarchical[]' => 'hierarchical_facet_str_mv'
-                    ]
-                ]
+                        'hierarchical[]' => 'hierarchical_facet_str_mv',
+                    ],
+                ],
             ]
         );
         $page = $this->performSearch('building:"hierarchy.mrc"');
@@ -349,15 +349,15 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             [
                 'facets' => [
                     'Results' => [
-                        'hierarchical_facet_str_mv' => 'hierarchy'
+                        'hierarchical_facet_str_mv' => 'hierarchy',
                     ],
                     'SpecialFacets' => [
-                        'hierarchical[]' => 'hierarchical_facet_str_mv'
+                        'hierarchical[]' => 'hierarchical_facet_str_mv',
                     ],
                     'Results_Settings' => [
                         'exclude' => 'hierarchical_facet_str_mv',
-                    ]
-                ]
+                    ],
+                ],
             ]
         );
         $extractCount = function ($str) {
@@ -395,15 +395,15 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             [
                 'facets' => [
                     'Results' => [
-                        'hierarchical_facet_str_mv' => 'hierarchy'
+                        'hierarchical_facet_str_mv' => 'hierarchy',
                     ],
                     'Results_Settings' => [
-                        'collapsedFacets' => '*'
+                        'collapsedFacets' => '*',
                     ],
                     'SpecialFacets' => [
-                        'hierarchical[]' => 'hierarchical_facet_str_mv'
-                    ]
-                ]
+                        'hierarchical[]' => 'hierarchical_facet_str_mv',
+                    ],
+                ],
             ]
         );
         $page = $this->performSearch('building:"hierarchy.mrc"');
@@ -445,7 +445,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     protected function assertNoFilters($page)
     {
         $items = $page->findAll('css', $this->activeFilterSelector);
-        $this->assertEquals(0, count($items));
+        $this->assertCount(0, $items);
     }
 
     /**
@@ -458,7 +458,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     protected function assertNoResetFiltersButton($page)
     {
         $reset = $page->findAll('css', '.reset-filters-btn');
-        $this->assertEquals(0, count($reset));
+        $this->assertCount(0, $reset);
     }
 
     /**
@@ -528,8 +528,8 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->changeConfigs(
             [
                 'searches' => [
-                    'General' => ['retain_filters_by_default' => false]
-                ]
+                    'General' => ['retain_filters_by_default' => false],
+                ],
             ]
         );
         $page = $this->getFilteredSearch();
@@ -554,8 +554,8 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->changeConfigs(
             [
                 'searches' => [
-                    'General' => ['default_filters' => ['building:weird_ids.mrc']]
-                ]
+                    'General' => ['default_filters' => ['building:weird_ids.mrc']],
+                ],
             ]
         );
 
@@ -590,8 +590,8 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->changeConfigs(
             [
                 'facets' => [
-                    'Results_Settings' => ['orFacets' => 'building']
-                ]
+                    'Results_Settings' => ['orFacets' => 'building'],
+                ],
             ]
         );
 

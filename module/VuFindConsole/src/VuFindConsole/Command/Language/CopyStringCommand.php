@@ -138,7 +138,8 @@ class CopyStringCommand extends AbstractCommand
         [$sourceDomain, $sourceKey] = $this->extractTextDomain($source);
         [$targetDomain, $targetKey] = $this->extractTextDomain($target);
 
-        if (!($sourceDir = $this->getLangDir($output, $sourceDomain))
+        if (
+            !($sourceDir = $this->getLangDir($output, $sourceDomain))
             || !($targetDir = $this->getLangDir($output, $targetDomain, true))
         ) {
             return 1;

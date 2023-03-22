@@ -79,7 +79,7 @@ class SimilarCommand extends CallMethodCommand
     {
         return [
             $this->getRecordIdentifier(),
-            $this->getSearchParameters()
+            $this->getSearchParameters(),
         ];
     }
 }

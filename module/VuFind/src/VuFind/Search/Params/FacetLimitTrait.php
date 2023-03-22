@@ -138,7 +138,8 @@ trait FacetLimitTrait
         $limit = $this->facetLimitByField[$field] ?? $this->facetLimit;
 
         // Check for a different limit for hierarchical facets:
-        if (null !== $this->hierarchicalFacetLimit
+        if (
+            null !== $this->hierarchicalFacetLimit
             && $limit !== $this->hierarchicalFacetLimit
         ) {
             $hierarchicalFacets = $this->getOptions()->getHierarchicalFacets();

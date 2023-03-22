@@ -52,15 +52,15 @@ class HomePageFacetsTest extends \VuFindTest\Integration\MinkTestCase
             [
                 'facets' => [
                     'Results' => [
-                        'hierarchical_facet_str_mv' => 'hierarchy'
+                        'hierarchical_facet_str_mv' => 'hierarchy',
                     ],
                     'SpecialFacets' => [
-                        'hierarchical[]' => 'hierarchical_facet_str_mv'
+                        'hierarchical[]' => 'hierarchical_facet_str_mv',
                     ],
                     'HomePage' => [
-                        'hierarchical_facet_str_mv' => 'Hierarchical'
-                    ]
-                ]
+                        'hierarchical_facet_str_mv' => 'Hierarchical',
+                    ],
+                ],
             ]
         );
         $session = $this->getMinkSession();

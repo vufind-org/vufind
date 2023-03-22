@@ -90,11 +90,11 @@ class NonTabRecordActionCommandTest extends \PHPUnit\Framework\TestCase
                             'defaults' => [
                                 'controller' => 'Example',
                                 'action'     => 'Foo',
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ];
         $tools = $this->getMockGeneratorTools(
             ['getModuleConfigPath', 'backUpFile', 'writeModuleConfig']
@@ -123,11 +123,11 @@ class NonTabRecordActionCommandTest extends \PHPUnit\Framework\TestCase
                             'defaults' => [
                                 'controller' => 'Example',
                                 'action'     => 'Home',
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ];
         $command = new NonTabRecordActionCommand($tools, $config);
         $commandTester = new CommandTester($command);

@@ -57,7 +57,7 @@ class LinkResolverTest extends \VuFindTest\Integration\MinkTestCase
                 'resolver' => 'demo',
                 'embed' => '1',
                 'url' => 'https://vufind.org/wiki',
-            ]
+            ],
         ];
     }
 

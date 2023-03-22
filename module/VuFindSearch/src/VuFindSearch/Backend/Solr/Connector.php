@@ -348,7 +348,8 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     protected function forceToBackendException($ex)
     {
         // Don't wrap specific backend exceptions....
-        if ($ex instanceof RemoteErrorException
+        if (
+            $ex instanceof RemoteErrorException
             || $ex instanceof RequestErrorException
             || $ex instanceof HttpErrorException
         ) {

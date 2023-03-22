@@ -55,7 +55,7 @@ class TermsTest extends TestCase
             [
                 'terms' => [
                     'field1' => $field1,
-                ]
+                ],
             ]
         );
 

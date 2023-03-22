@@ -141,15 +141,15 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
 
         // Build SQL Statement
         $sql = <<<HERE
-SELECT ccs.name AS status, acn.label AS callnumber, aou.name AS location
-FROM config.copy_status ccs
-    INNER JOIN asset.copy ac ON ac.status = ccs.id
-    INNER JOIN asset.call_number acn ON acn.id = ac.call_number
-    INNER JOIN actor.org_unit aou ON aou.id = ac.circ_lib
-WHERE
-    acn.record = ? AND
-    NOT ac.deleted
-HERE;
+            SELECT ccs.name AS status, acn.label AS callnumber, aou.name AS location
+            FROM config.copy_status ccs
+                INNER JOIN asset.copy ac ON ac.status = ccs.id
+                INNER JOIN asset.call_number acn ON acn.id = ac.call_number
+                INNER JOIN actor.org_unit aou ON aou.id = ac.circ_lib
+            WHERE
+                acn.record = ? AND
+                NOT ac.deleted
+            HERE;
 
         // Execute SQL
         try {
@@ -184,7 +184,7 @@ HERE;
                 'status' => $row['status'],
                 'location' => $row['location'],
                 'reserve' => $reserve,
-                'callnumber' => $row['callnumber']
+                'callnumber' => $row['callnumber'],
             ];
         }
 
@@ -235,22 +235,22 @@ HERE;
 
         // Build SQL Statement
         $sql = <<<HERE
-SELECT ccs.name AS status, acn.label AS callnumber, aou.name AS location,
-    ac.copy_number, ac.barcode,
-    extract (year from circ.due_date) as due_year,
-    extract (month from circ.due_date) as due_month,
-    extract (day from circ.due_date) as due_day
-FROM config.copy_status ccs
-    INNER JOIN asset.copy ac ON ac.status = ccs.id
-    INNER JOIN asset.call_number acn ON acn.id = ac.call_number
-    INNER JOIN actor.org_unit aou ON aou.id = ac.circ_lib
-    FULL JOIN action.circulation circ ON (
-        ac.id = circ.target_copy AND circ.checkin_time IS NULL
-    )
-WHERE
-    acn.record = ? AND
-    NOT ac.deleted
-HERE;
+            SELECT ccs.name AS status, acn.label AS callnumber, aou.name AS location,
+                ac.copy_number, ac.barcode,
+                extract (year from circ.due_date) as due_year,
+                extract (month from circ.due_date) as due_month,
+                extract (day from circ.due_date) as due_day
+            FROM config.copy_status ccs
+                INNER JOIN asset.copy ac ON ac.status = ccs.id
+                INNER JOIN asset.call_number acn ON acn.id = ac.call_number
+                INNER JOIN actor.org_unit aou ON aou.id = ac.circ_lib
+                FULL JOIN action.circulation circ ON (
+                    ac.id = circ.target_copy AND circ.checkin_time IS NULL
+                )
+            WHERE
+                acn.record = ? AND
+                NOT ac.deleted
+            HERE;
 
         // Execute SQL
         try {
@@ -298,7 +298,7 @@ HERE;
                 'callnumber' => $row['callnumber'],
                 'duedate' => $due_date,
                 'number' => $row['copy_number'],
-                'barcode' => $row['barcode']
+                'barcode' => $row['barcode'],
             ];
         }
 
@@ -339,14 +339,14 @@ HERE;
     public function patronLogin($barcode, $passwd)
     {
         $sql = <<<HERE
-SELECT usr.id, usr.first_given_name as firstName,
-    usr.family_name as lastName, usr.email, usrname
-FROM actor.usr usr
-    INNER JOIN actor.card ON usr.card = card.id
-WHERE card.active = true
-    AND actor.verify_passwd(usr.id, 'main',
-                           MD5(actor.get_salt(usr.id, 'main') || MD5(?)))
-HERE;
+            SELECT usr.id, usr.first_given_name as firstName,
+                usr.family_name as lastName, usr.email, usrname
+            FROM actor.usr usr
+                INNER JOIN actor.card ON usr.card = card.id
+            WHERE card.active = true
+                AND actor.verify_passwd(usr.id, 'main',
+                                       MD5(actor.get_salt(usr.id, 'main') || MD5(?)))
+            HERE;
         if (is_numeric($barcode)) {
             // A barcode was supplied as ID
             $sql .= "AND card.barcode = ?";
@@ -460,7 +460,7 @@ HERE;
                                     'institution_name' => $row['owning_library'],
                                     'borrowingLocation' =>
                                         $row['borrowing_location'],
-                                    'dueStatus' => $dueStatus
+                                    'dueStatus' => $dueStatus,
                                ];
             }
         } catch (PDOException $e) {
@@ -516,7 +516,7 @@ HERE;
                     'checkout' => $this->formatDate($row['checkout_time']),
                     'createdate' => $this->formatDate($row['last_billing_ts']),
                     'duedate' => $this->formatDate($row['due_date']),
-                    'id' => $row['record']
+                    'id' => $row['record'],
                 ];
             }
             return $fineList;
@@ -595,16 +595,16 @@ HERE;
     public function getMyProfile($patron)
     {
         $sql = <<<HERE
-SELECT usr.family_name, usr.first_given_name, usr.day_phone,
-    usr.evening_phone, usr.other_phone, aua.street1,
-    aua.street2, aua.post_code, pgt.name AS usrgroup,
-    aua.city, aua.country, usr.expire_date
-FROM actor.usr
-    FULL JOIN actor.usr_address aua ON aua.id = usr.mailing_address
-    INNER JOIN permission.grp_tree pgt ON pgt.id = usr.profile
-WHERE usr.active = true
-     AND usr.id = ?
-HERE;
+            SELECT usr.family_name, usr.first_given_name, usr.day_phone,
+                usr.evening_phone, usr.other_phone, aua.street1,
+                aua.street2, aua.post_code, pgt.name AS usrgroup,
+                aua.city, aua.country, usr.expire_date
+            FROM actor.usr
+                FULL JOIN actor.usr_address aua ON aua.id = usr.mailing_address
+                INNER JOIN permission.grp_tree pgt ON pgt.id = usr.profile
+            WHERE usr.active = true
+                 AND usr.id = ?
+            HERE;
 
         try {
             $sqlStmt = $this->db->prepare($sql);

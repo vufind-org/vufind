@@ -149,7 +149,7 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
             'login' => 'http://myserver',
             'username' => 'username',
             'email' => 'email',
-            'use_headers' => $useHeaders
+            'use_headers' => $useHeaders,
         ];
         if ($requiredAttributes) {
             $config += [
@@ -218,7 +218,7 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
     {
         $server = $overrides + [
             'username' => 'testuser', 'email' => 'user@test.com',
-            'password' => 'testpass'
+            'password' => 'testpass',
         ];
         $request = new \Laminas\Http\PhpEnvironment\Request();
         if ($useHeaders) {

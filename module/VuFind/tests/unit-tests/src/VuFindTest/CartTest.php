@@ -61,7 +61,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
             ->setConstructorArgs(
                 [
                 $this->createMock(\VuFindSearch\Service::class),
-                $this->createMock(\VuFind\RecordDriver\PluginManager::class)
+                $this->createMock(\VuFind\RecordDriver\PluginManager::class),
                 ]
             )->getMock();
     }
@@ -265,7 +265,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
     public function testVF1Cookie()
     {
         $cart = $this->getCart(100, true, ['vufind_cart' => "a\tb\tc"]);
-        $this->assertEquals(3, count($cart->getItems()));
+        $this->assertCount(3, $cart->getItems());
         $this->assertTrue($cart->contains('Solr|a'));
         $this->assertTrue($cart->contains('Solr|b'));
         $this->assertTrue($cart->contains('Solr|c'));
@@ -280,10 +280,10 @@ class CartTest extends \PHPUnit\Framework\TestCase
     {
         $cookies = [
             'vufind_cart' => "Aa\tBb\tCc",
-            'vufind_cart_src' => "Solr\tSummon\tWorldCat"
+            'vufind_cart_src' => "Solr\tSummon\tWorldCat",
         ];
         $cart = $this->getCart(100, true, $cookies);
-        $this->assertEquals(3, count($cart->getItems()));
+        $this->assertCount(3, $cart->getItems());
         $this->assertTrue($cart->contains('Solr|a'));
         $this->assertTrue($cart->contains('Summon|b'));
         $this->assertTrue($cart->contains('WorldCat|c'));

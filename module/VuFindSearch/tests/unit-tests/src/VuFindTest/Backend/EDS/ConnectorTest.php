@@ -120,7 +120,7 @@ class ConnectorTest extends TestCase
             [
                 'api_url' => 'http://example.tld/',
                 'auth_url' => 'http://example.tld/',
-                'orgid' => 'VuFindTest'
+                'orgid' => 'VuFindTest',
             ],
             $client ?: $this->createClient()
         );

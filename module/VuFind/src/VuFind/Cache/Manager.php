@@ -144,7 +144,7 @@ class Manager
      */
     public function getCache($name, $namespace = null)
     {
-        $namespace = $namespace ?? $name;
+        $namespace ??= $name;
         $key = "$name:$namespace";
 
         if (!isset($this->caches[$key])) {
@@ -263,7 +263,7 @@ class Manager
     {
         $this->cacheSettings[$cacheName] = [
             'adapter' => \Laminas\Cache\Storage\Adapter\BlackHole::class,
-            'options' => []
+            'options' => [],
         ];
     }
 

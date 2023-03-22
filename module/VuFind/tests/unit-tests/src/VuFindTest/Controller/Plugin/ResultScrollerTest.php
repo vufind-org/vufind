@@ -61,7 +61,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         $expected = [
             'firstRecord' => null, 'lastRecord' => null,
             'previousRecord' => null, 'nextRecord' => null,
-            'currentPosition' => null, 'resultTotal' => null
+            'currentPosition' => null, 'resultTotal' => null,
         ];
 
         $this->assertEquals(
@@ -95,7 +95,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         $expected = [
             'firstRecord' => null, 'lastRecord' => null,
             'previousRecord' => null, 'nextRecord' => null,
-            'currentPosition' => null, 'resultTotal' => null
+            'currentPosition' => null, 'resultTotal' => null,
         ];
         $this->assertEquals(
             $expected,
@@ -116,7 +116,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         $expected = [
             'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|1',
             'previousRecord' => null, 'nextRecord' => null,
-            'currentPosition' => 1, 'resultTotal' => 1
+            'currentPosition' => 1, 'resultTotal' => 1,
         ];
         $this->assertEquals(
             $expected,
@@ -137,7 +137,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         $expected = [
             'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|10',
             'previousRecord' => 'Solr|4', 'nextRecord' => 'Solr|6',
-            'currentPosition' => 5, 'resultTotal' => 10
+            'currentPosition' => 5, 'resultTotal' => 10,
         ];
         $this->assertEquals(
             $expected,
@@ -158,7 +158,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         $expected = [
             'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|10',
             'previousRecord' => null, 'nextRecord' => 'Solr|2',
-            'currentPosition' => 1, 'resultTotal' => 10
+            'currentPosition' => 1, 'resultTotal' => 10,
         ];
         $this->assertEquals(
             $expected,
@@ -179,7 +179,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         $expected = [
             'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|10',
             'previousRecord' => null, 'nextRecord' => 'Solr|2',
-            'currentPosition' => 1, 'resultTotal' => 10
+            'currentPosition' => 1, 'resultTotal' => 10,
         ];
         $this->assertEquals(
             $expected,
@@ -201,7 +201,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         $expected = [
             'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|10',
             'previousRecord' => 'Solr|9', 'nextRecord' => null,
-            'currentPosition' => 10, 'resultTotal' => 10
+            'currentPosition' => 10, 'resultTotal' => 10,
         ];
         $this->assertEquals(
             $expected,
@@ -223,7 +223,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         $expected = [
             'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|9',
             'previousRecord' => 'Solr|8', 'nextRecord' => null,
-            'currentPosition' => 9, 'resultTotal' => 9
+            'currentPosition' => 9, 'resultTotal' => 9,
         ];
         $this->assertEquals(
             $expected,
@@ -245,7 +245,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         $expected = [
             'firstRecord' => null, 'lastRecord' => null,
             'previousRecord' => 'Solr|4', 'nextRecord' => 'Solr|6',
-            'currentPosition' => 5, 'resultTotal' => 10
+            'currentPosition' => 5, 'resultTotal' => 10,
         ];
         $this->assertEquals(
             $expected,
@@ -266,7 +266,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         $expected = [
             'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|10',
             'previousRecord' => null, 'nextRecord' => 'Solr|2',
-            'currentPosition' => 1, 'resultTotal' => 10
+            'currentPosition' => 1, 'resultTotal' => 10,
         ];
         $this->assertEquals(
             $expected,
@@ -287,7 +287,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         $expected = [
             'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|10',
             'previousRecord' => 'Solr|9', 'nextRecord' => null,
-            'currentPosition' => 10, 'resultTotal' => 10
+            'currentPosition' => 10, 'resultTotal' => 10,
         ];
         $this->assertEquals(
             $expected,
@@ -308,7 +308,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         $expected = [
             'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|17',
             'previousRecord' => 'Solr|16', 'nextRecord' => null,
-            'currentPosition' => 17, 'resultTotal' => 17
+            'currentPosition' => 17, 'resultTotal' => 17,
         ];
         $this->assertEquals(
             $expected,
@@ -329,7 +329,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         $expected = [
             'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|30',
             'previousRecord' => 'Solr|10', 'nextRecord' => 'Solr|12',
-            'currentPosition' => 11, 'resultTotal' => 30
+            'currentPosition' => 11, 'resultTotal' => 30,
         ];
         $this->assertEquals(
             $expected,
@@ -360,7 +360,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         $expected = [
             'firstRecord' => 'Solr|1', 'lastRecord' => 'Solr|30',
             'previousRecord' => 'Solr|19', 'nextRecord' => 'Solr|21',
-            'currentPosition' => 20, 'resultTotal' => 30
+            'currentPosition' => 20, 'resultTotal' => 30,
         ];
         $this->assertEquals(
             $expected,
@@ -381,7 +381,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         $expected = [
             'firstRecord' => 'Solr|sorted1', 'lastRecord' => 'Solr|sorted30',
             'previousRecord' => 'Solr|sorted19', 'nextRecord' => 'Solr|sorted21',
-            'currentPosition' => 20, 'resultTotal' => 30
+            'currentPosition' => 20, 'resultTotal' => 30,
         ];
         $this->assertEquals(
             $expected,
@@ -453,7 +453,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
             new Container('test'),
             $mockManager,
             $mockMemory,
-            true
+            true,
         ];
         // Create an anonymous class to stub out some behavior:
         $resultScroller = new class (...$params) extends ResultScroller {

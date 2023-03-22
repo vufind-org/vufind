@@ -84,7 +84,7 @@ class ImportCsvCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester->execute(
             [
                 'CSV_file' => 'foo.csv',
-                'ini_file' => 'bar.ini'
+                'ini_file' => 'bar.ini',
             ]
         );
         $this->assertEquals(

@@ -68,9 +68,9 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
                         'multiple_call_nos' => $nos,
                         'multiple_locations' => $locs,
                         'callnumber_handler' => false,
-                        'show_full_status' => $full
-                    ]
-                ]
+                        'show_full_status' => $full,
+                    ],
+                ],
             ]
         );
     }
@@ -85,7 +85,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function checkLink($link, $type)
     {
-        $this->assertTrue(is_object($link));
+        $this->assertIsObject($link);
         $href = $link->getAttribute('href');
         $this->assertStringContainsString($type, $href);
         $this->assertNotEquals('', $link->getText());
@@ -103,7 +103,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
         $this->changeConfigs(
             [
             'config' => [
-                'Catalog' => ['driver' => 'Demo']
+                'Catalog' => ['driver' => 'Demo'],
             ],
             'Demo' => [
                 'StaticHoldings' => [
@@ -112,11 +112,11 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
                         ['callnumber' => 'CallNumberOne', 'location' => 'Villanova'],
                         ['callnumber' => 'CallNumberTwo', 'location' => 'Villanova'],
                         ['callnumber' => 'CallNumberThree', 'location' => 'Phobos'],
-                        ['callnumber' => 'CallNumberFour', 'location' => 'Phobos']
+                        ['callnumber' => 'CallNumberFour', 'location' => 'Phobos'],
                         ]
-                    )
-                ]
-            ]
+                    ),
+                ],
+            ],
             ]
         );
     }
@@ -137,8 +137,8 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
             [
                 'config' => [
                     'Catalog' => ['driver' => 'Sample'],
-                    'Item_Status' => ['callnumber_handler' => $type]
-                ]
+                    'Item_Status' => ['callnumber_handler' => $type],
+                ],
             ]
         );
         $callnumberSelector = '.callnumber a,.groupCallnumber a,.fullCallnumber a';

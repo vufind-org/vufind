@@ -152,7 +152,8 @@ class DeduplicationListener
             if ($params && in_array($context, $contexts)) {
                 // If deduplication is enabled, filter out merged child records,
                 // otherwise filter out dedup records.
-                if ($this->enabled && 'getids' !== $context
+                if (
+                    $this->enabled && 'getids' !== $context
                     && !$this->hasChildFilter($params)
                 ) {
                     $fq = '-merged_child_boolean:true';

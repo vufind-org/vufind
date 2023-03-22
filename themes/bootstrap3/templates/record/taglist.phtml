@@ -26,10 +26,10 @@
 </div>
 <?php
 $script = <<<JS
-$('.tag-submit').click(function(e) {
-    ajaxTagUpdate(this, $(this).data('tag'), $(this).data('selected'));
-    return false;
-});
-JS;
+    $('.tag-submit').click(function(e) {
+        ajaxTagUpdate(this, $(this).data('tag'), $(this).data('selected'));
+        return false;
+    });
+    JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');

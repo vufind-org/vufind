@@ -72,7 +72,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
                 'driver' => 'Demo',
                 'holds_mode' => 'driver',
                 'title_level_holds_mode' => 'driver',
-            ]
+            ],
         ];
     }
 
@@ -287,7 +287,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
             $page,
             [
                 'username' => 'username4',
-                'email' => "username4@ignore.com"
+                'email' => "username4@ignore.com",
             ]
         );
         $this->clickCss($page, 'input.btn.btn-primary');
@@ -343,7 +343,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     protected function clickButtonGroupLink(Element $page, string $text): void
     {
         $link = $this->findCss($page, '.btn-group.open')->findLink($text);
-        $this->assertTrue(is_object($link));
+        $this->assertIsObject($link);
         $link->click();
     }
 
@@ -734,7 +734,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
             $page,
             [
                 'username' => 'username3',
-                'email' => "username3@ignore.com"
+                'email' => "username3@ignore.com",
             ]
         );
         $this->clickCss($page, 'input.btn.btn-primary');
@@ -769,7 +769,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $demoConfig = $this->getDemoIniOverrides();
         $demoConfig['ProxiedUsers'] = [
             'user1' => 'Proxy User 1',
-            'user2' => 'Proxy User 2'
+            'user2' => 'Proxy User 2',
         ];
         $this->changeConfigs(
             [

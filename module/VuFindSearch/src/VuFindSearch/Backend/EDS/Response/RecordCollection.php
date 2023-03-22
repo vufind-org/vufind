@@ -132,7 +132,8 @@ class RecordCollection extends AbstractRecordCollection
      */
     public function getOffset()
     {
-        if (isset($this->response['SearchRequestGet'])
+        if (
+            isset($this->response['SearchRequestGet'])
             && !empty($this->response['SearchRequestGet']['QueryString'])
         ) {
             $qsParameters = explode(

@@ -152,7 +152,7 @@ class XCNCIP2 extends AbstractBase implements
      * @var string[]
      */
     protected $notHoldableStatuses = [
-        'circulation status undefined', 'not available', 'lost'
+        'circulation status undefined', 'not available', 'lost',
     ];
 
     /**
@@ -419,7 +419,7 @@ class XCNCIP2 extends AbstractBase implements
                 $agencyId = $data[0] . '|' . $data[1];
                 $this->pickupLocations[$agencyId] = [
                     'locationID' => $agencyId,
-                    'locationDisplay' => $data[2]
+                    'locationDisplay' => $data[2],
                 ];
             }
             fclose($handle);
@@ -504,7 +504,8 @@ class XCNCIP2 extends AbstractBase implements
             }
         }
 
-        if (!$result->isSuccess()
+        if (
+            !$result->isSuccess()
             && !in_array(
                 $result->getStatusCode(),
                 $this->otherAcceptedHttpStatusCodes
@@ -872,8 +873,7 @@ class XCNCIP2 extends AbstractBase implements
                         if (!isset($status[$bibId])) {
                             $status[$bibId] = [];
                         }
-                        $chunk['location'] = $chunk['location']
-                            ?? $holdingLocation ?? null;
+                        $chunk['location'] ??= $holdingLocation ?? null;
                         $status[$bibId][] = $chunk;
                     }
                 }
@@ -971,9 +971,9 @@ class XCNCIP2 extends AbstractBase implements
                     $chunk['callnumber'] = empty($chunk['callnumber']) ?
                         $holdCallNo : $chunk['callnumber'];
                     $chunk['eresource'] = $eResource;
-                    $chunk['location'] = $chunk['location']
-                        ?? $holdingLocation ?? null;
-                    if (!isset($chunk['collection_desc'])
+                    $chunk['location'] ??= $holdingLocation ?? null;
+                    if (
+                        !isset($chunk['collection_desc'])
                         && !empty($collection)
                     ) {
                         $chunk['collection_desc'] = $collection;
@@ -1255,7 +1255,7 @@ class XCNCIP2 extends AbstractBase implements
                 'fine' => $desc,
                 'duedate' => '',
                 'createdate' => $date,
-                'id' => $id
+                'id' => $id,
             ];
         }
         return $fines;
@@ -1436,7 +1436,7 @@ class XCNCIP2 extends AbstractBase implements
             if (isset($address[2])) {
                 $address2 .= ', ' . $address[2];
             }
-            $zip = $zip ?? $address[3] ?? null;
+            $zip ??= $address[3] ?? null;
         }
 
         $expirationDate = $response->xpath(
@@ -2286,7 +2286,7 @@ class XCNCIP2 extends AbstractBase implements
         $desiredElementTypes = [
             'Agency Address Information', 'Agency User Privilege Type',
             'Application Profile Supported Type', 'Authentication Prompt',
-            'Consortium Agreement', 'Organization Name Information'
+            'Consortium Agreement', 'Organization Name Information',
         ];
         foreach ($desiredElementTypes as $elementType) {
             $ret .= $this->element('AgencyElementType', $elementType);
@@ -2758,7 +2758,7 @@ class XCNCIP2 extends AbstractBase implements
     protected function getProblemDescription(
         \SimpleXMLElement $xml,
         array $elements = [
-            'ProblemType', 'ProblemDetail', 'ProblemElement', 'ProblemValue'
+            'ProblemType', 'ProblemDetail', 'ProblemElement', 'ProblemValue',
         ],
         bool $withElementNames = true
     ): string {

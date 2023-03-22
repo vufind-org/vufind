@@ -98,8 +98,8 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('crossref10.5755/j01.ss.71.2.544', $recs[2]->recordid);
         $this->assertEquals(5706, $coll->getTotal());
         $facets = $coll->getFacets();
-        $this->assertEquals(9, count($facets));
-        $this->assertEquals(19, count($facets['jtitle']));
+        $this->assertCount(9, $facets);
+        $this->assertCount(19, $facets['jtitle']);
         $this->assertEquals(16, $facets['jtitle']['Remedial and Special Education']);
         $this->assertEquals(0, $coll->getOffset());
     }
@@ -186,9 +186,9 @@ class BackendTest extends \PHPUnit\Framework\TestCase
             'query' => [
                 [
                     'index' => null,
-                    'lookfor' => 'baz'
-                ]
-            ]
+                    'lookfor' => 'baz',
+                ],
+            ],
         ];
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
@@ -212,39 +212,39 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         return [
             [
                 '',
-                true
+                true,
             ],
             [
                 true,
-                true
+                true,
             ],
             [
                 1,
-                true
+                true,
             ],
             [
                 '1',
-                true
+                true,
             ],
             [
                 'true',
-                true
+                true,
             ],
             [
                 false,
-                false
+                false,
             ],
             [
                 0,
-                false
+                false,
             ],
             [
                 '0',
-                false
+                false,
             ],
             [
                 'false',
-                false
+                false,
             ],
         ];
     }
@@ -266,10 +266,10 @@ class BackendTest extends \PHPUnit\Framework\TestCase
                 'filterList' => [
                     'pcAvailability' => [
                         'values' => [
-                            $value
-                        ]
-                    ]
-                ]
+                            $value,
+                        ],
+                    ],
+                ],
             ]
         );
         $expectedParams = [
@@ -280,9 +280,9 @@ class BackendTest extends \PHPUnit\Framework\TestCase
             'query' => [
                 [
                     'index' => null,
-                    'lookfor' => 'foo'
-                ]
-            ]
+                    'lookfor' => 'foo',
+                ],
+            ],
         ];
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())

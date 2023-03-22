@@ -83,7 +83,8 @@ class Utils
             }
 
             // Check for month/year or month-year formats:
-            if (preg_match('/([0-9])(-|\/)([0-9]{4})/', $date, $matches)
+            if (
+                preg_match('/([0-9])(-|\/)([0-9]{4})/', $date, $matches)
                 || preg_match('/([0-9]{2})(-|\/)([0-9]{4})/', $date, $matches)
             ) {
                 $month = $matches[1];

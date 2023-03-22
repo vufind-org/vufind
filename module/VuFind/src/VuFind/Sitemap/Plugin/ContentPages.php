@@ -149,7 +149,8 @@ class ContentPages extends AbstractGeneratorPlugin
         // Check each file for language suffix and combine the files into a
         // non-language specific array
         foreach ($files as $fileInfo) {
-            if (in_array($fileInfo['relativeFile'], $this->excludedFiles)
+            if (
+                in_array($fileInfo['relativeFile'], $this->excludedFiles)
             ) {
                 continue;
             }

@@ -100,7 +100,8 @@ class ErrorListener extends AbstractErrorListener
         $tags = [];
         if (isset($body->error->msg)) {
             $reason = $body->error->msg;
-            if (stristr($reason, 'org.apache.solr.search.SyntaxError')
+            if (
+                stristr($reason, 'org.apache.solr.search.SyntaxError')
                 || stristr($reason, 'undefined field')
                 || stristr($reason, 'invalid date')
             ) {

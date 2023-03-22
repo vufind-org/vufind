@@ -63,7 +63,7 @@ class Recommend extends \Laminas\View\Helper\AbstractHelper
         $context = [
             'recommend' => $recommend,
             'location' => $location,
-            'configIndex' => $index
+            'configIndex' => $index,
         ];
         return $this->renderClassTemplate($template, $className, $context);
     }

@@ -58,7 +58,7 @@ class SwitchTabTest extends \PHPUnit\Framework\TestCase
                         "label" => "label01",
                         "permission" => "permission01",
                         "selected" => true,
-                        "url" => "http://newurl1"
+                        "url" => "http://newurl1",
                     ],
                     [
                         "id" => "A02",
@@ -66,7 +66,7 @@ class SwitchTabTest extends \PHPUnit\Framework\TestCase
                         "label" => "label02",
                         "permission" => "permission02",
                         "selected" => false,
-                        "url" => "http://newurl2"
+                        "url" => "http://newurl2",
                     ],
                 ],
                 [
@@ -75,8 +75,8 @@ class SwitchTabTest extends \PHPUnit\Framework\TestCase
                     "label" => "label01",
                     "permission" => "permission01",
                     "selected" => true,
-                    "url" => "http://newurl1"
-                ]
+                    "url" => "http://newurl1",
+                ],
             ],
             'No tab selected' => [
                 [
@@ -86,7 +86,7 @@ class SwitchTabTest extends \PHPUnit\Framework\TestCase
                         "label" => "label01",
                         "permission" => "permission01",
                         "selected" => false,
-                        "url" => "http://newurl1"
+                        "url" => "http://newurl1",
                     ],
                     [
                         "id" => "A02",
@@ -94,10 +94,10 @@ class SwitchTabTest extends \PHPUnit\Framework\TestCase
                         "label" => "label02",
                         "permission" => "permission02",
                         "selected" => false,
-                        "url" => "http://newurl2"
+                        "url" => "http://newurl2",
                     ],
                 ],
-                null
+                null,
             ],
         ];
     }
@@ -134,7 +134,7 @@ class SwitchTabTest extends \PHPUnit\Framework\TestCase
                         "label" => "label01",
                         "permission" => "permission01",
                         "selected" => true,
-                        "url" => "http://newurl1"
+                        "url" => "http://newurl1",
                     ],
                     [
                         "id" => "A02",
@@ -142,7 +142,7 @@ class SwitchTabTest extends \PHPUnit\Framework\TestCase
                         "label" => "label02",
                         "permission" => "permission02",
                         "selected" => false,
-                        "url" => "http://newurl2"
+                        "url" => "http://newurl2",
                     ],
                 ],
                 [
@@ -152,9 +152,9 @@ class SwitchTabTest extends \PHPUnit\Framework\TestCase
                         "label" => "label02",
                         "permission" => "permission02",
                         "selected" => false,
-                        "url" => "http://newurl2"
-                    ]
-                ]
+                        "url" => "http://newurl2",
+                    ],
+                ],
             ],
         ];
     }

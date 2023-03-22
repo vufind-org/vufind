@@ -91,7 +91,8 @@ class JSTree extends AbstractBase implements \VuFind\I18n\Translator\TranslatorA
 
         if ($hierarchyID) {
             // Specific Hierarchy Supplied
-            if (in_array($hierarchyID, $inHierarchies)
+            if (
+                in_array($hierarchyID, $inHierarchies)
                 && $this->getDataSource()->supports($hierarchyID)
             ) {
                 return [
@@ -99,7 +100,7 @@ class JSTree extends AbstractBase implements \VuFind\I18n\Translator\TranslatorA
                         $hierarchyID,
                         $inHierarchies,
                         $inHierarchiesTitle
-                    )
+                    ),
                 ];
             }
         } else {
@@ -191,13 +192,13 @@ class JSTree extends AbstractBase implements \VuFind\I18n\Translator\TranslatorA
             'id' => preg_replace('/\W/', '-', $node->id),
             'text' => $escaper->escapeHtml($node->title),
             'li_attr' => [
-                'data-recordid' => $node->id
+                'data-recordid' => $node->id,
             ],
             'a_attr' => [
                 'href' => $this->getContextualUrl($node, $context),
-                'title' => $node->title
+                'title' => $node->title,
             ],
-            'type' => $node->type
+            'type' => $node->type,
         ];
         if (isset($node->children)) {
             $ret['children'] = [];
@@ -249,12 +250,12 @@ class JSTree extends AbstractBase implements \VuFind\I18n\Translator\TranslatorA
         if (!isset($cache[$route])) {
             $params = [
                 'id' => '__record_id__',
-                'tab' => 'HierarchyTree'
+                'tab' => 'HierarchyTree',
             ];
             $options = [
                 'query' => [
-                    'recordID' => '__record_id__'
-                ]
+                    'recordID' => '__record_id__',
+                ],
             ];
             $cache[$route] = $this->router->fromRoute(
                 $this->getRouteNameFromDataSource($route),
@@ -365,7 +366,7 @@ class JSTree extends AbstractBase implements \VuFind\I18n\Translator\TranslatorA
             'collectionTitle' => $hierarchyTitle,
             'baseURL' => rtrim($this->router->fromRoute('home'), '/'),
             'context' => $context,
-            'recordID' => $recordID
+            'recordID' => $recordID,
         ];
 
         // Transform the XML

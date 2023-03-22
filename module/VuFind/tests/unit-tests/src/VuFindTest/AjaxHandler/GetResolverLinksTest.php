@@ -154,7 +154,7 @@ class GetResolverLinksTest extends \VuFindTest\Unit\AjaxHandlerTest
             [
                 [
                     'html' => 'html',
-                ]
+                ],
             ],
             $handler->handleRequest($params)
         );

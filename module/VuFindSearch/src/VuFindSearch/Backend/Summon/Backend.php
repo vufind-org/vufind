@@ -173,7 +173,7 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
                 [
                     'idsToFetch' => $currentPage,
                     'pageNumber' => 1,
-                    'pageSize' => $pageSize
+                    'pageSize' => $pageSize,
                 ]
             );
             try {

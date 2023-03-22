@@ -57,7 +57,7 @@ class WorldCatSimilarTest extends \PHPUnit\Framework\TestCase
                     'getAllSubjectHeadings',
                     'getTitle',
                     'getUniqueId',
-                    'getSourceIdentifier'
+                    'getSourceIdentifier',
                 ]
             )->getMock();
         $driver->expects($this->once())

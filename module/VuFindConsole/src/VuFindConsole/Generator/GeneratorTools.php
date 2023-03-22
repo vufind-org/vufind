@@ -333,7 +333,7 @@ class GeneratorTools
                 );
                 $param1 = [
                     'name' => 'container',
-                    'type' => 'Psr\Container\ContainerInterface'
+                    'type' => 'Psr\Container\ContainerInterface',
                 ];
                 $param2 = [
                     'name' => 'requestedName',
@@ -584,7 +584,8 @@ class GeneratorTools
         // either be a [controller, method] array or a "controller::method"
         // string; anything else will cause a problem.
         $parts = is_string($factory) ? explode('::', $factory) : $factory;
-        if (!is_array($parts) || count($parts) != 2 || !class_exists($parts[0])
+        if (
+            !is_array($parts) || count($parts) != 2 || !class_exists($parts[0])
             || !is_callable($parts)
         ) {
             throw new \Exception('Unexpected factory configuration format.');
@@ -867,7 +868,7 @@ class GeneratorTools
     {
         $generator = FileGenerator::fromArray(
             [
-                'body' => 'return ' . var_export($config, true) . ';'
+                'body' => 'return ' . var_export($config, true) . ';',
             ]
         );
         if (!file_put_contents($configPath, $generator->generate())) {

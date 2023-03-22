@@ -137,7 +137,7 @@ class EdsBackendFactory extends AbstractBackendFactory
     {
         $options = [
             'search_http_method' => $this->edsConfig->General->search_http_method
-                ?? 'POST'
+                ?? 'POST',
         ];
         if (isset($this->edsConfig->General->api_url)) {
             $options['api_url'] = $this->edsConfig->General->api_url;

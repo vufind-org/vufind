@@ -88,7 +88,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
                     ? [
                         'heading' => [$topic],
                         'type' => $fieldType,
-                        'source' => ''
+                        'source' => '',
                     ] : [$topic];
             }
         }
@@ -186,7 +186,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
         return isset($this->fields['Snippet'][0])
             ? [
                 'snippet' => trim($this->fields['Snippet'][0], '.'),
-                'caption' => ''
+                'caption' => '',
             ]
             : false;
     }
@@ -331,7 +331,8 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      */
     public function getPublicationDates()
     {
-        if (isset($this->fields['PublicationDate_xml'])
+        if (
+            isset($this->fields['PublicationDate_xml'])
             && is_array($this->fields['PublicationDate_xml'])
         ) {
             $dates = [];
@@ -446,7 +447,8 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
         // Support thumbnails embedded in the Summon record when no unique identifier
         // is found... (We don't use them in cases where we have an identifier, since
         // we want to allow these to be passed to configured external services).
-        if (!isset($params['oclc']) && !isset($params['issn'])
+        if (
+            !isset($params['oclc']) && !isset($params['issn'])
             && !isset($params['isbn']) && !isset($params['upc'])
         ) {
             if ($size === 'small' && isset($this->fields['thumbnail_s'][0])) {
@@ -509,7 +511,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
         if (isset($this->fields['link'])) {
             $msg = $this->hasFullText() ? 'Get full text' : 'Get more information';
             return [
-                ['url' => $this->fields['link'], 'desc' => $this->translate($msg)]
+                ['url' => $this->fields['link'], 'desc' => $this->translate($msg)],
             ];
         }
         $retVal = [];
@@ -588,7 +590,8 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
     {
         if (isset($this->fields['EndPage'])) {
             return $this->fields['EndPage'][0];
-        } elseif (isset($this->fields['PageCount'])
+        } elseif (
+            isset($this->fields['PageCount'])
             && $this->fields['PageCount'] > 1
             && intval($this->fields['StartPage'][0]) > 0
         ) {

@@ -48,7 +48,7 @@ class Params extends \VuFind\Search\Solr\Params
      */
     protected $defaultFacetLabelSections = [
         'Advanced_Facets', 'HomePage_Facets', 'ResultsTop', 'Results',
-        'ExtraFacetLabels'
+        'ExtraFacetLabels',
     ];
 
     /**

@@ -158,7 +158,8 @@ class SummonController extends AbstractSearch
                 // If we haven't already found a selected facet and the current
                 // facet has been applied to the search, we should store it as
                 // the selected facet for the current control.
-                if ($searchObject
+                if (
+                    $searchObject
                     && $searchObject->getParams()->hasFilter($fullFilter)
                 ) {
                     $facetList[$facet]['list'][$key]['selected'] = true;

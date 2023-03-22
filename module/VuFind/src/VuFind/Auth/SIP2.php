@@ -102,7 +102,8 @@ class SIP2 extends AbstractBase
 
         $result = $mysip->parsePatronStatusResponse($msg_result);
         $mysip->disconnect();
-        if (($result['variable']['BL'][0] == 'Y')
+        if (
+            ($result['variable']['BL'][0] == 'Y')
             and ($result['variable']['CQ'][0] == 'Y')
         ) {
             // Success!!!

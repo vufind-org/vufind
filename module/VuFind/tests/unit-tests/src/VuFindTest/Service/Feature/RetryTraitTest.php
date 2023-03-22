@@ -164,7 +164,7 @@ class RetryTraitTest extends \PHPUnit\Framework\TestCase
                     'retryableExceptionCallback' => function ($attempt, $exception) {
                         $this->assertInstanceOf(\Exception::class, $exception);
                         return $exception->getMessage() !== 'Fail attempt 3';
-                    }
+                    },
                 ]
             );
         } catch (\Exception $e) {

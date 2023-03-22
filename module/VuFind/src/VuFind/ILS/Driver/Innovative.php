@@ -100,7 +100,8 @@ class Innovative extends AbstractBase implements
     protected function prepID($id)
     {
         // Get the ID format from config (default to use_full_id if unset):
-        if (!isset($this->config['RecordID']['use_full_id'])
+        if (
+            !isset($this->config['RecordID']['use_full_id'])
             || $this->config['RecordID']['use_full_id']
         ) {
             // Strip ID leading period and trailing check digit.

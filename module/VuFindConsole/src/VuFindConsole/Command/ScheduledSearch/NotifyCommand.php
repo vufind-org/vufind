@@ -469,8 +469,8 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
                     $selectedCheckboxes
                 ),
                 'filters' => $params->getFilterList(true),
-                'userInstitution' => $userInstitution
-             ]
+                'userInstitution' => $userInstitution,
+             ],
         ];
         return $this->renderer
             ->render('Email/scheduled-alert.phtml', $viewParams);
@@ -526,7 +526,8 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
         $this->msg(sprintf('Processing %d searches', count($scheduled)));
         foreach ($scheduled as $s) {
             $lastTime = new \DateTime($s->last_notification_sent);
-            if (!$this->validateSchedule($todayTime, $lastTime, $s)
+            if (
+                !$this->validateSchedule($todayTime, $lastTime, $s)
                 || !($user = $this->getUserForSearch($s))
                 || !($searchObject = $this->getObjectForSearch($s))
                 || !($newRecords = $this->getNewRecords($searchObject, $lastTime))

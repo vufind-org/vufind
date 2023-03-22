@@ -31,7 +31,7 @@
             $transParams = [
               '%%start%%' => $this->localizedNumber($paginator->getAbsoluteItemNumber(1)),
               '%%end%%' => $this->localizedNumber($end),
-              '%%total%%' => $this->localizedNumber($paginator->getTotalItemCount())
+              '%%total%%' => $this->localizedNumber($paginator->getTotalItemCount()),
             ];
           ?>
           <?=$this->translate('showing_items_of_html', $transParams); ?>

@@ -74,7 +74,7 @@ class GetRequestGroupPickupLocations extends AbstractIlsAndUserAction
             if ($patron = $this->ilsAuthenticator->storedCatalogLogin()) {
                 $details = [
                     'id' => $id,
-                    'requestGroupId' => $requestGroupId
+                    'requestGroupId' => $requestGroupId,
                 ];
                 $results = $this->ils->getPickupLocations($patron, $details);
                 foreach ($results as &$result) {

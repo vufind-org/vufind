@@ -270,7 +270,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
     protected function checkForLoginMessage(Element $page)
     {
         $warning = $page->find('css', '.modal-body .alert-danger');
-        $this->assertTrue(is_object($warning));
+        $this->assertIsObject($warning);
         $this->assertEquals(
             'You must be logged in first',
             $warning->getText()
@@ -303,9 +303,9 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
                 'config' => [
                     'Site' => [
                         'showBookBag' => true,
-                        'bookbagTogglesInSearch' => false
-                    ]
-                ]
+                        'bookbagTogglesInSearch' => false,
+                    ],
+                ],
             ]
         );
 
@@ -329,9 +329,9 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
                 'config' => [
                     'Site' => [
                         'showBookBag' => true,
-                        'bookbagTogglesInSearch' => false
-                    ]
-                ]
+                        'bookbagTogglesInSearch' => false,
+                    ],
+                ],
             ]
         );
 
@@ -358,9 +358,9 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
                     'Site' => [
                         'showBookBag' => true,
                         'bookBagMaxSize' => 1,
-                        'bookbagTogglesInSearch' => false
-                    ]
-                ]
+                        'bookbagTogglesInSearch' => false,
+                    ],
+                ],
             ]
         );
 
@@ -495,9 +495,9 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
                 'config' => [
                     'Site' => [
                         'showBookBag' => true,
-                        'bookbagTogglesInSearch' => false
-                    ]
-                ]
+                        'bookbagTogglesInSearch' => false,
+                    ],
+                ],
             ]
         );
         $page = $this->getSearchResultsPage();

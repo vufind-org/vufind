@@ -98,7 +98,8 @@ abstract class AbstractThemeUtility
                 if (!$this->copyDir("$src/$current", "$dest/$current")) {
                     return false;
                 }
-            } elseif (!file_exists("$dest/$current")
+            } elseif (
+                !file_exists("$dest/$current")
                 && !copy("$src/$current", "$dest/$current")
             ) {
                 return $this->setLastError(

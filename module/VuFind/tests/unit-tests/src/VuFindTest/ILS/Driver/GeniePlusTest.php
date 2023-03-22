@@ -86,7 +86,7 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
         [
             'Accept: application/json',
             'Authorization: Bearer fake-token',
-        ]
+        ],
     ];
 
     /**
@@ -279,7 +279,7 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
                     [
                         'Accept: application/json',
                         'Authorization: Bearer fake-token',
-                    ]
+                    ],
                 ],
             )->willReturnOnConsecutiveCalls(
                 $response1,
@@ -469,7 +469,7 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
                     [
                         'Accept: application/json',
                         'Authorization: Bearer fake-token',
-                    ]
+                    ],
                 ],
             )->willReturnOnConsecutiveCalls(
                 $response1,
@@ -522,7 +522,7 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
                     [
                         'Accept: application/json',
                         'Authorization: Bearer fake-token',
-                    ]
+                    ],
                 ],
             )->willReturnOnConsecutiveCalls(
                 $response1,

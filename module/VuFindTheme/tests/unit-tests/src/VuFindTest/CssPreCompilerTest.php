@@ -64,7 +64,7 @@ class CssPreCompilerTest extends \PHPUnit\Framework\TestCase
     public static function extClassProvider()
     {
         return [
-            ['scss', ScssCompiler::class]
+            ['scss', ScssCompiler::class],
         ];
     }
 
@@ -173,8 +173,8 @@ class CssPreCompilerTest extends \PHPUnit\Framework\TestCase
     {
         $this->setupCompiler($ext, $class);
         $this->compiler->compile(['child']);
-        $this->assertTrue(file_exists($this->testDest . 'themes/child/css/compiled.css'));
-        $this->assertFalse(file_exists($this->testDest . 'themes/parent/css/compiled.css'));
+        $this->assertFileExists($this->testDest . 'themes/child/css/compiled.css');
+        $this->assertFileDoesNotExist($this->testDest . 'themes/parent/css/compiled.css');
         unlink($this->testDest . 'themes/child/css/compiled.css');
     }
 
@@ -192,9 +192,9 @@ class CssPreCompilerTest extends \PHPUnit\Framework\TestCase
     {
         $this->setupCompiler($ext, $class);
         $this->compiler->compile([]);
-        $this->assertTrue(file_exists($this->testDest . 'themes/child/css/compiled.css'));
-        $this->assertTrue(file_exists($this->testDest . 'themes/parent/css/compiled.css'));
-        $this->assertTrue(file_exists($this->testDest . 'themes/parent/css/relative/relative.css'));
+        $this->assertFileExists($this->testDest . 'themes/child/css/compiled.css');
+        $this->assertFileExists($this->testDest . 'themes/parent/css/compiled.css');
+        $this->assertFileExists($this->testDest . 'themes/parent/css/relative/relative.css');
         unlink($this->testDest . 'themes/child/css/compiled.css');
         unlink($this->testDest . 'themes/parent/css/compiled.css');
         unlink($this->testDest . 'themes/parent/css/relative/relative.css');
