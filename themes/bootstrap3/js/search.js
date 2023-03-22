@@ -2,7 +2,7 @@
 
 VuFind.register('search', function search() {
   let jsRecordListSelector = '.js-record-list';
-  let paginationLinksSelector = '.js-ajax-pagination a';
+  let paginationLinksSelector = '.js-pagination a';
   let scrollElementSelector = '.search-stats';
   let searchStatsSelector = '.js-search-stats';
   let searchControlFormSelector = '.search-controls form';
@@ -62,7 +62,11 @@ VuFind.register('search', function search() {
             let urlParts = form.getAttribute('action').split('?', 2);
             const query = new URLSearchParams(urlParts.length > 1 ? urlParts[1] : '');
             Object.entries(form.elements).forEach(([, element]) => {
-              query.set(element.name, element.value);
+              if (element.name.endsWith('[]')) {
+                query.append(element.name, element.value);
+              } else {
+                query.set(element.name, element.value);
+              }
             });
             // Remove page so that any change resets it:
             query.delete('page');
@@ -249,7 +253,7 @@ VuFind.register('search', function search() {
   }
 
   /**
-   * Initialize AJAX pagination if enabled
+   * Initialize JS pagination if enabled
    */
   function init() {
     if (document.querySelector(jsRecordListSelector)) {

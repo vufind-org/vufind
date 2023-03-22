@@ -178,7 +178,8 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
         if ('search' !== $baseAction && !$this->renderer->resolver($templatePath)) {
             $templatePath = "search/$template.phtml";
         }
-        return $this->renderer->render($templatePath, compact('results'));
+        $params = $results->getParams();
+        return $this->renderer->render($templatePath, compact('results', 'params'));
     }
 
     /**

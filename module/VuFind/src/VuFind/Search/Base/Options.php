@@ -307,6 +307,13 @@ abstract class Options implements TranslatorAwareInterface
     protected $firstlastNavigation = false;
 
     /**
+     * Is loading of results with JavaScript enabled?
+     *
+     * @var bool
+     */
+    protected $loadResultsWithJs = true;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Config loader
@@ -328,6 +335,9 @@ abstract class Options implements TranslatorAwareInterface
                 }
             }
         }
+
+        $searchSettings = $configLoader->get($this->searchIni);
+        $this->loadResultsWithJs = (bool)($searchSettings->General->load_results_with_js ?? true);
     }
 
     /**
@@ -1066,6 +1076,16 @@ abstract class Options implements TranslatorAwareInterface
     {
         // Unsupported by default!
         return false;
+    }
+
+    /**
+     * Should we load results with JavaScript?
+     *
+     * @return bool
+     */
+    public function loadResultsWithJsEnabled()
+    {
+        return $this->loadResultsWithJs;
     }
 
     /**

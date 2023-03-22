@@ -275,11 +275,17 @@ var VuFind = (function VuFind() {
    * @param {string|JQuery} container
    */
   var initResultScripts = function initResultScripts(container) {
-    this.openurl.init($(container));
-    this.itemStatuses.init(container);
+    if (typeof this.openurl !== 'undefined') {
+      this.openurl.init($(container));
+    }
+    if (typeof this.itemStatuses !== 'undefined') {
+      this.itemStatuses.init(container);
+    }
     checkSaveStatuses($(container));
     setupQRCodeLinks($(container));
-    this.recordVersions.init(container);
+    if (typeof this.recordVersions !== 'undefined') {
+      this.recordVersions.init(container);
+    }
   };
 
   var init = function init() {

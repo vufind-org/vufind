@@ -1,6 +1,6 @@
 <?php
   $listClasses = ['search-grid'];
-  if ($this->config()->ajaxResultsEnabled()) {
+  if ($this->results->getOptions()->loadResultsWithJsEnabled()) {
     $this->headScript()->appendFile('search.js');
     // Ensure OpenURL support is available even if none of the results on the initial
     // page has one:

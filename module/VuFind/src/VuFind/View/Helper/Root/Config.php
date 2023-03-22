@@ -92,16 +92,6 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Should results be loaded via AJAX?
-     *
-     * @return bool
-     */
-    public function ajaxResultsEnabled(): bool
-    {
-        return (bool)($this->get('config')->Site->loadResultsWithAjax ?? true);
-    }
-
-    /**
      * Should we limit the number of items displayed on the full record?
      *
      * @return int
