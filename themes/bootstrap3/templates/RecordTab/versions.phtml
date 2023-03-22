@@ -42,11 +42,9 @@
 <?php
 // Add any translations added when processing the search results:
 $translations = $this->jsTranslations()->getJSON();
-// Use combinedSearch.initResultScripts to avoid duplicating the list of scripts
-// required for results loaded via AJAX:
 $script = <<<JS
     VuFind.addTranslations($translations);
-    VuFind.combinedSearch.initResultScripts($('.results'));
+    VuFind.search.initResultScripts($('.results'));
     JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>

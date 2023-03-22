@@ -6,24 +6,22 @@
     '%%lookfor%%' => $this->escapeHtml($this->lookfor),
   ];
 
-  $showingResults = $this->translate(
-      isset($this->skipTotalCount) ? 'showing_results_html' : 'showing_results_of_html',
-      $transParams
-  );
-?>
-<?php // Use search-heading if it's set, but append only if it's not empty to avoid extra whitespace: ?>
-<?php if ($this->slot('search-heading')->isset()): ?>
-  <?php if ($heading = $this->slot('search-heading')->get()): ?>
-    <?php $showingResults .= " $heading"; ?>
-  <?php endif; ?>
-<?php elseif ($this->params->getSearchType() == 'basic'):
-  $showingResults = $this->translate(
-      isset($this->skipTotalCount) ? 'showing_results_for_html' : 'showing_results_of_for_html',
-      $transParams
-  );
-endif; ?>
+  // Use search-heading if it's set, but append only if it's not empty to avoid extra whitespace:
+  if ($this->slot('search-heading')->isset() || $this->params->getSearchType() !== 'basic') {
+    $showingResults = !empty($this->skipTotalCount)
+      ? '<span class="js-search-stats" data-key="showing_results_html">' . $this->translate('showing_results_html', $transParams) . '</span>'
+      : '<span class="js-search-stats" data-key="showing_results_of_html">' . $this->translate('showing_results_of_html', $transParams) . '</span>';
+    if ($heading = $this->slot('search-heading')->get()) {
+      $showingResults .= $heading;
+    }
+  } else {
+    $showingResults = !empty($this->skipTotalCount)
+      ? '<span class="js-search-stats" data-key="showing_results_for_html">' . $this->translate('showing_results_for_html', $transParams) . '</span'
+      : '<span class="js-search-stats" data-key="showing_results_of_for_html">' . $this->translate('showing_results_of_for_html', $transParams) . '</span>';
+  }
 
-<?php $this->layout()->srmessage = $showingResults; ?>
+  $this->layout()->srmessage = $showingResults;
+?>
 <?php if ($qtime = $this->results->getQuerySpeed()): ?>
   <?=$showingResults; ?><span class="search-query-time">, <?=$this->transEsc('query time')?>: <?=$this->localizedNumber($qtime, 2) . $this->transEsc('seconds_abbrev')?></span>
 <?php else: ?>
