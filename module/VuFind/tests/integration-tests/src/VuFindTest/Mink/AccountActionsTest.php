@@ -153,7 +153,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Now confirm that email button is absent:
         $link = $page->findLink('Change Email Address');
-        $this->assertFalse(is_object($link));
+        $this->assertIsNotObject($link);
     }
 
     /**

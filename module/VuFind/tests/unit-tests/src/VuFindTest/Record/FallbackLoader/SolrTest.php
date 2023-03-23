@@ -100,6 +100,6 @@ class SolrTest extends \PHPUnit\Framework\TestCase
         $resource = $this->getMockBuilder(\VuFind\Db\Table\Resource::class)
             ->disableOriginalConstructor()->getMock();
         $loader = new Solr($resource, $search, null);
-        $this->assertEquals(0, count($loader->load(['oldId'])));
+        $this->assertCount(0, $loader->load(['oldId']));
     }
 }
