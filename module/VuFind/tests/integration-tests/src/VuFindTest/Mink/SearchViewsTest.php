@@ -65,7 +65,7 @@ class SearchViewsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.view-buttons a[title="Switch view to Grid"]');
         $this->waitForPageLoad($page);
 
-        // Check for sample driver location/call number in output (this will
+        // Check for sample driver's available status in output (this will
         // only appear after AJAX returns):
         $this->unFindCss($page, '.ajax-availability');
         $this->assertEquals(
