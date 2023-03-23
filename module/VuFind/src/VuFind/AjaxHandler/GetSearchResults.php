@@ -67,6 +67,13 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     protected $renderer;
 
     /**
+     * Main configuration
+     *
+     * @var array
+     */
+    protected $config;
+
+    /**
      * Elements to render for each search results page.
      *
      * @var array
@@ -92,15 +99,18 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
      * @param SessionSettings $sessionSettings Session settings
      * @param ResultsManager  $resultsManager  Results Manager
      * @param PhpRenderer     $renderer        View renderer
+     * @param array           $config          Main configuration
      */
     public function __construct(
         SessionSettings $sessionSettings,
         ResultsManager $resultsManager,
-        PhpRenderer $renderer
+        PhpRenderer $renderer,
+        array $config
     ) {
         $this->sessionSettings = $sessionSettings;
         $this->resultsManager = $resultsManager;
         $this->renderer = $renderer;
+        $this->config = $config;
     }
 
     /**
@@ -179,7 +189,35 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
             $templatePath = "search/$template.phtml";
         }
         $params = $results->getParams();
-        return $this->renderer->render($templatePath, compact('results', 'params'));
+        $options = $results->getOptions();
+        $cart = $this->renderer->plugin('cart');
+        $showBulkOptions = $options->supportsCart()
+            && ($this->config['Site']['showBulkOptions'] ?? false);
+        // Checkboxes if appropriate:
+        $showCartControls = $options->supportsCart()
+            && $cart()->isActive()
+            && ($showBulkOptions || !$cart()->isActiveInSearch());
+        // Enable bulk options if appropriate:
+        $showCheckboxes = $showCartControls || $showBulkOptions;
+
+        // Create a css class for results from the search class:
+        $searchClass = $params->getSearchClassId();
+        if (!ctype_upper($searchClass)) {
+            $searchClass = preg_replace('/([a-zA-Z])(?=[A-Z])/', '$1-', $searchClass);
+        }
+        $resultsClass = 'search-results-' . strtolower($searchClass);
+
+        return $this->renderer->render(
+            $templatePath,
+            compact(
+                'results',
+                'params',
+                'showBulkOptions',
+                'showCartControls',
+                'showCheckboxes',
+                'resultsClass'
+            )
+        );
     }
 
     /**
