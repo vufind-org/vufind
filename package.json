@@ -9,6 +9,20 @@
   "bugs": {
     "url": "https://vufind.org/jira"
   },
+  "scripts": {
+    "css": "npm run less",
+    "watch:css": "npm run watch:less",
+
+    "less": "grunt less",
+    "lessdev": "grunt lessdev",
+    "scss": "grunt scss",
+    "lessToSass": "grunt lessToSass",
+
+    "watch:less": "grunt watch:less",
+    "watch:lessdev": "grunt watch:lessdev",
+    "watch:scss": "grunt watch:scss",
+    "watch:lessToSass": "grunt watch:lessToSass"
+  },
   "dependencies": {
     "autocomplete.js": "vufind-org/autocomplete.js#v2.1.3",
     "grunt": "^1.0.4",
