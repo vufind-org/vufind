@@ -76,7 +76,7 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
             'method' => 'renderResults',
             'target' => 'outer',
         ],
-        '.js-ajax-pagination' => [
+        '.js-pagination' => [
             'method' => 'renderPagination',
             'target' => 'outer',
         ],
