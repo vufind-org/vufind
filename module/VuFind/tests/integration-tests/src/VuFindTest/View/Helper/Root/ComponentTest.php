@@ -79,7 +79,7 @@ class ComponentTest extends \VuFindTest\Integration\MinkTestCase
                 [
                     new \VuFind\Record\Router(
                         new \Laminas\Config\Config([])
-                    )
+                    ),
                 ]
             )->getMock();
         $recordLinker->expects($this->any())->method('getUrl')
@@ -98,16 +98,21 @@ class ComponentTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Build a page that's just this component.
+     * Call just like you'd call $view->component(...)
+     *
+     * @param string $component  Name of component
+     * @param mixed  ...$options Options and parameters for the components
      *
      * @return \Behat\Mink\Page
      */
-    protected function getComponentPage($component, ...$options) {
+    protected function getComponentPage($component, ...$options)
+    {
         // Get component
         $helper = new Component();
         $helper->setView($this->getPhpRenderer($this->getPlugins()));
         $component = $helper($component, ...$options);
         // Make sure we have HTML
-        $this->assertTrue(is_string($component));
+        $this->assertIsString($component);
 
         $script = '<script src="' . $this->getVuFindUrl() . '/themes/bootstrap3/js/components.js"></script>';
         $html = '<!doctype html><head>' . $script . '</head><body>' . $component . '</body></html>';
@@ -131,11 +136,11 @@ class ComponentTest extends \VuFindTest\Integration\MinkTestCase
         $menu = $this->findCss($page, '.confirm-menu');
         $toggle = $this->findCss($page, '.confirm__toggle');
 
-        $assertOpen = function($menu) {
+        $assertOpen = function ($menu) {
             $className = $menu->getAttribute("class");
             $this->assertTrue(strstr($className, 'is-open') !== false);
         };
-        $assertClosed = function($menu) {
+        $assertClosed = function ($menu) {
             $className = $menu->getAttribute("class");
             $this->assertTrue(strstr($className, 'is-open') === false);
         };
