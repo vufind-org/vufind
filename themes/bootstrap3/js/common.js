@@ -275,17 +275,20 @@ var VuFind = (function VuFind() {
    * @param {string|JQuery} container
    */
   var initResultScripts = function initResultScripts(container) {
+    let jqContainer = typeof container === 'string' ? $(container) : container;
     if (typeof this.openurl !== 'undefined') {
-      this.openurl.init($(container));
+      this.openurl.init(jqContainer);
     }
     if (typeof this.itemStatuses !== 'undefined') {
-      this.itemStatuses.init(container);
+      this.itemStatuses.init(jqContainer);
     }
-    VuFind.saveStatuses.init($(container));
-    setupQRCodeLinks($(container));
+    if (typeof this.saveStatuses !== 'undefined') {
+      this.saveStatuses.init(jqContainer);
+    }
     if (typeof this.recordVersions !== 'undefined') {
-      this.recordVersions.init(container);
+      this.recordVersions.init(jqContainer);
     }
+    setupQRCodeLinks(jqContainer);
   };
 
   var init = function init() {
