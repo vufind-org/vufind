@@ -139,7 +139,7 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
      * @param string                $action  Record action to access
      * @param array                 $query   Optional query parameters
      * @param string                $anchor  Optional anchor
-     * @param array                 $options Optional options
+     * @param array                 $options Record URL parameter options (optional)
      *
      * @return string
      */
