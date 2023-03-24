@@ -672,9 +672,14 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test export buttons found in tool bar
+     *
+     * @return void
      */
     public function testRefWorksExportButton()
     {
+        $this->changeConfigs(
+            ['config' => ['RefWorks' => ['vendor' => 'VuFind', 'url' => 'https://www.refworks.com']]]
+        );
         // Go to a record view
         $page = $this->gotoRecord();
         // Click SMS
