@@ -673,7 +673,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test export buttons found in tool bar
      */
-    public function testExportButtons()
+    public function testRefWorksExportButton()
     {
         // Go to a record view
         $page = $this->gotoRecord();
@@ -681,7 +681,10 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.export-toggle');
         $this->clickCss($page, '#export-options li a');
         $this->waitForPageLoad($page);
-        $this->clickCss($page, '#export-form .btn.btn-primary');
+        $this->assertEquals(
+            'Send to RefWorks',
+            $this->findCss($page, '#export-form input.btn.btn-primary')->getValue()
+        );
     }
 
     /**
