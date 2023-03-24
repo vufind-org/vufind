@@ -5,7 +5,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2011.
+ * Copyright (C) Villanova University 2011-2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -37,6 +38,7 @@ namespace VuFindTest\Mink;
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  * @retry    4
@@ -666,6 +668,25 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Logout
         $this->clickCss($page, '.logoutOptions a.logout');
+    }
+
+    /**
+     * Test export button found in toolbar
+     *
+     * @return void
+     */
+    public function testRefWorksExportButton()
+    {
+        // Go to a record view
+        $page = $this->gotoRecord();
+        // Click the first Export option in the drop-down menu
+        $this->clickCss($page, '.export-toggle');
+        $this->clickCss($page, '#export-options li a');
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            'Send to RefWorks',
+            $this->findCss($page, '#export-form input.btn.btn-primary')->getValue()
+        );
     }
 
     /**
