@@ -143,8 +143,13 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function getActionUrl($driver, $action, $query = [], $anchor = '', $options = [])
-    {
+    public function getActionUrl(
+        $driver,
+        $action,
+        $query = [],
+        $anchor = '',
+        $options = []
+    ) {
         // Build the URL:
         $urlHelper = $this->getView()->plugin('url');
         $details = $this->router->getActionRouteDetails($driver, $action);
