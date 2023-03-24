@@ -138,6 +138,7 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
      * to, or source|id pipe-delimited string
      * @param string                $action  Record action to access
      * @param array                 $query   Optional query parameters
+     * @param string                $anchor  Optional anchor
      * @param array                 $options Optional options
      *
      * @return string
