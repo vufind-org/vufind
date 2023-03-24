@@ -134,15 +134,15 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
     /**
      * Given a record driver, get a URL for that record.
      *
-     * @param AbstractRecord|string $driver Record driver representing record to link
+     * @param AbstractRecord|string $driver  Record driver representing record to link
      * to, or source|id pipe-delimited string
-     * @param string                $action Record action to access
-     * @param array                 $query  Optional query parameters
-     * @param string                $anchor Optional anchor
+     * @param string                $action  Record action to access
+     * @param array                 $query   Optional query parameters
+     * @param array                 $options Optional options
      *
      * @return string
      */
-    public function getActionUrl($driver, $action, $query = [], $anchor = '')
+    public function getActionUrl($driver, $action, $query = [], $anchor = '', $options = [])
     {
         // Build the URL:
         $urlHelper = $this->getView()->plugin('url');
@@ -151,8 +151,8 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
             $details['route'],
             $details['params'] ?: [],
             [
-                'query' => $this->getRecordUrlParams() + $query,
-                'fragment' => ltrim($anchor, '#'),
+                'query' => $this->getRecordUrlParams($options) + $query,
+                'fragment' => $anchor ? ltrim($anchor, '#') : '',
                 'normalize_path' => false, // required to keep slashes encoded
             ]
         );
