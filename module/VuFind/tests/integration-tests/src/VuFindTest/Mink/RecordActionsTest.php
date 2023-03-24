@@ -671,7 +671,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test export buttons found in tool bar
+     * Test export button found in toolbar
      *
      * @return void
      */
