@@ -134,8 +134,8 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
     /**
      * Given a record driver, get a URL for that record.
      *
-     * @param AbstractRecord|string $driver  Record driver representing record to link
-     * to, or source|id pipe-delimited string
+     * @param AbstractRecord|string $driver  Record driver representing record
+     * to link to, or source|id pipe-delimited string
      * @param string                $action  Record action to access
      * @param array                 $query   Optional query parameters
      * @param string                $anchor  Optional anchor
