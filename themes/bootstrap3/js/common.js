@@ -251,10 +251,10 @@ var VuFind = (function VuFind() {
 
     container.find('a.qrcodeLink').click(function qrcodeToggle() {
       if ($(this).hasClass("active")) {
-        $(".result-link-label", this).html(VuFind.translate('qrcode_show'));
+        $(".result-link-label", this).html(translate('qrcode_show'));
         $(this).removeClass("active");
       } else {
-        $(".result-link-label", this).html(VuFind.translate('qrcode_hide'));
+        $(".result-link-label", this).html(translate('qrcode_hide'));
         $(this).addClass("active");
       }
 
