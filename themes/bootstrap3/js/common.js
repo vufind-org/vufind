@@ -511,8 +511,11 @@ function setupAutocomplete() {
       },
       dataType: 'json',
       success: function autocompleteJSON(json) {
-        cache[searcher.searcher][query] = json.data.suggestions;
-        callback(json.data.suggestions);
+        const highlighted = json.data.suggestions.map(
+          (item) => item.replace(query, `<b>${query}</b>`)
+        );
+        cache[searcher.searcher][query] = highlighted;
+        callback(highlighted);
       }
     });
   });
