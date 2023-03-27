@@ -1,18 +1,4 @@
-<?php
-  // See also similar code in list-list.phtml
-  $listClassesEscaped = ['search-grid'];
-  if ($this->results->getOptions()->loadResultsWithJsEnabled()) {
-    $this->headScript()->appendFile('search.js');
-    // Ensure OpenURL support is available even if none of the results on the initial
-    // page has one:
-    $this->headScript()->appendFile('openurl.js');
-    $listClassesEscaped[] = 'js-record-list';
-  }
-  if ($class = $this->resultsClass ?? '') {
-    $listClassesEscaped[] = $this->escapeHtmlAttr($class);
-  }
-?>
-<div class="<?=implode(' ', $listClassesEscaped)?>" data-backend="<?=$this->escapeHtmlAttr($this->results->getParams()->getSearchClassId())?>">
+<div class="<?=$this->escapeHtmlAttr(trim('search-grid ' . ($this->resultsClass ?? '')))?>" data-backend="<?=$this->escapeHtmlAttr($this->results->getParams()->getSearchClassId())?>">
   <?php $it = 0; ?>
   <?php foreach ($this->results->getResults() as $current): ?>
     <?=$this->record($current)->getSearchResult('grid', $this->results)?>

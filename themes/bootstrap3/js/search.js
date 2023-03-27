@@ -184,6 +184,20 @@ VuFind.register('search', function search() {
   }
 
   /**
+   * Show an error message
+   *
+   * @param {string} error
+   */
+  function showError(error) {
+    let errorMsg = document.createElement('div');
+    errorMsg.classList = 'alert alert-danger';
+    errorMsg.textContent = error;
+    const recordList = document.querySelector(jsRecordListSelector);
+    recordList.innerHTML = '';
+    recordList.append(errorMsg);
+  }
+
+  /**
    * Load results and update associated elements.
    *
    * @param {string} pageUrl
@@ -191,6 +205,12 @@ VuFind.register('search', function search() {
    */
   loadResults = function loadResultsReal(pageUrl, addToHistory) {
     const recordList = document.querySelector(jsRecordListSelector);
+    const backend = recordList.dataset.backend;
+    if (typeof backend === 'undefined') {
+      showError('ERROR: data-backend not set for record list');
+      return;
+    }
+
     const loadingOverlay = document.createElement('div');
     loadingOverlay.classList = 'loading-overlay';
     loadingOverlay.setAttribute('aria-live', 'polite');
@@ -200,7 +220,6 @@ VuFind.register('search', function search() {
     const searchStats = document.querySelector(searchStatsSelector);
     const statsKey = searchStats.dataset.key;
 
-    const backend = recordList.dataset.backend;
     let url = VuFind.path + '/AJAX/JSON?method=getSearchResults&source='
       + encodeURIComponent(backend) + '&statsKey=' + encodeURIComponent(statsKey);
     let pageUrlParts = pageUrl.split('?');
@@ -232,11 +251,7 @@ VuFind.register('search', function search() {
         VuFind.emit('vf-results-loaded', {url: pageUrl, addToHistory: addToHistory, data: result});
       })
       .catch((error) => {
-        let errorMsg = document.createElement('div');
-        errorMsg.classList = 'alert alert-danger';
-        errorMsg.textContent = VuFind.translate('error_occurred') + ' - ' + error;
-        recordList.innerHTML = '';
-        recordList.append(errorMsg);
+        showError(VuFind.translate('error_occurred') + ' - ' + error);
       });
   };
 

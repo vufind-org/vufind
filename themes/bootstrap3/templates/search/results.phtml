@@ -30,9 +30,10 @@
   $this->layout()->searchId = $this->results->getSearchId();
 
   // Enable cart if appropriate:
-  $this->showBulkOptions = $this->params->getOptions()->supportsCart() && $this->showBulkOptions;
+  $options = $this->params->getOptions();
+  $this->showBulkOptions = $options->supportsCart() && $this->showBulkOptions;
   // Checkboxes if appropriate:
-  $this->showCartControls = $this->params->getOptions()->supportsCart() && $this->cart()->isActive()
+  $this->showCartControls = $options->supportsCart() && $this->cart()->isActive()
     && ($this->showBulkOptions || !$this->cart()->isActiveInSearch());
   // Enable bulk options if appropriate:
   $this->showCheckboxes = $this->showCartControls || $this->showBulkOptions;
@@ -42,14 +43,18 @@
     $searchClass = preg_replace('/([a-zA-Z])(?=[A-Z])/', '$1-', $searchClass);
   }
   $this->resultsClass = 'search-results-' . strtolower($searchClass);
-
-  $this->render('search/results-scripts.phtml', ['displayVersions' => !empty($this->params->getOptions()->getVersionsAction())]);
-
-  // Load only if list view parameter is NOT full:
-  if ($this->params->getOptions()->getListViewOption() !== 'full') {
-      $this->headScript()->appendFile("record.js");
-      $this->headScript()->appendFile("embedded_record.js");
+  if ($this->results->getOptions()->loadResultsWithJsEnabled()) {
+    $this->resultsClass .= ' js-record-list';
   }
+
+  $this->render(
+    'search/results-scripts.phtml',
+    [
+      'displayVersions' => !empty($options->getVersionsAction()),
+      'jsResults' => $options->loadResultsWithJsEnabled(),
+      'listViewOption' => $options->getListViewOption(),
+    ]
+  );
 ?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">

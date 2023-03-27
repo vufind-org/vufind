@@ -205,7 +205,7 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
         if (!ctype_upper($searchClass)) {
             $searchClass = preg_replace('/([a-zA-Z])(?=[A-Z])/', '$1-', $searchClass);
         }
-        $resultsClass = 'search-results-' . strtolower($searchClass);
+        $resultsClass = 'search-results-' . strtolower($searchClass) . ' js-record-list';
 
         return $this->renderer->render(
             $templatePath,
