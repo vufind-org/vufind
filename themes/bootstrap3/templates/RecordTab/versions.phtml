@@ -2,11 +2,11 @@
   $results = $this->driver->tryMethod('getVersions', [false, 20]);
   $view = 'list';
   $this->render(
-    'search/results-scripts.phtml',
-    [
-      'displayVersions' => true,
-      'jsResults' => $results->getOptions()->loadResultsWithJsEnabled(),
-    ]
+      'search/results-scripts.phtml',
+      [
+          'displayVersions' => true,
+          'jsResults' => $results->getOptions()->loadResultsWithJsEnabled(),
+      ]
   );
 ?>
 <div class="results result-view-<?=$this->escapeHtmlAttr($view)?>">

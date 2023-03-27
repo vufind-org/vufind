@@ -48,12 +48,12 @@
   }
 
   $this->render(
-    'search/results-scripts.phtml',
-    [
-      'displayVersions' => !empty($options->getVersionsAction()),
-      'jsResults' => $options->loadResultsWithJsEnabled(),
-      'listViewOption' => $options->getListViewOption(),
-    ]
+      'search/results-scripts.phtml',
+      [
+          'displayVersions' => !empty($options->getVersionsAction()),
+          'jsResults' => $options->loadResultsWithJsEnabled(),
+          'listViewOption' => $options->getListViewOption(),
+      ]
   );
 ?>
 
