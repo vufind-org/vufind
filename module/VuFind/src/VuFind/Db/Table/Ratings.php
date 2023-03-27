@@ -224,32 +224,4 @@ class Ratings extends Gateway
     {
         $this->delete(['user_id' => $user->id]);
     }
-
-    /**
-     * Get statistics on use of ratings.
-     *
-     * @return array
-     */
-    public function getStatistics(): array
-    {
-        $select = $this->sql->select();
-        $select->columns(
-            [
-                'users' => new Expression(
-                    'COUNT(DISTINCT(?))',
-                    ['user_id'],
-                    [Expression::TYPE_IDENTIFIER]
-                ),
-                'resources' => new Expression(
-                    'COUNT(DISTINCT(?))',
-                    ['resource_id'],
-                    [Expression::TYPE_IDENTIFIER]
-                ),
-                'total' => new Expression('COUNT(*)')
-            ]
-        );
-        $statement = $this->sql->prepareStatementForSqlObject($select);
-        $result = $statement->execute();
-        return (array)$result->current();
-    }
 }

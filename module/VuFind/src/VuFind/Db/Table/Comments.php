@@ -28,7 +28,6 @@
 namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
-use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 use VuFind\Db\Row\RowGateway;
 
@@ -134,33 +133,5 @@ class Comments extends Gateway
     public function deleteByUser($user)
     {
         $this->delete(['user_id' => $user->id]);
-    }
-
-    /**
-     * Get statistics on use of comments.
-     *
-     * @return array
-     */
-    public function getStatistics()
-    {
-        $select = $this->sql->select();
-        $select->columns(
-            [
-                'users' => new Expression(
-                    'COUNT(DISTINCT(?))',
-                    ['user_id'],
-                    [Expression::TYPE_IDENTIFIER]
-                ),
-                'resources' => new Expression(
-                    'COUNT(DISTINCT(?))',
-                    ['resource_id'],
-                    [Expression::TYPE_IDENTIFIER]
-                ),
-                'total' => new Expression('COUNT(*)')
-            ]
-        );
-        $statement = $this->sql->prepareStatementForSqlObject($select);
-        $result = $statement->execute();
-        return (array)$result->current();
     }
 }

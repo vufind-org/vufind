@@ -195,39 +195,6 @@ class UserResource extends Gateway
     }
 
     /**
-     * Get statistics on use of lists.
-     *
-     * @return array
-     */
-    public function getStatistics()
-    {
-        $select = $this->sql->select();
-        $select->columns(
-            [
-                'users' => new Expression(
-                    'COUNT(DISTINCT(?))',
-                    ['user_id'],
-                    [Expression::TYPE_IDENTIFIER]
-                ),
-                'lists' => new Expression(
-                    'COUNT(DISTINCT(?))',
-                    ['list_id'],
-                    [Expression::TYPE_IDENTIFIER]
-                ),
-                'resources' => new Expression(
-                    'COUNT(DISTINCT(?))',
-                    ['resource_id'],
-                    [Expression::TYPE_IDENTIFIER]
-                ),
-                'total' => new Expression('COUNT(*)')
-            ]
-        );
-        $statement = $this->sql->prepareStatementForSqlObject($select);
-        $result = $statement->execute();
-        return (array)$result->current();
-    }
-
-    /**
      * Get a list of duplicate rows (this sometimes happens after merging IDs,
      * for example after a Summon resource ID changes).
      *

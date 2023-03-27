@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2021.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -52,6 +52,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'externalsession' => ExternalSession::class,
         'feedback' => Feedback::class,
         'oairesumption' => OaiResumption::class,
+        'ratings' => Ratings::class,
         'record' => Record::class,
         'resource' => Resource::class,
         'resourcetags' => ResourceTags::class,
@@ -77,6 +78,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         ExternalSession::class => InvokableFactory::class,
         Feedback::class => InvokableFactory::class,
         OaiResumption::class => InvokableFactory::class,
+        Ratings::class => InvokableFactory::class,
         Record::class => InvokableFactory::class,
         Resource::class => InvokableFactory::class,
         ResourceTags::class => InvokableFactory::class,

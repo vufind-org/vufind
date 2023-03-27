@@ -1,6 +1,6 @@
 <?php
 /**
- * Database service plugin manager
+ * Database service for Ratings.
  *
  * PHP version 7
  *
@@ -21,14 +21,16 @@
  *
  * @category VuFind
  * @package  Database
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 namespace VuFind\Db\Service;
 
+use VuFind\Db\Entity\Ratings;
+
 /**
- * Database service plugin manager
+ * Database service for Ratings.
  *
  * @category VuFind
  * @package  Database
@@ -36,44 +38,21 @@ namespace VuFind\Db\Service;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
+class RatingsService extends AbstractService
 {
     /**
-     * Default plugin aliases.
+     * Get statistics on use of Ratings.
      *
-     * @var array
+     * @return array
      */
-    protected $aliases = [
-        'comments' => CommentsService::class,
-        'feedback' => FeedbackService::class,
-        'ratings' => RatingsService::class,
-        'tag' => TagService::class,
-        'user' => UserService::class,
-        'userResource' => UserResourceService::class,
-    ];
-
-    /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        CommentsService::class => AbstractServiceFactory::class,
-        FeedbackService::class => AbstractServiceFactory::class,
-        RatingsService::class => AbstractServiceFactory::class,
-        TagService::class => TagServiceFactory::class,
-        UserService::class => AbstractServiceFactory::class,
-        UserResourceService::class => AbstractServiceFactory::class,
-    ];
-
-    /**
-     * Return the name of the base class or interface that plug-ins must conform
-     * to.
-     *
-     * @return string
-     */
-    protected function getExpectedInterface()
+    public function getStatistics(): array
     {
-        return AbstractService::class;
+        $dql = "SELECT COUNT(DISTINCT(r.user)) AS users, "
+            . "COUNT(DISTINCT(r.resource)) AS resources, "
+            . "COUNT(r.id) AS total "
+            . "FROM " . $this->getEntityClass(Ratings::class) . " r";
+        $query = $this->entityManager->createQuery($dql);
+        $stats = current($query->getResult());
+        return $stats;
     }
 }

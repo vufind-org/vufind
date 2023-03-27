@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -28,7 +28,10 @@
 namespace VuFindAdmin\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\Db\Service\CommentsService;
+use VuFind\Db\Service\RatingsService;
 use VuFind\Db\Service\TagService;
+use VuFind\Db\Service\UserResourceService;
 
 /**
  * Class controls VuFind social statistical data.
@@ -49,6 +52,27 @@ class SocialstatsController extends AbstractAdmin
     protected $tagService;
 
     /**
+     * Comments service
+     *
+     * @var CommentsService
+     */
+    protected $commentsService;
+
+    /**
+     * Ratings service
+     *
+     * @var RatingsService
+     */
+    protected $ratingsService;
+
+    /**
+     * UserResource service
+     *
+     * @var UserResourceService
+     */
+    protected $userResourceService;
+
+    /**
      * Constructor
      *
      * @param ServiceLocatorInterface $sm Service locator
@@ -58,6 +82,14 @@ class SocialstatsController extends AbstractAdmin
         parent::__construct($sm);
         $this->tagService = $sm->get(\VuFind\Db\Service\PluginManager::class)
             ->get(TagService::class);
+        $this->commentsService = $sm->get(\VuFind\Db\Service\PluginManager::class)
+            ->get(CommentsService::class);
+        $this->ratingsService = $sm->get(\VuFind\Db\Service\PluginManager::class)
+            ->get(RatingsService::class);
+        $this->userResourceService = $sm->get(
+            \VuFind\Db\Service\PluginManager::class
+        )
+            ->get(UserResourceService::class);
     }
 
     /**
@@ -69,9 +101,9 @@ class SocialstatsController extends AbstractAdmin
     {
         $view = $this->createViewModel();
         $view->setTemplate('admin/socialstats/home');
-        $view->comments = $this->getTable('comments')->getStatistics();
-        $view->ratings = $this->getTable('ratings')->getStatistics();
-        $view->favorites = $this->getTable('userresource')->getStatistics();
+        $view->comments = $this->commentsService->getStatistics();
+        $view->ratings = $this->ratingsService->getStatistics();
+        $view->favorites = $this->userResourceService->getStatistics();
         $view->tags = $this->tagService->getStatistics();
         return $view;
     }
