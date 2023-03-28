@@ -252,9 +252,7 @@ VuFind.register('search', function search() {
             } else {
               element.outerHTML = contents.html;
             }
-            if (typeof contents.attrs !== 'undefined') {
-              contents.attrs.forEach(([attr, value]) => element.setAttribute(attr, value));
-            }
+            Object.entries(contents.attrs).forEach(([attr, value]) => element.setAttribute(attr, value));
           });
         });
         VuFind.initResultScripts(jsRecordListSelector);

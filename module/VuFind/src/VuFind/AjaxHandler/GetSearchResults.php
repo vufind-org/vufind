@@ -257,6 +257,7 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
                 $result[$selector] = [
                     'html' => $html,
                     'target' => $element['target'],
+                    'attrs' => $element['attrs'] ?? [],
                 ];
             }
         }
