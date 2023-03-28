@@ -578,14 +578,23 @@ table.search-history-table {
   text-align: inherit;
   li {
     display: inline-block;
+    a.page-prev {
+      margin-right: 0.5rem;
+    }
+    a.page-next {
+      margin-left: 0.5rem;
+    }
   }
-  .pager-text span {
-    border: 0;
-    padding: 0;
-    color: $text-color;
-    &:hover {
+  .pager-text {
+    margin: 0;
+    span {
+      border: 0;
+      padding: 0;
       color: $text-color;
-      background-color: transparent;
+      &:hover {
+        color: $text-color;
+        background-color: transparent;
+      }
     }
   }
 }
