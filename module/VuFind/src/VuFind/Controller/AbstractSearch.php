@@ -460,10 +460,10 @@ class AbstractSearch extends AbstractBase
         if (
             ($this->getConfig()->Record->jump_to_single_search_result ?? false)
             && $results->getResultTotal() == 1
+            && $recordList = $results->getResults()
         ) {
-            $recordList = $results->getResults();
             return $this->getRedirectForRecord(
-                $recordList[0],
+                reset($recordList),
                 ['sid' => $results->getSearchId()]
             );
         }
