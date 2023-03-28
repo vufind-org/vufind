@@ -210,6 +210,10 @@ VuFind.register('search', function search() {
       showError('ERROR: data-backend not set for record list');
       return;
     }
+    let searchType = recordList.dataset.searchType;
+    if (typeof searchType === 'undefined') {
+      searchType = '';
+    }
 
     const loadingOverlay = document.createElement('div');
     loadingOverlay.classList = 'loading-overlay';
@@ -220,18 +224,22 @@ VuFind.register('search', function search() {
     const searchStats = document.querySelector(searchStatsSelector);
     const statsKey = searchStats.dataset.key;
 
-    let url = VuFind.path + '/AJAX/JSON?method=getSearchResults&source='
-      + encodeURIComponent(backend) + '&statsKey=' + encodeURIComponent(statsKey);
+    const queryParams = new URLSearchParams('method=getSearchResults');
+    queryParams.set('source', backend);
+    if (searchType) {
+      queryParams.set('searchType', searchType);
+    }
+    queryParams.set('statsKey', statsKey);
     let pageUrlParts = pageUrl.split('?');
     if (typeof pageUrlParts[1] !== 'undefined') {
-      url += '&querystring=' + encodeURIComponent(pageUrlParts[1]);
+      queryParams.set('querystring', pageUrlParts[1]);
       if (addToHistory) {
         window.history.pushState({url: pageUrl}, '', '?' + pageUrlParts[1]);
       }
     }
     updateResultControls(pageUrl);
     VuFind.emit('vf-results-load', {url: pageUrl, addToHistory: addToHistory});
-    fetch(url)
+    fetch(VuFind.path + '/AJAX/JSON?' + queryParams.toString())
       .then((response) => response.json())
       .then((result) => {
         // We expect to get the results list in elements, but reset it to hide spinner just in case:

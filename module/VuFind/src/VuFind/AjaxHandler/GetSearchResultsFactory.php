@@ -73,6 +73,7 @@ class GetSearchResultsFactory implements \Laminas\ServiceManager\Factory\Factory
             $container->get(\VuFind\Session\Settings::class),
             $container->get(\VuFind\Search\Results\PluginManager::class),
             $container->get('ViewRenderer'),
+            $container->get(\VuFind\Record\Loader::class),
             $container->get(\VuFind\Config\PluginManager::class)->get('config')->toArray()
         );
         return $result;

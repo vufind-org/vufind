@@ -32,6 +32,7 @@ namespace VuFind\AjaxHandler;
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Stdlib\Parameters;
 use Laminas\View\Renderer\PhpRenderer;
+use VuFind\Record\Loader as RecordLoader;
 use VuFind\Search\Base\Results;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFind\Session\Settings as SessionSettings;
@@ -67,6 +68,13 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     protected $renderer;
 
     /**
+     * Record loader
+     *
+     * @var RecordLoader
+     */
+    protected $recordLoader;
+
+    /**
      * Main configuration
      *
      * @var array
@@ -99,17 +107,20 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
      * @param SessionSettings $sessionSettings Session settings
      * @param ResultsManager  $resultsManager  Results Manager
      * @param PhpRenderer     $renderer        View renderer
+     * @param RecordLoader    $recordLoader    Record loader
      * @param array           $config          Main configuration
      */
     public function __construct(
         SessionSettings $sessionSettings,
         ResultsManager $resultsManager,
         PhpRenderer $renderer,
+        RecordLoader $recordLoader,
         array $config
     ) {
         $this->sessionSettings = $sessionSettings;
         $this->resultsManager = $resultsManager;
         $this->renderer = $renderer;
+        $this->recordLoader = $recordLoader;
         $this->config = $config;
     }
 
@@ -125,6 +136,9 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
         $this->disableSessionWrites();  // avoid session write timing bug
 
         $results = $this->getSearchResults($params);
+        if (!$results) {
+            return $this->formatResponse(['error' => 'Invalid request'], 400);
+        }
         $elements = $this->getElements($params, $results);
         return $this->formatResponse(compact('elements'));
     }
@@ -134,13 +148,38 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
      *
      * @param Params $params Request params
      *
-     * @return Results
+     * @return ?Results
      */
     protected function getSearchResults(Params $params): Results
     {
         parse_str($params->fromQuery('querystring', ''), $searchParams);
 
         $backend = $params->fromQuery('source', DEFAULT_SEARCH_BACKEND);
+        $searchType = $params->fromQuery('searchType', '');
+        if ('versions' === $searchType) {
+            $id = $searchParams['id'] ?? null;
+            $keys = $searchParams['keys'] ?? null;
+            $record = null;
+            if ($id) {
+                $record = $this->recordLoader->load($id, $backend, true);
+                if ($record instanceof \VuFind\RecordDriver\Missing) {
+                    $record = null;
+                } else {
+                    $keys = $record->tryMethod('getWorkKeys');
+                }
+            }
+            if (empty($keys)) {
+                return null;
+            }
+
+            $mapFunc = function ($val) {
+                return '"' . addcslashes($val, '"') . '"';
+            };
+
+            $searchParams['lookfor'] = implode(' OR ', array_map($mapFunc, (array)$keys));
+            $searchParams['type'] = 'WorkKeys';
+        }
+
         $results = $this->resultsManager->get($backend);
         $paramsObj = $results->getParams();
         $paramsObj->getOptions()->spellcheckEnabled(false);
@@ -183,10 +222,9 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     protected function renderResults(Params $params, Results $results): ?string
     {
         [$baseAction] = explode('-', $results->getOptions()->getSearchAction());
-        $template = 'list-' . $results->getParams()->getView();
-        $templatePath = "$baseAction/$template.phtml";
+        $templatePath = "$baseAction/results-list.phtml";
         if ('search' !== $baseAction && !$this->renderer->resolver($templatePath)) {
-            $templatePath = "search/$template.phtml";
+            $templatePath = "search/results-list.phtml";
         }
         $params = $results->getParams();
         $options = $results->getOptions();
@@ -199,13 +237,6 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
             && ($showBulkOptions || !$cart()->isActiveInSearch());
         // Enable bulk options if appropriate:
         $showCheckboxes = $showCartControls || $showBulkOptions;
-
-        // Create a css class for results from the search class:
-        $searchClass = $params->getSearchClassId();
-        if (!ctype_upper($searchClass)) {
-            $searchClass = preg_replace('/([a-zA-Z])(?=[A-Z])/', '$1-', $searchClass);
-        }
-        $resultsClass = 'search-results-' . strtolower($searchClass) . ' js-record-list';
 
         return $this->renderer->render(
             $templatePath,

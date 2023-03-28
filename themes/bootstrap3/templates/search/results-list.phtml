@@ -1,0 +1,18 @@
+<?php
+  // Create a css class for results from the search class:
+  $searchClass = $searchClassCss = $this->params->getSearchClassId();
+  if (!ctype_upper($searchClassCss)) {
+    $searchClassCss = preg_replace('/([a-zA-Z])(?=[A-Z])/', '$1-', $searchClassCss);
+  }
+  $this->resultsClass = 'search-results-' . strtolower($searchClassCss);
+  // Add any additional classes and attributes:
+  if ($this->results->getOptions()->loadResultsWithJsEnabled()) {
+    $this->resultsClass .= ' js-record-list';
+    if ($this->resultsAttrs) {
+      $this->resultsAttrs->add('data-backend', $searchClass);
+    } else {
+      $this->resultsAttrs = $this->htmlAttributes(['data-backend' => $searchClass,]);
+    }
+  }
+?>
+<?=$this->render('search/list-' . $this->params->getView() . '.phtml')?>

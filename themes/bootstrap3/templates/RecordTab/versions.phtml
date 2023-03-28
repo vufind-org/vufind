@@ -5,9 +5,10 @@
       'search/results-scripts.phtml',
       [
           'displayVersions' => true,
-          'jsResults' => $results->getOptions()->loadResultsWithJsEnabled(),
+          'jsResults' => $this->searchOptions($this->driver->getSearchBackendIdentifier())->loadResultsWithJsEnabled(),
       ]
   );
+  $this->resultsAttrs = $this->htmlAttributes(['data-search-type' => 'versions',]);
 ?>
 <div class="results result-view-<?=$this->escapeHtmlAttr($view)?>">
   <nav class="search-header hidden-print">
