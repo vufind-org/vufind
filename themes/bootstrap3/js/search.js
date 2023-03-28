@@ -2,7 +2,7 @@
 
 VuFind.register('search', function search() {
   let jsRecordListSelector = '.js-record-list';
-  let paginationLinksSelector = '.js-pagination a';
+  let paginationLinksSelector = '.js-pagination a,.js-pagination-simple a';
   let scrollElementSelector = '.search-stats';
   let searchStatsSelector = '.js-search-stats';
   let searchControlFormSelector = '.search-controls form';
@@ -218,6 +218,7 @@ VuFind.register('search', function search() {
     const loadingOverlay = document.createElement('div');
     loadingOverlay.classList = 'loading-overlay';
     loadingOverlay.setAttribute('aria-live', 'polite');
+    loadingOverlay.setAttribute('role', 'status');
     loadingOverlay.innerHTML = VuFind.loading();
     recordList.prepend(loadingOverlay);
     document.querySelector(scrollElementSelector).scrollIntoView({behavior: 'smooth'});
@@ -251,7 +252,9 @@ VuFind.register('search', function search() {
             } else {
               element.outerHTML = contents.html;
             }
-            element.setAttribute('aria-live', 'polite');
+            if (typeof contents.attrs !== 'undefined') {
+              contents.attrs.forEach(([attr, value]) => element.setAttribute(attr, value));
+            }
           });
         });
         VuFind.initResultScripts(jsRecordListSelector);

@@ -291,6 +291,9 @@ var VuFind = (function VuFind() {
     if (typeof this.cart !== 'undefined') {
       this.cart.registerToggles(jqContainer);
     }
+    if (typeof this.embedded !== 'undefined') {
+      this.embedded.init(jqContainer);
+    }
     this.lightbox.bind(jqContainer);
     setupQRCodeLinks(jqContainer);
   };

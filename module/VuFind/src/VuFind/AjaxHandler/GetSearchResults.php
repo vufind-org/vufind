@@ -126,24 +126,31 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
             'method' => 'renderPagination',
             'target' => 'outer',
         ],
+        '.js-pagination-simple' => [
+            'method' => 'renderPaginationSimple',
+            'target' => 'outer',
+        ],
         '.js-search-stats' => [
             'method' => 'renderSearchStats',
             'target' => 'inner',
+            'attrs' => [
+                'aria-live' => 'polite',
+            ],
         ],
     ];
 
     /**
      * Constructor
      *
-     * @param SessionSettings $sessionSettings Session settings
-     * @param ResultsManager  $resultsManager  Results Manager
-     * @param PhpRenderer     $renderer        View renderer
-     * @param RecordLoader    $recordLoader    Record loader
+     * @param SessionSettings  $sessionSettings Session settings
+     * @param ResultsManager   $resultsManager  Results Manager
+     * @param PhpRenderer      $renderer        View renderer
+     * @param RecordLoader     $recordLoader    Record loader
      * @param ?UserRow         $user            Logged-in user
      * @param string           $sessionId       Session ID
      * @param SearchNormalizer $normalizer      Search normalizer
      * @param SearchTable      $searchTable     Search table
-     * @param array           $config          Main configuration
+     * @param array            $config          Main configuration
      */
     public function __construct(
         SessionSettings $sessionSettings,
@@ -298,13 +305,17 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     /**
      * Render pagination
      *
-     * @param Params  $params  Request params
-     * @param Results $results Search results
+     * @param Params  $params   Request params
+     * @param Results $results  Search results
+     * @param string  $template Paginator template
      *
      * @return ?string
      */
-    protected function renderPagination(Params $params, Results $results): ?string
-    {
+    protected function renderPagination(
+        Params $params,
+        Results $results,
+        string $template = 'search/pagination.phtml'
+    ): ?string {
         $backend = $params->fromQuery('source', DEFAULT_SEARCH_BACKEND);
         $paginationOptions = 'EDS' === $backend
             ? ['disableFirst' => true, 'disableLast' => true] : [];
@@ -312,9 +323,22 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
         return $pagination(
             $results->getPaginator(),
             'Sliding',
-            'search/pagination.phtml',
+            $template,
             ['results' => $results, 'options' => $paginationOptions]
         );
+    }
+
+    /**
+     * Render simple pagination
+     *
+     * @param Params  $params  Request params
+     * @param Results $results Search results
+     *
+     * @return ?string
+     */
+    protected function renderPaginationSimple(Params $params, Results $results): ?string
+    {
+        return $this->renderPagination($params, $results, 'search/pagination_simple.phtml');
     }
 
     /**
