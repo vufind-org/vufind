@@ -32,9 +32,12 @@ namespace VuFind\AjaxHandler;
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Stdlib\Parameters;
 use Laminas\View\Renderer\PhpRenderer;
+use VuFind\Db\Row\User as UserRow;
+use VuFind\Db\Table\Search;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Search\Base\Results;
 use VuFind\Search\Results\PluginManager as ResultsManager;
+use VuFind\Search\SearchNormalizer;
 use VuFind\Session\Settings as SessionSettings;
 
 /**
@@ -75,6 +78,34 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     protected $recordLoader;
 
     /**
+     * Logged-in user
+     *
+     * @var ?UserRow
+     */
+    protected $user;
+
+    /**
+     * Session ID
+     *
+     * @var string
+     */
+    protected $sessionId;
+
+    /**
+     * Search normalizer
+     *
+     * @var SearchNormalizer
+     */
+    protected $searchNormalizer;
+
+    /**
+     * Search table
+     *
+     * @var SearchTable
+     */
+    protected $searchTable;
+
+    /**
      * Main configuration
      *
      * @var array
@@ -108,6 +139,10 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
      * @param ResultsManager  $resultsManager  Results Manager
      * @param PhpRenderer     $renderer        View renderer
      * @param RecordLoader    $recordLoader    Record loader
+     * @param ?UserRow         $user            Logged-in user
+     * @param string           $sessionId       Session ID
+     * @param SearchNormalizer $normalizer      Search normalizer
+     * @param SearchTable      $searchTable     Search table
      * @param array           $config          Main configuration
      */
     public function __construct(
@@ -115,12 +150,20 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
         ResultsManager $resultsManager,
         PhpRenderer $renderer,
         RecordLoader $recordLoader,
+        ?UserRow $user,
+        string $sessionId,
+        SearchNormalizer $normalizer,
+        Search $searchTable,
         array $config
     ) {
         $this->sessionSettings = $sessionSettings;
         $this->resultsManager = $resultsManager;
         $this->renderer = $renderer;
         $this->recordLoader = $recordLoader;
+        $this->user = $user;
+        $this->sessionId = $sessionId;
+        $this->searchNormalizer = $normalizer;
+        $this->searchTable = $searchTable;
         $this->config = $config;
     }
 
@@ -133,8 +176,6 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
      */
     public function handleRequest(Params $params)
     {
-        $this->disableSessionWrites();  // avoid session write timing bug
-
         $results = $this->getSearchResults($params);
         if (!$results) {
             return $this->formatResponse(['error' => 'Invalid request'], 400);
@@ -184,6 +225,10 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
         $paramsObj = $results->getParams();
         $paramsObj->getOptions()->spellcheckEnabled(false);
         $paramsObj->initFromRequest(new Parameters($searchParams));
+
+        if ('versions' !== $searchType) {
+            $this->saveSearchToHistory($results);
+        }
 
         return $results;
     }
@@ -298,5 +343,22 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
         ];
 
         return $this->translate($statsKey, $transParams);
+    }
+
+    /**
+     * Save a search to the history in the database.
+     *
+     * @param Results $results Search results
+     *
+     * @return void
+     */
+    protected function saveSearchToHistory(Results $results): void
+    {
+        $this->searchTable->saveSearch(
+            $this->searchNormalizer,
+            $results,
+            $this->sessionId,
+            $this->user->id ?? null
+        );
     }
 }
