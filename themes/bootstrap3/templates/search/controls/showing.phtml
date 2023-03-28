@@ -6,11 +6,13 @@
     '%%lookfor%%' => $this->escapeHtml($this->lookfor),
   ];
 
-  // Use search-heading if it's set, but append only if it's not empty to avoid extra whitespace:
-  if ($this->slot('search-heading')->isset() || $this->params->getSearchType() !== 'basic') {
+  // Use simple form if search-heading is set, search type is not basic or we have a simple top paginator enabled:
+  $topPaginator = $this->results ? $this->results->getOptions()->getTopPaginatorStyle() : '';
+  if ($this->slot('search-heading')->isset() || $this->params->getSearchType() !== 'basic' || 'simple' === $topPaginator) {
     $showingResults = !empty($this->skipTotalCount)
       ? '<span class="js-search-stats" data-key="showing_results_html">' . $this->translate('showing_results_html', $transParams) . '</span>'
       : '<span class="js-search-stats" data-key="showing_results_of_html">' . $this->translate('showing_results_of_html', $transParams) . '</span>';
+    // Append search-heading only if it's not empty to avoid extra whitespace:
     if ($heading = $this->slot('search-heading')->get()) {
       $showingResults .= $heading;
     }
@@ -22,7 +24,7 @@
 
   $this->layout()->srmessage = $showingResults;
 ?>
-<?php if (!$this->results->getOptions()->loadResultsWithJsEnabled() && $qtime = $this->results->getQuerySpeed()): ?>
+<?php if (!$this->results->getOptions()->loadResultsWithJsEnabled() && $qtime = $this->results->getQuerySpeed() && 'simple' !== $topPaginator): ?>
   <?=$showingResults; ?><span class="search-query-time">, <?=$this->transEsc('query time')?>: <?=$this->localizedNumber($qtime, 2) . $this->transEsc('seconds_abbrev')?></span>
 <?php else: ?>
   <?=$showingResults; ?>

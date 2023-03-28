@@ -571,3 +571,21 @@ table.search-history-table {
     }
   }
 }
+
+/* Simple pagination */
+.js-pagination-simple {
+  margin: 0;
+  text-align: inherit;
+  li {
+    display: inline-block;
+  }
+  .pager-text span {
+    border: 0;
+    padding: 0;
+    color: $text-color;
+    &:hover {
+      color: $text-color;
+      background-color: transparent;
+    }
+  }
+}
