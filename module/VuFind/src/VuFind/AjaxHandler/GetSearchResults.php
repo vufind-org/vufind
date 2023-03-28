@@ -246,7 +246,6 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
                 'showBulkOptions',
                 'showCartControls',
                 'showCheckboxes',
-                'resultsClass'
             )
         );
     }
