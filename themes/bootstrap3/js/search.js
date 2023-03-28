@@ -269,7 +269,7 @@ VuFind.register('search', function search() {
    * @param {Event} event
    */
   function historyStateListener(event) {
-    if (event.state.url && getBaseUrl(window.location.href) === getBaseUrl(event.state.url)) {
+    if (event.state && event.state.url && getBaseUrl(window.location.href) === getBaseUrl(event.state.url)) {
       event.preventDefault();
       loadResults(event.state.url, false);
     }

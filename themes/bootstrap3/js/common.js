@@ -288,6 +288,10 @@ var VuFind = (function VuFind() {
     if (typeof this.recordVersions !== 'undefined') {
       this.recordVersions.init(jqContainer);
     }
+    if (typeof this.cart !== 'undefined') {
+      this.cart.registerToggles(jqContainer);
+    }
+    this.lightbox.bind(jqContainer);
     setupQRCodeLinks(jqContainer);
   };
 

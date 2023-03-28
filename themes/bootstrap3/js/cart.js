@@ -161,7 +161,7 @@ VuFind.register('cart', function Cart() {
     var $form = typeof _form === 'undefined'
       ? $('form[name="bulkActionForm"]')
       : $(_form);
-    $("#updateCart, #bottom_updateCart").unbind('click').click(function cartUpdate() {
+    $("#updateCart, #bottom_updateCart").off('click').on('click', function cartUpdate() {
       var elId = this.id;
       var selected = [];
       var addToSelected = function processCartFormValues() {
@@ -206,15 +206,16 @@ VuFind.register('cart', function Cart() {
     });
   }
 
-  function _registerToggles() {
-    var $toggleBtns = $('.btn-bookbag-toggle');
+  function registerToggles(_container) {
+    var container = typeof _container !== 'undefined' ? $(_container) : $(document);
+    var $toggleBtns = container.find('.btn-bookbag-toggle');
     if ($toggleBtns.length > 0) {
       $toggleBtns.each(function cartIdEach() {
         var $this = $(this);
         var currentId = $this.data('cart-id');
         var currentSource = $this.data('cart-source');
         $this.find('.correct').removeClass('correct hidden');
-        $this.find('.cart-add').click(function cartAddClick(e) {
+        $this.find('.cart-add').on('click', function cartAddClick(e) {
           e.preventDefault();
           if (addItem(currentId, currentSource)) {
             $this.find('.cart-add').addClass('hidden');
@@ -226,7 +227,7 @@ VuFind.register('cart', function Cart() {
             }, 5000);
           }
         });
-        $this.find('.cart-remove').click(function cartRemoveClick(e) {
+        $this.find('.cart-remove').on('click', function cartRemoveClick(e) {
           e.preventDefault();
           removeItem(currentId, currentSource);
           $this.find('.cart-add').removeClass('hidden');
@@ -238,7 +239,7 @@ VuFind.register('cart', function Cart() {
 
   function init() {
     // Record buttons
-    _registerToggles();
+    registerToggles();
     // Search results
     _registerUpdate();
     $("#updateCart, #bottom_updateCart").popover({
@@ -262,7 +263,8 @@ VuFind.register('cart', function Cart() {
     setDomain: setDomain,
     updateCount: updateCount,
     // Init
-    init: init
+    init: init,
+    registerToggles: registerToggles
   };
 });
 
