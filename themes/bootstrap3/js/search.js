@@ -235,7 +235,13 @@ VuFind.register('search', function search() {
     if (typeof pageUrlParts[1] !== 'undefined') {
       queryParams.set('querystring', pageUrlParts[1]);
       if (addToHistory) {
-        window.history.pushState({url: pageUrl}, '', '?' + pageUrlParts[1]);
+        window.history.pushState(
+          {
+            url: getBaseUrl(window.location.href) + '?' + pageUrlParts[1]
+          },
+          '',
+          '?' + pageUrlParts[1]
+        );
       }
     }
     updateResultControls(pageUrl);
