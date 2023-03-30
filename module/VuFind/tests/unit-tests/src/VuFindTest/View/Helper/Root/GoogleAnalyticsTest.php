@@ -45,29 +45,25 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ViewTrait;
 
     /**
-     * Test the helper (old mode)
+     * Test the helper (basic setup)
      *
      * @return void
      */
-    public function testOldSetup(): void
+    public function testBasicSetup(): void
     {
-        $output = $this->renderGA('myfakekey', false);
-        $this->assertTrue(false !== strstr($output, 'ga.js'));
-        $this->assertFalse(strstr($output, 'analytics.js'));
-        $this->assertTrue(false !== strstr($output, 'myfakekey'));
-    }
-
-    /**
-     * Test the helper (Universal Analytics mode)
-     *
-     * @return void
-     */
-    public function testNewSetup(): void
-    {
-        $output = $this->renderGA('myfakekey', true);
-        $this->assertTrue(false !== strstr($output, 'analytics.js'));
-        $this->assertFalse(strstr($output, 'ga.js'));
-        $this->assertTrue(false !== strstr($output, 'myfakekey'));
+        $expectedUrl = "https&#x3A;&#x2F;&#x2F;www.googletagmanager.com&#x2F;gtag&#x2F;js&#x3F;id&#x3D;myfakekey";
+        $expected = <<<JS
+            <script type="text&#x2F;javascript" async="async" src="$expectedUrl"></script>
+            <script type="text&#x2F;javascript">
+                //<!--
+                window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'myfakekey', 'auto');
+                //-->
+            </script>
+            JS;
+        $this->assertEquals($expected, $this->renderGA('myfakekey'));
     }
 
     /**
@@ -82,24 +78,19 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
             'universal' => true,
             'create_options_js' => $createJs,
         ];
-        $output = $this->renderGA('myfakekey', $options);
-        // Confirm that the custom JS appears in the output, and that the
-        // default 'auto' does not:
-        $this->assertTrue(false !== strstr($output, $createJs));
-        $this->assertFalse(strstr($output, "'auto'"));
-    }
-
-    /**
-     * Test default create options.
-     *
-     * @return void
-     */
-    public function testDefaultCreateOptions(): void
-    {
-        $output = $this->renderGA('myfakekey', true);
-        // Confirm that the default JS appears in the output:
-        $expectedJs = "ga('create', 'myfakekey', 'auto');";
-        $this->assertTrue(false !== strstr($output, $expectedJs));
+        $expectedUrl = "https&#x3A;&#x2F;&#x2F;www.googletagmanager.com&#x2F;gtag&#x2F;js&#x3F;id&#x3D;myfakekey";
+        $expected = <<<JS
+            <script type="text&#x2F;javascript" async="async" src="$expectedUrl"></script>
+            <script type="text&#x2F;javascript">
+                //<!--
+                window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'myfakekey', {cookieFlags: 'max-age=7200;secure;samesite=none'});
+                //-->
+            </script>
+            JS;
+        $this->assertEquals($expected, $this->renderGA('myfakekey', $options));
     }
 
     /**
@@ -115,8 +106,8 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
     /**
      * Render the GA code
      *
-     * @param string     $key     GA key (false for disabled)
-     * @param array|bool $options Options for GA helper
+     * @param string $key     GA key (false for disabled)
+     * @param array  $options Options for GA helper
      *
      * @return string
      */
