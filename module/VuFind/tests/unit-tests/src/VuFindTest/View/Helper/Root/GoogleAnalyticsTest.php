@@ -5,7 +5,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010-2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -73,7 +73,7 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
      */
     public function testCustomCreateOptions(): void
     {
-        $createJs = "{cookieFlags: 'max-age=7200;secure;samesite=none'}";
+        $createJs = "{cookie_flags: 'max-age=7200;secure;samesite=none'}";
         $options = [
             'universal' => true,
             'create_options_js' => $createJs,
@@ -86,7 +86,7 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
                 window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'myfakekey', {cookieFlags: 'max-age=7200;secure;samesite=none'});
+            gtag('config', 'myfakekey', {cookie_flags: 'max-age=7200;secure;samesite=none'});
                 //-->
             </script>
             JS;
