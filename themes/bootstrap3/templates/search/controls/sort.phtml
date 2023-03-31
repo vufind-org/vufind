@@ -2,21 +2,21 @@
   $list = $this->params->getSortList();
   if (!empty($list)) {
     echo $this->component(
-      'menu-button',
-      [
-        'showSelectedValue' => true,
-        'toggleLabel' => 'Sort',
-        'menuItems' => array_map(
-          function ($item, $val) {
-            return [
-              'label' => $item['desc'],
-              'url' => $this->results->getUrlQuery()->setSort($val)->getParams(false),
-              'selected' => $item['selected'] ?? false,
-            ];
-          },
-          $list,
-          array_keys($list)
-        ),
-      ]
+        'menu-button',
+        [
+          'showSelectedValue' => true,
+          'toggleLabel' => 'Sort',
+          'menuItems' => array_map(
+              function ($item, $val) {
+                return [
+                  'label' => $item['desc'],
+                  'url' => $this->results->getUrlQuery()->setSort($val)->getParams(false),
+                  'selected' => $item['selected'] ?? false,
+                ];
+              },
+              $list,
+              array_keys($list)
+          ),
+        ]
     );
   }

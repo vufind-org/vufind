@@ -2,21 +2,21 @@
   $limitList = $this->params->getLimitList();
   if (count($limitList) > 1) {
     echo $this->component(
-      'menu-button',
-      [
-        'showSelectedValue' => true,
-        'toggleLabel' => 'Results per page',
-        'menuItems' => array_map(
-          function ($item, $val) {
-            return [
-              'label' => $item['desc'],
-              'url' => $this->results->getUrlQuery()->setLimit($val)->getParams(false),
-              'selected' => $item['selected'] ?? false,
-            ];
-          },
-          $limitList,
-          array_keys($limitList)
-        ),
-      ]
+        'menu-button',
+        [
+          'showSelectedValue' => true,
+          'toggleLabel' => 'Results per page',
+          'menuItems' => array_map(
+              function ($item, $val) {
+                return [
+                  'label' => $item['desc'],
+                  'url' => $this->results->getUrlQuery()->setLimit($val)->getParams(false),
+                  'selected' => $item['selected'] ?? false,
+                ];
+              },
+              $limitList,
+              array_keys($limitList)
+          ),
+        ]
     );
   }
