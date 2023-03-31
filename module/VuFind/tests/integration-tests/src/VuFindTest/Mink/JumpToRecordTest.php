@@ -70,14 +70,10 @@ class JumpToRecordTest extends \VuFindTest\Integration\MinkTestCase
     {
         $page = $this->performSearch('id:testbug2');
 
-        $expected = 'Showing 1 - 1 results of 1 for search \'id:testbug2\'';
-        $this->assertEquals(
+        $expected = 'Showing 1 - 1 results of 1';
+        $this->assertStringStartsWith(
             $expected,
-            substr(
-                $this->findCss($page, '.search-stats')->getText(),
-                0,
-                strlen($expected)
-            )
+            $this->findCss($page, '.search-stats')->getText()
         );
     }
 }
