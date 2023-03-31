@@ -1,12 +1,22 @@
-<?php $list = $this->params->getSortList(); if (!empty($list)): ?>
-  <form class="search-sort" action="<?=$this->currentPath()?>" method="get" name="sort">
-    <?=$this->results->getUrlQuery()->asHiddenFields(['sort' => '/.*/']);?>
-    <label for="sort_options_1"><?=$this->transEsc('Sort')?></label>
-    <select id="sort_options_1" name="sort" class="jumpMenu form-control">
-      <?php foreach ($list as $sortType => $sortData): ?>
-        <option value="<?=$this->escapeHtmlAttr($sortType)?>"<?=$sortData['selected'] ? ' selected="selected"' : ''?>><?=$this->transEsc($sortData['desc'])?></option>
-      <?php endforeach; ?>
-    </select>
-    <noscript><input type="submit" class="btn btn-default" value="<?=$this->transEscAttr("Set")?>" /></noscript>
-  </form>
-<?php endif; ?>
+<?php
+  $list = $this->params->getSortList();
+  if (!empty($list)) {
+    echo $this->component(
+      'menu-button',
+      [
+        'showSelectedValue' => true,
+        'toggleLabel' => 'Sort',
+        'menuItems' => array_map(
+          function ($item, $val) {
+            return [
+              'label' => $item['desc'],
+              'url' => $this->results->getUrlQuery()->setSort($val)->getParams(false),
+              'selected' => $item['selected'] ?? false,
+            ];
+          },
+          $list,
+          array_keys($list)
+        ),
+      ]
+    );
+  }
