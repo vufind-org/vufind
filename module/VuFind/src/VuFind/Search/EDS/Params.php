@@ -1,4 +1,5 @@
 <?php
+
 /**
  * EDS API Params
  *
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\EDS;
 
 use VuFindSearch\ParamBag;
@@ -333,7 +335,7 @@ class Params extends \VuFind\Search\Base\Params
         foreach ($this->getOptions()->getViewOptions() as $key => $value) {
             $list[$key] = [
                 'desc' => $value,
-                'selected' => ($key == $this->getView() . '|' . $this->getEdsView())
+                'selected' => ($key == $this->getView() . '|' . $this->getEdsView()),
             ];
         }
         return $list;

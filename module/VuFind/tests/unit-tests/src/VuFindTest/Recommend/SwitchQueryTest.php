@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SwitchQuery recommendation module Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Recommend;
 
 use VuFind\Recommend\SwitchQuery;
@@ -145,7 +147,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
         $sq = $this->getSwitchQuery($results);
         $this->assertEquals(
             [
-                'switchquery_unwantedquotes' => 'my phrase'
+                'switchquery_unwantedquotes' => 'my phrase',
             ],
             $sq->getSuggestions()
         );
@@ -162,7 +164,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
         $sq = $this->getSwitchQuery($results, ':wildcard:truncatechar');
         $this->assertEquals(
             [
-                'switchquery_truncatechar' => 'abc'
+                'switchquery_truncatechar' => 'abc',
             ],
             $sq->getSuggestions()
         );
@@ -191,7 +193,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
      */
     protected function getSwitchQuery($results = null, $settings = '', $bm = null)
     {
-        $results = $results ?? $this->getMockResults();
+        $results ??= $this->getMockResults();
         $sq = new SwitchQuery(
             $this->getSearchService($bm ?? $this->getMockBackendManager())
         );

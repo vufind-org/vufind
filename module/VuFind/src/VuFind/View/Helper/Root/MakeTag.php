@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Make tag view helper
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 /**
@@ -189,7 +191,7 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
         'var',
         'video',
         'wbr',
-        'xmp'
+        'xmp',
     ];
 
     /**
@@ -214,7 +216,7 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
         'param', // deprecated, but included for back-compatibility
         'source',
         'track',
-        'wbr'
+        'wbr',
     ];
 
     /**
@@ -252,7 +254,7 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
         'spacer',
         'strike',
         'tt',
-        'xmp'
+        'xmp',
     ];
 
     /**

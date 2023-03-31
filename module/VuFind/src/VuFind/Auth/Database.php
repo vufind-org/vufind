@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Database authentication class
  *
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:authentication_handlers Wiki
  */
+
 namespace VuFind\Auth;
 
 use Laminas\Crypt\Password\Bcrypt;
@@ -175,7 +177,7 @@ class Database extends AbstractBase
         // Ensure that all expected parameters are populated to avoid notices
         // in the code below.
         $params = [
-            'username' => '', 'password' => '', 'password2' => ''
+            'username' => '', 'password' => '', 'password2' => '',
         ];
         foreach ($params as $param => $default) {
             $params[$param] = $request->getPost()->get($param, $default);
@@ -398,7 +400,7 @@ class Database extends AbstractBase
         // in the code below.
         $params = [
             'firstname' => '', 'lastname' => '', 'username' => '',
-            'password' => '', 'password2' => '', 'email' => ''
+            'password' => '', 'password2' => '', 'email' => '',
         ];
         foreach ($params as $param => $default) {
             $params[$param] = $request->getPost()->get($param, $default);

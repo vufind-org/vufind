@@ -1,4 +1,5 @@
 <?php
+
 /**
  * GoogleAnalytics view helper Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper\Root;
 
 use VuFind\View\Helper\Root\GoogleAnalytics;
@@ -78,7 +80,7 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
         $createJs = "{cookieFlags: 'max-age=7200;secure;samesite=none'}";
         $options = [
             'universal' => true,
-            'create_options_js' => $createJs
+            'create_options_js' => $createJs,
         ];
         $output = $this->renderGA('myfakekey', $options);
         // Confirm that the custom JS appears in the output, and that the

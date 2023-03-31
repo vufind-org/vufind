@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Orb cover content loader.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Content\Covers;
 
 /**
@@ -36,8 +38,7 @@ namespace VuFind\Content\Covers;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:content_provider_components
  */
-class Orb extends \VuFind\Content\AbstractCover
-implements \VuFindHttp\HttpServiceAwareInterface
+class Orb extends \VuFind\Content\AbstractCover implements \VuFindHttp\HttpServiceAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
 
@@ -119,7 +120,8 @@ implements \VuFindHttp\HttpServiceAwareInterface
             $data = $result->getBody();
             $json = json_decode($data, true);
             foreach ($json['data'] as $title) {
-                if ($title['ean13'] == $ean
+                if (
+                    $title['ean13'] == $ean
                     && isset($title['images']['front'][$imageVersion]['src'])
                 ) {
                     return $title['images']['front'][$imageVersion]['src'];

@@ -211,7 +211,7 @@
           </ul>
         </div>
 
-        <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>':''?>
+        <?=$this->driver->supportsCoinsOpenUrl() ? '<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>' : ''?>
       </div>
     </div>
     <?php if ($thumbnail && $thumbnailAlignment == 'right'): ?>
@@ -222,19 +222,19 @@
     $escId = $this->escapeJs($id);
     $escSource = $this->escapeJs($source);
     $script = <<<JS
-$('#confirm_delete_item_${escId}').click(function(e) {
-    e.preventDefault();
-    $.post('${deleteUrl}', {
-                'delete':'${escId}',
-                'source':'${escSource}',
-                'confirm':true
-            },
-            function() {
-                location.reload()
-            }
-        );
-});
-JS;
+        $('#confirm_delete_item_${escId}').click(function(e) {
+            e.preventDefault();
+            $.post('${deleteUrl}', {
+                        'delete':'${escId}',
+                        'source':'${escSource}',
+                        'confirm':true
+                    },
+                    function() {
+                        location.reload()
+                    }
+                );
+        });
+        JS;
   ?>
   <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');?>
 </li>

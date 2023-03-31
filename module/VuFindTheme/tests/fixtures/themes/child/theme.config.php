@@ -1,4 +1,5 @@
 <?php
+
 return [
     'extends' => 'parent',
     'css' => ['child.css'],
@@ -9,6 +10,6 @@ return [
         ],
         'aliases' => [
             'xyzzy' => 'Xyzzy',
-        ]
+        ],
     ],
 ];

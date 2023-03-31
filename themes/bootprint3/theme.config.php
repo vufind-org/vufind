@@ -194,6 +194,6 @@ return [
             'view-list' => 'Fugue:view_list.png',
             'view-visual' => 'Fugue:view_visual.png',
             'warning' => 'Fugue:error.png',
-        ]
-    ]
+        ],
+    ],
 ];

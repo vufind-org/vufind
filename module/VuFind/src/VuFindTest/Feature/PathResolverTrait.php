@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Feature;
 
 use VuFind\Config\PathResolver;
@@ -55,13 +56,13 @@ trait PathResolverTrait
             ? [
                 [
                     'directory' => LOCAL_OVERRIDE_DIR,
-                    'defaultConfigSubdir' => PathResolver::DEFAULT_CONFIG_SUBDIR
-                ]
+                    'defaultConfigSubdir' => PathResolver::DEFAULT_CONFIG_SUBDIR,
+                ],
             ] : [];
         return new \VuFind\Config\PathResolver(
             [
                 'directory' => $baseDirectory ?? APPLICATION_PATH,
-                'defaultConfigSubdir' => PathResolver::DEFAULT_CONFIG_SUBDIR
+                'defaultConfigSubdir' => PathResolver::DEFAULT_CONFIG_SUBDIR,
             ],
             $localDirs
         );

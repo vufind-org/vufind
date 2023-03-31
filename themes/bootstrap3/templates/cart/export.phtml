@@ -50,22 +50,22 @@
 <?php endif; ?>
 <?php
   $script = <<<JS
-  $('button.btn.hidden').removeClass('hidden');
-  $('#itemhide').removeClass('in');
-  $('.export.btn').click(function exportButtonClick() {
-    if (typeof $('#format option:selected').attr('data-redirect') !== 'undefined') {
-      VuFind.modal('hide');
-    }
-  });
-  $('#format').change(function exportFormatChange(e) {
-    if (this.selectedOptions[0].getAttribute('data-redirect') === null) {
-      $('.export.btn').removeAttr('data-lightbox-ignore');
-      $('form[name=exportForm]').removeAttr('target');
-    } else {
-      $('.export.btn').attr('data-lightbox-ignore', '1');
-      $('form[name=exportForm]').attr('target', this.selectedOptions[0].value + 'Main');
-    }
-  }).trigger('change');
-JS;
+        $('button.btn.hidden').removeClass('hidden');
+        $('#itemhide').removeClass('in');
+        $('.export.btn').click(function exportButtonClick() {
+          if (typeof $('#format option:selected').attr('data-redirect') !== 'undefined') {
+            VuFind.modal('hide');
+          }
+        });
+        $('#format').change(function exportFormatChange(e) {
+          if (this.selectedOptions[0].getAttribute('data-redirect') === null) {
+            $('.export.btn').removeAttr('data-lightbox-ignore');
+            $('form[name=exportForm]').removeAttr('target');
+          } else {
+            $('.export.btn').attr('data-lightbox-ignore', '1');
+            $('form[name=exportForm]').attr('target', this.selectedOptions[0].value + 'Main');
+          }
+        }).trigger('change');
+      JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>

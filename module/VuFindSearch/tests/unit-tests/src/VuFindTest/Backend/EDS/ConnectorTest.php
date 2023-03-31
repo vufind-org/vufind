@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Backend\EDS;
 
 use InvalidArgumentException;
@@ -119,7 +120,7 @@ class ConnectorTest extends TestCase
             [
                 'api_url' => 'http://example.tld/',
                 'auth_url' => 'http://example.tld/',
-                'orgid' => 'VuFindTest'
+                'orgid' => 'VuFindTest',
             ],
             $client ?: $this->createClient()
         );

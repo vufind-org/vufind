@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Record tab abstract base class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
+
 namespace VuFind\RecordTab;
 
 use LmcRbacMvc\Service\AuthorizationServiceAwareInterface;
@@ -39,7 +41,8 @@ use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
-abstract class AbstractBase implements TabInterface,
+abstract class AbstractBase implements
+    TabInterface,
     AuthorizationServiceAwareInterface
 {
     use AuthorizationServiceAwareTrait;

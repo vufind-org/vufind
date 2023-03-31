@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Syndetics Summaries content loader.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Content\Summaries;
 
 /**
@@ -47,12 +49,12 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
         'AVSUMMARY' => [
             'title' => 'Summaries',
             'file' => 'AVSUMMARY.XML',
-            'div' => '<div id="syn_avsummary"></div>'
+            'div' => '<div id="syn_avsummary"></div>',
         ],
         'SUMMARY' => [
             'title' => 'Summaries',
             'file' => 'SUMMARY.XML',
-            'div' => '<div id="syn_summary"></div>'
+            'div' => '<div id="syn_summary"></div>',
         ],
     ];
 

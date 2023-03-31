@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Cookie Consent View Helper Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper\Root;
 
 use Laminas\View\Helper\EscapeHtmlAttr;
@@ -104,7 +106,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
                 'session_name' => 'vufindsession',
                 'consent' => true,
                 'consentCategories' => 'essential,matomo',
-            ]
+            ],
         ];
 
         $cookies = [
@@ -116,7 +118,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
                     'lastConsentTimestamp' => gmdate('Y-m-d\TH:i:s\Z'),
                     'revision' => 0,
                 ]
-            )
+            ),
         ];
         $expectedParams = $this->getExpectedRenderParams(
             'CookieConsent.yaml',
@@ -147,7 +149,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
                 'session_name' => 'vufindsession',
                 'consent' => true,
                 'consentCategories' => 'essential,matomo',
-            ]
+            ],
         ];
 
         $cookies = [
@@ -159,7 +161,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
                     'lastConsentTimestamp' => gmdate('Y-m-d\TH:i:s\Z'),
                     'revision' => -1,
                 ]
-            )
+            ),
         ];
 
         $helper = $this->getCookieConsent($config, $cookies);
@@ -384,7 +386,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
                 'matomo' => [
                     'matomo',
                 ],
-            ]
+            ],
         ];
     }
 

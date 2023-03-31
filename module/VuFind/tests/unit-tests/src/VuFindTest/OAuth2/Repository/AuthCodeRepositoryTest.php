@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OAuth2 AuthCodeRepository tests.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\OAuth2\Repository;
 
 use VuFind\OAuth2\Repository\AuthCodeRepository;
@@ -62,8 +64,8 @@ class AuthCodeRepositoryTest extends AbstractTokenRepositoryTest
                     'type' => 'oauth2_auth_code',
                     'revoked' => false,
                     'data' => json_encode($token),
-                    'user_id' => null
-                ]
+                    'user_id' => null,
+                ],
             ],
             $this->accessTokenTable
         );
@@ -77,8 +79,8 @@ class AuthCodeRepositoryTest extends AbstractTokenRepositoryTest
                     'type' => 'oauth2_auth_code',
                     'revoked' => true,
                     'data' => json_encode($token),
-                    'user_id' => null
-                ]
+                    'user_id' => null,
+                ],
             ],
             $this->accessTokenTable
         );

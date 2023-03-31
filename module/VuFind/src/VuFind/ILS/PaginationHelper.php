@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ILS Pagination Helper
  *
@@ -28,6 +29,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS;
 
 /**
@@ -87,7 +89,7 @@ class PaginationHelper
                 $sortList[$key] = [
                     'desc' => $value,
                     'url' => '?sort=' . urlencode($key),
-                    'selected' => $sort == $key
+                    'selected' => $sort == $key,
                 ];
             }
         }

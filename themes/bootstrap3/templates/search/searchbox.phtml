@@ -30,7 +30,7 @@
     $advSearch = $options->getAdvancedSearchAction();
 
     if (!isset($this->filterList) || !isset($this->checkboxFilters)) {
-        $params = $params ?? $this->searchMemory()->getLastSearchParams($this->searchClassId);
+        $params ??= $this->searchMemory()->getLastSearchParams($this->searchClassId);
         $filterList = $params->getFilterList(true);
         $checkboxFilters = $params->getCheckboxFacets();
     } else {

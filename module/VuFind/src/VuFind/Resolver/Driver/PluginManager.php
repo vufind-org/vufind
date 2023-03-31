@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Resolver driver plugin manager
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:link_resolver_drivers Wiki
  */
+
 namespace VuFind\Resolver\Driver;
 
 use Laminas\ServiceManager\Factory\InvokableFactory;
@@ -55,7 +57,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'redi' => Redi::class,
         'threesixtylink' => Threesixtylink::class,
         'generic' => Generic::class,
-        'other' => 'generic'
+        'other' => 'generic',
     ];
 
     /**

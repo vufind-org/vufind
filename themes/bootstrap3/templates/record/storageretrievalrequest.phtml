@@ -99,17 +99,18 @@
   </div>
 </form>
 
-<?php $changeHandler = <<<'JS'
-$(document).ready(function() {
-  $("input[type='radio']").change(function() {
-    if ($('#storageRetrievalRequestItem').is(':checked')) {
-      $('#storageRetrievalRequestReference input').attr('disabled', 'disabled');
-    } else {
-      $('#storageRetrievalRequestReference input').removeAttr('disabled');
-    }
-  });
-  $('#storageRetrievalRequestItem').trigger('change');
-});
-JS;
+<?php
+  $changeHandler = <<<'JS'
+      $(document).ready(function() {
+        $("input[type='radio']").change(function() {
+          if ($('#storageRetrievalRequestItem').is(':checked')) {
+            $('#storageRetrievalRequestReference input').attr('disabled', 'disabled');
+          } else {
+            $('#storageRetrievalRequestReference input').removeAttr('disabled');
+          }
+        });
+        $('#storageRetrievalRequestItem').trigger('change');
+      });
+      JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $changeHandler, 'SET');

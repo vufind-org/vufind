@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink test class to test advanced search.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
@@ -73,7 +75,8 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $links = $page->findAll('css', '.adv_search_links a');
         $isAdv = false;
         foreach ($links as $link) {
-            if ($this->checkVisibility($link)
+            if (
+                $this->checkVisibility($link)
                 && $link->getHtml() == 'Edit this Advanced Search'
             ) {
                 $isAdv = true;
@@ -94,7 +97,8 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
     {
         $links = $page->findAll('css', '.adv_search_links a');
         foreach ($links as $link) {
-            if ($this->checkVisibility($link)
+            if (
+                $this->checkVisibility($link)
                 && $link->getHtml() == 'Edit this Advanced Search'
             ) {
                 $link->click();
@@ -184,11 +188,11 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $multiSel = $this->findCss($page, '#limit_callnumber-first');
         $multiSel->selectOption('~callnumber-first:"A - General Works"', true);
         $multiSel->selectOption('~callnumber-first:"D - World History"', true);
-        $this->assertEquals(2, count($multiSel->getValue()));
+        $this->assertCount(2, $multiSel->getValue());
 
         $this->findCss($page, '.adv-submit .clear-btn')->press();
         $this->assertEquals('', $this->findCss($page, '#search_lookfor0_0')->getValue());
-        $this->assertEquals(0, count($multiSel->getValue()));
+        $this->assertCount(0, $multiSel->getValue());
     }
 
     /**
@@ -294,10 +298,10 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
                 'facets' => [
                     'Advanced_Settings' => [
                         'limitOrderOverride' => [
-                            'format' => 'Book::eBook'
-                        ]
-                    ]
-                ]
+                            'format' => 'Book::eBook',
+                        ],
+                    ],
+                ],
             ]
         );
         $session = $this->getMinkSession();

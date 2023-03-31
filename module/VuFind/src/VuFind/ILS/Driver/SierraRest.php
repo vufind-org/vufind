@@ -1,4 +1,5 @@
 <?php
+
 /**
  * III Sierra REST API driver
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use Laminas\Log\LoggerAwareInterface;
@@ -42,12 +44,12 @@ use VuFindHttp\HttpServiceAwareInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class SierraRest extends AbstractBase implements TranslatorAwareInterface,
-    HttpServiceAwareInterface, LoggerAwareInterface,
+class SierraRest extends AbstractBase implements
+    TranslatorAwareInterface,
+    HttpServiceAwareInterface,
+    LoggerAwareInterface,
     \VuFind\I18n\HasSorterInterface
 {
-    public const HOLDINGS_LINE_NUMBER = 40;
-
     use \VuFind\Cache\CacheTrait;
     use \VuFind\Log\LoggerAwareTrait {
         logError as error;
@@ -56,6 +58,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\I18n\HasSorterTrait;
     use \VuFind\Service\Feature\RetryTrait;
+
+    public const HOLDINGS_LINE_NUMBER = 40;
 
     /**
      * Driver configuration
@@ -503,7 +507,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             'cat_password' => $password,
             'email' => !empty($patron['emails']) ? $patron['emails'][0] : '',
             'major' => null,
-            'college' => null
+            'college' => null,
         ];
     }
 
@@ -548,7 +552,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         $result = $this->makeRequest(
             [$this->apiBase, 'patrons', $patron['id']],
             [
-                'fields' => 'names,emails,phones,addresses,birthDate,expirationDate'
+                'fields' => 'names,emails,phones,addresses,birthDate,expirationDate',
             ],
             'GET',
             $patron
@@ -592,7 +596,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             'zip' => $zip,
             'city' => $city,
             'birthdate' => $result['birthDate'] ?? '',
-            'expiration_date' => $expirationDate
+            'expiration_date' => $expirationDate,
         ];
     }
 
@@ -620,7 +624,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 'limit' => $pageSize,
                 'offset' => $offset,
                 'fields' => 'item,dueDate,numberOfRenewals,outDate,recallDate'
-                    . ',callNumber,barcode'
+                    . ',callNumber,barcode',
             ],
             'GET',
             $patron
@@ -628,7 +632,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         if (empty($result['entries'])) {
             return [
                 'count' => $result['total'],
-                'records' => []
+                'records' => [],
             ];
         }
 
@@ -646,7 +650,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 ),
                 'dueStatus' => $this->getDueStatus($entry),
                 'renew' => $entry['numberOfRenewals'],
-                'renewable' => true // assumption, who knows?
+                'renewable' => true, // assumption, who knows?
             ];
             if (!empty($entry['recallDate'])) {
                 $date = $this->dateConverter->convertToDisplayDate(
@@ -673,7 +677,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
 
         return [
             'count' => $result['total'],
-            'records' => $transactions
+            'records' => $transactions,
         ];
     }
 
@@ -720,7 +724,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 $finalResult['details'][$itemId] = [
                     'item_id' => $itemId,
                     'success' => false,
-                    'sysMessage' => $msg
+                    'sysMessage' => $msg,
                 ];
             } else {
                 $newDate = $this->dateConverter->convertToDisplayDate(
@@ -730,7 +734,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 $finalResult['details'][$itemId] = [
                     'item_id' => $itemId,
                     'success' => true,
-                    'new_date' => $newDate
+                    'new_date' => $newDate,
                 ];
             }
         }
@@ -763,7 +767,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 'offset' => $offset,
                 'sortField' => 'outDate',
                 'sortOrder' => $sortOrder,
-                'fields' => 'item,outDate'
+                'fields' => 'item,outDate',
             ],
             'GET',
             $patron
@@ -773,7 +777,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 'success' => false,
                 'status' => 146 === $result['code']
                     ? 'ils_transaction_history_disabled'
-                    : 'ils_connection_failed'
+                    : 'ils_connection_failed',
             ];
         }
 
@@ -786,7 +790,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 'checkoutDate' => $this->dateConverter->convertToDisplayDate(
                     'Y-m-d',
                     $entry['outDate']
-                )
+                ),
             ];
             $item = $items[$transaction['item_id']] ?? null;
             $transaction['volume'] = $item ? $this->extractVolume($item) : '';
@@ -806,7 +810,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
 
         return [
             'count' => $result['total'] ?? 0,
-            'transactions' => $transactions
+            'transactions' => $transactions,
         ];
     }
 
@@ -844,7 +848,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             [$this->apiBase, 'patrons', $patron['id'], 'holds'],
             [
                 'limit' => 10000,
-                'fields' => $fields
+                'fields' => $fields,
             ],
             'GET',
             $patron
@@ -975,13 +979,13 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                     'item_id' => $holdId,
                     'success' => false,
                     'status' => 'hold_cancel_fail',
-                    'sysMessage' => $msg
+                    'sysMessage' => $msg,
                 ];
             } else {
                 $response[$holdId] = [
                     'item_id' => $holdId,
                     'success' => true,
-                    'status' => 'hold_cancel_success'
+                    'status' => 'hold_cancel_success',
                 ];
                 ++$count;
             }
@@ -1013,7 +1017,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             $hold = $this->makeRequest(
                 [$this->apiBase, 'patrons', 'holds', $requestId],
                 [
-                    'fields' => $reqFields
+                    'fields' => $reqFields,
                 ],
                 'GET',
                 $patron
@@ -1044,7 +1048,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             if (!$updateFields) {
                 $results[$requestId] = [
                     'success' => false,
-                    'status' => 'hold_error_update_blocked_status'
+                    'status' => 'hold_error_update_blocked_status',
                 ];
             } else {
                 $result = $this->makeRequest(
@@ -1059,16 +1063,16 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                         'success' => false,
                         'status' => $this->formatErrorMessage(
                             $result['description'] ?? $result['name']
-                        )
+                        ),
                     ];
                 } elseif ($fieldsSkipped) {
                     $results[$requestId] = [
                         'success' => false,
-                        'status' => 'hold_error_update_blocked_status'
+                        'status' => 'hold_error_update_blocked_status',
                     ];
                 } else {
                     $results[$requestId] = [
-                        'success' => true
+                        'success' => true,
                     ];
                 }
             }
@@ -1108,7 +1112,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                     'locationID' => $id,
                     'locationDisplay' => $this->translateLocation(
                         ['code' => $id, 'name' => $location]
-                    )
+                    ),
                 ];
             }
             return $locations;
@@ -1120,7 +1124,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 'limit' => 10000,
                 'offset' => 0,
                 'fields' => 'code,name',
-                'language' => $this->getTranslatorLocale()
+                'language' => $this->getTranslatorLocale(),
             ],
             'GET',
             $patron
@@ -1143,7 +1147,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 'locationID' => $entry['code'],
                 'locationDisplay' => $this->translateLocation(
                     ['code' => $entry['code'], 'name' => $entry['name']]
-                )
+                ),
             ];
         }
 
@@ -1192,7 +1196,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         $level = $data['level'] ?? 'copy';
         if ('title' === $level) {
             $bib = $this->getBibRecord($id, 'bibLevel', $patron);
-            if (!isset($bib['bibLevel']['code'])
+            if (
+                !isset($bib['bibLevel']['code'])
                 || !in_array($bib['bibLevel']['code'], $this->titleHoldBibLevels)
             ) {
                 return false;
@@ -1276,7 +1281,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             [$this->apiBase, 'patrons', $patron['id'], 'fines'],
             [
                 'fields' => 'item,assessedDate,description,chargeType,itemCharge'
-                    . ',processingFee,billingFee,paidAmount'
+                    . ',processingFee,billingFee,paidAmount',
             ],
             'GET',
             $patron
@@ -1292,7 +1297,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             $balance = $amount - $entry['paidAmount'];
             $description = '';
             // Display charge type if it's not manual (code=1)
-            if (!empty($entry['chargeType'])
+            if (
+                !empty($entry['chargeType'])
                 && $entry['chargeType']['code'] != '1'
             ) {
                 $description = $entry['chargeType']['display'];
@@ -1337,7 +1343,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 ),
                 'checkout' => '',
                 'id' => $this->formatBibId($bibId),
-                'title' => $title
+                'title' => $title,
             ];
         }
         return $fines;
@@ -1367,14 +1373,14 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         );
         if (null === $patron) {
             return [
-                'success' => false, 'status' => 'authentication_error_invalid'
+                'success' => false, 'status' => 'authentication_error_invalid',
             ];
         }
 
         $newPIN = preg_replace('/[^\d]/', '', trim($details['newPassword']));
         if (strlen($newPIN) != 4) {
             return [
-                'success' => false, 'status' => 'password_error_invalid'
+                'success' => false, 'status' => 'password_error_invalid',
             ];
         }
 
@@ -1392,7 +1398,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 'success' => false,
                 'status' => $this->formatErrorMessage(
                     $result['description'] ?? $result['name']
-                )
+                ),
             ];
         }
         return ['success' => true, 'status' => 'change_password_ok'];
@@ -1413,7 +1419,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     {
         if ('getMyTransactions' === $function) {
             return [
-                'max_results' => 100
+                'max_results' => 100,
             ];
         }
         if ('getMyTransactionHistory' === $function) {
@@ -1424,9 +1430,9 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 'max_results' => 100,
                 'sort' => [
                     'checkout desc' => 'sort_checkout_date_desc',
-                    'checkout asc' => 'sort_checkout_date_asc'
+                    'checkout asc' => 'sort_checkout_date_asc',
                 ],
-                'default_sort' => 'checkout desc'
+                'default_sort' => 'checkout desc',
             ];
         }
         return $this->config[$function] ?? false;
@@ -1513,7 +1519,10 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         $returnStatus = false
     ) {
         // Status logging callback:
-        $statusCallback = function ($attempt, $exception) use (
+        $statusCallback = function (
+            $attempt,
+            $exception
+        ) use (
             $hierarchy,
             $params,
             $method
@@ -1580,7 +1589,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         $returnStatus = false
     ) {
         // Clear current access token if it's not specific to the given patron
-        if ($patron && $this->isPatronSpecificAccess()
+        if (
+            $patron && $this->isPatronSpecificAccess()
             && $this->sessionCache->accessTokenPatron != $patron['cat_username']
         ) {
             $this->sessionCache->accessToken = null;
@@ -1679,7 +1689,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         return $returnStatus
             ? [
                 'statusCode' => $response->getStatusCode(),
-                'response' => $decodedResult
+                'response' => $decodedResult,
             ] : $decodedResult;
     }
 
@@ -1793,7 +1803,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             'client_id' => $this->config['Catalog']['client_key'],
             'redirect_uri' => $redirectUri,
             'state' => 'auth',
-            'response_type' => 'code'
+            'response_type' => 'code',
         ];
         $apiUrl = $this->config['Catalog']['host'] . '/authorize'
             . '?' . http_build_query($params);
@@ -2018,14 +2028,15 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                     'bibIds' => $this->extractBibId($id),
                     //'deleted' => 'false',
                     //'suppressed' => 'false',
-                    'fields' => 'fixedFields,varFields'
+                    'fields' => 'fixedFields,varFields',
                 ],
                 'GET'
             );
             foreach ($holdingsResult['entries'] ?? [] as $entry) {
                 $location = '';
                 foreach ($entry['fixedFields'] as $code => $field) {
-                    if ($code === static::HOLDINGS_LINE_NUMBER
+                    if (
+                        $code === static::HOLDINGS_LINE_NUMBER
                         || $field['label'] === 'LOCATION'
                     ) {
                         $location = $field['value'];
@@ -2054,7 +2065,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                     'suppressed' => 'false',
                     'fields' => $fields,
                     'limit' => $limit,
-                    'offset' => $offset
+                    'offset' => $offset,
                 ],
                 'GET'
             );
@@ -2099,13 +2110,14 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                     'duedate' => $duedate,
                     'number' => $volume,
                     'barcode' => $item['barcode'],
-                    'sort' => $sort--
+                    'sort' => $sort--,
                 ];
                 if ($notes) {
                     $entry['item_notes'] = $notes;
                 }
 
-                if ($this->isHoldable($item) && $this->itemHoldAllowed($item, $bib)
+                if (
+                    $this->isHoldable($item) && $this->itemHoldAllowed($item, $bib)
                 ) {
                     $entry['is_holdable'] = true;
                     $entry['level'] = 'copy';
@@ -2149,7 +2161,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 'availability' => false,
                 'duedate' => '',
                 'barcode' => '',
-                'sort' => $sort--
+                'sort' => $sort--,
             ];
             $entry += $this->getHoldingsData($holdings);
 
@@ -2171,7 +2183,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 'availability' => false,
                 'duedate' => '',
                 'barcode' => '',
-                'sort' => $sort--
+                'sort' => $sort--,
             ];
         }
 
@@ -2195,7 +2207,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                     'HoldingStatus',
                     1 === $order['copies']
                         ? 'copy_ordered_on_date'
-                        : 'copies_ordered_on_date'
+                        : 'copies_ordered_on_date',
                 ],
                 [
                     '%%copies%%' => $order['copies'],
@@ -2285,7 +2297,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 $subfieldCodes = substr($fieldSpec, 3);
                 $fields = $row['varFields'] ?? [];
                 foreach ($fields as $field) {
-                    if (($field['marcTag'] ?? '') !== $fieldCode
+                    if (
+                        ($field['marcTag'] ?? '') !== $fieldCode
                         && ($field['fieldTag'] ?? '') !== $fieldCode
                     ) {
                         continue;
@@ -2293,12 +2306,13 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                     $subfields = $field['subfields'] ?? [
                         [
                             'tag' => '',
-                            'content' => $field['content'] ?? ''
-                        ]
+                            'content' => $field['content'] ?? '',
+                        ],
                     ];
                     $line = [];
                     foreach ($subfields as $subfield) {
-                        if ($subfieldCodes
+                        if (
+                            $subfieldCodes
                             && false === strpos(
                                 $subfieldCodes,
                                 (string)$subfield['tag']
@@ -2336,7 +2350,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 ['v4', 'branches'],
                 [
                     'limit' => 10000,
-                    'fields' => 'locations'
+                    'fields' => 'locations',
                 ],
                 'GET'
             );
@@ -2511,7 +2525,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         if (!$this->itemHoldsEnabled) {
             return false;
         }
-        if (!empty($this->itemHoldExcludedItemCodes)
+        if (
+            !empty($this->itemHoldExcludedItemCodes)
             && isset($item['fixedFields']['60'])
         ) {
             $code = $item['fixedFields']['60']['value'];
@@ -2547,7 +2562,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 'GET',
                 $patron
             );
-            if (!empty($result['blockInfo'])
+            if (
+                !empty($result['blockInfo'])
                 && trim($result['blockInfo']['code']) != '-'
             ) {
                 $blockReason = [trim($result['blockInfo']['code'])];
@@ -2614,7 +2630,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         $msg = $this->formatErrorMessage($msg);
         return [
             'success' => false,
-            'sysMessage' => $msg
+            'sysMessage' => $msg,
         ];
     }
 
@@ -2755,7 +2771,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     ): array {
         $credentials = [
             'cat_username' => $username,
-            'cat_password' => $password
+            'cat_password' => $password,
         ];
         $result = $this->makeRequest(
             [$this->apiBase, 'info', 'token'],
@@ -2801,7 +2817,8 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             ?? null;
         // patrons/auth endpoint is only supported on API version >= 6, without
         // custom validation configured:
-        if ($this->apiVersion >= 6 && null !== $password
+        if (
+            $this->apiVersion >= 6 && null !== $password
             && empty($validationField)
         ) {
             return $this->authenticatePatronV6($username, $password, $authMethod);
@@ -2872,7 +2889,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             $request = [
                 'barcode' => $username,
                 'pin' => $password,
-                'caseSensitivity' => false
+                'caseSensitivity' => false,
             ];
             try {
                 $result = $this->makeRequest(
@@ -2896,7 +2913,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             [
                 'varFieldTag' => $varField,
                 'varFieldContent' => $username,
-                'fields' => 'names,emails'
+                'fields' => 'names,emails',
             ]
         );
         if (!$result || !empty($result['code'])) {
@@ -2968,7 +2985,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             [$this->apiBase, 'items'],
             [
                 'id' => implode(',', $itemIds),
-                'fields' => 'bibIds,varFields'
+                'fields' => 'bibIds,varFields',
             ],
             'GET',
             $patron
@@ -2986,7 +3003,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             [$this->apiBase, 'bibs'],
             [
                 'id' => implode(',', array_keys($bibIdsToItems)),
-                'fields' => 'title,publishYear'
+                'fields' => 'title,publishYear',
             ],
             'GET',
             $patron

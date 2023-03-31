@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for record drivers that uses the class name to look up config files.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\RecordDriver;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;

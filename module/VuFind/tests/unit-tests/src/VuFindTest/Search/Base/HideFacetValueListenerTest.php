@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTest\Search\Base;
 
 use Laminas\EventManager\Event;
@@ -75,7 +76,7 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
                 'Book' => 124,
                 'Unknown' => 16,
                 'Fake' => 3,
-            ]
+            ],
         ];
     }
 
@@ -90,17 +91,21 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
         $result = $this->getMockBuilder(RecordCollection::class)
             ->disableOriginalConstructor()->getMock();
         $result->expects($this->any())->method('getFacets')
-            ->will($this->returnCallback(
-                function () use (&$facets) {
-                    return $facets;
-                }
-            ));
+            ->will(
+                $this->returnCallback(
+                    function () use (&$facets) {
+                        return $facets;
+                    }
+                )
+            );
         $result->expects($this->any())->method('setFacets')
-            ->will($this->returnCallback(
-                function ($new) use (&$facets) {
-                    $facets = $new;
-                }
-            ));
+            ->will(
+                $this->returnCallback(
+                    function ($new) use (&$facets) {
+                        $facets = $new;
+                    }
+                )
+            );
         $result->expects($this->any())->method('getQueryFacets')
             ->will($this->returnValue([]));
         $result->expects($this->any())->method('getPivotFacets')

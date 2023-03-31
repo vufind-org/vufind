@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Email authentication module.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:authentication_handlers Wiki
  */
+
 namespace VuFind\Auth;
 
 use VuFind\Exception\Auth as AuthException;
@@ -84,7 +86,7 @@ class Email extends AbstractBase
             $user = $this->getUserTable()->getByEmail($email);
             if ($user) {
                 $loginData = [
-                    'vufind_id' => $user['id']
+                    'vufind_id' => $user['id'],
                 ];
                 $this->emailAuthenticator->sendAuthenticationLink(
                     $user['email'],

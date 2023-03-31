@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Formatter;
 
 use VuFind\I18n\TranslatableString;
@@ -53,20 +54,20 @@ class RecordFormatterTest extends \PHPUnit\Framework\TestCase
             'cleanDOI' => [
                 'vufind.method' => 'getCleanDOI',
                 'description' => 'First valid DOI',
-                'type' => 'string'
+                'type' => 'string',
             ],
             'dedupIds' => [
                 'vufind.method' => 'Formatter::getDedupIds',
                 'description' => 'IDs of all records deduplicated',
                 'type' => 'array',
-                'items' => ['type' => 'string']
+                'items' => ['type' => 'string'],
             ],
             'fullRecord' => ['vufind.method' => 'Formatter::getFullRecord'],
             'rawData' => ['vufind.method' => 'Formatter::getRawData'],
             'buildings' => ['vufind.method' => 'getBuildings'],
             'recordPage' => ['vufind.method' => 'Formatter::getRecordPage'],
             'subjectsExtended' => [
-                'vufind.method' => 'Formatter::getExtendedSubjectHeadings'
+                'vufind.method' => 'Formatter::getExtendedSubjectHeadings',
             ],
             'authors' => ['vufind.method' => 'getDeduplicatedAuthors'],
         ];
@@ -152,7 +153,7 @@ class RecordFormatterTest extends \PHPUnit\Framework\TestCase
         $expectedRaw = $driver->getRawData();
         unset($expectedRaw['spelling']);
         $expectedRaw['Buildings'] = [
-            'foo', ['value' => 'bar', 'translated' => 'xyzzy']
+            'foo', ['value' => 'bar', 'translated' => 'xyzzy'],
         ];
         $expected = [
             [
@@ -195,12 +196,12 @@ class RecordFormatterTest extends \PHPUnit\Framework\TestCase
         $expected = [
             'cleanDOI' => [
                 'description' => 'First valid DOI',
-                'type' => 'string'
+                'type' => 'string',
             ],
             'dedupIds' => [
                 'description' => 'IDs of all records deduplicated',
                 'type' => 'array',
-                'items' => ['type' => 'string']
+                'items' => ['type' => 'string'],
             ],
             'fullRecord' => [],
             'rawData' => [],

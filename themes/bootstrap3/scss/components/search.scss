@@ -122,6 +122,10 @@ header .container.navbar { margin-bottom: 0; }
 
   .checkbox-select-item { float: left; }
 
+  .dropdown-menu.qrcode {
+    min-width: inherit;
+  }
+
   @media (max-width: 767px) {
     a {
       max-width: 100%;
@@ -529,6 +533,9 @@ table.search-history-table {
   table-layout: auto;
 
   tbody > tr > td { vertical-align: middle; }
+  th:first-child {
+    width: 20%;
+  }
 }
 
 /* Break early to prevent table overflow */

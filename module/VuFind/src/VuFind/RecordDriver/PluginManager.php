@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Record driver plugin manager
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver;
 
 use Laminas\ServiceManager\Factory\InvokableFactory;
@@ -129,7 +131,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         // Add an initializer for setting up hierarchies
         $initializer = function ($sm, $instance) {
             $hasHierarchyType = is_callable([$instance, 'getHierarchyType']);
-            if ($hasHierarchyType
+            if (
+                $hasHierarchyType
                 && is_callable([$instance, 'setHierarchyDriverManager'])
             ) {
                 if ($sm && $sm->has(\VuFind\Hierarchy\Driver\PluginManager::class)) {

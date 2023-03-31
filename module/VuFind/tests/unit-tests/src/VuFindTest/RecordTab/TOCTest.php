@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TOC Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\RecordTab;
 
 use VuFind\RecordTab\TOC;
@@ -65,7 +67,7 @@ class TOCTest extends \PHPUnit\Framework\TestCase
     /**
      * Test if the tab is active.
      *
-     * @param string $toc TOC from record driver
+     * @param string $toc            TOC from record driver
      * @param bool   $expectedResult Expected return value from isActive
      *
      * @return void

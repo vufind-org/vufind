@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DefaultRecord Record Driver Test Class
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\RecordDriver;
 
 use Laminas\Config\Config;
@@ -311,8 +313,8 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
             "rft.isbn" => "8820737493",
             "rft_id" => [
                 "info:doi/xxx",
-                "pmid:yyy"
-            ]
+                "pmid:yyy",
+            ],
         ];
 
         $fixture = $this->getJsonFixture('misc/testbug2.json');
@@ -479,6 +481,11 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
         }
     }
 
+    /**
+     * Data provider for testGetCleanISBNs
+     *
+     * @return array
+     */
     public function getCleanISBNsProvider(): array
     {
         return [
@@ -517,6 +524,10 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test getCleanISBNs for a record.
+     *
+     * @param array  $result        Expected result
+     * @param string $mode          Retrieval mode
+     * @param bool   $filterInvalid Should we filter invalid ISBNs?
      *
      * @dataProvider getCleanISBNsProvider
      *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OAuth2 ClientRepository tests.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\OAuth2\Repository;
 
 use VuFind\OAuth2\Entity\ClientEntity;
@@ -60,7 +62,7 @@ class ClientRepositoryTest extends \PHPUnit\Framework\TestCase
                     'redirectUri' => 'http://localhost/secure',
                     'isConfidential' => true,
                 ],
-            ]
+            ],
         ];
         $repo = new ClientRepository($config);
         $this->assertFalse(
@@ -135,7 +137,7 @@ class ClientRepositoryTest extends \PHPUnit\Framework\TestCase
                 'openid_test' => [
                     'name' => 'OpenID Tester',
                 ],
-            ]
+            ],
         ];
         $repo = new ClientRepository($config);
         $this->expectExceptionMessage("OAuth2 client config missing 'redirectUri'");
@@ -154,9 +156,9 @@ class ClientRepositoryTest extends \PHPUnit\Framework\TestCase
                 'openid_test' => [
                     'name' => 'OpenID Tester',
                     'redirectUri' => 'http://localhost/callback',
-                    'secret' => 'this should not be specified'
+                    'secret' => 'this should not be specified',
                 ],
-            ]
+            ],
         ];
         $repo = new ClientRepository($config);
         $this->expectExceptionMessage(

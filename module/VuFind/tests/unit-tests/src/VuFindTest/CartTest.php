@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Cart Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest;
 
 use VuFind\Cookie\CookieManager;
@@ -59,7 +61,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
             ->setConstructorArgs(
                 [
                 $this->createMock(\VuFindSearch\Service::class),
-                $this->createMock(\VuFind\RecordDriver\PluginManager::class)
+                $this->createMock(\VuFind\RecordDriver\PluginManager::class),
                 ]
             )->getMock();
     }
@@ -67,10 +69,11 @@ class CartTest extends \PHPUnit\Framework\TestCase
     /**
      * Build a mock cookie manager.
      *
-     * @param array  $cookies Current cookie values
-     * @param string $path    Cookie base path (default = /)
-     * @param string $domain  Cookie domain
-     * @param bool   $secure  Are cookies secure only? (default = false)
+     * @param array  $cookies  Current cookie values
+     * @param string $path     Cookie base path (default = /)
+     * @param string $domain   Cookie domain
+     * @param bool   $secure   Are cookies secure only? (default = false)
+     * @param bool   $httpOnly Are cookes HTTP only? (default = false)
      *
      * @return CookieManager
      */
@@ -262,7 +265,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
     public function testVF1Cookie()
     {
         $cart = $this->getCart(100, true, ['vufind_cart' => "a\tb\tc"]);
-        $this->assertEquals(3, count($cart->getItems()));
+        $this->assertCount(3, $cart->getItems());
         $this->assertTrue($cart->contains('Solr|a'));
         $this->assertTrue($cart->contains('Solr|b'));
         $this->assertTrue($cart->contains('Solr|c'));
@@ -277,10 +280,10 @@ class CartTest extends \PHPUnit\Framework\TestCase
     {
         $cookies = [
             'vufind_cart' => "Aa\tBb\tCc",
-            'vufind_cart_src' => "Solr\tSummon\tWorldCat"
+            'vufind_cart_src' => "Solr\tSummon\tWorldCat",
         ];
         $cart = $this->getCart(100, true, $cookies);
-        $this->assertEquals(3, count($cart->getItems()));
+        $this->assertCount(3, $cart->getItems());
         $this->assertTrue($cart->contains('Solr|a'));
         $this->assertTrue($cart->contains('Summon|b'));
         $this->assertTrue($cart->contains('WorldCat|c'));

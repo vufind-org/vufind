@@ -128,7 +128,7 @@ class ObalkyKnih extends \VuFind\Content\AbstractCover
             return [
                 'url' => $url,
                 'backlink_url' => $data->backlink_url ?? '',
-                'backlink_text' => 'ObálkyKnih.cz'
+                'backlink_text' => 'ObálkyKnih.cz',
             ];
         }
         return [];

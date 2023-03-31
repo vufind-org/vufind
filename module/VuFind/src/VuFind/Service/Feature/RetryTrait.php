@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Trait that provides support for calling a method with configurable retries
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development
  */
+
 namespace VuFind\Service\Feature;
 
 /**
@@ -50,7 +52,7 @@ trait RetryTrait
         'subsequentBackoff' => 200,   // backoff (delay) before subsequent retries
                                       // (milliseconds)
         'exponentialBackoff' => true, // whether to use exponential backoff
-        'maximumBackoff' => 1000      // maximum backoff (milliseconds)
+        'maximumBackoff' => 1000,      // maximum backoff (milliseconds)
     ];
 
     /**

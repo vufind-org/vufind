@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Search;
 
 use VuFind\Search\SearchTabsHelper;
@@ -46,17 +47,17 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
             'Solr' => 'Local Index',
             'Solr:video' => 'Local Videos',
             'Primo' => 'Primo Central',
-            'Primo:dissertation' => 'Dissertations in Primo Central'
+            'Primo:dissertation' => 'Dissertations in Primo Central',
         ],
         'default_filtered' => [
             'Solr:main' => 'Main Library',
             'Solr:mainvideo' => 'Main Library Videos',
             'Solr:branch' => 'Branch Library',
             'Primo' => 'Primo Central',
-            'Primo:dissertation' => 'Dissertations in Primo Central'
+            'Primo:dissertation' => 'Dissertations in Primo Central',
         ],
         'no_tabs' => [
-        ]
+        ],
     ];
 
     protected $filterConfig = [
@@ -64,7 +65,7 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
         'Solr:main' => ['building:main'],
         'Solr:mainvideo' => ['building:main', 'format:video'],
         'Solr:branch' => ['building:branch'],
-        'Primo:dissertation' => ['rtype:Dissertations']
+        'Primo:dissertation' => ['rtype:Dissertations'],
     ];
 
     /**
@@ -204,8 +205,8 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
     /**
      * Create a SearchTabsHelper
      *
-     * @param string $config   Which config set to use
-     * @param array  $filters  Active filters for a simulated request
+     * @param string $config  Which config set to use
+     * @param array  $filters Active filters for a simulated request
      *
      * @return \VuFind\Search\SearchTabsHelper
      */
@@ -248,11 +249,14 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
                 $this->returnCallback(
                     function ($backend) use ($mockSolr, $mockPrimo) {
                         switch ($backend) {
-                            case 'Solr': return $mockSolr;
-                            case 'Primo': return $mockPrimo;
-                            default: throw new \Exception(
-                                "Unsupported backend $backend"
-                            );
+                            case 'Solr':
+                                return $mockSolr;
+                            case 'Primo':
+                                return $mockPrimo;
+                            default:
+                                throw new \Exception(
+                                    "Unsupported backend $backend"
+                                );
                         }
                     }
                 )

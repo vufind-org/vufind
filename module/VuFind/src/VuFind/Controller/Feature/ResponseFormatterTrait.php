@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Action Feature Trait - HTTP response formatting support methods
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Controller\Feature;
 
 use Laminas\Http\Response;

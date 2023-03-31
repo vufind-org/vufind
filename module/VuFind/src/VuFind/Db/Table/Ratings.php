@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Table Definition for ratings
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
@@ -78,7 +80,7 @@ class Ratings extends Gateway
         if (empty($resource)) {
             return [
                 'count' => 0,
-                'rating' => 0
+                'rating' => 0,
             ];
         }
 
@@ -112,7 +114,7 @@ class Ratings extends Gateway
         $result = $this->select($callback)->current();
         return [
             'count' => $result->count,
-            'rating' => $result->rating ?? 0
+            'rating' => $result->rating ?? 0,
         ];
     }
 
@@ -175,7 +177,8 @@ class Ratings extends Gateway
             ++$groupCount;
             if ($groups) {
                 foreach ($groups as $key => $range) {
-                    if ($rating->rating >= $range[0] && $rating->rating <= $range[1]
+                    if (
+                        $rating->rating >= $range[0] && $rating->rating <= $range[1]
                     ) {
                         $result['groups'][$key] = ($result['groups'][$key] ?? 0)
                             + $rating->count;
@@ -245,7 +248,7 @@ class Ratings extends Gateway
                     ['resource_id'],
                     [Expression::TYPE_IDENTIFIER]
                 ),
-                'total' => new Expression('COUNT(*)')
+                'total' => new Expression('COUNT(*)'),
             ]
         );
         $statement = $this->sql->prepareStatementForSqlObject($select);

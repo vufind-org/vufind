@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mailer Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Mailer;
 
 use Laminas\Mail\Address;
@@ -61,7 +63,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
                 'name' => 'foo',
                 'username' => 'vufinduser',
                 'password' => 'vufindpass',
-            ]
+            ],
         ];
         $cm = $this->getMockConfigPluginManager(compact('config'));
         $sm = new MockContainer($this);

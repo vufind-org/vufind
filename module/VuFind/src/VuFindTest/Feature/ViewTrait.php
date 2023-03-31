@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Feature;
 
 use VuFind\View\Helper\Root\SearchMemory;
@@ -59,7 +60,7 @@ trait ViewTrait
         $resolver->setPaths(
             [
                 $this->getPathForTheme('root'),
-                $this->getPathForTheme($theme)
+                $this->getPathForTheme($theme),
             ]
         );
         $renderer = new \Laminas\View\Renderer\PhpRenderer();

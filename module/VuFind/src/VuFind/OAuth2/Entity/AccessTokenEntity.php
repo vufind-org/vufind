@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OAuth2 access token entity implementation.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\OAuth2\Entity;
 
 use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
@@ -43,7 +45,9 @@ use League\OAuth2\Server\Entities\Traits\TokenEntityTrait;
  */
 class AccessTokenEntity implements AccessTokenEntityInterface, \JsonSerializable
 {
-    use AccessTokenTrait, TokenEntityTrait, EntityTrait;
+    use AccessTokenTrait;
+    use TokenEntityTrait;
+    use EntityTrait;
 
     /**
      * Serialize to a JSON string

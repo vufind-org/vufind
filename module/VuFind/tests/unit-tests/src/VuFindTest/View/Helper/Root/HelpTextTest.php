@@ -1,4 +1,5 @@
 <?php
+
 /**
  * HelpText View Helper Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper\Root;
 
 use VuFind\View\Helper\Root\Content;
@@ -60,7 +62,7 @@ class HelpTextTest extends \PHPUnit\Framework\TestCase
     ): Content {
         $helper = $this->getMockBuilder(Content::class)
             ->disableOriginalConstructor()->getMock();
-        $callback = function ($unused1, $unused2, $unused3, & $pageDetails) use ($mockPageDetails, $mockReturnValue) {
+        $callback = function ($unused1, $unused2, $unused3, &$pageDetails) use ($mockPageDetails, $mockReturnValue) {
             $pageDetails = $mockPageDetails;
             return $mockReturnValue;
         };

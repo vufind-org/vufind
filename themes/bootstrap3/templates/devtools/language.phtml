@@ -92,60 +92,60 @@ Current filter mode: <?=$includeOptional ? "Unfiltered" : "Mandatory strings onl
 <?php
   $json = json_encode($details);
   $script = <<<JS
-function createDiffManager() {
-  var details = {$json};
-  function makeTextarea(opArray, lang) {
-    var arr = [];
-    for (var i = 0; i < opArray.length; i++) {
-      arr.push(opArray[i] + ' = "' + (details[lang].object[opArray[i]] || details.en.object[opArray[i]]) + '"');
-    }
-    return '<textarea readonly class="translation-output form-control" rows="' + Math.min(arr.length + 1, 25) + '">' + arr.join('\\n') + '</textarea>';
-  }
+      function createDiffManager() {
+        var details = {$json};
+        function makeTextarea(opArray, lang) {
+          var arr = [];
+          for (var i = 0; i < opArray.length; i++) {
+            arr.push(opArray[i] + ' = "' + (details[lang].object[opArray[i]] || details.en.object[opArray[i]]) + '"');
+          }
+          return '<textarea readonly class="translation-output form-control" rows="' + Math.min(arr.length + 1, 25) + '">' + arr.join('\\n') + '</textarea>';
+        }
 
-  function bindTextareaEvent() {
-    var copyBtn = document.getElementById("template-copy-btn").content.cloneNode(true);
-    $(".modal-body h2").after(copyBtn);
-    $('.translation-output').click(function(e) {
-      this.select();
-    });
-  }
+        function bindTextareaEvent() {
+          var copyBtn = document.getElementById("template-copy-btn").content.cloneNode(true);
+          $(".modal-body h2").after(copyBtn);
+          $('.translation-output').click(function(e) {
+            this.select();
+          });
+        }
 
-  function showExtra(lang, title) {
-    VuFind.lightbox.render('<h2>' + title + '</h2>' + makeTextarea(details[lang].notInL1, lang));
-    bindTextareaEvent();
-    return false;
-  }
-  function showMissing(lang, title) {
-    VuFind.lightbox.render('<h2>' + title + '</h2>' + makeTextarea(details[lang].notInL2, lang));
-    bindTextareaEvent();
-    return false;
-  }
+        function showExtra(lang, title) {
+          VuFind.lightbox.render('<h2>' + title + '</h2>' + makeTextarea(details[lang].notInL1, lang));
+          bindTextareaEvent();
+          return false;
+        }
+        function showMissing(lang, title) {
+          VuFind.lightbox.render('<h2>' + title + '</h2>' + makeTextarea(details[lang].notInL2, lang));
+          bindTextareaEvent();
+          return false;
+        }
 
-  return {
-    showExtra: showExtra,
-    showMissing: showMissing
-  };
-}
-var diffManager = createDiffManager();
+        return {
+          showExtra: showExtra,
+          showMissing: showMissing
+        };
+      }
+      var diffManager = createDiffManager();
 
-$('#lang-summary .btn-missing').click(function(e) {
-  var lang = $(this).data('langcode');
-  var title = $(this).attr('title');
-  return diffManager.showMissing(lang, title);
-});
-$('#lang-summary .btn-extra').click(function(e) {
-  var lang = $(this).data('langcode');
-  var title = $(this).attr('title');
-  return diffManager.showExtra(lang, title);
-});
+      $('#lang-summary .btn-missing').click(function(e) {
+        var lang = $(this).data('langcode');
+        var title = $(this).attr('title');
+        return diffManager.showMissing(lang, title);
+      });
+      $('#lang-summary .btn-extra').click(function(e) {
+        var lang = $(this).data('langcode');
+        var title = $(this).attr('title');
+        return diffManager.showExtra(lang, title);
+      });
 
-$('.show-all').html('<button class="btn btn-default btn-light" type="button">' + $('.show-all:first').data('text') + '</button>');
-$('.show-all button').click(function() {
-  $("#lang-summary tr").each(function() {
-    $(this).removeClass("hide");
-  });
-  $(this).remove();
-});
-JS;
+      $('.show-all').html('<button class="btn btn-default btn-light" type="button">' + $('.show-all:first').data('text') + '</button>');
+      $('.show-all button').click(function() {
+        $("#lang-summary tr").each(function() {
+          $(this).removeClass("hide");
+        });
+        $(this).remove();
+      });
+      JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>

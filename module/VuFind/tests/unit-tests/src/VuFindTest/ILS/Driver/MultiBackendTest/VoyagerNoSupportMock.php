@@ -46,6 +46,13 @@ class VoyagerNoSupportMock extends \VuFind\ILS\Driver\Voyager
 {
     use ILSMockTrait;
 
+    /**
+     * Ensure that ALL methods are marked as unsupported
+     *
+     * @param array ...$args Arguments
+     *
+     * @return bool
+     */
     public function supportsMethod(...$args)
     {
         return false;

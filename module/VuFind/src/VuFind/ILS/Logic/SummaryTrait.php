@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Trait for getting a summary for checkouts, fines, holds, ILL requests or storage
  * retrieval requests.
@@ -28,6 +29,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\ILS\Logic;
 
 use VuFind\Service\CurrencyFormatter;

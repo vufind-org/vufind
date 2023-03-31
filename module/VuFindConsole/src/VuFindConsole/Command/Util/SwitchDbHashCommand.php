@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Console command: switch database encryption algorithm.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Util;
 
 use Laminas\Config\Config;
@@ -155,7 +157,8 @@ class SwitchDbHashCommand extends Command
         $newhash = $input->getArgument('newmethod');
 
         // Pull existing encryption settings from the configuration:
-        if (!isset($this->config->Authentication->ils_encryption_key)
+        if (
+            !isset($this->config->Authentication->ils_encryption_key)
             || !($this->config->Authentication->encrypt_ils_password ?? false)
         ) {
             $oldhash = 'none';

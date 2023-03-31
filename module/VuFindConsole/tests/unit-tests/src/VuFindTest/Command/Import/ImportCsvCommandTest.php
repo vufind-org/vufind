@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Import/ImportCsv command test.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Command\Import;
 
 use Symfony\Component\Console\Tester\CommandTester;
@@ -82,7 +84,7 @@ class ImportCsvCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester->execute(
             [
                 'CSV_file' => 'foo.csv',
-                'ini_file' => 'bar.ini'
+                'ini_file' => 'bar.ini',
             ]
         );
         $this->assertEquals(

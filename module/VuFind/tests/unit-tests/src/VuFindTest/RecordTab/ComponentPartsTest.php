@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ComponentParts Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\RecordTab;
 
 use VuFind\RecordTab\ComponentParts;
@@ -47,7 +49,7 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetDescription(): void
     {
-        $searchObj=$this->getService();
+        $searchObj = $this->getService();
         $obj = new ComponentParts($searchObj);
         $expected = 'child_records';
         $this->assertSame($expected, $obj->getDescription());
@@ -60,7 +62,7 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetMaxResults(): void
     {
-        $searchObj=$this->getService();
+        $searchObj = $this->getService();
         $obj = new ComponentParts($searchObj);
         $this->assertSame(100, $obj->getMaxResults());
     }
@@ -78,7 +80,7 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
     /**
      * Test if the tab is active.
      *
-     * @param int  $childCount   Child count for record driver to report
+     * @param int  $childCount     Child count for record driver to report
      * @param bool $expectedResult Expected return value from isActive
      *
      * @return void
@@ -132,7 +134,7 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
                 && $command->getArguments()[2] === 101
                 && $command->getArguments()[3]->getArrayCopy() === [
                     "hl" => ["false"],
-                    "sort" => ["hierarchy_sequence ASC,title ASC"]
+                    "sort" => ["hierarchy_sequence ASC,title ASC"],
                 ];
         };
         $service->expects($this->once())->method('invoke')
@@ -144,7 +146,7 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * get a Service object
+     * Get a Service object
      *
      * @return Service
      */

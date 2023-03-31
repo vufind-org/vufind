@@ -1,4 +1,5 @@
 <?php
+
 /**
  * World Cat Utilities
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Connection;
 
 use Laminas\Config\Config;
@@ -141,7 +143,8 @@ class WorldCatUtils implements \Laminas\Log\LoggerAwareInterface
         $current = str_replace('.', '', strtolower($current));
 
         // We don't want to use empty, numeric or known bad strings!
-        if (empty($current) || is_numeric($current)
+        if (
+            empty($current) || is_numeric($current)
             || in_array($current, $badChunks)
         ) {
             return false;
@@ -281,7 +284,8 @@ class WorldCatUtils implements \Laminas\Log\LoggerAwareInterface
         foreach ($data->records->record as $current) {
             // Build current name string:
             $current = $current->recordData->Identity->nameInfo ?? null;
-            if (isset($current['type']) && $current['type'] == 'personal'
+            if (
+                isset($current['type']) && $current['type'] == 'personal'
                 && !empty($current->rawName->suba)
             ) {
                 $currentName = $current->rawName->suba .

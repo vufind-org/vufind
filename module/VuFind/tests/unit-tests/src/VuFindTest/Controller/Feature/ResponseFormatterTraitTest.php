@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class ResponseFormatterTraitTest
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://knihovny.cz Main Page
  */
+
 namespace VuFindTest\Controller\Feature;
 
 use VuFind\Controller\Feature\ResponseFormatterTrait;

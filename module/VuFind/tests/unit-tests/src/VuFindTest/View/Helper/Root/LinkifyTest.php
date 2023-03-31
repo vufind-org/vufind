@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Linkify Test Class
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper\Root;
 
 use PHPUnit\Framework\MockObject\MockObject;

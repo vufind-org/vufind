@@ -17,7 +17,7 @@
           'electronic_holdings' => [],
           'total' => 0,
           'page' => 0,
-          'itemLimit' => 0
+          'itemLimit' => 0,
         ];
         $offlineMode = 'ils-offline';
     }
@@ -93,7 +93,7 @@
   <?php $callNos = $this->tab->getUniqueCallNumbers($holding['items'], true); if (!empty($callNos)): ?>
   <tr>
     <th><?=$this->transEsc("Call Number")?>: </th>
-    <td width="50%">
+    <td>
       <?php foreach ($callNos as $callNo): ?>
         <?php if ($this->callnumberHandler): ?>
           <a href="<?=$this->url('alphabrowse-home') ?>?source=<?=$this->escapeHtmlAttr($this->callnumberHandler) ?>&amp;from=<?=$this->escapeHtmlAttr($callNo['callnumber']) ?>"><?=$this->escapeHtml($callNo['display'])?></a>

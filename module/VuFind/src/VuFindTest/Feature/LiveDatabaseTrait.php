@@ -28,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Feature;
 
 /**
@@ -138,11 +139,11 @@ trait LiveDatabaseTrait
         $checks = [
             [
                 'table' => \VuFind\Db\Table\User::class,
-                'name' => 'users'
+                'name' => 'users',
             ],
             [
                 'table' => \VuFind\Db\Table\Tags::class,
-                'name' => 'tags'
+                'name' => 'tags',
             ],
         ];
         foreach ($checks as $check) {

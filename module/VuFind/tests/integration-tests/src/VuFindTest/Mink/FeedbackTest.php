@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink Feedback module test class.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
@@ -124,7 +126,7 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
         // By default, no OpenURL on record page:
         $page = $this->setupPage(
             [
-                'Captcha' => ['types' => ['demo'], 'forms' => 'feedback']
+                'Captcha' => ['types' => ['demo'], 'forms' => 'feedback'],
             ]
         );
         $this->fillInAndSubmitFeedbackForm($page);
@@ -155,8 +157,8 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
                 'Captcha' => [
                     'types' => ['interval'],
                     'forms' => 'feedback',
-                    'action_interval' => 60
-                ]
+                    'action_interval' => 60,
+                ],
             ]
         );
         // Test that submission is blocked:
@@ -172,8 +174,8 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
                 'Captcha' => [
                     'types' => ['interval'],
                     'forms' => 'feedback',
-                    'action_interval' => 1
-                ]
+                    'action_interval' => 1,
+                ],
             ]
         );
         $this->fillInAndSubmitFeedbackForm($page);

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * HtmlSafeJsonEncode View Helper Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper\Root;
 
 use Laminas\View\Helper\EscapeHtmlAttr;
@@ -46,7 +48,7 @@ class HtmlSafeJsonEncodeTest extends \PHPUnit\Framework\TestCase
     /**
      * Get helper to test
      *
-     * @param array $plugins  Array of extra plugins for renderer
+     * @param array $plugins Array of extra plugins for renderer
      *
      * @return HtmlSafeJsonEncode
      */
@@ -84,7 +86,7 @@ class HtmlSafeJsonEncodeTest extends \PHPUnit\Framework\TestCase
                 => ['<\'">', '"\u003C\u0027\u0022\u003E"'],
             'array of special characters' => [
                 ['<', '"', "'", '>', '&'],
-                '["\u003C","\u0022","\u0027","\u003E","\u0026"]'
+                '["\u003C","\u0022","\u0027","\u003E","\u0026"]',
             ],
         ];
     }

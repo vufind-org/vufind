@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OAuth2 Controller
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Controller;
 
 use Laminas\Http\Response;
@@ -209,7 +211,8 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
         // Validate the authorization request:
         $laminasRequest = $this->getRequest();
         $clientId = $laminasRequest->getQuery('client_id');
-        if (empty($clientId)
+        if (
+            empty($clientId)
             || !($clientConfig = $this->oauth2Config['Clients'][$clientId] ?? [])
         ) {
             throw new BadRequestException("Invalid OAuth2 client $clientId");

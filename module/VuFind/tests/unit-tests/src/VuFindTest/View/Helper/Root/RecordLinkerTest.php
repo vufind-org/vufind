@@ -1,4 +1,5 @@
 <?php
+
 /**
  * RecordLinker view helper Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper\Root;
 
 use Laminas\Config\Config;
@@ -92,6 +94,32 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test record URL creation with a non-tab action
+     *
+     * @return void
+     */
+    public function testGetActionUrl(): void
+    {
+        $recordLinker = $this->getRecordLinker();
+        $this->assertEquals(
+            '/Record/foo/Description?sid=-123',
+            $recordLinker->getActionUrl('Solr|foo', 'Description')
+        );
+        $this->assertEquals(
+            '/Record/foo/Description?sid=-123&param1=someValue',
+            $recordLinker->getActionUrl('Solr|foo', 'Description', ['param1' => 'someValue'])
+        );
+        $this->assertEquals(
+            '/Record/foo/Description?sid=-123#anchor1',
+            $recordLinker->getActionUrl('Solr|foo', 'Description', [], 'anchor1')
+        );
+        $this->assertEquals(
+            '/Record/foo/Description?sid=-123&param1=someValue#anchor1',
+            $recordLinker->getActionUrl('Solr|foo', 'Description', ['param1' => 'someValue'], 'anchor1')
+        );
+    }
+
+    /**
      * Get a RecordLinker object ready for testing.
      *
      * @return RecordLinker
@@ -138,8 +166,21 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
                 'action'     => 'Home',
             ]
         );
-
         $router->addRoute('record', $recordRoute);
+
+        $actionRoute = new \Laminas\Router\Http\Segment(
+            '/Record/[:id]/Description',
+            [
+                'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
+            ],
+            [
+                'controller' => 'Record',
+                'action'     => 'Description',
+            ]
+        );
+        $router->addRoute('record-description', $actionRoute);
+
         $url->setRouter($router);
 
         return $url;

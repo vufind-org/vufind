@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CachingDownloader Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Http;
 
 use Laminas\Http\Response;
@@ -43,6 +45,11 @@ use VuFindHttp\HttpService;
  */
 class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * Test a download
+     *
+     * @return void
+     */
     public function testDownload()
     {
         $container = new \VuFindTest\Container\MockContainer($this);
@@ -95,6 +102,11 @@ class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($body, $testBody);
     }
 
+    /**
+     * Test exception handling
+     *
+     * @return void
+     */
     public function testException()
     {
         $this->expectException(HttpDownloadException::class);

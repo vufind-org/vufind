@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ChoiceAuth test class.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Auth;
 
 use Laminas\Config\Config;
@@ -242,9 +244,9 @@ class ChoiceAuthTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a ChoiceAuth object.
      *
-     * @param PluginManager           $pm         Plugin manager
+     * @param PluginManager              $pm         Plugin manager
      * @param \Laminas\Session\Container $session    Session container
-     * @param string                  $strategies Strategies setting
+     * @param string                     $strategies Strategies setting
      *
      * @return ChoiceAuth
      */
