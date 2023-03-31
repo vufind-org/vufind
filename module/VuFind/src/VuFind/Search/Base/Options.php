@@ -345,7 +345,8 @@ abstract class Options implements TranslatorAwareInterface
 
         $searchSettings = $configLoader->get($this->searchIni);
         $this->loadResultsWithJs = (bool)($searchSettings->General->load_results_with_js ?? true);
-        $this->topPaginatorStyle = $searchSettings->General->top_paginator ?? 'simple';
+        $this->topPaginatorStyle = $searchSettings->General->top_paginator
+            ?? ($this->loadResultsWithJs ? 'simple' : false);
     }
 
     /**
