@@ -560,10 +560,10 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
             'primary' => [
                 $authorName => [
                     'role' => ['aut', 'trl'],
-                ]
+                ],
             ],
             'secondary' => [],
-            'corporate' => []
+            'corporate' => [],
         ];
 
         $driver = $this->getDriver($overrides);
