@@ -72,7 +72,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         // Confirm that we have 9 results and no filters to begin with:
         $stats = $this->findCss($page, '.search-stats');
         $this->assertStringStartsWith(
-            "Showing 1 - 9 results of 9 for search 'building:weird_ids.mrc'",
+            "Showing 1 - 9 results of 9",
             $stats->getText()
         );
         $items = $page->findAll('css', $this->activeFilterSelector);
@@ -87,7 +87,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $stats = $this->findCss($page, '.search-stats');
         $this->assertStringStartsWith(
-            "Showing 1 - 7 results of 7 for search 'building:weird_ids.mrc'",
+            "Showing 1 - 7 results of 7",
             $stats->getText()
         );
         $items = $page->findAll('css', $this->activeFilterSelector);
@@ -365,7 +365,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch('building:"hierarchy.mrc"');
         $stats = $this->findCss($page, '.search-stats');
         $this->assertEquals(
-            'Showing 1 - 10 results of 10 for search \'building:"hierarchy.mrc"\'',
+            'Showing 1 - 10 results of 10',
             $extractCount($stats->getText())
         );
         $this->clickCss($page, '#j1_1.jstree-closed .jstree-icon');
@@ -377,7 +377,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals('Remove Filter level1a/level2a', $filter->getText());
         $stats = $this->findCss($page, '.search-stats');
         $this->assertEquals(
-            'Showing 1 - 7 results of 7 for search \'building:"hierarchy.mrc"\'',
+            'Showing 1 - 7 results of 7',
             $extractCount($stats->getText())
         );
     }

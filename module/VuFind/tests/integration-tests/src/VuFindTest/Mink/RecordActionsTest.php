@@ -293,7 +293,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals('No Results!', $this->findCss($page, 'h2')->getText());
         // Now try a tag defined earlier:
         $page = $this->performSearch('five', 'tag');
-        $expected = 'Showing 1 - 1 results of 1 for search \'five\'';
+        $expected = 'Showing 1 - 1 results of 1';
         $this->assertEquals(
             $expected,
             substr(
