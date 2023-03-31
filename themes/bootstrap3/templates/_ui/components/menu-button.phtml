@@ -1,5 +1,6 @@
 <?php
   $wrapperTag = $this->wrapperTag ?? 'div';
+  $showSelectedValue = $this->showSelectedValue ?? false;
   $wrapperClass = 'dropdown'; // Bootstrap class
 
   if ($this->wrapperClass ?? false) {
@@ -21,23 +22,31 @@
     $toggleAttrs['href'] = $this->href;
     $toggleAttrs['type'] = null;
   }
+  $selected = '';
 ?>
-
 <?php ob_start(); ?>
   <ul class="dropdown-menu">
     <?php foreach ($this->menuItems as $current): ?>
-      <li class="dropdown__item <?php if ($current['selected'] ?? false): ?> active<?php endif ?>">
+      <?php
+        if ($current['selected'] ?? false) {
+          $selected = $this->transEsc($current['label']);
+          $extraClasses = ' active';
+        } else {
+          $extraClasses = '';
+        }
+      ?>
+      <li class="dropdown__item<?=$extraClasses?>">
         <a class="dropdown__link" href="<?=$this->escapeHtmlAttr($current['url']) ?>" rel="nofollow">
           <?=$this->transEsc($current['label']) ?>
         </a>
       </li>
     <?php endforeach; ?>
   </ul>
-
+  <?php $selectedValue = $showSelectedValue ? ': ' . $selected . ' ' : ''; ?>
   <?=$this
       ->makeTag(
           $toggleTag,
-          $this->transEsc($this->toggleLabel) . $this->icon('dropdown-caret'),
+          $this->transEsc($this->toggleLabel) . $selectedValue . $this->icon('dropdown-caret'),
           $toggleAttrs,
           ['escapeContent' => false]
       )
