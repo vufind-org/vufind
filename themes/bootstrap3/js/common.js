@@ -1,4 +1,4 @@
-/*global grecaptcha, isPhoneNumberValid */
+/*global grecaptcha, isPhoneNumberValid, loadCovers */
 /*exported VuFind, htmlEncode, escapeHtmlAttr, deparam, getUrlRoot, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, bulkFormHandler, setupMultiILSLoginFields, unwrapJQuery */
 
 // IE 9< console polyfill
@@ -296,6 +296,9 @@ var VuFind = (function VuFind() {
     }
     this.lightbox.bind(jqContainer);
     setupQRCodeLinks(jqContainer);
+    if (typeof loadCovers === 'function') {
+      loadCovers();
+    }
   };
 
   var init = function init() {
