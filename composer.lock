@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "797dd997ae753cadd597c2a01b4173d2",
+    "content-hash": "4071542cd6d4e92ec63bcb65d3f513ea",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -8471,16 +8471,16 @@
         },
         {
             "name": "vufind-org/vufindharvest",
-            "version": "v5.1.0",
+            "version": "v5.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vufind-org/vufindharvest.git",
-                "reference": "29648d261b683fc3ef12c0715749ccc58a148571"
+                "reference": "aaae1a76198e8403d0436c84465508d5e87ed161"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vufind-org/vufindharvest/zipball/29648d261b683fc3ef12c0715749ccc58a148571",
-                "reference": "29648d261b683fc3ef12c0715749ccc58a148571",
+                "url": "https://api.github.com/repos/vufind-org/vufindharvest/zipball/aaae1a76198e8403d0436c84465508d5e87ed161",
+                "reference": "aaae1a76198e8403d0436c84465508d5e87ed161",
                 "shasum": ""
             },
             "require": {
@@ -8520,9 +8520,9 @@
             "homepage": "https://vufind.org/",
             "support": {
                 "issues": "https://vufind.org/jira",
-                "source": "https://github.com/vufind-org/vufindharvest/tree/v5.1.0"
+                "source": "https://github.com/vufind-org/vufindharvest/tree/v5.2.0"
             },
-            "time": "2023-02-28T13:38:12+00:00"
+            "time": "2023-03-31T17:56:46+00:00"
         },
         {
             "name": "vufind-org/vufindhttp",
@@ -12594,5 +12594,5 @@
     "platform-overrides": {
         "php": "7.4.1"
     },
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.2.0"
 }
