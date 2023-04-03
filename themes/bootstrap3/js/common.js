@@ -512,7 +512,10 @@ function setupAutocomplete() {
       dataType: 'json',
       success: function autocompleteJSON(json) {
         const highlighted = json.data.suggestions.map(
-          (item) => item.replace(query, `<b>${query}</b>`)
+          (item) => ({
+            text: item.replace(query, `<b>${query}</b>`),
+            value: item,
+          })
         );
         cache[searcher.searcher][query] = highlighted;
         callback(highlighted);
