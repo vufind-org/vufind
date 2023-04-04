@@ -37,14 +37,25 @@
     <tr>
       <th><?=$this->transEsc('history_schedule')?>: </th>
       <td>
-        <form class="form-inline jumpMenuForm" action="<?= $this->url('myresearch-savesearch')?>" method="get" name="schedule">
-          <select name="schedule" class="jumpMenu form-control" aria-haspopup="true" title="<?=$this->transEscAttr("history_schedule")?>">
-            <?php foreach ($scheduleOptions as $scheduleValue => $scheduleLabel): ?>
-              <option value="<?=$this->escapeHtmlAttr($scheduleValue)?>"<?=($this->search->notification_frequency == $scheduleValue) ? (' selected') : ('')?>><?=$this->transEsc($scheduleLabel)?></option>
-            <?php endforeach; ?>
-          </select>
-          <input type="hidden" name="searchid" value="<?=$this->escapeHtmlAttr($this->search->id) ?>"/>
-        </form>
+        <?=
+          $this->component(
+              'menu-button',
+              [
+                'showSelectedValue' => true,
+                'menuItems' => array_map(
+                    function ($label, $val) {
+                      return [
+                        'label' => $label,
+                        'url' => $this->url('myresearch-savesearch', [], ['query' => ['schedule' => $val, 'searchid' => $this->search->id]]),
+                        'selected' => $this->search->notification_frequency == $val,
+                      ];
+                    },
+                    $scheduleOptions,
+                    array_keys($scheduleOptions)
+                ),
+              ]
+          );
+        ?>
       </td>
     </tr>
   </table>
