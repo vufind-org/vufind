@@ -227,8 +227,8 @@
   <?php endif; ?>
 </div>
 
-<aside class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
+<nav class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
   <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'checkedout'])?>
-</aside>
+</nav>
 
 <?=$this->render('myresearch/notify-account-status.phtml', ['method' => 'checkedOut', 'accountStatus' => $this->accountStatus]); ?>

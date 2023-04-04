@@ -54,14 +54,9 @@
 </div>
 
 <?php if ($saveSupported): ?>
-  <aside class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
-    <?=
-      $this->context($this)->renderInContext(
-          "myresearch/menu.phtml",
-          ['active' => 'history']
-      );
-    ?>
-  </aside>
+  <nav class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
+    <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'history']); ?>
+  </nav>
 <?php endif; ?>
 
 <?php
