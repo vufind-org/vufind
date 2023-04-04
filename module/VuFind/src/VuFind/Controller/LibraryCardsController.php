@@ -218,7 +218,7 @@ class LibraryCardsController extends AbstractBase
                 ->addMessage('authentication_error_technical', 'error');
         }
 
-        $this->setFollowupUrlToReferer();
+        $this->setFollowupUrlToReferer(false);
         if ($url = $this->getFollowupUrl()) {
             $this->clearFollowupUrl();
             return $this->redirect()->toUrl($this->adjustCardRedirectUrl($url));

@@ -669,9 +669,11 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
      * separate logic is used for storing followup information when VuFind
      * forces the user to log in from another context.
      *
+     * @param bool $allowCurrentUrl Whether the current URL is a valid for followup
+     *
      * @return void
      */
-    protected function setFollowupUrlToReferer()
+    protected function setFollowupUrlToReferer(bool $allowCurrentUrl = true)
     {
         // lbreferer is the stored current url of the lightbox
         // which overrides the url from the server request when present
@@ -708,6 +710,11 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
         $myUserLogin = $this->getServerUrl('myresearch-userlogin');
         $mulNorm = $this->normalizeUrlForComparison($myUserLogin);
         if (0 === strpos($refererNorm, $mulNorm)) {
+            return;
+        }
+
+        // Check that the referer is not current URL if not allowed:
+        if (!$allowCurrentUrl && $this->getRequest()->getUriString() === $referer) {
             return;
         }
 
