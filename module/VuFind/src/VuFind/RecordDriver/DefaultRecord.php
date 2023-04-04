@@ -443,7 +443,7 @@ class DefaultRecord extends AbstractBase
                 $keys = array_keys($array1);
                 foreach ($keys as $author) {
                     if (isset($array2[$author])) {
-                        $array1[$author] = array_merge(
+                        $array1[$author] = array_merge_recursive(
                             $array1[$author],
                             $array2[$author]
                         );

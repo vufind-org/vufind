@@ -1,0 +1,16 @@
+<?php if ($QRCode = $this->record($this->driver)->getQRCode($this->context)): ?>
+  <div class="dropdown hidden-xs">
+    <a href="#" class="dropdown-toggle qrcodeLink result-link icon-link" data-toggle="dropdown" aria-expanded="false" rel="nofollow">
+      <?=$this->icon('qrcode', 'icon-link__icon') ?>
+      <span class="icon-link__label"><?=$this->transEsc('QR Code')?></span>
+      <?=$this->icon('dropdown-caret', 'icon-link__icon') ?>
+    </a>
+    <ul class="dropdown-menu qrcode">
+      <li>
+        <script type="text/template" class="qrCodeImgTag">
+          <img alt="<?=$this->transEscAttr('QR Code')?>" src="<?=$this->escapeHtmlAttr($QRCode);?>">
+        </script>
+      </li>
+    </ul>
+  </div>
+<?php endif; ?>
