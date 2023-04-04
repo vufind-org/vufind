@@ -132,7 +132,7 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
         // Now repeat the same search in Author
         $this->findCss($page, '#searchForm_type')
             ->setValue('Author');
-            $this->findCss($page, '#searchForm_lookfor')
+        $this->findCss($page, '#searchForm_lookfor')
             ->setValue('jsto');
         // Make sure we get the right author match, and not a cached All Fields value!
         $acItem = $this->getAndAssertFirstAutocompleteValue($page, 'JSTOR (Organization)');
