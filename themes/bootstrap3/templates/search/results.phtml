@@ -115,9 +115,9 @@
 <?php /* End Main Listing */ ?>
 
 <?php /* Refine Search Options */ ?>
-<nav class="<?=$this->layoutClass('sidebar')?>" id="search-sidebar" aria-label="<?=$this->transEsc($this->slot('side-facet-caption')->get('Refine Results')) ?>">
+<aside class="<?=$this->layoutClass('sidebar')?>" id="search-sidebar" aria-label="<?=$this->transEsc($this->slot('side-facet-caption')->get('Refine Results')) ?>">
   <?php foreach ($this->results->getRecommendations('side') as $index => $current): ?>
     <?=$this->recommend($current, 'side', $index)?>
   <?php endforeach; ?>
-</nav>
+</aside>
 <?php /* End Refine Search Options */ ?>
