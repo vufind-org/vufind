@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OAuth2 RefreshTokenRepository tests.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\OAuth2\Repository;
 
 use VuFind\OAuth2\Entity\ScopeEntity;
@@ -73,8 +75,8 @@ class RefreshTokenRepositoryTest extends AbstractTokenRepositoryTest
                     'type' => 'oauth2_refresh_token',
                     'revoked' => false,
                     'data' => json_encode($token),
-                    'user_id' => '2'
-                ]
+                    'user_id' => '2',
+                ],
             ],
             $this->accessTokenTable
         );
@@ -88,8 +90,8 @@ class RefreshTokenRepositoryTest extends AbstractTokenRepositoryTest
                     'type' => 'oauth2_refresh_token',
                     'revoked' => true,
                     'data' => json_encode($token),
-                    'user_id' => '2'
-                ]
+                    'user_id' => '2',
+                ],
             ],
             $this->accessTokenTable
         );

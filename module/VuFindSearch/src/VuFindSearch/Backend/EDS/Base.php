@@ -1,4 +1,5 @@
 <?php
+
 /**
  * EBSCO Search API abstract base class
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://edswiki.ebscohost.com/EDS_API_Documentation
  */
+
 namespace VuFindSearch\Backend\EDS;
 
 /**
@@ -393,7 +395,7 @@ abstract class Base
         $headers = [
             'Accept' => $this->accept,
             'Content-Type' => $this->contentType,
-            'Accept-Encoding' => 'gzip,deflate'
+            'Accept-Encoding' => 'gzip,deflate',
         ];
         if (null != $headerParams) {
             foreach ($headerParams as $key => $value) {

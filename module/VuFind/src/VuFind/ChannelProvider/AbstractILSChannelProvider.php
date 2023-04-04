@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Abstract base class for channel providers relying on the ILS.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\ChannelProvider;
 
 use VuFind\I18n\Translator\TranslatorAwareInterface;
@@ -41,8 +43,7 @@ use VuFindSearch\Command\RetrieveBatchCommand;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-abstract class AbstractILSChannelProvider extends AbstractChannelProvider
-implements TranslatorAwareInterface
+abstract class AbstractILSChannelProvider extends AbstractChannelProvider implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 

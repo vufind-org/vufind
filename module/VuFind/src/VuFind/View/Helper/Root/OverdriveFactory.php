@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Overdrive helper factory.
  *
@@ -27,6 +28,7 @@
  *           License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;

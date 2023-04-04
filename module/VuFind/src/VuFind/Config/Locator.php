@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Configuration Locator - A static compatibility wrapper around PathResolver
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Config;
 
 /**
@@ -104,13 +106,13 @@ class Locator
             ? [
                 [
                     'directory' => LOCAL_OVERRIDE_DIR,
-                    'defaultConfigSubdir' => PathResolver::DEFAULT_CONFIG_SUBDIR
-                ]
+                    'defaultConfigSubdir' => PathResolver::DEFAULT_CONFIG_SUBDIR,
+                ],
             ] : [];
         return new \VuFind\Config\PathResolver(
             [
                 'directory' => APPLICATION_PATH,
-                'defaultConfigSubdir' => PathResolver::DEFAULT_CONFIG_SUBDIR
+                'defaultConfigSubdir' => PathResolver::DEFAULT_CONFIG_SUBDIR,
             ],
             $localDirs
         );

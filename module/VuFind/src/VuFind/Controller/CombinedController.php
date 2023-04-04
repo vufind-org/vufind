@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Combined Search Controller
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
@@ -105,7 +107,8 @@ class CombinedController extends AbstractSearch
         $settings['view'] = $this->forwardTo($controller, $action);
 
         // Should we suppress content due to emptiness?
-        if (($settings['hide_if_empty'] ?? false)
+        if (
+            ($settings['hide_if_empty'] ?? false)
             && $settings['view']->results->getResultTotal() == 0
         ) {
             $html = '';
@@ -120,7 +123,7 @@ class CombinedController extends AbstractSearch
                 'showCartControls' => $currentOptions->supportsCart()
                     && $cart->isActive(),
                 'showBulkOptions' => $currentOptions->supportsCart()
-                    && ($general->Site->showBulkOptions ?? false)
+                    && ($general->Site->showBulkOptions ?? false),
             ];
             // Load custom CSS, if necessary:
             $html = ($this->getViewRenderer()->plugin('headLink'))();
@@ -227,7 +230,7 @@ class CombinedController extends AbstractSearch
                 'results' => $results,
                 'supportsCart' => $supportsCart,
                 'supportsCartOptions' => $supportsCartOptions,
-                'showBulkOptions' => $settings->Site->showBulkOptions ?? false
+                'showBulkOptions' => $settings->Site->showBulkOptions ?? false,
             ]
         );
     }

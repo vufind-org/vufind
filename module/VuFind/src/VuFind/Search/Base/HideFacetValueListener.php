@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Hide values of facet for displaying
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Base;
 
 use Laminas\EventManager\EventInterface;

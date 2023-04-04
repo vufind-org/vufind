@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Blender backend.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Blender;
 
 use Laminas\EventManager\EventInterface;
@@ -158,7 +160,7 @@ class Backend extends AbstractBackend
             $backendDetails[$backendId] = [
                 'backend' => $backend,
                 'query' => $params->get("query_$backendId")[0],
-                'params' => $params->get("params_$backendId")[0]
+                'params' => $params->get("params_$backendId")[0],
             ];
         }
         if (!$backendDetails) {
@@ -250,8 +252,8 @@ class Backend extends AbstractBackend
                 [
                     'msg' => 'search_backend_partial_failure',
                     'tokens' => [
-                        '%%sources%%' => implode(', ', $failedBackends)
-                    ]
+                        '%%sources%%' => implode(', ', $failedBackends),
+                    ],
                 ]
             );
         }
@@ -557,7 +559,8 @@ class Backend extends AbstractBackend
     protected function triggerSearchEvent(EventInterface $event)
     {
         $command = $event->getParam('command');
-        if ($command->getTargetIdentifier() !== $this->getIdentifier()
+        if (
+            $command->getTargetIdentifier() !== $this->getIdentifier()
             || !($command instanceof SearchCommand)
         ) {
             return $event;

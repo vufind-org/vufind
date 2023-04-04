@@ -1,4 +1,5 @@
 <?php
+
 /**
  * RemoveFilters Recommendations Module
  * Recommends to remove filters
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
+
 namespace VuFind\Recommend;
 
 /**

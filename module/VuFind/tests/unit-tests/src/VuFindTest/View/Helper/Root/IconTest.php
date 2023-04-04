@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Icon View Helper Test Class
  *
@@ -25,12 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper\Root;
 
 use Laminas\Cache\Storage\Adapter\BlackHole;
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\View\Helper\EscapeHtmlAttr;
-use Laminas\View\Helper\HeadLink;
 use VuFind\View\Helper\Root\Icon;
 use VuFindTheme\View\Helper\ImageLink;
 
@@ -68,7 +69,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
                 'FakeSprite' => [
                     'template' => 'svg-sprite',
                     'src' => 'mysprites.svg',
-                ]
+                ],
             ],
             'aliases' => [
                 'bar' => 'Fugue:baz.png',
@@ -80,7 +81,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
                 'criminal' => 'Alias:illegal',
                 'foolish' => 'Alias:foolish',
                 'classy' => 'FontAwesome:spinner:extraClass',
-                'extraClassy' => 'Fugue:zzz.png:weird:class foo'
+                'extraClassy' => 'Fugue:zzz.png:weird:class foo',
             ],
         ];
     }
@@ -105,10 +106,10 @@ class IconTest extends \PHPUnit\Framework\TestCase
     /**
      * Get an Icon helper
      *
-     * @param array            $config   Icon helper configuration array
-     * @param StorageInterface $cache    Cache storage adapter (null for BlackHole)
-     * @param HeadLink         $headLink HeadLink helper (null for mock)
-     * @param array            $plugins  Array of extra plugins for renderer
+     * @param array            $config  Icon helper configuration array
+     * @param StorageInterface $cache   Cache storage adapter (null for BlackHole)
+     * @param array            $plugins Array of extra plugins for renderer
+     * @param bool             $rtl     Are we in right-to-left mode?
      *
      * @return Icon
      */
@@ -211,7 +212,8 @@ class IconTest extends \PHPUnit\Framework\TestCase
     {
         $plugins = ['imageLink' => $this->getMockImageLink('icons/baz.png')];
         $helper = $this->getIconHelper(null, null, $plugins);
-        $expected = '<img class="icon icon--img" src="baz.png" aria-hidden="true"/>';
+        $expected = '<img class="icon icon--img" src="baz.png" aria-hidden="true"'
+            . ' alt="">';
         $this->assertEquals($expected, $helper('bar'));
     }
 
@@ -225,7 +227,8 @@ class IconTest extends \PHPUnit\Framework\TestCase
     {
         $plugins = ['imageLink' => $this->getMockImageLink('icons/zzz.png')];
         $helper = $this->getIconHelper(null, null, $plugins);
-        $expected = '<img class="icon icon--img weird:class foo" src="zzz.png" aria-hidden="true"/>';
+        $expected = '<img class="icon icon--img weird:class foo" src="zzz.png"'
+            . ' aria-hidden="true" alt="">';
         $this->assertEquals($expected, $helper('extraClassy'));
     }
 
@@ -238,8 +241,8 @@ class IconTest extends \PHPUnit\Framework\TestCase
     {
         $plugins = ['imageLink' => $this->getMockImageLink('icons/baz.png')];
         $helper = $this->getIconHelper(null, null, $plugins);
-        $expected
-            = '<img class="icon icon--img myclass" src="baz.png" aria-hidden="true"/>';
+        $expected = '<img class="icon icon--img myclass" src="baz.png"'
+            . ' aria-hidden="true" alt="">';
         // Send a string, validating the shortcut where strings are treated as
         // classes, in addition to confirming that extras work for image icons.
         $this->assertEquals($expected, $helper('bar', 'myclass'));
@@ -255,13 +258,15 @@ class IconTest extends \PHPUnit\Framework\TestCase
         // RTL exists
         $plugins = ['imageLink' => $this->getMockImageLink('icons/zab.png')];
         $helper = $this->getIconHelper(null, null, $plugins, true);
-        $expected = '<img class="icon icon--img" src="zab.png" aria-hidden="true"/>';
+        $expected = '<img class="icon icon--img" src="zab.png" aria-hidden="true"'
+            . ' alt="">';
         $this->assertEquals($expected, $helper('bar'));
 
         // RTL does not exist
         $plugins = ['imageLink' => $this->getMockImageLink('icons/ltronly.png')];
         $helper = $this->getIconHelper(null, null, $plugins, true);
-        $expected = '<img class="icon icon--img" src="ltronly.png" aria-hidden="true"/>';
+        $expected = '<img class="icon icon--img" src="ltronly.png"'
+            . ' aria-hidden="true" alt="">';
         $this->assertEquals($expected, $helper('ltronly'));
     }
 
@@ -311,10 +316,10 @@ class IconTest extends \PHPUnit\Framework\TestCase
         $plugins = ['imageLink' => $this->getMockImageLink('mysprites.svg')];
         $helper = $this->getIconHelper(null, null, $plugins);
         $expected = <<<EXPECTED
-<svg class="icon icon--svg" aria-hidden="true">
-    <use xlink:href="mysprites.svg#sprite"></use>
-</svg>
-EXPECTED;
+            <svg class="icon icon--svg" aria-hidden="true">
+                <use xlink:href="mysprites.svg#sprite"></use>
+            </svg>
+            EXPECTED;
         $this->assertEquals($expected, $helper('xyzzy'));
     }
 
@@ -328,10 +333,10 @@ EXPECTED;
         $plugins = ['imageLink' => $this->getMockImageLink('mysprites.svg')];
         $helper = $this->getIconHelper(null, null, $plugins);
         $expected = <<<EXPECTED
-<svg class="icon icon--svg myclass" data-foo="bar" aria-hidden="true">
-    <use xlink:href="mysprites.svg#sprite"></use>
-</svg>
-EXPECTED;
+            <svg class="icon icon--svg myclass" data-foo="bar" aria-hidden="true">
+                <use xlink:href="mysprites.svg#sprite"></use>
+            </svg>
+            EXPECTED;
         $this->assertEquals(
             trim($expected),
             $helper('xyzzy', ['class' => 'myclass', 'data-foo' => 'bar'])

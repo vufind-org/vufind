@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Content\Covers;
 
 use VuFind\Content\Covers\Koha;
@@ -52,15 +53,15 @@ class KohaTest extends \PHPUnit\Framework\TestCase
             'no id' => [false, [null, 'small', []]],
             'small image' => [
                 'http://base?thumbnail=1&biblionumber=foo',
-                [null, 'small', ['recordid' => 'foo']]
+                [null, 'small', ['recordid' => 'foo']],
             ],
             'medium image' => [
                 'http://base?thumbnail=1&biblionumber=foo',
-                [null, 'medium', ['recordid' => 'foo']]
+                [null, 'medium', ['recordid' => 'foo']],
             ],
             'large image' => [
                 'http://base?biblionumber=foo',
-                [null, 'large', ['recordid' => 'foo']]
+                [null, 'large', ['recordid' => 'foo']],
             ],
         ];
     }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * InjectTemplateListenerFactory Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest;
 
 use Laminas\ModuleManager\ModuleManager;
@@ -58,7 +60,7 @@ class ThemeInjectTemplateListenerFactoryTest extends TestCase
             'vufind' => [
                 'extra_theme_prefixes' => ['Extra/'],
                 'excluded_theme_prefixes' => ['Laminas'],
-            ]
+            ],
         ];
         $container->set('config', $testConfig);
         $modules = ['Laminas\Foo', 'LaminasBar', 'VuFind\Foo', 'VuFind'];

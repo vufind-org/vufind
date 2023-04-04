@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Solr Utility Functions
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Solr;
 
 /**
@@ -81,7 +83,8 @@ class Utils
             }
 
             // Check for month/year or month-year formats:
-            if (preg_match('/([0-9])(-|\/)([0-9]{4})/', $date, $matches)
+            if (
+                preg_match('/([0-9])(-|\/)([0-9]{4})/', $date, $matches)
                 || preg_match('/([0-9]{2})(-|\/)([0-9]{4})/', $date, $matches)
             ) {
                 $month = $matches[1];

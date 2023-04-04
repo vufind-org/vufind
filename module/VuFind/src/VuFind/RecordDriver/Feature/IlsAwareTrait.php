@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ILS support for MARC and other types of records.
  *
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver\Feature;
 
 use VuFind\Exception\ILS as ILSException;

@@ -67,12 +67,12 @@
 <?php
     $explanation = $this->transEsc('schedule_explanation');
     $script = <<<JS
-$(".search-schedule-header").popover({
-    content: "$explanation",
-    placement: "top",
-    trigger: "hover",
-    container: "body",
-})
-JS;
+        $(".search-schedule-header").popover({
+            content: "$explanation",
+            placement: "top",
+            trigger: "hover",
+            container: "body",
+        })
+        JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>

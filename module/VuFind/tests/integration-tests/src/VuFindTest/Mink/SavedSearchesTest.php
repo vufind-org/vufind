@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink saved searches test class.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
@@ -67,7 +69,8 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
     {
         $links = $page->findAll('css', '.searchtools a');
         foreach ($links as $link) {
-            if ($this->checkVisibility($link)
+            if (
+                $this->checkVisibility($link)
                 && str_contains($link->getHtml(), 'Save Search')
             ) {
                 $link->click();
@@ -282,7 +285,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
     {
         $this->changeConfigs(
             [
-                'config' => ['Account' => ['schedule_searches' => true]]
+                'config' => ['Account' => ['schedule_searches' => true]],
             ]
         );
         $session = $this->getMinkSession();
@@ -320,14 +323,14 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
 
         // Now there should be two alert options visible (one in saved, one in
         // unsaved):
-        $this->assertEquals(2, count($page->findAll('css', $scheduleSelector)));
-        $this->assertEquals(
+        $this->assertCount(2, $page->findAll('css', $scheduleSelector));
+        $this->assertCount(
             1,
-            count($page->findAll('css', '#recent-searches ' . $scheduleSelector))
+            $page->findAll('css', '#recent-searches ' . $scheduleSelector)
         );
-        $this->assertEquals(
+        $this->assertCount(
             1,
-            count($page->findAll('css', '#saved-searches ' . $scheduleSelector))
+            $page->findAll('css', '#saved-searches ' . $scheduleSelector)
         );
 
         // At this point, our journals search should be in the unsaved list; let's
@@ -335,9 +338,9 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         $select = $this->findCss($page, '#recent-searches ' . $scheduleSelector);
         $select->selectOption(7);
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertCount(
             2,
-            count($page->findAll('css', '#saved-searches ' . $scheduleSelector))
+            $page->findAll('css', '#saved-searches ' . $scheduleSelector)
         );
 
         // Now let's delete the saved search and confirm that this clears the
@@ -442,14 +445,14 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
 
         // Now there should be one alert option visible (in unsaved):
         $scheduleSelector = 'select[name="schedule"]';
-        $this->assertEquals(1, count($page->findAll('css', $scheduleSelector)));
-        $this->assertEquals(
+        $this->assertCount(1, $page->findAll('css', $scheduleSelector));
+        $this->assertCount(
             1,
-            count($page->findAll('css', '#recent-searches ' . $scheduleSelector))
+            $page->findAll('css', '#recent-searches ' . $scheduleSelector)
         );
-        $this->assertEquals(
+        $this->assertCount(
             0,
-            count($page->findAll('css', '#saved-searches ' . $scheduleSelector))
+            $page->findAll('css', '#saved-searches ' . $scheduleSelector)
         );
 
         // Let's set up our search for alerts and make sure it's handled correctly:
@@ -469,9 +472,9 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         // the important one ("employment") should be first, which enables us to
         // safely rely on the final assertion below.
         $this->assertSavedSearchList(["employment", "test"], $page);
-        $this->assertEquals(
+        $this->assertCount(
             2,
-            count($page->findAll('css', '#saved-searches ' . $scheduleSelector))
+            $page->findAll('css', '#saved-searches ' . $scheduleSelector)
         );
         $this->assertEquals(1, $this->findCss($page, $scheduleSelector)->getValue());
     }

@@ -20,9 +20,9 @@ but it will improve the user experience by allowing proper sorting of favorites 
 <?php
 $confirmText = $this->transEsc('skip_confirm');
 $script = <<<JS
-$('#skip').click(function(e) {
-  return confirm('${confirmText}');
-});
-JS;
+    $('#skip').click(function(e) {
+      return confirm('${confirmText}');
+    });
+    JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');

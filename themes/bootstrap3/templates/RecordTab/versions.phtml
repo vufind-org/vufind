@@ -12,7 +12,7 @@
             [
               '%%start%%' => 1,
               '%%end%%' => count($results),
-              '%%total%%' => $this->localizedNumber($results->getTotal())
+              '%%total%%' => $this->localizedNumber($results->getTotal()),
             ]
         );
       ?>
@@ -45,8 +45,8 @@ $translations = $this->jsTranslations()->getJSON();
 // Use combinedSearch.initResultScripts to avoid duplicating the list of scripts
 // required for results loaded via AJAX:
 $script = <<<JS
-VuFind.addTranslations($translations);
-VuFind.combinedSearch.initResultScripts($('.results'));
-JS;
+    VuFind.addTranslations($translations);
+    VuFind.combinedSearch.initResultScripts($('.results'));
+    JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>

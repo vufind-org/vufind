@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Record linker view helper
  *
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use VuFind\RecordDriver\AbstractBase as AbstractRecord;
@@ -132,16 +134,22 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
     /**
      * Given a record driver, get a URL for that record.
      *
-     * @param AbstractRecord|string $driver Record driver representing record to link
-     * to, or source|id pipe-delimited string
-     * @param string                $action Record action to access
-     * @param array                 $query  Optional query parameters
-     * @param string                $anchor Optional anchor
+     * @param AbstractRecord|string $driver  Record driver representing record
+     * to link to, or source|id pipe-delimited string
+     * @param string                $action  Record action to access
+     * @param array                 $query   Optional query parameters
+     * @param string                $anchor  Optional anchor
+     * @param array                 $options Record URL parameter options (optional)
      *
      * @return string
      */
-    public function getActionUrl($driver, $action, $query = [], $anchor = '')
-    {
+    public function getActionUrl(
+        $driver,
+        $action,
+        $query = [],
+        $anchor = '',
+        $options = []
+    ) {
         // Build the URL:
         $urlHelper = $this->getView()->plugin('url');
         $details = $this->router->getActionRouteDetails($driver, $action);
@@ -149,8 +157,8 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
             $details['route'],
             $details['params'] ?: [],
             [
-                'query' => $this->getRecordUrlParams() + $query,
-                'fragment' => ltrim('#', $anchor),
+                'query' => $this->getRecordUrlParams($options) + $query,
+                'fragment' => $anchor ? ltrim($anchor, '#') : '',
                 'normalize_path' => false, // required to keep slashes encoded
             ]
         );
@@ -289,7 +297,7 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
 
         $urlParams = [
             'id' => $driver->getUniqueID(),
-            'keys' => $driver->tryMethod('getWorkKeys', [], [])
+            'keys' => $driver->tryMethod('getWorkKeys', [], []),
         ];
 
         $urlHelper = $this->getView()->plugin('url');

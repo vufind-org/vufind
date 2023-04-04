@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Action Feature Trait - Catch ILS exceptions from actions with an OnDispatch
  * handler
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Controller\Feature;
 
 use VuFind\Exception\ILS as ILSException;

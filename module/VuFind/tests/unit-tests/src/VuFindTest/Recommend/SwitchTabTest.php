@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SwitchTab Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Recommend;
 
 use VuFind\Recommend\SwitchTab;
@@ -47,50 +49,63 @@ class SwitchTabTest extends \PHPUnit\Framework\TestCase
      */
     public function tabConfigProvider(): array
     {
-        return ['First tab selected' => [[["id" => "A01",
-                            "class" => "class01",
-                            "label" => "label01",
-                            "permission" => "permission01",
-                            "selected" => true,
-                            "url" => "http://newurl1"
-                            ],
-                            ["id" => "A02",
-                            "class" => "class02",
-                            "label" => "label02",
-                            "permission" => "permission02",
-                            "selected" => false,
-                            "url" => "http://newurl2"
-                            ],],
-                            ["id" => "A01",
-                            "class" => "class01",
-                            "label" => "label01",
-                            "permission" => "permission01",
-                            "selected" => true,
-                            "url" => "http://newurl1"
-                ]],
-                'No tab selected' => [[["id" => "A01",
-                            "class" => "class01",
-                            "label" => "label01",
-                            "permission" => "permission01",
-                            "selected" => false,
-                            "url" => "http://newurl1"
-                            ],
-                            ["id" => "A02",
-                            "class" => "class02",
-                            "label" => "label02",
-                            "permission" => "permission02",
-                            "selected" => false,
-                            "url" => "http://newurl2"
-                            ],],
-                            null
-                            ],
-            ];
+        return [
+            'First tab selected' => [
+                [
+                    [
+                        "id" => "A01",
+                        "class" => "class01",
+                        "label" => "label01",
+                        "permission" => "permission01",
+                        "selected" => true,
+                        "url" => "http://newurl1",
+                    ],
+                    [
+                        "id" => "A02",
+                        "class" => "class02",
+                        "label" => "label02",
+                        "permission" => "permission02",
+                        "selected" => false,
+                        "url" => "http://newurl2",
+                    ],
+                ],
+                [
+                    "id" => "A01",
+                    "class" => "class01",
+                    "label" => "label01",
+                    "permission" => "permission01",
+                    "selected" => true,
+                    "url" => "http://newurl1",
+                ],
+            ],
+            'No tab selected' => [
+                [
+                    [
+                        "id" => "A01",
+                        "class" => "class01",
+                        "label" => "label01",
+                        "permission" => "permission01",
+                        "selected" => false,
+                        "url" => "http://newurl1",
+                    ],
+                    [
+                        "id" => "A02",
+                        "class" => "class02",
+                        "label" => "label02",
+                        "permission" => "permission02",
+                        "selected" => false,
+                        "url" => "http://newurl2",
+                    ],
+                ],
+                null,
+            ],
+        ];
     }
 
     /**
      * Test getting the active tab.
      *
-     * @param array $tabEnv tabConfig
+     * @param array $tabEnv         tabConfig
      * @param array $expectedResult expected result from getActiveTab
      *
      * @return void
@@ -110,34 +125,44 @@ class SwitchTabTest extends \PHPUnit\Framework\TestCase
      */
     public function inactiveTabConfigProvider(): array
     {
-        return ['Test1' => [[["id" => "A01",
-                            "class" => "class01",
-                            "label" => "label01",
-                            "permission" => "permission01",
-                            "selected" => true,
-                            "url" => "http://newurl1"
-                            ],
-                            ["id" => "A02",
-                            "class" => "class02",
-                            "label" => "label02",
-                            "permission" => "permission02",
-                            "selected" => false,
-                            "url" => "http://newurl2"
-                            ],],
-                            [["id" => "A02",
-                            "class" => "class02",
-                            "label" => "label02",
-                            "permission" => "permission02",
-                            "selected" => false,
-                            "url" => "http://newurl2"
-                ]]],
-            ];
+        return [
+            'Test1' => [
+                [
+                    [
+                        "id" => "A01",
+                        "class" => "class01",
+                        "label" => "label01",
+                        "permission" => "permission01",
+                        "selected" => true,
+                        "url" => "http://newurl1",
+                    ],
+                    [
+                        "id" => "A02",
+                        "class" => "class02",
+                        "label" => "label02",
+                        "permission" => "permission02",
+                        "selected" => false,
+                        "url" => "http://newurl2",
+                    ],
+                ],
+                [
+                    [
+                        "id" => "A02",
+                        "class" => "class02",
+                        "label" => "label02",
+                        "permission" => "permission02",
+                        "selected" => false,
+                        "url" => "http://newurl2",
+                    ],
+                ],
+            ],
+        ];
     }
 
     /**
      * Test getting the active tab.
      *
-     * @param array $tabEnv tabConfig
+     * @param array $tabEnv         tabConfig
      * @param array $expectedResult expected result from getInactiveTabs
      *
      * @return void

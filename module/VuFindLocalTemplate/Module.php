@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Template for code module for storing local overrides.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development
  */
+
 namespace VuFindLocalTemplate;
 
 use Laminas\ModuleManager\ModuleManager;

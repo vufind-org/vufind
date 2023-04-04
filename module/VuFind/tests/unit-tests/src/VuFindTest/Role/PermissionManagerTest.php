@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PermissionManager Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Role;
 
 use VuFind\Role\PermissionManager;
@@ -47,16 +49,16 @@ class PermissionManagerTest extends \PHPUnit\Framework\TestCase
      */
     protected $permissionConfig = [
         'permission.all' => [
-            'permission' => "everyone"
+            'permission' => "everyone",
         ],
         'permission.nobody' => [
-            'permission' => "nobody"
+            'permission' => "nobody",
         ],
         'permission.empty' => [
         ],
         'permission.array' => [
-            'permission' => ['everyoneArray', 'everyoneArray2']
-        ]
+            'permission' => ['everyoneArray', 'everyoneArray2'],
+        ],
     ];
 
     /**

@@ -26,10 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest;
 
 use PHPUnit\Framework\TestCase;
-
 use VuFindSearch\ParamBag;
 
 /**
@@ -106,10 +106,10 @@ class ParamBagTest extends TestCase
     public function testCountability()
     {
         $bag = new ParamBag();
-        $this->assertEquals(0, count($bag));
+        $this->assertCount(0, $bag);
         $bag->set('foo', 'bar');
-        $this->assertEquals(1, count($bag));
+        $this->assertCount(1, $bag);
         $bag->set('xyzzy', 'baz');
-        $this->assertEquals(2, count($bag));
+        $this->assertCount(2, $bag);
     }
 }

@@ -5,7 +5,7 @@
     <span class="icon-link__label"><?=$this->transEsc('Get RSS Feed')?></span>
   </a>
   &ndash;
-  <a class="icon-link" href="<?=$this->url('search-email')?>" class="mailSearch" data-lightbox id="mailSearch<?=$this->escapeHtmlAttr($this->results->getSearchId())?>">
+  <a class="icon-link mailSearch" href="<?=$this->url('search-email')?>" data-lightbox id="mailSearch<?=$this->escapeHtmlAttr($this->results->getSearchId())?>">
     <?=$this->icon('send-email', 'icon-link__icon') ?>
     <span class="icon-link__label"><?=$this->transEsc('Email this Search')?></span>
   </a>

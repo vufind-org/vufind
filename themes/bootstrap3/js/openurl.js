@@ -1,4 +1,4 @@
-/*global extractClassParams, Hunt, VuFind */
+/*global extractClassParams, VuFind */
 VuFind.register('openurl', function OpenUrl() {
   function _loadResolverLinks($target, openUrl, searchClassId) {
     $target.addClass('ajax_availability');
@@ -43,7 +43,7 @@ VuFind.register('openurl', function OpenUrl() {
   // Assign actions to the OpenURL links. This can be called with a container e.g. when
   // combined results fetched with AJAX are loaded.
   function init(_container) {
-    var container = _container || $('body');
+    var container = $(_container || 'body');
     // assign action to the openUrlWindow link class
     container.find('a.openUrlWindow').unbind('click').click(function openUrlWindowClick() {
       var params = extractClassParams(this);
@@ -58,12 +58,13 @@ VuFind.register('openurl', function OpenUrl() {
       return false;
     });
 
-    if (typeof Hunt === 'undefined' || VuFind.isPrinting()) {
+    if (VuFind.isPrinting()) {
       container.find('.openUrlEmbed.openUrlEmbedAutoLoad a').trigger('click');
     } else {
-      new Hunt(
-        container.find('.openUrlEmbed.openUrlEmbedAutoLoad a').toArray(),
-        { enter: embedOpenUrlLinks }
+      VuFind.observerManager.createIntersectionObserver(
+        'openUrlEmbed',
+        embedOpenUrlLinks,
+        container.find('.openUrlEmbed.openUrlEmbedAutoLoad a').toArray()
       );
     }
   }

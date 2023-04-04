@@ -1,4 +1,5 @@
 <?php
+
 /**
  * RemoteAddress utility factory. This uses the core Laminas RemoteAddress but
  * configures it according to VuFind settings.
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Http\PhpEnvironment;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;

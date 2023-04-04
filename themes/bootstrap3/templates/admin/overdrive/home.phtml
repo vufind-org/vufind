@@ -22,13 +22,13 @@
 
     <ul class="list-group">
         <li class="list-group-item"><?php echo "<strong>Mode: </strong>";
-            echo $this->overdriveConfig->productionMode?"Production":"Integration";?></li>
+            echo $this->overdriveConfig->productionMode ? "Production" : "Integration";?></li>
         <li class="list-group-item"> <?php echo "<strong>Client Key:</strong> " . $this->overdriveConfig->clientKey;?></li>
         <li class="list-group-item"> <?php echo "<strong>Library ID:</strong> " . $this->overdriveConfig->libraryID;?></li>
         <li class="list-group-item"> <?php echo "<strong>Website ID:</strong> " . $this->overdriveConfig->websiteID;?></li>
         <li class="list-group-item"> <?php echo "<strong>ILS Name:</strong> " . $this->overdriveConfig->ILSname;?></li>
         <li class="list-group-item"> <?php echo "<strong>Records in Marc Format: </strong>";
-             echo $this->overdriveConfig->isMarc?"Yes":"No"?></li>
+             echo $this->overdriveConfig->isMarc ? "Yes" : "No"?></li>
     </ul>
 
     <h2><?=$this->transEsc('User Access')?></h2>

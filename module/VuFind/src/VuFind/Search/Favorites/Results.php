@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Favorites aspect of the Search Multi-class (Results)
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Favorites;
 
 use LmcRbacMvc\Service\AuthorizationServiceAwareInterface;
@@ -46,8 +48,7 @@ use VuFindSearch\Service as SearchService;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Results extends BaseResults
-implements AuthorizationServiceAwareInterface
+class Results extends BaseResults implements AuthorizationServiceAwareInterface
 {
     use AuthorizationServiceAwareTrait;
 
@@ -137,7 +138,7 @@ implements AuthorizationServiceAwareInterface
             if (!isset($this->facets[$field])) {
                 $this->facets[$field] = [
                     'label' => $this->getParams()->getFacetLabel($field),
-                    'list' => []
+                    'list' => [],
                 ];
                 switch ($field) {
                     case 'tags':
@@ -152,7 +153,7 @@ implements AuthorizationServiceAwareInterface
                                 'displayText' => $tag->tag,
                                 'count' => $tag->cnt,
                                 'isApplied' => $this->getParams()
-                                    ->hasFilter("$field:" . $tag->tag)
+                                    ->hasFilter("$field:" . $tag->tag),
                             ];
                         }
                         break;
@@ -185,7 +186,8 @@ implements AuthorizationServiceAwareInterface
                 'Cannot retrieve favorites without logged in user.'
             );
         }
-        if (null !== $list && !$list->public
+        if (
+            null !== $list && !$list->public
             && (!$this->user || $list->user_id != $this->user->id)
         ) {
             throw new ListPermissionException(
@@ -223,8 +225,8 @@ implements AuthorizationServiceAwareInterface
             $recordsToRequest[] = [
                 'id' => $row->record_id, 'source' => $row->source,
                 'extra_fields' => [
-                    'title' => $row->title
-                ]
+                    'title' => $row->title,
+                ],
             ];
         }
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * JOP Link Resolver Driver
  *
@@ -34,6 +35,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:link_resolver_drivers Wiki
  */
+
 namespace VuFind\Resolver\Driver;
 
 use DOMDocument;
@@ -219,7 +221,8 @@ class Jop extends AbstractBase
         // prepare content for downgrading
         // resolver only accepts date formats YYYY, YYYY-MM, and YYYY-MM-DD
         // in case we have a date in another format, drop the date information
-        if (isset($parsed['rft.date'])
+        if (
+            isset($parsed['rft.date'])
             && !preg_match('/^\d{4}(-\d\d(-\d\d)?)?$/', $parsed['rft.date'])
         ) {
             unset($parsed['rft.date']);
@@ -292,7 +295,7 @@ class Jop extends AbstractBase
             '3'  => 'limited',
             '4'  => 'denied',
             '5'  => 'denied',
-            '10' => 'unknown'
+            '10' => 'unknown',
         ];
 
         $i = 0;
@@ -386,7 +389,7 @@ class Jop extends AbstractBase
             '2'  => 'open',
             '3'  => 'limited',
             '4'  => 'denied',
-            '10' => 'unknown'
+            '10' => 'unknown',
         ];
 
         $i = 0;
@@ -397,7 +400,7 @@ class Jop extends AbstractBase
             $resultXP = "/OpenURLResponseXML/Full/PrintData/ResultList/" .
                 "Result[@state={$state}][" . ($i + 1) . "]";
             $resultElements = [
-                'Title', 'Location', 'Signature', 'Period', 'Holding_comment'
+                'Title', 'Location', 'Signature', 'Period', 'Holding_comment',
             ];
             $elements = [];
             foreach ($resultElements as $element) {

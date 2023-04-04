@@ -62,7 +62,7 @@
       <?php foreach ($this->recordList as $resource): ?>
         <?php $iteration++; ?>
         <?php $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
-        <li id="record<?=$this->escapeHtmlAttr($resource->getUniqueId()) ?>" class="result">
+        <li class="result">
           <?php if (($this->cancelForm && isset($ilsDetails['cancel_details'])) || ($this->updateForm && isset($ilsDetails['updateDetails']))): ?>
             <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['cancel_details'] ?? $ilsDetails['updateDetails']); ?>
             <?php if ($this->cancelForm && isset($ilsDetails['cancel_details'])): ?>
@@ -224,7 +224,7 @@
               <?=$thumbnail ?>
             <?php endif ?>
           </div>
-          <?=$resource->tryMethod('supportsCoinsOpenUrl')?'<span class="Z3988" title="' . $this->escapeHtmlAttr($resource->getCoinsOpenUrl()) . '"></span>':''?>
+          <?=$resource->tryMethod('supportsCoinsOpenUrl') ? '<span class="Z3988" title="' . $this->escapeHtmlAttr($resource->getCoinsOpenUrl()) . '"></span>' : ''?>
         </li>
       <?php endforeach; ?>
     </ul>

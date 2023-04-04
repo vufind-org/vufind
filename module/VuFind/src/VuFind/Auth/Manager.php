@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Wrapper class for handling logged-in user in session.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Auth;
 
 use Laminas\Config\Config;
@@ -44,7 +46,8 @@ use VuFind\Validator\CsrfInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface,
+class Manager implements
+    \LmcRbacMvc\Identity\IdentityProviderInterface,
     \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
@@ -668,7 +671,8 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface,
         }
 
         // Validate CSRF for form-based authentication methods:
-        if (!$this->getAuth()->getSessionInitiator('')
+        if (
+            !$this->getAuth()->getSessionInitiator('')
             && $this->getAuth()->needsCsrfCheck($request)
         ) {
             if (!$this->csrf->isValid($request->getPost()->get('csrf'))) {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Dynamic Role Provider Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Role;
 
 use VuFind\Role\DynamicRoleProvider;
@@ -83,7 +85,7 @@ class DynamicRoleProviderTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo([1, 2, 3]))
             ->will($this->returnValue(['role']));
         $result = $this->getDynamicRoleProvider($pm, $config)->getRoles(['role']);
-        $this->assertEquals(1, count($result));
+        $this->assertCount(1, $result);
         $this->assertEquals('role', $result[0]->getName());
         $this->assertTrue($result[0]->hasPermission('perm1'));
         $this->assertFalse($result[0]->hasPermission('perm2'));

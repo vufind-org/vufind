@@ -27,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Backend\Solr;
 
 use InvalidArgumentException;
@@ -338,7 +339,7 @@ class ConnectorTest extends TestCase
                         // If client is provided, return it since it may have test
                         // expectations:
                         return $client ?? new \Laminas\Http\Client();
-                    }
+                    },
                 ]
             )
             ->getMock();

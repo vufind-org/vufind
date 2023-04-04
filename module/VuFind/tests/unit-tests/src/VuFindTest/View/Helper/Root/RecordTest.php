@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Record view helper Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper\Root;
 
 use Laminas\Config\Config;
@@ -206,10 +208,10 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $driver->expects($this->once())->method('getContainingLists')
             ->with($this->equalTo(42))
             ->will($this->returnValue([1, 2, 3]));
-        $user = new \StdClass;
+        $user = new \StdClass();
         $user->id = 42;
         $expected = [
-            'driver' => $driver, 'list' => null, 'user' => $user, 'lists' => [1, 2, 3]
+            'driver' => $driver, 'list' => null, 'user' => $user, 'lists' => [1, 2, 3],
         ];
         $context = $this->getMockContext();
         $context->expects($this->once())->method('apply')
@@ -325,11 +327,11 @@ class RecordTest extends \PHPUnit\Framework\TestCase
             ->withConsecutive(
                 [
                     'record/checkbox.phtml',
-                    ['id' => 'Solr|000105196', 'number' => 1, 'prefix' => 'bar', 'formAttr' => 'foo']
+                    ['id' => 'Solr|000105196', 'number' => 1, 'prefix' => 'bar', 'formAttr' => 'foo'],
                 ],
                 [
                     'record/checkbox.phtml',
-                    ['id' => 'Solr|000105196', 'number' => 2, 'prefix' => 'bar', 'formAttr' => 'foo']
+                    ['id' => 'Solr|000105196', 'number' => 2, 'prefix' => 'bar', 'formAttr' => 'foo'],
                 ]
             )
             ->willReturnOnConsecutiveCalls('success', 'success');
@@ -474,8 +476,8 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $driver->setRawData(
             [
                 'URLs' => [
-                    ['route' => 'fake-route', 'prefix' => 'http://proxy?_=', 'desc' => 'a link']
-                ]
+                    ['route' => 'fake-route', 'prefix' => 'http://proxy?_=', 'desc' => 'a link'],
+                ],
             ]
         );
         $record = $this->getRecord($driver, [], null, 'fake-route', true);
@@ -485,8 +487,8 @@ class RecordTest extends \PHPUnit\Framework\TestCase
                     'route' => 'fake-route',
                     'prefix' => 'http://proxy?_=',
                     'desc' => 'a link',
-                    'url' => 'http://proxy?_=http://server-foo/baz'
-                ]
+                    'url' => 'http://proxy?_=http://server-foo/baz',
+                ],
             ],
             $record->getLinkDetails()
         );
@@ -506,8 +508,8 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $driver->setRawData(
             [
                 'URLs' => [
-                    ['bad' => 'junk']
-                ]
+                    ['bad' => 'junk'],
+                ],
             ]
         );
         $record = $this->getRecord($driver);
@@ -517,8 +519,8 @@ class RecordTest extends \PHPUnit\Framework\TestCase
                     'route' => 'fake-route',
                     'prefix' => 'http://proxy?_=',
                     'desc' => 'a link',
-                    'url' => 'http://proxy?_=http://server-foo/baz'
-                ]
+                    'url' => 'http://proxy?_=http://server-foo/baz',
+                ],
             ],
             $record->getLinkDetails()
         );
@@ -541,8 +543,8 @@ class RecordTest extends \PHPUnit\Framework\TestCase
                     ['desc' => 'link 1 (alternate description)',
                         'url' => 'http://foo/baz1'],
                     ['url' => 'http://foo/baz3'],
-                    ['url' => 'http://foo/baz3']
-                ]
+                    ['url' => 'http://foo/baz3'],
+                ],
             ]
         );
         $record = $this->getRecord($driver);
@@ -552,7 +554,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
                 ['desc' => 'link 2', 'url' => 'http://foo/baz2'],
                 ['desc' => 'link 1 (alternate description)',
                     'url' => 'http://foo/baz1'],
-                ['desc' => 'http://foo/baz3', 'url' => 'http://foo/baz3']
+                ['desc' => 'http://foo/baz3', 'url' => 'http://foo/baz3'],
             ],
             $record->getLinkDetails()
         );
@@ -569,8 +571,8 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $driver->setRawData(
             [
                 'URLs' => [
-                    ['route' => 'fake-route', 'prefix' => 'http://proxy?_=', 'desc' => 'a link']
-                ]
+                    ['route' => 'fake-route', 'prefix' => 'http://proxy?_=', 'desc' => 'a link'],
+                ],
             ]
         );
         $record = $this->getRecord($driver, [], null, 'fake-route', true);
@@ -662,8 +664,6 @@ class RecordTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Get a mock server URL helper
-     *
-     * @param string $expectedRoute Route expected by mock helper
      *
      * @return \Laminas\View\Helper\ServerUrl
      */

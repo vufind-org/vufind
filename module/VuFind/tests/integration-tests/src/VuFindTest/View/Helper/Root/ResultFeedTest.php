@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ResultFeed Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Integration\View\Helper\Root;
 
 use VuFind\View\Helper\Root\ResultFeed;
@@ -74,7 +76,7 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
                 [
                     new \VuFind\Record\Router(
                         new \Laminas\Config\Config([])
-                    )
+                    ),
                 ]
             )->getMock();
         $recordLinker->expects($this->any())->method('getUrl')
@@ -97,7 +99,7 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
         $translations = [
             'Results for' => 'Results for',
             'showing_results_of_html' => 'Showing <strong>%%start%% - %%end%%'
-                . '</strong> results of <strong>%%total%%</strong>'
+                . '</strong> results of <strong>%%total%%</strong>',
         ];
         $mock = $this->getMockBuilder(\Laminas\I18n\Translator\TranslatorInterface::class)
             ->getMock();
@@ -136,7 +138,7 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
         $helper->setTranslator($this->getMockTranslator());
         $helper->setView($this->getPhpRenderer($this->getPlugins()));
         $feed = $helper($results, '/test/path');
-        $this->assertTrue(is_object($feed));
+        $this->assertIsObject($feed);
         $rss = $feed->export('rss');
 
         // Make sure it's really an RSS feed:

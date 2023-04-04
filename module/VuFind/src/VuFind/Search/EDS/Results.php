@@ -1,4 +1,5 @@
 <?php
+
 /**
  * EDS API Results
  *
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\EDS;
 
 use VuFindSearch\Command\SearchCommand;
@@ -86,7 +88,7 @@ class Results extends \VuFind\Search\Base\Results
                 'fieldName' => 'PublicationDate',
                 'displayName' => 'PublicationDate',
                 'displayText' => 'Publication Date',
-                'counts' => []
+                'counts' => [],
             ];
 
             // Construct record drivers for all the items in the response:

@@ -335,6 +335,14 @@
 
   <!-- Copy files from node modules to themes -->
   <target name="copynodemodules">
+    <!-- jstree -->
+    <copy todir="${srcdir}/themes/bootstrap3/js/vendor/jsTree">
+      <fileset dir="${srcdir}/node_modules/jstree/dist/" >
+        <include name="**/**" />
+        <exclude name="jstree.js" />
+        <exclude name="themes/default-dark/" />
+      </fileset>
+    </copy>
     <!-- vanilla-cookieconsent -->
     <copy file="${srcdir}/node_modules/vanilla-cookieconsent/dist/cookieconsent.umd.js" todir="${srcdir}/themes/bootstrap3/js/vendor" />
   </target>

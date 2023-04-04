@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Abstract results search model.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\Base;
 
 use Laminas\Paginator\Paginator;
@@ -821,7 +823,7 @@ abstract class Results
             // Initialize the settings for the current field
             $result[$field] = [
                 'label' => $filter[$field],
-                'list' => []
+                'list' => [],
             ];
             // Should we translate values for the current facet?
             $translate = in_array($field, $translatedFacets);

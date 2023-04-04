@@ -1,4 +1,5 @@
 <?php
+
 /**
  * EuropeanaResults Recommendations Module
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
+
 namespace VuFind\Recommend;
 
 use Laminas\Feed\Reader\Reader as FeedReader;
@@ -42,8 +44,10 @@ use Laminas\Feed\Reader\Reader as FeedReader;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class EuropeanaResults implements RecommendInterface,
-    \VuFindHttp\HttpServiceAwareInterface, \Laminas\Log\LoggerAwareInterface
+class EuropeanaResults implements
+    RecommendInterface,
+    \VuFindHttp\HttpServiceAwareInterface,
+    \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
     use \VuFindHttp\HttpServiceAwareTrait;
@@ -236,7 +240,7 @@ class EuropeanaResults implements RecommendInterface,
                 $resultsProcessed[] = [
                     'title' => $value->getTitle(),
                     'link' => $link,
-                    'enclosure' => $value->getEnclosure()['url'] ?? null
+                    'enclosure' => $value->getEnclosure()['url'] ?? null,
                 ];
             }
             if (count($resultsProcessed) == $this->limit) {
@@ -248,7 +252,7 @@ class EuropeanaResults implements RecommendInterface,
             $this->results = [
                 'worksArray' => $resultsProcessed,
                 'feedTitle' => $this->searchSite,
-                'sourceLink' => $this->sitePath
+                'sourceLink' => $this->sitePath,
             ];
         } else {
             $this->results = false;

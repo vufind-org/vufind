@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OAuth2 user entity implementation.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\OAuth2\Entity;
 
 use League\OAuth2\Server\Entities\Traits\EntityTrait;
@@ -189,8 +191,10 @@ class UserEntity implements UserEntityInterface, ClaimSetInterface
                             . $this->oauth2Config['Server']['hashSalt']
                         );
                     }
+                    break;
                 default:
-                    if (($value = $this->user->{$field} ?? null)
+                    if (
+                        ($value = $this->user->{$field} ?? null)
                         || ($value = $profile[$field] ?? null)
                     ) {
                         $result[$claim] = $value;

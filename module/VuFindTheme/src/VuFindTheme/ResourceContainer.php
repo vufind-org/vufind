@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Theme Public Resource Handler (for CSS, JS, etc.)
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTheme;
 
 /**
@@ -237,7 +239,8 @@ class ResourceContainer
             foreach (array_keys($array) as $i) {
                 if (isset($entry['priority'])) {
                     $currentPriority = $array[$i]['priority'] ?? null;
-                    if (!isset($currentPriority)
+                    if (
+                        !isset($currentPriority)
                         || $currentPriority > $entry['priority']
                     ) {
                         array_splice($array, $i, 0, [$entry]);
@@ -309,7 +312,8 @@ class ResourceContainer
         // have been converted to arrays
         $parts = explode(':', $current);
         // Special case: don't explode URLs:
-        if (($parts[0] === 'http' || $parts[0] === 'https')
+        if (
+            ($parts[0] === 'http' || $parts[0] === 'https')
             && '//' === substr($parts[1], 0, 2)
         ) {
             $protocol = array_shift($parts);

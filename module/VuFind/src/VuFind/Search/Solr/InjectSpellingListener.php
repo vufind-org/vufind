@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Solr;
 
 use Laminas\EventManager\EventInterface;
@@ -35,7 +36,6 @@ use VuFind\Log\LoggerAwareTrait;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
 use VuFindSearch\ParamBag;
-
 use VuFindSearch\Query\Query;
 use VuFindSearch\Service;
 

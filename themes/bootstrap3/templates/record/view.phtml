@@ -42,7 +42,7 @@
     <?=$this->record($this->driver)->getCoreMetadata()?>
 
     <?php if (count($this->tabs) > 0): ?>
-      <a name="tabnav"></a>
+      <a id="tabnav"></a>
       <div class="record-tabs">
         <ul class="nav nav-tabs" role="tablist">
           <?php foreach ($this->tabs as $tab => $obj): ?>
@@ -78,7 +78,7 @@
       </div>
     <?php endif; ?>
 
-    <?=$this->driver->supportsCoinsOpenURL()?'<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenURL()) . '"></span>':''?>
+    <?=$this->driver->supportsCoinsOpenURL() ? '<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenURL()) . '"></span>' : ''?>
   </div>
 
   <div class="<?=$this->layoutClass('sidebar')?>">

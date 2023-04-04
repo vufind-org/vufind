@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Head script view helper (extended for VuFind's theme system)
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindTheme\View\Helper;
 
 use VuFindTheme\ThemeInfo;
@@ -42,8 +44,7 @@ use VuFindTheme\ThemeInfo;
  * @method getIndent()
  * @method getSeparator()
  */
-class HeadScript extends \Laminas\View\Helper\HeadScript
-implements \Laminas\Log\LoggerAwareInterface
+class HeadScript extends \Laminas\View\Helper\HeadScript implements \Laminas\Log\LoggerAwareInterface
 {
     use ConcatTrait {
         getMinifiedData as getBaseMinifiedData;
@@ -138,7 +139,8 @@ implements \Laminas\Log\LoggerAwareInterface
         // Look for existing entry and remove it if found. Comparison method
         // copied from isDuplicate().
         foreach ($this->getContainer() as $offset => $item) {
-            if (($item->source === null)
+            if (
+                ($item->source === null)
                 && array_key_exists('src', $item->attributes)
                 && ($src === $item->attributes['src'])
             ) {

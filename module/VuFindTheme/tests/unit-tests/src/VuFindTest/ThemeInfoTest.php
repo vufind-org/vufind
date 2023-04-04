@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ThemeInfo Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest;
 
 use Laminas\Cache\Storage\StorageInterface;
@@ -52,7 +54,9 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     protected $fixturePath;
 
     /**
-     * Constructor
+     * Generic setup function
+     *
+     * @return void
      */
     public function setUp(): void
     {
@@ -136,7 +140,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
                 'mixin' => $expectedMixin,
                 'mixin_user' => $expectedMixinUser,
                 'child' => $expectedChild,
-                'parent' => $expectedParent
+                'parent' => $expectedParent,
             ],
             $ti->getThemeInfo()
         );
@@ -170,7 +174,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
         $expected = [
             'theme' => 'parent',
             'path' => $this->fixturePath . '/parent/parent.txt',
-            'relativePath' => 'parent.txt'
+            'relativePath' => 'parent.txt',
         ];
         $this->assertEquals($expected, $ti->findContainingTheme('parent.txt', ThemeInfo::RETURN_ALL_DETAILS));
     }
@@ -200,11 +204,11 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
         $files = $ti->findInThemes(
             [
                 'templates/content/*.phtml',
-                'templates/content/*.md'
+                'templates/content/*.md',
             ]
         );
         $this->assertIsArray($files);
-        $this->assertEquals(3, count($files));
+        $this->assertCount(3, $files);
         $this->assertEquals('parent', $files[0]['theme']);
         $this->assertEquals(
             'templates/content/page1.phtml',
@@ -311,6 +315,9 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     /**
      * Stress-test our merging algorithm
      *
+     * @param array $test     Test data
+     * @param array $expected Expected response
+     *
      * @dataProvider mergeEdgeCasesProvider
      *
      * @return void
@@ -393,7 +400,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
                     'not an array',
                 ],
                 [
-                    'mixed' => ['array']
+                    'mixed' => ['array'],
                 ],
             ],
         ];

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Search API Controller
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
+
 namespace VuFindApi\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
@@ -42,8 +44,7 @@ use VuFindApi\Formatter\RecordFormatter;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
-class SearchApiController extends \VuFind\Controller\AbstractSearch
-implements ApiInterface
+class SearchApiController extends \VuFind\Controller\AbstractSearch implements ApiInterface
 {
     use ApiTrait;
 
@@ -144,7 +145,7 @@ implements ApiInterface
 
         // Apply all supported configurations:
         $configKeys = [
-            'recordAccessPermission', 'searchAccessPermission', 'maxLimit'
+            'recordAccessPermission', 'searchAccessPermission', 'maxLimit',
         ];
         foreach ($configKeys as $key) {
             if (isset($settings[$key])) {
@@ -265,7 +266,7 @@ implements ApiInterface
         }
 
         $response = [
-            'resultCount' => count($results)
+            'resultCount' => count($results),
         ];
         $requestedFields = $this->getFieldList($request);
         if ($records = $this->recordFormatter->format($results, $requestedFields)) {
@@ -295,7 +296,8 @@ implements ApiInterface
         $request = $this->getRequest()->getQuery()->toArray()
             + $this->getRequest()->getPost()->toArray();
 
-        if (isset($request['limit'])
+        if (
+            isset($request['limit'])
             && (!ctype_digit($request['limit'])
             || $request['limit'] < 0 || $request['limit'] > $this->maxLimit)
         ) {
@@ -319,14 +321,16 @@ implements ApiInterface
             $results = $runner->run(
                 $request,
                 $this->searchClassId,
-                function ($runner, $params, $searchId) use (
+                function (
+                    $runner,
+                    $params,
+                    $searchId
+                ) use (
                     $hierarchicalFacets,
                     $request,
                     $requestedFields
                 ) {
-                    foreach ($request['facet'] ?? []
-                       as $facet
-                    ) {
+                    foreach ($request['facet'] ?? [] as $facet) {
                         if (!isset($hierarchicalFacets[$facet])) {
                             $params->addFacet($facet);
                         }

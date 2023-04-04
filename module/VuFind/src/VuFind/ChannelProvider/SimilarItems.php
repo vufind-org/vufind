@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Similar items" channel provider.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\ChannelProvider;
 
 use Laminas\Mvc\Controller\Plugin\Url;
@@ -44,8 +46,7 @@ use VuFindSearch\Command\SimilarCommand;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SimilarItems extends AbstractChannelProvider
-implements TranslatorAwareInterface
+class SimilarItems extends AbstractChannelProvider implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
@@ -167,7 +168,8 @@ implements TranslatorAwareInterface
         }
         // If the search results did not include the object we were looking for,
         // we need to fetch it from the search service:
-        if (empty($channels)
+        if (
+            empty($channels)
             && is_object($driver ?? null)
             && $channelToken !== null
         ) {
@@ -203,7 +205,7 @@ implements TranslatorAwareInterface
         $retVal = [
             'title' => "{$heading}: {$driver->getBreadcrumb()}",
             'providerId' => $this->providerId,
-            'links' => []
+            'links' => [],
         ];
         if ($tokenOnly) {
             $retVal['token'] = $driver->getUniqueID();
@@ -221,14 +223,14 @@ implements TranslatorAwareInterface
                 'label' => 'View Record',
                 'icon' => 'fa-file-text-o',
                 'url' => $this->url
-                    ->fromRoute($route['route'], $route['params'])
+                    ->fromRoute($route['route'], $route['params']),
             ];
             $retVal['links'][] = [
                 'label' => 'channel_expand',
                 'icon' => 'fa-search-plus',
                 'url' => $this->url->fromRoute('channels-record')
                     . '?id=' . urlencode($driver->getUniqueID())
-                    . '&source=' . urlencode($driver->getSourceIdentifier())
+                    . '&source=' . urlencode($driver->getSourceIdentifier()),
             ];
         }
         return $retVal;

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * IpRange permission provider for VuFind.
  *
@@ -28,6 +29,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Role\PermissionProvider;
 
 use Laminas\Stdlib\RequestInterface;

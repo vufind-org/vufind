@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Alma ILS Driver
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use Laminas\Http\Headers;
@@ -43,8 +45,10 @@ use VuFind\Marc\MarcReader;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface,
-    \Laminas\Log\LoggerAwareInterface, TranslatorAwareInterface
+class Alma extends AbstractBase implements
+    \VuFindHttp\HttpServiceAwareInterface,
+    \Laminas\Log\LoggerAwareInterface,
+    TranslatorAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
@@ -354,7 +358,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     'holdtype' => 'auto',
                     'addLink' => $patron ? 'check' : false,
                     // For Alma title-level hold requests
-                    'description' => $description ?? null
+                    'description' => $description ?? null,
                 ];
             }
         }
@@ -538,7 +542,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         // Check if config params are all set
         $configParams = [
             'recordType', 'userGroup', 'preferredLanguage',
-            'accountType', 'status', 'emailType', 'idType'
+            'accountType', 'status', 'emailType', 'idType',
         ];
         foreach ($configParams as $configParam) {
             if (empty(trim($newUserConfig[$configParam] ?? ''))) {
@@ -653,7 +657,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             [$response, $status] = $this->makeRequest(
                 '/users/' . rawurlencode($username),
                 [
-                    'view' => 'full'
+                    'view' => 'full',
                 ],
                 [],
                 'GET',
@@ -666,12 +670,12 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 $patron = [
                     'id' => (string)$response->primary_id,
                     'cat_username' => trim($username),
-                    'email' => $this->getPreferredEmail($response)
+                    'email' => $this->getPreferredEmail($response),
                 ];
             } else {
                 // Try to find the user in Alma by unique email address
                 $getParams = [
-                    'q' => 'email~' . $username
+                    'q' => 'email~' . $username,
                 ];
 
                 $response = $this->makeRequest(
@@ -694,7 +698,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     $patron = [
                         'id' => (string)$user->primary_id,
                         'cat_username' => trim($username),
-                        'email' => trim($username)
+                        'email' => trim($username),
                     ];
                 }
             }
@@ -708,7 +712,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             $getParams = [
                 'user_id_type' => 'all_unique',
                 'op' => 'auth',
-                'password' => $password
+                'password' => $password,
             ];
 
             // Try to authenticate the user with Alma
@@ -734,7 +738,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $getParams = [
             'user_id_type' => 'all_unique',
             'view' => 'full',
-            'expand' => 'none'
+            'expand' => 'none',
         ];
 
         // Check for patron in Alma
@@ -791,7 +795,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 : null,
             'group_code' => (isset($xml->user_group))
                 ? (string)$xml->user_group
-                : null
+                : null,
         ];
         $contact = $xml->contact_info;
         if ($contact) {
@@ -859,7 +863,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 "balance"  => round(floatval($fee->balance) * 100),
                 "createdate" => $this->parseDate($created, true),
                 "checkout" => $this->parseDate($checkout, true),
-                "fine"     => $this->getTranslatableString($fee->type)
+                "fine"     => $this->getTranslatableString($fee->type),
             ];
         }
         return $fineList;
@@ -973,7 +977,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 $count++;
                 $item[$requestId] = [
                     'success' => true,
-                    'status' => 'hold_cancel_success'
+                    'status' => 'hold_cancel_success',
                 ];
             } catch (ILSException $e) {
                 if (isset($apiResult['xml'])) {
@@ -989,7 +993,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     'status' => 'hold_cancel_fail',
                     'sysMessage' => $sysMessage . '. ' .
                          'Alma request ID: ' . $requestId . '. ' .
-                         'Alma error code: ' . $almaErrorCode
+                         'Alma error code: ' . $almaErrorCode,
                 ];
             }
 
@@ -1042,11 +1046,11 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     ?? 'hold_error_fail';
                 $results[$requestId] = [
                     'success' => false,
-                    'status' => (string)$error
+                    'status' => (string)$error,
                 ];
             } else {
                 $results[$requestId] = [
-                    'success' => true
+                    'success' => true,
                 ];
             }
         }
@@ -1074,7 +1078,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $holdList = [];
         for ($i = 0; $i < count($xml->user_requests); $i++) {
             $request = $xml->user_requests[$i];
-            if (!isset($request->item_policy)
+            if (
+                !isset($request->item_policy)
                 || $request->item_policy !== 'Archive'
             ) {
                 continue;
@@ -1114,7 +1119,8 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $holdList = [];
         for ($i = 0; $i < count($xml->user_requests); $i++) {
             $request = $xml->user_requests[$i];
-            if (!isset($request->item_policy)
+            if (
+                !isset($request->item_policy)
                 || $request->item_policy !== 'InterlibraryLoan'
             ) {
                 continue;
@@ -1176,7 +1182,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 ? ($params['page'] - 1) * $pageSize : 0,
             'order_by' => $sortKey,
             'direction' => $direction,
-            'expand' => 'renewable'
+            'expand' => 'renewable',
         ];
 
         // Get user loans from Alma API
@@ -1237,7 +1243,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 
         return [
             'count' => $totalCount,
-            'records' => $returnArray
+            'records' => $returnArray,
         ];
     }
 
@@ -1295,7 +1301,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                         true
                     ),
                     'item_id' => (string)$apiResult->loan_id,
-                    'sysMessage' => 'renew_success'
+                    'sysMessage' => 'renew_success',
                 ];
 
                 // Add the renewal to the return array
@@ -1303,7 +1309,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             } catch (ILSException $ilsEx) {
                 // Add the empty renewal array to the return array
                 $returnArray['details'][$loanId] = [
-                    'success' => false
+                    'success' => false,
                 ];
             }
         }
@@ -1375,7 +1381,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     {
         if ($function == 'patronLogin') {
             return [
-                'loginMethod' => $this->config['Catalog']['loginMethod'] ?? 'vufind'
+                'loginMethod' => $this->config['Catalog']['loginMethod'] ?? 'vufind',
             ];
         }
         if (isset($this->config[$function])) {
@@ -1396,9 +1402,9 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     'checkout asc' => 'sort_checkout_date_asc',
                     'due desc' => 'sort_due_date_desc',
                     'due asc' => 'sort_due_date_asc',
-                    'title asc' => 'sort_title'
+                    'title asc' => 'sort_title',
                 ],
-                'default_sort' => 'due asc'
+                'default_sort' => 'due asc',
             ];
         } else {
             $functionConfig = false;
@@ -1481,7 +1487,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $client->setHeaders(
             [
             'Content-type: application/json',
-            'Accept: application/json'
+            'Accept: application/json',
             ]
         );
 
@@ -1515,7 +1521,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         return [
             'success' => false,
             'sysMessage' => $error->errorList->error[0]->errorMessage
-                ?? 'hold_error_fail'
+                ?? 'hold_error_fail',
         ];
     }
 
@@ -1547,7 +1553,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         foreach ($xml as $library) {
             $libraries[] = [
                 'locationID' => (string)$library->code,
-                'locationDisplay' => (string)$library->name
+                'locationDisplay' => (string)$library->name,
             ];
         }
         return $libraries;
@@ -1704,7 +1710,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $map = [
             'physical' => 'p_avail',
             'digital' => 'd_avail',
-            'electronic' => 'e_avail'
+            'electronic' => 'e_avail',
         ];
         $types = array_flip($types);
         foreach ($map as $src => $dest) {
@@ -1732,7 +1738,7 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $results = [];
         $params = [
             'mms_id' => implode(',', $ids),
-            'expand' => implode(',', $types)
+            'expand' => implode(',', $types),
         ];
         if ($bibs = $this->makeRequest('/bibs', $params)) {
             foreach ($bibs as $bib) {
@@ -1887,16 +1893,16 @@ class Alma extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         return $this->getTranslatableString($item->item_data->location);
     }
 
-    // @codingStandardsIgnoreStart
-
     /**
+     * Get list of funds
+     *
      * @return array with key = course ID, value = course name
-     * /
-     * public function getFunds() {
-     * // https://developers.exlibrisgroup.com/alma/apis/acq
-     * // GET /almaws/v1/acq/funds
-     * }
      */
-
-    // @codingStandardsIgnoreEnd
+    public function getFunds()
+    {
+        // TODO: implement me!
+        // https://developers.exlibrisgroup.com/alma/apis/acq
+        // GET /almaws/v1/acq/funds
+        return [];
+    }
 }

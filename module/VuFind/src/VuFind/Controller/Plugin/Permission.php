@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Action Helper - Permission Checker
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Controller\Plugin;
 
 use Laminas\Log\LoggerAwareInterface;
@@ -43,7 +45,8 @@ use VuFind\Role\PermissionManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Permission extends AbstractPlugin implements LoggerAwareInterface,
+class Permission extends AbstractPlugin implements
+    LoggerAwareInterface,
     TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
@@ -119,7 +122,8 @@ class Permission extends AbstractPlugin implements LoggerAwareInterface,
     ) {
         // If no permission rule is defined and we're only checking defined
         // permissions, bail out now....
-        if (!$this->permissionManager->permissionRuleExists($permission)
+        if (
+            !$this->permissionManager->permissionRuleExists($permission)
             && $passIfUndefined
         ) {
             return null;

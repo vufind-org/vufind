@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Backend\Solr\Json\Response;
 
 use PHPUnit\Framework\TestCase;
@@ -90,7 +91,7 @@ class RecordCollectionTest extends TestCase
     {
         $coll = new RecordCollection(
             [
-                'response' => ['numFound' => 10, 'start' => 5]
+                'response' => ['numFound' => 10, 'start' => 5],
             ]
         );
         for ($i = 0; $i < 5; $i++) {
@@ -114,8 +115,8 @@ class RecordCollectionTest extends TestCase
                 'params' => [
                     'spellcheck.q' => 'foo',
                     'q' => 'bar',
-                ]
-            ]
+                ],
+            ],
         ];
         $coll = new RecordCollection($input);
         $this->assertEquals('foo', $coll->getSpellcheck()->getQuery());
@@ -154,12 +155,12 @@ class RecordCollectionTest extends TestCase
                         ],
                     ],
                     ['correctlySpelled', false],
-                ]
-            ]
+                ],
+            ],
         ];
         $coll = new RecordCollection($input);
         $spell = $coll->getSpellcheck();
-        $this->assertEquals(1, count($spell));
+        $this->assertCount(1, $spell);
     }
 
     /**
@@ -203,7 +204,7 @@ class RecordCollectionTest extends TestCase
         $coll->add($r3);
         $coll->shuffle();
         $final = $coll->getRecords();
-        $this->assertEquals(3, count($final));
+        $this->assertCount(3, $final);
         $this->assertTrue(in_array($r1, $final));
         $this->assertTrue(in_array($r2, $final));
         $this->assertTrue(in_array($r3, $final));
@@ -218,7 +219,7 @@ class RecordCollectionTest extends TestCase
     {
         $coll = new RecordCollection(
             [
-                'response' => ['numFound' => 10, 'start' => 5]
+                'response' => ['numFound' => 10, 'start' => 5],
             ]
         );
         $record = $this->createMock(\VuFindSearch\Response\RecordInterface::class);
@@ -248,9 +249,9 @@ class RecordCollectionTest extends TestCase
                             ['Book', 123],
                             ['Journal', 234],
                             ['Map', 1],
-                        ]
-                    ]
-                ]
+                        ],
+                    ],
+                ],
             ]
         );
         $facets = $coll->getFacets();
@@ -259,8 +260,8 @@ class RecordCollectionTest extends TestCase
                 'format' => [
                     'Book' => 123,
                     'Journal' => 234,
-                    'Map' => 1
-                ]
+                    'Map' => 1,
+                ],
             ],
             $facets
         );
@@ -270,8 +271,8 @@ class RecordCollectionTest extends TestCase
             [
                 'format' => [
                     'Book' => 123,
-                    'Map' => 1
-                ]
+                    'Map' => 1,
+                ],
             ],
             $coll->getFacets()
         );

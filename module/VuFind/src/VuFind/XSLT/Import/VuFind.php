@@ -1,4 +1,5 @@
 <?php
+
 /**
  * XSLT importer support methods.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/indexing Wiki
  */
+
 namespace VuFind\XSLT\Import;
 
 use DOMDocument;
@@ -294,10 +296,10 @@ class VuFind
         $descriptorspec = [
             0 => ['pipe', 'r'],
             1 => ['file', $output, 'w'],
-            2 => ['pipe', 'w']
+            2 => ['pipe', 'w'],
         ];
         return [
-            "java -jar $tika $arg -eUTF8 $input", $descriptorspec, []
+            "java -jar $tika $arg -eUTF8 $input", $descriptorspec, [],
         ];
     }
 

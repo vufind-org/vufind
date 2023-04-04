@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink test class for visualization view.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 /**
@@ -50,7 +52,7 @@ class VisualizationTest extends \VuFindTest\Integration\MinkTestCase
                 'default_top_recommend' => ['VisualFacets'],
             ],
             'Views' => ['list' => 'List', 'visual' => 'Visual'],
-        ]
+        ],
     ];
 
     /**

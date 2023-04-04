@@ -3,7 +3,13 @@
     <?php foreach ($viewList as $viewType => $viewData): ?>
       <?php $viewDesc = $this->translate($viewData['desc']); ?>
       <?php if (!$viewData['selected']): ?>
-        <a class="icon-link" href="<?=$this->results->getUrlQuery()->setViewParam($viewType)?>" title="<?=$this->transEscAttr('switch_view', ['%%view%%' => $viewDesc])?>" >
+        <?php
+          $viewUrl = $this->results->getUrlQuery()->setViewParam($viewType);
+          if ('visual' === $viewType) {
+            $viewUrl = $viewUrl->setPage(1);
+          }
+        ?>
+        <a class="icon-link" href="<?=$viewUrl?>" title="<?=$this->transEscAttr('switch_view', ['%%view%%' => $viewDesc])?>" >
       <?php else: ?>
         <span class="icon-link" title="<?=$this->transEscAttr('view_already_selected', ['%%current%%' => $viewDesc]) ?>">
       <?php endif; ?>

@@ -70,7 +70,7 @@
             $transParams = [
               '%%start%%' => $this->localizedNumber($results->getStartRecord()),
               '%%end%%' => $this->localizedNumber($results->getEndRecord()),
-              '%%total%%' => $this->localizedNumber($recordTotal)
+              '%%total%%' => $this->localizedNumber($recordTotal),
             ];
           ?>
           <?php if (!isset($this->skipTotalCount)): ?>

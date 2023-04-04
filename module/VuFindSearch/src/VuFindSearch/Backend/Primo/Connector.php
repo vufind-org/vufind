@@ -31,6 +31,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Primo;
 
 use Laminas\Http\Client as HttpClient;
@@ -84,7 +85,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         'recordCount' => 0,
         'documents' => [],
         'facets' => [],
-        'error' => 'empty_search_disallowed'
+        'error' => 'empty_search_disallowed',
     ];
 
     /**
@@ -616,7 +617,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             'recordCount' => $totalhits,
             'documents' => $items,
             'facets' => $facets,
-            'didYouMean' => $didYouMean
+            'didYouMean' => $didYouMean,
         ];
     }
 
@@ -735,7 +736,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         $highlightFields = [
             'title' => 'title',
             'creator' => 'author',
-            'description' => 'description'
+            'description' => 'description',
         ];
 
         $hilightDetails = [];

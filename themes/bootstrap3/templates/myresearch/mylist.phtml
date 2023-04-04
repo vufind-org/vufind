@@ -48,7 +48,7 @@
           $transParams = [
             '%%start%%' => $this->localizedNumber($this->results->getStartRecord()),
             '%%end%%' => $this->localizedNumber($this->results->getEndRecord()),
-            '%%total%%' => $this->localizedNumber($recordTotal)
+            '%%total%%' => $this->localizedNumber($recordTotal),
           ];
         ?>
         <?=$this->translate('showing_items_of_html', $transParams); ?>
