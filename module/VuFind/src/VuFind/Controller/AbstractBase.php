@@ -669,7 +669,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
      * separate logic is used for storing followup information when VuFind
      * forces the user to log in from another context.
      *
-     * @param bool $allowCurrentUrl Whether the current URL is a valid for followup
+     * @param bool $allowCurrentUrl Whether the current URL is valid for followup
      *
      * @return void
      */
