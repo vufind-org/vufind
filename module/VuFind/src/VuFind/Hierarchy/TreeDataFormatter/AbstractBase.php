@@ -126,6 +126,7 @@ abstract class AbstractBase implements \VuFind\I18n\HasSorterInterface
         if (
             isset($fields->hierarchy_parent_id)
             && isset($fields->hierarchy_sequence)
+            && count($fields->hierarchy_parent_id) === count($fields->hierarchy_sequence)
         ) {
             foreach ($fields->hierarchy_parent_id as $key => $val) {
                 $retVal[$val] = $fields->hierarchy_sequence[$key];
