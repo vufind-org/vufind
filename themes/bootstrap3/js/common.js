@@ -619,22 +619,12 @@ function setupQRCodeLinks(_container) {
   var container = _container || $('body');
 
   container.find('a.qrcodeLink').click(function qrcodeToggle() {
-    if ($(this).hasClass("active")) {
-      $(".result-link-label", this).html(VuFind.translate('qrcode_show'));
-      $(this).removeClass("active");
-    } else {
-      $(".result-link-label", this).html(VuFind.translate('qrcode_hide'));
-      $(this).addClass("active");
-    }
-
     var holder = $(this).next('.qrcode');
     if (holder.find('img').length === 0) {
       // We need to insert the QRCode image
       var template = holder.find('.qrCodeImgTag').html();
       holder.html(template);
     }
-    holder.toggleClass('hidden');
-    return false;
   });
 }
 

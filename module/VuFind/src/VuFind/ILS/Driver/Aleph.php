@@ -1085,31 +1085,28 @@ class Aleph extends AbstractBase implements
         $patron = $details['patron'];
         $patronId = $patron['id'];
         $count = 0;
-        $statuses = [];
+        $items = [];
         foreach ($details['details'] as $id) {
             try {
                 $result = $this->doRestDLFRequest(
                     [
                         'patron', $patronId, 'circulationActions', 'requests',
-                         'holds', $id,
+                        'holds', $id,
                     ],
                     null,
                     "DELETE"
                 );
+                $count++;
+                $items[$id] = ['success' => true, 'status' => 'cancel_hold_ok'];
             } catch (Aleph\RestfulException $e) {
-                $statuses[$id] = [
-                    'success' => false, 'status' => 'cancel_hold_failed',
+                $items[$id] = [
+                    'success' => false,
+                    'status' => 'cancel_hold_failed',
                     'sysMessage' => $e->getMessage(),
                 ];
             }
-            if (isset($result)) {
-                $count++;
-                $statuses[$id]
-                    = ['success' => true, 'status' => 'cancel_hold_ok'];
-            }
         }
-        $statuses['count'] = $count;
-        return $statuses;
+        return ['count' => $count, 'items' => $items];
     }
 
     /**
