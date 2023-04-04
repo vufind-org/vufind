@@ -47,11 +47,16 @@
       </li>
     <?php endforeach; ?>
   </ul>
-  <?php $selectedValue = $showSelectedValue ? ': ' . $selected . ' ' : ''; ?>
+  <?php
+    $label = empty($this->toggleLabel) ? '' : $this->transEsc($this->toggleLabel);
+    if ($showSelectedValue) {
+      $label .= (empty($label) ? '' : ': ') . $selected . ' ';
+    }
+  ?>
   <?=$this
       ->makeTag(
           $toggleTag,
-          $this->transEsc($this->toggleLabel) . $selectedValue . $this->icon('dropdown-caret'),
+          $label . $this->icon('dropdown-caret'),
           $toggleAttrs,
           ['escapeContent' => false]
       )
