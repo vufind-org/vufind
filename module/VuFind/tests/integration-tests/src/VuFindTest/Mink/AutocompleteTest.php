@@ -75,7 +75,7 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testBasicAutocomplete()
+    public function testBasicAutocomplete(): void
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Search/Home');
@@ -96,7 +96,7 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testBasicAutocompleteForNonDefaultField()
+    public function testBasicAutocompleteForNonDefaultField(): void
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Search/Home');
@@ -115,11 +115,41 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test two different autocomplete types in the same session to ensure that inappropriate
+     * caching does not occur.
+     *
+     * @return void
+     */
+    public function testMultipleAutocompletesInSingleSession(): void
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Home');
+        $page = $session->getPage();
+        // First do a search in All Fields
+        $this->findCss($page, '#searchForm_lookfor')
+            ->setValue('jsto');
+        $acItem = $this->getAndAssertFirstAutocompleteValue($page, 'Al Gore');
+        // Now repeat the same search in Author
+        $this->findCss($page, '#searchForm_type')
+            ->setValue('Author');
+            $this->findCss($page, '#searchForm_lookfor')
+            ->setValue('jsto');
+        // Make sure we get the right author match, and not a cached All Fields value!
+        $acItem = $this->getAndAssertFirstAutocompleteValue($page, 'JSTOR (Organization)');
+        $acItem->click();
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            $this->getVuFindUrl() . '/Search/Results?lookfor=JSTOR+%28Organization%29&type=Author',
+            $session->getCurrentUrl()
+        );
+    }
+
+    /**
      * Test that default autocomplete behavior is correct.
      *
      * @return void
      */
-    public function testDisablingAutocompleteAutosubmit()
+    public function testDisablingAutocompleteAutosubmit(): void
     {
         $this->changeConfigs(
             ['searches' => ['Autocomplete' => ['auto_submit' => false]]]
