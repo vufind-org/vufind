@@ -10,11 +10,12 @@
               // Special case: insert initial value if cat_username is empty:
               null === $this->user->cat_username
                 ? [
-                  [
-                    'label' => '-',
-                    'url' => $this->url('librarycards-selectcard', [], ['query' => ['cardID' => ""]]),
-                    'extraLinkAttributes' => ['data-clear-account-cache' => ''],
-                    'selected' => true],
+                    [
+                      'label' => '-',
+                      'url' => $this->url('librarycards-selectcard', [], ['query' => ['cardID' => ""]]),
+                      'extraLinkAttributes' => ['data-clear-account-cache' => ''],
+                      'selected' => true,
+                    ],
                 ]
                 : [],
               // Standard case: map the cards:
