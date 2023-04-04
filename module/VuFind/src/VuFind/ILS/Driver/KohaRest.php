@@ -1566,10 +1566,11 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         $links = [];
         $opacUrl = $this->config['Catalog']['opacURL'] ?? false;
         if ($opacUrl) {
-            $links[] = [
-                'url' => $opacUrl . '?biblionumber=' . urlencode($id),
-                'desc' => $this->translate('view_in_opac'),
-            ];
+            $url = strstr($opacUrl, '%%id%%') === false
+                ? $opacUrl . urlencode($id)
+                : str_replace('%%id%%', urlencode($id), $opacUrl);
+            $desc = $this->translate('view_in_opac');
+            $links[] = compact('url', 'desc');
         }
         return $links;
     }
