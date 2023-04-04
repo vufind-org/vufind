@@ -583,11 +583,6 @@ function unwrapJQuery(node) {
   return node instanceof Node ? node : node[0];
 }
 
-function setupJumpMenus(_container) {
-  var container = _container || $('body');
-  container.find('select.jumpMenu').change(function jumpMenu(){ $(this).parent('form').submit(); });
-}
-
 function setupMultiILSLoginFields(loginMethods, idPrefix) {
   var searchPrefix = idPrefix ? '#' + idPrefix : '#';
   $(searchPrefix + 'target').change(function onChangeLoginTarget() {
@@ -637,10 +632,6 @@ $(document).ready(function commonDocReady() {
   setupOffcanvas();
   // Keyboard shortcuts in detail view
   keyboardShortcuts();
-
-  // support "jump menu" dropdown boxes
-  setupJumpMenus();
-
   // handle QR code links
   setupQRCodeLinks();
 
