@@ -38,9 +38,9 @@
       <li class="dropdown__item<?=$extraClasses?>">
         <?php
           $linkAttributes = array_merge(
-            $current['extraLinkAttributes'] ?? [],
-            ['class' => 'dropdown__link', 'href' => $current['url'], 'rel' => 'nofollow']
-          );
+          $current['extraLinkAttributes'] ?? [],
+          ['class' => 'dropdown__link', 'href' => $current['url'], 'rel' => 'nofollow']
+      );
         ?>
         <a<?=$this->htmlAttributes($linkAttributes)?>>
           <?=$this->transEsc($current['label']) ?>
