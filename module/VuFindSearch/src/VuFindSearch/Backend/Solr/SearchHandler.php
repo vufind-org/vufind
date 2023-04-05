@@ -28,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Solr;
 
 /**
@@ -53,7 +54,7 @@ class SearchHandler
      */
     protected static $configKeys = [
         'CustomMunge', 'DismaxFields', 'DismaxHandler', 'QueryFields',
-        'DismaxParams', 'FilterQuery', 'DismaxMunge'
+        'DismaxParams', 'FilterQuery', 'DismaxMunge',
     ];
 
     /**
@@ -387,7 +388,8 @@ class SearchHandler
             // also omit quotes if the phrase is already quoted or if there is no
             // whitespace (in which case phrase searching is pointless and might
             // interfere with wildcard behavior):
-            if (strstr($search, '"') || strstr($search, ' NOT ')
+            if (
+                strstr($search, '"') || strstr($search, ' NOT ')
                 || !preg_match('/\s/', $search)
             ) {
                 $mungeValues['onephrase'] = $search;
@@ -434,29 +436,29 @@ class SearchHandler
     protected function customMunge($string, $operation)
     {
         switch ($operation[0]) {
-        case 'append':
-            $string .= $operation[1];
-            break;
-        case 'lowercase':
-            $string = strtolower($string);
-            break;
-        case 'preg_replace':
-            $string = preg_replace(
-                $operation[1],
-                $operation[2],
-                $string
-            );
-            break;
-        case 'ucfirst':
-            $string = ucfirst($string);
-            break;
-        case 'uppercase':
-            $string = strtoupper($string);
-            break;
-        default:
-            throw new \InvalidArgumentException(
-                sprintf('Unknown munge operation: %s', $operation[0])
-            );
+            case 'append':
+                $string .= $operation[1];
+                break;
+            case 'lowercase':
+                $string = strtolower($string);
+                break;
+            case 'preg_replace':
+                $string = preg_replace(
+                    $operation[1],
+                    $operation[2],
+                    $string
+                );
+                break;
+            case 'ucfirst':
+                $string = ucfirst($string);
+                break;
+            case 'uppercase':
+                $string = strtoupper($string);
+                break;
+            default:
+                throw new \InvalidArgumentException(
+                    sprintf('Unknown munge operation: %s', $operation[0])
+                );
         }
         return $string;
     }

@@ -26,7 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
+
 namespace VuFindSearch\Backend\Blender\Response\Json;
+
+use VuFindSearch\Response\RecordInterface;
 
 /**
  * JSON-based record collection for records from multiple sources.
@@ -37,8 +40,7 @@ namespace VuFindSearch\Backend\Blender\Response\Json;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-class RecordCollection
-    extends \VuFindSearch\Backend\Solr\Response\Json\RecordCollection
+class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCollection
 {
     /**
      * Blender configuration
@@ -190,9 +192,8 @@ class RecordCollection
      */
     public function getFacetDelimiter(string $field): string
     {
-        foreach ($this->config->Advanced_Settings->delimited_facets ?? []
-            as $current
-        ) {
+        $delimitedFacets = $this->config->Advanced_Settings->delimited_facets ?? [];
+        foreach ($delimitedFacets as $current) {
             $parts = explode('|', $current);
             if ($parts[0] === $field) {
                 return $parts[1] ?? $this->config->Advanced_Settings->delimiter
@@ -215,19 +216,34 @@ class RecordCollection
         foreach ($collections as $backendId => $collection) {
             $result[$backendId] = [];
             $records = $collection->getRecords();
-            $label = $this->config->Backends[$backendId];
             foreach ($records as $record) {
                 $record->setSourceIdentifiers(
                     $record->getSourceIdentifier(),
                     $backendId
                 );
-                if ($label) {
-                    $record->addLabel($label, 'source');
-                }
                 $result[$backendId][] = $record;
             }
         }
         return $result;
+    }
+
+    /**
+     * Add a record to the collection.
+     *
+     * @param RecordInterface $record        Record to add
+     * @param bool            $checkExisting Whether to check for existing record in
+     * the collection (slower, but makes sure there are no duplicates)
+     *
+     * @return void
+     */
+    public function add(RecordInterface $record, $checkExisting = true)
+    {
+        $label = $this->config->Backends[$record->getSearchBackendIdentifier()]
+            ?? '';
+        if ($label) {
+            $record->addLabel($label, 'source');
+        }
+        parent::add($record, $checkExisting);
     }
 
     /**
@@ -247,7 +263,7 @@ class RecordCollection
                         'msg' => '%%error%% -- %%label%%',
                         'tokens' => [
                             '%%error%%' => $error,
-                            '%%label%%' => $label
+                            '%%label%%' => $label,
                         ],
                         'translate' => true,
                         'translateTokens' => true,
@@ -301,9 +317,8 @@ class RecordCollection
 
         // Iterate through mappings and merge values. It is important to do it this
         // way since multiple facets may map to a single one.
-        foreach ($this->mappings['Facets']['Fields'] ?? []
-            as $facetField => $settings
-        ) {
+        $facetFieldData = $this->mappings['Facets']['Fields'] ?? [];
+        foreach ($facetFieldData as $facetField => $settings) {
             // Get merged list of facet values:
             $list = $this->mapFacetValues($collections, $settings);
             // Re-sort the list:
@@ -374,6 +389,18 @@ class RecordCollection
                 }
             }
         }
+
+        foreach ($settings['Mappings'] as $backendId => $mappings) {
+            $ignore = $mappings['Ignore'] ?? false;
+            if ($ignore && ($collections[$backendId] ?? false)) {
+                $ignoredKeys = is_array($ignore) ? $ignore : array_keys($result);
+                foreach ($ignoredKeys as $ignoredValue) {
+                    $result[$ignoredValue] = ($result[$ignoredValue] ?? 0)
+                        + $collections[$backendId]->getTotal();
+                }
+            }
+        }
+
         return $result;
     }
 

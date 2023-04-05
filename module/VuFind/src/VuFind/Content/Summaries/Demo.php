@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Demo (fake data) summaries content loader.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Content\Summaries;
 
 /**
@@ -53,7 +55,7 @@ class Demo extends \VuFind\Content\AbstractBase
         // Initialize return value:
         return [
             'Demo summary key: ' . $key,
-            'Demo summary ISBN: ' . $isbnObj->get13()
+            'Demo summary ISBN: ' . $isbnObj->get13(),
         ];
     }
 }

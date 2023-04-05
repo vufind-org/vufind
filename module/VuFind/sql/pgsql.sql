@@ -92,10 +92,9 @@ CREATE TABLE search (
 id BIGSERIAL,
 user_id int NOT NULL DEFAULT '0',
 session_id varchar(128),
-folder_id int DEFAULT NULL,
 created timestamp NOT NULL DEFAULT '1970-01-01 00:00:00',
 title varchar(20) DEFAULT NULL,
-saved int NOT NULL DEFAULT '0',
+saved boolean NOT NULL DEFAULT '0',
 search_object bytea,
 checksum int DEFAULT NULL,
 notification_frequency int NOT NULL DEFAULT '0',
@@ -104,7 +103,6 @@ notification_base_url varchar(255) NOT NULL DEFAULT '',
 PRIMARY KEY (id)
 );
 CREATE INDEX search_user_id_idx ON search (user_id);
-CREATE INDEX search_folder_id_idx ON search (folder_id);
 CREATE INDEX session_id_idx ON search (session_id);
 CREATE INDEX notification_frequency_idx ON search (notification_frequency);
 CREATE INDEX notification_base_url_idx ON search (notification_base_url);
@@ -192,7 +190,7 @@ user_id int NOT NULL,
 title varchar(200) NOT NULL,
 description text DEFAULT NULL,
 created timestamp NOT NULL DEFAULT '1970-01-01 00:00:00',
-public int NOT NULL DEFAULT '0',
+public boolean NOT NULL DEFAULT '0',
 PRIMARY KEY (id)
 );
 CREATE INDEX user_list_user_id_idx ON user_list (user_id);

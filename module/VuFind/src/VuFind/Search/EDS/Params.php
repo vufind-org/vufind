@@ -1,10 +1,12 @@
 <?php
+
 /**
  * EDS API Params
  *
  * PHP version 7
  *
  * Copyright (C) EBSCO Industries 2013
+ * Copyright (C) The National Library of Finland 2022
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,9 +24,11 @@
  * @category VuFind
  * @package  EBSCO
  * @author   Michelle Milton <mmilton@epnet.com>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\EDS;
 
 use VuFindSearch\ParamBag;
@@ -35,6 +39,7 @@ use VuFindSearch\ParamBag;
  * @category VuFind
  * @package  EBSCO
  * @author   Michelle Milton <mmilton@epnet.com>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -72,18 +77,20 @@ class Params extends \VuFind\Search\Base\Params
     protected $defaultFacetLabelCheckboxSections = ['CheckboxFacets'];
 
     /**
-     * Is the request using this parameters objects for setup only?
-     *
-     * @var bool
-     */
-    public $isSetupOnly = false;
-
-    /**
      * Facet settings
      *
      * @var array
      */
     protected $fullFacetSettings = [];
+
+    /**
+     * A flag indicating whether limiters and expanders have been added to the
+     * checkbox facets. Used to defer adding them (and accessing the API) until
+     * necessary.
+     *
+     * @var bool
+     */
+    protected $checkboxFacetsAugmented = false;
 
     /**
      * Constructor
@@ -94,8 +101,6 @@ class Params extends \VuFind\Search\Base\Params
     public function __construct($options, \VuFind\Config\PluginManager $configLoader)
     {
         parent::__construct($options, $configLoader);
-        $this->addLimitersAsCheckboxFacets($options);
-        $this->addExpandersAsCheckboxFacets($options);
     }
 
     /**
@@ -150,10 +155,6 @@ class Params extends \VuFind\Search\Base\Params
             $backendParams->set('searchMode', $mode);
         }
 
-        //process the setup only parameter
-        if (true == $this->isSetupOnly) {
-            $backendParams->set('setuponly', $this->isSetupOnly);
-        }
         $this->createBackendFilterParameters($backendParams, $options);
 
         return $backendParams;
@@ -334,7 +335,7 @@ class Params extends \VuFind\Search\Base\Params
         foreach ($this->getOptions()->getViewOptions() as $key => $value) {
             $list[$key] = [
                 'desc' => $value,
-                'selected' => ($key == $this->getView() . '|' . $this->getEdsView())
+                'selected' => ($key == $this->getView() . '|' . $this->getEdsView()),
             ];
         }
         return $list;
@@ -355,5 +356,31 @@ class Params extends \VuFind\Search\Base\Params
 
         // Build display query:
         return QueryAdapter::display($this->getQuery(), $translate, $showField);
+    }
+
+    /**
+     * Return checkbox facets without any processing
+     *
+     * @return array
+     */
+    protected function getRawCheckboxFacets(): array
+    {
+        $this->augmentCheckboxFacets();
+        return parent::getRawCheckboxFacets();
+    }
+
+    /**
+     * Augment checkbox facets with limiters and expanders retrieved from the API
+     * info
+     *
+     * @return void
+     */
+    protected function augmentCheckboxFacets(): void
+    {
+        if (!$this->checkboxFacetsAugmented) {
+            $this->addLimitersAsCheckboxFacets($this->getOptions());
+            $this->addExpandersAsCheckboxFacets($this->getOptions());
+            $this->checkboxFacetsAugmented = true;
+        }
     }
 }

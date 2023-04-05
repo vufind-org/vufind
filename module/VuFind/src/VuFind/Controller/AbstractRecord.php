@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Record Controller
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
+
 namespace VuFind\Controller;
 
 use VuFind\Exception\BadRequest as BadRequestException;
@@ -165,7 +167,8 @@ class AbstractRecord extends AbstractBase
             $resource->addComment($comment, $user);
 
             // Save rating if allowed:
-            if ($driver->isRatingAllowed()
+            if (
+                $driver->isRatingAllowed()
                 && '0' !== ($rating = $this->params()->fromPost('rating', '0'))
             ) {
                 $driver->addOrUpdateRating($user->id, intval($rating));
@@ -266,7 +269,7 @@ class AbstractRecord extends AbstractBase
             $this->flashMessenger()->addMessage(
                 [
                     'msg' => 'tags_deleted',
-                    'tokens' => ['%count%' => 1]
+                    'tokens' => ['%count%' => 1],
                 ],
                 'success'
             );
@@ -293,7 +296,8 @@ class AbstractRecord extends AbstractBase
         // Save rating, if any, and user has logged in:
         $user = $this->getUser();
         if ($user && null !== ($rating = $this->params()->fromPost('rating'))) {
-            if ('' === $rating
+            if (
+                '' === $rating
                 && !($this->getConfig()->Social->remove_rating ?? true)
             ) {
                 throw new BadRequestException('error_inconsistent_parameters');
@@ -312,7 +316,7 @@ class AbstractRecord extends AbstractBase
         // Display the "add rating" form:
         $view = $this->createViewModel(
             [
-                'currentRating' => $user ? $driver->getRatingData($user->id) : null
+                'currentRating' => $user ? $driver->getRatingData($user->id) : null,
             ]
         );
         return $view;
@@ -342,8 +346,12 @@ class AbstractRecord extends AbstractBase
                 if (true === $driver->tryMethod('isCollection')) {
                     $params = $this->params()->fromQuery()
                         + $this->params()->fromRoute();
+                    $options = [];
+                    if ($sid = $this->getSearchMemory()->getCurrentSearchId()) {
+                        $options['query'] = compact($sid);
+                    }
                     $collectionUrl = $this->url()
-                        ->fromRoute($collectionRoute, $params);
+                        ->fromRoute($collectionRoute, $params, $options);
                     return $this->redirect()->toUrl($collectionUrl);
                 }
             }
@@ -399,7 +407,7 @@ class AbstractRecord extends AbstractBase
             'html' => true,
             'msg' => $this->translate('bulk_save_success') . '. '
             . '<a href="' . $listUrl . '" class="gotolist">'
-            . $this->translate('go_to_list') . '</a>.'
+            . $this->translate('go_to_list') . '</a>.',
         ];
         $this->flashMessenger()->addMessage($message, 'success');
 
@@ -449,7 +457,8 @@ class AbstractRecord extends AbstractBase
         // in these cases, we will simply push the user to record view
         // by unsetting the followup and relying on default behavior in processSave.
         $referer = $this->getRequest()->getServer()->get('HTTP_REFERER');
-        if (substr($referer, -5) != '/Save'
+        if (
+            substr($referer, -5) != '/Save'
             && stripos($referer, 'MyResearch/EditList/NEW') === false
         ) {
             $this->setFollowupUrlToReferer();
@@ -486,7 +495,7 @@ class AbstractRecord extends AbstractBase
         $view = $this->createViewModel(
             [
                 'containingLists' => $containingLists,
-                'nonContainingLists' => $nonContainingLists
+                'nonContainingLists' => $nonContainingLists,
             ]
         );
         $view->setTemplate('record/save');
@@ -502,7 +511,8 @@ class AbstractRecord extends AbstractBase
     {
         // Force login if necessary:
         $config = $this->getConfig();
-        if ((!isset($config->Mail->require_login) || $config->Mail->require_login)
+        if (
+            (!isset($config->Mail->require_login) || $config->Mail->require_login)
             && !$this->getUser()
         ) {
             return $this->forceLogin();
@@ -662,7 +672,8 @@ class AbstractRecord extends AbstractBase
 
         // If this is an export format that redirects to an external site, perform
         // the redirect now (unless we're being called back from that service!):
-        if ($export->needsRedirect($format)
+        if (
+            $export->needsRedirect($format)
             && !$this->params()->fromQuery('callback')
         ) {
             // Build callback URL:
@@ -689,14 +700,14 @@ class AbstractRecord extends AbstractBase
                 'postData' => $exportedRecord,
                 'targetWindow' => $export->getTargetWindow($format),
                 'url' => $export->getRedirectUrl($format, ''),
-                'format' => $format
+                'format' => $format,
             ];
             $msg = [
                 'translate' => false, 'html' => true,
                 'msg' => $this->getViewRenderer()->render(
                     'cart/export-success.phtml',
                     $params
-                )
+                ),
             ];
             $this->flashMessenger()->addSuccessMessage($msg);
             return $this->redirectToRecord();
@@ -876,11 +887,13 @@ class AbstractRecord extends AbstractBase
         // Special case -- handle login request (currently needed for holdings
         // tab when driver-based holds mode is enabled, but may also be useful
         // in other circumstances):
-        if ($this->params()->fromQuery('login', 'false') == 'true'
+        if (
+            $this->params()->fromQuery('login', 'false') == 'true'
             && !$this->getUser()
         ) {
             return $this->forceLogin(null);
-        } elseif ($this->params()->fromQuery('catalogLogin', 'false') == 'true'
+        } elseif (
+            $this->params()->fromQuery('catalogLogin', 'false') == 'true'
             && !is_array($patron = $this->catalogLogin())
         ) {
             return $patron;

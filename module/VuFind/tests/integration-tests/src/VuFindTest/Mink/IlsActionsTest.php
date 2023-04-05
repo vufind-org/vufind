@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink ILS actions test class.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
@@ -69,7 +71,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
                 'driver' => 'Demo',
                 'holds_mode' => 'driver',   // needed to display login link
                 'renewals_enabled' => true,
-            ]
+            ],
         ];
     }
 
@@ -167,7 +169,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     protected function clickButtonGroupLink(Element $page, string $text): void
     {
         $link = $this->findCss($page, '.btn-group.open')->findLink($text);
-        $this->assertTrue(is_object($link));
+        $this->assertIsObject($link);
         $link->click();
     }
 
@@ -339,7 +341,9 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Confirm that login form is disabled:
         $this->unFindCss($page, "#profile_cat_username");
         $this->assertEquals(
-            "Connection to the library management system failed. Information related to your library account cannot be displayed. If the problem persists, please contact your library.",
+            "Connection to the library management system failed. "
+            . "Information related to your library account cannot be displayed. "
+            . "If the problem persists, please contact your library.",
             $this->findCss($page, "div.alert-warning")->getText()
         );
 
@@ -379,7 +383,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Confirm that demo driver expected values are present:
         $this->waitForPageLoad($page);
         $texts = [
-            'Lib-catuser', 'Somewhere...', 'Over the Rainbow'
+            'Lib-catuser', 'Somewhere...', 'Over the Rainbow',
         ];
         foreach ($texts as $text) {
             $this->assertTrue($this->hasElementsMatchingText($page, 'td', $text));

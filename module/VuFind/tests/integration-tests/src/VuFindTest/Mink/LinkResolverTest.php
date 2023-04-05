@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink link resolver test class.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
@@ -55,7 +57,7 @@ class LinkResolverTest extends \VuFindTest\Integration\MinkTestCase
                 'resolver' => 'demo',
                 'embed' => '1',
                 'url' => 'https://vufind.org/wiki',
-            ]
+            ],
         ];
     }
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * GeniePlus ILS driver test
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\ILS\Driver;
 
 use Laminas\Http\Response;
@@ -84,7 +86,7 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
         [
             'Accept: application/json',
             'Authorization: Bearer fake-token',
-        ]
+        ],
     ];
 
     /**
@@ -108,7 +110,8 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
     /**
      * Get a mock response with a predetermined body.
      *
-     * @param string $body Body
+     * @param string $body   Body
+     * @param int    $status HTTP status code
      *
      * @return Response
      */
@@ -269,13 +272,14 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
                     [
                         'page-size' => 100,
                         'page' => 0,
-                        'fields' => 'Inventory.Barcode,Inventory.CallNumLC,Inventory.ClaimDate,UniqRecNum,Inventory.SubLoc.CodeDesc,Inventory.ActType.Status,Inventory.VolumeDesc',
+                        'fields' => 'Inventory.Barcode,Inventory.CallNumLC,Inventory.ClaimDate,UniqRecNum,'
+                        . 'Inventory.SubLoc.CodeDesc,Inventory.ActType.Status,Inventory.VolumeDesc',
                         'command' => "UniqRecNum == 'foo-id'",
                     ],
                     [
                         'Accept: application/json',
                         'Authorization: Bearer fake-token',
-                    ]
+                    ],
                 ],
             )->willReturnOnConsecutiveCalls(
                 $response1,
@@ -458,13 +462,14 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
                     [
                         'page-size' => 1,
                         'page' => 0,
-                        'fields' => 'Address1,Address2,ZipCode,City,StateProv.CodeDesc,Country.CodeDesc,PhoneNumber,ExpiryDate',
+                        'fields' => 'Address1,Address2,ZipCode,City,StateProv.CodeDesc,Country.CodeDesc,'
+                        . 'PhoneNumber,ExpiryDate',
                         'command' => "ID == 'fake.user.fake.com'",
                     ],
                     [
                         'Accept: application/json',
                         'Authorization: Bearer fake-token',
-                    ]
+                    ],
                 ],
             )->willReturnOnConsecutiveCalls(
                 $response1,
@@ -517,7 +522,7 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
                     [
                         'Accept: application/json',
                         'Authorization: Bearer fake-token',
-                    ]
+                    ],
                 ],
             )->willReturnOnConsecutiveCalls(
                 $response1,

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Abstract base for content loader plug-ins.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Content;
 
 use VuFindCode\ISBN;
@@ -38,7 +40,8 @@ use VuFindCode\ISBN;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-abstract class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface,
+abstract class AbstractBase implements
+    \VuFindHttp\HttpServiceAwareInterface,
     \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;

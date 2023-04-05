@@ -1,4 +1,5 @@
 <?php
+
 /**
  * AuthorFacets aspect of the Search Multi-class (Options)
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\SolrAuthorFacets;
 
 /**
@@ -53,7 +55,7 @@ class Options extends \VuFind\Search\Solr\Options
         //   is really using facet sorting.
         $this->sortOptions = [
             'relevance' => 'sort_author_relevance',
-            'author' => 'sort_author_author'
+            'author' => 'sort_author_author',
         ];
 
         // No spell check needed in author module:

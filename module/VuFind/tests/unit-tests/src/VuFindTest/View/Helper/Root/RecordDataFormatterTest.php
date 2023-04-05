@@ -1,4 +1,5 @@
 <?php
+
 /**
  * RecordDataFormatter Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper\Root;
 
 use Psr\Container\ContainerInterface;
@@ -80,17 +82,27 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'context' => $context,
             'config' => new \VuFind\View\Helper\Root\Config($container->get(\VuFind\Config\PluginManager::class)),
             'doi' => new \VuFind\View\Helper\Root\Doi($context),
+            'htmlSafeJsonEncode' => new \VuFind\View\Helper\Root\HtmlSafeJsonEncode(),
             'icon' => new \VuFind\View\Helper\Root\Icon(
                 [],
                 new \Laminas\Cache\Storage\Adapter\BlackHole(),
                 new \Laminas\View\Helper\EscapeHtmlAttr(),
             ),
-            'openUrl' => new \VuFind\View\Helper\Root\OpenUrl($context, [], $this->getMockBuilder(\VuFind\Resolver\Driver\PluginManager::class)->disableOriginalConstructor()->getMock()),
+            'openUrl' => new \VuFind\View\Helper\Root\OpenUrl(
+                $context,
+                [],
+                $this->getMockBuilder(\VuFind\Resolver\Driver\PluginManager::class)
+                    ->disableOriginalConstructor()->getMock()
+            ),
             'proxyUrl' => new \VuFind\View\Helper\Root\ProxyUrl(),
             'record' => new \VuFind\View\Helper\Root\Record(),
             'recordLinker' => new \VuFind\View\Helper\Root\RecordLinker($this->getMockRecordRouter()),
-            'searchOptions' => new \VuFind\View\Helper\Root\SearchOptions(new \VuFind\Search\Options\PluginManager($container)),
-            'searchTabs' => $this->getMockBuilder(\VuFind\View\Helper\Root\SearchTabs::class)->disableOriginalConstructor()->getMock(),
+            'searchMemory' => $this->getSearchMemoryViewHelper(),
+            'searchOptions' => new \VuFind\View\Helper\Root\SearchOptions(
+                new \VuFind\Search\Options\PluginManager($container)
+            ),
+            'searchTabs' => $this->getMockBuilder(\VuFind\View\Helper\Root\SearchTabs::class)
+                ->disableOriginalConstructor()->getMock(),
             'transEsc' => new \VuFind\View\Helper\Root\TransEsc(),
             'translate' => new \VuFind\View\Helper\Root\Translate(),
             'usertags' => new \VuFind\View\Helper\Root\UserTags(),
@@ -108,7 +120,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     {
         // "Mock out" tag functionality to avoid database access:
         $methods = [
-            'getBuildings', 'getDeduplicatedAuthors', 'getContainerTitle', 'getTags'
+            'getBuildings', 'getDeduplicatedAuthors', 'getContainerTitle', 'getTags',
         ];
         $record = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
             ->onlyMethods($methods)
@@ -208,12 +220,34 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test citation generation
+     * Data Provider for testFormatting().
+     *
+     * @return array
+     */
+    public function getFormattingData(): array
+    {
+        return [
+            [
+                'getInvokedSpecs',
+            ],
+            [
+                'getOldSpecs',
+            ],
+        ];
+    }
+
+    /**
+     * Test formatting.
+     *
+     * @param string $function Function to test the formatting with.
      *
      * @return void
+     *
+     * @dataProvider getFormattingData
      */
-    public function testFormatting()
+    public function testFormatting(string $function): void
     {
+        $driver = $this->getDriver();
         $formatter = $this->getFormatter();
         $spec = $formatter->getDefaults('core');
         $spec['Building'] = [
@@ -235,7 +269,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
                         'values' => count($data),
                     ],
                 ];
-            }
+            },
         ];
         $spec['MultiEmptyArrayTest'] = [
             'dataMethod' => true,
@@ -243,7 +277,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'pos' => 2000,
             'multiFunction' => function () {
                 return [];
-            }
+            },
         ];
         $spec['MultiNullTest'] = [
             'dataMethod' => true,
@@ -251,7 +285,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'pos' => 2000,
             'multiFunction' => function () {
                 return null;
-            }
+            },
         ];
         $spec['MultiNullInArrayWithZeroTest'] = [
             'dataMethod' => true,
@@ -267,9 +301,9 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
                     [
                         'label' => 'ZeroBlocked',
                         'values' => 0,
-                    ]
+                    ],
                 ];
-            }
+            },
         ];
         $spec['MultiNullInArrayWithZeroAllowedTest'] = [
             'dataMethod' => true,
@@ -285,9 +319,9 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
                     [
                         'label' => 'ZeroAllowed',
                         'values' => 0,
-                    ]
+                    ],
                 ];
-            }
+            },
         ];
         $spec['MultiWithSortPos'] = [
             'dataMethod' => true,
@@ -298,20 +332,20 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
                     [
                         'label' => 'b',
                         'values' => 'b',
-                        'options' => ['pos' => 3000]
+                        'options' => ['pos' => 3000],
                     ],
                     [
                         'label' => 'a',
                         'values' => 'a',
-                        'options' => ['pos' => 3000]
+                        'options' => ['pos' => 3000],
                     ],
                     [
                         'label' => 'c',
                         'values' => 'c',
-                        'options' => ['pos' => 2999]
+                        'options' => ['pos' => 2999],
                     ],
                 ];
-            }
+            },
         ];
         $expected = [
             'Building' => 'prefix_0',
@@ -334,9 +368,8 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'a' => 'a',
             'b' => 'b',
         ];
-        $driver = $this->getDriver();
-        $results = $formatter->getData($driver, $spec);
-
+        // Call the method specified by the data provider
+        $results = $this->$function($driver, $spec);
         // Check for expected array keys
         $this->assertEquals(array_keys($expected), $this->getLabels($results));
 
@@ -353,10 +386,10 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
                 )
             );
         }
-
         // Check for exact markup in representative example:
         $this->assertEquals(
-            '<span property="availableLanguage" typeof="Language"><span property="name">Italian</span></span><br /><span property="availableLanguage" typeof="Language"><span property="name">Latin</span></span>',
+            '<span property="availableLanguage" typeof="Language"><span property="name">Italian</span></span><br />'
+            . '<span property="availableLanguage" typeof="Language"><span property="name">Latin</span></span>',
             $this->findResult('Language', $results)['value']
         );
 
@@ -365,5 +398,33 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             ['foo' => 1],
             $this->findResult('Building', $results)['context']
         );
+    }
+
+    /**
+     * Invokes a RecordDataFormatter with a driver and returns getData results.
+     *
+     * @param SolrDefault $driver Driver to invoke with.
+     * @param array       $spec   Specifications to test with.
+     *
+     * @return array Results from RecordDataFormatter::getData
+     */
+    protected function getInvokedSpecs($driver, array $spec): array
+    {
+        $formatter = ($this->getFormatter())($driver);
+        return $formatter->getData($spec);
+    }
+
+    /**
+     * Calls RecordDataFormatter::getData with a driver as parameter and returns the results.
+     *
+     * @param SolrDefault $driver Driver to call with.
+     * @param array       $spec   Specifications to test with.
+     *
+     * @return array Results from RecordDataFormatter::getData
+     */
+    protected function getOldSpecs($driver, array $spec): array
+    {
+        $formatter = $this->getFormatter();
+        return $formatter->getData($driver, $spec);
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * EDS Search Object Parameters Test
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Search\EDS;
 
 use VuFind\Config\PluginManager;
@@ -53,12 +55,12 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $limiters = [
-            ['selectedvalue' => 'limitervalue', 'description' => 'limiter']
+            ['selectedvalue' => 'limitervalue', 'description' => 'limiter'],
         ];
         $options->expects($this->once())->method('getSearchScreenLimiters')
             ->will($this->returnValue($limiters));
         $expanders = [
-            ['selectedvalue' => 'expandervalue', 'description' => 'expander']
+            ['selectedvalue' => 'expandervalue', 'description' => 'expander'],
         ];
         $options->expects($this->once())->method('getSearchScreenExpanders')
             ->will($this->returnValue($expanders));
@@ -98,7 +100,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         Options $options = null,
         PluginManager $mockConfig = null
     ): Params {
-        $mockConfig = $mockConfig ?? $this->createMock(PluginManager::class);
+        $mockConfig ??= $this->createMock(PluginManager::class);
         return new Params(
             $options ?? new Options($mockConfig),
             $mockConfig

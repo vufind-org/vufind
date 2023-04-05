@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for BrowZine backend.
  *
@@ -25,14 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Factory;
 
 use Psr\Container\ContainerInterface;
-
 use VuFindSearch\Backend\BrowZine\Backend;
 use VuFindSearch\Backend\BrowZine\Connector;
 use VuFindSearch\Backend\BrowZine\QueryBuilder;
-
 use VuFindSearch\Backend\BrowZine\Response\RecordCollectionFactory;
 
 /**

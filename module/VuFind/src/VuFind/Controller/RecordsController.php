@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Records Controller
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
@@ -60,13 +62,17 @@ class RecordsController extends AbstractSearch
     {
         // If there is exactly one record, send the user directly there:
         $ids = $this->params()->fromQuery('id', []);
+        $print = $this->params()->fromQuery('print');
         if (count($ids) == 1) {
             $details = $this->getRecordRouter()->getTabRouteDetails($ids[0]);
             $target = $this->url()->fromRoute($details['route'], $details['params']);
             // forward print param, if necessary:
-            $print = $this->params()->fromQuery('print');
             $params = empty($print) ? '' : '?print=' . urlencode($print);
             return $this->redirect()->toUrl($target . $params);
+        }
+        // Ignore Print for Search History:
+        if (!empty($print)) {
+            $this->saveToHistory = false;
         }
 
         // Not exactly one record -- show search results:

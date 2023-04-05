@@ -29,6 +29,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Feature;
 
 use PHPUnit\Framework\SkippedTestError;
@@ -109,7 +110,7 @@ trait AutoRetryTrait
                 if ($this->retriesLeft > 0) {
                     $logMethod = [
                         $this,
-                        $annotations['method']['retryLogMethod'][0] ?? 'logWarning'
+                        $annotations['method']['retryLogMethod'][0] ?? 'logWarning',
                     ];
                     if (is_callable($logMethod)) {
                         $method = get_class($this) . '::' . $this->getName(false);

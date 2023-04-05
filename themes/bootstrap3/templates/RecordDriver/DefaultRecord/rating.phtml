@@ -2,7 +2,7 @@
   $ratingData = $this->driver->getRatingData();
   $translationParams = [
     '%%rating%%' => $this->localizedNumber($ratingData['rating']),
-    '%%count%%' => $this->localizedNumber($ratingData['count'])
+    '%%count%%' => $this->localizedNumber($ratingData['count']),
   ];
   $addUrlEsc = $this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Rating'));
   $countKeys = [

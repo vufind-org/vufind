@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Backend\Solr;
 
 use PHPUnit\Framework\TestCase;
@@ -51,7 +52,10 @@ class SearchHandlerTest extends TestCase
     {
         $spec = ['DismaxParams' => [['foo', 'bar']], 'DismaxFields' => ['field1', 'field2']];
         $hndl = new SearchHandler($spec);
-        $this->assertEquals('(_query_:"{!dismax qf=\"field1 field2\" foo=\\\'bar\\\' mm=\\\'100%\\\'}foobar")', $hndl->createSimpleQueryString('foobar'));
+        $this->assertEquals(
+            '(_query_:"{!dismax qf=\"field1 field2\" foo=\\\'bar\\\' mm=\\\'100%\\\'}foobar")',
+            $hndl->createSimpleQueryString('foobar')
+        );
     }
 
     /**
@@ -63,7 +67,10 @@ class SearchHandlerTest extends TestCase
     {
         $spec = ['QueryFields' => ['id' => [['or', '~']]]];
         $hndl = new SearchHandler($spec);
-        $this->assertEquals('(id:("escaped\"quote" OR not OR quoted OR "basic phrase"))', $hndl->createSimpleQueryString('"escaped\"quote" not quoted "basic phrase"'));
+        $this->assertEquals(
+            '(id:("escaped\"quote" OR not OR quoted OR "basic phrase"))',
+            $hndl->createSimpleQueryString('"escaped\"quote" not quoted "basic phrase"')
+        );
     }
 
     /**
@@ -75,7 +82,13 @@ class SearchHandlerTest extends TestCase
     {
         $spec = ['DismaxParams' => [['foo', 'bar'], ['mm', '100%']], 'DismaxFields' => ['field1', 'field2']];
         $hndl = new SearchHandler($spec);
-        $defaults = ['CustomMunge' => [], 'DismaxHandler' => 'dismax', 'QueryFields' => [], 'FilterQuery' => [], 'DismaxMunge' => []];
+        $defaults = [
+            'CustomMunge' => [],
+            'DismaxHandler' => 'dismax',
+            'QueryFields' => [],
+            'FilterQuery' => [],
+            'DismaxMunge' => [],
+        ];
         $this->assertEquals($spec + $defaults, $hndl->toArray());
     }
 
@@ -88,7 +101,10 @@ class SearchHandlerTest extends TestCase
     {
         $spec = ['DismaxParams' => [['foo', 'bar']], 'DismaxFields' => ['field1', 'field2']];
         $hndl = new SearchHandler($spec, 'edismax');
-        $this->assertEquals('(_query_:"{!edismax qf=\"field1 field2\" foo=\\\'bar\\\' mm=\\\'0%\\\'}foobar")', $hndl->createSimpleQueryString('foobar'));
+        $this->assertEquals(
+            '(_query_:"{!edismax qf=\"field1 field2\" foo=\\\'bar\\\' mm=\\\'0%\\\'}foobar")',
+            $hndl->createSimpleQueryString('foobar')
+        );
     }
 
     /**
@@ -104,14 +120,14 @@ class SearchHandlerTest extends TestCase
                 'callnumber_exact' => [
                     ['uppercase'],
                     ['preg_replace', '/[ "]/', ""],
-                    ['preg_replace', '/\*+$/', ""]
+                    ['preg_replace', '/\*+$/', ""],
                 ],
                 'callnumber_fuzzy' => [
                     ['uppercase'],
                     ['preg_replace', '/[ "]/', ""],
                     ['preg_replace', '/\*+$/', ""],
-                    ['append', '*']
-                ]
+                    ['append', '*'],
+                ],
             ],
             'QueryFields' => [
                 'callnumber' => [
@@ -121,8 +137,8 @@ class SearchHandlerTest extends TestCase
                 'dewey-full' => [
                     ['callnumber_exact', 1000],
                     ['callnumber_fuzzy', '~'],
-                ]
-            ]
+                ],
+            ],
         ];
 
         $hndl = new SearchHandler($spec);
@@ -144,10 +160,10 @@ class SearchHandlerTest extends TestCase
             'DismaxMunge' => [
                 ['uppercase'],
                 ['preg_replace', '/[ "]/', ""],
-                ['preg_replace', '/\*+$/', ""]
+                ['preg_replace', '/\*+$/', ""],
             ],
             'DismaxFields' => ['callnumber'],
-            'DismaxHandler' => 'dismax'
+            'DismaxHandler' => 'dismax',
         ];
 
         $hndl = new SearchHandler($spec);

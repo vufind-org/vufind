@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Flashmessages View Helper Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper\Root;
 
 use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
@@ -56,48 +58,48 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
         return [
             [
                 [],
-                ''
+                '',
             ],
             [
                 [
                     'success' => [
-                        'Foo'
-                    ]
+                        'Foo',
+                    ],
                 ],
-                '<div role="alert" class="success">Foo</div>'
+                '<div role="alert" class="success">Foo</div>',
             ],
             [
                 [
                     'error' => [
-                        'Fail'
+                        'Fail',
                     ],
                     'success' => [
-                        'Good'
-                    ]
+                        'Good',
+                    ],
                 ],
                 '<div role="alert" class="error">Fail</div>'
-                    . '<div role="alert" class="success">Good Translation</div>'
-            ],
-            [
-                [
-                    'success' => [
-                        [
-                            'msg' => 'Good'
-                        ]
-                    ]
-                ],
-                '<div role="alert" class="success">Good Translation</div>'
+                    . '<div role="alert" class="success">Good Translation</div>',
             ],
             [
                 [
                     'success' => [
                         [
                             'msg' => 'Good',
-                            'translate' => false
-                        ]
-                    ]
+                        ],
+                    ],
                 ],
-                '<div role="alert" class="success">Good</div>'
+                '<div role="alert" class="success">Good Translation</div>',
+            ],
+            [
+                [
+                    'success' => [
+                        [
+                            'msg' => 'Good',
+                            'translate' => false,
+                        ],
+                    ],
+                ],
+                '<div role="alert" class="success">Good</div>',
             ],
             [
                 [
@@ -108,10 +110,10 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
                             'tokens' => [
                                 '%%ph%%' => 'Good',
                             ],
-                        ]
-                    ]
+                        ],
+                    ],
                 ],
-                '<div role="alert" class="success">foo Good</div>'
+                '<div role="alert" class="success">foo Good</div>',
             ],
             [
                 [
@@ -122,11 +124,11 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
                             'tokens' => [
                                 '%%ph%%' => 'paragraph',
                             ],
-                            'translateTokens' => true
-                        ]
-                    ]
+                            'translateTokens' => true,
+                        ],
+                    ],
                 ],
-                '<div role="alert" class="success">foo Tag &lt;p&gt;</div>'
+                '<div role="alert" class="success">foo Tag &lt;p&gt;</div>',
             ],
             [
                 [
@@ -138,11 +140,11 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
                             'tokens' => [
                                 '%%ph%%' => 'paragraph',
                             ],
-                            'translateTokens' => true
-                        ]
-                    ]
+                            'translateTokens' => true,
+                        ],
+                    ],
                 ],
-                '<div role="alert" class="success">foo Tag &lt;p&gt;</div>'
+                '<div role="alert" class="success">foo Tag &lt;p&gt;</div>',
             ],
             [
                 [
@@ -156,10 +158,10 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
                             ],
                             'translateTokens' => true,
                             'tokensHtml' => true,
-                        ]
-                    ]
+                        ],
+                    ],
                 ],
-                '<div role="alert" class="success">foo Tag <p></div>'
+                '<div role="alert" class="success">foo Tag <p></div>',
             ],
             [
                 [
@@ -173,10 +175,10 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
                             ],
                             'translateTokens' => false,
                             'tokensHtml' => true,
-                        ]
-                    ]
+                        ],
+                    ],
                 ],
-                '<div role="alert" class="success">foo <b>bold</b></div>'
+                '<div role="alert" class="success">foo <b>bold</b></div>',
             ],
             [
                 [
@@ -184,10 +186,10 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
                         [
                             'msg' => 'Goof',
                             'default' => 'Good',
-                        ]
-                    ]
+                        ],
+                    ],
                 ],
-                '<div role="alert" class="success">Good</div>'
+                '<div role="alert" class="success">Good</div>',
             ],
         ];
     }
@@ -212,7 +214,7 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a Flashmessages helper with the given messages in the queue
      *
-     * @array $messages Messages
+     * @param array $messages Messages
      *
      * @return Flashmessages
      */
@@ -253,7 +255,7 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
                 'Good' => 'Good Translation',
                 'paragraph' => 'Tag <p>',
                 'foo_html' => '<p>Foo</p>',
-                'foo_placeholder' => 'foo %%ph%%'
+                'foo_placeholder' => 'foo %%ph%%',
             ];
             $translated = $strings[$str] ?? $default ?? $str;
             return str_replace(

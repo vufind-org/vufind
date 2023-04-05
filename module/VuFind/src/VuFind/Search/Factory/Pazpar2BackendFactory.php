@@ -26,14 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Factory;
 
 use Psr\Container\ContainerInterface;
-
 use VuFindSearch\Backend\Pazpar2\Backend;
 use VuFindSearch\Backend\Pazpar2\Connector;
 use VuFindSearch\Backend\Pazpar2\QueryBuilder;
-
 use VuFindSearch\Backend\Pazpar2\Response\RecordCollectionFactory;
 
 /**

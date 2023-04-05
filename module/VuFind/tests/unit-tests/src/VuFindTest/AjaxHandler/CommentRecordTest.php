@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CommentRecord test class.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\AjaxHandler;
 
 use VuFind\AjaxHandler\CommentRecord;
@@ -175,11 +177,11 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTest
         $post = [
             'id' => 'foo',
             'comment' => 'bar',
-            'rating' => '100'
+            'rating' => '100',
         ];
         $this->assertEquals(
             [
-                ['commentId' => true]
+                ['commentId' => true],
             ],
             $handler->handleRequest($this->getParamsHelper([], $post))
         );

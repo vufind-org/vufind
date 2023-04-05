@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interval CAPTCHA (requires an interval between actions or from start of session).
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Captcha;
 
 use Laminas\Config\Config;
@@ -112,7 +114,7 @@ class Interval extends AbstractBase implements TranslatorAwareInterface
             $this->errorMessage = $this->translate(
                 'interval_captcha_not_passed',
                 [
-                    '%%delay%%' => max($requiredInterval - $timePassed, 1)
+                    '%%delay%%' => max($requiredInterval - $timePassed, 1),
                 ]
             );
             return false;

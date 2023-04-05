@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ajax Controller Module
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
+
 namespace VuFind\Controller;
 
 use Laminas\Mvc\Controller\AbstractActionController;
@@ -40,8 +42,7 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
-class AjaxController extends AbstractActionController
-    implements TranslatorAwareInterface
+class AjaxController extends AbstractActionController implements TranslatorAwareInterface
 {
     use AjaxResponseTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
@@ -65,7 +66,11 @@ class AjaxController extends AbstractActionController
      */
     public function jsonAction()
     {
-        return $this->callAjaxMethod($this->params()->fromQuery('method'));
+        $method = $this->params()->fromQuery('method');
+        if (!$method) {
+            return $this->getAjaxResponse('application/json', ['error' => 'Parameter "method" missing'], 400);
+        }
+        return $this->callAjaxMethod($method);
     }
 
     /**

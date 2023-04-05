@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OAuth2/OIDC test class.
  *
@@ -25,7 +26,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 declare(strict_types=1);
+
 namespace VuFindTest\Mink;
 
 use const PHP_MAJOR_VERSION;
@@ -87,7 +90,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         return [
             'Catalog' => [
                 'driver' => 'Demo',
-            ]
+            ],
         ];
     }
 
@@ -112,8 +115,8 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
                     'redirectUri' => $redirectUri,
                     'isConfidential' => true,
                     'secret' => password_hash('mysecret', PASSWORD_DEFAULT),
-                ]
-            ]
+                ],
+            ],
         ];
     }
 
@@ -215,7 +218,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
             'grant_type' => 'authorization_code',
             'redirect_uri' => $redirectUri,
             'client_id' => 'test',
-            'client_secret' => 'mysecret'
+            'client_secret' => 'mysecret',
         ];
         $http = new \VuFindHttp\HttpService();
         $response = $http->post(
@@ -268,7 +271,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
             '',
             [
                 'Authorization' => $tokenResult['token_type'] . ' '
-                . $tokenResult['access_token']
+                . $tokenResult['access_token'],
             ]
         );
         $this->assertEquals(
@@ -465,10 +468,12 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
             }
         }
 
-        $privateKey = openssl_pkey_new([
-            'private_key_bits' => 2048,
-            'private_key_type' => OPENSSL_KEYTYPE_RSA
-        ]);
+        $privateKey = openssl_pkey_new(
+            [
+                'private_key_bits' => 2048,
+                'private_key_type' => OPENSSL_KEYTYPE_RSA,
+            ]
+        );
         if (!$privateKey) {
             throw new \Exception(
                 'Could not create private key: ' . openssl_error_string()

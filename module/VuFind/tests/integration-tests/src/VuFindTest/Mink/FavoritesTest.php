@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink favorites test class.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
@@ -151,13 +153,15 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForLightboxHidden();
 
         // Check list page
-        $session = $this->getMinkSession();
-        $recordURL = $this->stripHash($session->getCurrentUrl());
+        $recordURL = $this->stripHash($this->getCurrentUrlWithoutSid());
         $this->clickCss($page, '.savedLists a');
         $this->waitForPageLoad($page);
         $this->clickCss($page, '.resultItemLine1 a');
         $this->waitForPageLoad($page);
-        $this->assertEquals($recordURL, $this->stripHash($session->getCurrentUrl()));
+        $this->assertEquals(
+            $recordURL,
+            $this->stripHash($this->getCurrentUrlWithoutSid())
+        );
         $this->clickCss($page, '.logoutOptions a.logout');
     }
 
@@ -306,10 +310,10 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         // Check list page
         $this->clickCss($page, '.result a.title');
         $session = $this->getMinkSession();
-        $recordURL = $session->getCurrentUrl();
+        $recordURL = $this->getCurrentUrlWithoutSid();
         $this->clickCss($page, '.savedLists a');
         $this->clickCss($page, '.resultItemLine1 a');
-        $this->assertEquals($recordURL, $session->getCurrentUrl());
+        $this->assertEquals($recordURL, $this->getCurrentUrlWithoutSid());
         $this->clickCss($page, '.logoutOptions a.logout');
     }
 
@@ -582,7 +586,6 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testBulkPrint()
     {
-        $session = $this->getMinkSession();
         $page = $this->setupBulkTest();
 
         // First try clicking without selecting anything:
@@ -599,9 +602,8 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
 
         $this->assertEqualsWithTimeout(
             'print=true',
-            function () use ($session) {
-                $urlParts = explode('?', $session->getCurrentUrl());
-                return $urlParts[1] ?? '';
+            function () {
+                return $this->getCurrentQueryString(true);
             }
         );
     }

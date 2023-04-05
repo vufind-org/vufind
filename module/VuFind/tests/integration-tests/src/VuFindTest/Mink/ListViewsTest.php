@@ -1,4 +1,5 @@
 <?php
+
 /**
  * List views (i.e. tabs/accordion) test class.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
+
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
@@ -114,7 +116,9 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
         // Save to list
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->closeLightbox($page);
+        $this->waitForPageLoad($page);
         // Check saved items status
+        $this->clickCss($page, '#information_cd588d8723d65ca0ce9439e79755fa0a');
         $this->findCss($page, '#information_cd588d8723d65ca0ce9439e79755fa0a-content .savedLists ul');
     }
 
@@ -150,6 +154,8 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
         $this->closeLightbox($page);
         // Check saved items status
         // Not visible, but still exists
+        $this->clickCss($page, '#information_cd588d8723d65ca0ce9439e79755fa0a');
+        $this->waitForPageLoad($page);
         $this->findCss($page, '#information_cd588d8723d65ca0ce9439e79755fa0a-content .savedLists ul');
     }
 
@@ -190,7 +196,7 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->gotoSearch();
         // Did our result close after not being being in the last search?
         $result = $page->find('css', '.result.embedded');
-        $this->assertFalse(is_object($result));
+        $this->assertIsNotObject($result);
     }
 
     /**

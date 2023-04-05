@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Generic VuFind table gateway.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
@@ -116,7 +118,8 @@ class Gateway extends AbstractTableGateway
 
         // If this is a PostgreSQL connection, we may need to initialize the ID
         // from a sequence:
-        if ($this->adapter
+        if (
+            $this->adapter
             && $this->adapter->getDriver()->getDatabasePlatformName() == "Postgresql"
             && $obj instanceof \VuFind\Db\Row\RowGateway
         ) {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Google cover content loader.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Content\Covers;
 
 use VuFind\Exception\HttpDownloadException;
@@ -38,8 +40,7 @@ use VuFind\Exception\HttpDownloadException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Google extends \VuFind\Content\AbstractCover
-    implements \VuFind\Http\CachingDownloaderAwareInterface
+class Google extends \VuFind\Content\AbstractCover implements \VuFind\Http\CachingDownloaderAwareInterface
 {
     use \VuFind\Http\CachingDownloaderAwareTrait;
 
@@ -75,11 +76,12 @@ class Google extends \VuFind\Content\AbstractCover
                'bibkeys=ISBN:' . $ids['isbn']->get13() . '&callback=addTheCover';
 
         $decodeCallback = function (\Laminas\Http\Response $response, $url) {
-            if (!preg_match(
-                '/^[^{]*({.*})[^}]*$/',
-                $response->getBody(),
-                $matches
-            )
+            if (
+                !preg_match(
+                    '/^[^{]*({.*})[^}]*$/',
+                    $response->getBody(),
+                    $matches
+                )
             ) {
                 throw new HttpDownloadException(
                     'Invalid response body (raw)',
@@ -90,6 +92,7 @@ class Google extends \VuFind\Content\AbstractCover
                 );
             }
 
+            // convert \x26 or \u0026 to &
             $json = json_decode(
                 str_replace(['\\x26', '\\u0026'], '&', $matches[1]),
                 true

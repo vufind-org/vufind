@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Overdrive Connector factory.
  *
@@ -28,6 +29,7 @@
  *           License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\DigitalContent;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -75,6 +77,11 @@ class OverdriveConnectorFactory implements
         $configManager = $container->get(\VuFind\Config\PluginManager::class);
         $config = $configManager->get('config');
         $odConfig = $configManager->get('Overdrive');
+
+        // Allow simulated connection if configured:
+        if ($odConfig->API->simulateConnection ?? false) {
+            return new FakeOverdriveConnector($config, $odConfig);
+        }
         $auth = $container->get(\VuFind\Auth\ILSAuthenticator::class);
         $sessionContainer = null;
 

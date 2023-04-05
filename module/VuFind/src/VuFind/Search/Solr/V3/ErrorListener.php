@@ -26,12 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Solr\V3;
 
 use Laminas\EventManager\EventInterface;
-
 use VuFind\Search\Solr\AbstractErrorListener;
-
 use VuFindSearch\Backend\Exception\HttpErrorException;
 
 /**
@@ -59,7 +58,8 @@ class ErrorListener extends AbstractErrorListener
             $error = $event->getParam('error');
             if ($error instanceof HttpErrorException) {
                 $reason = $error->getResponse()->getReasonPhrase();
-                if (stristr($reason, 'org.apache.lucene.queryParser.ParseException')
+                if (
+                    stristr($reason, 'org.apache.lucene.queryParser.ParseException')
                     || stristr($reason, 'undefined field')
                 ) {
                     $error->addTag(self::TAG_PARSER_ERROR);

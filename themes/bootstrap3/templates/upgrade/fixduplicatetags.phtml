@@ -26,9 +26,9 @@ otherwise, it is recommended that you fix these.  Click Submit to proceed.</p>
 <?php
 $confirmText = $this->transEsc('skip_confirm');
 $script = <<<JS
-$('#skip').click(function(e) {
-  return confirm('${confirmText}');
-});
-JS;
+    $('#skip').click(function(e) {
+      return confirm('${confirmText}');
+    });
+    JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');

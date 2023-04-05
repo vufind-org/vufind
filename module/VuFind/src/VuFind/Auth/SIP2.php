@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SIP2 authentication module.
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:authentication_handlers Wiki
  */
+
 namespace VuFind\Auth;
 
 use VuFind\Exception\Auth as AuthException;
@@ -100,7 +102,8 @@ class SIP2 extends AbstractBase
 
         $result = $mysip->parsePatronStatusResponse($msg_result);
         $mysip->disconnect();
-        if (($result['variable']['BL'][0] == 'Y')
+        if (
+            ($result['variable']['BL'][0] == 'Y')
             and ($result['variable']['CQ'][0] == 'Y')
         ) {
             // Success!!!

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Solr Search Object Results Test
  *
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Search\Solr;
 
 use Laminas\I18n\Translator\TranslatorInterface;
@@ -87,9 +89,11 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         $mockConfig = $this->createMock(PluginManager::class);
         $options = new Options($mockConfig);
         $options->setTranslator($mockTranslator);
-        $options->setTranslatedFacets([
-            'dewey-raw:DDC23:dewey_format_str'
-        ]);
+        $options->setTranslatedFacets(
+            [
+                'dewey-raw:DDC23:dewey_format_str',
+            ]
+        );
         $params = $this->getParams($options);
         $params->addFacet('dewey-raw');
         $searchService = $this->getSearchServiceWithMockSearchMethod(
@@ -98,7 +102,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                 'facet_counts' => [
                     'facet_fields' => [
                         'dewey-raw' => [
-                            ["000", 100]
+                            ["000", 100],
                         ],
                     ],
                 ],
@@ -130,8 +134,9 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     {
         $results = $this->getResults();
         $defaultProcessor = $results->getSpellingProcessor();
-        $this->assertTrue(
-            $defaultProcessor instanceof SpellingProcessor,
+        $this->assertInstanceOf(
+            SpellingProcessor::class,
+            $defaultProcessor,
             'default spelling processor was created'
         );
         $mockProcessor = $this->createMock(SpellingProcessor::class);
@@ -161,8 +166,8 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock search service that will return a RecordCollection.
      *
-     * @param array $solrResponse   Decoded Solr response for search to return
-     * @parma array $expectedParams Expected ParamBag parameters
+     * @param array $response       Decoded Solr response for search to return
+     * @param array $expectedParams Expected ParamBag parameters
      *
      * @return SearchService
      */
@@ -172,8 +177,8 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     ): SearchService {
         $collection = new RecordCollection($response);
         $searchService = $this->getMockBuilder(\VuFindSearch\Service::class)
-        ->disableOriginalConstructor()
-        ->getMock();
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
             ->disableOriginalConstructor()
@@ -217,7 +222,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         $results = $this->getResultsFromResponse(
             [
                 'response' => [
-                    'numFound' => 5
+                    'numFound' => 5,
                 ],
                 'facet_counts' => [
                     'facet_fields' => [
@@ -229,9 +234,9 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                             ['0/Main/', 11],
                             ['1/Main/Fiction/', 5],
                             ['0/Sub/', 2],
-                        ]
-                    ]
-                ]
+                        ],
+                    ],
+                ],
             ],
             $this->getParams(null, $config)
         );
@@ -268,7 +273,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                             'isApplied' => false,
                         ],
                     ],
-                ]
+                ],
             ],
             $facets
         );
@@ -296,7 +301,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                             'isApplied' => false,
                         ],
                     ],
-                ]
+                ],
             ],
             $facets
         );
@@ -324,7 +329,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                             'isApplied' => false,
                         ],
                     ],
-                ]
+                ],
             ],
             $facets
         );
@@ -367,7 +372,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                             'isApplied' => false,
                         ],
                     ],
-                ]
+                ],
             ],
             $facets
         );
@@ -403,7 +408,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                             'isApplied' => false,
                         ],
                     ],
-                ]
+                ],
             ],
             $facets
         );
@@ -415,6 +420,10 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Get Results object
+     *
+     * @param Params        $params        Params object
+     * @param SearchService $searchService Search service
+     * @param Loader        $loader        Record loader
      *
      * @return Results
      */
@@ -480,7 +489,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         Options $options = null,
         PluginManager $mockConfig = null
     ): Params {
-        $mockConfig = $mockConfig ?? $this->createMock(PluginManager::class);
+        $mockConfig ??= $this->createMock(PluginManager::class);
         return new Params(
             $options ?? new Options($mockConfig),
             $mockConfig

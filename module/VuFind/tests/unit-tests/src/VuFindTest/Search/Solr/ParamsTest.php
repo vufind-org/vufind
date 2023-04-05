@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Solr Search Object Parameters Test
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Search\Solr;
 
 use VuFind\Config\PluginManager;
@@ -43,6 +45,7 @@ use VuFind\Search\Solr\Params;
 class ParamsTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ReflectionTrait;
 
     /**
      * Test that filters work as expected.
@@ -129,7 +132,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                         'inverted' => 'foo:bar',
                     ],
                 ],
-            ]
+            ],
         ];
         $configManager = $this->getMockConfigPluginManager($config);
         $params = $this->getParams(null, $configManager);
@@ -157,6 +160,50 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Data provider for testSortTieBreakerParameter.
+     *
+     * @return array
+     */
+    public function sortValueProvider(): array
+    {
+        return ['Test1' => ["year", "id", "publishDateSort desc,id asc"],
+                'Test2' => ["year", "id desc", "publishDateSort desc,id desc"],
+                'Test3' => ["year", "", "publishDateSort desc"],
+                'Test4' => ["year", "title desc,id asc", "publishDateSort desc,title_sort desc,id asc"],
+                'Test5' => ["year", "title desc,id", "publishDateSort desc,title_sort desc,id asc"],
+                'Test6' => ["year,id", "id desc", "publishDateSort desc,id asc"],
+            ];
+    }
+
+    /**
+     * Test sort tie-breaker parameter.
+     *
+     * @param string $sort           Sort parameter of normalizeSort method
+     * @param string $tieBreaker     Sort tie breaker form Searches.ini
+     * @param string $expectedResult Expected return value from normalizeSort
+     *
+     * @return void
+     *
+     * @dataProvider sortValueProvider
+     */
+    public function testSortTieBreakerParameter(
+        string $sort,
+        string $tieBreaker,
+        string $expectedResult
+    ): void {
+        $options = $this->getMockBuilder(\VuFind\Search\Solr\Options::class)
+                ->disableOriginalConstructor()
+                ->getMock();
+        $options->expects($this->once())->method('getSortTieBreaker')
+                ->will($this->returnValue($tieBreaker));
+        $params = $this->getParams($options);
+        $this->assertEquals(
+            $expectedResult,
+            $this->callMethod($params, 'normalizeSort', [$sort])
+        );
+    }
+
+    /**
      * Get Params object
      *
      * @param Options       $options    Options object (null to create)
@@ -168,7 +215,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         Options $options = null,
         PluginManager $mockConfig = null
     ): Params {
-        $mockConfig = $mockConfig ?? $this->createMock(PluginManager::class);
+        $mockConfig ??= $this->createMock(PluginManager::class);
         return new Params(
             $options ?? new Options($mockConfig),
             $mockConfig

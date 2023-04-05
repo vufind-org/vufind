@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Route Generator Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Route;
 
 use VuFind\Route\RouteGenerator;
@@ -220,7 +222,7 @@ class RouteGeneratorTest extends \PHPUnit\Framework\TestCase
         $routeConfig = ['route1' => 'Controller1', 'route2' => 'Controller2'];
         $generator->addRecordRoutes($config, $routeConfig);
         $generator->addNonTabRecordActions($config, ['NonTabAction']);
-        $extendedGenerator = new class extends RouteGenerator {
+        $extendedGenerator = new class () extends RouteGenerator {
         };
         $extendedGenerator->addNonTabRecordActions(
             $config,

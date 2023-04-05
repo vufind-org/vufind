@@ -185,7 +185,7 @@ $(document).ready(function registerAccountAjax() {
     selector: ".fines-status",
     ajaxMethod: "getUserFines",
     render: function render($element, status, ICON_LEVELS) {
-      if (status.value === 0) {
+      if (status.total === 0) {
         $element.addClass("hidden");
         return ICON_LEVELS.NONE;
       }
@@ -193,7 +193,7 @@ $(document).ready(function registerAccountAjax() {
       return ICON_LEVELS.DANGER;
     },
     updateNeeded: function updateNeeded(currentStatus, status) {
-      return status.total !== currentStatus.value;
+      return status.total !== currentStatus.total;
     }
   });
 

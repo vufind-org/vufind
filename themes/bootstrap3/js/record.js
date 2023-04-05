@@ -24,7 +24,7 @@ function checkRequestIsValid(element, requestType, icon = 'place-hold') {
       if (response.data.status) {
         $(element).removeClass('disabled')
           .attr('title', response.data.msg)
-          .html(VuFind.icon(icon) + VuFind.updateCspNonce(response.data.msg));
+          .html(VuFind.icon(icon) + '<span class="icon-link__label">' + VuFind.updateCspNonce(response.data.msg) + "</span>");
       } else {
         $(element).remove();
       }
@@ -211,6 +211,7 @@ ajaxLoadTab = function ajaxLoadTabReal($newTab, tabid, setHash, tabUrl) {
   } else {
     url = VuFind.path + getUrlRoot(document.URL) + '/AjaxTab';
     postData.tab = tabid;
+    postData.sid = VuFind.getCurrentSearchId();
   }
   $.ajax({
     url: url,
@@ -344,7 +345,7 @@ function recordDocReady() {
     $('.record-tabs .nav-tabs li').attr('aria-selected', 'false');
     $(e.target).parent().attr('aria-selected', 'true');
   });
-  $('.record-tabs .nav-tabs a').click(function recordTabsClick() {
+  $('.record-tabs .nav-tabs a').on('click', function recordTabsClick() {
     var $li = $(this).parent();
     // If it's an active tab, click again to follow to a shareable link.
     if ($li.hasClass('active')) {

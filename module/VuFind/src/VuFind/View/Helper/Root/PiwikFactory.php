@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Piwik helper factory.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -72,7 +74,7 @@ class PiwikFactory implements FactoryInterface
         $settings = [
             'siteId' => $config->Piwik->site_id ?? 1,
             'searchPrefix' => $config->Piwik->searchPrefix ?? null,
-            'disableCookies' => $config->Piwik->disableCookies ?? false
+            'disableCookies' => $config->Piwik->disableCookies ?? false,
         ];
         $customVars = $config->Piwik->custom_variables ?? false;
         $request = $container->get('Request');

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Abstract Test Class for element making helpers
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Unit;
 
 /**
@@ -51,7 +53,7 @@ abstract class AbstractMakeTagTest extends \PHPUnit\Framework\TestCase
             'escapehtml' => new \Laminas\View\Helper\EscapeHtml(),
             'escapehtmlattr' => new \Laminas\View\Helper\EscapeHtmlAttr(),
             'htmlattributes' => new \Laminas\View\Helper\HtmlAttributes(),
-            'maketag' => new \VuFind\View\Helper\Root\MakeTag()
+            'maketag' => new \VuFind\View\Helper\Root\MakeTag(),
         ];
 
         $view = $this->createMock(\Laminas\View\Renderer\PhpRenderer::class);

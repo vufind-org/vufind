@@ -118,11 +118,11 @@
         if ($.isReady) {
             setUpILLRequestForm("{$this->escapeHtml($this->driver->getUniqueId())}");
         } else {
-            $(document).ready(function(){
+            $(document).ready(function() {
                 setUpILLRequestForm("{$this->escapeHtml($this->driver->getUniqueId())}");
             });
         }
-JS;
+        JS;
 
     echo $this->inlineScript()->appendScript($js);
 ?>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * EDS Record Driver Test Class
  *
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\RecordDriver;
 
 use VuFind\RecordDriver\EDS;
@@ -52,7 +54,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     public function testGetUniqueID(): void
     {
         $overrides = [
-            'Header' => ['DbId' => 'TDB123', 'An' => 'TAn456']
+            'Header' => ['DbId' => 'TDB123', 'An' => 'TAn456'],
         ];
         $driver = $this->getDriver($overrides);
         $this->assertEquals('TDB123,TAn456', $driver->getUniqueID());
@@ -270,6 +272,8 @@ class EDSTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Data provider for testLinkUrls
+     *
+     * @return array
      */
     public function getLinkUrlsProvider(): array
     {
@@ -288,6 +292,9 @@ class EDSTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test linkUrls for a record.
+     *
+     * @param string $url      Input URL
+     * @param string $expected Expected value
      *
      * @dataProvider getLinkUrlsProvider
      *
@@ -344,31 +351,31 @@ class EDSTest extends \PHPUnit\Framework\TestCase
                                         'Identifiers' => [
                                             [
                                                 'Type' => 'issn-electronic',
-                                                'Value' => '1234-5678'
+                                                'Value' => '1234-5678',
                                             ],
                                             [
                                                 'Type' => 'issn-print',
-                                                'Value' => '5678-1234'
+                                                'Value' => '5678-1234',
                                             ],
                                             [
                                                 'Type' => 'isbn-electronic',
-                                                'Value' => '0123456789X'
+                                                'Value' => '0123456789X',
                                             ],
                                             [
                                                 'Type' => 'isbn-print',
-                                                'Value' => 'fakeisbnxxx'
+                                                'Value' => 'fakeisbnxxx',
                                             ],
                                             [
                                                 'Type' => 'meaningless-noise',
-                                                'Value' => 'should never be seen'
+                                                'Value' => 'should never be seen',
                                             ],
-                                        ]
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
             ]
         );
     }

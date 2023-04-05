@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Test options search model.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Search\TestHarness;
 
 /**
@@ -50,7 +52,8 @@ class Options extends \VuFind\Search\Base\Options
         parent::__construct($configLoader);
         // Turn on first/last navigation if configured:
         $config = $configLoader->get('config');
-        if (isset($config->Record->first_last_navigation)
+        if (
+            isset($config->Record->first_last_navigation)
             && $config->Record->first_last_navigation
         ) {
             $this->firstlastNavigation = true;

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Cache Manager
  *
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Cache;
 
 use Laminas\Cache\Service\StorageAdapterFactory;
@@ -102,7 +104,7 @@ class Manager
         // Laminas\Config\Config can be created mutable or cloned and merged, useful
         // for future cache-specific overrides.
         $cacheConfig = $config->Cache ?? false;
-        $this->defaults = $cacheConfig ? $cacheConfig->toArray() : false;
+        $this->defaults = $cacheConfig ? $cacheConfig->toArray() : [];
 
         // Get base cache directory.
         $cacheBase = $this->getCacheDir();
@@ -116,17 +118,17 @@ class Manager
         // Set up search specs cache based on config settings:
         $searchCacheType = $searchConfig->Cache->type ?? false;
         switch ($searchCacheType) {
-        case 'File':
-            $this->createFileCache(
-                'searchspecs',
-                $cacheBase . 'searchspecs'
-            );
-            break;
-        case false:
-            $this->createNoCache('searchspecs');
-            break;
-        default:
-            throw new \Exception("Unsupported cache setting: $searchCacheType");
+            case 'File':
+                $this->createFileCache(
+                    'searchspecs',
+                    $cacheBase . 'searchspecs'
+                );
+                break;
+            case false:
+                $this->createNoCache('searchspecs');
+                break;
+            default:
+                throw new \Exception("Unsupported cache setting: $searchCacheType");
         }
     }
 
@@ -142,7 +144,7 @@ class Manager
      */
     public function getCache($name, $namespace = null)
     {
-        $namespace = $namespace ?? $name;
+        $namespace ??= $name;
         $key = "$name:$namespace";
 
         if (!isset($this->caches[$key])) {
@@ -168,10 +170,10 @@ class Manager
      */
     public function getCacheDir($allowCliOverride = true)
     {
-        if ($this->defaults && isset($this->defaults['cache_dir'])) {
-            // cache_dir setting in config.ini is deprecated
+        if (isset($this->defaults['cache_dir'])) {
+            // cache_dir setting in config.ini is obsolete
             throw new \Exception(
-                'Deprecated cache_dir setting found in config.ini - please use '
+                'Obsolete cache_dir setting found in config.ini - please use '
                 . 'Apache environment variable VUFIND_CACHE_DIR in '
                 . 'httpd-vufind.conf instead.'
             );
@@ -221,7 +223,7 @@ class Manager
      *
      * @return string
      */
-    public function addDownloaderCache($downloaderName, $opts=[])
+    public function addDownloaderCache($downloaderName, $opts = [])
     {
         $cacheName = 'downloader-' . $downloaderName;
         $this->createFileCache(
@@ -261,7 +263,7 @@ class Manager
     {
         $this->cacheSettings[$cacheName] = [
             'adapter' => \Laminas\Cache\Storage\Adapter\BlackHole::class,
-            'options' => []
+            'options' => [],
         ];
     }
 
@@ -274,7 +276,7 @@ class Manager
      *
      * @return void
      */
-    protected function createFileCache($cacheName, $dirName, $overrideOpts=[])
+    protected function createFileCache($cacheName, $dirName, $overrideOpts = [])
     {
         $opts = array_merge($this->defaults, $overrideOpts);
         if (!is_dir($dirName)) {

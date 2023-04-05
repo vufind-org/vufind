@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DefaultRecord Record Driver Test Class
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\RecordDriver;
 
 use Laminas\Config\Config;
@@ -109,7 +111,10 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetSortTitle()
     {
-        $this->assertEquals("congiura dei principi napoletani 1701 :(prima e seconda stesura)", $this->getDriver()->getSortTitle());
+        $this->assertEquals(
+            "congiura dei principi napoletani 1701 :(prima e seconda stesura)",
+            $this->getDriver()->getSortTitle()
+        );
     }
 
     /**
@@ -136,8 +141,9 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
           'title' => 'La congiura dei Principi Napoletani 1701 : (prima e seconda stesura) /',
           'recordid' => 'testbug2',
           'source' => '',
-          'isbn' => '8820737493',
-          'oclc' => '30585539'];
+          'oclc' => '30585539',
+          'isbns' => ['8820737493', '8072815563', '9798644293513'],
+        ];
         $this->assertEquals($thumbnail, $this->getDriver()->getThumbnail());
     }
 
@@ -307,8 +313,8 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
             "rft.isbn" => "8820737493",
             "rft_id" => [
                 "info:doi/xxx",
-                "pmid:yyy"
-            ]
+                "pmid:yyy",
+            ],
         ];
 
         $fixture = $this->getJsonFixture('misc/testbug2.json');
@@ -473,6 +479,97 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
                 array_values($this->getDriver([], $cfg)->getCitationFormats())
             );
         }
+    }
+
+    /**
+     * Data provider for testGetCleanISBNs
+     *
+     * @return array
+     */
+    public function getCleanISBNsProvider(): array
+    {
+        return [
+            [
+                ['8820737493', '8072815563'],
+                'only10',
+                true,
+            ],
+            [
+                ['8820737493', '8072815563', 'invalid-isbn'],
+                'only10',
+                false,
+            ],
+            [
+                ['8820737493', '8072815563', '9798644293513'],
+                'prefer10',
+                true,
+            ],
+            [
+                ['8820737493', '8072815563', '9798644293513', 'invalid-isbn'],
+                'prefer10',
+                false,
+            ],
+            [
+                ['9798644293513', '9788820737498', '9788072815562'],
+                'normalize13',
+                true,
+            ],
+            [
+                ['9798644293513', '9788820737498', '9788072815562', 'invalid-isbn'],
+                'normalize13',
+                false,
+            ],
+        ];
+    }
+
+    /**
+     * Test getCleanISBNs for a record.
+     *
+     * @param array  $result        Expected result
+     * @param string $mode          Retrieval mode
+     * @param bool   $filterInvalid Should we filter invalid ISBNs?
+     *
+     * @dataProvider getCleanISBNsProvider
+     *
+     * @return void
+     */
+    public function testGetCleanISBNs($result, $mode, $filterInvalid)
+    {
+        $this->assertEquals($result, $this->getDriver()->getCleanISBNs($mode, $filterInvalid));
+    }
+
+    /**
+     * Test whether author deduplication works corrrectly.
+     *
+     * @return void
+     */
+    public function testGetDeduplicatedAuthors()
+    {
+        $authorName = 'Tester, Marc';
+
+        $overrides = [
+            'author' => $authorName,
+            'author_role' => 'aut',
+            'author2' => [$authorName],
+            'author2_role' => ['trl'],
+            'author_corporate' => [],
+            'author_corporate_role' => [],
+        ];
+
+        $expectedResult = [
+            'primary' => [
+                $authorName => [
+                    'role' => ['aut', 'trl'],
+                ],
+            ],
+            'secondary' => [],
+            'corporate' => [],
+        ];
+
+        $driver = $this->getDriver($overrides);
+        $deduplicatedAuthors = $driver->getDeduplicatedAuthors();
+
+        $this->assertEquals($deduplicatedAuthors, $expectedResult);
     }
 
     /**

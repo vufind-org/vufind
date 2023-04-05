@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Solr\Response\Json;
 
 use VuFindSearch\Response\AbstractRecordCollection;
@@ -85,7 +86,8 @@ class RecordCollection extends AbstractRecordCollection
      */
     public function __construct(array $response)
     {
-        if (array_key_exists('response', $response)
+        if (
+            array_key_exists('response', $response)
             && null === $response['response']
         ) {
             unset($response['response']);
@@ -133,9 +135,8 @@ class RecordCollection extends AbstractRecordCollection
     {
         if (null === $this->facetFields) {
             $this->facetFields = [];
-            foreach ($this->response['facet_counts']['facet_fields'] ?? []
-                as $field => $facetData
-            ) {
+            $facetFieldData = $this->response['facet_counts']['facet_fields'] ?? [];
+            foreach ($facetFieldData as $field => $facetData) {
                 $values = [];
                 foreach ($facetData as $value) {
                     $values[$value[0]] = $value[1];
@@ -184,7 +185,8 @@ class RecordCollection extends AbstractRecordCollection
     public function getPivotFacets()
     {
         $result = [];
-        foreach ($this->response['facet_counts']['facet_pivot'] ?? [] as $facetData
+        foreach (
+            $this->response['facet_counts']['facet_pivot'] ?? [] as $facetData
         ) {
             foreach ($facetData as $current) {
                 $result[$current['value']] = $current;

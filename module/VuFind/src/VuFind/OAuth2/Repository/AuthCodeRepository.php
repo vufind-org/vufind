@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OAuth2 authorization code repository implementation.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\OAuth2\Repository;
 
 use League\OAuth2\Server\Entities\AuthCodeEntityInterface;
@@ -41,8 +43,7 @@ use VuFind\OAuth2\Entity\AuthCodeEntity;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class AuthCodeRepository extends AbstractTokenRepository
-    implements AuthCodeRepositoryInterface
+class AuthCodeRepository extends AbstractTokenRepository implements AuthCodeRepositoryInterface
 {
     /**
      * Constructor

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ResourceContainer Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest;
 
 use VuFindTheme\ResourceContainer;
@@ -87,7 +89,7 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
             [
                 'file' => 'http://foo/bar',
                 'position' => 'header',
-                'attributes' => ['conditional' => 'lt IE 7']
+                'attributes' => ['conditional' => 'lt IE 7'],
             ],
         ];
         $this->assertEquals($expectedResult, $container->getJs());
@@ -104,7 +106,7 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
             [
                 'file' => 'http://foo/bar',
                 'position' => 'header',
-                'attributes' => ['conditional' => 'lt IE 7']
+                'attributes' => ['conditional' => 'lt IE 7'],
             ],
         ];
         $this->assertEquals(
@@ -204,7 +206,7 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
         $container = new ResourceContainer();
         $tests = [
             'foo:bar:baz' => ['foo', 'bar', 'baz'],
-            'http://foo/bar:baz:xyzzy' => ['http://foo/bar', 'baz', 'xyzzy']
+            'http://foo/bar:baz:xyzzy' => ['http://foo/bar', 'baz', 'xyzzy'],
         ];
         foreach ($tests as $test => $expected) {
             $this->assertEquals(

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PermissionManager Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Role;
 
 use VuFind\Role\PermissionDeniedManager;
@@ -48,24 +50,24 @@ class PermissionDeniedManagerTest extends \PHPUnit\Framework\TestCase
     protected $permissionDeniedConfig = [
         'permissionDeniedTemplate' => [
             'deniedTemplateBehavior' => "showTemplate:record/displayLogicTest:param1=noValue",
-            'deniedControllerBehavior' => "showTemplate:record/ActionTest:param1=noValue"
+            'deniedControllerBehavior' => "showTemplate:record/ActionTest:param1=noValue",
         ],
         'permissionDeniedTemplateNoParams' => [
             'deniedTemplateBehavior' => "showTemplate:record/displayLogicTest",
-            'deniedControllerBehavior' => "showTemplate:record/ActionTest"
+            'deniedControllerBehavior' => "showTemplate:record/ActionTest",
         ],
         'permissionDeniedMessage' => [
             'deniedTemplateBehavior' => "showMessage:dl_translatable_test",
-            'deniedControllerBehavior' => "showTemplate:action_translatable_test"
+            'deniedControllerBehavior' => "showTemplate:action_translatable_test",
         ],
         'permissionDeniedLogin' => [
-            'deniedControllerBehavior' => "promptLogin"
+            'deniedControllerBehavior' => "promptLogin",
         ],
         'permissionDeniedException' => [
-            'deniedControllerBehavior' => "exception:ForbiddenException:exception_message"
+            'deniedControllerBehavior' => "exception:ForbiddenException:exception_message",
         ],
         'permissionDeniedNonExistentException' => [
-            'deniedControllerBehavior' => "exception:NonExistentException:exception_message"
+            'deniedControllerBehavior' => "exception:NonExistentException:exception_message",
         ],
         'permissionDeniedNothing' => [
         ],

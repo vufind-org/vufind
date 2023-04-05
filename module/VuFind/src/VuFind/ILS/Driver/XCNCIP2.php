@@ -1,4 +1,5 @@
 <?php
+
 /**
  * XC NCIP Toolkit (v2) ILS Driver
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use VuFind\Config\PathResolver;
@@ -41,7 +43,8 @@ use VuFind\Exception\ILS as ILSException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface,
+class XCNCIP2 extends AbstractBase implements
+    \VuFindHttp\HttpServiceAwareInterface,
     \Laminas\Log\LoggerAwareInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface
 {
@@ -149,7 +152,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @var string[]
      */
     protected $notHoldableStatuses = [
-        'circulation status undefined', 'not available', 'lost'
+        'circulation status undefined', 'not available', 'lost',
     ];
 
     /**
@@ -416,7 +419,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $agencyId = $data[0] . '|' . $data[1];
                 $this->pickupLocations[$agencyId] = [
                     'locationID' => $agencyId,
-                    'locationDisplay' => $data[2]
+                    'locationDisplay' => $data[2],
                 ];
             }
             fclose($handle);
@@ -501,7 +504,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             }
         }
 
-        if (!$result->isSuccess()
+        if (
+            !$result->isSuccess()
             && !in_array(
                 $result->getStatusCode(),
                 $this->otherAcceptedHttpStatusCodes
@@ -869,8 +873,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                         if (!isset($status[$bibId])) {
                             $status[$bibId] = [];
                         }
-                        $chunk['location'] = $chunk['location']
-                            ?? $holdingLocation ?? null;
+                        $chunk['location'] ??= $holdingLocation ?? null;
                         $status[$bibId][] = $chunk;
                     }
                 }
@@ -968,9 +971,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                     $chunk['callnumber'] = empty($chunk['callnumber']) ?
                         $holdCallNo : $chunk['callnumber'];
                     $chunk['eresource'] = $eResource;
-                    $chunk['location'] = $chunk['location']
-                        ?? $holdingLocation ?? null;
-                    if (!isset($chunk['collection_desc'])
+                    $chunk['location'] ??= $holdingLocation ?? null;
+                    if (
+                        !isset($chunk['collection_desc'])
                         && !empty($collection)
                     ) {
                         $chunk['collection_desc'] = $collection;
@@ -1252,7 +1255,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 'fine' => $desc,
                 'duedate' => '',
                 'createdate' => $date,
-                'id' => $id
+                'id' => $id,
             ];
         }
         return $fines;
@@ -1433,7 +1436,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             if (isset($address[2])) {
                 $address2 .= ', ' . $address[2];
             }
-            $zip = $zip ?? $address[3] ?? null;
+            $zip ??= $address[3] ?? null;
         }
 
         $expirationDate = $response->xpath(
@@ -2283,7 +2286,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $desiredElementTypes = [
             'Agency Address Information', 'Agency User Privilege Type',
             'Application Profile Supported Type', 'Authentication Prompt',
-            'Consortium Agreement', 'Organization Name Information'
+            'Consortium Agreement', 'Organization Name Information',
         ];
         foreach ($desiredElementTypes as $elementType) {
             $ret .= $this->element('AgencyElementType', $elementType);
@@ -2755,7 +2758,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected function getProblemDescription(
         \SimpleXMLElement $xml,
         array $elements = [
-            'ProblemType', 'ProblemDetail', 'ProblemElement', 'ProblemValue'
+            'ProblemType', 'ProblemDetail', 'ProblemElement', 'ProblemValue',
         ],
         bool $withElementNames = true
     ): string {
@@ -2788,7 +2791,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @return string Scheme attribute or empty string
      */
-    private function _schemeAttr(string $element, $namespacePrefix = 'ns1'): string
+    protected function schemeAttr(string $element, $namespacePrefix = 'ns1'): string
     {
         return isset($this->schemes[$element])
             ? ' ' . $namespacePrefix . ':Scheme="' . $this->schemes[$element] . '"'
@@ -2811,7 +2814,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     ): string {
         $fullElementName = $namespacePrefix . ':' . $elementName;
         return '<' . $fullElementName .
-            $this->_schemeAttr($elementName, $namespacePrefix) . '>' .
+            $this->schemeAttr($elementName, $namespacePrefix) . '>' .
             htmlspecialchars($text) .
             '</' . $fullElementName . '>';
     }

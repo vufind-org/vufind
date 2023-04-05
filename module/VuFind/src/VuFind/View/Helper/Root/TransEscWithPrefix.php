@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Translate with prefix + escape view helper
  *
@@ -27,7 +28,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
+
+use Laminas\View\Helper\AbstractHelper;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
  * Translate with prefix + escape view helper
@@ -41,8 +46,7 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class TransEscWithPrefix extends \Laminas\View\Helper\AbstractHelper
-    implements \VuFind\I18n\Translator\TranslatorAwareInterface
+class TransEscWithPrefix extends AbstractHelper implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Combined Search Controller
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
@@ -105,7 +107,8 @@ class CombinedController extends AbstractSearch
         $settings['view'] = $this->forwardTo($controller, $action);
 
         // Should we suppress content due to emptiness?
-        if (($settings['hide_if_empty'] ?? false)
+        if (
+            ($settings['hide_if_empty'] ?? false)
             && $settings['view']->results->getResultTotal() == 0
         ) {
             $html = '';
@@ -120,7 +123,7 @@ class CombinedController extends AbstractSearch
                 'showCartControls' => $currentOptions->supportsCart()
                     && $cart->isActive(),
                 'showBulkOptions' => $currentOptions->supportsCart()
-                    && ($general->Site->showBulkOptions ?? false)
+                    && ($general->Site->showBulkOptions ?? false),
             ];
             // Load custom CSS, if necessary:
             $html = ($this->getViewRenderer()->plugin('headLink'))();
@@ -227,7 +230,7 @@ class CombinedController extends AbstractSearch
                 'results' => $results,
                 'supportsCart' => $supportsCart,
                 'supportsCartOptions' => $supportsCartOptions,
-                'showBulkOptions' => $settings->Site->showBulkOptions ?? false
+                'showBulkOptions' => $settings->Site->showBulkOptions ?? false,
             ]
         );
     }
@@ -241,40 +244,42 @@ class CombinedController extends AbstractSearch
     {
         [$type, $target] = explode(':', $this->params()->fromQuery('type'), 2);
         switch ($type) {
-        case 'VuFind':
-            [$searchClassId, $type] = explode('|', $target);
-            $params = $this->getRequest()->getQuery()->toArray();
-            $params['type'] = $type;
+            case 'VuFind':
+                [$searchClassId, $type] = explode('|', $target);
+                $params = $this->getRequest()->getQuery()->toArray();
+                $params['type'] = $type;
 
-            // Disable retained filters if we are switching classes!
-            $activeClass = $this->params()->fromQuery('activeSearchClassId');
-            if ($activeClass != $searchClassId) {
-                unset($params['filter']);
-            }
-            unset($params['activeSearchClassId']); // don't need to pass this forward
+                // Disable retained filters if we are switching classes!
+                $activeClass = $this->params()->fromQuery('activeSearchClassId');
+                if ($activeClass != $searchClassId) {
+                    unset($params['filter']);
+                }
+                // We don't need to pass activeSearchClassId forward:
+                unset($params['activeSearchClassId']);
 
-            $route = $this->serviceLocator
-                ->get(\VuFind\Search\Options\PluginManager::class)
-                ->get($searchClassId)->getSearchAction();
-            $base = $this->url()->fromRoute($route);
-            return $this->redirect()->toUrl($base . '?' . http_build_query($params));
-        case 'External':
-            $lookfor = $this->params()->fromQuery('lookfor');
-            $finalTarget = (false === strpos($target, '%%lookfor%%'))
-                ? $target . urlencode($lookfor)
-                : str_replace('%%lookfor%%', urlencode($lookfor), $target);
-            return $this->redirect()->toUrl($finalTarget);
-        default:
-            // If parameters are completely missing, just redirect to home instead
-            // of throwing an error; this is possibly a misbehaving crawler that
-            // followed the SearchBox URL without passing any parameters.
-            if (empty($type) && empty($target)) {
-                return $this->redirect()->toRoute('home');
-            }
-            // If we have a weird value here, report it as an Exception:
-            throw new \VuFind\Exception\BadRequest(
-                'Unexpected search type: "' . $type . '".'
-            );
+                $route = $this->serviceLocator
+                    ->get(\VuFind\Search\Options\PluginManager::class)
+                    ->get($searchClassId)->getSearchAction();
+                $base = $this->url()->fromRoute($route);
+                return $this->redirect()
+                    ->toUrl($base . '?' . http_build_query($params));
+            case 'External':
+                $lookfor = $this->params()->fromQuery('lookfor');
+                $finalTarget = (false === strpos($target, '%%lookfor%%'))
+                    ? $target . urlencode($lookfor)
+                    : str_replace('%%lookfor%%', urlencode($lookfor), $target);
+                return $this->redirect()->toUrl($finalTarget);
+            default:
+                // If parameters are completely missing, redirect to home instead
+                // of throwing an error; this is possibly a misbehaving crawler that
+                // followed the SearchBox URL without passing any parameters.
+                if (empty($type) && empty($target)) {
+                    return $this->redirect()->toRoute('home');
+                }
+                // If we have a weird value here, report it as an Exception:
+                throw new \VuFind\Exception\BadRequest(
+                    'Unexpected search type: "' . $type . '".'
+                );
         }
     }
 

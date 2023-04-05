@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Factory;
 
 /**
@@ -45,7 +46,7 @@ class SolrReservesBackendFactory extends AbstractSolrBackendFactory
     public function __construct()
     {
         parent::__construct();
-        $this->solrCore = 'reserves';
+        $this->defaultIndexName = 'reserves';
         $this->searchConfig = 'reserves';
         $this->searchYaml = 'reservessearchspecs.yaml';
         $this->facetConfig = 'reserves';

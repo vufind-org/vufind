@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for Blender backend.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
+
 namespace VuFind\Search\Factory;
 
 use Laminas\EventManager\EventManager;

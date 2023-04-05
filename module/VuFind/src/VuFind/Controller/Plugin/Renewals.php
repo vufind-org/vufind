@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Action Helper - Renewals Support Methods
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Controller\Plugin;
 
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
@@ -120,7 +122,8 @@ class Renewals extends AbstractPlugin
             );
             if ($renewResult !== false) {
                 // Assign Blocks to the Template
-                if (isset($renewResult['blocks'])
+                if (
+                    isset($renewResult['blocks'])
                     && is_array($renewResult['blocks'])
                 ) {
                     foreach ($renewResult['blocks'] as $block) {

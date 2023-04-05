@@ -1,4 +1,5 @@
 <?php
+
 /**
  * LocalFile cover content loader.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Content\Covers;
 
 /**
@@ -51,7 +53,7 @@ class LocalFile extends \VuFind\Content\AbstractCover
      * @var array
      */
     protected $allowedMimeTypes = [
-        "image/gif", "image/jpeg", "image/png", "image/tiff"
+        "image/gif", "image/jpeg", "image/png", "image/tiff",
     ];
 
     /**

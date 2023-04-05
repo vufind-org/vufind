@@ -1,4 +1,5 @@
 <?php
+
 /**
  * EDSResultsDeferred Recommendations Module
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
+
 namespace VuFind\Recommend;
 
 /**
@@ -95,7 +97,7 @@ class EDSResultsDeferred implements RecommendInterface
         // with a blank string, so we can rebuild the parameters to pass through
         // AJAX later on!
         for ($i = 0; $i < 2; $i++) {
-            $settings[$i] = $settings[$i] ?? '';
+            $settings[$i] ??= '';
         }
 
         // Map the user-specified query field to 'lookfor' for simplicity:

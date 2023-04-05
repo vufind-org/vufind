@@ -27,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Record\FallbackLoader;
 
 use VuFind\Record\FallbackLoader\Solr;
@@ -99,6 +100,6 @@ class SolrTest extends \PHPUnit\Framework\TestCase
         $resource = $this->getMockBuilder(\VuFind\Db\Table\Resource::class)
             ->disableOriginalConstructor()->getMock();
         $loader = new Solr($resource, $search, null);
-        $this->assertEquals(0, count($loader->load(['oldId'])));
+        $this->assertCount(0, $loader->load(['oldId']));
     }
 }

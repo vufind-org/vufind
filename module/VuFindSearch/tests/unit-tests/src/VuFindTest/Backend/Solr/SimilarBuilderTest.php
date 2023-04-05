@@ -28,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Backend\Solr;
 
 use VuFindSearch\Backend\Solr\SimilarBuilder;
@@ -83,8 +84,8 @@ class SimilarBuilderTest extends \PHPUnit\Framework\TestCase
     {
         $config = [
             'MoreLikeThis' => [
-                'count' => 10
-            ]
+                'count' => 10,
+            ],
         ];
         $sb = new SimilarBuilder(new \Laminas\Config\Config($config));
         $response = $sb->build('testrecord');

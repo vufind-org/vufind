@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Hierarchy support for record drivers.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver\Feature;
 
 /**
@@ -63,7 +65,8 @@ trait HierarchyAwareTrait
      */
     public function getHierarchyDriver()
     {
-        if (null === $this->hierarchyDriver
+        if (
+            null === $this->hierarchyDriver
             && null !== $this->hierarchyDriverManager
         ) {
             $type = $this->getHierarchyType();
@@ -116,7 +119,8 @@ trait HierarchyAwareTrait
     {
         // If collections are disabled or this record is not part of a hierarchy, go
         // no further....
-        if (!isset($this->mainConfig->Collections->collections)
+        if (
+            !isset($this->mainConfig->Collections->collections)
             || !$this->mainConfig->Collections->collections
             || !($hierarchyDriver = $this->getHierarchyDriver())
         ) {
@@ -129,30 +133,33 @@ trait HierarchyAwareTrait
 
         // Check config setting for what constitutes a collection, act accordingly:
         switch ($hierarchyDriver->getCollectionLinkType()) {
-        case 'All':
-            if (isset($this->fields['hierarchy_parent_title'])
-                && isset($this->fields['hierarchy_parent_id'])
-            ) {
-                $titles = $this->fields['hierarchy_parent_title'];
-                $ids = $this->fields['hierarchy_parent_id'];
-            }
-            break;
-        case 'Top':
-            if (isset($this->fields['hierarchy_top_title'])
-                && isset($this->fields['hierarchy_top_id'])
-            ) {
-                foreach ($this->fields['hierarchy_top_id'] as $i => $topId) {
-                    // Don't mark an item as its own parent -- filter out parent
-                    // collections whose IDs match that of the current collection.
-                    if (!$isCollection
-                        || $topId !== $this->fields['is_hierarchy_id']
-                    ) {
-                        $ids[] = $topId;
-                        $titles[] = $this->fields['hierarchy_top_title'][$i];
+            case 'All':
+                if (
+                    isset($this->fields['hierarchy_parent_title'])
+                    && isset($this->fields['hierarchy_parent_id'])
+                ) {
+                    $titles = $this->fields['hierarchy_parent_title'];
+                    $ids = $this->fields['hierarchy_parent_id'];
+                }
+                break;
+            case 'Top':
+                if (
+                    isset($this->fields['hierarchy_top_title'])
+                    && isset($this->fields['hierarchy_top_id'])
+                ) {
+                    foreach ($this->fields['hierarchy_top_id'] as $i => $topId) {
+                        // Don't mark an item as its own parent -- filter out parent
+                        // collections whose IDs match the current collection's ID.
+                        if (
+                            !$isCollection
+                            || $topId !== $this->fields['is_hierarchy_id']
+                        ) {
+                            $ids[] = $topId;
+                            $titles[] = $this->fields['hierarchy_top_title'][$i];
+                        }
                     }
                 }
-            }
-            break;
+                break;
         }
 
         // Map the titles and IDs to a useful format:
@@ -181,19 +188,19 @@ trait HierarchyAwareTrait
 
         // Check config setting for what constitutes a collection
         switch ($hierarchyDriver->getCollectionLinkType()) {
-        case 'All':
-            return isset($this->fields['is_hierarchy_id']);
-        case 'Top':
-            return isset($this->fields['is_hierarchy_title'])
-                && isset($this->fields['is_hierarchy_id'])
-                && isset($this->fields['hierarchy_top_id'])
-                && in_array(
-                    $this->fields['is_hierarchy_id'],
-                    $this->fields['hierarchy_top_id']
-                );
-        default:
-            // Default to not be a collection level record
-            return false;
+            case 'All':
+                return isset($this->fields['is_hierarchy_id']);
+            case 'Top':
+                return isset($this->fields['is_hierarchy_title'])
+                    && isset($this->fields['is_hierarchy_id'])
+                    && isset($this->fields['hierarchy_top_id'])
+                    && in_array(
+                        $this->fields['is_hierarchy_id'],
+                        $this->fields['hierarchy_top_id']
+                    );
+            default:
+                // Default to not be a collection level record
+                return false;
         }
     }
 

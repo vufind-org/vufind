@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Solr Collection aspect of the Search Multi-class (Options)
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\SolrCollection;
 
 /**
@@ -59,7 +61,7 @@ class Options extends \VuFind\Search\Solr\Options
             $this->sortOptions = [
                 'title' => 'sort_title',
                 'year' => 'sort_year', 'year asc' => 'sort_year asc',
-                'author' => 'sort_author'
+                'author' => 'sort_author',
             ];
         }
         $this->defaultSort = key($this->sortOptions);

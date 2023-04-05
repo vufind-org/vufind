@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 
 /**
  * Class InstallControllerTest
@@ -27,6 +26,9 @@ declare(strict_types=1);
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
+declare(strict_types=1);
+
 namespace VuFindTest\Controller;
 
 use VuFind\Controller\InstallController;
@@ -88,7 +90,7 @@ class InstallControllerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * getMinimalPhpVersion test data
+     * Test data for getMinimalPhpVersion
      *
      * @return array[]
      */
@@ -182,7 +184,11 @@ class InstallControllerTest extends \PHPUnit\Framework\TestCase
     /**
      * Test getMinimalPhpVersion with actual composer.json file
      *
+     * @param array  $json     JSON data
+     * @param string $expected Expected version number
+     *
      * @dataProvider getMinimalPhpVersionProvider
+     *
      * @return void
      */
     public function testGetMinimalPhpVersion($json, $expected)
