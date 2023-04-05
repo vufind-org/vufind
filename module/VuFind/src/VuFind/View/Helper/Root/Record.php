@@ -414,7 +414,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
             . $this->driver->getUniqueId();
         $context
             = ['id' => $id, 'number' => $number, 'prefix' => $idPrefix,
-               'title' => $this->getTitleHtml()];
+               'titleHtml' => $this->getTitleHtml()];
         if ($formAttr) {
             $context['formAttr'] = $formAttr;
         }

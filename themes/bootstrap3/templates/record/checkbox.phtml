@@ -8,8 +8,8 @@
   <span class="checkbox-icon"></span>
   <?php if (strlen($this->number ?? '') > 0): ?>
     <span class="sr-only"><?=$this->transEsc('result_checkbox_label', ['%%number%%' => $this->number]) ?></span>
-  <?php elseif (strlen($this->title ?? '') > 0): ?>
-    <span class="sr-only"><?=$this->title?></span>
+  <?php elseif (strlen($this->titleHtml ?? '') > 0): ?>
+    <span class="sr-only"><?=$this->titleHtml?></span>
   <?php endif; ?>
 </label>
 <input
