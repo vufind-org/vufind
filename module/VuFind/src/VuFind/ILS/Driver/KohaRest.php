@@ -769,6 +769,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 ? ''
                 : $requestId;
             $updateDetails = ($available || $inTransit) ? '' : $requestId;
+            // Note: Expiration date is the last interest date until the hold becomes
+            // available for pickup. Then it becomes the last pickup date.
             $expirationDate = $this->convertDate($entry['expiration_date']);
             $holds[] = [
                 'id' => $entry['biblio_id'],
