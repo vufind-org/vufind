@@ -769,6 +769,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 ? ''
                 : $requestId;
             $updateDetails = ($available || $inTransit) ? '' : $requestId;
+            $expirationDate = $this->convertDate($entry['expiration_date']);
             $holds[] = [
                 'id' => $entry['biblio_id'],
                 'item_id' => $entry['hold_id'],
@@ -777,9 +778,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     $entry['pickup_library_id'] ?? null
                 ),
                 'create' => $this->convertDate($entry['hold_date'] ?? null),
-                'expire' => $this->convertDate($entry['expiration_date'] ?? null),
+                'expire' => $available ? null : $expirationDate,
                 'position' => $entry['priority'],
                 'available' => $available,
+                'last_pickup_date' => $available ? $expirationDate : null,
                 'frozen' => $frozen,
                 'frozenThrough' => $frozen
                     ? $this->convertDate($entry['suspended_until'] ?? null) : null,
