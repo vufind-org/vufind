@@ -1,4 +1,4 @@
-/* https://github.com/vufind-org/autocomplete.js (v2.1.3) */
+/* https://github.com/vufind-org/autocomplete.js (v2.1.4) (2023-04-11) */
 function Autocomplete(_settings) {
   const _DEFAULTS = {
     delay: 250,
@@ -255,7 +255,6 @@ function Autocomplete(_settings) {
     // Activation / De-activation
     input.setAttribute("autocomplete", "off");
     input.addEventListener("focus", _ => _search(handler, input), false);
-    input.addEventListener("click", _ => _search(handler, input), false);
     input.addEventListener("blur", _hide, false);
 
     // Input typing
