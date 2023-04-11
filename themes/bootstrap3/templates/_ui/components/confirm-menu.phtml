@@ -4,7 +4,8 @@
   }
 
   $toggleLabelEsc = $this->transEsc($this->label);
-  $toggleClassAttr = trim('confirm__toggle ' . $this->escapeHtmlAttr(($this->toggleClassAttr ?? 'btn')));
+  $toggleClassAttr = trim('confirm__toggle ' . trim($this->toggleClassAttr ?? 'btn'));
+  $labelAttributes = ($this->labelExtraAttributes ?? []) + ['class' => $toggleClassAttr];
 
   $actionType = $this->action->type ?? 'submit';
 
@@ -13,7 +14,7 @@
 ?>
 
 <div class="confirm-menu">
-  <button class="<?=$toggleClassAttr ?>">
+  <button<?=$this->htmlAttributes($labelAttributes)?>>
     <?php if (isset($this->labelIcon)): ?>
       <?=$this->icon($this->labelIcon, 'confirm__icon')?>
     <?php endif; ?>
