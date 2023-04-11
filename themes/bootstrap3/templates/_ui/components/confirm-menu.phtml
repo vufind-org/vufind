@@ -13,7 +13,12 @@
 ?>
 
 <div class="confirm-menu">
-  <button class="<?=$toggleClassAttr ?>"><?=$toggleLabelEsc ?></button>
+  <button class="<?=$toggleClassAttr ?>">
+    <?php if (isset($this->labelIcon)): ?>
+      <?=$this->icon($this->labelIcon, 'confirm__icon')?>
+    <?php endif; ?>
+    <?=$toggleLabelEsc ?>
+  </button>
 
   <div class="confirm__options">
     <?php if ($this->description): ?>
