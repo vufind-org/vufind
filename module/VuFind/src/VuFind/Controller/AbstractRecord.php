@@ -348,7 +348,7 @@ class AbstractRecord extends AbstractBase
                         + $this->params()->fromRoute();
                     $options = [];
                     if ($sid = $this->getSearchMemory()->getCurrentSearchId()) {
-                        $options['query'] = compact((string)$sid);
+                        $options['query'] = ['sid' => $sid];
                     }
                     $collectionUrl = $this->url()
                         ->fromRoute($collectionRoute, $params, $options);
