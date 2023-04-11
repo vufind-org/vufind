@@ -484,14 +484,17 @@ function setupAutocomplete() {
   let cache = {};
   const input = $searchbox[0];
   typeahead(input, function vufindACHandler(query, callback) {
-    var searcher = extractClassParams(input);
+    const classParams = extractClassParams(input);
+    const searcher = classParams.searcher;
+    const type = classParams.type ? classParams.type : $('#searchForm_type').val();
 
-    if (typeof cache[searcher.searcher] === "undefined") {
-      cache[searcher.searcher] = {};
+    const cacheKey = searcher + "|" + type;
+    if (typeof cache[cacheKey] === "undefined") {
+      cache[cacheKey] = {};
     }
 
-    if (typeof cache[searcher.searcher][query] !== "undefined") {
-      callback(cache[searcher.searcher][query]);
+    if (typeof cache[cacheKey][query] !== "undefined") {
+      callback(cache[cacheKey][query]);
       return;
     }
 
@@ -505,8 +508,8 @@ function setupAutocomplete() {
       data: {
         q: query,
         method: 'getACSuggestions',
-        searcher: searcher.searcher,
-        type: searcher.type ? searcher.type : $('#searchForm_type').val(),
+        searcher: searcher,
+        type: type,
         hiddenFilters,
       },
       dataType: 'json',
@@ -517,7 +520,7 @@ function setupAutocomplete() {
             value: item,
           })
         );
-        cache[searcher.searcher][query] = highlighted;
+        cache[cacheKey][query] = highlighted;
         callback(highlighted);
       }
     });

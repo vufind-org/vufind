@@ -167,6 +167,7 @@ function Autocomplete(_settings) {
         return;
       }
       _searchCallback(items, input);
+      _show(input);
       _align(input);
     });
   }
