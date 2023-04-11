@@ -73,8 +73,8 @@
                     </xsl:for-each>
                 </xsl:if>
                 <!-- SUBJECT -->
-                <xsl:if test="//dc:subject">
-                    <xsl:for-each select="//dc:subject">
+                <xsl:if test="dc:subject">
+                    <xsl:for-each select="dc:subject">
                         <xsl:if test="string-length() > 0">
                             <field name="topic">
                                 <xsl:value-of select="normalize-space()"/>
@@ -82,8 +82,8 @@
                         </xsl:if>
                     </xsl:for-each>
                 </xsl:if>
-                <xsl:if test="//dc:subject">
-                    <xsl:for-each select="//dc:subject">
+                <xsl:if test="dc:subject">
+                    <xsl:for-each select="dc:subject">
                         <xsl:if test="string-length() > 0">
                             <field name="topic_facet">
                                 <xsl:value-of select="normalize-space()"/>
