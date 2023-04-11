@@ -57,9 +57,13 @@ header .container.navbar { margin-bottom: 0; }
 }
 
 @media (min-width: 768px) {
-  .search-header { display: flex; }
+  .search-header,
+  .search-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
   .search-stats { flex-grow: 1; }
-  .search-controls { text-align: right; }
 }
 
 .versions-tab {
@@ -71,6 +75,11 @@ header .container.navbar { margin-bottom: 0; }
   .search-header {
     .search-stats { flex-grow: 0; }
   }
+}
+
+.search__option .dropdown-toggle {
+  &:extend(.btn);
+  &:extend(.btn-default);
 }
 
 .record-nav,
