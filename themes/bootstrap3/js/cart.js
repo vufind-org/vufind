@@ -218,7 +218,7 @@ VuFind.register('cart', function Cart() {
           e.preventDefault();
           if (addItem(currentId, currentSource)) {
             $this.find('.cart-add').addClass('hidden');
-            $this.find('.cart-remove').removeClass('hidden');
+            $this.find('.cart-remove').removeClass('hidden').trigger('focus');
           } else {
             $this.popover({content: VuFind.translate('bookbagFull')});
             setTimeout(function recordCartFullHide() {
@@ -229,7 +229,7 @@ VuFind.register('cart', function Cart() {
         $this.find('.cart-remove').click(function cartRemoveClick(e) {
           e.preventDefault();
           removeItem(currentId, currentSource);
-          $this.find('.cart-add').removeClass('hidden');
+          $this.find('.cart-add').removeClass('hidden').trigger('focus');
           $this.find('.cart-remove').addClass('hidden');
         });
       });

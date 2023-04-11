@@ -1,11 +1,11 @@
 <?php
 
 /**
- * GoogleAnalytics helper factory.
+ * Factory for Util/PurgeCachedRecord command.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) The National Library of Finland 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,13 +21,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  View_Helpers
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Console
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\View\Helper\Root;
+namespace VuFindConsole\Command\Util;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -36,15 +36,15 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * GoogleAnalytics helper factory.
+ * Factory for Util/PurgeCachedRecord command.
  *
  * @category VuFind
- * @package  View_Helpers
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Console
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class GoogleAnalyticsFactory implements FactoryInterface
+class PurgeCachedRecordCommandFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -65,16 +65,10 @@ class GoogleAnalyticsFactory implements FactoryInterface
         $requestedName,
         array $options = null
     ) {
-        if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
-        }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $key = $config->GoogleAnalytics->apiKey ?? false;
-        $options = [
-            'create_options_js' =>
-                $config->GoogleAnalytics->create_options_js ?? null,
-        ];
-        return new $requestedName($key, $options);
+        return new $requestedName(
+            $container->get(\VuFind\Db\Table\PluginManager::class)->get('Record'),
+            $container->get(\VuFind\Db\Table\PluginManager::class)->get('Resource'),
+            ...($options ?? [])
+        );
     }
 }
