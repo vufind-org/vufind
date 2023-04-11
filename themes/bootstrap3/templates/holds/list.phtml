@@ -51,6 +51,19 @@
                   <li><a href="#" id="confirm_cancel_all_yes"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
                   <li><a href="#" class="confirm_cancel_no"><?=$this->transEsc('confirm_dialog_no')?></a></li>
                 </ul>
+                <?=
+                  $this->component(
+                      'confirm-menu',
+                      [
+                        'label' => 'hold_cancel_all',
+                        'labelExtraAttributes' => [
+                          'data-lightbox-ignore' => '',
+                          'name' => 'cancelAll',
+                        ],
+                        'toggleClassAttr' => 'btn btn-default dropdown-toggle',
+                      ]
+                  )
+                ?>
               </div>
             <?php endif; ?>
           </div>
