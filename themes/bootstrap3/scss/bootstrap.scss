@@ -6,13 +6,13 @@ $fa-font-path: "../../bootstrap3/css/fonts";
 @import "vendor/bootstrap/bootstrap";
 <#LESS */
 @import "vendor/font-awesome/font-awesome";
-@import "vendor/autocomplete";
 
 @import "components/accessibility";
 @import "components/variables";
 
 @import "components/advanced-search";
 @import "components/alphabrowse";
+@import "components/autocomplete";
 @import "components/channels";
 @import "components/cookie-consent";
 @import "components/devtools";
