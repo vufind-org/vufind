@@ -7,8 +7,7 @@
     xmlns:xlink="http://www.w3.org/2001/XMLSchema-instance">
     <xsl:output method="xml" indent="yes" encoding="utf-8"/>
     <xsl:param name="institution">My University</xsl:param>
-    <xsl:param name="collection">Archives</xsl:param>
-    <xsl:param name="urlPrefix">http</xsl:param>
+    <xsl:param name="collection">SubjectsPlus</xsl:param>
     <xsl:param name="id_tag_name">identifier</xsl:param>
     <xsl:param name="change_tracking_core">biblio</xsl:param>
     <xsl:param name="change_tracking_date_tag_name"></xsl:param>
@@ -39,7 +38,7 @@
                 </field>
 
                 <!-- RECORD FORMAT -->
-                <field name="record_format">archivesspace</field>
+                <field name="record_format">subjectsplus</field>
 
                 <!-- FULLRECORD -->
                 <!-- disabled for now; records are so large that they cause memory problems!
@@ -67,10 +66,13 @@
                 <xsl:for-each select="dc:language">
                     <xsl:if test="string-length() > 0">
                         <field name="language">
-                            <xsl:value-of select="php:function('VuFind::mapString', normalize-space(string(.)), 'language_map.properties')"/>
+                            <xsl:value-of select="php:function('VuFind::mapString', normalize-space(string(.)), 'language_map_iso639-1.properties')"/>
                         </field>
                     </xsl:if>
                 </xsl:for-each>
+
+                <!-- FORMAT -->
+                <field name="format">Online</field>
 
                 <!-- SUBJECT -->
                 <xsl:for-each select="dc:subject">
@@ -92,14 +94,6 @@
                 <xsl:if test="dc:contributor[normalize-space()]">
                     <field name="author2">
                         <xsl:value-of select="dc:contributor[normalize-space()]" />
-                    </field>
-                </xsl:if>
-
-                <!-- FORMAT / TYPE -->
-                <field name="format">Archival Material</field>
-                <xsl:if test="dc:type">
-                    <field name="format">
-                        <xsl:value-of select="dc:type" />
                     </field>
                 </xsl:if>
 
@@ -137,25 +131,26 @@
                 <!-- PUBLISHER -->
                 <xsl:if test="dc:publisher[normalize-space()]">
                     <field name="publisher">
-                        <xsl:value-of select="php:function('VuFind::implode', ', ', dc:publisher)"/>
+                        <xsl:value-of select="dc:publisher[normalize-space()]"/>
                     </field>
                 </xsl:if>
 
                 <!-- PUBLISHDATE -->
                 <xsl:if test="dc:date">
                     <field name="publishDate">
-                        <xsl:value-of select="php:function('VuFind::extractBestDateOrRange', dc:date)"/>
+                        <xsl:value-of select="substring(dc:date, 1, 4)"/>
                     </field>
                     <field name="publishDateSort">
-                        <xsl:value-of select="php:function('VuFind::extractEarliestYear', dc:date)"/>
+                        <xsl:value-of select="substring(dc:date, 1, 4)"/>
                     </field>
                 </xsl:if>
 
                 <!-- URL -->
                 <xsl:for-each select="dc:identifier">
-                    <xsl:if test="substring(., 1, string-length($urlPrefix)) = $urlPrefix">
+                    <!-- SubjectsPlus prefixes URLs with http: so this code strips off that prefix -->
+                    <xsl:if test="substring(., 1, 10) = 'http:http:'">
                         <field name="url">
-                            <xsl:value-of select="." />
+                            <xsl:value-of select="substring-after(., 'http:')" />
                         </field>
                     </xsl:if>
                 </xsl:for-each>
