@@ -58,6 +58,9 @@ class ContainerLinksTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test default behavior of container links.
      *
+     * Test handling of container fields when simpleContainerLinks is false
+     * (default behavior).
+     *
      * @return void
      */
     public function testDefaultContainerLinks(): void
