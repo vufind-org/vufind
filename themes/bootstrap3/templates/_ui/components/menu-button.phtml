@@ -9,6 +9,7 @@
 
   $toggleTag = 'button';
   $toggleAttrs = $this->toggleAttrs ?? [];
+  $toggleAttrs['id'] = $toggleAttrs['id'] ?? uniqid('toggle-');
   $toggleAttrs['type'] = 'button'; // Accessible default
   $toggleAttrs['class'] = 'dropdown-toggle'; // Bootstrap class
   $toggleAttrs['data-toggle'] = 'dropdown'; // Bootstrap data-attr
@@ -49,14 +50,15 @@
   </ul>
   <?php
     $label = empty($this->toggleLabel) ? '' : $this->transEsc($this->toggleLabel);
-    if ($showSelectedValue) {
-      $label .= (empty($label) ? '' : ': ') . $selected . ' ';
-    }
+    $buttonText = $showSelectedValue ? $selected . ' ' : $label;
   ?>
+  <?php if ($showSelectedValue): ?>
+    <label for="<?=$this->escapeHtmlAttr($toggleAttrs['id'])?>")><?=$this->escapeHtml($label)?></label>
+  <?php endif; ?>
   <?=$this
       ->makeTag(
           $toggleTag,
-          $label . $this->icon('dropdown-caret'),
+          $buttonText . $this->icon('dropdown-caret'),
           $toggleAttrs,
           ['escapeContent' => false]
       )
