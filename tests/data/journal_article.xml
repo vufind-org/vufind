@@ -7,7 +7,7 @@
     <controlfield tag="008">231104c2023    xx  x goo     0   a|eng||</controlfield>
     <datafield tag="024" ind1=" " ind2=" ">
       <subfield code="2">test</subfield>
-      <subfield code="a">journal1</subfield>
+      <subfield code="a">jnl1</subfield>
     </datafield>
     <datafield tag="245" ind1="1" ind2="0">
       <subfield code="a">Arithmetic Facts</subfield>

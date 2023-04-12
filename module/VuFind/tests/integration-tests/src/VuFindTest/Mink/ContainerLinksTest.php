@@ -56,11 +56,11 @@ class ContainerLinksTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test simple container linking without ID.
+     * Test default behavior of container links.
      *
      * @return void
      */
-    public function testSimpleContainerLinksWithoutID(): void
+    public function testDefaultContainerLinks(): void
     {
         $page = $this->performSearch('id:jnl1-1');
         $this->assertMatchesRegularExpression(
