@@ -96,8 +96,8 @@ function bindAriaMenu(menuList, controller = null) {
 //
 
 // Treat like MenuButton
-function bindConfirmMenus() {
-  document.querySelectorAll(".confirm-menu").forEach((menu) => {
+function bindConfirmMenus(scope = document) {
+  scope.querySelectorAll(".confirm-menu").forEach((menu) => {
     const isOpen = menu.classList.contains("is-open");
 
     // MenuButton: The element that opens the menu has role button.
@@ -109,14 +109,16 @@ function bindConfirmMenus() {
       toggleEl.setAttribute("aria-expanded", true);
     }
 
+    console.log(menu, toggleEl);
+
     // MenuButton: The element that contains the menu menuitems displayed by activating the button has role menu.
     const targetEl = menu.querySelector(".confirm__options");
     toggleEl.setAttribute("role", "menu");
 
     // Confirm action either link or submit, so no event needed
-    const confirmEl = document.querySelector(".confirm__confirm");
+    const confirmEl = menu.querySelector(".confirm__confirm");
 
-    const cancelEl = document.querySelector(".confirm__cancel");
+    const cancelEl = menu.querySelector(".confirm__cancel");
     // Close menu on cancel
     cancelEl.addEventListener("click", () => {
       ariaCollapse(menu, toggleEl, targetEl);
@@ -128,7 +130,7 @@ function bindConfirmMenus() {
     cancelEl.setAttribute("role", "menuitem");
 
     const ariaMenu = bindAriaMenu(
-      document.querySelector(".confirm__menu"),
+      menu.querySelector(".confirm__menu"),
       // MenuButton: Escape: close menu, focus trigger
       function menuListBubble(event) {
         if (
@@ -186,6 +188,14 @@ function bindConfirmMenus() {
   });
 }
 
+function bindComponents(scope = document) {
+  bindConfirmMenus(scope);
+}
+
 document.addEventListener("DOMContentLoaded", function componentsReady() {
-  bindConfirmMenus();
+  bindComponents();
+});
+
+VuFind.listen("VuFind.lightbox.render", (event) => {
+  bindComponents(event.detail);
 });
