@@ -488,6 +488,7 @@
     <foreach param="relfilename" absparam="filename" target="importrec">
       <fileset dir="${srcdir}/tests/data">
           <include name="*.mrc" />
+          <include name="*.xml" />
       </fileset>
     </foreach>
   </target>
