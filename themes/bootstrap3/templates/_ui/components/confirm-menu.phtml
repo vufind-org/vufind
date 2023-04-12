@@ -4,8 +4,8 @@
   }
 
   $toggleLabelEsc = $this->transEsc($this->label);
-  $toggleClassAttr = trim('confirm__toggle ' . trim($this->toggleClassAttr ?? 'btn'));
-  $labelAttributes = ($this->labelExtraAttributes ?? []) + ['class' => $toggleClassAttr];
+  $toggleClassAttr = trim('confirm__toggle ' . $this->toggleClass ?? '');
+  $toggleAttrs = $this->toggleAttrs ?? [];
 
   $actionType = $this->action->type ?? 'submit';
 
@@ -14,7 +14,11 @@
 ?>
 
 <div class="confirm-menu">
-  <button<?=$this->htmlAttributes($labelAttributes)?>>
+  <button
+    type="button"
+    class="<?=$this->escapeHtmlAttr($toggleClassAttr) ?>"
+    <?=$this->htmlAttributes($toggleAttrs)?>
+  >
     <?php if (isset($this->labelIcon)): ?>
       <?=$this->icon($this->labelIcon, 'confirm__icon')?>
     <?php endif; ?>
@@ -29,7 +33,7 @@
     <ul role="menu" class="confirm__menu">
       <li role="none">
         <?php if ($actionType == 'link'): ?>
-          <a role="menuitem" class="confirm__confirm" href="<?=$this->escapeHtmlAttr($this->action->value) ?>">
+          <a role="menuitem" class="confirm__confirm" href="<?=$this->escapeHtmlAttr($this->action->href) ?>">
             <?=$this->icon('ui-success', 'confirm__icon') ?>
             <?=$confirmLabelEsc ?>
           </a>

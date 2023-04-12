@@ -193,7 +193,7 @@ function bindComponents(scope = document) {
 }
 
 document.addEventListener("DOMContentLoaded", function componentsReady() {
-  bindComponents();
+  bindComponents(document);
 });
 
 VuFind.listen("VuFind.lightbox.render", (event) => {
