@@ -1,18 +1,23 @@
-function confirmCancelRequest(link, action) {
+function confirmCancelRequest(btn, action) {
   $('#cancelConfirm').val(1);
   $('#submitType').attr('name', action);
-  $(link).parents('form').submit();
+  $(btn).parents('form').submit();
 }
 
 $(document).ready(function setupRequests() {
-  $('#confirm_cancel_selected_yes').click(function cancelSelectedRequests(e) {
+  // storage retrieval request
+  $('#srr_cancel_selected .confirm__confirm').click(function cancelSelectedRequests(e) {
     e.preventDefault();
     confirmCancelRequest(this, 'cancelSelected');
   });
-  $('#confirm_cancel_all_yes').click(function cancelAllRequests(e) {
+  $('#srr_cancel_all .confirm__confirm').click(function cancelSelectedRequests(e) {
     e.preventDefault();
     confirmCancelRequest(this, 'cancelAll');
   });
+
+  // #todo: cover all requests
+  // #todo: remove unnecessary cancels
+
   $('.confirm_cancel_no').click(function doNotCancelRequest(e) {
     e.preventDefault();
   });
@@ -20,6 +25,8 @@ $(document).ready(function setupRequests() {
     // Change submitType to indicate that this is not a cancel request:
     $('#submitType').attr('name', 'updateSelected');
   });
+
+  // #todo: is this needed?
 
   var checkCheckboxes = function CheckCheckboxes() {
     var checked = $('form[name="updateForm"] .result .checkbox input[type=checkbox]:checked');

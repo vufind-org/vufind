@@ -109,8 +109,6 @@ function bindConfirmMenus(scope = document) {
       toggleEl.setAttribute("aria-expanded", true);
     }
 
-    console.log(menu, toggleEl);
-
     // MenuButton: The element that contains the menu menuitems displayed by activating the button has role menu.
     const targetEl = menu.querySelector(".confirm__options");
     toggleEl.setAttribute("role", "menu");
