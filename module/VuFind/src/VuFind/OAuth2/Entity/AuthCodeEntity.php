@@ -45,7 +45,9 @@ use League\OAuth2\Server\Entities\Traits\TokenEntityTrait;
  */
 class AuthCodeEntity implements AuthCodeEntityInterface, \JsonSerializable
 {
-    use AuthCodeTrait, TokenEntityTrait, EntityTrait;
+    use AuthCodeTrait;
+    use TokenEntityTrait;
+    use EntityTrait;
 
     /**
      * Serialize to a JSON string

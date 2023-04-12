@@ -182,7 +182,7 @@ class Form extends \Laminas\Form\Form implements
      */
     public function getDisplayString($translationKey, $escape = null)
     {
-        $escape = $escape ?? substr($translationKey, -5) !== '_html';
+        $escape ??= substr($translationKey, -5) !== '_html';
         $helper = $this->viewHelperManager->get($escape ? 'transEsc' : 'translate');
         return $helper($translationKey);
     }
@@ -265,11 +265,8 @@ class Form extends \Laminas\Form\Form implements
             ? [$recipient] : $recipient;
 
         foreach ($recipients as &$recipient) {
-            $recipient['email'] = $recipient['email']
-                ?? $this->defaultFormConfig['recipient_email'] ?? null;
-
-            $recipient['name'] = $recipient['name']
-                ?? $this->defaultFormConfig['recipient_name'] ?? null;
+            $recipient['email'] ??= $this->defaultFormConfig['recipient_email'] ?? null;
+            $recipient['name'] ??= $this->defaultFormConfig['recipient_name'] ?? null;
         }
 
         return $recipients;
@@ -392,7 +389,7 @@ class Form extends \Laminas\Form\Form implements
     {
         return [
             $this->mapRequestParamsToFieldValues($requestParams),
-            'Email/form.phtml'
+            'Email/form.phtml',
         ];
     }
 
@@ -476,16 +473,16 @@ class Form extends \Laminas\Form\Form implements
                 'name' => EmailAddress::class,
                 'options' => [
                     'message' => $this->getValidationMessage('invalid_email'),
-                ]
+                ],
             ],
             'notEmpty' => [
                 'name' => NotEmpty::class,
                 'options' => [
                     'message' => [
                         NotEmpty::IS_EMPTY => $this->getValidationMessage('empty'),
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ];
 
         $elementObjects = $this->getElements();
@@ -511,8 +508,8 @@ class Form extends \Laminas\Form\Form implements
                                             $value
                                         )
                                     );
-                            }
-                         ]
+                            },
+                         ],
                     ];
                 } elseif ($required) {
                     $fieldValidators[] = [
@@ -520,11 +517,11 @@ class Form extends \Laminas\Form\Form implements
                         'options' => [
                             'message' => [
                                 Identical::MISSING_TOKEN
-                                => $this->getValidationMessage('empty')
+                                => $this->getValidationMessage('empty'),
                             ],
                             'strict' => true,
-                            'token' => array_keys($el['options'])
-                        ]
+                            'token' => array_keys($el['options']),
+                        ],
                     ];
                 }
             }
@@ -545,7 +542,7 @@ class Form extends \Laminas\Form\Form implements
                 [
                     'name' => $el['name'],
                     'required' => $required,
-                    'validators' => $fieldValidators
+                    'validators' => $fieldValidators,
                 ]
             );
         }
@@ -610,7 +607,7 @@ class Form extends \Laminas\Form\Form implements
     {
         $formConfig = [
            'id' => $formId,
-           'title' => !empty($config['name']) ?: $formId
+           'title' => !empty($config['name']) ?: $formId,
         ];
 
         foreach ($this->getFormSettingFields() as $key) {
@@ -633,8 +630,8 @@ class Form extends \Laminas\Form\Form implements
             'label' => $this->translate('feedback_name'),
             'group' => '__sender__',
             'settings' => [
-                'size' => 50
-            ]
+                'size' => 50,
+            ],
         ];
         $senderEmail = [
             'name' => 'email',
@@ -642,8 +639,8 @@ class Form extends \Laminas\Form\Form implements
             'label' => $this->translate('feedback_email'),
             'group' => '__sender__',
             'settings' => [
-                'size' => 254
-            ]
+                'size' => 254,
+            ],
         ];
         if ($formConfig['senderInfoRequired'] ?? false) {
             $senderEmail['required'] = $senderName['required'] = true;
@@ -660,7 +657,8 @@ class Form extends \Laminas\Form\Form implements
 
             $required = ['type', 'name'];
             $optional = $this->getFormElementSettingFields();
-            foreach (array_merge($required, $optional) as $field
+            foreach (
+                array_merge($required, $optional) as $field
             ) {
                 if (!isset($el[$field])) {
                     continue;
@@ -669,7 +667,8 @@ class Form extends \Laminas\Form\Form implements
                 $element[$field] = $value;
             }
 
-            if (in_array($element['type'], ['checkbox', 'radio'])
+            if (
+                in_array($element['type'], ['checkbox', 'radio'])
                 && !isset($element['group'])
             ) {
                 $element['group'] = $element['name'];
@@ -714,7 +713,8 @@ class Form extends \Laminas\Form\Form implements
             }
 
             // Add default field size settings for fields that don't define them:
-            if (in_array($elementType, ['text', 'url', 'email'])
+            if (
+                in_array($elementType, ['text', 'url', 'email'])
                 && !isset($element['settings']['size'])
             ) {
                 $element['settings']['size'] = 50;
@@ -769,7 +769,7 @@ class Form extends \Laminas\Form\Form implements
         $elements[] = [
             'type' => 'submit',
             'name' => 'submit',
-            'label' => 'Send'
+            'label' => 'Send',
         ];
 
         return $elements;
@@ -799,8 +799,8 @@ class Form extends \Laminas\Form\Form implements
                 'value' => '',
                 'label' => $placeholder,
                 'attributes' => [
-                    'selected' => 'selected', 'disabled' => 'disabled'
-                ]
+                    'selected' => 'selected', 'disabled' => 'disabled',
+                ],
             ];
         }
         $idx = 0;
@@ -810,7 +810,7 @@ class Form extends \Laminas\Form\Form implements
             $label = $option['label'] ?? $option;
             $options["o$idx"] = [
                 'value' => $value,
-                'label' => $label
+                'label' => $label,
             ];
         }
         return $options;
@@ -847,7 +847,7 @@ class Form extends \Laminas\Form\Form implements
             }
             $groups[$group['label']] = [
                 'label' => $group['label'],
-                'options' => $options
+                'options' => $options,
             ];
         }
         return $groups;
@@ -955,7 +955,7 @@ class Form extends \Laminas\Form\Form implements
 
         $attributes = [
             'id' => $this->getElementId($el['name']),
-            'class' => [$el['settings']['class'] ?? null]
+            'class' => [$el['settings']['class'] ?? null],
         ];
 
         if ($type !== 'submit') {
@@ -969,7 +969,8 @@ class Form extends \Laminas\Form\Form implements
             $attributes += $el['settings'];
         }
         // Add aria-label only if not a hidden field and no aria-label specified:
-        if (!empty($el['label']) && 'hidden' !== $type
+        if (
+            !empty($el['label']) && 'hidden' !== $type
             && !isset($attributes['aria-label'])
         ) {
             $attributes['aria-label'] = $el['label'];
@@ -987,8 +988,8 @@ class Form extends \Laminas\Form\Form implements
                         'label' => $this->translate($item['label']),
                         'value' => $key,
                         'attributes' => [
-                            'id' => $this->getElementId($el['name'] . '_' . $key)
-                        ]
+                            'id' => $this->getElementId($el['name'] . '_' . $key),
+                        ],
                     ];
                 }
                 $conf['options'] = ['value_options' => $optionElements];
@@ -1015,9 +1016,9 @@ class Form extends \Laminas\Form\Form implements
                         'value' => $key,
                         'label_attributes' => ['for' => $elemId],
                         'attributes' => [
-                            'id' => $elemId
+                            'id' => $elemId,
                         ],
-                        'selected' => $first
+                        'selected' => $first,
                     ];
                     $first = false;
                 }

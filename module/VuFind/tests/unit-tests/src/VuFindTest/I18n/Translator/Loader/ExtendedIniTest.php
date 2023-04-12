@@ -54,7 +54,7 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
     {
         $pathStack = [
             realpath($this->getFixtureDir() . 'language/base'),
-            realpath($this->getFixtureDir() . 'language/overrides')
+            realpath($this->getFixtureDir() . 'language/overrides'),
         ];
         $loader = new ExtendedIni($pathStack);
         $result = $loader->load('en', null);

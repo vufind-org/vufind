@@ -131,10 +131,10 @@ class AdminApiController extends \VuFind\Controller\AbstractBase implements ApiI
                         'schema' => [
                             'type' => 'array',
                             'items' => [
-                                'type' => 'string'
-                            ]
+                                'type' => 'string',
+                            ],
                         ],
-                    ]
+                    ],
                 ],
                 'tags' => ['admin'],
                 'responses' => [
@@ -143,22 +143,22 @@ class AdminApiController extends \VuFind\Controller\AbstractBase implements ApiI
                         'content' => [
                             'application/json' => [
                                 'schema' => [
-                                    '$ref' => '#/components/schemas/Success'
-                                ]
-                            ]
-                        ]
+                                    '$ref' => '#/components/schemas/Success',
+                                ],
+                            ],
+                        ],
                     ],
                     'default' => [
                         'description' => 'Error',
                         'content' => [
                             'application/json' => [
                                 'schema' => [
-                                    '$ref' => '#/components/schemas/Error'
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
+                                    '$ref' => '#/components/schemas/Error',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
             ];
         }
 

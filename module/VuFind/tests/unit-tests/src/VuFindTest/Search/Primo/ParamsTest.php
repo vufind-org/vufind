@@ -102,13 +102,13 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     'values' => [
                         'foo',
                         'bar',
-                    ]
+                    ],
                 ],
                 'building' => [
                     'facetOp' => 'AND',
                     'values' => [
                         'main',
-                    ]
+                    ],
                 ],
             ],
             $params->getBackendParameters()->get('filterList')
@@ -123,7 +123,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     'values' => [
                         'foo',
                         'bar',
-                    ]
+                    ],
                 ],
             ],
             $params->getBackendParameters()->get('filterList')
@@ -139,14 +139,14 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     'values' => [
                         'foo',
                         'bar',
-                    ]
+                    ],
                 ],
                 'building' => [
                     'facetOp' => 'AND',
                     'values' => [
                         'sub',
                         'main',
-                    ]
+                    ],
                 ],
             ],
             $params->getBackendParameters()->get('filterList')
@@ -161,7 +161,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     'values' => [
                         'sub',
                         'main',
-                    ]
+                    ],
                 ],
             ],
             $params->getBackendParameters()->get('filterList')
@@ -175,7 +175,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     'facetOp' => 'AND',
                     'values' => [
                         'sub',
-                    ]
+                    ],
                 ],
             ],
             $params->getBackendParameters()->get('filterList')

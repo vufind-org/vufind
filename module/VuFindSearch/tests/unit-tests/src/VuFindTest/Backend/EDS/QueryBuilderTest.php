@@ -79,7 +79,7 @@ class QueryBuilderTest extends TestCase
                         'field' => null,
                         'bool' => 'AND',
                     ],
-                ]
+                ],
             ],
             $response
         );
@@ -107,9 +107,9 @@ class QueryBuilderTest extends TestCase
                         'term' => 'test',
                         'field' => 'SU',
                         'bool' => 'AND',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ];
 
         $qb = new QueryBuilder();

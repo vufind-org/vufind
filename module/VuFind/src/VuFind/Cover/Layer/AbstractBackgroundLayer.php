@@ -56,7 +56,7 @@ abstract class AbstractBackgroundLayer extends AbstractLayer
         }
         if (null !== $callnumber) {
             $cv = 0;
-            for ($i = 0;$i < strlen($callnumber);$i++) {
+            for ($i = 0; $i < strlen($callnumber); $i++) {
                 $cv += ord($callnumber[$i]);
             }
             return $cv;

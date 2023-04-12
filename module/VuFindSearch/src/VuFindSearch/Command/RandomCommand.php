@@ -96,7 +96,7 @@ class RandomCommand extends CallMethodCommand
         return [
             $this->getQuery(),
             $this->getLimit(),
-            $this->getSearchParameters()
+            $this->getSearchParameters(),
         ];
     }
 

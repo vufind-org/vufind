@@ -54,24 +54,24 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
     protected $permissionDeniedConfig = [
         'permissionDeniedTemplate' => [
             'deniedTemplateBehavior' => "showTemplate:record/displayLogicTest:param1=noValue",
-            'deniedControllerBehavior' => "showTemplate:record/ActionTest:param1=noValue"
+            'deniedControllerBehavior' => "showTemplate:record/ActionTest:param1=noValue",
         ],
         'permissionDeniedTemplateNoParams' => [
             'deniedTemplateBehavior' => "showTemplate:record/displayLogicTest",
-            'deniedControllerBehavior' => "showTemplate:record/ActionTest"
+            'deniedControllerBehavior' => "showTemplate:record/ActionTest",
         ],
         'permissionDeniedMessage' => [
             'deniedTemplateBehavior' => "showMessage:dl_translatable_test",
-            'deniedControllerBehavior' => "showTemplate:action_translatable_test"
+            'deniedControllerBehavior' => "showTemplate:action_translatable_test",
         ],
         'permissionDeniedLogin' => [
-            'deniedControllerBehavior' => "promptLogin"
+            'deniedControllerBehavior' => "promptLogin",
         ],
         'permissionDeniedException' => [
-            'deniedControllerBehavior' => "exception:ForbiddenException:exception_message"
+            'deniedControllerBehavior' => "exception:ForbiddenException:exception_message",
         ],
         'permissionDeniedNonExistentException' => [
-            'deniedControllerBehavior' => "exception:NonExistentException:exception_message"
+            'deniedControllerBehavior' => "exception:NonExistentException:exception_message",
         ],
         'permissionDeniedNothing' => [
         ],

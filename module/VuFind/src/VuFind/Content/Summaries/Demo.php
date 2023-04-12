@@ -55,7 +55,7 @@ class Demo extends \VuFind\Content\AbstractBase
         // Initialize return value:
         return [
             'Demo summary key: ' . $key,
-            'Demo summary ISBN: ' . $isbnObj->get13()
+            'Demo summary ISBN: ' . $isbnObj->get13(),
         ];
     }
 }

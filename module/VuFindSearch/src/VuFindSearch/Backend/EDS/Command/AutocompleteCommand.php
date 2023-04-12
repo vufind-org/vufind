@@ -91,7 +91,7 @@ class AutocompleteCommand extends CallMethodCommand
     {
         return [
             $this->getQuery(),
-            $this->getDomain()
+            $this->getDomain(),
         ];
     }
 

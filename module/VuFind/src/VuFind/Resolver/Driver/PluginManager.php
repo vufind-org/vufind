@@ -57,7 +57,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'redi' => Redi::class,
         'threesixtylink' => Threesixtylink::class,
         'generic' => Generic::class,
-        'other' => 'generic'
+        'other' => 'generic',
     ];
 
     /**

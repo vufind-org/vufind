@@ -72,7 +72,7 @@ class MultiAuthTest extends \PHPUnit\Framework\TestCase
     {
         $config = new Config(
             [
-                'method_order' => 'Database,ILS'
+                'method_order' => 'Database,ILS',
             ],
             true
         );
@@ -107,7 +107,7 @@ class MultiAuthTest extends \PHPUnit\Framework\TestCase
     protected function getLoginRequest(array $overrides = []): \Laminas\Http\Request
     {
         $post = $overrides + [
-            'username' => 'testuser', 'password' => 'testpass'
+            'username' => 'testuser', 'password' => 'testpass',
         ];
         $request = new \Laminas\Http\Request();
         $request->setPost(new \Laminas\Stdlib\Parameters($post));

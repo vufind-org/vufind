@@ -88,7 +88,7 @@ class Results extends \VuFind\Search\Base\Results
                 'fieldName' => 'PublicationDate',
                 'displayName' => 'PublicationDate',
                 'displayText' => 'Publication Date',
-                'counts' => []
+                'counts' => [],
             ];
 
             // Construct record drivers for all the items in the response:

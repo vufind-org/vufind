@@ -51,9 +51,7 @@ use VuFindHttp\HttpServiceAwareInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class KohaILSDI extends AbstractBase implements
-    HttpServiceAwareInterface,
-    LoggerAwareInterface
+class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, LoggerAwareInterface
 {
     use \VuFind\Cache\CacheTrait {
         getCacheKey as protected getBaseCacheKey;
@@ -553,9 +551,9 @@ class KohaILSDI extends AbstractBase implements
                     'return desc' => 'sort_return_date_desc',
                     'return asc' => 'sort_return_date_asc',
                     'due desc' => 'sort_due_date_desc',
-                    'due asc' => 'sort_due_date_asc'
+                    'due asc' => 'sort_due_date_asc',
                 ],
-                'default_sort' => 'checkout desc'
+                'default_sort' => 'checkout desc',
             ];
         }
         return $this->config[$function] ?? false;
@@ -589,7 +587,8 @@ class KohaILSDI extends AbstractBase implements
             if (!$this->pickupEnableBranchcodes) {
                 // No defaultPickupLocation is defined in config
                 // AND no pickupLocations are defined either
-                if (isset($holdDetails['item_id']) && (empty($holdDetails['level'])
+                if (
+                    isset($holdDetails['item_id']) && (empty($holdDetails['level'])
                     || $holdDetails['level'] == 'item')
                 ) {
                     // We try to get the actual branchcode the item is found at
@@ -605,7 +604,8 @@ class KohaILSDI extends AbstractBase implements
                         $this->debug('Connection failed: ' . $e->getMessage());
                         $this->throwAsIlsException($e);
                     }
-                } elseif (!empty($holdDetails['level'])
+                } elseif (
+                    !empty($holdDetails['level'])
                     && $holdDetails['level'] == 'title'
                 ) {
                     // We try to get the actual branchcodes the title is found at
@@ -710,7 +710,7 @@ class KohaILSDI extends AbstractBase implements
         } catch (\Exception $e) {
             return [
                 "success" => false,
-                "sysMessage" => "hold_date_invalid"
+                "sysMessage" => "hold_date_invalid",
             ];
         }
 
@@ -735,7 +735,7 @@ class KohaILSDI extends AbstractBase implements
             $this->debug("Fatal error: Patron has already reserved this item.");
             return [
                 "success" => false,
-                "sysMessage" => "It seems you have already reserved this item."
+                "sysMessage" => "It seems you have already reserved this item.",
             ];
         }
 
@@ -979,7 +979,8 @@ class KohaILSDI extends AbstractBase implements
             }
 
             $onTransfer = false;
-            if (($rowItem["TRANSFERFROM"] != null)
+            if (
+                ($rowItem["TRANSFERFROM"] != null)
                 && ($rowItem["TRANSFERTO"] != null)
             ) {
                 $branchSqlStmt->execute([':branch' => $rowItem["TRANSFERFROM"]]);
@@ -1078,7 +1079,7 @@ class KohaILSDI extends AbstractBase implements
         $rescount = 0;
         foreach ($itemSqlStmt->fetchAll() as $rowItem) {
             $items[] = [
-                'id' => $rowItem['id']
+                'id' => $rowItem['id'],
             ];
             $rescount++;
         }
@@ -1435,7 +1436,8 @@ class KohaILSDI extends AbstractBase implements
                     ? [$row['TYPE']]
                     : [$this->blockTerms[$row['TYPE']]];
 
-                if (!empty($this->showBlockComments[$row['TYPE']])
+                if (
+                    !empty($this->showBlockComments[$row['TYPE']])
                     && !empty($row['COMMENT'])
                 ) {
                     $block[] = $row['COMMENT'];
@@ -1526,7 +1528,7 @@ class KohaILSDI extends AbstractBase implements
         }
         return [
             'count' => $totalCount,
-            'transactions' => $historicLoans
+            'transactions' => $historicLoans,
         ];
     }
 
@@ -1561,7 +1563,7 @@ class KohaILSDI extends AbstractBase implements
                 "GetServices",
                 [
                     "patron_id" => $id,
-                    "item_id" => $this->getField($loan->{'itemnumber'})
+                    "item_id" => $this->getField($loan->{'itemnumber'}),
                 ]
             );
             $end = microtime(true);
@@ -1988,7 +1990,7 @@ class KohaILSDI extends AbstractBase implements
         return [
             'success' => $result,
             'status' => $result ? 'new_password_success'
-                : 'password_error_not_unique'
+                : 'password_error_not_unique',
         ];
     }
 

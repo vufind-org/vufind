@@ -65,7 +65,7 @@ class SpellcheckTest extends TestCase
                 ['bar', []],
                 ['foo bar', []],
                 ['1842', []],
-                ['1843', []]
+                ['1843', []],
             ],
             'fake query'
         );

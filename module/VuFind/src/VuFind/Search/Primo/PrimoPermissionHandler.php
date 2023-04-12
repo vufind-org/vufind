@@ -134,7 +134,8 @@ class PrimoPermissionHandler
      */
     protected function checkConfig()
     {
-        if (isset($this->primoConfig['institutionCode'])
+        if (
+            isset($this->primoConfig['institutionCode'])
             || isset($this->primoConfig['onCampusRule'])
             || ($this->getDefaultCode() !== false)
         ) {
@@ -158,7 +159,8 @@ class PrimoPermissionHandler
     protected function checkLegacySettings()
     {
         // if we already have settings, ignore the legacy ones
-        if (isset($this->primoConfig['defaultCode'])
+        if (
+            isset($this->primoConfig['defaultCode'])
             || isset($this->primoConfig['onCampusRule'])
         ) {
             return;
@@ -189,7 +191,8 @@ class PrimoPermissionHandler
 
         // Add additional keys from relevant config sections:
         foreach (['institutionCode', 'onCampusRule'] as $section) {
-            if (isset($this->primoConfig[$section])
+            if (
+                isset($this->primoConfig[$section])
                 && is_array($this->primoConfig[$section])
             ) {
                 $codes = array_merge(
@@ -219,7 +222,8 @@ class PrimoPermissionHandler
 
         // walk through the relevant config sections and check if one is granted
         foreach (['institutionCode', 'onCampusRule'] as $section) {
-            if (isset($this->primoConfig[$section])
+            if (
+                isset($this->primoConfig[$section])
                 && is_array($this->primoConfig[$section])
             ) {
                 foreach ($this->primoConfig[$section] as $code => $permRule) {

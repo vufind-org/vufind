@@ -69,7 +69,7 @@ class Slack extends Post
         ':warning: ',            // WARN
         ':speech_balloon: ',     // NOTICE
         ':information_source: ', // INFO
-        ':beetle: '              // DEBUG
+        ':beetle: ',              // DEBUG
     ];
 
     /**
@@ -104,7 +104,7 @@ class Slack extends Post
             'channel' => $this->channel,
             'username' => $this->username,
             'text' => $this->messageIcons[$event['priority']]
-                . $this->formatter->format($event) . PHP_EOL
+                . $this->formatter->format($event) . PHP_EOL,
         ];
         return json_encode($data);
     }

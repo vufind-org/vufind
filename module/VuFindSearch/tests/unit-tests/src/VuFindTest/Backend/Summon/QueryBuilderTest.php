@@ -54,12 +54,13 @@ class QueryBuilderTest extends TestCase
     {
         // Set up an array of expected inputs (serialized objects) and outputs
         // (queries):
-        // @codingStandardsIgnoreStart
         $tests = [
             ['basic', 'Author:(john smith)'],
-            ['advanced', '(Title:(bananas)) AND (SubjectTerms:(oranges) OR apples) NOT ((PublicationSeriesTitle:(pears)))']
+            [
+                'advanced',
+                '(Title:(bananas)) AND (SubjectTerms:(oranges) OR apples) NOT ((PublicationSeriesTitle:(pears)))',
+            ],
         ];
-        // @codingStandardsIgnoreEnd
 
         $qb = new QueryBuilder();
         foreach ($tests as $test) {

@@ -62,8 +62,8 @@ class Module
         return [
             'Laminas\Loader\ClassMapAutoloader' => [
                 'classes' => [
-                    'minSO' => __DIR__ . '/src/VuFind/Search/minSO.php'
-                ]
+                    'minSO' => __DIR__ . '/src/VuFind/Search/minSO.php',
+                ],
             ],
             'Laminas\Loader\StandardAutoloader' => [
                 'namespaces' => [

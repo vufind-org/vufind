@@ -49,7 +49,7 @@ class MapSelectionConfig extends AbstractConfig
     {
         return [
             'default_coordinates' => '-95, 30, 72, 15',
-            'height' => '320'
+            'height' => '320',
         ];
     }
 

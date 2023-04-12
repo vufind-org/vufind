@@ -31,7 +31,6 @@ namespace VuFindSearch\Backend\BrowZine;
 
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
-
 use VuFindSearch\Query\Query;
 
 /**

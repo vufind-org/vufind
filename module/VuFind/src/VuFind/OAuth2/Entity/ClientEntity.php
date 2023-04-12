@@ -45,7 +45,8 @@ use VuFind\Exception\BadConfig as BadConfigException;
  */
 class ClientEntity implements ClientEntityInterface
 {
-    use EntityTrait, ClientTrait;
+    use EntityTrait;
+    use ClientTrait;
 
     /**
      * Constructor

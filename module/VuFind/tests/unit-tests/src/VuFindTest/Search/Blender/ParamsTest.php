@@ -57,7 +57,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         'Backends' => [
             'Solr' => 'Local',
             'Primo' => 'CDI',
-            'EDS' => 'EBSCO'
+            'EDS' => 'EBSCO',
         ],
         'Blending' => [
             'initialResults' => [
@@ -66,8 +66,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                 'Primo',
                 'EDS',
                 'Primo',
-                'EDS'
-            ]
+                'EDS',
+            ],
         ],
     ];
 
@@ -90,8 +90,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                             'Values' => [
                                 'main' => '0/Main/',
                                 'sub' => '1/Sub/Fiction/',
-                            ]
-                        ]
+                            ],
+                        ],
                     ],
                 ],
                 'format' => [
@@ -127,7 +127,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                         'EDS' => [
                             'Field' => 'LIMIT|FT',
                             'Values' => [
-                                'y' => '1'
+                                'y' => '1',
                             ],
                         ],
                     ],
@@ -153,14 +153,14 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     'Mappings' => [
                         'Solr' => 'AllFields',
                         'Primo' => 'AllFields',
-                        'EDS' => 'AllFields'
+                        'EDS' => 'AllFields',
                     ],
                 ],
                 'Title' => [
                     'Mappings' => [
                         'Solr' => 'Title',
                         'Primo' => 'Title',
-                        'EDS' => 'TI'
+                        'EDS' => 'TI',
                     ],
                 ],
             ],
@@ -195,8 +195,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             'AvailableSorts' => [
                 [
                     'Id' => 'date',
-                    'Label' => 'Date Newest'
-                ]
+                    'Label' => 'Date Newest',
+                ],
             ],
         ],
     ];
@@ -209,8 +209,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     protected $edsConfig = [
         'Sorting' => [
             'relevance' => 'relevance',
-            'date' => 'year'
-        ]
+            'date' => 'year',
+        ],
     ];
 
     /**
@@ -221,8 +221,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     protected $primoConfig = [
         'Sorting' => [
             'relevance' => 'relevance',
-            'scdate' => 'year'
-        ]
+            'scdate' => 'year',
+        ],
     ];
 
     /**
@@ -275,8 +275,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     'filter' => 'format:bar',
                     'selected' => false,
                     'alwaysVisible' => false,
-                    'dynamic' => false
-                ]
+                    'dynamic' => false,
+                ],
             ],
             $params->getCheckboxFacets()
         );
@@ -290,8 +290,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     'filter' => 'format:bar',
                     'selected' => true,
                     'alwaysVisible' => false,
-                    'dynamic' => false
-                ]
+                    'dynamic' => false,
+                ],
             ],
             $params->getCheckboxFacets()
         );
@@ -301,7 +301,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             [
                 'format:"bar"',
-                '-blender_backend:"EDS"'
+                '-blender_backend:"EDS"',
             ],
             $backendParams->get('fq')
         );
@@ -319,12 +319,12 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             [
                 'formatPrimo' => [
                     'facetOp' => 'AND',
-                    'values' => ['barPrimo']
+                    'values' => ['barPrimo'],
                 ],
                 'pcAvailability' => [
                     'facetOp' => 'AND',
-                    'values' => ['true']
-                ]
+                    'values' => ['true'],
+                ],
             ],
             $primoParams->get('filterList')
         );
@@ -349,7 +349,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             [
                 'fulltext_boolean:"1"',
                 '{!tag=formatSolr_filter}formatSolr:(formatSolr:"bar"'
-                    . ' OR formatSolr:"baz")'
+                    . ' OR formatSolr:"baz")',
             ],
             $solrParams->get('fq')
         );
@@ -357,15 +357,15 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             [
                 'pcAvailability' => [
                     'facetOp' => 'AND',
-                    'values' => ['false']
+                    'values' => ['false'],
                 ],
                 'formatPrimo' => [
                     'facetOp' => 'OR',
                     'values' => [
                         'barPrimo',
-                        'bazPrimo'
-                    ]
-                ]
+                        'bazPrimo',
+                    ],
+                ],
             ],
             $primoParams->get('filterList')
         );
@@ -385,7 +385,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             [
                 'pcAvailability' => [
                     'facetOp' => 'AND',
-                    'values' => ['false']
+                    'values' => ['false'],
                 ],
             ],
             $primoParams->get('filterList')
@@ -405,7 +405,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             [
                 'pcAvailability' => [
                     'facetOp' => 'AND',
-                    'values' => ['true']
+                    'values' => ['true'],
                 ],
             ],
             $primoParams->get('filterList')
@@ -426,8 +426,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             [
                 'pcAvailability' => [
                     'facetOp' => 'AND',
-                    'values' => ['false']
-                ]
+                    'values' => ['false'],
+                ],
             ],
             $primoParams->get('filterList')
         );
@@ -456,13 +456,13 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     'facetOp' => 'OR',
                     'values' => [
                         'double1',
-                        'double2'
-                    ]
+                        'double2',
+                    ],
                 ],
                 'pcAvailability' => [
                     'facetOp' => 'AND',
-                    'values' => ['true']
-                ]
+                    'values' => ['true'],
+                ],
             ],
             $primoParams->get('filterList')
         );
@@ -480,13 +480,13 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     'facetOp' => 'NOT',
                     'values' => [
                         'double1',
-                        'double2'
-                    ]
+                        'double2',
+                    ],
                 ],
                 'pcAvailability' => [
                     'facetOp' => 'AND',
-                    'values' => ['true']
-                ]
+                    'values' => ['true'],
+                ],
             ],
             $primoParams->get('filterList')
         );
@@ -501,8 +501,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             [
                 'pcAvailability' => [
                     'facetOp' => 'AND',
-                    'values' => ['true']
-                ]
+                    'values' => ['true'],
+                ],
             ],
             $primoParams->get('filterList')
         );
@@ -522,7 +522,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             [
                 'pcAvailability' => [
                     'facetOp' => 'AND',
-                    'values' => ['true']
+                    'values' => ['true'],
                 ],
             ],
             $primoParams->get('filterList')
@@ -558,11 +558,11 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             [
                 'creationdate' => [
                     'facetOp' => 'AND',
-                    'values' => ['[2020 TO 2022]']
+                    'values' => ['[2020 TO 2022]'],
                 ],
                 'pcAvailability' => [
                     'facetOp' => 'AND',
-                    'values' => ['true']
+                    'values' => ['true'],
                 ],
             ],
             $primoParams->get('filterList')
@@ -588,7 +588,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             [
                 'format:"bar"',
-                '-blender_backend:"EDS"'
+                '-blender_backend:"EDS"',
             ],
             $backendParams->get('fq')
         );
@@ -606,12 +606,12 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             [
                 'formatPrimo' => [
                     'facetOp' => 'AND',
-                    'values' => ['barPrimo']
+                    'values' => ['barPrimo'],
                 ],
                 'pcAvailability' => [
                     'facetOp' => 'AND',
-                    'values' => ['true']
-                ]
+                    'values' => ['true'],
+                ],
             ],
             $primoParams->get('filterList')
         );
@@ -648,7 +648,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             [
                 '{!tag=blender_backend_filter}blender_backend:('
-                . 'blender_backend:"Primo" OR blender_backend:"EDS")'
+                . 'blender_backend:"Primo" OR blender_backend:"EDS")',
             ],
             $backendParams->get('fq')
         );
@@ -673,7 +673,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     'filter' => 'blender_backend:Primo',
                     'selected' => false,
                     'alwaysVisible' => false,
-                    'dynamic' => false
+                    'dynamic' => false,
                 ],
             ],
             $params->getCheckboxFacets()
@@ -688,8 +688,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             [
                 'pcAvailability' => [
                     'facetOp' => 'AND',
-                    'values' => ['true']
-                ]
+                    'values' => ['true'],
+                ],
             ],
             $primoParams->get('filterList')
         );
@@ -709,7 +709,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             [
                 'format:"bar"',
-                '-blender_backend:"EDS"'
+                '-blender_backend:"EDS"',
             ],
             $backendParams->get('fq')
         );
@@ -717,7 +717,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         // Test ignoring all values:
         $mappings = $this->mappings;
         $mappings['Facets']['Fields']['format']['Mappings']['EDS'] = [
-            'Ignore' => true
+            'Ignore' => true,
         ];
         $params = $this->getParams(null, $mappings);
         $params->addHiddenFilter('format:bar');
@@ -737,8 +737,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $mappings = $this->mappings;
         $mappings['Facets']['Fields']['format']['Mappings']['EDS'] = [
             'Ignore' => [
-                'bar'
-            ]
+                'bar',
+            ],
         ];
         $params = $this->getParams(null, $mappings);
         $params->addHiddenFilter('format:bar');
@@ -813,7 +813,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             [
                 'building:"0/Main/"',
-                '-blender_backend:"Primo"'
+                '-blender_backend:"Primo"',
             ],
             $backendParams->get('fq')
         );
@@ -875,7 +875,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             [
                 'building:"0/Sub/"',
-                '-blender_backend:"Primo"'
+                '-blender_backend:"Primo"',
             ],
             $backendParams->get('fq')
         );

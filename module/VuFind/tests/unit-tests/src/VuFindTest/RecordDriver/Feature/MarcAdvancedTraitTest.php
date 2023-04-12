@@ -106,7 +106,7 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             [
                 ['name' => 'Development Series &\'><"'],
-                ['name' => 'Development', 'number' => 'no. 2']
+                ['name' => 'Development', 'number' => 'no. 2'],
             ],
             $obj->getSeries()
         );
@@ -123,8 +123,8 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
             [
                 [
                     'url' => 'https://vufind.org/vufind/',
-                    'desc' => 'VuFind Home Page'
-                ]
+                    'desc' => 'VuFind Home Page',
+                ],
             ],
             $obj->getURLs()
         );

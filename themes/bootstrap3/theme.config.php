@@ -39,7 +39,8 @@ return [
         ['file' => 'vendor/bootstrap.min.js', 'priority' => 120],
         ['file' => 'vendor/bootstrap-accessibility.min.js', 'priority' => 130],
         ['file' => 'vendor/validator.min.js', 'priority' => 140],
-        ['file' => 'lib/autocomplete.js', 'priority' => 220],
+        ['file' => 'vendor/autocomplete.js', 'priority' => 220],
+        ['file' => 'lib/ajax_request_queue.js', 'priority' => 230],
         ['file' => 'common.js', 'priority' => 310],
         ['file' => 'lightbox.js', 'priority' => 320],
         ['file' => 'truncate.js', 'priority' => 330],
@@ -60,8 +61,8 @@ return [
             'flashmessages' => 'VuFind\View\Helper\Bootstrap3\Flashmessages',
             'highlight' => 'VuFind\View\Helper\Bootstrap3\Highlight',
             'layoutClass' => 'VuFind\View\Helper\Bootstrap3\LayoutClass',
-            'search' => 'VuFind\View\Helper\Bootstrap3\Search'
-        ]
+            'search' => 'VuFind\View\Helper\Bootstrap3\Search',
+        ],
     ],
     'icons' => [
         'defaultSet' => 'FontAwesome',
@@ -241,10 +242,10 @@ return [
             'sign-out' => 'FontAwesome:sign-out',
             'spinner' => 'FontAwesome:spinner:icon--spin',
             'status-available' => 'FontAwesome:check',
-            'status-indicator' => 'FontAwesome:circle',
             'status-pending' => 'FontAwesome:clock-o',
             'status-ready' => 'FontAwesome:bell',
             'status-unavailable' => 'FontAwesome:times',
+            'status-unknown' => 'FontAwesome:circle',
             'tag-add' => 'Alias:ui-add',
             'tag-remove' => 'Alias:ui-remove',
             'tree-context' => 'FontAwesome:sitemap',
@@ -280,5 +281,5 @@ return [
             'warning' => 'FontAwesome:exclamation-triangle',
         ],
     ],
-    'doctype' => 'HTML5'
+    'doctype' => 'HTML5',
 ];

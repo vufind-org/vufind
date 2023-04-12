@@ -48,7 +48,7 @@ use VuFind\View\Helper\Root\SearchParams;
  */
 class SearchMemoryTest extends \PHPUnit\Framework\TestCase
 {
-    use  \VuFindTest\Feature\ViewTrait;
+    use \VuFindTest\Feature\ViewTrait;
 
     /**
      * Test search memory helper

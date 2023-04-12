@@ -70,7 +70,7 @@ class HoldingsWorldCatTest extends \PHPUnit\Framework\TestCase
     /**
      * Test if the tab is active.
      *
-     * @param string $oclcnum OCLCNum
+     * @param string $oclcnum        OCLCNum
      * @param bool   $expectedResult Expected return value from isActive
      *
      * @return void

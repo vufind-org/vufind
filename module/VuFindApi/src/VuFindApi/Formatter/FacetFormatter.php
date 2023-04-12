@@ -109,7 +109,7 @@ class FacetFormatter extends BaseFormatter
         $result = [];
         $fields = [
             'value', 'displayText', 'count',
-            'children', 'href', 'isApplied'
+            'children', 'href', 'isApplied',
         ];
         foreach ($list as $value) {
             $resultValue = [];

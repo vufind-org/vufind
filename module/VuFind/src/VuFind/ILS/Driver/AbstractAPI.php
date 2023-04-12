@@ -165,7 +165,8 @@ abstract class AbstractAPI extends AbstractBase implements
             throw new ILSException("Error during send operation.");
         }
         $code = $response->getStatusCode();
-        if (!$response->isSuccess()
+        if (
+            !$response->isSuccess()
             && !$this->failureCodeIsAllowed($code, $allowedFailureCodes)
         ) {
             $this->logError(

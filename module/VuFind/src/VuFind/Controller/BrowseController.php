@@ -126,7 +126,7 @@ class BrowseController extends AbstractBase implements
 
         // This is a list of all available browse options:
         $allOptions = [
-            'tag', 'dewey', 'lcc', 'author', 'topic', 'genre', 'region', 'era'
+            'tag', 'dewey', 'lcc', 'author', 'topic', 'genre', 'region', 'era',
         ];
 
         // By default, all options except dewey are turned on if omitted from config:
@@ -259,7 +259,8 @@ class BrowseController extends AbstractBase implements
         $view->categoryList = $facets;
 
         // SEARCH (Tag does its own search)
-        if ($this->params()->fromQuery('query')
+        if (
+            $this->params()->fromQuery('query')
             && $this->getCurrentAction() != 'Tag'
         ) {
             $results = $this->getFacetList(
@@ -273,7 +274,7 @@ class BrowseController extends AbstractBase implements
                 $resultList[] = [
                     'displayText' => $result['displayText'],
                     'value' => $result['value'],
-                    'count' => $result['count']
+                    'count' => $result['count'],
                 ];
             }
             // Don't make a second filter if it would be the same facet
@@ -321,7 +322,7 @@ class BrowseController extends AbstractBase implements
         $view->categoryList = [
             'alphabetical' => 'By Alphabetical',
             'popularity'   => 'By Popularity',
-            'recent'       => 'By Recent'
+            'recent'       => 'By Recent',
         ];
 
         if ($this->params()->fromQuery('findby')) {
@@ -343,7 +344,7 @@ class BrowseController extends AbstractBase implements
                             $tagList[] = [
                                 'displayText' => $tag['tag'],
                                 'value' => $tag['tag'],
-                                'count' => $tag['cnt']
+                                'count' => $tag['cnt'],
                             ];
                         }
                     }
@@ -370,7 +371,7 @@ class BrowseController extends AbstractBase implements
                     $resultList[$i] = [
                         'displayText' => $tag['tag'],
                         'value' => $tag['tag'],
-                        'count'    => $tag['cnt']
+                        'count'    => $tag['cnt'],
                     ];
                 }
                 $view->resultList = $resultList;
@@ -394,7 +395,7 @@ class BrowseController extends AbstractBase implements
         [$view->filter, $view->secondaryList] = $this->getSecondaryList('lcc');
         $view->secondaryParams = [
             'query_field' => 'callnumber-first',
-            'facet_field' => 'callnumber-subject'
+            'facet_field' => 'callnumber-subject',
         ];
         $view->searchParams = ['sort' => 'callnumber-sort'];
         return $this->performSearch($view);
@@ -414,7 +415,7 @@ class BrowseController extends AbstractBase implements
         foreach ($hundredsList as $dewey) {
             $categoryList[$dewey['value']] = [
                 'text' => $dewey['displayText'],
-                'count' => $dewey['count']
+                'count' => $dewey['count'],
             ];
         }
         $view->categoryList = $categoryList;
@@ -436,7 +437,7 @@ class BrowseController extends AbstractBase implements
             $view->secondaryList = $secondaryList;
             $view->secondaryParams = [
                 'query_field' => 'dewey-tens',
-                'facet_field' => 'dewey-ones'
+                'facet_field' => 'dewey-ones',
             ];
             $view->searchParams = ['sort' => 'dewey-sort'];
         }
@@ -463,7 +464,7 @@ class BrowseController extends AbstractBase implements
         if ($findby) {
             $view->secondaryParams = [
                 'query_field' => $this->getCategory($findby),
-                'facet_field' => $this->getCategory($currentAction)
+                'facet_field' => $this->getCategory($currentAction),
             ];
             $view->facetPrefix = $facetPrefix && $findby == 'alphabetical';
             [$view->filter, $view->secondaryList]
@@ -486,7 +487,7 @@ class BrowseController extends AbstractBase implements
             'topic'        => 'By Topic',
             'genre'        => 'By Genre',
             'region'       => 'By Region',
-            'era'          => 'By Era'
+            'era'          => 'By Era',
         ];
 
         return $this->performBrowse('Author', $categoryList, true);
@@ -503,7 +504,7 @@ class BrowseController extends AbstractBase implements
             'alphabetical' => 'By Alphabetical',
             'genre'        => 'By Genre',
             'region'       => 'By Region',
-            'era'          => 'By Era'
+            'era'          => 'By Era',
         ];
 
         return $this->performBrowse('Topic', $categoryList, true);
@@ -520,7 +521,7 @@ class BrowseController extends AbstractBase implements
             'alphabetical' => 'By Alphabetical',
             'topic'        => 'By Topic',
             'region'       => 'By Region',
-            'era'          => 'By Era'
+            'era'          => 'By Era',
         ];
 
         return $this->performBrowse('Genre', $categoryList, true);
@@ -537,7 +538,7 @@ class BrowseController extends AbstractBase implements
             'alphabetical' => 'By Alphabetical',
             'topic'        => 'By Topic',
             'genre'        => 'By Genre',
-            'era'          => 'By Era'
+            'era'          => 'By Era',
         ];
 
         return $this->performBrowse('Region', $categoryList, true);
@@ -554,7 +555,7 @@ class BrowseController extends AbstractBase implements
             'alphabetical' => 'By Alphabetical',
             'topic'        => 'By Topic',
             'genre'        => 'By Genre',
-            'region'       => 'By Region'
+            'region'       => 'By Region',
         ];
 
         return $this->performBrowse('Era', $categoryList, true);
@@ -577,7 +578,7 @@ class BrowseController extends AbstractBase implements
                 return [
                         'dewey-tens', $this->quoteValues(
                             $this->getFacetList('dewey-hundreds', $category, 'index')
-                        )
+                        ),
                     ];
             case 'lcc':
                 return [
@@ -587,31 +588,31 @@ class BrowseController extends AbstractBase implements
                                 $category,
                                 'index'
                             )
-                        )
+                        ),
                     ];
             case 'topic':
                 return [
                         'topic_facet', $this->quoteValues(
                             $this->getFacetList('topic_facet', $category)
-                        )
+                        ),
                     ];
             case 'genre':
                 return [
                         'genre_facet', $this->quoteValues(
                             $this->getFacetList('genre_facet', $category)
-                        )
+                        ),
                     ];
             case 'region':
                 return [
                         'geographic_facet', $this->quoteValues(
                             $this->getFacetList('geographic_facet', $category)
-                        )
+                        ),
                     ];
             case 'era':
                 return [
                         'era_facet', $this->quoteValues(
                             $this->getFacetList('era_facet', $category)
-                        )
+                        ),
                     ];
         }
         throw new \Exception('Unexpected value: ' . $facet);
@@ -657,7 +658,8 @@ class BrowseController extends AbstractBase implements
         $result = $results->getFacetList();
         if (isset($result[$facet])) {
             // Sort facets alphabetically if configured to do so:
-            if (isset($this->config->Browse->alphabetical_order)
+            if (
+                isset($this->config->Browse->alphabetical_order)
                 && $this->config->Browse->alphabetical_order
             ) {
                 $callback = function ($a, $b) {

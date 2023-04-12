@@ -163,6 +163,14 @@
   th { text-align: right; }
   td span.term { font-weight: bold; }
 }
+.staff-view--marc {
+  .marc__tag {
+    width: 15%;
+  }
+  .marc__ind {
+    width: 5%;
+  }
+}
 
 .item-notes ul { padding-left: 2rem; }
 

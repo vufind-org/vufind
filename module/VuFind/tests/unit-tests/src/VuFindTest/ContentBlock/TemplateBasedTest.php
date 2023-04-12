@@ -154,7 +154,7 @@ class TemplateBasedTest extends \PHPUnit\Framework\TestCase
             [
                 'template' => 'ContentBlock/TemplateBased/markdown',
                 'data' => file_get_contents($file),
-                'pageLocatorDetails' => $details
+                'pageLocatorDetails' => $details,
             ],
             $block->getContext()
         );

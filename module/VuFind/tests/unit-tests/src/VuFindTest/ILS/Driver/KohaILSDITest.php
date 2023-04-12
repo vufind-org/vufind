@@ -57,6 +57,7 @@ class KohaILSDITest extends \VuFindTest\Unit\ILSDriverTestCase
     /**
      * Test toKohaDate method
      *
+     * @return void
      * @throws \ReflectionException
      */
     public function testToKohaDate(): void

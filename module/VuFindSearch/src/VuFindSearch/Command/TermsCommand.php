@@ -102,7 +102,7 @@ class TermsCommand extends CallMethodCommand
             $this->getField(),
             $this->getStart(),
             $this->getLimit(),
-            $this->getSearchParameters()
+            $this->getSearchParameters(),
         ];
     }
 

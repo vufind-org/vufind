@@ -142,7 +142,7 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
             [
                 'source' => 'foo::bar',
                 'target' => 'foo::xyzzy',
-                '--replace' => 'baz/transformed'
+                '--replace' => 'baz/transformed',
             ]
         );
         $this->assertEquals(

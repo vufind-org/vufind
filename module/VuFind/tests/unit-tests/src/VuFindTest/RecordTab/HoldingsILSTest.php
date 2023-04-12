@@ -60,7 +60,7 @@ class HoldingsILSTest extends \PHPUnit\Framework\TestCase
         $items2 = [
             ['callnumber' => 'b', 'callnumber_prefix' => ''],
             ['callnumber' => 'b', 'callnumber_prefix' => ''],
-            ['callnumber' => 'b', 'callnumber_prefix' => '']
+            ['callnumber' => 'b', 'callnumber_prefix' => ''],
         ];
         $expected2 = [['callnumber' => 'b', 'display' => 'b', 'prefix' => '']];
         $this->assertSame($expected2, $obj->getUniqueCallNumbers($items2, true));
@@ -69,12 +69,12 @@ class HoldingsILSTest extends \PHPUnit\Framework\TestCase
         $items3 = [
             ['callnumber' => 'a', 'callnumber_prefix' => ''],
             ['callnumber' => 'b', 'callnumber_prefix' => 'c'],
-            ['callnumber' => 'b', 'callnumber_prefix' => '']
+            ['callnumber' => 'b', 'callnumber_prefix' => ''],
         ];
         $expected3 = [
             0 => ['callnumber' => 'a', 'display' => 'a', 'prefix' => ''],
             2 => ['callnumber' => 'b', 'display' => 'b', 'prefix' => ''],
-            1 => ['callnumber' => 'b', 'display' => 'c b', 'prefix' => 'c']
+            1 => ['callnumber' => 'b', 'display' => 'c b', 'prefix' => 'c'],
         ];
         $this->assertSame($expected3, $obj->getUniqueCallNumbers($items3, true));
 
@@ -82,7 +82,7 @@ class HoldingsILSTest extends \PHPUnit\Framework\TestCase
         $items4 = [
             ['callnumber' => 'b', 'callnumber_prefix' => ''],
             ['callnumber' => 'b', 'callnumber_prefix' => 'a'],
-            ['callnumber' => 'b', 'callnumber_prefix' => 'c']
+            ['callnumber' => 'b', 'callnumber_prefix' => 'c'],
         ];
         $expected4 = ['b'];
         $this->assertSame($expected4, $obj->getUniqueCallNumbers($items4, false));

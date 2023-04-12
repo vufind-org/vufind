@@ -68,7 +68,8 @@ class OCLCIdentities implements AutocompleteInterface
 
         // Retrieve and parse response:
         $tmp = file_get_contents($target);
-        if ($tmp && ($json = json_decode($tmp)) && isset($json->result)
+        if (
+            $tmp && ($json = json_decode($tmp)) && isset($json->result)
             && is_array($json->result)
         ) {
             foreach ($json->result as $current) {

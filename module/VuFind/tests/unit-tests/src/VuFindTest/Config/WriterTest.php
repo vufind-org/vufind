@@ -75,12 +75,12 @@ class WriterTest extends \PHPUnit\Framework\TestCase
                     'settings' => [
                         'key1' => [
                             'before' => "; key head\n",
-                            'inline' => '; key inline'
-                        ]
-                    ]
-                ]
+                            'inline' => '; key inline',
+                        ],
+                    ],
+                ],
             ],
-            'after' => "; the end\n"
+            'after' => "; the end\n",
         ];
         $target = "; section head\n[Test]\t; inline\n; key head\n"
             . "key1             = \"val1\"\t; key inline\n"
@@ -138,7 +138,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
     public function testAssocArray()
     {
         $cfg = [
-            'Test' => ['test' => ['key1' => 'val1', 'key2' => 'val2']]
+            'Test' => ['test' => ['key1' => 'val1', 'key2' => 'val2']],
         ];
         $test = new Writer('fake.ini', $cfg);
         $expected = "[Test]\ntest['key1']     = \"val1\"\n"

@@ -139,7 +139,7 @@ class UserList extends Gateway
                         'DISTINCT(?)',
                         ['user_list.id'],
                         [Expression::TYPE_IDENTIFIER]
-                    ), Select::SQL_STAR
+                    ), Select::SQL_STAR,
                 ]
             );
             $select->join(

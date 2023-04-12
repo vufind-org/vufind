@@ -51,7 +51,7 @@ class MapTabConfig extends AbstractConfig
             'recordMap' => false,
             'displayCoords' => false,
             'mapLabels' => null,
-            'graticule' => false
+            'graticule' => false,
         ];
     }
 

@@ -87,13 +87,13 @@ class PathResolverFactory implements FactoryInterface
                 ? [
                     [
                         'directory' => LOCAL_OVERRIDE_DIR,
-                        'defaultConfigSubdir' => $this->defaultLocalConfigSubdir
-                    ]
+                        'defaultConfigSubdir' => $this->defaultLocalConfigSubdir,
+                    ],
                 ] : [];
         return new $requestedName(
             [
                 'directory' => APPLICATION_PATH,
-                'defaultConfigSubdir' => $this->defaultBaseConfigSubdir
+                'defaultConfigSubdir' => $this->defaultBaseConfigSubdir,
             ],
             $localDirs
         );

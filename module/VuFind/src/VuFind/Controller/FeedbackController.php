@@ -138,7 +138,7 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
             $form->setData(
                 [
                  'name' => $user->firstname . ' ' . $user->lastname,
-                 'email' => $user['email']
+                 'email' => $user['email'],
                 ]
             );
         }

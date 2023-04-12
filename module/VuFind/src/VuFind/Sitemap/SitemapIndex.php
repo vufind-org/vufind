@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class for representing sitemap index files
  *

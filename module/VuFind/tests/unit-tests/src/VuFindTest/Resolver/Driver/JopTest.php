@@ -31,10 +31,8 @@
 namespace VuFindTest\Resolver\Driver;
 
 use InvalidArgumentException;
-
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
 use Laminas\Http\Response as HttpResponse;
-
 use VuFind\Resolver\Driver\Jop;
 
 /**
@@ -67,7 +65,7 @@ class JopTest extends \PHPUnit\Framework\TestCase
             'show_in_record' => false,
             'show_in_holdings' => true,
             'embed' => true,
-            'replace_other_urls' => true
+            'replace_other_urls' => true,
         ],
     ];
 
@@ -89,35 +87,35 @@ class JopTest extends \PHPUnit\Framework\TestCase
                 'coverage' => 'ab Vol. 31, Iss. 1 (1997)',
                 'access' => 'limited',
                 'href' => 'http://onlinelibrary.wiley.com/journal/10.1111/(ISSN)1468-0068',
-                'service_type' => 'getFullTxt'
+                'service_type' => 'getFullTxt',
             ],
             1 => [
                 'title' => 'Noûs (ältere Jahrgänge via JSTOR)',
                 'coverage' => 'ab Vol. 1, Iss. 1 (1967); für die Ausgaben der aktuellen 11 Jahrgänge nicht verfügbar',
                 'access' => 'limited',
                 'href' => 'http://www.jstor.org/action/showPublication?journalCode=nous',
-                'service_type' => 'getFullTxt'
+                'service_type' => 'getFullTxt',
             ],
             2 => [
                 'title' => 'Nous (via EBSCO Host)',
                 'coverage' => 'für die Ausgaben der vergangenen 12 Monate nicht verfügbar',
                 'access' => 'limited',
                 'href' => 'http://search.ebscohost.com/direct.asp?db=aph&jid=D97&scope=site',
-                'service_type' => 'getFullTxt'
+                'service_type' => 'getFullTxt',
             ],
             3 => [
                 'title' => 'Nous (via EBSCO Host)',
                 'coverage' => 'für die Ausgaben der vergangenen 12 Monate nicht verfügbar',
                 'access' => 'limited',
                 'href' => 'http://search.ebscohost.com/direct.asp?db=lfh&jid=D97&scope=site',
-                'service_type' => 'getFullTxt'
+                'service_type' => 'getFullTxt',
             ],
             4 => [
                 'title' => 'Philosophical Perspectives (aktuelle Jahrgänge)',
                 'coverage' => 'ab Vol. 17 (2003)',
                 'access' => 'limited',
                 'href' => 'http://onlinelibrary.wiley.com/journal/10.1111/%28ISSN%291520-8583',
-                'service_type' => 'getFullTxt'
+                'service_type' => 'getFullTxt',
             ],
             5 => [
                 'title' => 'Print available',
@@ -126,15 +124,15 @@ class JopTest extends \PHPUnit\Framework\TestCase
                 'href' => 'http://dispatch.opac.dnb.de/CHARSET=ISO-8859-1/DB=1.1/CMD'
                     . '?ACT=SRCHA&IKT=8509&SRT=LST_ty&TRM=IDN+011960027+or+IDN+01545794X'
                     . '&HLIB=009030085#009030085',
-                'service_type' => 'getHolding'
+                'service_type' => 'getHolding',
             ],
             6 => [
                 'title' => 'Print available',
                 'coverage' => 'Noûs; Leipzig UB // HB/FH/ Standortsignatur: 96-7-558; '
                     . 'CA 5470 Magazin: 96-7-558; 1.1967 - 27.1993; 30.1996 - 43.2009; Letzten 15 Jg. Freihand',
                 'access' => 'open',
-                'service_type' => 'getHolding'
-            ]
+                'service_type' => 'getHolding',
+            ],
         ];
 
         $this->assertEquals($result, $testResult);

@@ -204,7 +204,7 @@ class BackendTest extends TestCase
                     'Adult children of aging parents' => 7,
                     'Automobile drivers\' tests' => 7,
                     'Fathers and daughters' => 7,
-                ]
+                ],
             ],
             $facets
         );
@@ -502,8 +502,8 @@ class BackendTest extends TestCase
         $back = new Backend($conn);
         $query = new Query('foo');
         $result = $back->getIds($query, 0, 10);
-        $this->assertTrue($result instanceof RecordCollection);
-        $this->assertEquals(0, count($result));
+        $this->assertInstanceOf(RecordCollection::class, $result);
+        $this->assertCount(0, $result);
     }
 
     /**
@@ -666,7 +666,7 @@ class BackendTest extends TestCase
                         // If client is provided, return it since it may have test
                         // expectations:
                         return $client ?? new \Laminas\Http\Client();
-                    }
+                    },
                 ]
             )
             ->getMock();

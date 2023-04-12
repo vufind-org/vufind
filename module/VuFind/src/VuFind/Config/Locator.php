@@ -106,13 +106,13 @@ class Locator
             ? [
                 [
                     'directory' => LOCAL_OVERRIDE_DIR,
-                    'defaultConfigSubdir' => PathResolver::DEFAULT_CONFIG_SUBDIR
-                ]
+                    'defaultConfigSubdir' => PathResolver::DEFAULT_CONFIG_SUBDIR,
+                ],
             ] : [];
         return new \VuFind\Config\PathResolver(
             [
                 'directory' => APPLICATION_PATH,
-                'defaultConfigSubdir' => PathResolver::DEFAULT_CONFIG_SUBDIR
+                'defaultConfigSubdir' => PathResolver::DEFAULT_CONFIG_SUBDIR,
             ],
             $localDirs
         );

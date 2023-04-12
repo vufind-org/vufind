@@ -335,6 +335,8 @@
 
   <!-- Copy files from node modules to themes -->
   <target name="copynodemodules">
+    <!-- autocomplete.js -->
+    <copy file="${srcdir}/node_modules/autocomplete.js/autocomplete.js" todir="${srcdir}/themes/bootstrap3/js/vendor" />
     <!-- jstree -->
     <copy todir="${srcdir}/themes/bootstrap3/js/vendor/jsTree">
       <fileset dir="${srcdir}/node_modules/jstree/dist/" >
@@ -488,6 +490,7 @@
     <foreach param="relfilename" absparam="filename" target="importrec">
       <fileset dir="${srcdir}/tests/data">
           <include name="*.mrc" />
+          <include name="*.xml" />
       </fileset>
     </foreach>
   </target>

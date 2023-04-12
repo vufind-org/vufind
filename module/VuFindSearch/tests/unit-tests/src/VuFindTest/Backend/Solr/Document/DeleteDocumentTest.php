@@ -31,7 +31,6 @@
 namespace VuFindTest\Backend\Solr\Document;
 
 use PHPUnit\Framework\TestCase;
-
 use VuFindSearch\Backend\Solr\Document\DeleteDocument;
 
 /**

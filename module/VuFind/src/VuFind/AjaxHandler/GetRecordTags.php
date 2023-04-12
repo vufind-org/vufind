@@ -108,7 +108,7 @@ class GetRecordTags extends AbstractBase
             $tagList[] = [
                 'tag'   => $tag->tag,
                 'cnt'   => $tag->cnt,
-                'is_me' => !empty($tag->is_me)
+                'is_me' => !empty($tag->is_me),
             ];
         }
 

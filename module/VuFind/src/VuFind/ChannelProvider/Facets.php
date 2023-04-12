@@ -254,7 +254,7 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
             'providerId' => $this->providerId,
             'groupId' => current(explode(':', $filter)),
             'token' => $this->getToken($filter, $title),
-            'links' => []
+            'links' => [],
         ];
         if ($tokenOnly) {
             return $retVal;
@@ -271,13 +271,13 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
             'label' => 'channel_search',
             'icon' => 'fa-list',
             'url' => $this->url->fromRoute($params->getOptions()->getSearchAction())
-                . $query
+                . $query,
         ];
         $retVal['links'][] = [
             'label' => 'channel_expand',
             'icon' => 'fa-search-plus',
             'url' => $this->url->fromRoute('channels-search')
-                . $query . '&source=' . urlencode($params->getSearchClassId())
+                . $query . '&source=' . urlencode($params->getSearchClassId()),
         ];
 
         // Run the search and convert the results into a channel:

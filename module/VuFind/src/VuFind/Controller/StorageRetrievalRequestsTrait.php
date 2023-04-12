@@ -60,7 +60,7 @@ trait StorageRetrievalRequestsTrait
             'StorageRetrievalRequests',
             [
                 'id' => $driver->getUniqueID(),
-                'patron' => $patron
+                'patron' => $patron,
             ]
         );
         if (!$checkRequests) {
@@ -133,7 +133,7 @@ trait StorageRetrievalRequestsTrait
                         'msg' => 'storage_retrieval_request_place_success_html',
                         'tokens' => [
                             '%%url%%' => $this->url()
-                                ->fromRoute('myresearch-storageretrievalrequests')
+                                ->fromRoute('myresearch-storageretrievalrequests'),
                         ],
                     ];
                     $this->flashMessenger()->addMessage($msg, 'success');

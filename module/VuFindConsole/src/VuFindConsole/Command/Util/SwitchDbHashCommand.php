@@ -157,7 +157,8 @@ class SwitchDbHashCommand extends Command
         $newhash = $input->getArgument('newmethod');
 
         // Pull existing encryption settings from the configuration:
-        if (!isset($this->config->Authentication->ils_encryption_key)
+        if (
+            !isset($this->config->Authentication->ils_encryption_key)
             || !($this->config->Authentication->encrypt_ils_password ?? false)
         ) {
             $oldhash = 'none';

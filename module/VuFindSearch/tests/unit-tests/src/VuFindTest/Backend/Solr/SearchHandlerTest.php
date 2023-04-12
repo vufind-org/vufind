@@ -87,7 +87,7 @@ class SearchHandlerTest extends TestCase
             'DismaxHandler' => 'dismax',
             'QueryFields' => [],
             'FilterQuery' => [],
-            'DismaxMunge' => []
+            'DismaxMunge' => [],
         ];
         $this->assertEquals($spec + $defaults, $hndl->toArray());
     }
@@ -120,14 +120,14 @@ class SearchHandlerTest extends TestCase
                 'callnumber_exact' => [
                     ['uppercase'],
                     ['preg_replace', '/[ "]/', ""],
-                    ['preg_replace', '/\*+$/', ""]
+                    ['preg_replace', '/\*+$/', ""],
                 ],
                 'callnumber_fuzzy' => [
                     ['uppercase'],
                     ['preg_replace', '/[ "]/', ""],
                     ['preg_replace', '/\*+$/', ""],
-                    ['append', '*']
-                ]
+                    ['append', '*'],
+                ],
             ],
             'QueryFields' => [
                 'callnumber' => [
@@ -137,8 +137,8 @@ class SearchHandlerTest extends TestCase
                 'dewey-full' => [
                     ['callnumber_exact', 1000],
                     ['callnumber_fuzzy', '~'],
-                ]
-            ]
+                ],
+            ],
         ];
 
         $hndl = new SearchHandler($spec);
@@ -160,10 +160,10 @@ class SearchHandlerTest extends TestCase
             'DismaxMunge' => [
                 ['uppercase'],
                 ['preg_replace', '/[ "]/', ""],
-                ['preg_replace', '/\*+$/', ""]
+                ['preg_replace', '/\*+$/', ""],
             ],
             'DismaxFields' => ['callnumber'],
-            'DismaxHandler' => 'dismax'
+            'DismaxHandler' => 'dismax',
         ];
 
         $hndl = new SearchHandler($spec);

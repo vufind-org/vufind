@@ -45,6 +45,11 @@ use VuFindHttp\HttpService;
  */
 class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * Test a download
+     *
+     * @return void
+     */
     public function testDownload()
     {
         $container = new \VuFindTest\Container\MockContainer($this);
@@ -97,6 +102,11 @@ class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($body, $testBody);
     }
 
+    /**
+     * Test exception handling
+     *
+     * @return void
+     */
     public function testException()
     {
         $this->expectException(HttpDownloadException::class);

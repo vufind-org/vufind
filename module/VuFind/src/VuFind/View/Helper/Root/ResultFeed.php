@@ -148,7 +148,7 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
                     [
                         '%%start%%' => $results->getStartRecord(),
                         '%%end%%' => $results->getEndRecord(),
-                        '%%total%%' => $results->getResultTotal()
+                        '%%total%%' => $results->getResultTotal(),
                     ]
                 )
             )

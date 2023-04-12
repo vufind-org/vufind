@@ -225,7 +225,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTest
             ->willReturnMap(
                 [
                     [1, null],
-                    [2, $user]
+                    [2, $user],
                 ]
             );
         return $userTable;
@@ -248,7 +248,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTest
             'cat_password' => 'pass',
             'email'        => 'Lib.Rarian@library.not',
             'major'        => null,
-            'college'      => null
+            'college'      => null,
         ];
 
         $profile = [

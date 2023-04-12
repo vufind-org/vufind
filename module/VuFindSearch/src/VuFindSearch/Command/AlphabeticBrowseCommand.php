@@ -125,7 +125,7 @@ class AlphabeticBrowseCommand extends CallMethodCommand
             $this->getPage(),
             $this->getLimit(),
             $this->getSearchParameters(),
-            $this->getOffsetDelta()
+            $this->getOffsetDelta(),
         ];
     }
 

@@ -79,7 +79,7 @@ class SessionCsrfFactory implements FactoryInterface
         return new $requestedName(
             [
                 'session' => new \Laminas\Session\Container('csrf', $sessionManager),
-                'salt' => $config->Security->HMACkey ?? 'VuFindCsrfSalt'
+                'salt' => $config->Security->HMACkey ?? 'VuFindCsrfSalt',
             ]
         );
     }

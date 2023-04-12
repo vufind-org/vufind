@@ -60,7 +60,7 @@ trait ILLRequestsTrait
             'ILLRequests',
             [
                 'id' => $driver->getUniqueID(),
-                'patron' => $patron
+                'patron' => $patron,
             ]
         );
         if (!$checkRequests) {
@@ -114,7 +114,7 @@ trait ILLRequestsTrait
                     'msg' => 'ill_request_place_success_html',
                     'tokens' => [
                         '%%url%%' => $this->url()
-                            ->fromRoute('myresearch-illrequests')
+                            ->fromRoute('myresearch-illrequests'),
                     ],
                 ];
                 $this->flashMessenger()->addMessage($msg, 'success');

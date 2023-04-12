@@ -110,7 +110,7 @@ trait AutoRetryTrait
                 if ($this->retriesLeft > 0) {
                     $logMethod = [
                         $this,
-                        $annotations['method']['retryLogMethod'][0] ?? 'logWarning'
+                        $annotations['method']['retryLogMethod'][0] ?? 'logWarning',
                     ];
                     if (is_callable($logMethod)) {
                         $method = get_class($this) . '::' . $this->getName(false);

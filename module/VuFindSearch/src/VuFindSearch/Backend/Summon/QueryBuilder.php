@@ -32,11 +32,9 @@
 namespace VuFindSearch\Backend\Summon;
 
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
-
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
-
 use VuFindSearch\Query\QueryGroup;
 
 /**

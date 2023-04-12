@@ -191,7 +191,7 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
         'var',
         'video',
         'wbr',
-        'xmp'
+        'xmp',
     ];
 
     /**
@@ -216,7 +216,7 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
         'param', // deprecated, but included for back-compatibility
         'source',
         'track',
-        'wbr'
+        'wbr',
     ];
 
     /**
@@ -254,7 +254,7 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
         'spacer',
         'strike',
         'tt',
-        'xmp'
+        'xmp',
     ];
 
     /**

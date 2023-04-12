@@ -101,7 +101,8 @@ abstract class CallMethodCommand extends AbstractBase
     public function execute(BackendInterface $backend): CommandInterface
     {
         $this->validateBackend($backend);
-        if (!($backend instanceof $this->interface)
+        if (
+            !($backend instanceof $this->interface)
             || !method_exists($this->interface, $this->method)
         ) {
             throw new BackendException(

@@ -157,7 +157,7 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
                     'course_id' => $courseId,
                     'course' => $courses[$courseId] ?? '',
                     'department_id' => $departmentId,
-                    'department' => $departments[$departmentId] ?? ''
+                    'department' => $departments[$departmentId] ?? '',
                 ];
             }
             if (!in_array($record['BIB_ID'], $index[$id]['bib_id'])) {
@@ -243,7 +243,8 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
 
         // Make sure we have reserves and at least one of: instructors, courses,
         // departments:
-        if ((!empty($instructors) || !empty($courses) || !empty($departments))
+        if (
+            (!empty($instructors) || !empty($courses) || !empty($departments))
             && !empty($reserves)
         ) {
             // Delete existing records

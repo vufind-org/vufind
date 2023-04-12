@@ -32,7 +32,6 @@
 namespace VuFind\Search\Solr;
 
 use Laminas\EventManager\EventInterface;
-
 use Laminas\EventManager\SharedEventManagerInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\I18n\TranslatableString;
@@ -182,7 +181,8 @@ class HierarchicalFacetListener
             return $event;
         }
         $context = $command->getContext();
-        if ($context == 'search' || $context == 'retrieve'
+        if (
+            $context == 'search' || $context == 'retrieve'
             || $context == 'retrieveBatch' || $context == 'similar'
         ) {
             $this->processHierarchicalFacets($event);
@@ -215,7 +215,8 @@ class HierarchicalFacetListener
                         // Include a translation for each value only if we don't
                         // display full hierarchy or this is the deepest hierarchy
                         // level available
-                        if (!$allLevels
+                        if (
+                            !$allLevels
                             || $this->facetHelper->isDeepestFacetLevel(
                                 $fields[$facetName],
                                 $value

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Index-based generator plugin factory
  *

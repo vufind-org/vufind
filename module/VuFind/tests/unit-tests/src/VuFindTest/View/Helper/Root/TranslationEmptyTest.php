@@ -59,7 +59,7 @@ class TranslationEmptyTest extends \PHPUnit\Framework\TestCase
                     'default' => [
                         'foo' => 'bar',
                         'baz' => '',
-                    ]
+                    ],
                 ]
             )
         );

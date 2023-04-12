@@ -103,7 +103,7 @@ class WriteDocumentCommand extends \VuFindSearch\Command\CallMethodCommand
             $this->getDocument(),
             $this->getTimeout(),
             $this->getHandler(),
-            $this->getSearchParameters()
+            $this->getSearchParameters(),
         ];
     }
 

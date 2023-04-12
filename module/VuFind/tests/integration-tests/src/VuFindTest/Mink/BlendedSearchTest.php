@@ -69,7 +69,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
             'General' => [
                 'default_side_recommend[]'
                     => 'SideFacetsDeferred:Results:CheckboxFacets:Blender',
-            ]
+            ],
         ];
     }
 
@@ -106,17 +106,20 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
         return [
             [
                 ['page' => 1],
-                $expectedFirstPage
+                $expectedFirstPage,
             ],
             [
                 ['page' => 2],
-                $expected
-            ]
+                $expected,
+            ],
         ];
     }
 
     /**
      * Test blended search
+     *
+     * @param array $queryParams    Query parameters
+     * @param array $expectedLabels Expected labels
      *
      * @dataProvider getSearchData
      *
@@ -130,9 +133,9 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
                     'SearchTabs' => [
                         'Solr' => 'Catalog',
                         'Blender' => 'Blended',
-                    ]
+                    ],
                 ],
-                'Blender' => $this->getBlenderIniOverrides()
+                'Blender' => $this->getBlenderIniOverrides(),
             ],
             ['Blender']
         );

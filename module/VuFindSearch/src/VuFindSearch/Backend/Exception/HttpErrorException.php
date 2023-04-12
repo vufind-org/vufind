@@ -30,7 +30,6 @@
 namespace VuFindSearch\Backend\Exception;
 
 use Exception;
-
 use Laminas\Http\Response;
 
 /**

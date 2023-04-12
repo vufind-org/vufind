@@ -139,11 +139,11 @@ trait LiveDatabaseTrait
         $checks = [
             [
                 'table' => \VuFind\Db\Table\User::class,
-                'name' => 'users'
+                'name' => 'users',
             ],
             [
                 'table' => \VuFind\Db\Table\Tags::class,
-                'name' => 'tags'
+                'name' => 'tags',
             ],
         ];
         foreach ($checks as $check) {

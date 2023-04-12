@@ -303,7 +303,7 @@ class Map extends AbstractBase
                 [
                     $geoCoords[$key][0], $geoCoords[$key][1],
                     $geoCoords[$key][2], $geoCoords[$key][3],
-                    $mapLabel, $mapCoords
+                    $mapLabel, $mapCoords,
                 ]
             );
         }

@@ -476,7 +476,8 @@ abstract class AbstractBase implements
         array $policy,
         string $string
     ): void {
-        if (isset($policy['minLength'])
+        if (
+            isset($policy['minLength'])
             && mb_strlen($string, 'UTF-8') < $policy['minLength']
         ) {
             // e.g. password_minimum_length or username_minimum_length:
@@ -487,7 +488,8 @@ abstract class AbstractBase implements
                 )
             );
         }
-        if (isset($policy['maxLength'])
+        if (
+            isset($policy['maxLength'])
             && mb_strlen($string, 'UTF-8') > $policy['maxLength']
         ) {
             // e.g. password_maximum_length or username_maximum_length:

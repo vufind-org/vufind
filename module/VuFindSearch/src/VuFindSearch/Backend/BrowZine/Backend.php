@@ -30,12 +30,9 @@
 namespace VuFindSearch\Backend\BrowZine;
 
 use VuFindSearch\Backend\AbstractBackend;
-
 use VuFindSearch\Backend\Exception\BackendException;
-
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
-
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Response\RecordCollectionInterface;
 
@@ -121,7 +118,7 @@ class Backend extends AbstractBackend
             [
                 'offset' => $offset,
                 'recordCount' => count($results),
-                'data' => array_slice($results, $offset, $limit)
+                'data' => array_slice($results, $offset, $limit),
             ]
         );
         $this->injectSourceIdentifier($collection);

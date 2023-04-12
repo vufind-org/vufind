@@ -181,7 +181,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
             $this->getMockTranslator(
                 [
                     'default' => ['foo' => '%%token%%'],
-                    'other' => ['foo' => 'Foo', 'bar' => 'Bar']
+                    'other' => ['foo' => 'Foo', 'bar' => 'Bar'],
                 ]
             )
         );

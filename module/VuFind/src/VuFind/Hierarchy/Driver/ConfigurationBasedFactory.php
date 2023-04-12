@@ -72,7 +72,7 @@ class ConfigurationBasedFactory
         $configReader = $container->get(\VuFind\Config\PluginManager::class);
         $globalConfig = $configReader->get('config');
         $options = [
-            'enabled' => $globalConfig->Hierarchy->showTree ?? false
+            'enabled' => $globalConfig->Hierarchy->showTree ?? false,
         ];
 
         // Load driver-specific configuration:

@@ -30,11 +30,9 @@
 namespace VuFind\Search\Factory;
 
 use Psr\Container\ContainerInterface;
-
 use VuFindSearch\Backend\LibGuides\Backend;
 use VuFindSearch\Backend\LibGuides\Connector;
 use VuFindSearch\Backend\LibGuides\QueryBuilder;
-
 use VuFindSearch\Backend\LibGuides\Response\RecordCollectionFactory;
 
 /**

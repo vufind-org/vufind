@@ -31,7 +31,6 @@ namespace VuFind\Search\Solr;
 
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
-
 use VuFindSearch\Backend\Solr\Backend;
 
 /**
@@ -69,7 +68,7 @@ class DefaultParametersListener
     protected $contextMap = [
         'getIds' => 'search',
         'random' => 'retrieve',
-        'retrieveBatch' => 'retrieve'
+        'retrieveBatch' => 'retrieve',
     ];
 
     /**

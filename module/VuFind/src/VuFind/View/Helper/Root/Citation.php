@@ -94,7 +94,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
      * @var string[]
      */
     protected $uncappedPhrases = [
-        'even if', 'if only', 'now that', 'on top of'
+        'even if', 'if only', 'now that', 'on top of',
     ];
 
     /**
@@ -178,7 +178,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
             'pubName' => $publishers[0] ?? null,
             'pubDate' => $pubDates[0] ?? null,
             'edition' => empty($edition) ? [] : [$edition],
-            'journal' => $driver->tryMethod('getContainerTitle')
+            'journal' => $driver->tryMethod('getContainerTitle'),
         ];
 
         return $this;
@@ -203,7 +203,8 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
         // also know if we have a valid corporate author name that it should be
         // left alone... otherwise, it's worth trying to reverse names (for example,
         // this may be dirty data from Summon):
-        if (!($this->driver instanceof \VuFind\RecordDriver\SolrMarc)
+        if (
+            !($this->driver instanceof \VuFind\RecordDriver\SolrMarc)
             && !$isCorporate
         ) {
             $callables[] = function (string $name): string {
@@ -289,7 +290,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
         $apa = [
             'title' => $this->getAPATitle(),
             'authors' => $this->getAPAAuthors(),
-            'edition' => $this->getEdition()
+            'edition' => $this->getEdition(),
         ];
 
         // Show a period after the title if it does not already have punctuation
@@ -604,7 +605,8 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
     protected function fixAbbreviatedNameLetters($str)
     {
         // Fix abbreviated letters.
-        if (strlen($str) == 1
+        if (
+            strlen($str) == 1
             || preg_match('/\s[a-zA-Z]/', substr($str, -2))
         ) {
             return $str . '.';
@@ -771,7 +773,8 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
     protected function getAPAAuthors()
     {
         $authorStr = '';
-        if (isset($this->details['authors'])
+        if (
+            isset($this->details['authors'])
             && is_array($this->details['authors'])
         ) {
             $i = 0;
@@ -818,7 +821,8 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
     protected function getEdition()
     {
         // Find the first edition statement that isn't "1st ed."
-        if (isset($this->details['edition'])
+        if (
+            isset($this->details['edition'])
             && is_array($this->details['edition'])
         ) {
             foreach ($this->details['edition'] as $edition) {
@@ -894,7 +898,8 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
     protected function getMLAAuthors($etAlThreshold = 2)
     {
         $authorStr = '';
-        if (isset($this->details['authors'])
+        if (
+            isset($this->details['authors'])
             && is_array($this->details['authors'])
         ) {
             $i = 0;
@@ -937,11 +942,13 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
     protected function getPublisher($includePubPlace = true)
     {
         $parts = [];
-        if ($includePubPlace && !empty($this->details['pubPlace'])
+        if (
+            $includePubPlace && !empty($this->details['pubPlace'])
         ) {
             $parts[] = $this->stripPunctuation($this->details['pubPlace']);
         }
-        if (!empty($this->details['pubName'])
+        if (
+            !empty($this->details['pubName'])
         ) {
             $parts[] = $this->details['pubName'];
         }

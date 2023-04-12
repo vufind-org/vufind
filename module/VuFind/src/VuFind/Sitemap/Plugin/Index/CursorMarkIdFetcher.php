@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Plugin to get IDs for a sitemap from a backend using cursor marks (if supported).
  *
@@ -133,7 +134,7 @@ class CursorMarkIdFetcher extends AbstractIdFetcher
             $this->defaultParams + [
                 'rows' => $countPerPage,
                 'sort' => $key . ' asc',
-                'cursorMark' => $cursorMark
+                'cursorMark' => $cursorMark,
             ]
         );
         // Apply filters:

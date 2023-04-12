@@ -120,7 +120,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     {
         // "Mock out" tag functionality to avoid database access:
         $methods = [
-            'getBuildings', 'getDeduplicatedAuthors', 'getContainerTitle', 'getTags'
+            'getBuildings', 'getDeduplicatedAuthors', 'getContainerTitle', 'getTags',
         ];
         $record = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
             ->onlyMethods($methods)
@@ -228,11 +228,11 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     {
         return [
             [
-                'getInvokedSpecs'
+                'getInvokedSpecs',
             ],
             [
-                'getOldSpecs'
-            ]
+                'getOldSpecs',
+            ],
         ];
     }
 
@@ -269,7 +269,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
                         'values' => count($data),
                     ],
                 ];
-            }
+            },
         ];
         $spec['MultiEmptyArrayTest'] = [
             'dataMethod' => true,
@@ -277,7 +277,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'pos' => 2000,
             'multiFunction' => function () {
                 return [];
-            }
+            },
         ];
         $spec['MultiNullTest'] = [
             'dataMethod' => true,
@@ -285,7 +285,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'pos' => 2000,
             'multiFunction' => function () {
                 return null;
-            }
+            },
         ];
         $spec['MultiNullInArrayWithZeroTest'] = [
             'dataMethod' => true,
@@ -301,9 +301,9 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
                     [
                         'label' => 'ZeroBlocked',
                         'values' => 0,
-                    ]
+                    ],
                 ];
-            }
+            },
         ];
         $spec['MultiNullInArrayWithZeroAllowedTest'] = [
             'dataMethod' => true,
@@ -319,9 +319,9 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
                     [
                         'label' => 'ZeroAllowed',
                         'values' => 0,
-                    ]
+                    ],
                 ];
-            }
+            },
         ];
         $spec['MultiWithSortPos'] = [
             'dataMethod' => true,
@@ -332,20 +332,20 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
                     [
                         'label' => 'b',
                         'values' => 'b',
-                        'options' => ['pos' => 3000]
+                        'options' => ['pos' => 3000],
                     ],
                     [
                         'label' => 'a',
                         'values' => 'a',
-                        'options' => ['pos' => 3000]
+                        'options' => ['pos' => 3000],
                     ],
                     [
                         'label' => 'c',
                         'values' => 'c',
-                        'options' => ['pos' => 2999]
+                        'options' => ['pos' => 2999],
                     ],
                 ];
-            }
+            },
         ];
         $expected = [
             'Building' => 'prefix_0',
@@ -368,9 +368,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'a' => 'a',
             'b' => 'b',
         ];
-
-        // Check that the function is callable in this test.
-        $this->assertTrue(is_callable([$this, $function]));
+        // Call the method specified by the data provider
         $results = $this->$function($driver, $spec);
         // Check for expected array keys
         $this->assertEquals(array_keys($expected), $this->getLabels($results));

@@ -65,7 +65,7 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
             ['apples and oranges (not that)', 'apples AND oranges (NOT that)'],
             [
                 '(this or that) and (apples not oranges)',
-                '(this OR that) AND (apples NOT oranges)'
+                '(this OR that) AND (apples NOT oranges)',
             ],
 
             // do not capitalize inside quotes:
@@ -256,11 +256,11 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
             // special case for timestamps:
             [
                 '[1900-01-01t00:00:00z to 1900-12-31t23:59:59z]',
-                '[1900-01-01T00:00:00Z TO 1900-12-31T23:59:59Z]'
+                '[1900-01-01T00:00:00Z TO 1900-12-31T23:59:59Z]',
             ],
             [
                 '{1900-01-01T00:00:00Z       TO   1900-12-31T23:59:59Z}',
-                '{1900-01-01T00:00:00Z TO 1900-12-31T23:59:59Z}'
+                '{1900-01-01T00:00:00Z TO 1900-12-31T23:59:59Z}',
             ],
         ];
     }

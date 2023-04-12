@@ -90,7 +90,8 @@ class Google extends \VuFind\Content\AbstractCover implements \VuFindHttp\HttpSe
         $result = $this->getHttpClient($url)->send();
 
         // If the request was successful and we can extract a valid response...
-        if ($result->isSuccess()
+        if (
+            $result->isSuccess()
             && preg_match('/^[^{]*({.*})[^}]*$/', $result->getBody(), $matches)
         ) {
             // convert \x26 or \u0026 to &

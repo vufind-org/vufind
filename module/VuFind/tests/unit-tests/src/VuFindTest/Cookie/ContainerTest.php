@@ -84,11 +84,11 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
 
         // Test get/set of array:
         $this->container->testArray = [1, 2];
-        $this->assertEquals(2, count($this->container->testArray));
+        $this->assertCount(2, $this->container->testArray);
 
         // Test getAllValues:
         $all = $this->container->getAllValues();
-        $this->assertEquals(2, count($all));
+        $this->assertCount(2, $all);
         $this->assertTrue(in_array('value', array_keys($all)));
         $this->assertTrue(in_array('testArray', array_keys($all)));
     }

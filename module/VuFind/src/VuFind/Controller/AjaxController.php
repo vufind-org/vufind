@@ -66,7 +66,11 @@ class AjaxController extends AbstractActionController implements TranslatorAware
      */
     public function jsonAction()
     {
-        return $this->callAjaxMethod($this->params()->fromQuery('method'));
+        $method = $this->params()->fromQuery('method');
+        if (!$method) {
+            return $this->getAjaxResponse('application/json', ['error' => 'Parameter "method" missing'], 400);
+        }
+        return $this->callAjaxMethod($method);
     }
 
     /**

@@ -78,7 +78,7 @@ class IconFactory implements FactoryInterface
         // can disable these problematic checks by setting memory_limit to -1.
         $cacheConfig = [
             'adapter' => \Laminas\Cache\Storage\Adapter\Memory::class,
-            'options' => ['memory_limit' => -1]
+            'options' => ['memory_limit' => -1],
         ];
         $cache = $container->get(\Laminas\Cache\Service\StorageAdapterFactory::class)
             ->createFromArrayConfiguration($cacheConfig);

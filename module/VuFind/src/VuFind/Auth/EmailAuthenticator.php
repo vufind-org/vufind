@@ -163,7 +163,8 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
         $recoveryInterval = $this->config->Authentication->recover_interval ?? 60;
         $sessionId = $this->sessionManager->getId();
 
-        if (($row = $this->authHashTable->getLatestBySessionId($sessionId))
+        if (
+            ($row = $this->authHashTable->getLatestBySessionId($sessionId))
             && time() - strtotime($row['created']) < $recoveryInterval
         ) {
             throw new AuthException('authentication_error_in_progress');
@@ -174,7 +175,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
             'timestamp' => time(),
             'data' => $data,
             'email' => $email,
-            'ip' => $this->remoteAddress->getIpAddress()
+            'ip' => $this->remoteAddress->getIpAddress(),
         ];
         $hash = $this->csrf->getHash(true);
 
@@ -224,7 +225,8 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
 
         // Require same session id or IP address:
         $sessionId = $this->sessionManager->getId();
-        if ($row['session_id'] !== $sessionId
+        if (
+            $row['session_id'] !== $sessionId
             && $linkData['ip'] !== $this->remoteAddress->getIpAddress()
         ) {
             throw new AuthException('authentication_error_session_ip_mismatch');

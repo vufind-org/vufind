@@ -293,7 +293,8 @@ class TabManager
             if (method_exists($newTab, 'setRecordDriver')) {
                 $newTab->setRecordDriver($driver);
             }
-            if ($request instanceof \Laminas\Http\Request
+            if (
+                $request instanceof \Laminas\Http\Request
                 && method_exists($newTab, 'setRequest')
             ) {
                 $newTab->setRequest($request);

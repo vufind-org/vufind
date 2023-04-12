@@ -983,7 +983,8 @@ abstract class Options implements TranslatorAwareInterface
         // otherwise:
         $recommend = [];
 
-        if (null !== $handler
+        if (
+            null !== $handler
             && isset($searchSettings->TopRecommendations->$handler)
         ) {
             $recommend['top'] = $searchSettings->TopRecommendations
@@ -994,7 +995,8 @@ abstract class Options implements TranslatorAwareInterface
                 ? $searchSettings->General->default_top_recommend->toArray()
                 : false;
         }
-        if (null !== $handler
+        if (
+            null !== $handler
             && isset($searchSettings->SideRecommendations->$handler)
         ) {
             $recommend['side'] = $searchSettings->SideRecommendations
@@ -1005,7 +1007,8 @@ abstract class Options implements TranslatorAwareInterface
                 ? $searchSettings->General->default_side_recommend->toArray()
                 : false;
         }
-        if (null !== $handler
+        if (
+            null !== $handler
             && isset($searchSettings->NoResultsRecommendations->$handler)
         ) {
             $recommend['noresults'] = $searchSettings->NoResultsRecommendations

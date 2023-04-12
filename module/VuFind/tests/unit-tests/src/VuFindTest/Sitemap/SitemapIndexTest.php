@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SitemapIndex Test Class
  *
@@ -52,23 +53,23 @@ class SitemapIndexTest extends \PHPUnit\Framework\TestCase
         $sm->addUrl('http://foo');
         $sm->addUrl('http://bar');
         $expected = <<<XML
-<?xml version="1.0" encoding="UTF-8"?>
-<sitemapindex
-   xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-   xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-   http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+            <?xml version="1.0" encoding="UTF-8"?>
+            <sitemapindex
+               xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+               http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 
-  <sitemap>
-    <loc>http://foo</loc>
-    <lastmod>2014-11-14</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>http://bar</loc>
-    <lastmod>2014-11-14</lastmod>
-  </sitemap>
-</sitemapindex>
-XML;
+              <sitemap>
+                <loc>http://foo</loc>
+                <lastmod>2014-11-14</lastmod>
+              </sitemap>
+              <sitemap>
+                <loc>http://bar</loc>
+                <lastmod>2014-11-14</lastmod>
+              </sitemap>
+            </sitemapindex>
+            XML;
         $this->assertEquals($expected, $sm->toString());
     }
 }

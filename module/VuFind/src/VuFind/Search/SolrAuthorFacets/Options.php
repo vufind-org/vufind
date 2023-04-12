@@ -55,7 +55,7 @@ class Options extends \VuFind\Search\Solr\Options
         //   is really using facet sorting.
         $this->sortOptions = [
             'relevance' => 'sort_author_relevance',
-            'author' => 'sort_author_author'
+            'author' => 'sort_author_author',
         ];
 
         // No spell check needed in author module:

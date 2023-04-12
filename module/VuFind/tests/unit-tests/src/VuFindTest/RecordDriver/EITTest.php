@@ -115,9 +115,9 @@ class EITTest extends \PHPUnit\Framework\TestCase
         $overrides = [
             'header' => [
                 'controlInfo' => [
-                    'pubinfo' => ['pub' => ['TestPublisher']]
-                ]
-            ]
+                    'pubinfo' => ['pub' => ['TestPublisher']],
+                ],
+            ],
         ];
         $driver = $this->getDriver($overrides);
         $this->assertEquals([['TestPublisher']], $driver->getPublishers());

@@ -823,7 +823,7 @@ abstract class Results
             // Initialize the settings for the current field
             $result[$field] = [
                 'label' => $filter[$field],
-                'list' => []
+                'list' => [],
             ];
             // Should we translate values for the current facet?
             $translate = in_array($field, $translatedFacets);

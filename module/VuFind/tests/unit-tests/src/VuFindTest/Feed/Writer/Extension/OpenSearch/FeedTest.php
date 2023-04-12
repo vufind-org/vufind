@@ -79,7 +79,7 @@ class FeedTest extends \PHPUnit\Framework\TestCase
                     'role' => 'role',
                     'type' => 'atom',
                     'title' => 'title',
-                ]
+                ],
             ],
             $feed->getOpensearchLinks()
         );

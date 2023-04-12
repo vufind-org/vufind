@@ -260,7 +260,8 @@ class ResultScroller extends AbstractPlugin
     {
         // if the current page is NOT the last page, and the next page has not been
         // fetched, then fetch the next page
-        if ($this->data->page < ceil($this->data->total / $this->data->limit)
+        if (
+            $this->data->page < ceil($this->data->total / $this->data->limit)
             && $this->data->nextIds == null
         ) {
             $this->data->nextIds = $this->fetchPage(
@@ -507,12 +508,13 @@ class ResultScroller extends AbstractPlugin
         $retVal = [
             'firstRecord' => null, 'lastRecord' => null,
             'previousRecord' => null, 'nextRecord' => null,
-            'currentPosition' => null, 'resultTotal' => null
+            'currentPosition' => null, 'resultTotal' => null,
         ];
 
         $searchId = $this->searchMemory->getLastSearchId();
         // Process scroll data only if enabled and data exists:
-        if (!$this->enabled || !$searchId || !isset($this->session->s[$searchId])
+        if (
+            !$this->enabled || !$searchId || !isset($this->session->s[$searchId])
             || !($lastSearch = $this->restoreSearch($searchId))
         ) {
             return $retVal;

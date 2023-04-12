@@ -191,7 +191,7 @@ class OpenLibrarySubjects implements
 
             if (!empty($result)) {
                 $this->result = [
-                    'worksArray' => $result, 'subject' => $this->subject
+                    'worksArray' => $result, 'subject' => $this->subject,
                 ];
             }
         }

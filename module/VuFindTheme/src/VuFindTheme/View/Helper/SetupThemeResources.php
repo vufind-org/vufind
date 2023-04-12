@@ -124,7 +124,7 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
             $headLink(
                 [
                     'href' => $imageLink($favicon),
-                    'type' => 'image/x-icon', 'rel' => 'shortcut icon'
+                    'type' => 'image/x-icon', 'rel' => 'shortcut icon',
                 ]
             );
         }

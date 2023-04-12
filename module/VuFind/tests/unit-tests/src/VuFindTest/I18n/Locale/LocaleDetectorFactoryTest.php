@@ -76,7 +76,7 @@ class LocaleDetectorFactoryTest extends \PHPUnit\Framework\TestCase
                 LocaleDetectorParamStrategy::class,
                 QueryStrategy::class,
                 LocaleDetectorCookieStrategy::class,
-                HttpAcceptLanguageStrategy::class
+                HttpAcceptLanguageStrategy::class,
             ],
             $this->getStrategyClasses()
         );
@@ -99,7 +99,7 @@ class LocaleDetectorFactoryTest extends \PHPUnit\Framework\TestCase
                 LocaleDetectorParamStrategy::class,
                 QueryStrategy::class,
                 LocaleDetectorCookieStrategy::class,
-                HttpAcceptLanguageStrategy::class
+                HttpAcceptLanguageStrategy::class,
             ],
             $this->getStrategyClasses($mockSettings)
         );

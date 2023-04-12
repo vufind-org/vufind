@@ -50,14 +50,14 @@ class VuFindHighlighterTest extends \PHPUnit\Framework\TestCase
      *
      * @var ProxyUrl&MockObject
      */
-    private $proxyUrl;
+    protected $proxyUrl;
 
     /**
      * VuFind highlighter object
      *
      * @var VuFindHighlighter
      */
-    private $vuFindHighlighter;
+    protected $vuFindHighlighter;
 
     /**
      * Generic setup method
@@ -83,8 +83,8 @@ class VuFindHighlighterTest extends \PHPUnit\Framework\TestCase
     /**
      * Test the highlight method
      *
-     * @param string $url
-     * @param string $expected
+     * @param string $url      URL
+     * @param string $expected Expected result
      *
      * @return void
      *

@@ -84,7 +84,7 @@ class ImportXslCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester->execute(
             [
                 'XML_file' => 'foo.xml',
-                'properties_file' => 'bar.properties'
+                'properties_file' => 'bar.properties',
             ]
         );
         $this->assertEquals(

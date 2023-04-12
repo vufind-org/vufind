@@ -124,7 +124,7 @@ class HoldingsILS extends AbstractBase
      *
      * @return array
      */
-    public function getUniqueCallNumbers($items, $fullDetails=false)
+    public function getUniqueCallNumbers($items, $fullDetails = false)
     {
         if (!$fullDetails) {
             return $this->getSimpleUniqueCallNumbers($items);

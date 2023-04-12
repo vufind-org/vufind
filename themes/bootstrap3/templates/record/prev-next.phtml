@@ -34,7 +34,7 @@
 
     <?=$this->transEsc('of_num_results', [
       '%%position%%' => $this->localizedNumber($this->scrollData['currentPosition']),
-      '%%total%%' => $this->localizedNumber($this->scrollData['resultTotal'])
+      '%%total%%' => $this->localizedNumber($this->scrollData['resultTotal']),
     ]) ?>
 
     <?php if ($this->scrollData['nextRecord']): ?>

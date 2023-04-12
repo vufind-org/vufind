@@ -1,6 +1,6 @@
 <?php
   $this->headTitle($this->translate('Browse the Catalog'));
-  $this->layout()->breadcrumbs = '<a href="' . $this->url('browse-home') . '">' . $this->transEsc('Browse') . '</a>';
+  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('browse-home') . '">' . $this->transEsc('Browse') . '</a></li>';
 
   $BROWSE_BASE = $this->url('browse-' . strtolower($this->currentAction));
   $SEARCH_BASE = $this->url($this->currentAction == 'Tag' ? 'tag-home' : 'search-results');

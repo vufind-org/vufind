@@ -61,7 +61,8 @@ class BaseFormatter
             // We don't want to return empty values -- unless it's an empty array
             // with a non-numeric key, since the key could be significant (e.g. in
             // the case of an author name => roles array with no assigned roles).
-            if ((is_numeric($key) && is_array($value) && empty($value))
+            if (
+                (is_numeric($key) && is_array($value) && empty($value))
                 || (is_bool($value) && !$value)
                 || $value === null || $value === ''
             ) {

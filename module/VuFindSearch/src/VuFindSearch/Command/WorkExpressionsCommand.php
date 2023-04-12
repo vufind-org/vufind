@@ -91,7 +91,7 @@ class WorkExpressionsCommand extends CallMethodCommand
         return [
             $this->getRecordIdentifier(),
             $this->getWorkKeys(),
-            $this->getSearchParameters()
+            $this->getSearchParameters(),
         ];
     }
 

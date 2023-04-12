@@ -137,7 +137,7 @@ class GetRecordCover extends AbstractBase implements AjaxHandlerInterface
                     'html' => $this->renderer->render(
                         'record/coverReplacement',
                         ['driver' => $record]
-                    )
+                    ),
                 ]
             );
     }

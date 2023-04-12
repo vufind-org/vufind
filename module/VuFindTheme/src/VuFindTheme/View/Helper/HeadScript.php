@@ -139,7 +139,8 @@ class HeadScript extends \Laminas\View\Helper\HeadScript implements \Laminas\Log
         // Look for existing entry and remove it if found. Comparison method
         // copied from isDuplicate().
         foreach ($this->getContainer() as $offset => $item) {
-            if (($item->source === null)
+            if (
+                ($item->source === null)
                 && array_key_exists('src', $item->attributes)
                 && ($src === $item->attributes['src'])
             ) {

@@ -83,10 +83,10 @@ class HttpDownloadException extends \Exception implements HttpStatusInterface
     public function __construct(
         string $message,
         string $url,
-        ?int $statusCode=null,
-        ?Headers $responseHeaders=null,
-        ?string $responseBody=null,
-        ?\Throwable $previous=null
+        ?int $statusCode = null,
+        ?Headers $responseHeaders = null,
+        ?string $responseBody = null,
+        ?\Throwable $previous = null
     ) {
         $this->url = $url;
         $this->statusCode = $statusCode;

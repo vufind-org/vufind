@@ -94,6 +94,9 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTest
     /**
      * Generic support function for successful request tests.
      *
+     * @param string  $ilsMethod   ILS method to mock
+     * @param ?string $requestType Request type for params helper
+     *
      * @return array
      */
     protected function runSuccessfulTest($ilsMethod, $requestType = null)
@@ -148,7 +151,7 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTest
     {
         $this->assertEquals(
             [
-                ['status' => true, 'msg' => 'storage_retrieval_request_place_text']
+                ['status' => true, 'msg' => 'storage_retrieval_request_place_text'],
             ],
             $this->runSuccessfulTest(
                 'checkStorageRetrievalRequestIsValid',

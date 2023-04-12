@@ -364,8 +364,8 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
                             'freq' => 5735,
                             'new_term' => 'make',
                             'expand_term' => '(lake OR make)',
-                        ]
-                    ]
+                        ],
+                    ],
                 ],
                 'geneve' => [
                     'freq' => 662,
@@ -374,9 +374,9 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
                             'freq' => 1170,
                             'new_term' => 'geneva',
                             'expand_term' => '(geneve OR geneva)',
-                        ]
-                    ]
-                ]
+                        ],
+                    ],
+                ],
             ]
         );
     }
@@ -426,18 +426,18 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
                     'suggestions' => [
                         '12345678' => [
                             'freq' => 1,
-                            'new_term' => '12345678'
-                        ]
-                    ]
+                            'new_term' => '12345678',
+                        ],
+                    ],
                 ],
                 'sqid' => [
                     'freq' => 0,
                     'suggestions' => [
                         'squid' => [
                             'freq' => 34,
-                            'new_term' => 'squid'
-                        ]
-                    ]
+                            'new_term' => 'squid',
+                        ],
+                    ],
                 ],
             ],
             ['limit' => 1, 'skip_numeric' => false, 'expand' => false]
@@ -459,9 +459,9 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
                     'suggestions' => [
                         'squid' => [
                             'freq' => 34,
-                            'new_term' => 'squid'
-                        ]
-                    ]
+                            'new_term' => 'squid',
+                        ],
+                    ],
                 ],
             ],
             ['limit' => 1, 'skip_numeric' => true, 'expand' => false]
@@ -532,7 +532,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
                 'suggestions' => [
                     'trimble' => 110,
                     'gribble' => 21,
-                    'grimsley' => 24
+                    'grimsley' => 24,
                 ],
             ],
         ];
@@ -559,7 +559,7 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
                 'suggestions' => [
                     'trimble' => 110,
                     'gribble' => 21,
-                    'grimsley' => 24
+                    'grimsley' => 24,
                 ],
             ],
         ];
@@ -567,6 +567,8 @@ class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Get a fixture object
+     *
+     * @param string $file Name of fixture file
      *
      * @return mixed
      */

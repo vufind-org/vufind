@@ -107,7 +107,7 @@ class PageLocator
             '%pathPrefix%' => $pathPrefix,
             '%pageName%' => $pageName,
             '%language%' => $language,
-            '//' => '/'
+            '//' => '/',
         ];
         $languagePatternExtended = '"\\{(.*)%language%(.*)\\}"';
         $languagePatternExtendedReplacement = $language ? "\\1$language\\2" : '';

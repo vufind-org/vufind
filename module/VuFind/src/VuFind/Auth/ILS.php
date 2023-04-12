@@ -190,7 +190,7 @@ class ILS extends AbstractBase
             [
                 'patron' => $patron,
                 'oldPassword' => $params['oldpwd'],
-                'newPassword' => $params['password']
+                'newPassword' => $params['password'],
             ]
         );
         if (!$result['success']) {

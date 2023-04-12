@@ -85,7 +85,7 @@ class ExtendServiceCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester->execute(
             [
                 'config_path' => 'Foo',
-                'target_module' => 'Bar'
+                'target_module' => 'Bar',
             ]
         );
         $this->assertEquals(0, $commandTester->getStatusCode());
@@ -109,7 +109,7 @@ class ExtendServiceCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester->execute(
             [
                 'config_path' => 'Foo',
-                'target_module' => 'Bar'
+                'target_module' => 'Bar',
             ]
         );
         $this->assertEquals("Foo!\n", $commandTester->getDisplay());

@@ -60,19 +60,19 @@ class CacheTest extends \PHPUnit\Framework\TestCase
                 'record_id' => '020645147',
                 'source' => 'Solr',
                 'version' => '2.5',
-                'data' => 's:17:"dummy_solr_record";'
+                'data' => 's:17:"dummy_solr_record";',
             ],
             [
                 'record_id' => '70764764',
                 'source' => 'WorldCat',
                 'version' => '2.5',
-                'data' => 's:21:"dummy_worldcat_record";'
+                'data' => 's:21:"dummy_worldcat_record";',
             ],
             [
                 'record_id' => '00033321',
                 'source' => 'Solr',
                 'version' => '2.5',
-                'data' => 's:19:"dummy_solr_record_2";'
+                'data' => 's:19:"dummy_solr_record_2";',
             ],
         ];
     }
@@ -215,10 +215,10 @@ class CacheTest extends \PHPUnit\Framework\TestCase
                 'WorldCat' => ['operatingMode' => 'fallback'],
             ],
             'Disabled' => [
-                'Solr' => []
+                'Solr' => [],
             ],
             'Fallback' => [
-                'Solr' => ['operatingMode' => 'fallback']
+                'Solr' => ['operatingMode' => 'fallback'],
             ],
         ];
 
@@ -237,7 +237,8 @@ class CacheTest extends \PHPUnit\Framework\TestCase
         $findRecordsCallback = function (array $ids, string $source): array {
             $results = [];
             foreach ($this->recordTable as $row) {
-                if (in_array($row['record_id'], $ids)
+                if (
+                    in_array($row['record_id'], $ids)
                     && $row['source'] == $source
                 ) {
                     $results[] = $row;
@@ -248,7 +249,8 @@ class CacheTest extends \PHPUnit\Framework\TestCase
 
         $findRecordCallback = function ($id, $source) {
             foreach ($this->recordTable as $row) {
-                if ($row['record_id'] == $id
+                if (
+                    $row['record_id'] == $id
                     && $row['source'] == $source
                 ) {
                     return $row;
@@ -269,7 +271,7 @@ class CacheTest extends \PHPUnit\Framework\TestCase
                 'record_id' => $recordId,
                 'source' => $source,
                 'version' => '2.5',
-                'data' => serialize($rawData)
+                'data' => serialize($rawData),
             ];
         };
         $recordTable->method('updateRecord')

@@ -86,7 +86,8 @@ class RecordCollection extends AbstractRecordCollection
      */
     public function __construct(array $response)
     {
-        if (array_key_exists('response', $response)
+        if (
+            array_key_exists('response', $response)
             && null === $response['response']
         ) {
             unset($response['response']);
@@ -184,7 +185,8 @@ class RecordCollection extends AbstractRecordCollection
     public function getPivotFacets()
     {
         $result = [];
-        foreach ($this->response['facet_counts']['facet_pivot'] ?? [] as $facetData
+        foreach (
+            $this->response['facet_counts']['facet_pivot'] ?? [] as $facetData
         ) {
             foreach ($facetData as $current) {
                 $result[$current['value']] = $current;

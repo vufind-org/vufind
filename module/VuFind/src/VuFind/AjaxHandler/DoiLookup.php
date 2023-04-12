@@ -140,7 +140,8 @@ class DoiLookup extends AbstractBase
                 }
                 // If all DOIs have been found and we're not in merge mode, we
                 // can short circuit out of here.
-                if ($this->multiMode !== 'merge'
+                if (
+                    $this->multiMode !== 'merge'
                     && count(array_diff($dois, array_keys($response))) == 0
                 ) {
                     break;

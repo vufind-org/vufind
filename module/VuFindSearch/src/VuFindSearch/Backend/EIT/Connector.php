@@ -32,7 +32,6 @@ namespace VuFindSearch\Backend\EIT;
 use Laminas\Http\Client;
 use Laminas\Http\Request;
 use VuFindSearch\Backend\Exception\HttpErrorException;
-
 use VuFindSearch\ParamBag;
 
 /**
@@ -126,7 +125,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         return [
             'docs' => $finalDocs,
             'offset' => $offset,
-            'total' => (int)$xml->Hits
+            'total' => (int)$xml->Hits,
         ];
     }
 
@@ -218,7 +217,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         return [
             'docs' => $finalDocs,
             'offset' => 0,
-            'total' => (int)$xml->Hits
+            'total' => (int)$xml->Hits,
         ];
     }
 }

@@ -89,7 +89,8 @@ class CollectionController extends AbstractRecord
         }
 
         $result = parent::showTab($tab, $ajax);
-        if (!$ajax && $result instanceof \Laminas\View\Model\ViewModel
+        if (
+            !$ajax && $result instanceof \Laminas\View\Model\ViewModel
             && $result->getTemplate() !== 'myresearch/login'
         ) {
             $result->setTemplate('collection/view');

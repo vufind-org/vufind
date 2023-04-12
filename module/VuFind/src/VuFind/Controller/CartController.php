@@ -245,7 +245,8 @@ class CartController extends AbstractBase
 
         // Force login if necessary:
         $config = $this->getConfig();
-        if ((!isset($config->Mail->require_login) || $config->Mail->require_login)
+        if (
+            (!isset($config->Mail->require_login) || $config->Mail->require_login)
             && !$this->getUser()
         ) {
             return $this->forceLogin(
@@ -355,7 +356,7 @@ class CartController extends AbstractBase
             $exportType = $export->getBulkExportType($format);
             $params = [
                 'exportType' => $exportType,
-                'format' => $format
+                'format' => $format,
             ];
             if ('post' === $exportType) {
                 $records = $this->getRecordLoader()->loadBatch($ids);
@@ -377,7 +378,7 @@ class CartController extends AbstractBase
                 'msg' => $this->getViewRenderer()->render(
                     'cart/export-success.phtml',
                     $params
-                )
+                ),
             ];
             return $this->redirectToSource('success', $msg);
         }
@@ -476,7 +477,7 @@ class CartController extends AbstractBase
                 'html' => true,
                 'msg' => $this->translate('bulk_save_success') . '. '
                 . '<a href="' . $listUrl . '" class="gotolist">'
-                . $this->translate('go_to_list') . '</a>.'
+                . $this->translate('go_to_list') . '</a>.',
             ];
             $this->flashMessenger()->addMessage($message, 'success');
             return $this->redirect()->toUrl($listUrl);
@@ -486,7 +487,7 @@ class CartController extends AbstractBase
         return $this->createViewModel(
             [
                 'records' => $this->getRecordLoader()->loadBatch($ids),
-                'lists' => $user->getLists()
+                'lists' => $user->getLists(),
             ]
         );
     }

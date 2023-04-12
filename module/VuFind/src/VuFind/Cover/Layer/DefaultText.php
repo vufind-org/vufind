@@ -80,7 +80,8 @@ class DefaultText extends AbstractTextLayer
         $line = '';
         $lineCount = 0;
         $i = 0;
-        while ($i < count($words)
+        while (
+            $i < count($words)
             && $lineCount < $settings->maxTitleLines - 1
         ) {
             $pline = $line;
@@ -157,7 +158,8 @@ class DefaultText extends AbstractTextLayer
                 $settings->authorFont,
                 $fontSize
             );
-        } while ($textWidth > $settings->wrapWidth &&
+        } while (
+            $textWidth > $settings->wrapWidth &&
               $fontSize > $settings->minAuthorFontSize
         );
         // Too small to read? Align left

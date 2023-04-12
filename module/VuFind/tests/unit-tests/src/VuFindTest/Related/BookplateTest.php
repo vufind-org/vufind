@@ -77,14 +77,14 @@ class BookplateTest extends \PHPUnit\Framework\TestCase
                 'bookplate_full' => 'https://localhost/%%img%%',
                 'bookplate_thumb' => 'https://localhost/%%thumb%%',
                 'bookplate_display_title' => true,
-            ]
+            ],
         ];
         $container = $this->getContainer('config', $config);
         $driver = $this->getTestRecord(
             [
                 'donor_str' => 'Mr. Donor',
                 'donor_image_str' => 'image.jpg',
-                'donor_thumb_str' => 'thumb.jpg'
+                'donor_thumb_str' => 'thumb.jpg',
             ]
         );
         $bookplate = $this->getBookplate($container);
@@ -95,7 +95,7 @@ class BookplateTest extends \PHPUnit\Framework\TestCase
                 'fullUrl' => 'https://localhost/image.jpg',
                 'thumbUrl' => 'https://localhost/thumb.jpg',
                 'displayTitle' => true,
-            ]
+            ],
         ];
         $this->assertEquals($expected, $bookplate->getBookplateDetails());
     }
@@ -116,7 +116,7 @@ class BookplateTest extends \PHPUnit\Framework\TestCase
                 'bookplate_full' => 'https://localhost/%%img%%',
                 'bookplate_thumb' => 'https://localhost/%%thumb%%',
                 'bookplate_display_title' => false,
-            ]
+            ],
         ];
         $container = $this->getContainer('foo', $config);
         $driver = $this->getTestRecord(
@@ -140,7 +140,7 @@ class BookplateTest extends \PHPUnit\Framework\TestCase
                 'fullUrl' => 'https://localhost/image2.jpg',
                 'thumbUrl' => 'https://localhost/thumb2.jpg',
                 'displayTitle' => false,
-            ]
+            ],
         ];
         $this->assertEquals($expected, $bookplate->getBookplateDetails());
     }

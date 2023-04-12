@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CursorMarkIdFetcher Test Class
  *
@@ -70,9 +71,6 @@ class CursorMarkIdFetcherTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock search service
      *
-     * @param RecordCollection $records            Record set to return
-     * @param string           $expectedCursorMark Expected cursor mark
-     *
      * @return Service
      */
     protected function getMockService(): Service
@@ -86,6 +84,7 @@ class CursorMarkIdFetcherTest extends \PHPUnit\Framework\TestCase
      * Add mock records to a collection and return an array of the generated IDs.
      *
      * @param RecordCollection $records Collection to add to
+     * @param int              $offset  Offset for records
      *
      * @return int[]
      */

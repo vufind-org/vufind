@@ -62,7 +62,7 @@ class HelpTextTest extends \PHPUnit\Framework\TestCase
     ): Content {
         $helper = $this->getMockBuilder(Content::class)
             ->disableOriginalConstructor()->getMock();
-        $callback = function ($unused1, $unused2, $unused3, & $pageDetails) use ($mockPageDetails, $mockReturnValue) {
+        $callback = function ($unused1, $unused2, $unused3, &$pageDetails) use ($mockPageDetails, $mockReturnValue) {
             $pageDetails = $mockPageDetails;
             return $mockReturnValue;
         };

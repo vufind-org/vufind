@@ -146,7 +146,8 @@ class HierarchyTree extends AbstractBase
         if (is_object($hierarchyDriver)) {
             // No setting, or true setting -- use default setting:
             $settings = $hierarchyDriver->getTreeSettings();
-            if (!isset($settings['fullHierarchyRecordView'])
+            if (
+                !isset($settings['fullHierarchyRecordView'])
                 || $settings['fullHierarchyRecordView']
             ) {
                 return true;
@@ -173,7 +174,7 @@ class HierarchyTree extends AbstractBase
      */
     public function renderTree($baseUrl, $id = null, $context = 'Record')
     {
-        $id = $id ?? $this->getActiveTree();
+        $id ??= $this->getActiveTree();
         $recordDriver = $this->getRecordDriver();
         $hierarchyDriver = $recordDriver->tryMethod('getHierarchyDriver');
         if (is_object($hierarchyDriver)) {

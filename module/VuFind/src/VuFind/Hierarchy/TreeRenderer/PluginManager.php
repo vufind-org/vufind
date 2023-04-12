@@ -46,7 +46,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
-        'jstree' => JSTree::class
+        'jstree' => JSTree::class,
     ];
 
     /**
@@ -55,7 +55,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        JSTree::class => JSTreeFactory::class
+        JSTree::class => JSTreeFactory::class,
     ];
 
     /**

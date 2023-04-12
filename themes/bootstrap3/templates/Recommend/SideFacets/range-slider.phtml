@@ -50,34 +50,34 @@
     ];
     $sliderOptionsJson = json_encode($sliderOptions);
     $script = <<<JS
-$(document).ready(function() {
-  var fillTexts = function() {
-    var v = {$safeBaseId}dateSlider.getValue();
-    $('#{$safeBaseId}from').val(v[0]);
-    $('#{$safeBaseId}to').val(v[1]);
-  };
-  var {$safeBaseId}dateSlider = $('#{$safeBaseId}dateSlider')
-    .slider($sliderOptionsJson)
-    .on('change', fillTexts)
-    .data('slider');
+        $(document).ready(function() {
+          var fillTexts = function() {
+            var v = {$safeBaseId}dateSlider.getValue();
+            $('#{$safeBaseId}from').val(v[0]);
+            $('#{$safeBaseId}to').val(v[1]);
+          };
+          var {$safeBaseId}dateSlider = $('#{$safeBaseId}dateSlider')
+            .slider($sliderOptionsJson)
+            .on('change', fillTexts)
+            .data('slider');
 
-    $("#{$safeBaseId}Filter .slider-handle.min-slider-handle").attr("aria-labelledby", "{$safeBaseId}from-label");
-    $("#{$safeBaseId}Filter .slider-handle.max-slider-handle").attr("aria-labelledby", "{$safeBaseId}to-label");
-});
+            $("#{$safeBaseId}Filter .slider-handle.min-slider-handle").attr("aria-labelledby", "{$safeBaseId}from-label");
+            $("#{$safeBaseId}Filter .slider-handle.max-slider-handle").attr("aria-labelledby", "{$safeBaseId}to-label");
+        });
 
-$('#{$safeBaseId}from, #{$safeBaseId}to').change(function () {
-  var fromValue = Number($('#{$safeBaseId}from').val());
-  var toValue = Number($('#{$safeBaseId}to').val());
-  $('#{$safeBaseId}dateSlider').slider(
-    'setValue',
-    [
-      isNaN(fromValue) || fromValue <= 0 ? {$min} : fromValue,
-      isNaN(toValue) || toValue <= 0 ? {$max} : toValue
-    ],
-    true
-  );
-});
-JS;
+        $('#{$safeBaseId}from, #{$safeBaseId}to').change(function () {
+          var fromValue = Number($('#{$safeBaseId}from').val());
+          var toValue = Number($('#{$safeBaseId}to').val());
+          $('#{$safeBaseId}dateSlider').slider(
+            'setValue',
+            [
+              isNaN(fromValue) || fromValue <= 0 ? {$min} : fromValue,
+              isNaN(toValue) || toValue <= 0 ? {$max} : toValue
+            ],
+            true
+          );
+        });
+        JS;
   ?>
   <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
 <?php endif; ?>

@@ -44,6 +44,11 @@ use VuFind\Auth\AuthToken;
  */
 class AuthTokenTest extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * Test getting a header value
+     *
+     * @return void
+     */
     public function testGetHeaderValue()
     {
         $token = new AuthToken('token', 10);
@@ -52,6 +57,11 @@ class AuthTokenTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('Basic token', $token->getHeaderValue());
     }
 
+    /**
+     * Test isExpired() method
+     *
+     * @return void
+     */
     public function testIsExpired()
     {
         $token = new AuthToken('token', 1);
@@ -60,6 +70,11 @@ class AuthTokenTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($token->isExpired());
     }
 
+    /**
+     * Test getExpiresIn() method
+     *
+     * @return void
+     */
     public function testGetExpiresIn()
     {
         $token = new AuthToken('token', 11);

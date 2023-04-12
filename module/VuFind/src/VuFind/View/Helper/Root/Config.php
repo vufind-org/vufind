@@ -82,7 +82,7 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Should be covers loaded via AJAX?
+     * Should covers be loaded via AJAX?
      *
      * @return bool
      */

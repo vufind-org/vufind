@@ -81,7 +81,7 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
     {
         $args = [
             $solr ?? $this->getMockSolrWriter(),
-            $ils ?? $this->getMockIlsConnection()
+            $ils ?? $this->getMockIlsConnection(),
         ];
         return $this->getMockBuilder(SuppressedCommand::class)
             ->setConstructorArgs($args)

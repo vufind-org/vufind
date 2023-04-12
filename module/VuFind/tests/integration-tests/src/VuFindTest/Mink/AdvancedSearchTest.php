@@ -75,7 +75,8 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $links = $page->findAll('css', '.adv_search_links a');
         $isAdv = false;
         foreach ($links as $link) {
-            if ($this->checkVisibility($link)
+            if (
+                $this->checkVisibility($link)
                 && $link->getHtml() == 'Edit this Advanced Search'
             ) {
                 $isAdv = true;
@@ -96,7 +97,8 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
     {
         $links = $page->findAll('css', '.adv_search_links a');
         foreach ($links as $link) {
-            if ($this->checkVisibility($link)
+            if (
+                $this->checkVisibility($link)
                 && $link->getHtml() == 'Edit this Advanced Search'
             ) {
                 $link->click();
@@ -186,11 +188,11 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $multiSel = $this->findCss($page, '#limit_callnumber-first');
         $multiSel->selectOption('~callnumber-first:"A - General Works"', true);
         $multiSel->selectOption('~callnumber-first:"D - World History"', true);
-        $this->assertEquals(2, count($multiSel->getValue()));
+        $this->assertCount(2, $multiSel->getValue());
 
         $this->findCss($page, '.adv-submit .clear-btn')->press();
         $this->assertEquals('', $this->findCss($page, '#search_lookfor0_0')->getValue());
-        $this->assertEquals(0, count($multiSel->getValue()));
+        $this->assertCount(0, $multiSel->getValue());
     }
 
     /**
@@ -270,7 +272,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->goToAdvancedSearch($session);
         // By default, everything is sorted alphabetically:
         $this->assertEquals(
-            'Book Book Chapter Conference Proceeding eBook Electronic Journal Microfilm',
+            'Article Book Book Chapter Conference Proceeding eBook Electronic Journal Microfilm Serial',
             $this->findCss($page, "#limit_format")->getText()
         );
         // Change the language:
@@ -279,7 +281,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         // Still sorted alphabetically, even though in a different language:
         $this->assertEquals(
-            'Buch Buchkapitel E-Book Elektronisch Mikrofilm Tagungsbericht Zeitschrift',
+            'Artikel Buch Buchkapitel E-Book Elektronisch Mikrofilm Schriftenreihe Tagungsbericht Zeitschrift',
             $this->findCss($page, "#limit_format")->getText()
         );
     }
@@ -296,17 +298,17 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
                 'facets' => [
                     'Advanced_Settings' => [
                         'limitOrderOverride' => [
-                            'format' => 'Book::eBook'
-                        ]
-                    ]
-                ]
+                            'format' => 'Book::eBook',
+                        ],
+                    ],
+                ],
             ]
         );
         $session = $this->getMinkSession();
         $page = $this->goToAdvancedSearch($session);
         // By default, everything is sorted alphabetically:
         $this->assertEquals(
-            'Book eBook Book Chapter Conference Proceeding Electronic Journal Microfilm',
+            'Book eBook Article Book Chapter Conference Proceeding Electronic Journal Microfilm Serial',
             $this->findCss($page, "#limit_format")->getText()
         );
         // Change the language:
@@ -315,7 +317,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         // Still sorted alphabetically, even though in a different language:
         $this->assertEquals(
-            'Buch E-Book Buchkapitel Elektronisch Mikrofilm Tagungsbericht Zeitschrift',
+            'Buch E-Book Artikel Buchkapitel Elektronisch Mikrofilm Schriftenreihe Tagungsbericht Zeitschrift',
             $this->findCss($page, "#limit_format")->getText()
         );
     }

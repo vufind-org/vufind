@@ -1,5 +1,6 @@
 <?php
   $this->headScript()->appendFile('vendor/jsTree/jstree.min.js');
+  $this->headScript()->appendFile('jstree-vufind-facet-plugin.js');
 
   // We need to pass the current URL query to the Javascript; we use substr() to
   // strip off the leading ? character. The "suppress query" option is used for
@@ -37,9 +38,9 @@
 </div>
 <?php
   $script = <<<JS
-$(document).ready(function () {
-  initFacetTree($('#facet_{$this->escapeHtml($this->title)}'), true);
-});
-JS;
+      $(document).ready(function () {
+        initFacetTree($('#facet_{$this->escapeHtml($this->title)}'), true);
+      });
+      JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>

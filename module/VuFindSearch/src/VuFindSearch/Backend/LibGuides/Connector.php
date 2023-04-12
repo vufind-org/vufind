@@ -127,7 +127,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
                 $result = [
                     'recordCount' => 0,
                     'documents' => [],
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ];
             } else {
                 throw $e;
@@ -196,7 +196,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
 
         $results = [
             'recordCount' => count($items),
-            'documents' => $items
+            'documents' => $items,
         ];
 
         return $results;

@@ -77,7 +77,7 @@ class ImageFactoryTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo('url'))->will($this->returnValue($url));
 
         $factory = new \VuFind\Captcha\ImageFactory();
-        $fakeImage = new class {
+        $fakeImage = new class () {
             /**
              * Constructor arguments
              *
@@ -96,10 +96,10 @@ class ImageFactoryTest extends \PHPUnit\Framework\TestCase
         $result = $factory($container, get_class($fakeImage));
         $expectedFont = APPLICATION_PATH
         . '/vendor/webfontkit/open-sans/fonts/opensans-regular.ttf';
-        $this->assertTrue(file_exists($expectedFont));
+        $this->assertFileExists($expectedFont);
         $expected = [
             'font' => $expectedFont,
-            'imgDir' => $options->getCacheDir()
+            'imgDir' => $options->getCacheDir(),
         ];
         $this->assertEquals($expected, $result->constructorArgs[0]->getOptions());
         $this->assertEquals($expectedCache, $result->constructorArgs[1]);

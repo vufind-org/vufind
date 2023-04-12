@@ -91,7 +91,7 @@ class GetRecordRating extends AbstractBase
         return $this->formatResponse(
             [
                 'ratingData' => $driver->getRatingData(),
-                'html' => $html
+                'html' => $html,
             ]
         );
     }

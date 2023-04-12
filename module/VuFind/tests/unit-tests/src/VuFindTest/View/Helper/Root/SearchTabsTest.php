@@ -46,7 +46,7 @@ use VuFind\View\Helper\Root\SearchTabs;
  */
 class SearchTabsTest extends \PHPUnit\Framework\TestCase
 {
-    use  \VuFindTest\Feature\ViewTrait;
+    use \VuFindTest\Feature\ViewTrait;
 
     /**
      * Data provider for testGetCurrentHiddenFilterParams
@@ -61,7 +61,7 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
                 2,
                 [],
                 1,
-                ''
+                '',
             ],
             [
                 [
@@ -70,7 +70,7 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
                 ],
                 1,
                 [
-                    'last' => ['foo']
+                    'last' => ['foo'],
                 ],
                 0,
                 'hiddenFilters%5B%5D=first%3A%22foo%22'

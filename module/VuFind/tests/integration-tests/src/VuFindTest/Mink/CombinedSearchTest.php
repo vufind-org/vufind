@@ -58,7 +58,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
             'Solr:two' => [
                 'label' => 'Solr Two',
                 'hiddenFilter' => 'building:weird_ids.mrc',
-            ]
+            ],
         ];
     }
 

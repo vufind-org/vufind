@@ -72,7 +72,7 @@ class ExtendedIniFactory implements \Laminas\ServiceManager\Factory\FactoryInter
         }
         $pathStack = [
             APPLICATION_PATH . '/languages',
-            LOCAL_OVERRIDE_DIR . '/languages'
+            LOCAL_OVERRIDE_DIR . '/languages',
         ];
         $settings = $container->get(LocaleSettings::class);
         return new $requestedName($pathStack, $settings->getFallbackLocales());

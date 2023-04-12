@@ -89,7 +89,8 @@ class VuFindGeo
      */
     protected static function validateNumericCoordinates($coords)
     {
-        if (!is_numeric($coords['westlimit'] ?? 'NaN')
+        if (
+            !is_numeric($coords['westlimit'] ?? 'NaN')
             || !is_numeric($coords['eastlimit'] ?? 'NaN')
             || !is_numeric($coords['northlimit'] ?? 'NaN')
             || !is_numeric($coords['southlimit'] ?? 'NaN')
@@ -110,7 +111,8 @@ class VuFindGeo
      */
     protected static function validateLines($coords)
     {
-        if ($coords['westlimit'] != $coords['eastlimit']
+        if (
+            $coords['westlimit'] != $coords['eastlimit']
             && $coords['northlimit'] == $coords['southlimit']
             && abs($coords['northlimit']) == 90
         ) {
@@ -129,7 +131,8 @@ class VuFindGeo
      */
     protected static function validateExtent($coords)
     {
-        if (abs($coords['northlimit']) > 90
+        if (
+            abs($coords['northlimit']) > 90
             || abs($coords['southlimit']) > 90
             || abs($coords['eastlimit']) > 180
             || abs($coords['westlimit']) > 180
@@ -197,7 +200,8 @@ class VuFindGeo
     {
         $distEW = $coords['eastlimit'] - $coords['westlimit'];
         $distNS = $coords['northlimit'] - $coords['southlimit'];
-        if (($coords['northlimit'] == -90 || $coords['southlimit'] == -90)
+        if (
+            ($coords['northlimit'] == -90 || $coords['southlimit'] == -90)
             && ($distNS > 0 && $distNS < 0.167)
         ) {
             static::logError(
@@ -207,7 +211,8 @@ class VuFindGeo
             return false;
         }
 
-        if (($coords['westlimit'] == 0 || $coords['eastlimit'] == 0)
+        if (
+            ($coords['westlimit'] == 0 || $coords['eastlimit'] == 0)
             && ($distEW > -2 && $distEW < 0)
         ) {
             static::logError(

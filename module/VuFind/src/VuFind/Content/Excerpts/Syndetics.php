@@ -49,8 +49,8 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
         'DBCHAPTER' => [
             'title' => 'First Chapter or Excerpt',
             'file' => 'DBCHAPTER.XML',
-            'div' => '<div id="syn_dbchapter"></div>'
-        ]
+            'div' => '<div id="syn_dbchapter"></div>',
+        ],
     ];
 
     /**

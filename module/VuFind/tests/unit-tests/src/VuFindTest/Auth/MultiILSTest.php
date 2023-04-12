@@ -154,7 +154,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
     {
         $response = [
             'cat_username' => 'testuser', 'cat_password' => 'testpass',
-            'email' => 'user@test.com'
+            'email' => 'user@test.com',
         ];
         $driver = $this->getMockMultiBackend();
         $driver->expects($this->once())->method('patronLogin')
@@ -177,7 +177,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
 
         $response = [
             'cat_username' => 'testuser', 'cat_password' => 'testpass',
-            'email' => 'user@test.com'
+            'email' => 'user@test.com',
         ];
         $driver = $this->getMockMultiBackend();
         $driver->expects($this->once())->method('patronLogin')
@@ -202,7 +202,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
     protected function getLoginRequest($overrides = [])
     {
         $post = $overrides + [
-            'username' => 'testuser', 'password' => 'testpass', 'target' => 'ils1'
+            'username' => 'testuser', 'password' => 'testpass', 'target' => 'ils1',
         ];
         $request = new \Laminas\Http\Request();
         $request->setPost(new \Laminas\Stdlib\Parameters($post));
@@ -232,7 +232,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
      *
      * @param array $onlyMethods Existing methods to mock (in addition to
      * supportsMethod)
-     * @param array $addMethods New methods to mock (in addition to
+     * @param array $addMethods  New methods to mock (in addition to
      * getLoginDrivers)
      *
      * @return MockObject&MultiBackend
@@ -318,7 +318,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
             [
                 $driverClass => [
                     'Drivers' => [
-                        'ils1' => 'Sample'
+                        'ils1' => 'Sample',
                     ],
                     'Login' => [
                         'drivers' => ['ils1'],

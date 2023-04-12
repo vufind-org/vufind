@@ -43,7 +43,6 @@ use VuFind\Crypt\HMAC;
  * @property int     $id
  * @property int     $user_id
  * @property ?string $session_id
- * @property ?int    $folder_id
  * @property string  $created
  * @property ?string $title
  * @property int     $saved
@@ -154,7 +153,7 @@ class Search extends RowGateway
         $data = [
             'id' => $this->id,
             'user_id' => $user->id,
-            'created' => $user->created
+            'created' => $user->created,
         ];
         return $hmac->generate(array_keys($data), $data);
     }

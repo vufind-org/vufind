@@ -244,9 +244,9 @@ class ChoiceAuthTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a ChoiceAuth object.
      *
-     * @param PluginManager           $pm         Plugin manager
+     * @param PluginManager              $pm         Plugin manager
      * @param \Laminas\Session\Container $session    Session container
-     * @param string                  $strategies Strategies setting
+     * @param string                     $strategies Strategies setting
      *
      * @return ChoiceAuth
      */

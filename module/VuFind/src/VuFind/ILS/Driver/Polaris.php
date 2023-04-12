@@ -149,7 +149,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             "Content-type: application/json",
             "Accept: application/json",
             "PolarisDate: $date",
-            "Authorization: $auth_token"
+            "Authorization: $auth_token",
         ];
 
         try {
@@ -283,7 +283,8 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $copy_count++;
 
             $availability = 0;
-            if (($holdings_response->CircStatus == 'In')
+            if (
+                ($holdings_response->CircStatus == 'In')
                 || ($holdings_response->CircStatus == 'Just Returned')
                 || ($holdings_response->CircStatus == 'On Shelf')
                 || ($holdings_response->CircStatus == 'Available - Check shelves')
@@ -484,7 +485,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             foreach ($this->ws_pickUpLocations as $code => $library) {
                 $locations[] = [
                     'locationID'      => $code,
-                    'locationDisplay' => $library
+                    'locationDisplay' => $library,
                 ];
             }
         } else {
@@ -777,7 +778,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         }
         $result = [
             'count' => $count, 'details' => $item_response,
-            'blocks' => $item_blocks
+            'blocks' => $item_blocks,
         ];
 
         return $result;
@@ -831,13 +832,13 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $count++;
                 $item_response[$hold_id] = [
                 'success' => true,
-                'status'  => 'hold_cancel_success'
+                'status'  => 'hold_cancel_success',
                 ];
             } else {
                 $item_response[$hold_id] = [
                 'success' => false,
                 'status'  => 'hold_cancel_fail',
-                'sysMessage' => 'Failure calling ILS to cancel hold'
+                'sysMessage' => 'Failure calling ILS to cancel hold',
                 ];
             }
         }
@@ -980,7 +981,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         foreach ($hold_ids as $hold_id) {
             $jsonrequest = [
                  'UserID' => '1',
-                 'ActivationDate' => "$jsondate"
+                 'ActivationDate' => "$jsondate",
                 ];
 
             $response = $this->makeRequest(
@@ -994,13 +995,13 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $count++;
                 $item_response[$hold_id] = [
                   'success' => true,
-                  'status'  => 'hold_suspend_success'
+                  'status'  => 'hold_suspend_success',
                 ];
             } else {
                 $item_response[$hold_id] = [
                 'success' => false,
                 'status'  => 'hold_suspend_fail',
-                'sysMessage' => 'Failure calling ILS to suspend hold'
+                'sysMessage' => 'Failure calling ILS to suspend hold',
                 ];
             }
         }
@@ -1048,7 +1049,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         foreach ($hold_ids as $hold_id) {
             $jsonrequest = [
                  'UserID' => '1',
-                 'ActivationDate' => "$jsondate"
+                 'ActivationDate' => "$jsondate",
                  ];
 
             $response = $this->makeRequest(
@@ -1062,13 +1063,13 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $count++;
                 $item_response[$hold_id] = [
                   'success' => true,
-                  'status'  => 'hold_reactivate_success'
+                  'status'  => 'hold_reactivate_success',
                 ];
             } else {
                 $item_response[$hold_id] = [
                 'success' => false,
                 'status'  => 'hold_reactivate_fail',
-                'sysMessage' => 'Failure calling ILS to reactivate hold'
+                'sysMessage' => 'Failure calling ILS to reactivate hold',
                 ];
             }
         }

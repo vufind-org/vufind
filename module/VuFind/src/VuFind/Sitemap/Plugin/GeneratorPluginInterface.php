@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interface for sitemap generator plugins
  *

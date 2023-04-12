@@ -63,7 +63,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
     public function testCheckContextDefaults()
     {
         $config = [
-            'url' => 'http://foo/bar'
+            'url' => 'http://foo/bar',
         ];
         $driver = $this->getMockDriver();
         $openUrl = ($this->getOpenUrl(null, $config))($driver, 'results');

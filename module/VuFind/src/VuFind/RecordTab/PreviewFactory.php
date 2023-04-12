@@ -78,7 +78,8 @@ class PreviewFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
                 'trim',
                 explode(',', strtolower($cfg->Content->previews))
             );
-            if (in_array('google', $previews)
+            if (
+                in_array('google', $previews)
                 && strlen(trim($cfg->Content->GoogleOptions['tab'] ?? '')) > 0
             ) {
                 $active = true;

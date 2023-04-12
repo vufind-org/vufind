@@ -168,9 +168,9 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
                 && $command->getArguments()[0]->getAllTerms() === "john smith"
                 && $command->getArguments()[1] === 10
                 && $command->getArguments()[2]->getArrayCopy() ===
-                    ['spellcheck'=> ['true'],
-                    'fq'=> ['facet1:"value1"', 'facet2:"value2"'],
-                    'hl'=>["false"]];
+                    ['spellcheck' => ['true'],
+                    'fq' => ['facet1:"value1"', 'facet2:"value2"'],
+                    'hl' => ["false"]];
         };
         $service->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))
@@ -216,9 +216,9 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
                 && $command->getArguments()[0]->getAllTerms() === "john smith"
                 && $command->getArguments()[1] === 10
                 && $command->getArguments()[2]->getArrayCopy() ===
-                    ['spellcheck'=> ['true'],
-                    'fq'=> ['facet1:"value1"',
-                    'facet2:"value2"'], 'hl'=>["false"]];
+                    ['spellcheck' => ['true'],
+                    'fq' => ['facet1:"value1"',
+                    'facet2:"value2"'], 'hl' => ["false"]];
         };
         $service->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))
@@ -265,9 +265,9 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
                 && $command->getArguments()[0]->getAllTerms() === "john smith"
                 && $command->getArguments()[1] === 10
                 && $command->getArguments()[2]->getArrayCopy() ===
-                    ['spellcheck'=> ['true'],
-                    'fq'=> ['facet1:"value1"',
-                    'facet2:"value2"'], 'hl'=>["false"]];
+                    ['spellcheck' => ['true'],
+                    'fq' => ['facet1:"value1"',
+                    'facet2:"value2"'], 'hl' => ["false"]];
         };
         $service->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))
@@ -317,9 +317,9 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
                 && $command->getTargetIdentifier() === "Solr"
                 && $command->getArguments()[0]->getAllTerms() === "john smith"
                 && $command->getArguments()[1] === 10
-                && $command->getArguments()[2]->getArrayCopy() === ['spellcheck'=> ['true'],
-                    'fq'=> ['facet1:"value1"',
-                    'facet2:"value2"'], 'hl'=>["false"]];
+                && $command->getArguments()[2]->getArrayCopy() === ['spellcheck' => ['true'],
+                    'fq' => ['facet1:"value1"',
+                    'facet2:"value2"'], 'hl' => ["false"]];
         };
         $service->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))
@@ -345,6 +345,8 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Get a fixture object
+     *
+     * @param string $file Fixture name
      *
      * @return mixed
      */

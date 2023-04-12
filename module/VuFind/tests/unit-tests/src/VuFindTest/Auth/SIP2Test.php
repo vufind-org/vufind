@@ -73,7 +73,7 @@ class SIP2Test extends \PHPUnit\Framework\TestCase
         $config = new Config(
             [
                 'host' => 'my.fake.host',
-                'port' => '6002'
+                'port' => '6002',
             ],
             true
         );
@@ -91,7 +91,7 @@ class SIP2Test extends \PHPUnit\Framework\TestCase
     protected function getLoginRequest($overrides = [])
     {
         $post = $overrides + [
-            'username' => 'testuser', 'password' => 'testpass'
+            'username' => 'testuser', 'password' => 'testpass',
         ];
         $request = new \Laminas\Http\Request();
         $request->setPost(new \Laminas\Stdlib\Parameters($post));

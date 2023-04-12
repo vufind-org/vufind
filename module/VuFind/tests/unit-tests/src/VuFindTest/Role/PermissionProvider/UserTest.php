@@ -59,15 +59,15 @@ class UserTest extends \PHPUnit\Framework\TestCase
         [
                 ['username','mbeh'],
                 ['email','markus.beh@ub.uni-freiburg.de'],
-                ['college', 'Albert Ludwigs Universität Freiburg']
+                ['college', 'Albert Ludwigs Universität Freiburg'],
         ],
         'testuser2' =>
         [
                 ['username','mbeh2'],
                 ['email','markus.beh@ub.uni-freiburg.de'],
                 ['college', 'Villanova University'],
-                ['major', 'alumni']
-        ]
+                ['major', 'alumni'],
+        ],
     ];
 
     /**

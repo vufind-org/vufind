@@ -176,7 +176,7 @@ class AuthorFacets implements RecommendInterface
             // false; if we are able to find this information out in the future,
             // we can fill it in here and the templates will display it).
             'count' => false,
-            'list' => $results->getResults()
+            'list' => $results->getResults(),
         ];
     }
 }

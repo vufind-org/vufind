@@ -99,7 +99,7 @@ class EuropeanaResultsDeferred implements RecommendInterface
         // with a blank string, so we can rebuild the parameters to pass through
         // AJAX later on!
         for ($i = 0; $i < 4; $i++) {
-            $settings[$i] = $settings[$i] ?? '';
+            $settings[$i] ??= '';
         }
 
         // Collect the best possible search term(s):

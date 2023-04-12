@@ -196,7 +196,7 @@ class RecordFormatter extends BaseFormatter
                     if ($value instanceof TranslatableString) {
                         $value = [
                             'value' => (string)$value,
-                            'translated' => $translator->translate($value)
+                            'translated' => $translator->translate($value),
                         ];
                     } else {
                         $value = (string)$value;

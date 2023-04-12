@@ -239,7 +239,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
                 'driver' => $this->driver,
                 'list' => $list,
                 'user' => $user,
-                'lists' => $lists
+                'lists' => $lists,
             ]
         );
     }
@@ -504,7 +504,8 @@ class Record extends \Laminas\View\Helper\AbstractHelper
      */
     protected function getCoverSize($context, $default = 'medium')
     {
-        if (isset($this->config->Content->coversize)
+        if (
+            isset($this->config->Content->coversize)
             && !$this->config->Content->coversize
         ) {
             // covers disabled entirely
@@ -566,7 +567,8 @@ class Record extends \Laminas\View\Helper\AbstractHelper
                 return false;
         }
 
-        if (!isset($this->config->QRCode->$key)
+        if (
+            !isset($this->config->QRCode->$key)
             || !$this->config->QRCode->$key
         ) {
             return false;
@@ -580,7 +582,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
             $extra + ['driver' => $this->driver]
         );
         $qrcode = [
-            "text" => $text, 'level' => $level, 'size' => $size, 'margin' => $margin
+            "text" => $text, 'level' => $level, 'size' => $size, 'margin' => $margin,
         ];
 
         $urlHelper = $this->getView()->plugin('url');

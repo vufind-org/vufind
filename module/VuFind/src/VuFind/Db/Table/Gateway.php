@@ -118,7 +118,8 @@ class Gateway extends AbstractTableGateway
 
         // If this is a PostgreSQL connection, we may need to initialize the ID
         // from a sequence:
-        if ($this->adapter
+        if (
+            $this->adapter
             && $this->adapter->getDriver()->getDatabasePlatformName() == "Postgresql"
             && $obj instanceof \VuFind\Db\Row\RowGateway
         ) {

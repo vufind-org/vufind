@@ -64,8 +64,8 @@ class AuthCodeRepositoryTest extends AbstractTokenRepositoryTest
                     'type' => 'oauth2_auth_code',
                     'revoked' => false,
                     'data' => json_encode($token),
-                    'user_id' => null
-                ]
+                    'user_id' => null,
+                ],
             ],
             $this->accessTokenTable
         );
@@ -79,8 +79,8 @@ class AuthCodeRepositoryTest extends AbstractTokenRepositoryTest
                     'type' => 'oauth2_auth_code',
                     'revoked' => true,
                     'data' => json_encode($token),
-                    'user_id' => null
-                ]
+                    'user_id' => null,
+                ],
             ],
             $this->accessTokenTable
         );

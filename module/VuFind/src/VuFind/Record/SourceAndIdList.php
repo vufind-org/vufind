@@ -75,7 +75,7 @@ class SourceAndIdList
             if (!is_array($details)) {
                 $parts = explode('|', $details, 2);
                 $ids[$i] = $details = [
-                    'source' => $parts[0], 'id' => $parts[1]
+                    'source' => $parts[0], 'id' => $parts[1],
                 ];
             }
             $this->bySource[$details['source']][$details['id']][] = $i;

@@ -138,7 +138,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
         return [
             'docs' => $error ? [] : [$body],
             'offset' => 0,
-            'total' => $error ? 0 : 1
+            'total' => $error ? 0 : 1,
         ];
     }
 
@@ -169,7 +169,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
         return [
             'docs' => $finalDocs,
             'offset' => $offset,
-            'total' => (int)($xml->numberOfRecords ?? 0)
+            'total' => (int)($xml->numberOfRecords ?? 0),
         ];
     }
 }

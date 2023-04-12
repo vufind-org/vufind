@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Sitemap Generator factory.
  *

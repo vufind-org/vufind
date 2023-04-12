@@ -107,7 +107,7 @@ class CachingDownloader implements \VuFindHttp\HttpServiceAwareInterface
      *
      * @return void
      */
-    public function setUpCache(string $cacheId, array $cacheOptions=[])
+    public function setUpCache(string $cacheId, array $cacheOptions = [])
     {
         $this->cache = null;
         $this->cacheId = $cacheId;
@@ -126,8 +126,8 @@ class CachingDownloader implements \VuFindHttp\HttpServiceAwareInterface
      */
     public function download(
         $url,
-        $params=[],
-        callable $decodeCallback=null
+        $params = [],
+        callable $decodeCallback = null
     ) {
         $cache = $this->getDownloaderCache();
         $cacheItemKey = md5($url . http_build_query($params));
@@ -175,7 +175,7 @@ class CachingDownloader implements \VuFindHttp\HttpServiceAwareInterface
      *
      * @return stdClass
      */
-    public function downloadJson($url, $params=[])
+    public function downloadJson($url, $params = [])
     {
         $decodeJson = function (\Laminas\Http\Response $response, $url) {
             $decodedJson = json_decode($response->getBody());

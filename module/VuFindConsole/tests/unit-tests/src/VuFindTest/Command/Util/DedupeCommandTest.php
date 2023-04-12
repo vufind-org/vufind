@@ -143,12 +143,12 @@ class DedupeCommandTest extends \PHPUnit\Framework\TestCase
                 [
                     $this->isInstanceOf(InputInterface::class),
                     $this->isInstanceOf(OutputInterface::class),
-                    'Please specify an input file: '
+                    'Please specify an input file: ',
                 ],
                 [
                     $this->isInstanceOf(InputInterface::class),
                     $this->isInstanceOf(OutputInterface::class),
-                    'Please specify an output file: '
+                    'Please specify an output file: ',
                 ]
             )->willReturnOnConsecutiveCalls($fixture, $outputFilename);
         $this->setSuccessfulExpectations($command, $outputFilename);

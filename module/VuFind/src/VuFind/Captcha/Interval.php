@@ -114,7 +114,7 @@ class Interval extends AbstractBase implements TranslatorAwareInterface
             $this->errorMessage = $this->translate(
                 'interval_captcha_not_passed',
                 [
-                    '%%delay%%' => max($requiredInterval - $timePassed, 1)
+                    '%%delay%%' => max($requiredInterval - $timePassed, 1),
                 ]
             );
             return false;

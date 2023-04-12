@@ -149,7 +149,7 @@ class History
         // If custom frequencies are not provided, return defaults:
         if (!isset($this->config->Account->scheduled_search_frequencies)) {
             return [
-                0 => 'schedule_none', 1 => 'schedule_daily', 7 => 'schedule_weekly'
+                0 => 'schedule_none', 1 => 'schedule_daily', 7 => 'schedule_weekly',
             ];
         }
         // If we have a setting, make sure it is properly formatted as an array:

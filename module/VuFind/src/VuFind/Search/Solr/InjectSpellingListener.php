@@ -36,7 +36,6 @@ use VuFind\Log\LoggerAwareTrait;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
 use VuFindSearch\ParamBag;
-
 use VuFindSearch\Query\Query;
 use VuFindSearch\Service;
 

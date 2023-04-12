@@ -60,7 +60,8 @@ abstract class AbstractTokenRepositoryTest extends \PHPUnit\Framework\TestCase
             bool $create
         ): ?AccessTokenRow {
             foreach ($this->accessTokenTable as $row) {
-                if ($id === $row['id']
+                if (
+                    $id === $row['id']
                     && $type === $row['type']
                 ) {
                     return $this->createAccessTokenRow($row);
@@ -103,7 +104,8 @@ abstract class AbstractTokenRepositoryTest extends \PHPUnit\Framework\TestCase
         $save = function () use ($result) {
             $data = $result->toArray();
             foreach ($this->accessTokenTable as &$row) {
-                if ($data['id'] === $row['id']
+                if (
+                    $data['id'] === $row['id']
                     && $data['type'] === $row['type']
                 ) {
                     $row = $data;

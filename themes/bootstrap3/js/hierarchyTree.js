@@ -129,7 +129,7 @@ function buildJSONNodes(xml) {
     jsonNode.push({
       id: htmlEncodeId(id.text()),
       text: name.text(),
-      li_attr: { recordid: id.text() },
+      li_attr: { "data-recordid": id.text() },
       a_attr: {
         href: name.attr('href'),
         title: name.text()
@@ -190,7 +190,7 @@ $(document).ready(function hierarchyTreeReady() {
   $("#hierarchyLoading").removeClass('hide');
 
   $("#hierarchyTree")
-    .bind("ready.jstree", function jsTreeReady(/*event, data*/) {
+    .on("ready.jstree", function jsTreeReady(/*event, data*/) {
       $("#hierarchyLoading").addClass('hide');
       var tree = $("#hierarchyTree").jstree(true);
       tree.select_node(htmlID);
@@ -200,11 +200,11 @@ $(document).ready(function hierarchyTreeReady() {
         getRecord(recordID);
       }
 
-      $("#hierarchyTree").bind('select_node.jstree', function jsTreeSelect(e, resp) {
+      $("#hierarchyTree").on('select_node.jstree', function jsTreeSelect(e, resp) {
         if (inLightbox || hierarchyContext === "Record") {
           window.location.href = resp.node.a_attr.href;
         } else {
-          getRecord(resp.node.li_attr.recordid);
+          getRecord(resp.node.li_attr["data-recordid"]);
         }
       });
 

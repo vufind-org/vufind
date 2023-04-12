@@ -74,7 +74,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         $command = $this->getCommand(
             [
                 'searchTable' => $searchTable,
-                'scheduleOptions' => []
+                'scheduleOptions' => [],
             ]
         );
         $commandTester = new CommandTester($command);
@@ -99,7 +99,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
                         'search_object' => null,
                     ]
                 ),
-                'scheduleOptions' => [1 => 'Daily']
+                'scheduleOptions' => [1 => 'Daily'],
             ]
         );
         $commandTester = new CommandTester($command);
@@ -371,14 +371,14 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     protected function getMockSearchResultsSet($record = null)
     {
         return [
-            $record ?? $this->container->createMock(\VuFind\RecordDriver\SolrDefault::class)
+            $record ?? $this->container->createMock(\VuFind\RecordDriver\SolrDefault::class),
         ];
     }
 
     /**
      * Create a list of fake notification objects.
      *
-     * @param array     $overrides       Fields to override in the notification row.
+     * @param array    $overrides       Fields to override in the notification row.
      * @param callable $optionsCallback Callback to set expectations on options object
      * @param callable $paramsCallback  Callback to set expectations on params object
      * @param callable $resultsCallback Callback to set expectations on results object
@@ -395,7 +395,6 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
             'id' => 1,
             'user_id' => 2,
             'session_id' => null,
-            'folder_id' => null,
             'created' => '2000-01-01 00:00:00',
             'title' => null,
             'saved' => 1,
@@ -535,7 +534,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
                         'institution' => 'My Institution',
                         'title' => 'My Site',
                         'email' => 'admin@myuniversity.edu',
-                    ]
+                    ],
                 ]
             ),
             $options['mailer'] ?? $this->container->createMock(\VuFind\Mailer\Mailer::class),
@@ -569,7 +568,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Create a mock search table that returns a list of fake notification objects.
      *
-     * @param array     $overrides       Fields to override in the notification row.
+     * @param array    $overrides       Fields to override in the notification row.
      * @param callable $optionsCallback Callback to set expectations on options object
      * @param callable $paramsCallback  Callback to set expectations on params object
      * @param callable $resultsCallback Callback to set expectations on results object

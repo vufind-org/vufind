@@ -72,7 +72,7 @@ class Csp extends \Laminas\View\Helper\AbstractHelper
         $headers = $this->response->getHeaders();
         $fieldsToCheck = [
             'Content-Security-Policy',
-            'Content-Security-Policy-Report-Only'
+            'Content-Security-Policy-Report-Only',
         ];
         foreach ($fieldsToCheck as $field) {
             if ($cspHeaders = $headers->get($field)) {

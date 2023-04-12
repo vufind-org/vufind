@@ -67,7 +67,7 @@ class NoILSTest extends \PHPUnit\Framework\TestCase
             ->setConstructorArgs(
                 [
                     $this->createMock(\VuFindSearch\Service::class),
-                    $this->createMock(\VuFind\RecordDriver\PluginManager::class)
+                    $this->createMock(\VuFind\RecordDriver\PluginManager::class),
                 ]
             )->getMock();
         $this->driver = new NoILS($this->loader);
@@ -123,7 +123,7 @@ class NoILSTest extends \PHPUnit\Framework\TestCase
                     'reserve' => 'N',
                     'callnumber' => 'xyzzy',
                     'barcode' => null,
-                ]
+                ],
             ]
         );
         $this->assertTrue($this->driver->hasHoldings('foo'));

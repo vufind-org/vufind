@@ -61,7 +61,7 @@ class Options extends \VuFind\Search\Solr\Options
             $this->sortOptions = [
                 'title' => 'sort_title',
                 'year' => 'sort_year', 'year asc' => 'sort_year asc',
-                'author' => 'sort_author'
+                'author' => 'sort_author',
             ];
         }
         $this->defaultSort = key($this->sortOptions);

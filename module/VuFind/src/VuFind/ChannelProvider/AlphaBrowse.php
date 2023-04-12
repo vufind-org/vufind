@@ -234,7 +234,7 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
                     'title' => $item['extras']['title'][0][0],
                     'source' => $this->source,
                     'thumbnail' => false, // TODO: better thumbnails!
-                    'id' => $id
+                    'id' => $id,
                 ];
             }
         }
@@ -278,7 +278,7 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
                 ['%%title%%' => $driver->getBreadcrumb()]
             ),
             'providerId' => $this->providerId,
-            'links' => []
+            'links' => [],
         ];
         $raw = $driver->getRawData();
         $from = isset($raw[$this->solrField]) ? (array)$raw[$this->solrField] : null;
@@ -306,21 +306,21 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
                 'label' => 'View Record',
                 'icon' => 'fa-file-text-o',
                 'url' => $this->url
-                    ->fromRoute($route['route'], $route['params'])
+                    ->fromRoute($route['route'], $route['params']),
             ];
             $retVal['links'][] = [
                 'label' => 'channel_expand',
                 'icon' => 'fa-search-plus',
                 'url' => $this->url->fromRoute('channels-record')
                     . '?id=' . urlencode($driver->getUniqueID())
-                    . '&source=' . urlencode($driver->getSourceIdentifier())
+                    . '&source=' . urlencode($driver->getSourceIdentifier()),
             ];
             $retVal['links'][] = [
                 'label' => 'channel_browse',
                 'icon' => 'fa-list',
                 'url' => $this->url->fromRoute('alphabrowse-home')
                     . '?source=' . urlencode($this->browseIndex)
-                    . '&from=' . $from[0]
+                    . '&from=' . $from[0],
             ];
         }
         return $retVal;
