@@ -1,3 +1,4 @@
+/* exported AjaxRequestQueue */
 class AjaxRequestQueue {
   constructor({ run, success, failure, delay }) {
     // Status
