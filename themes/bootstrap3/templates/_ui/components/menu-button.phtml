@@ -7,14 +7,19 @@
     $wrapperClass = $this->wrapperClass . ' dropdown'; // Bootstrap class
   }
 
-  $toggleTag = 'button';
-  $toggleAttrs = $this->toggleAttrs ?? [];
-  $toggleAttrs['id'] = $toggleAttrs['id'] ?? uniqid('toggle-');
-  $toggleAttrs['type'] = 'button'; // Accessible default
-  $toggleAttrs['class'] = 'dropdown-toggle'; // Bootstrap class
-  $toggleAttrs['data-toggle'] = 'dropdown'; // Bootstrap data-attr
-  $toggleAttrs['aria-expanded'] = 'false';
-  $toggleAttrs['aria-haspopup'] = 'true';
+  // defaults
+  $toggleAttrs = [
+    'id' => uniqid('toggle-'),
+    'type' => 'button', // Accessible default
+    'data-toggle' => 'dropdown', // Bootstrap data-attr
+    'aria-expanded' => 'false',
+    'aria-haspopup' => 'true',
+  ];
+
+  $toggleTag = $this->toggleTag ?? 'button';
+  $toggleAttrs = $toggleAttrs + ($this->toggleAttrs ?? []);
+  // Bootstrap class
+  $toggleAttrs['class'] = trim('dropdown-toggle ' . ($toggleAttrs['class'] ?? ''));
 
   // An anchor tag with an href should only be used as
   // a non-js fallback to open the menu on another page
@@ -53,15 +58,15 @@
     $buttonText = $showSelectedValue ? $selected . ' ' : $label;
   ?>
   <?php if ($showSelectedValue): ?>
-    <label for="<?=$this->escapeHtmlAttr($toggleAttrs['id'])?>")><?=$this->escapeHtml($label)?></label>
+    <label for="<?=$this->escapeHtmlAttr($toggleAttrs['id'])?>"><?=$this->escapeHtml($label)?></label>
   <?php endif; ?>
-  <?=$this
-      ->makeTag(
-          $toggleTag,
-          $buttonText . $this->icon('dropdown-caret'),
-          $toggleAttrs,
-          ['escapeContent' => false]
-      )
+  <?=
+    $this->makeTag(
+      $toggleTag,
+      $buttonText . $this->icon('dropdown-caret'),
+      $toggleAttrs,
+      ['escapeContent' => false]
+    )
   ?>
 <?php $menuContents = ob_get_contents(); ?>
 <?php ob_end_clean(); ?>
