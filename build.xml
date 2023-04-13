@@ -674,7 +674,7 @@ ${git_status}
     <append destFile="${localdir}/import/marc-${BASENAME}.properties" text="building=&quot;${BASENAME}&quot;${line.separator}" />
 
     <copy file="${localdir}/import/import.properties" tofile="${localdir}/import/import-${BASENAME}.properties" />
-    <!-- normalize UTF-8 to avoid HTML validation problems -->
+    <!-- normalize Unicode to avoid HTML validation warnings -->
     <append destFile="${localdir}/import/import-${BASENAME}.properties" text="marc.unicode_normalize = C${line.separator}" />
     <reflexive>
       <fileset dir="${localdir}/import">
