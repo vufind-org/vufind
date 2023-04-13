@@ -16,7 +16,7 @@
       <td><?=$this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime("U", $info->getStartTime()))?></td>
       <td>
         <?=$this->historylabel($info->getParams()->getSearchClassId())?>
-        <a href="<?=$this->url($info->getOptions()->getSearchAction()) . $info->getUrlQuery()->getParams()?>"><?php
+        <a class="history-entry" href="<?=$this->url($info->getOptions()->getSearchAction()) . $info->getUrlQuery()->getParams()?>"><?php
           $desc = $info->getParams()->getDisplayQuery();
           echo empty($desc) ? $this->transEsc("history_empty_search") : $this->escapeHtml($desc);
         ?></a>
@@ -42,6 +42,7 @@
               $this->component(
                   'menu-button',
                   [
+                    'wrapperClass' => 'search__notify',
                     'showSelectedValue' => true,
                     'menuItems' => array_map(
                         function ($label, $val) use ($info) {
