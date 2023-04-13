@@ -4,8 +4,9 @@
     echo $this->component(
         'menu-button',
         [
-          'wrapperClass' => 'search__option',
+          'wrapperClass' => 'search__limit',
           'showSelectedValue' => true,
+          'defaultSelectedValue' => $this->params->getLimit(),
           'toggleLabel' => 'Results per page',
           'menuItems' => array_map(
               function ($item, $val) {

@@ -28,7 +28,7 @@
     $toggleAttrs['href'] = $this->href;
     $toggleAttrs['type'] = null;
   }
-  $selected = '';
+  $selected = $this->defaultSelectedValue ?? '';
 ?>
 <?php ob_start(); ?>
   <ul class="dropdown-menu">

@@ -48,7 +48,7 @@ class SearchLimitTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @var string
      */
-    protected $limitControlSelector = '#limit';
+    protected $limitControlSelector = '.search__limit';
 
     /**
      * Set up a search page with limits configured
@@ -97,10 +97,10 @@ class SearchLimitTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function assertLimitControl(Element $page, array $options, int $active)
     {
-        $limit = $this->findCss($page, $this->limitControlSelector);
-        $this->assertEquals((string)$active, $limit->getValue());
+        $limit = $this->findCss($page, $this->limitControlSelector . ' button');
+        $this->assertEquals((string)$active, $limit->getText());
         $optionElements
-            = $page->findAll('css', $this->limitControlSelector . ' option');
+            = $page->findAll('css', $this->limitControlSelector . ' li');
         $callback = function (Element $element): string {
             return intval($element->getText());
         };
@@ -171,7 +171,7 @@ class SearchLimitTest extends \VuFindTest\Integration\MinkTestCase
         // than the highest supported value.
         $page = $this->setUpLimitedSearch("4", "3,6,9", "6");
         $this->assertResultSize($page, 4);
-        $this->assertLimitControl($page, [3, 6, 9], 3);
+        $this->assertLimitControl($page, [3, 6, 9], 4);
     }
 
     /**
