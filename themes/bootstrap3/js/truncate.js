@@ -190,18 +190,17 @@ VuFind.register('truncate', function Truncate() {
       const observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
-            const nodes = getFocusableNodes(entry.target);
-            if (entry.intersectionRatio === 0) {
-              nodes.forEach((el) => el.setAttribute("tabindex", -1));
+            if (entry.intersectionRatio > 0) {
+              entry.target.removeAttribute("tabindex");
             } else {
-              nodes.forEach((el) => el.removeAttribute("tabindex"));
+              entry.target.setAttribute("tabindex", -1);
             }
           });
         },
         { root }
       );
-      // - add all facets to observer
-      Array.from(root.children).forEach((el) => observer.observe(el));
+      // - add all focusable elements of facets to observer
+      getFocusableNodes(root).forEach((el) => observer.observe(el));
 
       if (truncatedHeight === 0) {
         zeroHeightContainers.push(container);
