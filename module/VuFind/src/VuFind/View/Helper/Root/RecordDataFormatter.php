@@ -388,7 +388,7 @@ class RecordDataFormatter extends AbstractHelper
         $escaper = ($options['translate'] ?? false)
             ? $view->plugin('transEsc') : $view->plugin('escapeHtml');
         $transDomain = $options['translationTextDomain'] ?? '';
-        $separator = $options['separator'] ?? '<br />';
+        $separator = $options['separator'] ?? '<br>';
         $retVal = '';
         $array = (array)$data;
         $remaining = count($array);

@@ -81,14 +81,14 @@ class PrintArrayHtml extends AbstractHelper
                     $html .= $makeTag("span", $key . ":", ["class" => "term"])
                              . (
                                  (is_array($value) && !$valueIsSingleKeyList)
-                                 ? "<br/>\n" : " "
+                                 ? "<br>\n" : " "
                              );
                 }
 
                 $html .= $this->__invoke($value, $nextIndentLevel, $nextIndentFirst);
             }
         } else {
-            $html = $makeTag("span", $entry, ["class" => "detail"]) . "<br/>\n";
+            $html = $makeTag("span", $entry, ["class" => "detail"]) . "<br>\n";
         }
         return $html;
     }

@@ -1,11 +1,11 @@
 <?php if (isset($list)): ?>
-  <input type="hidden" name="listID" value="<?=$this->escapeHtmlAttr($list->id)?>" />
-  <input type="hidden" name="listName" value="<?=$this->escapeHtmlAttr($list->title)?>" />
+  <input type="hidden" name="listID" value="<?=$this->escapeHtmlAttr($list->id)?>">
+  <input type="hidden" name="listName" value="<?=$this->escapeHtmlAttr($list->title)?>">
 <?php endif; ?>
 <?php $user = $this->auth()->isLoggedIn(); ?>
 <nav class="bulkActionButtons">
   <div class="bulk-checkbox">
-    <input type="checkbox" name="selectAll" class="checkbox-select-all" id="myresearchCheckAll"/>
+    <input type="checkbox" name="selectAll" class="checkbox-select-all" id="myresearchCheckAll">
     <label for="myresearchCheckAll"><?=$this->transEsc('select_page')?> | <?=$this->transEsc('with_selected')?>:</label>
   </div>
   <ul class="action-toolbar">
