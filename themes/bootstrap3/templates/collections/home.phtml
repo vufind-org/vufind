@@ -46,8 +46,8 @@
           </a>
         </li>
       <?php endif; ?>
-      <input type="submit" class="btn btn-default" value="<?=$this->transEscAttr('Jump to')?>" />
-      <input type="text" name="from" value="<?=$this->escapeHtmlAttr($from)?>" class="form-control" />
+      <input type="submit" class="btn btn-default" value="<?=$this->transEscAttr('Jump to')?>">
+      <input type="text" name="from" value="<?=$this->escapeHtmlAttr($from)?>" class="form-control">
     </ul>
   </form>
 <?php $pageLinks = ob_get_contents(); ?>
@@ -90,5 +90,5 @@
 <?=$pageLinks ?>
 <div class="clearfix">
   <?=$this->render('collections/list.phtml')?>
-</div><br/>
+</div><br>
 <?=$pageLinks ?>
