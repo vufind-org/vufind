@@ -4,6 +4,8 @@ $fa-font-path: "../../bootstrap3/css/fonts";
 /* <#SCSS */
 /* #LESS>
 @import "vendor/bootstrap/bootstrap";
+@import "variables";
+
 <#LESS */
 @import "vendor/font-awesome/font-awesome";
 
@@ -493,6 +495,8 @@ div.holding-notes {
 }
 
 #cc-main {
+  z-index: $zindex-cookie-consent !important;
+
   a {
     &:hover {
       color: $link-hover-color;
