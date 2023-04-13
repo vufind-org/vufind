@@ -388,7 +388,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         }
         // Check for exact markup in representative example:
         $this->assertEquals(
-            '<span property="availableLanguage" typeof="Language"><span property="name">Italian</span></span><br />'
+            '<span property="availableLanguage" typeof="Language"><span property="name">Italian</span></span><br>'
             . '<span property="availableLanguage" typeof="Language"><span property="name">Latin</span></span>',
             $this->findResult('Language', $results)['value']
         );

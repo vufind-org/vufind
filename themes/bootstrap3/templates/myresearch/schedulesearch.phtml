@@ -43,7 +43,7 @@
               <option value="<?=$this->escapeHtmlAttr($scheduleValue)?>"<?=($this->search->notification_frequency == $scheduleValue) ? (' selected') : ('')?>><?=$this->transEsc($scheduleLabel)?></option>
             <?php endforeach; ?>
           </select>
-          <input type="hidden" name="searchid" value="<?=$this->escapeHtmlAttr($this->search->id) ?>"/>
+          <input type="hidden" name="searchid" value="<?=$this->escapeHtmlAttr($this->search->id) ?>">
         </form>
       </td>
     </tr>

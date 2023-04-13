@@ -19,8 +19,8 @@
       </div>
       <div id="information_<?=$idSuffixEsc?>-content" class="panel-collapse collapse<?php if ($this->defaultTab === 'information'): ?> in<?php endif; ?>">
         <div class="list-tab-content record panel-body">
-          <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id_<?=$idSuffixEsc?>" />
-          <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier()) ?>" class="hiddenSource" />
+          <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id_<?=$idSuffixEsc?>">
+          <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier()) ?>" class="hiddenSource">
           <?=$coreMetadata ?>
         </div>
       </div>

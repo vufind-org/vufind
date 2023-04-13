@@ -22,10 +22,10 @@
           <?=$this->escapeHtml($data->getTitle())?>
         </a>
         <?php $authors = $data->getPrimaryAuthors(); if (!empty($authors)): ?>
-          <br/><?=$this->transEsc('by')?>: <?=$this->escapeHtml($authors[0]);?><?php if (count($authors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?>
+          <br><?=$this->transEsc('by')?>: <?=$this->escapeHtml($authors[0]);?><?php if (count($authors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?>
         <?php endif; ?>
         <?php $pubDates = $data->getPublicationDates(); if (!empty($pubDates)): ?>
-          <br/><?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($pubDates[0])?>)
+          <br><?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($pubDates[0])?>)
         <?php endif; ?>
       </li>
     <?php endforeach; ?>

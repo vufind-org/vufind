@@ -342,7 +342,7 @@ class Wikipedia implements TranslatorAwareInterface
         // Convert multiple newlines into two breaks
         // We DO want this to be greedy
         $pattern[] = "/\n{2,}/s";
-        $replacement[] = '<br/><br/>';
+        $replacement[] = '<br><br>';
 
         return preg_replace($pattern, $replacement, $body);
     }
