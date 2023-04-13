@@ -538,7 +538,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
             $c_arr[] = "<strong>{$creator["role"]}<strong>: "
                 . $creator["name"];
         }
-        $data['creators'] = implode("<br/>", $c_arr);
+        $data['creators'] = implode("<br>", $c_arr);
 
         $this->debug("raw data:" . print_r($data, true));
         return $data;
