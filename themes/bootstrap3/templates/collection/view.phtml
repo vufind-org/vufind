@@ -45,8 +45,8 @@
 
 <div class="record source<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
   <div<?php if (!$tree): /* in tree mode, do not constrain width with a class */ ?> class="<?=$this->layoutClass('mainbody') ?> solo"<?php endif; ?>>
-    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id" />
-    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id">
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource">
     <?=$this->flashmessages()?>
     <?=$this->record($this->driver)->getCollectionMetadata()?>
 

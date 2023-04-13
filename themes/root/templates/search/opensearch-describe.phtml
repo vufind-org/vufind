@@ -6,7 +6,7 @@
   <Description><?=$this->transEsc('Library Catalog Search')?></Description>
   <Image height="16" width="16" type="image/png"><?=$this->serverUrl($this->imageLink('vufind-favicon.png'))?></Image>
   <Contact><?=$this->escapeHtml($this->site->email)?></Contact>
-  <Url type="text/html" method="get" template="<?=$searchBase?>?lookfor={searchTerms}&amp;page={startPage?}"/>
-  <Url type="application/rss+xml" method="get" template="<?=$searchBase?>?lookfor={searchTerms}&amp;view=rss"/>
-  <Url type="application/x-suggestions+json" method="get" template="<?=$suggestions?>?lookfor={searchTerms}&amp;format=JSON"/>
+  <Url type="text/html" method="get" template="<?=$searchBase?>?lookfor={searchTerms}&amp;page={startPage?}">
+  <Url type="application/rss+xml" method="get" template="<?=$searchBase?>?lookfor={searchTerms}&amp;view=rss">
+  <Url type="application/x-suggestions+json" method="get" template="<?=$suggestions?>?lookfor={searchTerms}&amp;format=JSON">
 </OpenSearchDescription>

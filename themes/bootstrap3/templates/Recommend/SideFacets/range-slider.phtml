@@ -9,26 +9,26 @@
 <div class="facet">
   <form class="facet-range-form" name="<?=$safeBaseId?>Filter" id="<?=$safeBaseId?>Filter">
     <?=$results->getUrlQuery()->asHiddenFields(['page' => "/./", 'filter' => "/^{$this->title}:.*/"])?>
-    <input type="hidden" name="<?=$this->escapeHtmlAttr($this->facet['type'])?>range[]" value="<?=$this->escapeHtmlAttr($this->title)?>"/>
+    <input type="hidden" name="<?=$this->escapeHtmlAttr($this->facet['type'])?>range[]" value="<?=$this->escapeHtmlAttr($this->title)?>">
     <div class="date-fields">
       <?php $extraInputAttribs = ($this->facet['type'] == 'date') ? 'maxlength="4" ' : ''; ?>
       <div class="date-from">
         <label id="<?=$safeBaseId?>from-label" for="<?=$safeBaseId?>from">
           <?=$this->transEsc('date_from')?>:
         </label>
-        <input type="text" class="form-control" name="<?=$safeBaseId?>from" id="<?=$safeBaseId?>from" value="<?=$this->escapeHtmlAttr($cleanValues[0] ?? '')?>" <?=$extraInputAttribs?>/>
+        <input type="text" class="form-control" name="<?=$safeBaseId?>from" id="<?=$safeBaseId?>from" value="<?=$this->escapeHtmlAttr($cleanValues[0] ?? '')?>" <?=$extraInputAttribs?>>
       </div>
       <div class="date-to">
         <label id="<?=$safeBaseId?>to-label" for="<?=$safeBaseId?>to">
           <?=$this->transEsc('date_to')?>:
         </label>
-        <input type="text" class="form-control" name="<?=$safeBaseId?>to" id="<?=$safeBaseId?>to" value="<?=$this->escapeHtmlAttr($cleanValues[1] ?? '')?>" <?=$extraInputAttribs?>/>
+        <input type="text" class="form-control" name="<?=$safeBaseId?>to" id="<?=$safeBaseId?>to" value="<?=$this->escapeHtmlAttr($cleanValues[1] ?? '')?>" <?=$extraInputAttribs?>>
       </div>
     </div>
     <?php if ($this->facet['type'] == 'date'): ?>
-      <div class="slider-container"><input type="text" class="hidden" id="<?=$safeBaseId?><?=$this->escapeHtml($this->facet['type'])?>Slider" aria-label="<?=$this->transEsc('slider_label', ['%%title%%' => $this->translate($this->cluster['label'])])?>"/></div>
+      <div class="slider-container"><input type="text" class="hidden" id="<?=$safeBaseId?><?=$this->escapeHtml($this->facet['type'])?>Slider" aria-label="<?=$this->transEsc('slider_label', ['%%title%%' => $this->translate($this->cluster['label'])])?>"></div>
     <?php endif; ?>
-    <input class="btn btn-default" type="submit" value="<?=$this->transEscAttr('Set')?>"/>
+    <input class="btn btn-default" type="submit" value="<?=$this->transEscAttr('Set')?>">
   </form>
 </div>
 <?php if ($this->facet['type'] == 'date'): ?>
