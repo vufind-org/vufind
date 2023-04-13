@@ -81,24 +81,6 @@ label { cursor: pointer; }
     outline: dotted 1px #000;
   }
 }
-.nav .dropdown-toggle {
-  padding-right: 8px;
-
-  .icon {
-    margin-left: 4px;
-    margin-right: 0;
-  }
-
-  body.rtl & {
-    padding-left: 8px;
-    padding-right: 10px;
-
-    .icon {
-      margin-left: 0;
-      margin-right: 4px;
-    }
-  }
-}
 
 // Normalize highlighting
 .highlight,
@@ -146,12 +128,27 @@ h3 { font-size: 16px; }
   #modal .form-control { max-width: none; }
 }
 
-button.dropdown-toggle {
+.nav li .dropdown-toggle {
   @include button-variant($btn-default-color, $btn-default-bg, $btn-default-border);
   appearance: none;
   padding: 15px;
   border: 0;
   color: $brand-primary;
+
+  .icon {
+    margin-left: 4px;
+    margin-right: 0;
+  }
+
+  body.rtl & {
+    padding-left: 8px;
+    padding-right: 10px;
+
+    .icon {
+      margin-left: 0;
+      margin-right: 4px;
+    }
+  }
 }
 
 /* ------ Layout ------ */
