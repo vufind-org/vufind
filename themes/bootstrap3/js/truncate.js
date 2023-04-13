@@ -1,4 +1,4 @@
-/* global VuFind */
+/* global VuFind, getFocusableNodes */
 
 VuFind.register('truncate', function Truncate() {
   function initTruncate(_container, _element, _fill) {
@@ -183,6 +183,25 @@ VuFind.register('truncate', function Truncate() {
       }
 
       container.addClass('truncate-done');
+
+      // Make hidden elements unfocusable
+      // - Create IntersectionObserver
+      const root = container.get(0);
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const nodes = getFocusableNodes(entry.target);
+            if (entry.intersectionRatio === 0) {
+              nodes.forEach((el) => el.setAttribute("tabindex", -1));
+            } else {
+              nodes.forEach((el) => el.removeAttribute("tabindex"));
+            }
+          });
+        },
+        { root }
+      );
+      // - add all facets to observer
+      Array.from(root.children).forEach((el) => observer.observe(el));
 
       if (truncatedHeight === 0) {
         zeroHeightContainers.push(container);
