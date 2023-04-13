@@ -13,6 +13,22 @@ VuFind.register('lightbox', function Lightbox() {
   function _storeClickedStatus() {
     _clickedButton = this;
   }
+  function _emit(msg, _details) {
+    var details = _details || {};
+    var event;
+    try {
+      event = new CustomEvent(msg, {
+        detail: details,
+        bubbles: true,
+        cancelable: true
+      });
+    } catch (e) {
+      // Fallback to document.createEvent() if creating a new CustomEvent fails (e.g. IE 11)
+      event = document.createEvent('CustomEvent');
+      event.initCustomEvent(msg, true, true, details);
+    }
+    return document.dispatchEvent(event);
+  }
   function _html(content) {
     _modalBody.html(VuFind.updateCspNonce(content));
     // Set or update title if we have one
@@ -29,22 +45,6 @@ VuFind.register('lightbox', function Lightbox() {
     _lightboxTitle = false;
     _modal.modal('handleUpdate');
     _emit("VuFind.lightbox.render", _modalBody.get(0));
-  }
-  function _emit(msg, _details) {
-    var details = _details || {};
-    var event;
-    try {
-      event = new CustomEvent(msg, {
-        detail: details,
-        bubbles: true,
-        cancelable: true
-      });
-    } catch (e) {
-      // Fallback to document.createEvent() if creating a new CustomEvent fails (e.g. IE 11)
-      event = document.createEvent('CustomEvent');
-      event.initCustomEvent(msg, true, true, details);
-    }
-    return document.dispatchEvent(event);
   }
 
   // Public: Present an alert
