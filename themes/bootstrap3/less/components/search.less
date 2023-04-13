@@ -80,6 +80,18 @@ header .container.navbar { margin-bottom: 0; }
 button.dropdown-toggle {
   &:extend(.btn);
   &:extend(.btn-default);
+
+  .icon {
+    margin-left: 4px;
+    margin-right: 0;
+  }
+
+  body.rtl & {
+    .icon {
+      margin-left: 0;
+      margin-right: 4px;
+    }
+  }
 }
 
 .record-nav,
