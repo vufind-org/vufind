@@ -136,7 +136,7 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
         // Open settings again and accept only essential cookies:
         $this->clickCss($page, '#cm__desc a');
         $this->waitStatement('$(".pm .pm__title").text() === "Cookie Settings"');
-        $this->clickCss($page, '.pm__btn', null, 1);
+        $this->clickCss($page, '.pm__btn.pm__btn--secondary');
         // Verify that there's no Matomo consent:
         $this->waitStatement(
             "window._paq[window._paq.length-1][0] !== 'setCookieConsentGiven'"
@@ -147,7 +147,7 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#cm__desc a');
         $this->waitStatement('$(".pm .pm__title").text() === "Cookie Settings"');
         $this->clickCss($page, '.section__toggle', null, 1);
-        $this->clickCss($page, '.pm__btn');
+        $this->clickCss($page, '.pm__btn.pm__btn--secondary');
         // Verify that there's Matomo consent:
         $this->waitStatement(
             "window._paq[window._paq.length-1][0] === 'setCookieConsentGiven'"
@@ -158,7 +158,7 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
         // Open settings again and accept only essential cookies:
         $this->clickCss($page, '#cm__desc a');
         $this->waitStatement('$(".pm .pm__title").text() === "Cookie Settings"');
-        $this->clickCss($page, '.pm__btn', null, 1);
+        $this->clickCss($page, '.pm__btn');
         $this->waitStatement(
             "window._paq[window._paq.length-1][0] !== 'setCookieConsentGiven'"
         );
@@ -168,7 +168,7 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
         // Open settings again and accept all cookies:
         $this->clickCss($page, '#cm__desc a');
         $this->waitStatement('$(".pm .pm__title").text() === "Cookie Settings"');
-        $this->clickCss($page, '.pm__btn', null, 2);
+        $this->clickCss($page, '.pm__btn', null, 1);
         $this->waitStatement(
             "window._paq[window._paq.length-1][0] === 'setCookieConsentGiven'"
         );

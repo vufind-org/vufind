@@ -336,9 +336,9 @@
   <!-- Copy files from node modules to themes -->
   <target name="copynodemodules">
     <!-- autocomplete.js -->
-    <copy file="${srcdir}/node_modules/autocomplete.js/autocomplete.js" todir="${srcdir}/themes/bootstrap3/js/vendor" />
+    <copy file="${srcdir}/node_modules/autocomplete.js/autocomplete.js" todir="${srcdir}/themes/bootstrap3/js/vendor" overwrite="true" />
     <!-- jstree -->
-    <copy todir="${srcdir}/themes/bootstrap3/js/vendor/jsTree">
+    <copy todir="${srcdir}/themes/bootstrap3/js/vendor/jsTree" overwrite="true">
       <fileset dir="${srcdir}/node_modules/jstree/dist/" >
         <include name="**/**" />
         <exclude name="jstree.js" />
@@ -346,7 +346,7 @@
       </fileset>
     </copy>
     <!-- vanilla-cookieconsent -->
-    <copy file="${srcdir}/node_modules/vanilla-cookieconsent/dist/cookieconsent.umd.js" todir="${srcdir}/themes/bootstrap3/js/vendor" />
+    <copy file="${srcdir}/node_modules/vanilla-cookieconsent/dist/cookieconsent.umd.js" todir="${srcdir}/themes/bootstrap3/js/vendor" overwrite="true" />
   </target>
 
   <!-- Install and Activate VuFind -->

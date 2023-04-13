@@ -21,7 +21,7 @@
           <a href="<?=$this->escapeHtmlAttr($pLink)?>">
             <?=$this->transEsc('View in EDS')?>
           </a>
-        </span><br />
+        </span><br>
       <?php endif; ?>
       <?php $ftLink = $this->driver->getLinkedFullTextLink();
           if ($ftLink): ?>
@@ -29,7 +29,7 @@
           <a href="<?=$ftLink?>" class="fulltext">
             <?=$this->transEsc('Linked Full Text')?>
           </a>
-        </span><br />
+        </span><br>
       <?php endif; ?>
       <?php $pdfLink = $this->driver->getPdfLink();
           if ($pdfLink): ?>
@@ -37,7 +37,7 @@
           <a href="<?=$pdfLink?>" class="icon--eds pdf fulltext">
             <?=$this->transEsc('PDF Full Text')?>
           </a>
-        </span><br />
+        </span><br>
       <?php endif; ?>
       <?php $epubLink = $this->driver->getEpubLink();
           if ($epubLink): ?>
@@ -45,14 +45,14 @@
           <a href="<?=$epubLink?>" class="icon--eds epub fulltext">
             <?=$this->transEsc('ePub Full Text')?>
           </a>
-        </span><br />
+        </span><br>
       <?php endif; ?>
       <?php if ($this->driver->hasHTMLFullTextAvailable()): ?>
         <span>
           <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->driver))?>#html" class="icon--eds html fulltext">
             <?=$this->transEsc('HTML Full Text')?>
           </a>
-        </span><br />
+        </span><br>
       <?php endif; ?>
     </div>
   </div>
@@ -111,7 +111,7 @@
         ?>
         <div>
           <a href="<?=$this->escapeHtmlAttr($url)?>" target="_blank" title="<?=$this->escapeHtmlAttr($mot)?>" class="custom-link">
-            <?php if ($icon): ?><img src="<?=$this->escapeHtmlAttr($icon)?>" /> <?php endif; ?><?=$this->escapeHtml($name)?>
+            <?php if ($icon): ?><img src="<?=$this->escapeHtmlAttr($icon)?>"> <?php endif; ?><?=$this->escapeHtml($name)?>
           </a>
         </div>
       <?php endforeach; ?>

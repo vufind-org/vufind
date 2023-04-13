@@ -32,11 +32,11 @@
       <?php foreach ($this->savedData as $i => $current): ?>
         <fieldset class="list-edit-group">
           <h3><?=$this->transEsc('List') ?>: <?=$this->escapeHtml($current['listTitle'])?></h3>
-          <input type="hidden" name="lists[]" value="<?=$this->escapeHtmlAttr($current['listId']) ?>"/>
+          <input type="hidden" name="lists[]" value="<?=$this->escapeHtmlAttr($current['listId']) ?>">
           <?php if ($this->usertags()->getMode() !== 'disabled'): ?>
             <div class="form-group">
               <label class="control-label" for="edit_tags<?=$current['listId'] ?>"><?=$this->transEsc('Tags') ?>:</label>
-              <input type="text" name="tags<?=$current['listId'] ?>" id="edit_tags<?=$current['listId'] ?>" class="form-control" value="<?=$this->escapeHtmlAttr($current['tags'])?>"/>
+              <input type="text" name="tags<?=$current['listId'] ?>" id="edit_tags<?=$current['listId'] ?>" class="form-control" value="<?=$this->escapeHtmlAttr($current['tags'])?>">
               <span class="help-block"><?=$this->transEsc("add_tag_note") ?></span>
             </div>
           <?php endif; ?>
@@ -53,7 +53,7 @@
     </div>
   <?php endif; ?>
   <?php if (count($this->lists) > 0): ?>
-    <hr/>
+    <hr>
     <div class="form-group">
       <select name="addToList" class="form-control">
         <option value="-1">- <?=$this->transEsc('Add to another list')?> -</option>
@@ -65,7 +65,7 @@
   <?php endif; ?>
   <?php if (!empty($this->savedData) || count($this->lists) > 0): ?>
     <div class="form-group">
-      <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEscAttr('Save') ?>"/>
+      <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEscAttr('Save') ?>">
     </div>
   <?php endif; ?>
   </form>
