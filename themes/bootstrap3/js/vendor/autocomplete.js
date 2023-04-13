@@ -1,4 +1,4 @@
-/* https://github.com/vufind-org/autocomplete.js (v2.1.4) (2023-04-11) */
+/* https://github.com/vufind-org/autocomplete.js (v2.1.5) (2023-04-13) */
 function Autocomplete(_settings) {
   const _DEFAULTS = {
     delay: 250,
@@ -159,8 +159,14 @@ function Autocomplete(_settings) {
 
   let lastCB;
   function _search(handler, input) {
+    if (input.value.length < settings.minInputLength) {
+      _hide();
+      return;
+    }
+
     let thisCB = new Date().getTime();
     lastCB = thisCB;
+
     handler(input.value, function callback(items) {
       if (thisCB !== lastCB || items === false || items.length === 0) {
         _hide();
@@ -262,11 +268,6 @@ function Autocomplete(_settings) {
     input.addEventListener(
       "input",
       event => {
-        if (input.value.length < settings.minInputLength) {
-          _hide();
-          return;
-        }
-
         let loadingEl = _renderItem({ _header: settings.loadingString });
         list.innerHTML = loadingEl.outerHTML;
         _show(input);
