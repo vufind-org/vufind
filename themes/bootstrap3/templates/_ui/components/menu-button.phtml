@@ -62,10 +62,10 @@
   <?php endif; ?>
   <?=
     $this->makeTag(
-      $toggleTag,
-      $buttonText . $this->icon('dropdown-caret'),
-      $toggleAttrs,
-      ['escapeContent' => false]
+        $toggleTag,
+        $buttonText . $this->icon('dropdown-caret'),
+        $toggleAttrs,
+        ['escapeContent' => false]
     )
   ?>
 <?php $menuContents = ob_get_contents(); ?>
