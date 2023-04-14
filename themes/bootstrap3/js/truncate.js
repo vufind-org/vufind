@@ -192,7 +192,17 @@ VuFind.register('truncate', function Truncate() {
           entries.forEach((entry) => {
             if (entry.intersectionRatio > 0) {
               entry.target.removeAttribute("tabindex");
+              // restore previous tabindex
+              if (entry.target.dataset && entry.target.dataset.tabindex) {
+                entry.target.setAttribute("tabindex", entry.target.dataset.tabindex);
+                delete entry.target.dataset.tabindex;
+              }
             } else {
+              // save previous tabindex
+              if (entry.target.getAttribute("tabindex")) {
+                entry.target.dataset.tabindex = entry.target.getAttribute("tabindex");
+              }
+
               entry.target.setAttribute("tabindex", -1);
             }
           });
