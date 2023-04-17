@@ -220,7 +220,10 @@ VuFind.register('cart', function Cart() {
             $this.find('.cart-add').addClass('hidden');
             $this.find('.cart-remove').removeClass('hidden').trigger('focus');
           } else {
-            $this.popover({content: VuFind.translate('bookbagFull')});
+            $this.popover({
+              title: VuFind.translate('Information'),
+              content: VuFind.translate('bookbagFull')
+            });
             setTimeout(function recordCartFullHide() {
               $this.popover('hide');
             }, 5000);
@@ -242,6 +245,7 @@ VuFind.register('cart', function Cart() {
     // Search results
     _registerUpdate();
     $("#updateCart, #bottom_updateCart").popover({
+      title: VuFind.translate('Information'),
       content: '',
       html: true,
       trigger: 'manual',
