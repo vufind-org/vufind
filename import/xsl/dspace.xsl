@@ -65,15 +65,13 @@
                 </field>
 
                 <!-- LANGUAGE -->
-                <xsl:if test="dc:language">
-                    <xsl:for-each select="dc:language">
-                        <xsl:if test="string-length() > 0">
-                            <field name="language">
-                                <xsl:value-of select="php:function('VuFind::mapString', normalize-space(string(.)), 'language_map_iso639-1.properties')"/>
-                            </field>
-                        </xsl:if>
-                    </xsl:for-each>
-                </xsl:if>
+                <xsl:for-each select="dc:language">
+                    <xsl:if test="string-length() > 0">
+                        <field name="language">
+                            <xsl:value-of select="php:function('VuFind::mapString', normalize-space(string(.)), 'language_map_iso639-1.properties')"/>
+                        </field>
+                    </xsl:if>
+                </xsl:for-each>
 
                 <!-- FORMAT -->
                 <!-- populating the format field with dc.type instead, see TYPE below.
@@ -83,15 +81,13 @@
                 -->
 
                 <!-- SUBJECT -->
-                <xsl:if test="dc:subject">
-                    <xsl:for-each select="dc:subject">
-                        <xsl:if test="string-length() > 0">
-                            <field name="topic">
-                                <xsl:value-of select="normalize-space()"/>
-                            </field>
-                        </xsl:if>
-                    </xsl:for-each>
-                </xsl:if>
+                <xsl:for-each select="dc:subject">
+                    <xsl:if test="string-length() > 0">
+                        <field name="topic">
+                            <xsl:value-of select="normalize-space()"/>
+                        </field>
+                    </xsl:if>
+                </xsl:for-each>
 
                 <!-- DESCRIPTION -->
                 <xsl:if test="dc:description">
@@ -115,21 +111,19 @@
                 </xsl:if>
 
                 <!-- AUTHOR -->
-                <xsl:if test="dc:creator">
-                    <xsl:for-each select="dc:creator">
-                        <xsl:if test="normalize-space()">
-                            <field name="author">
+                <xsl:for-each select="dc:creator">
+                    <xsl:if test="normalize-space()">
+                        <field name="author">
+                            <xsl:value-of select="normalize-space()"/>
+                        </field>
+                        <!-- use first author value for sorting -->
+                        <xsl:if test="position()=1">
+                            <field name="author_sort">
                                 <xsl:value-of select="normalize-space()"/>
                             </field>
-                            <!-- use first author value for sorting -->
-                            <xsl:if test="position()=1">
-                                <field name="author_sort">
-                                    <xsl:value-of select="normalize-space()"/>
-                                </field>
-                            </xsl:if>
                         </xsl:if>
-                    </xsl:for-each>
-                </xsl:if>
+                    </xsl:if>
+                </xsl:for-each>
 
                 <!-- TITLE -->
                 <xsl:if test="dc:title[normalize-space()]">

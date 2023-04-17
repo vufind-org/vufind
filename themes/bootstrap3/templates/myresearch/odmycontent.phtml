@@ -60,7 +60,7 @@
             <a href="<?=$this->record($resource['record'])->getLink('author', $listAuthors[0])?>">
               <?=$this->escapeHtml($listAuthors[0])?>
             </a>
-            <?php if (count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?><br/>
+            <?php if (count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?><br>
           <?php endif; ?>
 
           <div><?=$this->transEsc('od_expires_on', ['%%due_date%%' => $resource['checkout']->expires])?></div>
@@ -133,7 +133,7 @@
                 if (!empty($listAuthors)): ?>
                   <?=$this->transEsc('by')?>:
                   <a href="<?=$this->record($resource['record'])->getLink('author', $listAuthors[0])?>"><?=$this->escapeHtml($listAuthors[0])?></a><?php if (count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?>
-                <?php endif; ?><br/>
+                <?php endif; ?><br>
                 <?php endif; ?>
 
                 <?=$this->transEsc('od_hold_placed_on', ['%%holdPlacedDate%%' => $resource['hold']->holdPlacedDate]);?>

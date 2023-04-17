@@ -8,9 +8,9 @@
       <?php if (!empty($field['number'])): ?>
         <?=$this->escapeHtml($field['number'])?>
       <?php endif; ?>
-      <br/>
+      <br>
     <?php endif; ?>
   <?php else: ?>
-    <a href="<?=$this->record($this->driver)->getLink('series', $field)?>"><?=$this->escapeHtml($field)?></a><br/>
+    <a href="<?=$this->record($this->driver)->getLink('series', $field)?>"><?=$this->escapeHtml($field)?></a><br>
   <?php endif; ?>
 <?php endforeach; ?>

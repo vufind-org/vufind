@@ -373,7 +373,7 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
         $htmlAttrs = $this->getView()->plugin('htmlAttributes')($attrs);
 
         if (empty($contents) && in_array($tagName, $this->voidElements)) {
-            return '<' . $tagName . $htmlAttrs . ' />';
+            return '<' . $tagName . $htmlAttrs . '>';
         }
 
         // Special option: escape content

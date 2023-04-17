@@ -17,8 +17,8 @@
   </div>
 <?php $thumbnail = ob_get_contents(); ?>
 <?php ob_end_clean(); ?>
-<input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
-<input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
+<input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId">
+<input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource">
 <div class="media<?=$this->driver->supportsAjaxStatus() ? ' ajaxItem' : ''?>">
   <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
     <?=$thumbnail ?>
@@ -46,7 +46,7 @@
           <div class="resultItemLine1">
             <p>
               <?=$this->transEsc('This result is not displayed to guests')?>
-              <br />
+              <br>
               <a class="login" href="<?=$this->url('myresearch-userlogin')?>">
                 <strong><?=$this->transEsc('Login for full access')?></strong>
               </a>
@@ -66,7 +66,7 @@
             ?>
             <span>
               <a href="<?=$this->escapeHtmlAttr($url)?>" target="_blank" title="<?=$this->escapeHtmlAttr($mot)?>" class="custom-link">
-                <?php if ($icon): ?><img src="<?=$this->escapeHtmlAttr($icon)?>" /> <?php endif; ?><?=$this->escapeHtml($name)?>
+                <?php if ($icon): ?><img src="<?=$this->escapeHtmlAttr($icon)?>"> <?php endif; ?><?=$this->escapeHtml($name)?>
               </a>
             </span>
           <?php endforeach; ?>
@@ -111,12 +111,12 @@
       <?=$this->record($this->driver)->renderTemplate('controls/qrcode.phtml', ['driver' => $this->driver, 'context' => 'results'])?>
 
       <?php if ($this->cart()->isActiveInSearch() && $this->params->getOptions()->supportsCart() && $this->cart()->isActive()): ?>
-        <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?><br/>
+        <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?><br>
       <?php endif; ?>
 
       <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
         <?php /* Add to favorites */ ?>
-        <?=$this->icon('user-list-add') ?> <a href="<?=$this->escapeHtmlAttr($recordLinker->getActionUrl($this->driver, 'Save'))?>" class="save-record" data-lightbox id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEscAttr('Add to favorites')?>"><?=$this->transEsc('Add to favorites')?></a><br/>
+        <?=$this->icon('user-list-add') ?> <a href="<?=$this->escapeHtmlAttr($recordLinker->getActionUrl($this->driver, 'Save'))?>" class="save-record" data-lightbox id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEscAttr('Add to favorites')?>"><?=$this->transEsc('Add to favorites')?></a><br>
 
         <?php /* Saved lists */ ?>
         <div class="savedLists alert alert-info hidden">
@@ -128,7 +128,7 @@
       <?php $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>
         <?php foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
           <div class="hierarchyTreeLink">
-            <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId" />
+            <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId">
             <?=$this->icon('tree-context') ?>
             <a class="hierarchyTreeLinkText" data-lightbox href="<?=$this->escapeHtmlAttr($recordLinker->getTabUrl($this->driver, 'HierarchyTree', ['hierarchy' => $hierarchyID]))?>#tabnav" title="<?=$this->transEscAttr('hierarchy_tree')?>">
               <?=$this->transEsc('hierarchy_view_context')?><?php if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><?php endif; ?>
