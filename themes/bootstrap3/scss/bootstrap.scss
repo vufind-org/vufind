@@ -1,12 +1,13 @@
-/* #LESS>
-@import "vendor/bootstrap/bootstrap";
-@import "vendor/font-awesome/font-awesome";
-<#LESS */
 /* #SCSS> */
 $fa-font-path: "../../bootstrap3/css/fonts";
 @import "vendor/bootstrap";
-@import "vendor/font-awesome/font-awesome";
 /* <#SCSS */
+/* #LESS>
+@import "vendor/bootstrap/bootstrap";
+@import "variables";
+
+<#LESS */
+@import "vendor/font-awesome/font-awesome";
 
 @import "components/accessibility";
 @import "components/variables";
@@ -494,6 +495,8 @@ div.holding-notes {
 }
 
 #cc-main {
+  z-index: $zindex-cookie-consent !important;
+
   a {
     &:hover {
       color: $link-hover-color;

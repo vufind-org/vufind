@@ -2,7 +2,7 @@
 <div class="authorbox">
   <p><?=$this->transEsc('summon_database_recommendations')?></p>
   <?php foreach ($summonDatabases as $current): ?>
-    <p><a href="<?=$this->escapeHtmlAttr($current['link'])?>"><?=$this->escapeHtml($current['title'])?></a><br/><?=$this->escapeHtml($current['description'])?></p>
+    <p><a href="<?=$this->escapeHtmlAttr($current['link'])?>"><?=$this->escapeHtml($current['title'])?></a><br><?=$this->escapeHtml($current['description'])?></p>
   <?php endforeach; ?>
 </div>
 <?php endif; ?>
