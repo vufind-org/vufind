@@ -78,6 +78,23 @@ abstract class AbstractBase implements \VuFind\I18n\HasSorterInterface
     protected $count = 0;
 
     /**
+     * Throw an exception if hierarchy parent and sequence data is out of sync?
+     *
+     * @var bool
+     */
+    protected $validateHierarchySequences;
+
+    /**
+     * Constructor
+     *
+     * @param validateHierarchySequences Throw an exception if hierarchy parent and sequence data is out of sync?
+     */
+    public function __construct($validateHierarchySequences) 
+    {
+        $this->validateHierarchySequences = $validateHierarchySequences;
+    }
+
+    /**
      * Set raw data.
      *
      * @param object $topNode  Full record for top node
@@ -126,10 +143,20 @@ abstract class AbstractBase implements \VuFind\I18n\HasSorterInterface
         if (
             isset($fields->hierarchy_parent_id)
             && isset($fields->hierarchy_sequence)
-            && count($fields->hierarchy_parent_id) === count($fields->hierarchy_sequence)
         ) {
-            foreach ($fields->hierarchy_parent_id as $key => $val) {
-                $retVal[$val] = $fields->hierarchy_sequence[$key];
+            $parentIDs = $fields->hierarchy_parent_id;
+            $sequences = $fields->hierarchy_sequence;
+
+            if (count($parentIDs) > count($sequences)) {
+                if ($this->validateHierarchySequences) {
+                    throw new \Exception('Fields hierarchy_parent_id and hierarchy_sequence have different lengths.');
+                } else {
+                    return [];
+                }
+            }           
+
+            foreach ($parentIDs as $key => $val) {
+                $retVal[$val] = $sequences[$key];
             }
         }
         return $retVal;
