@@ -11,7 +11,7 @@
 
   <?=$this->flashmessages()?>
 
-  <form class="form-tags-manage" action="<?= $this->url('admin/tags', ['action' => 'Manage']);?>" method="post" role="form">
+  <form class="form-tags-manage" action="<?= $this->url('admin/tags', ['action' => 'Manage']);?>" method="post">
     <div class="form-group">
       <label for="type" class="control-label"><?=$this->transEsc('delete_tags_by')?>:</label>
       <select id="type" name="type" class="form-control">
