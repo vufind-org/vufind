@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Support class to build reserves data from CSV file(s).
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki Wiki
  */
+
 namespace VuFind\Reserves;
 
 /**

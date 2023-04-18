@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Authority Controller
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
@@ -58,29 +60,17 @@ class AuthorityController extends AbstractSearch
      */
     public function homeAction()
     {
-        // If we came in with a record ID, forward to the record action:
+        // If we came in with a record ID, forward to the record action; this
+        // provides backward compatibility with multiple legacy routes.
         if ($id = $this->params()->fromRoute('id', false)) {
-            $this->getRequest()->getQuery()->set('id', $id);
-            return $this->forwardTo('Authority', 'Record');
+            if ($id === 'Record') {
+                $id = $this->params()->fromQuery('id', $id);
+            }
+            return $this->redirect()->toRoute('solrauthrecord', compact('id'));
         }
 
         // Default behavior:
         return parent::homeAction();
-    }
-
-    /**
-     * Record action -- display a record
-     *
-     * @return \Laminas\View\Model\ViewModel
-     */
-    public function recordAction()
-    {
-        $id = $this->params()->fromQuery('id');
-        $driver = $this->serviceLocator->get(\VuFind\Record\Loader::class)
-            ->load($id, 'SolrAuth');
-        $request = $this->getRequest();
-        $tabs = $this->getRecordTabManager()->getTabsForRecord($driver, $request);
-        return $this->createViewModel(['driver' => $driver, 'tabs' => $tabs]);
     }
 
     /**

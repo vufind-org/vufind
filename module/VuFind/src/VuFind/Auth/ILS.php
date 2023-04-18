@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ILS authentication module.
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:authentication_handlers Wiki
  */
+
 namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\Request;
@@ -151,7 +153,10 @@ class ILS extends AbstractBase
             return parent::getPasswordPolicy();
         }
         if (isset($policy['pattern']) && empty($policy['hint'])) {
-            $policy['hint'] = $this->getCannedPasswordPolicyHint($policy['pattern']);
+            $policy['hint'] = $this->getCannedPolicyHint(
+                'password',
+                $policy['pattern']
+            );
         }
         return $policy;
     }
@@ -185,7 +190,7 @@ class ILS extends AbstractBase
             [
                 'patron' => $patron,
                 'oldPassword' => $params['oldpwd'],
-                'newPassword' => $params['password']
+                'newPassword' => $params['password'],
             ]
         );
         if (!$result['success']) {

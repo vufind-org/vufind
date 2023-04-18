@@ -63,18 +63,14 @@ public class IllustrationTools
             }
 
             // Now check if any 006 fields apply:
-            List<VariableField> fields = record.getVariableFields("006");
-            Iterator<VariableField> fieldsIter = fields.iterator();
-            if (fields != null) {
-                while(fieldsIter.hasNext()) {
-                    fixedField = (ControlField) fieldsIter.next();
-                    String fixedFieldText = fixedField.getData().toLowerCase();
-                    for (int i = 1; i <= 4; i++) {
-                         if (i < fixedFieldText.length()) {
-                            currentCode = fixedFieldText.substring(i, i + 1);
-                            if (illusCodes.contains(currentCode)) {
-                                return "Illustrated";
-                            }
+            for (VariableField variableField : record.getVariableFields("006")) {
+                fixedField = (ControlField) variableField;
+                String fixedFieldText = fixedField.getData().toLowerCase();
+                for (int i = 1; i <= 4; i++) {
+                        if (i < fixedFieldText.length()) {
+                        currentCode = fixedFieldText.substring(i, i + 1);
+                        if (illusCodes.contains(currentCode)) {
+                            return "Illustrated";
                         }
                     }
                 }
@@ -82,18 +78,13 @@ public class IllustrationTools
         }
 
         // Now check for interesting strings in 300 subfield b:
-        List<VariableField> fields = record.getVariableFields("300");
-        Iterator<VariableField> fieldsIter = fields.iterator();
-        if (fields != null) {
-            DataField physical;
-            while(fieldsIter.hasNext()) {
-                physical = (DataField) fieldsIter.next();
-                List<Subfield> subfields = physical.getSubfields('b');
-                for (Subfield sf: subfields) {
-                    String desc = sf.getData().toLowerCase();
-                    if (desc.contains("ill.") || desc.contains("illus.")) {
-                        return "Illustrated";
-                    }
+        for (VariableField variableField : record.getVariableFields("300")) {
+            DataField physical = (DataField) variableField;
+            List<Subfield> subfields = physical.getSubfields('b');
+            for (Subfield sf: subfields) {
+                String desc = sf.getData().toLowerCase();
+                if (desc.contains("ill.") || desc.contains("illus.") || desc.contains("illustrations")) {
+                    return "Illustrated";
                 }
             }
         }

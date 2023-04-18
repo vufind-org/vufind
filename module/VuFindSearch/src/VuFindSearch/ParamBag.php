@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch;
 
 /**
@@ -240,7 +241,7 @@ class ParamBag implements \Countable
                             return sprintf(
                                 '%s=%s',
                                 urlencode($name),
-                                urlencode($value)
+                                urlencode($value ?? '')
                             );
                         },
                         $values

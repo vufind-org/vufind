@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Summon support functions.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
@@ -50,18 +52,18 @@ class Summon extends AbstractHelper
     public function getEndnoteFormat($format)
     {
         switch ($format) {
-        case 'Journal Article':
-            return 'Journal Article';
-        case 'Book':
-            return 'Book';
-        case 'Book Chapter':
-            return 'Book Section';
-        case 'Conference Proceeding':
-            return 'Conference Paper';
-        case 'Dissertation':
-            return 'Thesis';
-        default:
-            return 'Generic';
+            case 'Journal Article':
+                return 'Journal Article';
+            case 'Book':
+                return 'Book';
+            case 'Book Chapter':
+                return 'Book Section';
+            case 'Conference Proceeding':
+                return 'Conference Paper';
+            case 'Dissertation':
+                return 'Thesis';
+            default:
+                return 'Generic';
         }
     }
 
@@ -75,40 +77,40 @@ class Summon extends AbstractHelper
     public function getRefWorksFormat($format)
     {
         switch ($format) {
-        case 'Book Chapter':
-            return 'Book, Section';
-        case 'Book':
-            return 'Book, Whole';
-        case 'eBook':
-            return 'Book, Whole';
-        case 'Computer File':
-            return 'Computer Program';
-        case 'Conference Proceeding':
-            return 'Conference Proceedings';
-        case 'Dissertation':
-            return 'Dissertation/Thesis';
-        case 'Journal Article':
-            return 'Journal Article';
-        case 'Journal':
-            return 'Journal, Electronic';
-        case 'Trade Publication Article':
-            return 'Magazine Article';
-        case 'Map':
-            return 'Map';
-        case 'Music Score':
-            return 'Music Score';
-        case 'Newspaper Article':
-            return 'Newspaper Article';
-        case 'Report':
-            return 'Report';
-        case 'Audio Recording':
-            return 'Sound Recording';
-        case 'Video Recording':
-            return 'Video/ DVD';
-        case 'Web Resource':
-            return 'Web Page';
-        default:
-            return 'Generic';
+            case 'Book Chapter':
+                return 'Book, Section';
+            case 'Book':
+                return 'Book, Whole';
+            case 'eBook':
+                return 'Book, Whole';
+            case 'Computer File':
+                return 'Computer Program';
+            case 'Conference Proceeding':
+                return 'Conference Proceedings';
+            case 'Dissertation':
+                return 'Dissertation/Thesis';
+            case 'Journal Article':
+                return 'Journal Article';
+            case 'Journal':
+                return 'Journal, Electronic';
+            case 'Trade Publication Article':
+                return 'Magazine Article';
+            case 'Map':
+                return 'Map';
+            case 'Music Score':
+                return 'Music Score';
+            case 'Newspaper Article':
+                return 'Newspaper Article';
+            case 'Report':
+                return 'Report';
+            case 'Audio Recording':
+                return 'Sound Recording';
+            case 'Video Recording':
+                return 'Video/ DVD';
+            case 'Web Resource':
+                return 'Web Page';
+            default:
+                return 'Generic';
         }
     }
 }

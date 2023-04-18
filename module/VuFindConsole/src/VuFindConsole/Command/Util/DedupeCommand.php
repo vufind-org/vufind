@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Console command: deduplicate lines in a sorted file.
  *
@@ -28,13 +29,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Util;
 
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
-use VuFindConsole\Command\RelativeFileAwareCommand;
 
 /**
  * Console command: deduplicate lines in a sorted file.
@@ -45,7 +47,7 @@ use VuFindConsole\Command\RelativeFileAwareCommand;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class DedupeCommand extends RelativeFileAwareCommand
+class DedupeCommand extends Command
 {
     /**
      * The name of the command (the part after "public/index.php")

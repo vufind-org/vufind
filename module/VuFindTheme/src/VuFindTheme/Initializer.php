@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Theme Initializer
  *
@@ -25,13 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTheme;
 
-use Interop\Container\ContainerInterface;
 use Laminas\Config\Config;
 use Laminas\Mvc\MvcEvent;
 use Laminas\Stdlib\RequestInterface as Request;
 use Laminas\View\Resolver\TemplatePathStack;
+use Psr\Container\ContainerInterface;
 
 /**
  * VuFind Theme Initializer
@@ -61,7 +63,7 @@ class Initializer
     /**
      * Top-level service container
      *
-     * @var \Interop\Container\ContainerInterface
+     * @var \Psr\Container\ContainerInterface
      */
     protected $serviceManager;
 
@@ -232,14 +234,16 @@ class Initializer
         }
 
         // Do we have a non-standard selection?
-        if ($selectedUI != 'standard'
+        if (
+            $selectedUI != 'standard'
             && isset($this->config->alternate_themes)
         ) {
             // Check the alternate theme settings for a match:
             $parts = explode(',', $this->config->alternate_themes);
             foreach ($parts as $part) {
                 $subparts = explode(':', $part);
-                if ((trim($subparts[0]) == trim($selectedUI))
+                if (
+                    (trim($subparts[0]) == trim($selectedUI))
                     && isset($subparts[1]) && !empty($subparts[1])
                 ) {
                     return $subparts[1];
@@ -288,7 +292,7 @@ class Initializer
                 if (!empty($name)) {
                     $options[] = [
                         'name' => $name, 'desc' => $desc,
-                        'selected' => ($this->cookieManager->get('ui') == $name)
+                        'selected' => ($this->cookieManager->get('ui') == $name),
                     ];
                 }
             }
@@ -362,9 +366,6 @@ class Initializer
             $templatePathStack[] = $this->tools->getBaseDir() . "/$key/templates";
 
             // Add CSS and JS dependencies:
-            if ($lessActive && isset($currentThemeInfo['less'])) {
-                $resources->addLessCss($currentThemeInfo['less']);
-            }
             if (isset($currentThemeInfo['css'])) {
                 $resources->addCss($currentThemeInfo['css']);
             }

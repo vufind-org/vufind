@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search;
 
 /**
@@ -59,6 +60,7 @@ class BackendRegistry extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
+        'Blender' => Factory\BlenderBackendFactory::class,
         'BrowZine' => Factory\BrowZineBackendFactory::class,
         'EDS' => Factory\EdsBackendFactory::class,
         'EIT' => Factory\EITBackendFactory::class,

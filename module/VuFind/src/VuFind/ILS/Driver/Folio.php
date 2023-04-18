@@ -1,10 +1,11 @@
 <?php
+
 /**
  * FOLIO REST API driver
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2018-2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use DateTime;
@@ -44,7 +46,8 @@ use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class Folio extends AbstractAPI implements
-    HttpServiceAwareInterface, TranslatorAwareInterface
+    HttpServiceAwareInterface,
+    TranslatorAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
@@ -91,6 +94,23 @@ class Folio extends AbstractAPI implements
      * @var \VuFind\Date\Converter
      */
     protected $dateConverter;
+
+    /**
+     * Default availability messages, in case they are not defined in Folio.ini
+     *
+     * @var string[]
+     */
+    protected $defaultAvailabilityStatuses = ['Open - Awaiting pickup'];
+
+    /**
+     * Default in_transit messages, in case they are not defined in Folio.ini
+     *
+     * @var string[]
+     */
+    protected $defaultInTransitStatuses = [
+        'Open - In transit',
+        'Open - Awaiting delivery',
+    ];
 
     /**
      * Constructor
@@ -147,7 +167,8 @@ class Folio extends AbstractAPI implements
     protected function debugRequest($method, $path, $params, $req_headers)
     {
         // Only log non-GET requests, unless configured otherwise
-        if ($method == 'GET'
+        if (
+            $method == 'GET'
             && !($this->config['API']['debug_get_requests'] ?? false)
         ) {
             return;
@@ -227,9 +248,6 @@ class Folio extends AbstractAPI implements
             'password' => $this->config['API']['password'],
         ];
         $response = $this->makeRequest('POST', '/authn/login', json_encode($auth));
-        if ($response->getStatusCode() >= 400) {
-            throw new ILSException($response->getBody());
-        }
         $this->token = $response->getHeaders()->get('X-Okapi-Token')
             ->getFieldValue();
         $this->sessionCache->folio_token = $this->token;
@@ -248,7 +266,7 @@ class Folio extends AbstractAPI implements
      */
     protected function checkTenantToken()
     {
-        $response = $this->makeRequest('GET', '/users');
+        $response = $this->makeRequest('GET', '/users', [], [], [401, 403]);
         if ($response->getStatusCode() >= 400) {
             $this->token = null;
             $this->renewTenantToken();
@@ -349,10 +367,10 @@ class Folio extends AbstractAPI implements
             : $this->getInstanceById($instanceOrInstanceId, $holdingId, $itemId);
 
         switch ($idType) {
-        case 'hrid':
-            return $instance->hrid;
-        case 'instance':
-            return $instance->id;
+            case 'hrid':
+                return $instance->hrid;
+            case 'instance':
+                return $instance->id;
         }
 
         throw new \Exception('Unsupported ID type: ' . $idType);
@@ -375,7 +393,7 @@ class Folio extends AbstractAPI implements
      *
      * @param string $bibId Bib-level id
      *
-     * @return array
+     * @return object
      */
     protected function getInstanceByBibId($bibId)
     {
@@ -386,7 +404,7 @@ class Folio extends AbstractAPI implements
         $idField = $idType === 'instance' ? 'id' : $idType;
 
         $query = [
-            'query' => '(' . $idField . '=="' . $this->escapeCql($bibId) . '")'
+            'query' => '(' . $idField . '=="' . $this->escapeCql($bibId) . '")',
         ];
         $response = $this->makeRequest('GET', '/instance-storage/instances', $query);
         $instances = json_decode($response->getBody());
@@ -434,7 +452,7 @@ class Folio extends AbstractAPI implements
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function, $params = null)
+    public function getConfig($function, $params = [])
     {
         return $this->config[$function] ?? false;
     }
@@ -449,10 +467,29 @@ class Folio extends AbstractAPI implements
      */
     protected function isHoldable($locationName)
     {
-        return !in_array(
-            $locationName,
-            (array)($this->config['Holds']['excludeHoldLocations'] ?? [])
-        );
+        $mode = $this->config['Holds']['excludeHoldLocationsCompareMode'] ?? 'exact';
+        $excludeLocs = (array)($this->config['Holds']['excludeHoldLocations'] ?? []);
+
+        // Exclude checking by regex match
+        if (trim(strtolower($mode)) == "regex") {
+            foreach ($excludeLocs as $pattern) {
+                $match = @preg_match($pattern, $locationName);
+                // Invalid regex, skip this pattern
+                if ($match === false) {
+                    $this->logWarning(
+                        'Invalid regex found in excludeHoldLocations: ' .
+                        $pattern
+                    );
+                    continue;
+                }
+                if ($match === 1) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        // Otherwise exclude checking by exact match
+        return !in_array($locationName, $excludeLocs);
     }
 
     /**
@@ -469,10 +506,12 @@ class Folio extends AbstractAPI implements
         $locationMap = $this->getCachedData($cacheKey);
         if (null === $locationMap) {
             $locationMap = [];
-            foreach ($this->getPagedResults(
-                'locations',
-                '/locations'
-            ) as $location) {
+            foreach (
+                $this->getPagedResults(
+                    'locations',
+                    '/locations'
+                ) as $location
+            ) {
                 $name = $location->discoveryDisplayName ?? $location->name;
                 $code = $location->code;
                 $locationMap[$location->id] = compact('name', 'code');
@@ -532,6 +571,163 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Support method: format a note for display
+     *
+     * @param object $note Note object decoded from FOLIO JSON.
+     *
+     * @return string
+     */
+    protected function formatNote($note): string
+    {
+        return !($note->staffOnly ?? false) && !empty($note->note)
+            ? $note->note : '';
+    }
+
+    /**
+     * Support method for getHolding(): extract details from the holding record that
+     * will be needed by formatHoldingItem() below.
+     *
+     * @param object $holding FOLIO holding record (decoded from JSON)
+     *
+     * @return array
+     */
+    protected function getHoldingDetailsForItem($holding): array
+    {
+        $textFormatter = function ($supplement) {
+            $format = '%s %s';
+            $supStat = $supplement->statement ?? '';
+            $supNote = $supplement->note ?? '';
+            $statement = trim(sprintf($format, $supStat, $supNote));
+            return $statement;
+        };
+        $id = $holding->id;
+        $holdingNotes = array_filter(
+            array_map([$this, 'formatNote'], $holding->notes ?? [])
+        );
+        $hasHoldingNotes = !empty(implode($holdingNotes));
+        $holdingsStatements = array_map(
+            $textFormatter,
+            $holding->holdingsStatements ?? []
+        );
+        $holdingsSupplements = array_map(
+            $textFormatter,
+            $holding->holdingsStatementsForSupplements ?? []
+        );
+        $holdingsIndexes = array_map(
+            $textFormatter,
+            $holding->holdingsStatementsForIndexes ?? []
+        );
+        $holdingCallNumber = $holding->callNumber ?? '';
+        $holdingCallNumberPrefix = $holding->callNumberPrefix ?? '';
+        return compact(
+            'id',
+            'holdingNotes',
+            'hasHoldingNotes',
+            'holdingsStatements',
+            'holdingsSupplements',
+            'holdingsIndexes',
+            'holdingCallNumber',
+            'holdingCallNumberPrefix'
+        );
+    }
+
+    /**
+     * Support method for getHolding() -- given a few key details, format an item
+     * for inclusion in the return value.
+     *
+     * @param string $bibId          Current bibliographic ID
+     * @param array  $holdingDetails Holding details produced by
+     * getHoldingDetailsForItem()
+     * @param object $item           FOLIO item record (decoded from JSON)
+     * @param int    $number         The current item number (position within
+     * current holdings record)
+     * @param string $dueDateValue   The due date to display to the user
+     *
+     * @return array
+     */
+    protected function formatHoldingItem(
+        string $bibId,
+        array $holdingDetails,
+        $item,
+        $number,
+        string $dueDateValue
+    ): array {
+        $itemNotes = array_filter(
+            array_map([$this, 'formatNote'], $item->notes ?? [])
+        );
+        $locationId = $item->effectiveLocationId;
+        $locationData = $this->getLocationData($locationId);
+        $locationName = $locationData['name'];
+        $locationCode = $locationData['code'];
+        // concatenate enumeration fields if present
+        $enum = implode(
+            ' ',
+            array_filter(
+                [
+                    $item->volume ?? null,
+                    $item->enumeration ?? null,
+                    $item->chronology ?? null,
+                ]
+            )
+        );
+        $callNumberData = $this->chooseCallNumber(
+            $holdingDetails['holdingCallNumberPrefix'],
+            $holdingDetails['holdingCallNumber'],
+            $item->effectiveCallNumberComponents->prefix
+                ?? $item->itemLevelCallNumberPrefix ?? '',
+            $item->effectiveCallNumberComponents->callNumber
+                ?? $item->itemLevelCallNumber ?? ''
+        );
+
+        return $callNumberData + [
+            'id' => $bibId,
+            'item_id' => $item->id,
+            'holding_id' => $holdingDetails['id'],
+            'number' => $number,
+            'enumchron' => $enum,
+            'barcode' => $item->barcode ?? '',
+            'status' => $item->status->name,
+            'duedate' => $dueDateValue,
+            'availability' => $item->status->name == 'Available',
+            'is_holdable' => $this->isHoldable($locationName),
+            'holdings_notes' => $holdingDetails['hasHoldingNotes']
+                ? $holdingDetails['holdingNotes'] : null,
+            'item_notes' => !empty(implode($itemNotes)) ? $itemNotes : null,
+            'issues' => $holdingDetails['holdingsStatements'],
+            'supplements' => $holdingDetails['holdingsSupplements'],
+            'indexes' => $holdingDetails['holdingsIndexes'],
+            'location' => $locationName,
+            'location_code' => $locationCode,
+            'reserve' => 'TODO',
+            'addLink' => true,
+        ];
+    }
+
+    /**
+     * Given a holdings array and a sort field, sort the array.
+     *
+     * @param array  $holdings  Holdings to sort
+     * @param string $sortField Sort field
+     *
+     * @return array
+     */
+    protected function sortHoldings(array $holdings, string $sortField): array
+    {
+        usort(
+            $holdings,
+            function ($a, $b) use ($sortField) {
+                return strnatcasecmp($a[$sortField], $b[$sortField]);
+            }
+        );
+        // Renumber the re-sorted batch:
+        $nbCount = count($holdings);
+        for ($nbIndex = 0; $nbIndex < $nbCount; $nbIndex++) {
+            $holdings[$nbIndex]['number'] = $nbIndex + 1;
+        }
+        return $holdings;
+    }
+
+    /**
      * This method queries the ILS for holding information.
      *
      * @param string $bibId   Bib-level id
@@ -544,90 +740,119 @@ class Folio extends AbstractAPI implements
      */
     public function getHolding($bibId, array $patron = null, array $options = [])
     {
+        $showDueDate = $this->config['Availability']['showDueDate'] ?? true;
+        $showTime = $this->config['Availability']['showTime'] ?? false;
+        $maxNumDueDateItems = $this->config['Availability']['maxNumberItems'] ?? 5;
+        $dueDateItemCount = 0;
+
         $instance = $this->getInstanceByBibId($bibId);
         $query = [
             'query' => '(instanceId=="' . $instance->id
-                . '" NOT discoverySuppress==true)'
+                . '" NOT discoverySuppress==true)',
         ];
         $items = [];
-        foreach ($this->getPagedResults(
-            'holdingsRecords',
-            '/holdings-storage/holdings',
-            $query
-        ) as $holding) {
-            $query = [
-                'query' => '(holdingsRecordId=="' . $holding->id
-                    . '" NOT discoverySuppress==true)'
-            ];
-            $notesFormatter = function ($note) {
-                return !($note->staffOnly ?? false)
-                    && !empty($note->note) ? $note->note : '';
-            };
-            $textFormatter = function ($supplement) {
-                $format = '%s %s';
-                $supStat = $supplement->statement ?? '';
-                $supNote = $supplement->note ?? '';
-                $statement = trim(sprintf($format, $supStat, $supNote));
-                return $statement ?? '';
-            };
-            $holdingNotes = array_filter(
-                array_map($notesFormatter, $holding->notes ?? [])
-            );
-            $hasHoldingNotes = !empty(implode($holdingNotes));
-            $holdingsStatements = array_map(
-                $textFormatter,
-                $holding->holdingsStatements ?? []
-            );
-            $holdingsSupplements = array_map(
-                $textFormatter,
-                $holding->holdingsStatementsForSupplements ?? []
-            );
-            $holdingsIndexes = array_map(
-                $textFormatter,
-                $holding->holdingsStatementsForIndexes ?? []
-            );
-            $holdingCallNumber = $holding->callNumber ?? '';
-            $holdingCallNumberPrefix = $holding->callNumberPrefix ?? '';
-            foreach ($this->getPagedResults(
-                'items',
-                '/item-storage/items',
+        $folioItemSort = $this->config['Holdings']['folio_sort'] ?? '';
+        $vufindItemSort = $this->config['Holdings']['vufind_sort'] ?? '';
+        foreach (
+            $this->getPagedResults(
+                'holdingsRecords',
+                '/holdings-storage/holdings',
                 $query
-            ) as $item) {
-                $itemNotes = array_filter(
-                    array_map($notesFormatter, $item->notes ?? [])
-                );
-                $locationId = $item->effectiveLocationId;
-                $locationData = $this->getLocationData($locationId);
-                $locationName = $locationData['name'];
-                $locationCode = $locationData['code'];
-                $callNumberData = $this->chooseCallNumber(
-                    $holdingCallNumberPrefix,
-                    $holdingCallNumber,
-                    $item->itemLevelCallNumberPrefix ?? '',
-                    $item->itemLevelCallNumber ?? ''
-                );
-                $items[] = $callNumberData + [
-                    'id' => $bibId,
-                    'item_id' => $item->id,
-                    'holding_id' => $holding->id,
-                    'number' => count($items) + 1,
-                    'barcode' => $item->barcode ?? '',
-                    'status' => $item->status->name,
-                    'availability' => $item->status->name == 'Available',
-                    'is_holdable' => $this->isHoldable($locationName),
-                    'holdings_notes'=> $hasHoldingNotes ? $holdingNotes : null,
-                    'item_notes' => !empty(implode($itemNotes)) ? $itemNotes : null,
-                    'issues' => $holdingsStatements,
-                    'supplements' => $holdingsSupplements,
-                    'indexes' => $holdingsIndexes,
-                    'location' => $locationName,
-                    'location_code' => $locationCode,
-                    'reserve' => 'TODO',
-                    'addLink' => true
-                ];
+            ) as $holding
+        ) {
+            $rawQuery = '(holdingsRecordId=="' . $holding->id
+                . '" NOT discoverySuppress==true)';
+            if (!empty($folioItemSort)) {
+                $rawQuery .= ' sortby ' . $folioItemSort;
             }
+            $query = ['query' => $rawQuery];
+            $holdingDetails = $this->getHoldingDetailsForItem($holding);
+            $nextBatch = [];
+            $sortNeeded = false;
+            $number = 0;
+            foreach (
+                $this->getPagedResults(
+                    'items',
+                    '/item-storage/items',
+                    $query
+                ) as $item
+            ) {
+                $number++;
+                $dueDateValue = '';
+                if (
+                    $item->status->name == 'Checked out'
+                    && $showDueDate
+                    && $dueDateItemCount < $maxNumDueDateItems
+                ) {
+                    $dueDateValue = $this->getDueDate($item->id, $showTime);
+                    $dueDateItemCount++;
+                }
+                $nextItem = $this->formatHoldingItem(
+                    $bibId,
+                    $holdingDetails,
+                    $item,
+                    $number,
+                    $dueDateValue
+                );
+                if (!empty($vufindItemSort) && !empty($nextItem[$vufindItemSort])) {
+                    $sortNeeded = true;
+                }
+                $nextBatch[] = $nextItem;
+            }
+            $items = array_merge(
+                $items,
+                $sortNeeded
+                    ? $this->sortHoldings($nextBatch, $vufindItemSort) : $nextBatch
+            );
         }
         return $items;
+    }
+
+    /**
+     * Convert a FOLIO date string to a DateTime object.
+     *
+     * @param string $str FOLIO date string
+     *
+     * @return DateTime
+     */
+    protected function getDateTimeFromString(string $str): DateTime
+    {
+        $dateTime = new DateTime($str, new DateTimeZone('UTC'));
+        $localTimezone = (new DateTime())->getTimezone();
+        $dateTime->setTimezone($localTimezone);
+        return $dateTime;
+    }
+
+    /**
+     * Support method for getHolding(): obtaining the Due Date from OKAPI
+     * by calling /circulation/loans with the item->id, adjusting the
+     * timezone and formatting in universal time with or without due time
+     *
+     * @param string $itemId   ID for the item to query
+     * @param bool   $showTime Determines if date or date & time is returned
+     *
+     * @return string
+     */
+    protected function getDueDate($itemId, $showTime)
+    {
+        $query = 'itemId==' . $itemId;
+        foreach (
+            $this->getPagedResults(
+                'loans',
+                '/circulation/loans',
+                compact('query')
+            ) as $loan
+        ) {
+            // many loans are returned for an item, the one we want
+            // is the one without a returnDate
+            if (!isset($loan->returnDate) && isset($loan->dueDate)) {
+                $dueDate = $this->getDateTimeFromString($loan->dueDate);
+                $method = $showTime
+                    ? 'convertToDisplayDateAndTime' : 'convertToDisplayDate';
+                return $this->dateConverter->$method('U', $dueDate->format('U'));
+            }
+        }
+        return '';
     }
 
     /**
@@ -650,9 +875,6 @@ class Folio extends AbstractAPI implements
             '/authn/login',
             json_encode($credentials)
         );
-        if ($response->getStatusCode() >= 400) {
-            throw new ILSException($response->getBody());
-        }
         $debugMsg = 'User logged in. User: ' . $username . '.';
         // We've authenticated the user with Okapi, but we only have their
         // username; set up a query to retrieve full info below.
@@ -711,7 +933,7 @@ class Folio extends AbstractAPI implements
     {
         $response = $this->makeRequest('GET', '/users', compact('query'));
         $json = json_decode($response->getBody());
-        return count($json->users) === 1 ? $json->users[0] : null;
+        return count($json->users ?? []) === 1 ? $json->users[0] : null;
     }
 
     /**
@@ -739,7 +961,7 @@ class Folio extends AbstractAPI implements
             $json = json_decode($response->getBody());
             if (!$response->isSuccess() || !$json) {
                 $msg = $json->errors[0]->message ?? json_last_error_msg();
-                throw new ILSException($msg);
+                throw new ILSException("Error: '$msg' fetching '$responseKey'");
             }
             $total = $json->totalRecords ?? 0;
             $previousCount = $count;
@@ -818,6 +1040,21 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Given a user UUID, return the user's profile object (null if not found).
+     *
+     * @param string $id User UUID
+     *
+     * @return ?object
+     */
+    protected function getUserById(string $id): ?object
+    {
+        $query = ['query' => 'id == "' . $id . '"'];
+        $response = $this->makeRequest('GET', '/users', $query);
+        $users = json_decode($response->getBody());
+        return $users->users[0] ?? null;
+    }
+
+    /**
      * This method queries the ILS for a patron's current profile information
      *
      * @param array $patron Patron login information from $this->patronLogin
@@ -826,10 +1063,7 @@ class Folio extends AbstractAPI implements
      */
     public function getMyProfile($patron)
     {
-        $query = ['query' => 'id == "' . $patron['id'] . '"'];
-        $response = $this->makeRequest('GET', '/users', $query);
-        $users = json_decode($response->getBody());
-        $profile = $users->users[0];
+        $profile = $this->getUserById($patron['id']);
         $expiration = isset($profile->expirationDate)
             ? $this->dateConverter->convertToDisplayDate(
                 "Y-m-d H:i",
@@ -897,16 +1131,15 @@ class Folio extends AbstractAPI implements
     {
         $query = ['query' => 'userId==' . $patron['id'] . ' and status.name==Open'];
         $transactions = [];
-        foreach ($this->getPagedResults(
-            'loans',
-            '/circulation/loans',
-            $query
-        ) as $trans) {
-            $date = new DateTime($trans->dueDate, new DateTimeZone('UTC'));
-            $localTimezone = (new DateTime)->getTimezone();
-            $date->setTimezone($localTimezone);
-
+        foreach (
+            $this->getPagedResults(
+                'loans',
+                '/circulation/loans',
+                $query
+            ) as $trans
+        ) {
             $dueStatus = false;
+            $date = $this->getDateTimeFromString($trans->dueDate);
             $dueDateTimestamp = $date->getTimestamp();
 
             $now = time();
@@ -962,16 +1195,18 @@ class Folio extends AbstractAPI implements
     public function renewMyItems($renewDetails)
     {
         $renewalResults = ['details' => []];
-        foreach ($renewDetails['details'] as $loanId) {
+        foreach ($renewDetails['details'] ?? [] as $loanId) {
             $requestbody = [
                 'itemId' => $loanId,
-                'userId' => $renewDetails['patron']['id']
+                'userId' => $renewDetails['patron']['id'],
             ];
             try {
                 $response = $this->makeRequest(
                     'POST',
                     '/circulation/renew-by-id',
-                    json_encode($requestbody)
+                    json_encode($requestbody),
+                    [],
+                    true
                 );
                 if ($response->isSuccess()) {
                     $json = json_decode($response->getBody());
@@ -986,14 +1221,14 @@ class Folio extends AbstractAPI implements
                             $json->dueDate
                         ),
                         'item_id' => $json->itemId,
-                        'sysMessage' => $json->action
+                        'sysMessage' => $json->action,
                     ];
                 } else {
                     $json = json_decode($response->getBody());
                     $sysMessage = $json->errors[0]->message;
                     $renewal = [
                         'success' => false,
-                        'sysMessage' => $sysMessage
+                        'sysMessage' => $sysMessage,
                     ];
                 }
             } catch (Exception $e) {
@@ -1034,14 +1269,16 @@ class Folio extends AbstractAPI implements
     {
         $query = ['query' => 'pickupLocation=true'];
         $locations = [];
-        foreach ($this->getPagedResults(
-            'servicepoints',
-            '/service-points',
-            $query
-        ) as $servicepoint) {
+        foreach (
+            $this->getPagedResults(
+                'servicepoints',
+                '/service-points',
+                $query
+            ) as $servicepoint
+        ) {
             $locations[] = [
                 'locationID' => $servicepoint->id,
-                'locationDisplay' => $servicepoint->discoveryDisplayName
+                'locationDisplay' => $servicepoint->discoveryDisplayName,
             ];
         }
         return $locations;
@@ -1089,31 +1326,80 @@ class Folio extends AbstractAPI implements
      */
     public function getMyHolds($patron)
     {
-        $query = [
-            'query' => '(requesterId == "' . $patron['id'] . '"  ' .
-            'and status == Open*)'
-        ];
+        $userQuery = '(requesterId == "' . $patron['id'] . '" '
+            . 'or proxyUserId == "' . $patron['id'] . '")';
+        $query = ['query' => '(' . $userQuery . ' and status == Open*)'];
         $holds = [];
-        foreach ($this->getPagedResults(
-            'requests',
-            '/request-storage/requests',
-            $query
-        ) as $hold) {
-            $requestDate = date_create($hold->requestDate);
+        foreach (
+            $this->getPagedResults(
+                'requests',
+                '/request-storage/requests',
+                $query
+            ) as $hold
+        ) {
+            $requestDate = $this->dateConverter->convertToDisplayDate(
+                "Y-m-d H:i",
+                $hold->requestDate
+            );
             // Set expire date if it was included in the response
             $expireDate = isset($hold->requestExpirationDate)
-                ? date_create($hold->requestExpirationDate) : null;
-            $holds[] = [
+                ? $this->dateConverter->convertToDisplayDate(
+                    "Y-m-d H:i",
+                    $hold->requestExpirationDate
+                )
+                : null;
+            // Set lastPickup Date if provided, format to j M Y
+            $lastPickup = isset($hold->holdShelfExpirationDate)
+                ? $this->dateConverter->convertToDisplayDate(
+                    "Y-m-d H:i",
+                    $hold->holdShelfExpirationDate
+                )
+                : null;
+            $currentHold = [
                 'type' => $hold->requestType,
-                'create' => date_format($requestDate, "j M Y"),
-                'expire' => isset($expireDate)
-                    ? date_format($expireDate, "j M Y") : "",
-                'id' => $this->getBibId(null, null, $hold->itemId),
+                'create' => $requestDate,
+                'expire' => $expireDate ?? "",
+                'id' => $this->getBibId(
+                    $hold->instanceId,
+                    $hold->holdingsRecordId,
+                    $hold->itemId
+                ),
                 'item_id' => $hold->itemId,
                 'reqnum' => $hold->id,
                 // Title moved from item to instance in Lotus release:
                 'title' => $hold->instance->title ?? $hold->item->title ?? '',
+                'available' => in_array(
+                    $hold->status,
+                    $this->config['Holds']['available']
+                    ?? $this->defaultAvailabilityStatuses
+                ),
+                'in_transit' => in_array(
+                    $hold->status,
+                    $this->config['Holds']['in_transit']
+                    ?? $this->defaultInTransitStatuses
+                ),
+                'last_pickup_date' => $lastPickup,
+                'position' => $hold->position ?? null,
             ];
+            // If this request was created by a proxy user, and the proxy user
+            // is not the current user, we need to indicate their name.
+            if (
+                ($hold->proxyUserId ?? $patron['id']) !== $patron['id']
+                && isset($hold->proxy)
+            ) {
+                $currentHold['proxiedBy']
+                    = $this->userObjectToNameString($hold->proxy);
+            }
+            // If this request was not created for the current user, it must be
+            // a proxy request created by the current user. We should indicate this.
+            if (
+                ($hold->requesterId ?? $patron['id']) !== $patron['id']
+                && isset($hold->requester)
+            ) {
+                $currentHold['proxiedFor']
+                    = $this->userObjectToNameString($hold->requester);
+            }
+            $holds[] = $currentHold;
         }
         return $holds;
     }
@@ -1132,41 +1418,65 @@ class Folio extends AbstractAPI implements
     public function placeHold($holdDetails)
     {
         $default_request = $this->config['Holds']['default_request'] ?? 'Hold';
-        try {
-            $requiredBy = $this->dateConverter->convertFromDisplayDate(
-                'Y-m-d',
-                $holdDetails['requiredBy']
-            );
-        } catch (Exception $e) {
-            $this->throwAsIlsException($e, 'hold_date_invalid');
+        if (
+            !empty($holdDetails['requiredByTS'])
+            && !is_int($holdDetails['requiredByTS'])
+        ) {
+            throw new ILSException('hold_date_invalid');
         }
-        $requestBody = [
-            'itemId' => $holdDetails['item_id'],
+        $requiredBy = !empty($holdDetails['requiredByTS'])
+            ? gmdate('Y-m-d', $holdDetails['requiredByTS']) : null;
+
+        $isTitleLevel = ($holdDetails['level'] ?? '') === 'title';
+        if ($isTitleLevel) {
+            $instance = $this->getInstanceByBibId($holdDetails['id']);
+            $baseParams = [
+                'instanceId' => $instance->id,
+                'requestLevel' => 'Title',
+            ];
+        } else {
+            // Note: early Lotus releases require instanceId and holdingsRecordId
+            // to be set here as well, but the requirement was lifted in a hotfix
+            // to allow backward compatibility. If you need compatibility with one
+            // of those versions, you can add additional identifiers here, but
+            // applying the latest hotfix is a better solution!
+            $baseParams = ['itemId' => $holdDetails['item_id']];
+        }
+        $requestBody = $baseParams + [
             'requestType' => $holdDetails['status'] == 'Available'
                 ? 'Page' : $default_request,
             'requesterId' => $holdDetails['patron']['id'],
             'requestDate' => date('c'),
             'fulfilmentPreference' => 'Hold Shelf',
             'requestExpirationDate' => $requiredBy,
-            'pickupServicePointId' => $holdDetails['pickUpLocation']
+            'pickupServicePointId' => $holdDetails['pickUpLocation'],
         ];
+        if (!empty($holdDetails['proxiedUser'])) {
+            $requestBody['requesterId'] = $holdDetails['proxiedUser'];
+            $requestBody['proxyUserId'] = $holdDetails['patron']['id'];
+        }
+        if (!empty($holdDetails['comment'])) {
+            $requestBody['patronComments'] = $holdDetails['comment'];
+        }
         $response = $this->makeRequest(
             'POST',
             '/circulation/requests',
-            json_encode($requestBody)
+            json_encode($requestBody),
+            [],
+            true
         );
         if ($response->isSuccess()) {
             $json = json_decode($response->getBody());
             $result = [
                 'success' => true,
-                'status' => $json->status
+                'status' => $json->status,
             ];
         } else {
             try {
                 $json = json_decode($response->getBody());
                 $result = [
                     'success' => false,
-                    'status' => $json->errors[0]->message
+                    'status' => $json->errors[0]->message,
                 ];
             } catch (Exception $e) {
                 $this->throwAsIlsException($e, $response->getBody());
@@ -1216,30 +1526,35 @@ class Folio extends AbstractAPI implements
             $request_json = json_decode($response->getBody());
 
             // confirm request belongs to signed in patron
-            if ($request_json->requesterId != $patron['id']) {
+            if (
+                $request_json->requesterId != $patron['id']
+                && ($request_json->proxyUserId ?? null) != $patron['id']
+            ) {
                 throw new ILSException("Invalid Request");
             }
             // Change status to Closed and add cancellationID
             $request_json->status = 'Closed - Cancelled';
             $request_json->cancellationReasonId
-                = $this->config['Holds']['cancellation_reason'];
-            $cancel_response = $this->makeRequest(
-                'PUT',
-                '/circulation/requests/' . $requestId,
-                json_encode($request_json)
-            );
-            if ($cancel_response->getStatusCode() == 204) {
-                $count++;
-                $cancelResult['items'][$request_json->itemId] = [
-                    'success' => true,
-                    'status' => 'hold_cancel_success'
-                ];
-            } else {
-                $cancelResult['items'][$request_json->itemId] = [
-                    'success' => false,
-                    'status' => 'hold_cancel_fail'
-                ];
+                = $this->config['Holds']['cancellation_reason']
+                ?? '75187e8d-e25a-47a7-89ad-23ba612338de';
+            $success = false;
+            try {
+                $cancel_response = $this->makeRequest(
+                    'PUT',
+                    '/circulation/requests/' . $requestId,
+                    json_encode($request_json),
+                    [],
+                    true
+                );
+                $success = $cancel_response->getStatusCode() === 204;
+            } catch (\Exception $e) {
+                // Do nothing; the $success flag is already false by default.
             }
+            $count += $success ? 1 : 0;
+            $cancelResult['items'][$request_json->itemId] = [
+                'success' => $success,
+                'status' => $success ? 'hold_cancel_success' : 'hold_cancel_fail',
+            ];
         }
         $cancelResult['count'] = $count;
         return $cancelResult;
@@ -1267,10 +1582,12 @@ class Folio extends AbstractAPI implements
         $retVal = [];
 
         // Results can be paginated, so let's loop until we've gotten everything:
-        foreach ($this->getPagedResults(
-            $responseKey ?? $type,
-            '/coursereserves/' . $type
-        ) as $item) {
+        foreach (
+            $this->getPagedResults(
+                $responseKey ?? $type,
+                '/coursereserves/' . $type
+            ) as $item
+        ) {
             $callback = function ($key) use ($item) {
                 return $item->$key ?? '';
             };
@@ -1393,15 +1710,15 @@ class Folio extends AbstractAPI implements
         $retVal = [];
 
         // Results can be paginated, so let's loop until we've gotten everything:
-        foreach ($this->getPagedResults(
-            'reserves',
-            '/coursereserves/reserves'
-        ) as $item) {
-            try {
-                $bibId = $this->getBibId(null, null, $item->itemId);
-            } catch (\Exception $e) {
-                $bibId = null;
-            }
+        foreach (
+            $this->getPagedResults(
+                'reserves',
+                '/coursereserves/reserves'
+            ) as $item
+        ) {
+            $idProperty = $this->getBibIdType() === 'hrid'
+                ? 'instanceHrid' : 'instanceId';
+            $bibId = $item->copiedItem->$idProperty ?? null;
             if ($bibId !== null) {
                 $courseData = $this->getCourseDetails(
                     $item->courseListingId ?? null
@@ -1435,71 +1752,24 @@ class Folio extends AbstractAPI implements
         return $retVal;
     }
 
-    // @codingStandardsIgnoreStart
-    /** NOT FINISHED BELOW THIS LINE **/
-
-    /**
-     * Check for request blocks.
-     *
-     * @param array $patron The patron array with username and password
-     *
-     * @return array|boolean    An array of block messages or false if there are no
-     *                          blocks
-     * @author Michael Birkner
-     */
-    public function getRequestBlocks($patron)
-    {
-        return false;
-    }
-
-    /**
-     * This method returns information on recently received issues of a serial.
-     *
-     *     Input: Bibliographic record ID
-     *     Output: Array of associative arrays, each with a single key:
-     *         issue - String describing the issue
-     *
-     * Currently, most drivers do not implement this method, instead always returning
-     * an empty array. It is only necessary to implement this in more detail if you
-     * want to populate the “Most Recent Received Issues” section of the record
-     * holdings tab.
-     */
-    public function getPurchaseHistory($bibID)
-    {
-        return [];
-    }
-
     /**
      * This method queries the ILS for a patron's current fines
      *
-     *     Input: Patron array returned by patronLogin method
-     *     Output: Returns an array of associative arrays, one for each fine
-     * associated with the specified account. Each associative array contains
-     * these keys:
-     *         amount - The total amount of the fine IN PENNIES. Be sure to adjust
-     * decimal points appropriately (i.e. for a $1.00 fine, amount should be 100).
-     *         checkout - A string representing the date when the item was
-     * checked out.
-     *         fine - A string describing the reason for the fine
-     * (i.e. “Overdue”, “Long Overdue”).
-     *         balance - The unpaid portion of the fine IN PENNIES.
-     *         createdate – A string representing the date when the fine was accrued
-     * (optional)
-     *         duedate - A string representing the date when the item was due.
-     *         id - The bibliographic ID of the record involved in the fine.
-     *         source - The search backend from which the record may be retrieved
-     * (optional - defaults to Solr). Introduced in VuFind 2.4.
+     * @param array $patron The patron array from patronLogin
      *
+     * @return array
      */
     public function getMyFines($patron)
     {
         $query = ['query' => 'userId==' . $patron['id'] . ' and status.name==Open'];
         $fines = [];
-        foreach ($this->getPagedResults(
-            'accounts',
-            '/accounts',
-            $query
-        ) as $fine) {
+        foreach (
+            $this->getPagedResults(
+                'accounts',
+                '/accounts',
+                $query
+            ) as $fine
+        ) {
             $date = date_create($fine->metadata->createdDate);
             $title = $fine->title ?? null;
             $bibId = isset($fine->instanceId)
@@ -1512,30 +1782,117 @@ class Folio extends AbstractAPI implements
                 'status' => $fine->paymentStatus->name,
                 'type' => $fine->feeFineType,
                 'title' => $title,
-                'createdate' => date_format($date, "j M Y")
+                'createdate' => date_format($date, "j M Y"),
             ];
         }
         return $fines;
     }
 
     /**
-     * Get a list of funds that can be used to limit the “new item” search. Note that
-     * “fund” may be a misnomer – if funds are not an appropriate way to limit your
-     * new item results, you can return a different set of values from this function.
-     * For example, you might just make this a wrapper for getDepartments(). The
-     * important thing is that whatever you return from this function, the IDs can be
-     * used as a limiter to the getNewItems() function, and the names are appropriate
-     * for display on the new item search screen. If you do not want or support such
-     * limits, just return an empty array here and the limit control on the new item
-     * search screen will disappear.
+     * Given a user object from the FOLIO API, return a name string.
      *
-     *     Output: An associative array with key = fund ID, value = fund name.
+     * @param object $user User object
      *
-     * IMPORTANT: The return value for this method changed in r2184. If you are using
-     * VuFind 1.0RC2 or earlier, this function returns a flat array of options
-     * (no ID-based keys), and empty return values may cause problems. It is
-     * recommended that you update to newer code before implementing the new item
-     * feature in your driver.
+     * @return string
+     */
+    protected function userObjectToNameString(object $user): string
+    {
+        $firstParts = ($user->firstName ?? '')
+            . ' ' . ($user->middleName ?? '');
+        $parts = [
+            trim($user->lastName ?? ''),
+            trim($firstParts),
+        ];
+        return implode(', ', array_filter($parts));
+    }
+
+    /**
+     * Given a user object returned by getUserById(), return a string representing
+     * the user's name.
+     *
+     * @param object $proxy User object from FOLIO
+     *
+     * @return string
+     */
+    protected function formatUserNameForProxyList(object $proxy): string
+    {
+        return $this->userObjectToNameString($proxy->personal);
+    }
+
+    /**
+     * Get list of users for whom the provided patron is a proxy.
+     *
+     * This requires the FOLIO user configured in Folio.ini to have the permission:
+     * proxiesfor.collection.get
+     *
+     * @param array $patron The patron array with username and password
+     *
+     * @return array
+     */
+    public function getProxiedUsers(array $patron): array
+    {
+        $query = [
+            'query' => '(proxyUserId=="' . $patron['id'] . '")',
+        ];
+        $results = [];
+        $proxies = $this->getPagedResults('proxiesFor', '/proxiesfor', $query);
+        foreach ($proxies as $current) {
+            if (
+                $current->status ?? '' === 'Active'
+                && $current->requestForSponsor ?? '' === 'Yes'
+                && isset($current->userId)
+            ) {
+                if ($proxy = $this->getUserById($current->userId)) {
+                    $results[$proxy->id] = $this->formatUserNameForProxyList($proxy);
+                }
+            }
+        }
+        return $results;
+    }
+
+    /**
+     * NOT FINISHED BELOW THIS LINE
+     **/
+
+    /**
+     * Check for request blocks.
+     *
+     * @param array $patron The patron array with username and password
+     *
+     * @return array|bool An array of block messages or false if there are no blocks
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getRequestBlocks($patron)
+    {
+        return false;
+    }
+
+    /**
+     * Get Purchase History Data
+     *
+     * This is responsible for retrieving the acquisitions history data for the
+     * specific record (usually recently received issues of a serial). It is used
+     * by getHoldings() and getPurchaseHistory() depending on whether the purchase
+     * history is displayed by holdings or in a separate list.
+     *
+     * @param string $bibID The record id to retrieve the info for
+     *
+     * @return array An array with the acquisitions data on success.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getPurchaseHistory($bibID)
+    {
+        return [];
+    }
+
+    /**
+     * Get Funds
+     *
+     * Return a list of funds which may be used to limit the getNewItems list.
+     *
+     * @return array An associative array with key = fund ID, value = fund name.
      */
     public function getFunds()
     {
@@ -1543,74 +1900,44 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * This method retrieves a patron's historic transactions
-     * (previously checked out items).
+     * Get Patron Loan History
      *
-     * :!: The getConfig method must return a non-false value for this feature to be
-     * enabled. For privacy reasons, the entire feature should be disabled by default
-     * unless explicitly turned on in the driver's .ini file.
+     * This is responsible for retrieving all historic loans (i.e. items previously
+     * checked out and then returned), for a specific patron.
      *
-     * This feature was added in VuFind 5.0.
+     * @param array $patron The patron array from patronLogin
+     * @param array $params Parameters
      *
-     *     getConfig may return the following keys if the service supports paging on
-     * the ILS side:
-     *         max_results - Maximum number of results that can be requested at once.
-     * Overrides the config.ini Catalog section setting historic_loan_page_size.
-     *         page_size - An array of allowed page sizes
-     * (number of records per page)
-     *         default_page_size - Default number of records per page
-     *     getConfig may return the following keys if the service supports sorting:
-     *         sort - An associative array where each key is a sort key and its
-     * value is a translation key
-     *         default_sort - Default sort key
-     *     Input: Patron array returned by patronLogin method and an array of
-     * optional parameters (keys = 'limit', 'page', 'sort').
-     *     Output: Returns an array of associative arrays containing some or all of
-     * these keys:
-     *         title - item title
-     *         checkoutDate - date checked out
-     *         dueDate - date due
-     *         id - bibliographic ID
-     *         barcode - item barcode
-     *         returnDate - date returned
-     *         publication_year - publication year
-     *         volume - item volume
-     *         institution_name - owning institution
-     *         borrowingLocation - checkout location
-     *         message - message about the transaction
+     * @return array Array of the patron's transactions on success.
      *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getMyTransactionHistory($patron)
+    public function getMyTransactionHistory($patron, $params)
     {
         return[];
     }
 
     /**
-     * This method queries the ILS for new items
+     * Get New Items
      *
-     *     Input: getNewItems takes the following parameters:
-     *         page - page number of results to retrieve (counting starts at 1)
-     *         limit - the size of each page of results to retrieve
-     *         daysOld - the maximum age of records to retrieve in days (maximum 30)
-     *         fundID - optional fund ID to use for limiting results (use a value
-     * returned by getFunds, or exclude for no limit); note that “fund” may be a
-     * misnomer – if funds are not an appropriate way to limit your new item results,
-     * you can return a different set of values from getFunds. The important thing is
-     * that this parameter supports an ID returned by getFunds, whatever that may
-     * mean.
-     *     Output: An associative array with two keys: 'count' (the number of items
-     * in the 'results' array) and 'results' (an array of associative arrays, each
-     * with a single key: 'id', a record ID).
+     * Retrieve the IDs of items recently added to the catalog.
      *
-     * IMPORTANT: The fundID parameter changed behavior in r2184. In VuFind 1.0RC2
-     * and earlier versions, it receives one of the VALUES returned by getFunds();
-     * in more recent code, it receives one of the KEYS from getFunds(). See getFunds
-     * for additional notes.
+     * @param int $page    Page number of results to retrieve (counting starts at 1)
+     * @param int $limit   The size of each page of results to retrieve
+     * @param int $daysOld The maximum age of records to retrieve in days (max. 30)
+     * @param int $fundId  optional fund ID to use for limiting results (use a value
+     * returned by getFunds, or exclude for no limit); note that "fund" may be a
+     * misnomer - if funds are not an appropriate way to limit your new item
+     * results, you can return a different set of values from getFunds. The
+     * important thing is that this parameter supports an ID returned by getFunds,
+     * whatever that may mean.
+     *
+     * @return array Associative array with 'count' and 'results' keys
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getNewItems($page, $limit, $daysOld, $fundID = null)
+    public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
         return [];
     }
-
-    // @codingStandardsIgnoreEnd
 }

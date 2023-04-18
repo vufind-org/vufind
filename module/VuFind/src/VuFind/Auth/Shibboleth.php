@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Shibboleth authentication module.
  *
@@ -31,6 +32,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\Request;
@@ -68,7 +70,7 @@ class Shibboleth extends AbstractBase
      */
     protected $attribsToCheck = [
         'cat_username', 'cat_password', 'email', 'lastname', 'firstname',
-        'college', 'major', 'home_library'
+        'college', 'major', 'home_library',
     ];
 
     /**
@@ -204,7 +206,7 @@ class Shibboleth extends AbstractBase
 
         // Check if required attributes match up:
         foreach ($this->getRequiredAttributes($shib) as $key => $value) {
-            if (!preg_match("/$value/", $this->getAttribute($request, $key))) {
+            if (!preg_match("/$value/", $this->getAttribute($request, $key) ?? '')) {
                 $details = ($this->useHeaders) ? $request->getHeaders()->toArray()
                     : $request->getServer()->toArray();
                 $this->debug(
@@ -228,7 +230,8 @@ class Shibboleth extends AbstractBase
                 $value = $this->getAttribute($request, $shib[$attribute]);
                 if ($attribute == 'email') {
                     $user->updateEmail($value);
-                } elseif ($attribute == 'cat_username' && isset($shib['prefix'])
+                } elseif (
+                    $attribute == 'cat_username' && isset($shib['prefix'])
                     && !empty($value)
                 ) {
                     $user->cat_username = $shib['prefix'] . '.' . $value;
@@ -298,7 +301,8 @@ class Shibboleth extends AbstractBase
     public function isExpired()
     {
         $config = $this->getConfig();
-        if (!isset($this->shibSessionId)
+        if (
+            !isset($this->shibSessionId)
             || !($config->Shibboleth->checkExpiredSession ?? true)
         ) {
             return false;
@@ -319,7 +323,8 @@ class Shibboleth extends AbstractBase
     {
         // If single log-out is enabled, use a special URL:
         $config = $this->getConfig();
-        if (isset($config->Shibboleth->logout)
+        if (
+            isset($config->Shibboleth->logout)
             && !empty($config->Shibboleth->logout)
         ) {
             $append = (strpos($config->Shibboleth->logout, '?') !== false) ? '&'
@@ -439,7 +444,7 @@ class Shibboleth extends AbstractBase
      */
     protected function getCurrentEntityId($request)
     {
-        return $this->getAttribute($request, $this->shibIdentityProvider);
+        return $this->getAttribute($request, $this->shibIdentityProvider) ?? '';
     }
 
     /**
@@ -448,9 +453,9 @@ class Shibboleth extends AbstractBase
      * @param \Laminas\Http\PhpEnvironment\Request $request   Request object
      * @param string                               $attribute Attribute name
      *
-     * @return string attribute value
+     * @return ?string attribute value
      */
-    protected function getAttribute($request, $attribute)
+    protected function getAttribute($request, $attribute): ?string
     {
         if ($this->useHeaders) {
             $header = $request->getHeader($attribute);

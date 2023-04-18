@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 
 /**
  * Trait OAuth2TokenTraitTest
@@ -28,6 +27,9 @@ declare(strict_types=1);
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://knihovny.cz Main Page
  */
+
+declare(strict_types=1);
+
 namespace VuFind\ILS\Driver;
 
 use VuFind\Auth\AuthToken;
@@ -105,7 +107,8 @@ trait OAuth2TokenTrait
         }
         $tokenData = json_decode($response->getBody(), true);
 
-        if (empty($tokenData['token_type'])
+        if (
+            empty($tokenData['token_type'])
             || empty($tokenData['access_token'])
         ) {
             $this->logError(

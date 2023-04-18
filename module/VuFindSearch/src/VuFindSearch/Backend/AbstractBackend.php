@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Abstract backend.
  *
@@ -25,11 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend;
 
 use Laminas\Log\LoggerAwareInterface;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
-
 use VuFindSearch\Response\RecordCollectionInterface;
 
 /**
@@ -114,7 +115,7 @@ abstract class AbstractBackend implements BackendInterface, LoggerAwareInterface
      */
     protected function injectSourceIdentifier(RecordCollectionInterface $response)
     {
-        $response->setSourceIdentifier($this->identifier);
+        $response->setSourceIdentifiers($this->identifier);
         return $response;
     }
 }

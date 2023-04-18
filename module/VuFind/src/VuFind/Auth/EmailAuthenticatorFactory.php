@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for email authenticator module.
  *
@@ -25,12 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Auth;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Factory for email authenticator module.
@@ -41,8 +43,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class EmailAuthenticatorFactory
-    implements \Laminas\ServiceManager\Factory\FactoryInterface
+class EmailAuthenticatorFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -68,7 +69,7 @@ class EmailAuthenticatorFactory
         }
         return new $requestedName(
             $container->get(\Laminas\Session\SessionManager::class),
-            $container->get(\VuFind\Validator\Csrf::class),
+            $container->get(\VuFind\Validator\CsrfInterface::class),
             $container->get(\VuFind\Mailer\Mailer::class),
             $container->get('ViewRenderer'),
             $container->get(\Laminas\Http\PhpEnvironment\RemoteAddress::class),

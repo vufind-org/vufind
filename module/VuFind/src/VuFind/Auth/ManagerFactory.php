@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Authentication Manager factory.
  *
@@ -25,13 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Auth;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Authentication Manager factory.
@@ -91,7 +93,7 @@ class ManagerFactory implements FactoryInterface
         $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
         $pm = $container->get(\VuFind\Auth\PluginManager::class);
         $cookies = $container->get(\VuFind\Cookie\CookieManager::class);
-        $csrf = $container->get(\VuFind\Validator\Csrf::class);
+        $csrf = $container->get(\VuFind\Validator\CsrfInterface::class);
 
         // Build the object and make sure account credentials haven't expired:
         $manager = new $requestedName(

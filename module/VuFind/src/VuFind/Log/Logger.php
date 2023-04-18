@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Logger
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Log;
 
 use Laminas\Log\Logger as BaseLogger;
@@ -114,7 +116,7 @@ class Logger extends BaseLogger
                         'priority'     => (int)$priority,
                         'priorityName' => $this->priorities[$priority],
                         'message'      => $message,
-                        'extra'        => $extra
+                        'extra'        => $extra,
                     ]
                 );
             }
@@ -137,7 +139,8 @@ class Logger extends BaseLogger
             return $error->getSeverityLevel();
         }
         // Treat unexpected or 5xx errors as more severe than 4xx errors.
-        if ($error instanceof \VuFind\Exception\HttpStatusInterface
+        if (
+            $error instanceof \VuFind\Exception\HttpStatusInterface
             && in_array($error->getHttpStatus(), [403, 404])
         ) {
             return BaseLogger::WARN;
@@ -208,7 +211,7 @@ class Logger extends BaseLogger
             2 => $baseError . $basicServer,
             3 => $baseError . $basicServer . $basicBacktrace,
             4 => $baseError . $detailedServer . $basicBacktrace,
-            5 => $baseError . $detailedServer . $detailedBacktrace
+            5 => $baseError . $detailedServer . $detailedBacktrace,
         ];
 
         $this->log($this->getSeverityFromException($error), $errorDetails);

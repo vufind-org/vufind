@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for Demo ILS driver.
  *
@@ -25,12 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Factory for Demo ILS driver.
@@ -69,14 +71,16 @@ class DemoFactory extends DriverWithDateConverterFactory
             $manager = $container->get(\Laminas\Session\SessionManager::class);
             return new \Laminas\Session\Container('DemoDriver' . $ns, $manager);
         };
-        return parent::__invoke(
+        $driver = parent::__invoke(
             $container,
             $requestedName,
             [
                 $container->get(\VuFindSearch\Service::class),
                 $sessionFactory,
-                $container->get('Request')
+                $container->get('Request'),
             ]
         );
+        $driver->setSorter($container->get(\VuFind\I18n\Sorter::class));
+        return $driver;
     }
 }

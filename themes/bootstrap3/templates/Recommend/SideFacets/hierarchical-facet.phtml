@@ -1,5 +1,6 @@
 <?php
   $this->headScript()->appendFile('vendor/jsTree/jstree.min.js');
+  $this->headScript()->appendFile('jstree-vufind-facet-plugin.js');
 
   // We need to pass the current URL query to the Javascript; we use substr() to
   // strip off the leading ? character. The "suppress query" option is used for
@@ -13,25 +14,6 @@
   // of the suppressed query:
   $extraUrlFields = $this->results->getUrlQuery()->getParamsWithConfiguredDefaults();
 ?>
-<?php if (!in_array($this->title, $this->collapsedFacets)): ?>
-  <?php
-    $script = <<<JS
-$(document).ready(function() {
-  initFacetTree($('#facet_{$this->escapeHtml($this->title)}'), true);
-});
-JS;
-  ?>
-  <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
-<?php else: ?>
-  <?php
-  $script = <<<JS
-$('#side-collapse-{$this->escapeHtmlAttr($this->title)}').on('show.bs.collapse', function() {
-  initFacetTree($('#facet_{$this->escapeHtml($this->title)}'), true);
-});
-JS;
-  ?>
-  <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
-<?php endif; ?>
 <?php
   $truncateSettings = $this->facets_before_more < 1 ? false : [
     'rows' => $this->facets_before_more,
@@ -40,7 +22,7 @@ JS;
     'wrapper-tagname' => 'div',
   ];
 ?>
-<div<?php if ($truncateSettings): ?> class="truncate-hierarchy" data-truncate="<?=$this->escapeHtml(json_encode($truncateSettings))?>"<?php endif; ?>>
+<div<?php if ($truncateSettings): ?> class="truncate-hierarchy" data-truncate="<?=$this->htmlSafeJsonEncode($truncateSettings)?>"<?php endif; ?>>
   <div id="facet_<?=$this->escapeHtml($this->title)?>" class="jstree-facet"
     data-source="<?=$this->escapeHtml($this->searchClassId)?>"
     data-facet="<?=$this->escapeHtmlAttr($this->title)?>"
@@ -54,3 +36,11 @@ JS;
     data-extra-fields="<?=$this->escapeHtml(implode(',', $extraUrlFields))?>">
   </div>
 </div>
+<?php
+  $script = <<<JS
+      $(document).ready(function () {
+        initFacetTree($('#facet_{$this->escapeHtml($this->title)}'), true);
+      });
+      JS;
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>

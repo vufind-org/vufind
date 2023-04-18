@@ -1,4 +1,5 @@
 <?php
+
 /**
  * A minimal record class for wrapping an array of fields
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindSearch\Response;
 
 /**
@@ -38,10 +40,7 @@ namespace VuFindSearch\Response;
  */
 class SimpleRecord implements RecordInterface
 {
-    /**
-     * Source backend identifier
-     */
-    protected $sourceId = DEFAULT_SEARCH_BACKEND;
+    use \VuFindSearch\Response\RecordTrait;
 
     /**
      * Field data
@@ -58,6 +57,7 @@ class SimpleRecord implements RecordInterface
     public function __construct($fields)
     {
         $this->fields = $fields;
+        $this->setSourceIdentifiers(DEFAULT_SEARCH_BACKEND);
     }
 
     /**
@@ -70,27 +70,5 @@ class SimpleRecord implements RecordInterface
     public function get($field)
     {
         return $this->fields[$field] ?? null;
-    }
-
-    /**
-     * Set the source backend identifier.
-     *
-     * @param string $identifier Backend identifier
-     *
-     * @return void
-     */
-    public function setSourceIdentifier($identifier)
-    {
-        $this->sourceId = $identifier;
-    }
-
-    /**
-     * Return the source backend identifier.
-     *
-     * @return string
-     */
-    public function getSourceIdentifier()
-    {
-        return $this->sourceId;
     }
 }

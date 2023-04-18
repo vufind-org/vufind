@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Record route generator
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Record;
 
 /**
@@ -155,13 +157,13 @@ class Router
         // Disable path normalization since it can unencode e.g. encoded slashes in
         // record id's
         $options = [
-            'normalize_path' => false
+            'normalize_path' => false,
         ];
 
         return [
             'params' => $params,
             'route' => $routeBase . $routeSuffix,
-            'options' => $options
+            'options' => $options,
         ];
     }
 

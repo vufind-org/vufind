@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Get Side Facets" AJAX handler
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
@@ -47,8 +49,7 @@ use VuFind\Session\Settings as SessionSettings;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase
-    implements \Laminas\Log\LoggerAwareInterface
+class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
@@ -156,7 +157,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase
         $context = [
             'recommend' => $recommend,
             'params' => $results->getParams(),
-            'searchClassId' => $request['searchClassId'] ?? DEFAULT_SEARCH_BACKEND
+            'searchClassId' => $request['searchClassId'] ?? DEFAULT_SEARCH_BACKEND,
         ];
         if (isset($request['enabledFacets'])) {
             // Render requested facets separately
@@ -238,14 +239,10 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase
         Results $results
     ) {
         $response = [];
-        $hierarchicalFacets = [];
-        $hierarchicalFacetSortOptions = [];
         $options = $results->getOptions();
-        if (is_callable([$options, 'getHierarchicalFacets'])) {
-            $hierarchicalFacets = $options->getHierarchicalFacets();
-            $hierarchicalFacetSortOptions
-                = $recommend->getHierarchicalFacetSortOptions();
-        }
+        $hierarchicalFacets = $options->getHierarchicalFacets();
+        $hierarchicalFacetSortOptions
+            = $recommend->getHierarchicalFacetSortOptions();
         $facetSet = $recommend->getFacetSet();
         $urlHelper = $results->getUrlQuery();
         foreach ($facets as $facet) {
@@ -316,7 +313,8 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase
             false
         );
 
-        if (!empty($this->facetConfig->FacetFilters->$facet)
+        if (
+            !empty($this->facetConfig->FacetFilters->$facet)
             || !empty($this->facetConfig->ExcludeFilters->$facet)
         ) {
             $filters = !empty($this->facetConfig->FacetFilters->$facet)

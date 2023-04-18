@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Record;
 
 use Laminas\Config\Config;
@@ -57,8 +58,8 @@ class RouterTest extends \PHPUnit\Framework\TestCase
                 'params' => ['id' => 'test'],
                 'route' => 'record',
                 'options' => [
-                    'normalize_path' => false
-                ]
+                    'normalize_path' => false,
+                ],
             ],
             $router->getRouteDetails($driver)
         );
@@ -77,8 +78,8 @@ class RouterTest extends \PHPUnit\Framework\TestCase
                 'params' => ['id' => 'test'],
                 'route' => 'summonrecord',
                 'options' => [
-                    'normalize_path' => false
-                ]
+                    'normalize_path' => false,
+                ],
             ],
             $router->getRouteDetails('Summon|test')
         );
@@ -97,8 +98,8 @@ class RouterTest extends \PHPUnit\Framework\TestCase
                 'params' => ['id' => 'test', 'tab' => 'foo'],
                 'route' => 'summonrecord',
                 'options' => [
-                    'normalize_path' => false
-                ]
+                    'normalize_path' => false,
+                ],
             ],
             $router->getTabRouteDetails('Summon|test', 'foo')
         );
@@ -118,8 +119,8 @@ class RouterTest extends \PHPUnit\Framework\TestCase
                 'route' => 'record',
                 'options' => [
                     'normalize_path' => false,
-                    'query' => ['checkRoute' => 1]
-                ]
+                    'query' => ['checkRoute' => 1],
+                ],
             ],
             $router->getTabRouteDetails('Solr|test', 'foo')
         );
@@ -138,8 +139,8 @@ class RouterTest extends \PHPUnit\Framework\TestCase
                 'params' => ['id' => 'test%2Fsub'],
                 'route' => 'record',
                 'options' => [
-                    'normalize_path' => false
-                ]
+                    'normalize_path' => false,
+                ],
             ],
             $router->getRouteDetails('Solr|test%2Fsub')
         );
@@ -159,8 +160,8 @@ class RouterTest extends \PHPUnit\Framework\TestCase
                 'route' => 'record',
                 'options' => [
                     'normalize_path' => false,
-                    'query' => ['checkRoute' => 1]
-                ]
+                    'query' => ['checkRoute' => 1],
+                ],
             ],
             $router->getTabRouteDetails('test', 'foo')
         );
@@ -174,15 +175,18 @@ class RouterTest extends \PHPUnit\Framework\TestCase
     public function testCollectionSpecialCaseWithDriver()
     {
         $driver = $this->getDriver();
-        $driver->expects($this->once())->method('tryMethod')->with($this->equalTo('isCollection'))->will($this->returnValue(true));
+        $driver->expects($this->once())
+            ->method('tryMethod')
+            ->with($this->equalTo('isCollection'))
+            ->will($this->returnValue(true));
         $router = $this->getRouter(['Collections' => ['collections' => true]]);
         $this->assertEquals(
             [
                 'params' => ['id' => 'test', 'tab' => 'foo'],
                 'route' => 'collection',
                 'options' => [
-                    'normalize_path' => false
-                ]
+                    'normalize_path' => false,
+                ],
             ],
             $router->getTabRouteDetails($driver, 'foo')
         );
@@ -201,8 +205,8 @@ class RouterTest extends \PHPUnit\Framework\TestCase
                 'params' => ['id' => 'test'],
                 'route' => 'record',
                 'options' => [
-                    'normalize_path' => false
-                ]
+                    'normalize_path' => false,
+                ],
             ],
             $router->getRouteDetails('test')
         );
@@ -222,8 +226,8 @@ class RouterTest extends \PHPUnit\Framework\TestCase
                 'params' => ['id' => 'test'],
                 'route' => 'record-sms',
                 'options' => [
-                    'normalize_path' => false
-                ]
+                    'normalize_path' => false,
+                ],
             ],
             $router->getActionRouteDetails($driver, 'SMS')
         );

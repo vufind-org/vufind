@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind CSV importer configuration
  *
@@ -25,10 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/ Wiki
  */
+
 namespace VuFind\CSV;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
-use VuFind\Config\Locator as ConfigLocator;
 use VuFindSearch\Backend\Solr\Document\RawJSONDocument;
 
 /**
@@ -176,21 +177,21 @@ class Importer
     protected function processHeader(ImporterConfig $config, $in, string $mode): void
     {
         switch (strtolower(trim($mode))) {
-        case 'fields':
-            // Load configuration from the header row:
-            $row = fgetcsv($in);
-            foreach ($row as $i => $field) {
-                $config->configureColumn($i, ['field' => $field]);
-            }
-            break;
-        case 'skip':
-            //  Just skip a row:
-            fgetcsv($in);
-            break;
-        case 'none':
-        default:
-            // Do nothing.
-            break;
+            case 'fields':
+                // Load configuration from the header row:
+                $row = fgetcsv($in);
+                foreach ($row as $i => $field) {
+                    $config->configureColumn($i, ['field' => $field]);
+                }
+                break;
+            case 'skip':
+                //  Just skip a row:
+                fgetcsv($in);
+                break;
+            case 'none':
+            default:
+                // Do nothing.
+                break;
         }
     }
 
@@ -206,7 +207,8 @@ class Importer
     protected function getConfiguration(string $iniFile, $in): ImporterConfig
     {
         // Load properties file:
-        $ini = ConfigLocator::getConfigPath($iniFile, $this->configBaseDir);
+        $resolver = $this->serviceLocator->get(\VuFind\Config\PathResolver::class);
+        $ini = $resolver->getConfigPath($iniFile, $this->configBaseDir);
         if (!file_exists($ini)) {
             throw new \Exception("Cannot load .ini file: {$ini}.");
         }
@@ -231,14 +233,14 @@ class Importer
             if (strpos($section, ':') !== false) {
                 [$type, $details] = explode(':', $section);
                 switch (strtolower(trim($type))) {
-                case 'column':
-                    $config->configureColumn($details, $settings);
-                    break;
-                case 'field':
-                    $config->configureField($details, $settings);
-                    break;
-                default:
-                    throw new \Exception('Unexpected config section: ' . $section);
+                    case 'column':
+                        $config->configureColumn($details, $settings);
+                        break;
+                    case 'field':
+                        $config->configureField($details, $settings);
+                        break;
+                    default:
+                        throw new \Exception("Unexpected config section: $section");
                 }
             }
         }
@@ -269,19 +271,20 @@ class Importer
             )
         );
         $argCallback = function ($arg) use ($value, $fieldValues) {
-            if (substr($arg, 0, 2) == '$$'
+            if (
+                substr($arg, 0, 2) == '$$'
                 && substr($arg, -2) == '$$'
             ) {
                 $parts = explode(':', trim($arg, '$'), 2);
                 switch ($parts[0]) {
-                case 'csv':
-                    return $value;
-                case 'field':
-                    return $fieldValues[$parts[1] ?? ''] ?? [];
-                case 'fieldFirst':
-                    return $fieldValues[$parts[1] ?? ''][0] ?? '';
-                default:
-                    throw new \Exception('Unknown directive: ' . $parts[0]);
+                    case 'csv':
+                        return $value;
+                    case 'field':
+                        return $fieldValues[$parts[1] ?? ''] ?? [];
+                    case 'fieldFirst':
+                        return $fieldValues[$parts[1] ?? ''][0] ?? '';
+                    default:
+                        throw new \Exception('Unknown directive: ' . $parts[0]);
                 }
             }
             return $arg;

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Shibboleth logout notification test class.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 use VuFind\Db\Table\ExternalSession;
@@ -41,26 +43,11 @@ use VuFind\Db\Table\ExternalSession;
  * @link     https://vufind.org Main Page
  * @retry    4
  */
-final class ShibbolethLogoutNotificationTest
-    extends \VuFindTest\Integration\MinkTestCase
+final class ShibbolethLogoutNotificationTest extends \VuFindTest\Integration\MinkTestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
     use \VuFindTest\Feature\LiveDatabaseTrait;
     use \VuFindTest\Feature\LiveDetectionTrait;
-
-    /**
-     * Standard setup method.
-     *
-     * @return void
-     */
-    public function setUp(): void
-    {
-        // Give up if we're not running in CI:
-        if (!$this->continuousIntegrationRunning()) {
-            $this->markTestSkipped('Continuous integration not running.');
-            return;
-        }
-    }
 
     /**
      * Test Shibboleth logout notification.
@@ -79,8 +66,8 @@ final class ShibbolethLogoutNotificationTest
                             '127.0.0.1',
                             '::1',
                         ],
-                    ]
-                ]
+                    ],
+                ],
             ]
         );
 

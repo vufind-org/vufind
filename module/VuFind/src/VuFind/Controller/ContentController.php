@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Content Controller
  *
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Controller;
 
 use Laminas\View\Model\ViewModel;
@@ -72,21 +74,6 @@ class ContentController extends AbstractBase
         return $method && is_callable([$this, $method])
             ? $this->$method($data['page'], $data['path'])
             : $this->notFoundAction();
-    }
-
-    /**
-     * Action called if matched action does not exist
-     *
-     * @return ViewModel
-     */
-    public function notFoundAction(): ViewModel
-    {
-        $response   = $this->response;
-
-        if ($response instanceof \Laminas\Http\Response) {
-            return $this->createHttpNotFoundModel($response);
-        }
-        return $this->createConsoleNotFoundModel($response);
     }
 
     /**

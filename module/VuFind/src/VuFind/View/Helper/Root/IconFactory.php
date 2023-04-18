@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Icon helper factory.
  *
@@ -26,13 +27,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Icon helper factory.
@@ -69,11 +71,15 @@ class IconFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $config = $container->get(\VuFindTheme\ThemeInfo::class)
-            ->getMergedConfig('icons', true);
+            ->getMergedConfig('icons');
+
         // As of release 1.1.0, the memory storage adapter has a flaw which can cause
         // unnecessary out of memory exceptions when a memory limit is enabled; we
         // can disable these problematic checks by setting memory_limit to -1.
-        $cacheConfig = ['name' => 'memory', 'options' => ['memory_limit' => -1]];
+        $cacheConfig = [
+            'adapter' => \Laminas\Cache\Storage\Adapter\Memory::class,
+            'options' => ['memory_limit' => -1],
+        ];
         $cache = $container->get(\Laminas\Cache\Service\StorageAdapterFactory::class)
             ->createFromArrayConfiguration($cacheConfig);
         $helpers = $container->get('ViewHelperManager');
@@ -81,7 +87,6 @@ class IconFactory implements FactoryInterface
             $config,
             $cache,
             $helpers->get('escapeHtmlAttr'),
-            $helpers->get('headLink'),
             $container->get('ViewManager')->getViewModel()->rtl
         );
     }

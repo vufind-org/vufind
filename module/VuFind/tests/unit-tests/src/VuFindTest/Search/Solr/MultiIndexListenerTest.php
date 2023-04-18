@@ -26,13 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTest\Search\Solr;
 
 use Laminas\EventManager\Event;
 use VuFind\Search\Solr\MultiIndexListener;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\Connector;
-
 use VuFindSearch\Backend\Solr\HandlerMap;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Service;
@@ -61,7 +61,7 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
             'QueryFields' => [
                 'A' => [
                     ['onephrase', 500],
-                    ['and', 200]
+                    ['and', 200],
                 ],
                 'B' => [
                     ['and', 100],
@@ -76,12 +76,12 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
                         ['onephrase', 300],
                     ],
                     '-E' => [
-                        ['or', '~']
-                    ]
-                ]
+                        ['or', '~'],
+                    ],
+                ],
             ],
             'FilterQuery' => 'format:Book',
-        ]
+        ],
     ];
 
     /**
@@ -127,7 +127,13 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
     protected function setUp(): void
     {
         $handlermap     = new HandlerMap(['select' => ['fallback' => true]]);
-        $connector      = new Connector('http://example.org/', $handlermap);
+        $connector      = new Connector(
+            'http://localhost/',
+            $handlermap,
+            function () {
+                return new \Laminas\Http\Client();
+            }
+        );
         $this->backend  = new Backend($connector);
         $this->backend->setIdentifier('foo');
         $this->listener = new MultiIndexListener($this->backend, self::$shards, self::$fields, self::$specs);
@@ -239,15 +245,15 @@ class MultiIndexListenerTest extends \PHPUnit\Framework\TestCase
                           0 => [
                               0 => ['AND', 50],
                               'C' => [
-                                  ['onephrase', 200]
+                                  ['onephrase', 200],
                               ],
                               'D' => [
-                                  ['onephrase', 300]
-                              ]
-                          ]
+                                  ['onephrase', 300],
+                              ],
+                          ],
                       ],
                       'FilterQuery' => 'format:Book',
-                  ]
+                  ],
             ],
             $specs
         );

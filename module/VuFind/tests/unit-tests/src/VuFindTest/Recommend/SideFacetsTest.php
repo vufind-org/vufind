@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SideFacets recommendation module Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Recommend;
 
 use VuFind\Recommend\SideFacets;
@@ -69,9 +71,9 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
                 'facets' => [
                     'SpecialFacets' => [
                         'hierarchical' => ['format'],
-                        'hierarchicalFacetSortOptions' => ['a', 'b', 'c']
-                    ]
-                ]
+                        'hierarchicalFacetSortOptions' => ['a', 'b', 'c'],
+                    ],
+                ],
             ],
             [],
             $this->once()
@@ -100,9 +102,9 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
                         'format' => 'Format',
                     ],
                     'SpecialFacets' => [
-                        'hierarchical' => ['format']
-                    ]
-                ]
+                        'hierarchical' => ['format'],
+                    ],
+                ],
             ],
             [],
             $this->once()
@@ -134,8 +136,8 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
                     ],
                     'Checkboxes' => [
                         'description' => 'filter',
-                    ]
-                ]
+                    ],
+                ],
             ],
             [],
             $this->once()
@@ -175,7 +177,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
                     'Results_Settings' => [
                         'orFacets' => '*',  // test or facet support
                     ],
-                ]
+                ],
             ],
             [],
             $this->once()
@@ -203,7 +205,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
                     'Results_Settings' => [
                         'exclude' => '*',  // test or facet support
                     ],
-                ]
+                ],
             ],
             [],
             $this->once()
@@ -227,8 +229,8 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
                         'fullDateRange' => ['fullDate'],
                         'genericRange' => ['generic'],
                         'numericRange' => ['numeric'],
-                    ]
-                ]
+                    ],
+                ],
             ],
             [],
             $this->once()
@@ -246,7 +248,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
         $expected = [
             'date' => ['type' => 'date', 'values' => ['1900', '1905']],
             'fullDate' => [
-                'type' => 'fulldate', 'values' => ['1900-01-01', '1905-12-31']
+                'type' => 'fulldate', 'values' => ['1900-01-01', '1905-12-31'],
             ],
             'generic' => ['type' => 'generic', 'values' => ['A', 'Z']],
             'numeric' => ['type' => 'numeric', 'values' => ['1', '9']],
@@ -275,7 +277,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
             [
                 'facets' => [
                     'Results_Settings' => ['collapsedFacets' => '   foo, bar,baz   '],
-                ]
+                ],
             ],
             [],
             $this->once()
@@ -298,7 +300,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
                         'format' => 'Format',
                     ],
                     'Results_Settings' => ['collapsedFacets' => '*'],
-                ]
+                ],
             ],
             [],
             $this->once()
@@ -336,8 +338,8 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
         $configLoader = $this->getMockConfigPluginManager(
             [
                 'facets' => [
-                    'Checkboxes' => ['foo' => 'bar']
-                ]
+                    'Checkboxes' => ['foo' => 'bar'],
+                ],
             ],
             [],
             $this->once()
@@ -364,8 +366,8 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
         $configLoader = $this->getMockConfigPluginManager(
             [
                 'facets' => [
-                    'Checkboxes' => ['foo' => 'bar']
-                ]
+                    'Checkboxes' => ['foo' => 'bar'],
+                ],
             ],
             [],
             $this->once()

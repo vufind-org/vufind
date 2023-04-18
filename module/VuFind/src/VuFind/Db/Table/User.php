@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Table Definition for user
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Db\Table;
 
 use Laminas\Config\Config;
@@ -119,7 +121,7 @@ class User extends Gateway
      *
      * @param string $catId Catalog ID.
      *
-     * @return UserRow
+     * @return ?UserRow
      */
     public function getByCatalogId($catId)
     {

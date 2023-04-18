@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Model for missing records -- used for saved favorites that have been deleted
  * from the index.
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver;
 
 /**
@@ -50,8 +52,8 @@ class Missing extends DefaultRecord
      */
     public function __construct($mainConfig = null, $recordConfig = null)
     {
-        $this->sourceIdentifier = 'missing';
         parent::__construct($mainConfig, $recordConfig);
+        $this->setSourceIdentifiers('missing');
     }
 
     /**

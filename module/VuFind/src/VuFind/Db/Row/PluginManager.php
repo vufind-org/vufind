@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Database row plugin manager
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
+
 namespace VuFind\Db\Row;
 
 /**
@@ -44,10 +46,12 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
+        'accesstoken' => AccessToken::class,
         'changetracker' => ChangeTracker::class,
         'comments' => Comments::class,
         'externalsession' => ExternalSession::class,
         'oairesumption' => OaiResumption::class,
+        'ratings' => Ratings::class,
         'record' => Record::class,
         'resource' => Resource::class,
         'resourcetags' => ResourceTags::class,
@@ -67,11 +71,14 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
+        AccessToken::class => RowGatewayFactory::class,
         AuthHash::class => RowGatewayFactory::class,
         ChangeTracker::class => RowGatewayFactory::class,
         Comments::class => RowGatewayFactory::class,
         ExternalSession::class => RowGatewayFactory::class,
+        Feedback::class => RowGatewayFactory::class,
         OaiResumption::class => RowGatewayFactory::class,
+        Ratings::class => RowGatewayFactory::class,
         Record::class => RowGatewayFactory::class,
         Resource::class => RowGatewayFactory::class,
         ResourceTags::class => RowGatewayFactory::class,

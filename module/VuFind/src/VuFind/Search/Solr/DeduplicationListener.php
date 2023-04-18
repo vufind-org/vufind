@@ -31,12 +31,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Solr;
 
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use Psr\Container\ContainerInterface;
-
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Service;
 
@@ -60,7 +60,7 @@ class DeduplicationListener
     protected $backend;
 
     /**
-     * Superior service manager.
+     * Service container.
      *
      * @var ContainerInterface
      */
@@ -152,7 +152,8 @@ class DeduplicationListener
             if ($params && in_array($context, $contexts)) {
                 // If deduplication is enabled, filter out merged child records,
                 // otherwise filter out dedup records.
-                if ($this->enabled && 'getids' !== $context
+                if (
+                    $this->enabled && 'getids' !== $context
                     && !$this->hasChildFilter($params)
                 ) {
                     $fq = '-merged_child_boolean:true';
@@ -261,13 +262,13 @@ class DeduplicationListener
                         $localPriority = ++$undefPriority;
                     }
                 }
-                if (isset($localPriority) && $localPriority < $priority) {
+                if ($localPriority < $priority) {
                     $dedupId = $localId;
                     $priority = $localPriority;
                 }
                 $dedupData[$source] = [
                     'id' => $localId,
-                    'priority' => $localPriority ?? 99999
+                    'priority' => $localPriority,
                 ];
             }
             $fields['dedup_id'] = $dedupId;
@@ -324,6 +325,7 @@ class DeduplicationListener
             );
             $foundLocalRecord->setRawData($localRecordData);
             $foundLocalRecord->setHighlightDetails($record->getHighlightDetails());
+            $foundLocalRecord->setLabels($record->getLabels());
             $result->replace($record, $foundLocalRecord);
         }
     }

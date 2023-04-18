@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Module definition for the VuFind theme system.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development
  */
+
 namespace VuFindTheme;
 
 use Laminas\Mvc\View\Http\InjectTemplateListener as ParentInjectTemplateListener;
@@ -85,7 +87,7 @@ class Module
                 // module.config.php configuration.
                 'excluded_theme_prefixes' => ['Laminas'],
                 'extra_theme_prefixes' => [],
-            ]
+            ],
         ];
     }
 
@@ -107,7 +109,7 @@ class Module
                 Mobile::class => InvokableFactory::class,
                 ResourceContainer::class => InvokableFactory::class,
                 ThemeCompiler::class => ThemeInfoInjectorFactory::class,
-                ThemeGenerator::class => ThemeInfoInjectorFactory::class,
+                ThemeGenerator::class => ThemeGeneratorFactory::class,
                 ThemeInfo::class => ThemeInfoFactory::class,
             ],
         ];

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Covers content loader plugin manager
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
+
 namespace VuFind\Content\Covers;
 
 use Laminas\ServiceManager\Factory\InvokableFactory;
@@ -55,6 +57,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'browzine' => BrowZine::class,
         'contentcafe' => ContentCafe::class,
         'google' => Google::class,
+        'koha' => Koha::class,
         'librarything' => LibraryThing::class,
         'localfile' => LocalFile::class,
         'obalkyknih' => ObalkyKnih::class,
@@ -78,6 +81,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         ContentCafe::class => ContentCafeFactory::class,
         Deprecated::class => InvokableFactory::class,
         Google::class => InvokableFactory::class,
+        Koha::class => KohaFactory::class,
         LibraryThing::class => InvokableFactory::class,
         LocalFile::class => InvokableFactory::class,
         ObalkyKnih::class => ObalkyKnihContentFactory::class,

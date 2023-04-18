@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Load help text" view helper
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 /**
@@ -99,7 +101,8 @@ class HelpText extends \Laminas\View\Helper\AbstractHelper
 
         if (!$html) {
             $this->warnings[] = 'help_page_missing';
-        } elseif (isset($pageDetails['pageLocatorDetails']['matchType'])
+        } elseif (
+            isset($pageDetails['pageLocatorDetails']['matchType'])
             && $pageDetails['pageLocatorDetails']['matchType'] != 'language'
         ) {
             $this->warnings[] = 'Sorry, but the help you requested is '

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Row Definition for user_card
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Db\Row;
 
 /**
@@ -35,6 +37,16 @@ namespace VuFind\Db\Row;
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
+ *
+ * @property int     $id
+ * @property int     $user_id
+ * @property string  $card_name
+ * @property string  $cat_username
+ * @property ?string $cat_password
+ * @property ?string $cat_pass_enc
+ * @property ?string $home_library
+ * @property string  $created
+ * @property string  $saved
  */
 class UserCard extends RowGateway
 {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class for text messaging via Clickatell's HTTP API
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\SMS;
 
 use VuFind\Exception\Mail as MailException;
@@ -56,7 +58,7 @@ class Clickatell extends AbstractBase
      */
     public function __construct(\Laminas\Config\Config $config, $options = [])
     {
-        parent::__construct($config, $options);
+        parent::__construct($config);
         $this->client = $options['client'] ?? new \Laminas\Http\Client();
     }
 
@@ -99,7 +101,7 @@ class Clickatell extends AbstractBase
     public function getCarriers()
     {
         return [
-            'Clickatell' => ['name' => 'Clickatell', 'domain' => null]
+            'Clickatell' => ['name' => 'Clickatell', 'domain' => null],
         ];
     }
 

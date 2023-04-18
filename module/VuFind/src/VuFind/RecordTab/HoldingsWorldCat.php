@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Holdings (WorldCat) tab
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
+
 namespace VuFind\RecordTab;
 
 use VuFindSearch\Backend\WorldCat\Command\GetHoldingsCommand;
@@ -101,10 +103,6 @@ class HoldingsWorldCat extends AbstractBase
      */
     protected function getOCLCNum()
     {
-        static $id = false;     // cache value in static variable
-        if (!$id) {
-            $id = $this->getRecordDriver()->tryMethod('getCleanOCLCNum');
-        }
-        return $id;
+        return $this->getRecordDriver()->tryMethod('getCleanOCLCNum');
     }
 }

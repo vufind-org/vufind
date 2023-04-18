@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Console command: Generate non-tab record action route.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Generate;
 
 use Symfony\Component\Console\Input\InputArgument;
@@ -117,7 +119,8 @@ class NonTabRecordActionCommand extends AbstractCommand
         // Append the routes
         $config = include $configPath;
         foreach ($this->mainConfig['router']['routes'] as $key => $val) {
-            if (isset($val['options']['route'])
+            if (
+                isset($val['options']['route'])
                 && substr($val['options']['route'], -14) == '[:id[/[:tab]]]'
             ) {
                 $newRoute = $key . '-' . strtolower($action);

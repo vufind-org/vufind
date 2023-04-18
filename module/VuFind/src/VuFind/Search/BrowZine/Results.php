@@ -1,10 +1,11 @@
 <?php
+
 /**
  * BrowZine aspect of the Search Multi-class (Results)
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2017.
+ * Copyright (C) Villanova University 2017, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,7 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\BrowZine;
+
+use VuFindSearch\Command\SearchCommand;
 
 /**
  * BrowZine Search Results
@@ -71,13 +75,14 @@ class Results extends \VuFind\Search\Base\Results
         $query  = $this->getParams()->getQuery();
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord() - 1;
-        $collection = $this->getSearchService()->search(
+        $command = new SearchCommand(
             $this->backendId,
             $query,
             $offset,
             $limit
         );
-
+        $collection = $this->getSearchService()->invoke($command)
+            ->getResult();
         $this->resultTotal = $collection->getTotal();
 
         // Construct record drivers for all the items in the response:

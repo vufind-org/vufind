@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ExtendedIni Loader Factory
  *
@@ -25,12 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\I18n\Translator\Loader;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 use VuFind\I18n\Locale\LocaleSettings;
 
 /**
@@ -70,7 +72,7 @@ class ExtendedIniFactory implements \Laminas\ServiceManager\Factory\FactoryInter
         }
         $pathStack = [
             APPLICATION_PATH . '/languages',
-            LOCAL_OVERRIDE_DIR . '/languages'
+            LOCAL_OVERRIDE_DIR . '/languages',
         ];
         $settings = $container->get(LocaleSettings::class);
         return new $requestedName($pathStack, $settings->getFallbackLocales());

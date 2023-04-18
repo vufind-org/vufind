@@ -67,22 +67,32 @@
     ?>
     <table class="table table-striped">
       <caption class="sr-only"><?=$this->transEsc('Your Fines')?></caption>
-      <tr>
-        <?php foreach ($columns as $header): ?>
-          <th><?=$this->transEsc($header)?></th>
-        <?php endforeach; ?>
-      </tr>
-      <?php for ($row = 0; $row < $rowCount; $row++): ?>
+      <thead>
         <tr>
-          <?php foreach ($columns as $column): ?>
-            <td><?=$tableData[$column][$row]?></td>
+          <?php foreach ($columns as $header): ?>
+            <th scope="col"><?=$this->transEsc($header)?></th>
           <?php endforeach; ?>
         </tr>
-      <?php endfor; ?>
-      <tr style="font-weight:bold">
-        <td colspan="<?=count($columns) - 1?>"><?=$this->transEsc('Total Balance Due')?></td>
-        <td><?=$this->safeMoneyFormat($totalDue / 100.00) ?></td>
-      </tr>
+      </thead>
+      <tbody>
+        <?php for ($row = 0; $row < $rowCount; $row++): ?>
+          <tr>
+            <?php foreach ($columns as $header => $column): ?>
+              <?php if ('Title' == $header): ?>
+                <th scope="row"><?=$tableData[$column][$row]?></th>
+              <?php else: ?>
+                <td><?=$tableData[$column][$row]?></td>
+              <?php endif; ?>
+            <?php endforeach; ?>
+          </tr>
+        <?php endfor; ?>
+      </tbody>
+      <tfoot>
+        <tr>
+          <th colspan="<?=count($columns) - 1?>" scope="row"><?=$this->transEsc('Total Balance Due')?></th>
+          <td style="font-weight:bold"><?=$this->safeMoneyFormat($totalDue / 100.00) ?></td>
+        </tr>
+      </tfoot>
     </table>
   <?php endif; ?>
 </div>

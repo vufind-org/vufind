@@ -1,10 +1,11 @@
 <?php
+
 /**
  * Factory for ApiController.
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2016.
+ * Copyright (C) The National Library of Finland 2016-2021.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,13 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
+
 namespace VuFindApi\Controller;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Factory for ApiController.
@@ -67,9 +69,23 @@ class ApiControllerFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $controller = new $requestedName($container);
-        $controller->addApi($container->get('ControllerManager')->get('SearchApi'));
-        $controller->addApi($container->get('ControllerManager')->get('Search2Api'));
-        $controller->addApi($container->get('ControllerManager')->get('WebApi'));
+        $controllerManager = $container->get('ControllerManager');
+        foreach ($this->getApiControllersToRegister($container) as $apiName) {
+            $controller->addApi($controllerManager->get($apiName));
+        }
         return $controller;
+    }
+
+    /**
+     * Get the API controllers to register with ApiController
+     *
+     * @param ContainerInterface $container Service manager
+     *
+     * @return array
+     */
+    protected function getApiControllersToRegister(ContainerInterface $container)
+    {
+        $config = $container->get('Config');
+        return $config['vufind_api']['register_controllers'];
     }
 }

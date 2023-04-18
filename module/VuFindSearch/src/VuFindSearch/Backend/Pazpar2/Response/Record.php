@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Pazpar2\Response;
 
 use SimpleXMLElement;
@@ -42,19 +43,14 @@ use VuFindSearch\Response\RecordInterface;
  */
 class Record implements RecordInterface
 {
+    use \VuFindSearch\Response\RecordTrait;
+
     /**
      * XML record.
      *
      * @var SimpleXMLElement
      */
     protected $xml;
-
-    /**
-     * Source identifier.
-     *
-     * @var string
-     */
-    protected $source;
 
     /**
      * Constructor.
@@ -66,28 +62,7 @@ class Record implements RecordInterface
     public function __construct(SimpleXMLElement $xml)
     {
         $this->xml = $xml;
-    }
-
-    /**
-     * Set the source backend identifier.
-     *
-     * @param string $identifier Backend identifier
-     *
-     * @return void
-     */
-    public function setSourceIdentifier($identifier)
-    {
-        $this->source = $identifier;
-    }
-
-    /**
-     * Return the source backend identifier.
-     *
-     * @return string
-     */
-    public function getSourceIdentifier()
-    {
-        return $this->source;
+        $this->setSourceIdentifiers('Pazpar2');
     }
 
     /**

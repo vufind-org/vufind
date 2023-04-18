@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Import/WebCrawl command test.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Command\Import;
 
 use Laminas\Config\Config;
@@ -72,7 +74,7 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo('SolrWeb'));
         $config = new Config(
             [
-                'Sitemaps' => ['url' => ['http://foo']]
+                'Sitemaps' => ['url' => ['http://foo']],
             ]
         );
         $command = $this->getMockCommand($importer, $solr, $config);

@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
@@ -48,7 +49,7 @@ class Search2recordController extends AbstractRecord
      */
     public function __construct(ServiceLocatorInterface $sm)
     {
-        $this->searchClassId = 'Search2';
+        $this->sourceId = 'Search2';
         $this->fallbackDefaultTab = 'Description';
         parent::__construct($sm);
     }

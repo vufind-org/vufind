@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink ILS actions test class.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
@@ -58,20 +60,6 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Standard setup method.
-     *
-     * @return void
-     */
-    public function setUp(): void
-    {
-        // Give up if we're not running in CI:
-        if (!$this->continuousIntegrationRunning()) {
-            $this->markTestSkipped('Continuous integration not running.');
-            return;
-        }
-    }
-
-    /**
      * Get config.ini override settings for testing ILS functions.
      *
      * @return array
@@ -83,7 +71,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
                 'driver' => 'Demo',
                 'holds_mode' => 'driver',   // needed to display login link
                 'renewals_enabled' => true,
-            ]
+            ],
         ];
     }
 
@@ -101,25 +89,6 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $session->getPage();
         $this->waitForPageLoad($page);
         return $page;
-    }
-
-    /**
-     * Fill in and submit the catalog login form with the provided credentials.
-     *
-     * @param Element $page     Page element.
-     * @param string  $username Username
-     * @param string  $password Password
-     *
-     * @return void
-     */
-    protected function submitCatalogLoginForm(
-        Element $page,
-        string $username,
-        string $password
-    ): void {
-        $this->findCss($page, '#profile_cat_username')->setValue($username);
-        $this->findCss($page, '#profile_cat_password')->setValue($password);
-        $this->clickCss($page, 'input.btn.btn-primary');
     }
 
     /**
@@ -200,7 +169,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     protected function clickButtonGroupLink(Element $page, string $text): void
     {
         $link = $this->findCss($page, '.btn-group.open')->findLink($text);
-        $this->assertTrue(is_object($link));
+        $this->assertIsObject($link);
         $link->click();
     }
 
@@ -340,7 +309,52 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test that user profile action blocks login with catalog login is disabled.
+     * Note that we need to run this test FIRST, because after this, VuFind will
+     * remember the credentials and won't display the login form again.
+     *
+     * @retryCallback tearDownAfterClass
+     *
+     * @return void
+     */
+    public function testDisabledUserLogin(): void
+    {
+        $config = $this->getConfigIniOverrides();
+        $config['Catalog']['allowUserLogin'] = false;
+        $this->changeConfigs(
+            [
+                'config' => $config,
+                'Demo' => $this->getDemoIniOverrides(),
+            ]
+        );
+
+        // Go to user profile screen:
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/MyResearch/Profile');
+        $page = $session->getPage();
+
+        // Set up user account:
+        $this->clickCss($page, '.createAccountLink');
+        $this->fillInAccountForm($page);
+        $this->clickCss($page, 'input.btn.btn-primary');
+
+        // Confirm that login form is disabled:
+        $this->unFindCss($page, "#profile_cat_username");
+        $this->assertEquals(
+            "Connection to the library management system failed. "
+            . "Information related to your library account cannot be displayed. "
+            . "If the problem persists, please contact your library.",
+            $this->findCss($page, "div.alert-warning")->getText()
+        );
+
+        // Clean up the user account so we can sign up again in the next test:
+        static::removeUsers(['username1']);
+    }
+
+    /**
      * Test user profile action.
+     *
+     * @retryCallback tearDownAfterClass
      *
      * @return void
      */
@@ -369,7 +383,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Confirm that demo driver expected values are present:
         $this->waitForPageLoad($page);
         $texts = [
-            'Lib-catuser', 'Somewhere...', 'Over the Rainbow'
+            'Lib-catuser', 'Somewhere...', 'Over the Rainbow',
         ];
         foreach ($texts as $text) {
             $this->assertTrue($this->hasElementsMatchingText($page, 'td', $text));
@@ -551,6 +565,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Test submitting with no selected checkboxes:
         $this->clickCss($page, '#renewSelected');
+        $this->clickButtonGroupLink($page, 'Yes');
         $this->assertEquals(
             'No items were selected',
             $this->findCss($page, '.alert.alert-danger')->getText()
@@ -558,6 +573,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Test "renew all":
         $this->clickCss($page, '#renewAll');
+        $this->clickButtonGroupLink($page, 'Yes');
         $this->assertEquals(
             'Renewal Successful',
             $this->findCss($page, '.alert.alert-success')->getText()

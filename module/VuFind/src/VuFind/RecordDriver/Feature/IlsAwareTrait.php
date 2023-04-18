@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ILS support for MARC and other types of records.
  *
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver\Feature;
 
 use VuFind\Exception\ILS as ILSException;
@@ -151,6 +153,27 @@ trait IlsAwareTrait
         }
 
         return false;
+    }
+
+    /**
+     * Return an array of associative URL arrays with one or more of the following
+     * keys:
+     *
+     * <li>
+     *   <ul>desc: URL description text to display (optional)</ul>
+     *   <ul>url: fully-formed URL (required if 'route' is absent)</ul>
+     *   <ul>route: VuFind route to build URL with (required if 'url' is absent)</ul>
+     *   <ul>routeParams: Parameters for route (optional)</ul>
+     *   <ul>queryString: Query params to append after building route (optional)</ul>
+     * </li>
+     *
+     * @return array
+     */
+    public function getURLs()
+    {
+        return $this->hasILS() && $this->ils->checkCapability('getUrlsForRecord')
+            ? $this->ils->getUrlsForRecord($this->getUniqueId())
+            : [];
     }
 
     /**

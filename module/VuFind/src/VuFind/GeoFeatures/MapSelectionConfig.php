@@ -1,4 +1,5 @@
 <?php
+
 /**
  * MapSelection Configuration Module
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
+
 namespace VuFind\GeoFeatures;
 
 /**
@@ -47,7 +49,7 @@ class MapSelectionConfig extends AbstractConfig
     {
         return [
             'default_coordinates' => '-95, 30, 72, 15',
-            'height' => '320'
+            'height' => '320',
         ];
     }
 

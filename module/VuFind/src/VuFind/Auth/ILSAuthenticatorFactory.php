@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ILS Authenticator factory.
  *
@@ -25,13 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Auth;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * ILS Authenticator factory.
@@ -71,7 +73,7 @@ class ILSAuthenticatorFactory implements FactoryInterface
         // potential circular dependency with the MultiBackend driver as well as
         // saving on initialization costs in cases where the authenticator is not
         // actually utilized.
-        $callback = function (& $wrapped, $proxy) use ($container, $requestedName) {
+        $callback = function (&$wrapped, $proxy) use ($container, $requestedName) {
             // Generate wrapped object:
             $auth = $container->get(\VuFind\Auth\Manager::class);
             $catalog = $container->get(\VuFind\ILS\Connection::class);

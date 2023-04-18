@@ -1,10 +1,11 @@
 <?php
+
 /**
  * WorldCat Similar Related Items Test Class
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,10 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Related;
 
 use VuFind\Related\WorldCatSimilar;
-use VuFindSearch\Query\Query;
 
 /**
  * WorldCat Similar Related Items Test Class
@@ -49,8 +50,16 @@ class WorldCatSimilarTest extends \PHPUnit\Framework\TestCase
     public function testGetResults()
     {
         $driver = $this->getMockBuilder(\VuFind\RecordDriver\WorldCat::class)
-            ->onlyMethods(['tryMethod', 'getPrimaryAuthor', 'getAllSubjectHeadings', 'getTitle', 'getUniqueId', 'getSourceIdentifier'])
-            ->getMock();
+            ->onlyMethods(
+                [
+                    'tryMethod',
+                    'getPrimaryAuthor',
+                    'getAllSubjectHeadings',
+                    'getTitle',
+                    'getUniqueId',
+                    'getSourceIdentifier',
+                ]
+            )->getMock();
         $driver->expects($this->once())
             ->method('tryMethod')
             ->with($this->equalTo('getDeweyCallNumber'))
@@ -71,8 +80,8 @@ class WorldCatSimilarTest extends \PHPUnit\Framework\TestCase
             ->method('getSourceIdentifier')
             ->will($this->returnValue('WorldCat'));
         $service = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->onlyMethods(['search'])->getMock();
-        $expectedQuery = new Query('(srw.dd any "fakedc" or srw.au all "fakepa" or srw.su all "fakesh1a fakesh1b" or srw.su all "fakesh2" or srw.ti any "faketitle") not srw.no all "fakeid"');
+            ->disableOriginalConstructor()
+            ->getMock();
         $response = $this->getMockBuilder(\VuFindSearch\Backend\WorldCat\Response\XML\RecordCollection::class)
             ->onlyMethods(['getRecords'])
             ->setConstructorArgs([['offset' => 0, 'total' => 0]])
@@ -80,10 +89,26 @@ class WorldCatSimilarTest extends \PHPUnit\Framework\TestCase
         $response->expects($this->once())
             ->method('getRecords')
             ->will($this->returnValue(['fakeresponse']));
-        $service->expects($this->once())
-            ->method('search')
-            ->with($this->equalTo('WorldCat'), $this->equalTo($expectedQuery), $this->equalTo(0), $this->equalTo(5))
+
+        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $commandObj->expects($this->once())->method('getResult')
             ->will($this->returnValue($response));
+
+        $checkCommand = function ($command) {
+            $expectedTerms = '(srw.dd any "fakedc" or srw.au all "fakepa" or '
+                . 'srw.su all "fakesh1a fakesh1b" or srw.su all "fakesh2" or '
+                . 'srw.ti any "faketitle") not srw.no all "fakeid"';
+            return get_class($command) === \VuFindSearch\Command\SearchCommand::class
+                && $command->getTargetIdentifier() === "WorldCat"
+                && $command->getArguments()[0]->getAllTerms() === $expectedTerms
+                && $command->getArguments()[1] === 0
+                && $command->getArguments()[2] === 5;
+        };
+        $service->expects($this->once())->method('invoke')
+            ->with($this->callback($checkCommand))
+            ->will($this->returnValue($commandObj));
 
         $similar = new WorldCatSimilar($service);
         $similar->init('', $driver);

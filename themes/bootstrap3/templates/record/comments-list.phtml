@@ -5,7 +5,7 @@
   <?php foreach ($comments as $comment): ?>
     <div class="comment">
       <div class="comment-name">
-        <strong><?=null === $comment->user_id ? $this->transEsc('comment_anonymous_user') : $this->escapeHtml(trim($comment->firstname . ' ' . $comment->lastname))?></strong><br/>
+        <strong><?=null === $comment->user_id ? $this->transEsc('comment_anonymous_user') : $this->escapeHtml(trim($comment->firstname . ' ' . $comment->lastname))?></strong><br>
         <small>
           <?=$this->escapeHtml($comment->created)?>
           <?php if (($user = $this->auth()->isLoggedIn()) && $comment->user_id == $user->id): ?>
@@ -16,6 +16,14 @@
       <div class="comment-text">
         <?=$this->escapeHtml($comment->comment)?>
       </div>
+      <?php if ($this->driver->isRatingAllowed()): ?>
+        <div class="comment-rating">
+          <?php $ratingData = $this->driver->getRatingData($comment->user_id); ?>
+          <?php if ($ratingData['count']): ?>
+            <?=$this->render('Helpers/star-rating.phtml', ['readonly' => true, 'ratingData' => $ratingData]);?>
+          <?php endif; ?>
+        </div>
+      <?php endif; ?>
     </div>
   <?php endforeach; ?>
 <?php endif; ?>

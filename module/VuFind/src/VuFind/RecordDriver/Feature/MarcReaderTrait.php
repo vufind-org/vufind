@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Functions for reading MARC records.
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver\Feature;
 
 /**
@@ -54,14 +56,6 @@ trait MarcReaderTrait
      * MARC reader. Access only via getMarcReader() as this is initialized lazily.
      */
     protected $lazyMarcReader = null;
-
-    /**
-     * MARC record for legacy support. Access only via getMarcRecord() as this is
-     * initialized lazily.
-     *
-     * @var \File_MARC_Record
-     */
-    protected $lazyMarcRecord = null;
 
     /**
      * Retrieve the raw MARC data for this record; note that format may vary
@@ -99,33 +93,6 @@ trait MarcReaderTrait
         }
 
         return $this->lazyMarcReader;
-    }
-
-    /**
-     * Get access to the raw File_MARC object.
-     *
-     * @return     \File_MARC_Record
-     * @deprecated Use getMarcReader()
-     */
-    public function getMarcRecord()
-    {
-        if (null === $this->lazyMarcRecord) {
-            $marc = $this->getRawMarcData();
-
-            // check if we are dealing with MARCXML
-            if (substr($marc, 0, 1) == '<') {
-                $marc = new \File_MARCXML($marc, \File_MARCXML::SOURCE_STRING);
-            } else {
-                $marc = new \File_MARC($marc, \File_MARC::SOURCE_STRING);
-            }
-
-            $this->lazyMarcRecord = $marc->next();
-            if (!$this->lazyMarcRecord) {
-                throw new \File_MARC_Exception('Cannot Process MARC Record');
-            }
-        }
-
-        return $this->lazyMarcRecord;
     }
 
     /**
@@ -171,7 +138,7 @@ trait MarcReaderTrait
     protected function getFirstFieldValue($field, $subfields = null)
     {
         $matches = $this->getFieldArray($field, $subfields);
-        return $matches[0] ?? null;
+        return $matches[0] ?? '';
     }
 
     /**
@@ -201,12 +168,12 @@ trait MarcReaderTrait
                 ->getSubfieldArray($currentField, [$subfield], true, $separator);
             if (!empty($currentVal)) {
                 switch ($currentField['i2']) {
-                case '1':
-                    $pubResults = array_merge($pubResults, $currentVal);
-                    break;
-                case '4':
-                    $copyResults = array_merge($copyResults, $currentVal);
-                    break;
+                    case '1':
+                        $pubResults = array_merge($pubResults, $currentVal);
+                        break;
+                    case '4':
+                        $copyResults = array_merge($copyResults, $currentVal);
+                        break;
                 }
             }
         }

@@ -27,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Command;
 
 use VuFindSearch\Backend\BackendInterface;
@@ -90,7 +91,7 @@ class WorkExpressionsCommand extends CallMethodCommand
         return [
             $this->getRecordIdentifier(),
             $this->getWorkKeys(),
-            $this->getSearchParameters()
+            $this->getSearchParameters(),
         ];
     }
 

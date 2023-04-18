@@ -1,10 +1,11 @@
 <?php
+
 /**
  * Record loader
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010, 2022.
  * Copyright (C) The National Library of Finland 2015.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -27,12 +28,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Record;
 
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\Record\FallbackLoader\PluginManager as FallbackLoader;
 use VuFind\RecordDriver\PluginManager as RecordFactory;
 use VuFindSearch\Backend\Exception\BackendException;
+use VuFindSearch\Command\RetrieveBatchCommand;
+use VuFindSearch\Command\RetrieveCommand;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Service as SearchService;
 
@@ -118,22 +122,25 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
     ) {
         if (null !== $id && '' !== $id) {
             $results = [];
-            if (null !== $this->recordCache
+            if (
+                null !== $this->recordCache
                 && $this->recordCache->isPrimary($source)
             ) {
                 $results = $this->recordCache->lookup($id, $source);
             }
             if (empty($results)) {
                 try {
-                    $results = $this->searchService->retrieve($source, $id, $params)
-                        ->getRecords();
+                    $command = new RetrieveCommand($source, $id, $params);
+                    $results = $this->searchService->invoke($command)
+                        ->getResult()->getRecords();
                 } catch (BackendException $e) {
                     if (!$tolerateMissing) {
                         throw $e;
                     }
                 }
             }
-            if (empty($results) && null !== $this->recordCache
+            if (
+                empty($results) && null !== $this->recordCache
                 && $this->recordCache->isFallback($source)
             ) {
                 $results = $this->recordCache->lookup($id, $source);
@@ -143,7 +150,8 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
                 return $results[0];
             }
 
-            if ($this->fallbackLoader
+            if (
+                $this->fallbackLoader
                 && $this->fallbackLoader->has($source)
             ) {
                 try {
@@ -164,7 +172,7 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
         if ($tolerateMissing) {
             $record = $this->recordFactory->get('Missing');
             $record->setRawData(['id' => $id]);
-            $record->setSourceIdentifier($source);
+            $record->setSourceIdentifiers($source);
             return $record;
         }
         throw new RecordMissingException(
@@ -207,9 +215,13 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
         $genuineRecords = [];
         if ($list->hasUnchecked()) {
             try {
+                $command = new RetrieveBatchCommand(
+                    $source,
+                    $list->getUnchecked(),
+                    $params
+                );
                 $genuineRecords = $this->searchService
-                    ->retrieveBatch($source, $list->getUnchecked(), $params)
-                    ->getRecords();
+                    ->invoke($command)->getResult()->getRecords();
             } catch (BackendException $e) {
                 if (!$tolerateBackendExceptions) {
                     throw $e;
@@ -226,7 +238,8 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
         }
 
         $retVal = $genuineRecords;
-        if ($list->hasUnchecked() && $this->fallbackLoader
+        if (
+            $list->hasUnchecked() && $this->fallbackLoader
             && $this->fallbackLoader->has($source)
         ) {
             try {
@@ -250,7 +263,8 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
             }
         }
 
-        if ($list->hasUnchecked() && null !== $this->recordCache
+        if (
+            $list->hasUnchecked() && null !== $this->recordCache
             && $this->recordCache->isFallback($source)
         ) {
             // Try to load missing records from cache if source is cachable
@@ -280,7 +294,7 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
         $fields['id'] = $details['id'];
         $record = $this->recordFactory->get('Missing');
         $record->setRawData($fields);
-        $record->setSourceIdentifier($details['source']);
+        $record->setSourceIdentifiers($details['source']);
         return $record;
     }
 

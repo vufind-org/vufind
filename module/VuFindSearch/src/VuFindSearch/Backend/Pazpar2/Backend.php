@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Pazpar2 backend.
  *
@@ -25,15 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Pazpar2;
 
 use VuFindSearch\Backend\AbstractBackend;
-
 use VuFindSearch\ParamBag;
-
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
-
 use VuFindSearch\Response\RecordCollectionInterface;
 
 /**
@@ -152,7 +151,8 @@ class Backend extends AbstractBackend
          */
         $queryStart = time();
         $progress = $this->getSearchProgress();
-        while ($progress < $this->progressTarget
+        while (
+            $progress < $this->progressTarget
             && (time() - $queryStart) < $this->maxQueryTime
         ) {
             sleep(1);

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Abstract cover layer
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
+
 namespace VuFind\Cover\Layer;
 
 /**
@@ -111,18 +113,18 @@ abstract class AbstractLayer implements LayerInterface
         $q = (int)($v * (1.0 - $s * $f));
         $t = (int)($v * (1.0 - $s * (1.0 - $f)));
         switch ($i) {
-        case 0:
-            return imagecolorallocate($im, $v, $t, $p);
-        case 1:
-            return imagecolorallocate($im, $q, $v, $p);
-        case 2:
-            return imagecolorallocate($im, $p, $v, $t);
-        case 3:
-            return imagecolorallocate($im, $p, $q, $v);
-        case 4:
-            return imagecolorallocate($im, $t, $p, $v);
-        default:
-            return imagecolorallocate($im, $v, $p, $q);
+            case 0:
+                return imagecolorallocate($im, $v, $t, $p);
+            case 1:
+                return imagecolorallocate($im, $q, $v, $p);
+            case 2:
+                return imagecolorallocate($im, $p, $v, $t);
+            case 3:
+                return imagecolorallocate($im, $p, $q, $v);
+            case 4:
+                return imagecolorallocate($im, $t, $p, $v);
+            default:
+                return imagecolorallocate($im, $v, $p, $q);
         }
     }
 }

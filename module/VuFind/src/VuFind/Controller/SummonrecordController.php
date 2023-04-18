@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Summon Record Controller
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Controller;
 
 use Laminas\Mvc\MvcEvent;
@@ -49,7 +51,7 @@ class SummonrecordController extends AbstractRecord
     public function __construct(ServiceLocatorInterface $sm)
     {
         // Override some defaults:
-        $this->searchClassId = 'Summon';
+        $this->sourceId = 'Summon';
         $this->fallbackDefaultTab = 'Description';
 
         // Call standard record controller initialization:

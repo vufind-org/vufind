@@ -1,4 +1,5 @@
 <?php
+
 /**
  * LocaleDetectorFactory Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\I18n\Locale;
 
 use SlmLocale\Strategy\HttpAcceptLanguageStrategy;
@@ -59,10 +61,7 @@ class LocaleDetectorFactoryTest extends \PHPUnit\Framework\TestCase
     {
         $factory = new LocaleDetectorFactory();
         $strategies = $this->callMethod($factory, 'getStrategies', func_get_args());
-        foreach ($strategies as $strategy) {
-            $strategyClasses[] = get_class($strategy);
-        }
-        return $strategyClasses;
+        return array_map('get_class', iterator_to_array($strategies));
     }
 
     /**
@@ -77,7 +76,7 @@ class LocaleDetectorFactoryTest extends \PHPUnit\Framework\TestCase
                 LocaleDetectorParamStrategy::class,
                 QueryStrategy::class,
                 LocaleDetectorCookieStrategy::class,
-                HttpAcceptLanguageStrategy::class
+                HttpAcceptLanguageStrategy::class,
             ],
             $this->getStrategyClasses()
         );
@@ -100,7 +99,7 @@ class LocaleDetectorFactoryTest extends \PHPUnit\Framework\TestCase
                 LocaleDetectorParamStrategy::class,
                 QueryStrategy::class,
                 LocaleDetectorCookieStrategy::class,
-                HttpAcceptLanguageStrategy::class
+                HttpAcceptLanguageStrategy::class,
             ],
             $this->getStrategyClasses($mockSettings)
         );

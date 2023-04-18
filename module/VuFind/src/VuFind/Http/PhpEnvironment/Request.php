@@ -1,4 +1,5 @@
 <?php
+
 /**
  * HTTP Request class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Http\PhpEnvironment;
 
 /**
@@ -96,7 +98,8 @@ class Request extends \Laminas\Http\PhpEnvironment\Request
      */
     protected function cleanup($param)
     {
-        if (is_array($param)
+        if (
+            is_array($param)
             || $param instanceof \Laminas\Stdlib\ParametersInterface
         ) {
             foreach ($param as $key => &$value) {
@@ -117,19 +120,23 @@ class Request extends \Laminas\Http\PhpEnvironment\Request
     }
 
     /**
-     * Check if a string is a valid parameter
+     * Check if a parameter is valid
      *
-     * @param string $str String to check
+     * @param mixed $param Parameter to check
      *
      * @return bool
      */
-    protected function isValid($str)
+    protected function isValid($param)
     {
-        // Check if the string is UTF-8
-        if (is_string($str) && $str !== '' && !preg_match('/^./su', $str)) {
+        if (!is_string($param)) {
+            return true;
+        }
+        // Check if the string is UTF-8:
+        if ($param !== '' && !preg_match('/^./su', $param)) {
             return false;
         }
-        if (strpos($str, "\x00") !== false) {
+        // Check for null in string:
+        if (strpos($param, "\x00") !== false) {
             return false;
         }
         return true;

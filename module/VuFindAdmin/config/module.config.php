@@ -1,4 +1,5 @@
 <?php
+
 namespace VuFindAdmin\Module\Configuration;
 
 $config = [
@@ -6,6 +7,7 @@ $config = [
         'factories' => [
             'VuFindAdmin\Controller\AdminController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFindAdmin\Controller\ConfigController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFindAdmin\Controller\FeedbackController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFindAdmin\Controller\MaintenanceController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFindAdmin\Controller\SocialstatsController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFindAdmin\Controller\TagsController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -15,6 +17,7 @@ $config = [
         'aliases' => [
             'Admin' => 'VuFindAdmin\Controller\AdminController',
             'AdminConfig' => 'VuFindAdmin\Controller\ConfigController',
+            'AdminFeedback' => 'VuFindAdmin\Controller\FeedbackController',
             'AdminMaintenance' => 'VuFindAdmin\Controller\MaintenanceController',
             'AdminSocial' => 'VuFindAdmin\Controller\SocialstatsController',
             'AdminTags' => 'VuFindAdmin\Controller\TagsController',
@@ -30,7 +33,7 @@ $config = [
                     'defaults' => [
                         'controller' => 'Admin',
                         'action'     => 'Home',
-                    ]
+                    ],
                 ],
                 'may_terminate' => true,
                 'child_routes' => [
@@ -41,8 +44,8 @@ $config = [
                             'defaults' => [
                                 'controller' => 'Admin',
                                 'action'     => 'Disabled',
-                            ]
-                        ]
+                            ],
+                        ],
                     ],
                     'config' => [
                         'type' => 'Laminas\Router\Http\Segment',
@@ -51,8 +54,18 @@ $config = [
                             'defaults' => [
                                 'controller' => 'AdminConfig',
                                 'action'     => 'Home',
-                            ]
-                        ]
+                            ],
+                        ],
+                    ],
+                    'feedback' => [
+                        'type' => 'Laminas\Router\Http\Segment',
+                        'options' => [
+                            'route'    => '/Feedback[/:action]',
+                            'defaults' => [
+                                'controller' => 'AdminFeedback',
+                                'action'     => 'Home',
+                            ],
+                        ],
                     ],
                     'maintenance' => [
                         'type' => 'Laminas\Router\Http\Segment',
@@ -61,8 +74,8 @@ $config = [
                             'defaults' => [
                                 'controller' => 'AdminMaintenance',
                                 'action'     => 'Home',
-                            ]
-                        ]
+                            ],
+                        ],
                     ],
                     'social' => [
                         'type' => 'Laminas\Router\Http\Segment',
@@ -71,8 +84,8 @@ $config = [
                             'defaults' => [
                                 'controller' => 'AdminSocial',
                                 'action'     => 'Home',
-                            ]
-                        ]
+                            ],
+                        ],
                     ],
                     'tags' => [
                         'type' => 'Laminas\Router\Http\Segment',
@@ -81,8 +94,8 @@ $config = [
                             'defaults' => [
                                 'controller' => 'AdminTags',
                                 'action'     => 'Home',
-                            ]
-                        ]
+                            ],
+                        ],
                     ],
                     'overdrive' => [
                         'type' => 'Laminas\Router\Http\Segment',
@@ -91,8 +104,8 @@ $config = [
                             'defaults' => [
                                 'controller' => 'AdminOverdrive',
                                 'action'     => 'Home',
-                            ]
-                        ]
+                            ],
+                        ],
                     ],
                 ],
             ],

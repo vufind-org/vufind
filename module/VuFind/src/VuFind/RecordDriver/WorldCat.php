@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Model for MARC records in WorldCat.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver;
 
 use VuFind\RecordDriver\Feature\MarcAdvancedTrait;
@@ -62,11 +64,6 @@ class WorldCat extends DefaultRecord
         // Ensure that $driver->setRawData($driver->getRawData()) doesn't blow up:
         if (isset($data['fullrecord'])) {
             $data = $data['fullrecord'];
-        }
-
-        // Make sure the XML has an appropriate header:
-        if (strlen($data) > 2 && substr($data, 0, 2) != '<?') {
-            $data = '<?xml version="1.0"?>' . $data;
         }
 
         // Map the WorldCat response into a format that the parent Solr-based

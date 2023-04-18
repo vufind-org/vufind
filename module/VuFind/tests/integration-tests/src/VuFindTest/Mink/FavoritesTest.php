@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink favorites test class.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
@@ -54,20 +56,6 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     public static function setUpBeforeClass(): void
     {
         static::failIfDataExists();
-    }
-
-    /**
-     * Standard setup method.
-     *
-     * @return void
-     */
-    public function setUp(): void
-    {
-        // Give up if we're not running in CI:
-        if (!$this->continuousIntegrationRunning()) {
-            $this->markTestSkipped('Continuous integration not running.');
-            return;
-        }
     }
 
     /**
@@ -165,13 +153,15 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForLightboxHidden();
 
         // Check list page
-        $session = $this->getMinkSession();
-        $recordURL = $this->stripHash($session->getCurrentUrl());
+        $recordURL = $this->stripHash($this->getCurrentUrlWithoutSid());
         $this->clickCss($page, '.savedLists a');
         $this->waitForPageLoad($page);
         $this->clickCss($page, '.resultItemLine1 a');
         $this->waitForPageLoad($page);
-        $this->assertEquals($recordURL, $this->stripHash($session->getCurrentUrl()));
+        $this->assertEquals(
+            $recordURL,
+            $this->stripHash($this->getCurrentUrlWithoutSid())
+        );
         $this->clickCss($page, '.logoutOptions a.logout');
     }
 
@@ -320,10 +310,10 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         // Check list page
         $this->clickCss($page, '.result a.title');
         $session = $this->getMinkSession();
-        $recordURL = $session->getCurrentUrl();
+        $recordURL = $this->getCurrentUrlWithoutSid();
         $this->clickCss($page, '.savedLists a');
         $this->clickCss($page, '.resultItemLine1 a');
-        $this->assertEquals($recordURL, $session->getCurrentUrl());
+        $this->assertEquals($recordURL, $this->getCurrentUrlWithoutSid());
         $this->clickCss($page, '.logoutOptions a.logout');
     }
 
@@ -596,7 +586,6 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testBulkPrint()
     {
-        $session = $this->getMinkSession();
         $page = $this->setupBulkTest();
 
         // First try clicking without selecting anything:
@@ -613,9 +602,8 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
 
         $this->assertEqualsWithTimeout(
             'print=true',
-            function () use ($session) {
-                $urlParts = explode('?', $session->getCurrentUrl());
-                return $urlParts[1] ?? '';
+            function () {
+                return $this->getCurrentQueryString(true);
             }
         );
     }
@@ -685,24 +673,26 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         foreach ($links as $link) {
             $data[] = [
                 'text' => $link->getText(),
-                'iconCount' => count($link->findAll('css', 'i.fa-globe')),
+                'iconCount' => count($link->findAll('css', '.user-list__public-icon')),
             ];
             $hrefs[] = $link->getAttribute('href');
         }
+
         $expectedData = [
             ['text' => 'Future List 1', 'iconCount' => 0],
             ['text' => 'Login Test List 1', 'iconCount' => 0],
             ['text' => 'Test List (Public List) 1', 'iconCount' => 1],
         ];
+
         $this->assertEquals($expectedData, $data);
 
         // The "Future List" should NOT be public:
         $this->clickCss($page, 'a[href="' . $hrefs[0] . '"]');
-        $this->unFindCss($page, 'strong i.fa-globe');
+        $this->unFindCss($page, '.mainbody .user-list__public-icon');
 
         // The "Test List" SHOULD be public:
         $this->clickCss($page, 'a[href="' . $hrefs[2] . '"]');
-        $this->waitStatement('$("strong i.fa-globe").length === 1');
+        $this->waitStatement('$(".mainbody .user-list__public-icon").length === 1');
     }
 
     /**
