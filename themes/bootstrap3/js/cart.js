@@ -214,7 +214,7 @@ VuFind.register('cart', function Cart() {
       }
       _cartNotificationTimeout = setTimeout(function notificationHide() {
         $('#' + elId).popover('hide');
-      }, 50000);
+      }, 5000);
       return false;
     });
   }
