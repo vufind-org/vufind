@@ -11,12 +11,13 @@
   },
   "scripts": {
     "build": "npm run build:css",
+    "watch": "npm run watch:css",
 
     "build:css": "npm run build:less",
     "watch:css": "npm run watch:less",
 
     "build:less": "grunt less",
-    "lessdev": "grunt lessdev",
+    "build:lessdev": "grunt lessdev",
     "watch:less": "grunt watch:less",
     "watch:lessdev": "grunt watch:lessdev",
 
