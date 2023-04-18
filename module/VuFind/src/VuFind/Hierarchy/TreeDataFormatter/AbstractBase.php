@@ -89,7 +89,7 @@ abstract class AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @param bool $validateHierarchySequences Throw an exception if hierarchy parent and sequence data is out of sync?
      */
-    public function __construct($validateHierarchySequences)
+    public function __construct($validateHierarchySequences = true)
     {
         $this->validateHierarchySequences = $validateHierarchySequences;
     }
