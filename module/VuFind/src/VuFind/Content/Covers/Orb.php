@@ -99,6 +99,10 @@ class Orb extends \VuFind\Content\AbstractCover implements \VuFind\Http\CachingD
 
         $url = 'https://' . $this->apiUser . ':' . $this->apiKey . '@' .
                $this->url . '/products?eans=' . $ean . '&sort=ean_asc';
+
+        if (!isset($this->cachingDownloader)) {
+            throw new \Exception('CachingDownloader initialization failed.');
+        }
         $json = $this->cachingDownloader->downloadJson($url);
         $imageVersion = $size == 'small' ? 'thumbnail' : 'original';
         foreach ($json->data as $title) {
