@@ -65,7 +65,7 @@
   <?php endif; ?>
   <?php if (!empty($this->savedData) || count($this->lists) > 0): ?>
     <div class="form-group">
-      <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEscAttr('Save') ?>">
+      <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEscAttr('Save') ?>" aria-label="<?=$this->transEscAttr('Save') ?>">
     </div>
   <?php endif; ?>
   </form>
