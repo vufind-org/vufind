@@ -18,7 +18,7 @@
     "watch:css": "npm run watch:less",
     "dev:css": "npm run dev:less",
 
-    "build:less": "grunt less",
+    "build:less": "grunt less && npm run lessToSass",
     "build:lessdev": "grunt lessdev",
     "dev:less": "grunt watch:lessdev && npm run watch:lessToSass",
     "watch:less": "grunt watch:less",
