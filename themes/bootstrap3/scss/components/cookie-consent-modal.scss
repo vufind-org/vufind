@@ -515,7 +515,7 @@ $cc-sections-padding: 1em 1.3em;
         transform: translateY($cc-translate-y);
 
         &--middle{
-            transform: translateY(calc(-50% + #{$cc-translate-y))};
+            transform: translateY(calc(-50% + #{$cc-translate-y}));
         }
 
         &--bar{
