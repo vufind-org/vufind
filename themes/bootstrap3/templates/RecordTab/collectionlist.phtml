@@ -93,8 +93,8 @@
   </div>
 </div>
 
-<aside class="<?=$this->layoutClass('sidebar')?>">
+<div class="<?=$this->layoutClass('sidebar')?>">
   <?php foreach ($results->getRecommendations('side') as $current): ?>
     <?=$this->recommend($current)?>
   <?php endforeach; ?>
-</aside>
+</div>

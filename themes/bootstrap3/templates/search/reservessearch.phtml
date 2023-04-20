@@ -79,9 +79,9 @@
 </div>
 
 <?php /* Refine Search Options */ ?>
-<aside class="<?=$this->layoutClass('sidebar')?>">
+<div class="<?=$this->layoutClass('sidebar')?>">
   <?php foreach ($this->results->getRecommendations('side') as $current): ?>
     <?=$this->recommend($current)?>
   <?php endforeach; ?>
-</aside>
+</div>
 <?php /* End Refine Search Options */ ?>
