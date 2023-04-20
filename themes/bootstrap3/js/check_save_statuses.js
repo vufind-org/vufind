@@ -146,5 +146,5 @@ VuFind.register("saveStatuses", function ItemStatuses() {
     }
   }
 
-  return { init, refresh };
+  return { init, refresh, check: checkAllSaveStatuses, checkRecord: checkSaveStatus };
 });
