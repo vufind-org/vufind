@@ -360,14 +360,7 @@
       </then>
     </if>
 
-    <!-- fail if a local config.ini already exists -->
-    <property name="local_config_ini" value="${localdir}/config/vufind/config.ini" />
-    <if>
-      <available file="${local_config_ini}" />
-      <then>
-        <fail>${local_config_ini} already exists</fail>
-      </then>
-    </if>
+    <phingcall target="fail_if_local_config_exists" />
 
     <!-- run extra startup action, if any -->
     <if>
@@ -404,7 +397,7 @@
     <!-- build and configure the requested database type -->
     <phingcall target="setup_database" />
 
-    <!-- start Solr (use restart in case of old PID files) -->
+    <!-- start Solr -->
     <phingcall target="setup_solr" />
 
     <phingcall target="import_biblios" />
@@ -412,8 +405,8 @@
     <phingcall target="build_alphabrowse" />
   </target>
 
-  <!-- Setup basic configuration and run the install command -->
-  <target name="configure_install" description="configure and run installation">
+  <!-- A helper task to check for existing configuration -->
+  <target name="fail_if_local_config_exists" description="check for local configuration and fail if it exists">
     <!-- fail if a local config.ini already exists -->
     <property name="local_config_ini" value="${localdir}/config/vufind/config.ini" />
     <if>
@@ -422,6 +415,12 @@
         <fail>${local_config_ini} already exists</fail>
       </then>
     </if>
+  </target>
+
+  <!-- Setup basic configuration and run the install command -->
+  <target name="configure_install" description="configure and run installation">
+    <phingcall target="fail_if_local_config_exists" />
+
     <!-- Generate basic configuration -->
     <php expression="end(explode('/', '${vufindurl}'))" returnProperty="basepath" />
     <exec command="php ${srcdir}/install.php --basepath=/${basepath} --non-interactive" passthru="true" checkreturn="true" />
@@ -437,7 +436,7 @@
       </else>
     </if>
 
-    <copy file="${srcdir}/config/vufind/config.ini" tofile="${local_config_ini}">
+    <copy file="${srcdir}/config/vufind/config.ini" tofile="${localdir}/config/vufind/config.ini">
       <filterchain>
         <replaceregexp>
           <regexp pattern="mysql://root@localhost/vufind" replace="${db_connection_string}" />
@@ -490,6 +489,7 @@
 
   <!-- Set up Solr -->
   <target name="setup_solr">
+    <!-- Start Solr using restart in case of old PID files -->
     <exec command="SOLR_PID_DIR=${localdir} VUFIND_HOME=${srcdir} SOLR_ADDITIONAL_JVM_OPTIONS=${solr_additional_jvm_options} ${srcdir}/solr.sh restart" passthru="true" checkreturn="true" />
     <!-- fail if Solr did not start up successfully: -->
     <if>
@@ -640,11 +640,11 @@ ${git_status}
   <!-- Reset database and configuration of the demo setup -->
   <target name="reset_setup" description="reset configuration and database of demo">
     <property name="solr_pid_file" value="${localdir}/solr-8983.pid" />
-    <!-- fail if the system is already running -->
+    <!-- fail if the system is not already running -->
     <if>
       <not><available file="${solr_pid_file}" /></not>
       <then>
-        <fail>Solr PID file (${solr_pid_file}) not detected. Is the system already running?</fail>
+        <fail>Solr PID file (${solr_pid_file}) not detected. Is the demo system not running?</fail>
       </then>
     </if>
 
