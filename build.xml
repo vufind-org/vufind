@@ -360,7 +360,7 @@
       </then>
     </if>
 
-    <phingcall target="fail_if_local_config_exists" />
+    <phingcall target="check_local_config" />
 
     <!-- run extra startup action, if any -->
     <if>
@@ -406,7 +406,7 @@
   </target>
 
   <!-- A helper task to check for existing configuration -->
-  <target name="fail_if_local_config_exists" description="check for local configuration and fail if it exists">
+  <target name="check_local_config" description="check for local configuration and fail if it exists">
     <!-- fail if a local config.ini already exists -->
     <property name="local_config_ini" value="${localdir}/config/vufind/config.ini" />
     <if>
@@ -419,7 +419,7 @@
 
   <!-- Setup basic configuration and run the install command -->
   <target name="configure_install" description="configure and run installation">
-    <phingcall target="fail_if_local_config_exists" />
+    <phingcall target="check_local_config" />
 
     <!-- Generate basic configuration -->
     <php expression="end(explode('/', '${vufindurl}'))" returnProperty="basepath" />
