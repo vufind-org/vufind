@@ -10,17 +10,20 @@
     "url": "https://vufind.org/jira"
   },
   "scripts": {
-    "css": "npm run less",
+    "build": "npm run build:css",
+
+    "build:css": "npm run build:less",
     "watch:css": "npm run watch:less",
 
-    "less": "grunt less",
+    "build:less": "grunt less",
     "lessdev": "grunt lessdev",
-    "scss": "grunt scss",
-    "lessToSass": "grunt lessToSass",
-
     "watch:less": "grunt watch:less",
     "watch:lessdev": "grunt watch:lessdev",
+
+    "build:scss": "grunt scss",
     "watch:scss": "grunt watch:scss",
+
+    "lessToSass": "grunt lessToSass",
     "watch:lessToSass": "grunt watch:lessToSass"
   },
   "dependencies": {
