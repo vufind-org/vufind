@@ -54,7 +54,7 @@
   <property name="html_validator_quiet" value="" /><!-- set to 1 to prevent the HTML validation from outputting results to the console  -->
   <property name="phpunit_html_validation_params" value="VUFIND_HTML_VALIDATOR=${html_validator} VUFIND_HTML_VALIDATOR_FAIL_TESTS=${html_validator_fail_tests} VUFIND_HTML_VALIDATOR_LOG_FILE=${html_validator_log_file} VUFIND_HTML_VALIDATOR_QUIET=${html_validator_quiet}" />
 
-  <property name="version" value="9.0" />
+  <property name="version" value="9.0.1" />
 
   <!-- We only need the -p switch if the password is non-blank -->
   <if>
