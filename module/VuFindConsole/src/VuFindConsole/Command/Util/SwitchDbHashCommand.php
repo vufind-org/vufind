@@ -218,17 +218,22 @@ class SwitchDbHashCommand extends Command
         $output->writeln("\tConverting hashes for " . count($users) . ' user(s).');
         foreach ($users as $row) {
             $pass = null;
-            if ($oldhash != 'none' && isset($row['cat_pass_enc'])) {
-                $oldcipher = new BlockCipher($oldCrypt);
-                $oldcipher->setKey($oldkey);
-                $pass = $oldcipher->decrypt($row['cat_pass_enc']);
+            if ($oldhash != 'none' && $row['cat_pass_enc'] ?? null !== null) {
+                try {
+                    $oldcipher = new BlockCipher($oldCrypt);
+                    $oldcipher->setKey($oldkey);
+                    $pass = $oldcipher->decrypt($row['cat_pass_enc']);
+                } catch (\Exception $e) {
+                    $output->writeln("Problem with user {$row['username']}: " . (string)$e);
+                    continue;
+                }
             } else {
                 $pass = $row['cat_password'];
             }
             $newcipher = new BlockCipher($newCrypt);
             $newcipher->setKey($newkey);
             $row['cat_password'] = null;
-            $row['cat_pass_enc'] = $newcipher->encrypt($pass);
+            $row['cat_pass_enc'] = $pass === null ? null : $newcipher->encrypt($pass);
             $row->save();
         }
 
