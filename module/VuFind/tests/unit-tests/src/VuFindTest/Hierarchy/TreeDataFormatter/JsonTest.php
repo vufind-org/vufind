@@ -1,9 +1,8 @@
 <?php
 
 /**
- *
  * Hierarchy TreeDataFormatter Json Test Class
- * 
+ *
  * PHP version 7
  *
  * Copyright (C) Villanova University 2010.
@@ -46,12 +45,14 @@ class JsonTest extends \PHPUnit\Framework\TestCase
     /**
      * Invokes a private or protected method and returns its return value.
      *
-     * @param object $obj
-     * @param string $method
-     * @param mixed ...$args
+     * @param object $obj     Object
+     * @param string $method  Method name
+     * @param mixed  ...$args Arguments passed to method
+     *
      * @return mixed
      */
-    private function invokePrivateMethod($obj, $method, ...$args) {
+    private function invokePrivateMethod($obj, $method, ...$args)
+    {
         $ref = new \ReflectionClass($obj);
         $refMethod = $ref->getMethod($method);
         $refMethod->setAccessible('true');
@@ -60,10 +61,11 @@ class JsonTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Tests method `getHierarchyPositionsInParents`.
-     * 
+     *
      * @return void
      */
-    public function testGetHierarchyPositionsInParents() {
+    public function testGetHierarchyPositionsInParents()
+    {
         $method = 'getHierarchyPositionsInParents';
 
         /**
@@ -77,7 +79,7 @@ class JsonTest extends \PHPUnit\Framework\TestCase
             'hierarchy_sequence' => [3, 4],
         ];
         $json = new Json(false);
-        $result = $this->invokePrivateMethod($json, $method, $fields); 
+        $result = $this->invokePrivateMethod($json, $method, $fields);
         $this->assertEquals($result, [
             1 => 3,
             2 => 4,
@@ -94,7 +96,7 @@ class JsonTest extends \PHPUnit\Framework\TestCase
             'hierarchy_sequence' => [3, 4],
         ];
         $json = new Json(true);
-        $result = $this->invokePrivateMethod($json, $method, $fields);  
+        $result = $this->invokePrivateMethod($json, $method, $fields);
         $this->assertEquals($result, [
             1 => 3,
             2 => 4,
@@ -120,7 +122,7 @@ class JsonTest extends \PHPUnit\Framework\TestCase
          * then throw an exception.
          */
 
-         $fields = (object)[
+        $fields = (object)[
             'hierarchy_parent_id' => [1, 2, 3],
             'hierarchy_sequence' => [4, 5],
         ];
