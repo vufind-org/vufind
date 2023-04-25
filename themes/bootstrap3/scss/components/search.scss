@@ -209,9 +209,8 @@ header .container.navbar { margin-bottom: 0; }
   padding-bottom: .25rem;
 }
 
-.result-body &,
-.media-body &
-{
+.result-body,
+.media-body {
   h2 {
     font-size: unset;
     line-height: $line-height-base;
