@@ -177,7 +177,7 @@ class HierarchyController extends AbstractBase
             }
         } catch (\Exception $e) {
             // Let exceptions fall through to error condition below:
-            $message = APPLICATION_ENV !== 'development'
+            $message = APPLICATION_ENV === 'development'
                 ? (string)$e : 'Unexpected exception';
         }
 
