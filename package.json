@@ -12,17 +12,18 @@
   "scripts": {
     "build": "npm run build:css",
     "watch": "npm run watch:css",
-    "dev": "npm run dev:css",
+    "build-dev": "npm run build-dev:css",
+    "watch-dev": "npm run watch-dev:css",
 
     "build:css": "npm run build:less",
     "watch:css": "npm run watch:less",
-    "dev:css": "npm run dev:less",
+    "build-dev:css": "npm run build-dev:less",
+    "watch-dev:css": "npm run watch-dev:less",
 
     "build:less": "grunt less && npm run lessToSass",
-    "build:lessdev": "grunt lessdev",
-    "dev:less": "grunt watch:lessdev && npm run watch:lessToSass",
-    "watch:less": "grunt watch:less",
-    "watch:lessdev": "grunt watch:lessdev",
+    "watch:less": "grunt watch:less && npm run watch:lessToSass",
+    "build-dev:less": "grunt lessdev && npm run lessToSass",
+    "watch-dev:less": "grunt watch:lessdev && npm run watch:lessToSass",
 
     "build:scss": "grunt scss",
     "watch:scss": "grunt watch:scss",
