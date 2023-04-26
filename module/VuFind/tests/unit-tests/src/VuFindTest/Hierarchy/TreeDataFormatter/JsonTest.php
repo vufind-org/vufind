@@ -5,7 +5,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,7 +22,7 @@
  *
  * @category VuFind
  * @package  Tests
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Mathias Maaß <mathias.maass@uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
@@ -42,22 +42,7 @@ use VuFind\Hierarchy\TreeDataFormatter\Json;
  */
 class JsonTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * Invokes a private or protected method and returns its return value.
-     *
-     * @param object $obj     Object
-     * @param string $method  Method name
-     * @param mixed  ...$args Arguments passed to method
-     *
-     * @return mixed
-     */
-    private function invokePrivateMethod($obj, $method, ...$args)
-    {
-        $ref = new \ReflectionClass($obj);
-        $refMethod = $ref->getMethod($method);
-        $refMethod->setAccessible('true');
-        return $refMethod->invoke($obj, ...$args);
-    }
+    use \VuFindTest\Feature\ReflectionTrait;
 
     /**
      * Tests method `getHierarchyPositionsInParents`.
@@ -79,7 +64,7 @@ class JsonTest extends \PHPUnit\Framework\TestCase
             'hierarchy_sequence' => [3, 4],
         ];
         $json = new Json(false);
-        $result = $this->invokePrivateMethod($json, $method, $fields);
+        $result = $this->callMethod($json, $method, [$fields]);
         $this->assertEquals($result, [
             1 => 3,
             2 => 4,
@@ -96,7 +81,7 @@ class JsonTest extends \PHPUnit\Framework\TestCase
             'hierarchy_sequence' => [3, 4],
         ];
         $json = new Json(true);
-        $result = $this->invokePrivateMethod($json, $method, $fields);
+        $result = $this->callMethod($json, $method, [$fields]);
         $this->assertEquals($result, [
             1 => 3,
             2 => 4,
@@ -113,7 +98,7 @@ class JsonTest extends \PHPUnit\Framework\TestCase
             'hierarchy_sequence' => [4, 5],
         ];
         $json = new Json(false);
-        $result = $this->invokePrivateMethod($json, $method, $fields);
+        $result = $this->callMethod($json, $method, [$fields]);
         $this->assertEquals($result, []);
 
         /**
@@ -128,6 +113,6 @@ class JsonTest extends \PHPUnit\Framework\TestCase
         ];
         $json = new Json(true);
         $this->expectException(\Exception::class);
-        $result = $this->invokePrivateMethod($json, $method, $fields);
+        $result = $this->callMethod($json, $method, [$fields]);
     }
 }
