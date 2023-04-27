@@ -31,20 +31,19 @@
             </div>
           <?php endforeach; ?>
         </h2>
-
-        <?php if ($this->driver->isCollection()): ?>
-          </header>
-          <div>
-          <?=implode('<br>', array_map([$this, 'escapeHtml'], $this->driver->getSummary())); ?>
-        <?php else: ?>
+        <?php if (!$this->driver->isCollection()): ?>
           <?php $summAuthors = $this->driver->getPrimaryAuthorsWithHighlighting(); if (!empty($summAuthors)): ?>
             <?=$this->transEsc('by')?>
             <?php $authorCount = count($summAuthors); foreach ($summAuthors as $i => $summAuthor): ?>
               <a href="<?=$this->record($this->driver)->getLink('author', $this->highlight($summAuthor, null, true, false))?>" class="result-author"><?=$this->highlight(rtrim($summAuthor, ','))?></a><?=$i + 1 < $authorCount ? ',' : ''?>
             <?php endforeach; ?>
           <?php endif; ?>
-          </header>
-          <div>
+        <?php endif; ?>
+      </header>
+      <div>
+        <?php if ($this->driver->isCollection()): ?>
+          <?=implode('<br>', array_map([$this, 'escapeHtml'], $this->driver->getSummary())); ?>
+        <?php else: ?>
           <?php $journalTitle = $this->driver->getContainerTitle(); $summDate = $this->driver->getPublicationDates(); ?>
           <?php if (!empty($journalTitle)): ?>
             <?=$this->transEsc('Published in')?>
