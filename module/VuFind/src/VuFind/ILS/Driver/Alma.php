@@ -32,8 +32,10 @@ namespace VuFind\ILS\Driver;
 use Laminas\Http\Headers;
 use SimpleXMLElement;
 use VuFind\Exception\ILS as ILSException;
+use VuFind\I18n\TranslatableString;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
+use VuFind\ILS\Connection;
 use VuFind\Marc\MarcReader;
 
 /**
@@ -84,6 +86,13 @@ class Alma extends AbstractBase implements
     protected $configLoader;
 
     /**
+     * Mappings from location type to item status. Overrides any other item status.
+     *
+     * @var array
+     */
+    protected $locationTypeToItemStatus = [];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter       $dateConverter Date converter object
@@ -113,6 +122,11 @@ class Alma extends AbstractBase implements
         }
         $this->baseUrl = $this->config['Catalog']['apiBaseUrl'];
         $this->apiKey = $this->config['Catalog']['apiKey'];
+
+        if (!empty($this->config['Holdings']['locationTypeItemStatus'])) {
+            $this->locationTypeToItemStatus
+                = $this->config['Holdings']['locationTypeItemStatus'];
+        }
     }
 
     /**
@@ -334,6 +348,38 @@ class Alma extends AbstractBase implements
                     );
                 }
 
+                $available = null;
+                if ($this->locationTypeToItemStatus) {
+                    $locationType = $this->getItemLocationType($item);
+                    if (
+                        $locationType
+                        && isset($this->locationTypeToItemStatus[$locationType])
+                    ) {
+                        $parts = explode(
+                            ':',
+                            $this->locationTypeToItemStatus[$locationType]
+                        );
+                        $status = new TranslatableString($parts[0], $parts[0]);
+                        if (isset($parts[1])) {
+                            switch ($parts[1]) {
+                                case 'unavailable':
+                                    $available = Connection::ITEM_STATUS_AVAILABLE;
+                                    break;
+                                case 'uncertain':
+                                    $available = Connection::ITEM_STATUS_UNCERTAIN;
+                                    break;
+                                default:
+                                    $available = Connection::ITEM_STATUS_AVAILABLE;
+                                    break;
+                            }
+                        }
+                    }
+                }
+
+                if (null === $available) {
+                    $available = $this->getAvailabilityFromItem($item);
+                }
+
                 $description = null;
                 if (!empty($item->item_data->description)) {
                     $number = (string)$item->item_data->description;
@@ -343,7 +389,7 @@ class Alma extends AbstractBase implements
                 $results['holdings'][] = [
                     'id' => $id,
                     'source' => 'Solr',
-                    'availability' => $this->getAvailabilityFromItem($item),
+                    'availability' => $available,
                     'status' => $status,
                     'location' => $this->getItemLocation($item),
                     'reserve' => 'N',   // TODO: support reserve status
@@ -1861,7 +1907,7 @@ class Alma extends AbstractBase implements
         $value = ($this->config['Catalog']['translationPrefix'] ?? '')
             . (string)$element;
         $desc = (string)($element->attributes()->desc ?? $element);
-        return new \VuFind\I18n\TranslatableString($value, $desc);
+        return new TranslatableString($value, $desc);
     }
 
     /**
@@ -1869,7 +1915,7 @@ class Alma extends AbstractBase implements
      *
      * @param SimpleXMLElement $element XML element
      *
-     * @return \VuFind\I18n\TranslatableString
+     * @return TranslatableString
      */
     protected function getTranslatableStatusString($element)
     {
@@ -1878,7 +1924,7 @@ class Alma extends AbstractBase implements
         }
         $value = 'status_' . strtolower((string)$element);
         $desc = (string)($element->attributes()->desc ?? $element);
-        return new \VuFind\I18n\TranslatableString($value, $desc);
+        return new TranslatableString($value, $desc);
     }
 
     /**
@@ -1886,11 +1932,77 @@ class Alma extends AbstractBase implements
      *
      * @param SimpleXMLElement $item Item
      *
-     * @return \VuFind\I18n\TranslatableString|string
+     * @return TranslatableString|string
      */
     protected function getItemLocation($item)
     {
         return $this->getTranslatableString($item->item_data->location);
+    }
+
+    /**
+     * Get location type for an item
+     *
+     * @param SimpleXMLElement $item Item
+     *
+     * @return string
+     */
+    protected function getItemLocationType($item)
+    {
+        // Yes, temporary location is in holding data while permanent location is in
+        // item data.
+        if ('true' === (string)$item->holding_data->in_temp_location) {
+            $library = $item->holding_data->temp_library
+                ?: $item->item_data->library;
+            $location = $item->holding_data->temp_location
+                ?: $item->item_data->location;
+        } else {
+            $library = $item->item_data->library;
+            $location = $item->item_data->location;
+        }
+        return $this->getLocationType((string)$library, (string)$location);
+    }
+
+    /**
+     * Get type of a location
+     *
+     * @param string $library  Library
+     * @param string $location Location
+     *
+     * @return string
+     */
+    protected function getLocationType($library, $location)
+    {
+        $locations = $this->getLocations($library);
+        return $locations[$location]['type'] ?? '';
+    }
+
+    /**
+     * Get the locations for a library
+     *
+     * @param string $library Library
+     *
+     * @return array
+     */
+    protected function getLocations($library)
+    {
+        $cacheId = 'alma|locations|' . $library;
+        $locations = $this->getCachedData($cacheId);
+
+        if (null === $locations) {
+            $xml = $this->makeRequest(
+                '/conf/libraries/' . rawurlencode($library) . '/locations'
+            );
+            $locations = [];
+            foreach ($xml as $entry) {
+                $locations[(string)$entry->code] = [
+                    'name' => (string)$entry->name,
+                    'externalName' => (string)$entry->external_name,
+                    'type' => (string)$entry->type,
+                ];
+            }
+            $this->putCachedData($cacheId, $locations, 3600);
+        }
+        return $locations;
     }
 
     /**
