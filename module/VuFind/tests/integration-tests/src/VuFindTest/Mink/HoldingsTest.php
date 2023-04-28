@@ -30,7 +30,7 @@
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\DocumentElement;
-use VuFind\ILS\Connection;
+use VuFind\ILS\Logic\ItemStatus;
 
 /**
  * Test class for holdings and item statuses.
@@ -56,9 +56,9 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
         return [
             [true, 'On Shelf', 'Available', 'success'],
             [false, 'Checked Out', 'Checked Out', 'danger'],
-            [Connection::ITEM_STATUS_AVAILABLE, 'On Shelf', 'On Shelf', 'success'],
-            [Connection::ITEM_STATUS_UNAVAILABLE, 'Checked Out', 'Checked Out', 'danger'],
-            [Connection::ITEM_STATUS_UNCERTAIN, 'Check with Staff', 'Check with Staff', 'warning'],
+            [ItemStatus::STATUS_AVAILABLE, 'On Shelf', 'On Shelf', 'success'],
+            [ItemStatus::STATUS_UNAVAILABLE, 'Checked Out', 'Checked Out', 'danger'],
+            [ItemStatus::STATUS_UNCERTAIN, 'Check with Staff', 'Check with Staff', 'warning'],
         ];
     }
 
@@ -188,12 +188,12 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
         // (if allowed) to test that the correct status prevails:
         if ($addExtraItems && $availability) {
             $item = $this->getFakeItem();
-            $item['availability'] = Connection::ITEM_STATUS_UNAVAILABLE;
+            $item['availability'] = ItemStatus::STATUS_UNAVAILABLE;
             $item['status'] = 'Foo';
             $items[] = $item;
-            if (Connection::ITEM_STATUS_UNCERTAIN !== $availability) {
+            if (ItemStatus::STATUS_UNCERTAIN !== $availability) {
                 $item = $this->getFakeItem();
-                $item['availability'] = Connection::ITEM_STATUS_UNCERTAIN;
+                $item['availability'] = ItemStatus::STATUS_UNCERTAIN;
                 $item['status'] = 'Foo';
                 $items[] = $item;
             }

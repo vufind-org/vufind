@@ -30,7 +30,7 @@
             <?php if ($holding['availability']): ?>
               <?php /* Begin Available Items (Holds) */ ?>
               <?php
-                if ((int)$holding['availability'] === \VuFind\ILS\Connection::ITEM_STATUS_UNCERTAIN) {
+                if ((int)$holding['availability'] === \VuFind\ILS\Logic\ItemStatus::STATUS_UNCERTAIN) {
                   $statusClassEsc = 'text-warning';
                   $status = $holding['status'];
                 } else {

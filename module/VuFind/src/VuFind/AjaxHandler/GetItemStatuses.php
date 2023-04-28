@@ -38,6 +38,7 @@ use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\ILS\Connection;
 use VuFind\ILS\Logic\Holds;
+use VuFind\ILS\Logic\ItemStatus;
 use VuFind\Session\Settings as SessionSettings;
 
 /**
@@ -466,7 +467,7 @@ class GetItemStatuses extends AbstractBase implements
     /**
      * Convert availability boolean or int to a string
      *
-     * @param mixed $available Boolean value or one of the Connection::ITEM_STATUS_*
+     * @param mixed $available Boolean value or one of the ItemStatus::STATUS_*
      *                         constants
      *
      * @return string
@@ -474,9 +475,9 @@ class GetItemStatuses extends AbstractBase implements
     protected function availabilityToString($available): string
     {
         switch ((int)$available) {
-            case Connection::ITEM_STATUS_UNAVAILABLE:
+            case ItemStatus::STATUS_UNAVAILABLE:
                 return 'false';
-            case Connection::ITEM_STATUS_UNCERTAIN:
+            case ItemStatus::STATUS_UNCERTAIN:
                 return 'uncertain';
             default:
                 return 'true';

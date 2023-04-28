@@ -35,7 +35,7 @@ use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\TranslatableString;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
-use VuFind\ILS\Connection;
+use VuFind\ILS\Logic\ItemStatus;
 use VuFind\Marc\MarcReader;
 
 /**
@@ -363,13 +363,13 @@ class Alma extends AbstractBase implements
                         if (isset($parts[1])) {
                             switch ($parts[1]) {
                                 case 'unavailable':
-                                    $available = Connection::ITEM_STATUS_AVAILABLE;
+                                    $available = ItemStatus::STATUS_AVAILABLE;
                                     break;
                                 case 'uncertain':
-                                    $available = Connection::ITEM_STATUS_UNCERTAIN;
+                                    $available = ItemStatus::STATUS_UNCERTAIN;
                                     break;
                                 default:
-                                    $available = Connection::ITEM_STATUS_AVAILABLE;
+                                    $available = ItemStatus::STATUS_AVAILABLE;
                                     break;
                             }
                         }
