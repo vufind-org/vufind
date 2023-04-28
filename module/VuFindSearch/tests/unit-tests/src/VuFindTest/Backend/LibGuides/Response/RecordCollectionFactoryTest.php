@@ -53,7 +53,7 @@ class RecordCollectionFactoryTest extends TestCase
         $resp = ['documents' => [[], [], []]];
         $fact = new RecordCollectionFactory();
         $coll = $fact->factory($resp);
-        $this->assertEquals(3, count($coll));
+        $this->assertCount(3, $coll);
     }
 
     /**

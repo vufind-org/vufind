@@ -55,8 +55,8 @@ class WorldCatUtilsTest extends \PHPUnit\Framework\TestCase
     {
         $client = $this->getClient('identities');
         $ids = $client->getRelatedIdentities('Clemens, Samuel');
-        $this->assertEquals(9, count($ids));
-        $this->assertEquals(34, count($ids['Twain, Mark, 1835-1910']));
+        $this->assertCount(9, $ids);
+        $this->assertCount(34, $ids['Twain, Mark, 1835-1910']);
         $this->assertTrue(in_array('Conjoined twins', $ids['Twain, Mark, 1835-1910']));
     }
 

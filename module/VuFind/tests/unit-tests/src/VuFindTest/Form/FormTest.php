@@ -84,7 +84,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
             'Laminas\InputFilter\InputFilter',
             get_class($form->getInputFilter())
         );
-        $this->assertEquals(0, count($form->getSecondaryHandlers()));
+        $this->assertCount(0, $form->getSecondaryHandlers());
     }
 
     /**

@@ -95,9 +95,9 @@ class ThemeCompilerTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($result);
 
         // Was the target directory created with the expected files?
-        $this->assertTrue(is_dir($this->targetPath));
-        $this->assertTrue(file_exists("{$this->targetPath}/parent.txt"));
-        $this->assertTrue(file_exists("{$this->targetPath}/child.txt"));
+        $this->assertDirectoryExists($this->targetPath);
+        $this->assertFileExists("{$this->targetPath}/parent.txt");
+        $this->assertFileExists("{$this->targetPath}/child.txt");
 
         // Did the right version of the  file that exists in both parent and child
         // get copied over?
@@ -149,10 +149,10 @@ class ThemeCompilerTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($result);
 
         // Was the target directory created with the expected files?
-        $this->assertTrue(is_dir($this->targetPath));
-        $this->assertTrue(file_exists("{$this->targetPath}/parent.txt"));
-        $this->assertTrue(file_exists("{$this->targetPath}/child.txt"));
-        $this->assertTrue(file_exists("{$this->targetPath}/js/mixin.js"));
+        $this->assertDirectoryExists($this->targetPath);
+        $this->assertFileExists("{$this->targetPath}/parent.txt");
+        $this->assertFileExists("{$this->targetPath}/child.txt");
+        $this->assertFileExists("{$this->targetPath}/js/mixin.js");
 
         // Did the right version of the  file that exists in both parent and child
         // get copied over?
@@ -212,12 +212,12 @@ class ThemeCompilerTest extends \PHPUnit\Framework\TestCase
         // removed when we force a recompile:
         $markerFile = $this->targetPath . '/fake-marker.txt';
         file_put_contents($markerFile, 'junk');
-        $this->assertTrue(file_exists($markerFile));
+        $this->assertFileExists($markerFile);
 
         // Now recompile with "force" set to true, confirm that this succeeds,
         // and make sure the marker file is now gone:
         $this->assertTrue($compiler->compile('child', 'compiled', true));
-        $this->assertFalse(file_exists($markerFile));
+        $this->assertFileDoesNotExist($markerFile);
     }
 
     /**

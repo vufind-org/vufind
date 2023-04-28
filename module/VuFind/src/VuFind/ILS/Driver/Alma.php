@@ -1893,16 +1893,16 @@ class Alma extends AbstractBase implements
         return $this->getTranslatableString($item->item_data->location);
     }
 
-    // @codingStandardsIgnoreStart
-
     /**
+     * Get list of funds
+     *
      * @return array with key = course ID, value = course name
-     * /
-     * public function getFunds() {
-     * // https://developers.exlibrisgroup.com/alma/apis/acq
-     * // GET /almaws/v1/acq/funds
-     * }
      */
-
-    // @codingStandardsIgnoreEnd
+    public function getFunds()
+    {
+        // TODO: implement me!
+        // https://developers.exlibrisgroup.com/alma/apis/acq
+        // GET /almaws/v1/acq/funds
+        return [];
+    }
 }

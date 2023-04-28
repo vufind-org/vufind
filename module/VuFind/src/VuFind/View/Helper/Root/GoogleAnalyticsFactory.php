@@ -74,7 +74,6 @@ class GoogleAnalyticsFactory implements FactoryInterface
         $options = [
             'create_options_js' =>
                 $config->GoogleAnalytics->create_options_js ?? null,
-            'universal' => $config->GoogleAnalytics->universal ?? false,
         ];
         return new $requestedName($key, $options);
     }

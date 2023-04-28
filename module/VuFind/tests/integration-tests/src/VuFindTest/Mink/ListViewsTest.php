@@ -94,6 +94,9 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @retryCallback tearDownAfterClass
      *
+     * @skip_html_validation true
+     * @todo                 Enable HTML validation when the issues are fixed in the upstream code
+     *
      * @return void
      */
     public function testFavoritesInTabMode()
@@ -116,7 +119,9 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
         // Save to list
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->closeLightbox($page);
+        $this->waitForPageLoad($page);
         // Check saved items status
+        $this->clickCss($page, '#information_cd588d8723d65ca0ce9439e79755fa0a');
         $this->findCss($page, '#information_cd588d8723d65ca0ce9439e79755fa0a-content .savedLists ul');
     }
 
@@ -124,6 +129,9 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
      * Test that we can save a favorite from accordion mode.
      *
      * @depends testFavoritesInTabMode
+     *
+     * @skip_html_validation true
+     * @todo                 Enable HTML validation when the issues are fixed in the upstream code
      *
      * @return void
      */
@@ -152,6 +160,8 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
         $this->closeLightbox($page);
         // Check saved items status
         // Not visible, but still exists
+        $this->clickCss($page, '#information_cd588d8723d65ca0ce9439e79755fa0a');
+        $this->waitForPageLoad($page);
         $this->findCss($page, '#information_cd588d8723d65ca0ce9439e79755fa0a-content .savedLists ul');
     }
 
@@ -192,7 +202,7 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->gotoSearch();
         // Did our result close after not being being in the last search?
         $result = $page->find('css', '.result.embedded');
-        $this->assertFalse(is_object($result));
+        $this->assertIsNotObject($result);
     }
 
     /**

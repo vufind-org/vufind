@@ -50,7 +50,7 @@ class MergeMarcCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testWithoutParameters()
+    public function testWithoutParameters(): void
     {
         $this->expectException(
             \Symfony\Component\Console\Exception\RuntimeException::class
@@ -68,7 +68,7 @@ class MergeMarcCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMergingDirectory()
+    public function testMergingDirectory(): void
     {
         $command = new MergeMarcCommand();
         $commandTester = new CommandTester($command);
@@ -95,11 +95,28 @@ class MergeMarcCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test that merging an invalid MARC file generates an exception
+     *
+     * @return void
+     */
+    public function testBadFile(): void
+    {
+        $command = new MergeMarcCommand();
+        $commandTester = new CommandTester($command);
+        $directory = $this->getFixtureDir('VuFindConsole') . 'bad-xml';
+        $filename = realpath($directory . "/bad.xml");
+        $expected = "Problem loading XML file: $filename\n"
+            . "Premature end of data in tag open-without-close line 1 in $filename";
+        $this->expectExceptionMessage($expected);
+        $commandTester->execute(compact('directory'));
+    }
+
+    /**
      * Test that merging a non-existent directory yields an error message.
      *
      * @return void
      */
-    public function testMissingDirectory()
+    public function testMissingDirectory(): void
     {
         $command = new MergeMarcCommand();
         $commandTester = new CommandTester($command);

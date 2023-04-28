@@ -98,8 +98,8 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('crossref10.5755/j01.ss.71.2.544', $recs[2]->recordid);
         $this->assertEquals(5706, $coll->getTotal());
         $facets = $coll->getFacets();
-        $this->assertEquals(9, count($facets));
-        $this->assertEquals(19, count($facets['jtitle']));
+        $this->assertCount(9, $facets);
+        $this->assertCount(19, $facets['jtitle']);
         $this->assertEquals(16, $facets['jtitle']['Remedial and Special Education']);
         $this->assertEquals(0, $coll->getOffset());
     }

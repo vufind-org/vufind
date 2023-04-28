@@ -9,7 +9,7 @@
   $user = $this->auth()->isLoggedIn();
 ?>
 
-<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="Expand Sidebar">
+<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="<?=$this->transEsc('sidebar_expand')?>">
   <?=$this->transEsc('Your Account') ?>
 </a>
 
@@ -43,7 +43,7 @@
               <option value="<?=$this->escapeHtmlAttr($scheduleValue)?>"<?=($this->search->notification_frequency == $scheduleValue) ? (' selected') : ('')?>><?=$this->transEsc($scheduleLabel)?></option>
             <?php endforeach; ?>
           </select>
-          <input type="hidden" name="searchid" value="<?=$this->escapeHtmlAttr($this->search->id) ?>"/>
+          <input type="hidden" name="searchid" value="<?=$this->escapeHtmlAttr($this->search->id) ?>">
         </form>
       </td>
     </tr>

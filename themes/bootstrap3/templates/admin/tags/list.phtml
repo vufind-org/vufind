@@ -58,10 +58,10 @@
 
   <?php if (count($this->results) > 0):?>
     <form action="<?= $this->url('admin/tags', ['action' => 'Delete'])?>" method="post">
-      <input type="hidden" name="user_id" value="<?=$this->escapeHtmlAttr($this->params['user_id'] ?? '') ?>" />
-      <input type="hidden" name="tag_id" value="<?=$this->escapeHtmlAttr($this->params['tag_id'] ?? '') ?>" />
-      <input type="hidden" name="resource_id" value="<?=$this->escapeHtmlAttr($this->params['resource_id'] ?? '') ?>" />
-      <input type="hidden" name="origin" value="list" />
+      <input type="hidden" name="user_id" value="<?=$this->escapeHtmlAttr($this->params['user_id'] ?? '') ?>">
+      <input type="hidden" name="tag_id" value="<?=$this->escapeHtmlAttr($this->params['tag_id'] ?? '') ?>">
+      <input type="hidden" name="resource_id" value="<?=$this->escapeHtmlAttr($this->params['resource_id'] ?? '') ?>">
+      <input type="hidden" name="origin" value="list">
 
       <table class="table table-striped">
         <tr>
@@ -74,8 +74,8 @@
           <tr>
             <td>
               <label for="<?=$this->prefix?>checkbox_<?=$tag['id']?>">
-                <input id="<?=$this->prefix?>checkbox_<?=$tag['id']?>" type="checkbox" name="ids[]" value="<?=$this->escapeHtmlAttr($tag['id'])?>" class="checkbox_ui"/>
-                <input type="hidden" name="idsAll[]" value="<?=$this->escapeHtmlAttr($tag['id'])?>" />
+                <input id="<?=$this->prefix?>checkbox_<?=$tag['id']?>" type="checkbox" name="ids[]" value="<?=$this->escapeHtmlAttr($tag['id'])?>" class="checkbox_ui">
+                <input type="hidden" name="idsAll[]" value="<?=$this->escapeHtmlAttr($tag['id'])?>">
                 <?=$tag->tag?> (<?= $tag->tag_id?>)
               </label>
             </td>

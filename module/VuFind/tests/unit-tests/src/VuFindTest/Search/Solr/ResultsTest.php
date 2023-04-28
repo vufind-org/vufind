@@ -134,8 +134,9 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     {
         $results = $this->getResults();
         $defaultProcessor = $results->getSpellingProcessor();
-        $this->assertTrue(
-            $defaultProcessor instanceof SpellingProcessor,
+        $this->assertInstanceOf(
+            SpellingProcessor::class,
+            $defaultProcessor,
             'default spelling processor was created'
         );
         $mockProcessor = $this->createMock(SpellingProcessor::class);

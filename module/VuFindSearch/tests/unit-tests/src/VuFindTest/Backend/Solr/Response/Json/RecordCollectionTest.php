@@ -160,7 +160,7 @@ class RecordCollectionTest extends TestCase
         ];
         $coll = new RecordCollection($input);
         $spell = $coll->getSpellcheck();
-        $this->assertEquals(1, count($spell));
+        $this->assertCount(1, $spell);
     }
 
     /**
@@ -204,7 +204,7 @@ class RecordCollectionTest extends TestCase
         $coll->add($r3);
         $coll->shuffle();
         $final = $coll->getRecords();
-        $this->assertEquals(3, count($final));
+        $this->assertCount(3, $final);
         $this->assertTrue(in_array($r1, $final));
         $this->assertTrue(in_array($r2, $final));
         $this->assertTrue(in_array($r3, $final));

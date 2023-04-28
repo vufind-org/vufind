@@ -79,7 +79,7 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCss($page, 'ul.breadcrumb li.active')->getText()
         );
         $results = $page->findAll('css', '.result');
-        $this->assertEquals(4, count($results));
+        $this->assertCount(4, $results);
     }
 
     /**
@@ -139,7 +139,7 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCss($page, 'ul.breadcrumb li.active')->getText()
         );
         $results = $page->findAll('css', '.result');
-        $this->assertEquals(4, count($results));
+        $this->assertCount(4, $results);
     }
 
     /**
@@ -164,9 +164,9 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch('id:0001732009-0');
 
         // Click on the "other versions" link:
-        $this->assertEquals(
+        $this->assertCount(
             0,
-            count($page->findAll('css', 'div.record-versions a'))
+            $page->findAll('css', 'div.record-versions a')
         );
     }
 }

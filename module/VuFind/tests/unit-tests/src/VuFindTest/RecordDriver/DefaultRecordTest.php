@@ -539,6 +539,40 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test whether author deduplication works corrrectly.
+     *
+     * @return void
+     */
+    public function testGetDeduplicatedAuthors()
+    {
+        $authorName = 'Tester, Marc';
+
+        $overrides = [
+            'author' => $authorName,
+            'author_role' => 'aut',
+            'author2' => [$authorName],
+            'author2_role' => ['trl'],
+            'author_corporate' => [],
+            'author_corporate_role' => [],
+        ];
+
+        $expectedResult = [
+            'primary' => [
+                $authorName => [
+                    'role' => ['aut', 'trl'],
+                ],
+            ],
+            'secondary' => [],
+            'corporate' => [],
+        ];
+
+        $driver = $this->getDriver($overrides);
+        $deduplicatedAuthors = $driver->getDeduplicatedAuthors();
+
+        $this->assertEquals($deduplicatedAuthors, $expectedResult);
+    }
+
+    /**
      * Get a record driver with fake data.
      *
      * @param array  $overrides  Fixture fields to override.

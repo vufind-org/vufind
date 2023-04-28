@@ -54,11 +54,9 @@ class QueryBuilderTest extends TestCase
     {
         // Set up an array of expected inputs (serialized objects) and outputs
         // (queries):
-        // @codingStandardsIgnoreStart
         $tests = [
             ['advanced', '((TX cheese) AND (AU cross)) NOT (((TI expansion)))'],
         ];
-        // @codingStandardsIgnoreEnd
 
         $qb = new QueryBuilder();
         foreach ($tests as $test) {

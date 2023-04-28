@@ -93,7 +93,10 @@ class CachingDownloader implements \VuFindHttp\HttpServiceAwareInterface
     protected function getDownloaderCache()
     {
         if ($this->cache == null) {
-            $cacheName = $this->cacheManager->addDownloaderCache($this->cacheId);
+            $cacheName = $this->cacheManager->addDownloaderCache(
+                $this->cacheId,
+                $this->cacheOptions
+            );
             $this->cache = $this->cacheManager->getCache($cacheName);
         }
         return $this->cache;

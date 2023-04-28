@@ -2734,4 +2734,24 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     {
         return $this->config['ProxiedUsers'] ?? [];
     }
+
+    /**
+     * Provide an array of URL data (in the same format returned by the record
+     * driver's getURLs method) for the specified bibliographic record.
+     *
+     * @param string $id Bibliographic record ID
+     *
+     * @return array
+     */
+    public function getUrlsForRecord(string $id): array
+    {
+        $links = [];
+        if ($this->config['RecordLinks']['fakeOpacLink'] ?? false) {
+            $links[] = [
+                'url' => 'http://localhost/my-fake-ils?id=' . urlencode($id),
+                'desc' => 'View in OPAC (fake demo link)',
+            ];
+        }
+        return $links;
+    }
 }

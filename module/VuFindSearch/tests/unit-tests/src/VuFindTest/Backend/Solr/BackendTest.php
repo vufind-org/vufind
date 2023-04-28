@@ -502,8 +502,8 @@ class BackendTest extends TestCase
         $back = new Backend($conn);
         $query = new Query('foo');
         $result = $back->getIds($query, 0, 10);
-        $this->assertTrue($result instanceof RecordCollection);
-        $this->assertEquals(0, count($result));
+        $this->assertInstanceOf(RecordCollection::class, $result);
+        $this->assertCount(0, $result);
     }
 
     /**

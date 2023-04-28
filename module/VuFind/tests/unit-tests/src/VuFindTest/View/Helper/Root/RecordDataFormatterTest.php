@@ -368,9 +368,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'a' => 'a',
             'b' => 'b',
         ];
-
-        // Check that the function is callable in this test.
-        $this->assertTrue(is_callable([$this, $function]));
+        // Call the method specified by the data provider
         $results = $this->$function($driver, $spec);
         // Check for expected array keys
         $this->assertEquals(array_keys($expected), $this->getLabels($results));
@@ -390,7 +388,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         }
         // Check for exact markup in representative example:
         $this->assertEquals(
-            '<span property="availableLanguage" typeof="Language"><span property="name">Italian</span></span><br />'
+            '<span property="availableLanguage" typeof="Language"><span property="name">Italian</span></span><br>'
             . '<span property="availableLanguage" typeof="Language"><span property="name">Latin</span></span>',
             $this->findResult('Language', $results)['value']
         );

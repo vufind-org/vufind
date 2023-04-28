@@ -513,7 +513,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
         $prototype = $table->getResultSetPrototype()->getArrayObjectPrototype();
         $prototype->expects($this->once())->method('save');
         $user = $db->create($this->getRequest($this->getCreateParams()));
-        $this->assertTrue(is_object($user));
+        $this->assertIsObject($user);
     }
 
     // INTERNAL API

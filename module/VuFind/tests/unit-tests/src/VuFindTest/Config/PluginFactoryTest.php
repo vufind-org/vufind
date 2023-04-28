@@ -133,7 +133,7 @@ class PluginFactoryTest extends \PHPUnit\Framework\TestCase
     {
         // Make sure load succeeds:
         $config = $this->getConfig('unit-test-child');
-        $this->assertTrue(is_object($config));
+        $this->assertIsObject($config);
 
         // Make sure Section 1 was overridden; values from parent should not be
         // present.
@@ -162,7 +162,7 @@ class PluginFactoryTest extends \PHPUnit\Framework\TestCase
     {
         // Make sure load succeeds:
         $config = $this->getConfig('unit-test-child2');
-        $this->assertTrue(is_object($config));
+        $this->assertIsObject($config);
 
         // Make sure Section 1 was overridden; values from parent should not be
         // present.

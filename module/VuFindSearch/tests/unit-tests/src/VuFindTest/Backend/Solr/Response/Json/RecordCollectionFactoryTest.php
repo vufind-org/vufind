@@ -53,7 +53,7 @@ class RecordCollectionFactoryTest extends TestCase
         $json = json_encode(['response' => ['start' => 0, 'docs' => [[], [], []]]]);
         $fact = new RecordCollectionFactory();
         $coll = $fact->factory(json_decode($json, true));
-        $this->assertEquals(3, count($coll));
+        $this->assertCount(3, $coll);
     }
 
     /**

@@ -124,7 +124,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
     protected function checkForLoginMessage(Element $page)
     {
         $warning = $this->findCss($page, '.modal-body .alert-danger');
-        $this->assertTrue(is_object($warning));
+        $this->assertIsObject($warning);
         $this->assertEquals(
             'You must be logged in first',
             $warning->getText()

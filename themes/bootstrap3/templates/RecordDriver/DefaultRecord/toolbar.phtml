@@ -41,14 +41,14 @@
     <?php $exportFormats = $this->export()->getFormatsForRecord($this->driver); ?>
     <?php if (count($exportFormats) > 0): ?>
       <li role="none" class="dropdown">
-        <a class="export-toggle toolbar-btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Export'))?>" rel="nofollow" aria-expanded="false" aria-controls="export-options">
+        <a class="export-toggle toolbar-btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Export', [], '', ['excludeSearchId' => true]))?>" rel="nofollow" aria-expanded="false" aria-controls="export-options">
           <?=$this->icon('export') ?>
           <?=$this->transEsc('Export Record') ?>
         </a>
         <ul class="dropdown-menu" id="export-options" role="menu">
           <?php foreach ($exportFormats as $exportFormat): ?>
             <li role="none">
-              <a <?php if ($this->export()->needsRedirect($exportFormat)): ?>target="<?=$this->escapeHtmlAttr($exportFormat)?>Main" <?php endif; ?>href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Export'))?>?style=<?=$this->escapeHtmlAttr($exportFormat)?>" rel="nofollow" role="menuitem">
+              <a <?php if ($this->export()->needsRedirect($exportFormat)): ?>target="<?=$this->escapeHtmlAttr($exportFormat)?>Main" <?php endif; ?>href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Export', [], '', ['excludeSearchId' => true]))?>?style=<?=$this->escapeHtmlAttr($exportFormat)?>" rel="nofollow" role="menuitem">
                 <?=$this->transEsc('Export to')?> <?=$this->transEsc($this->export()->getLabelForFormat($exportFormat))?>
               </a>
             </li>

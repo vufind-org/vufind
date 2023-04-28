@@ -451,7 +451,8 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
             return $prepend . UrlQueryHelper::buildQueryString(
                 [
                     'hiddenFilters' => $hiddenFilters,
-                ]
+                ],
+                false
             );
         }
         return '';
