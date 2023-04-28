@@ -708,7 +708,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     {
         // Go to user profile screen:
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Checkouts/ListHistory');
+        $session->visit($this->getVuFindUrl() . '/Checkouts/History');
         $page = $session->getPage();
 
         // Log in

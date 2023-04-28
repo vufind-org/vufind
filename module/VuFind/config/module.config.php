@@ -706,7 +706,7 @@ $staticRoutes = [
     'Cart/Email', 'Cart/Export', 'Cart/Home', 'Cart/MyResearchBulk',
     'Cart/Processor', 'Cart/Save', 'Cart/SearchResultsBulk',
     'Channels/Home', 'Channels/Record', 'Channels/Search',
-    'Checkouts/ListHistory', 'Checkouts/PurgeHistory',
+    'Checkouts/History', 'Checkouts/PurgeHistory',
     'Collections/ByTitle',
     'Collections/Home', 'Combined/Home', 'Combined/Results', 'Combined/SearchBox',
     'Confirm/Confirm', 'Cover/Show', 'Cover/Unavailable',

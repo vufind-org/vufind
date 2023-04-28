@@ -101,7 +101,7 @@ class CheckoutsController extends AbstractBase
      *
      * @return mixed
      */
-    public function listHistoryAction()
+    public function historyAction()
     {
         $this->resetValidRowIds();
 
@@ -194,7 +194,7 @@ class CheckoutsController extends AbstractBase
     public function purgeHistoryAction()
     {
         $this->ilsExceptionResponse = $redirectResponse
-            = $this->redirect()->toRoute('checkouts-listhistory');
+            = $this->redirect()->toRoute('checkouts-history');
 
         // Stop now if the user does not have valid catalog credentials available:
         if (!is_array($patron = $this->catalogLogin())) {

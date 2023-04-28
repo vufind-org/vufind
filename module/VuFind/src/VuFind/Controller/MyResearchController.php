@@ -1536,7 +1536,7 @@ class MyResearchController extends AbstractBase
      */
     public function historicloansAction()
     {
-        return $this->redirect()->toRoute('checkouts-listhistory');
+        return $this->redirect()->toRoute('checkouts-history');
     }
 
     /**
