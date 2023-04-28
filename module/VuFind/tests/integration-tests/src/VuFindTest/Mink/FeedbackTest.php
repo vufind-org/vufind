@@ -107,7 +107,6 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testFeedbackForm()
     {
-        // By default, no OpenURL on record page:
         $page = $this->setupPage();
         $this->fillInAndSubmitFeedbackForm($page);
         $this->assertEquals(
@@ -168,13 +167,13 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCss($page, '#modal .alert-danger')->getText(),
         );
 
-        // Set up with minimal delay and test that submission is passed:
+        // Set up with no real delay and test that submission is passed:
         $page = $this->setupPage(
             [
                 'Captcha' => [
                     'types' => ['interval'],
                     'forms' => 'feedback',
-                    'action_interval' => 1,
+                    'action_interval' => 0,
                 ],
             ]
         );

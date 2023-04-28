@@ -1,7 +1,7 @@
 <?php if (isset($this->showCheckboxes) && $this->showCheckboxes): ?>
   <nav class="bulkActionButtons">
     <div class="bulk-checkbox">
-      <input type="checkbox" class="checkbox-select-all" name="selectAll" id="<?=$this->idPrefix?>addFormCheckboxSelectAll"<?php if ($this->formAttr): ?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>/>
+      <input type="checkbox" class="checkbox-select-all" name="selectAll" id="<?=$this->idPrefix?>addFormCheckboxSelectAll"<?php if ($this->formAttr): ?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>>
       <label for="<?=$this->idPrefix?>addFormCheckboxSelectAll">
         <?=$this->transEsc('select_page')?>
         &#124; <?=$this->transEsc('with_selected')?>:

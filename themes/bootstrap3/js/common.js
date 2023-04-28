@@ -1,5 +1,5 @@
-/*global grecaptcha, isPhoneNumberValid, loadCovers */
-/*exported VuFind, htmlEncode, escapeHtmlAttr, deparam, getUrlRoot, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, bulkFormHandler, setupMultiILSLoginFields, unwrapJQuery */
+/*global Autocomplete, grecaptcha, isPhoneNumberValid, loadCovers */
+/*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
 
 // IE 9< console polyfill
 window.console = window.console || { log: function polyfillLog() {} };
@@ -250,22 +250,12 @@ var VuFind = (function VuFind() {
     var container = _container || $('body');
 
     container.find('a.qrcodeLink').click(function qrcodeToggle() {
-      if ($(this).hasClass("active")) {
-        $(".result-link-label", this).html(translate('qrcode_show'));
-        $(this).removeClass("active");
-      } else {
-        $(".result-link-label", this).html(translate('qrcode_hide'));
-        $(this).addClass("active");
-      }
-
       var holder = $(this).next('.qrcode');
       if (holder.find('img').length === 0) {
         // We need to insert the QRCode image
         var template = holder.find('.qrCodeImgTag').html();
         holder.html(template);
       }
-      holder.toggleClass('hidden');
-      return false;
     });
   }
 
@@ -350,6 +340,17 @@ function htmlEncode(value) {
   } else {
     return '';
   }
+}
+
+/**
+ * Keyboard and focus controllers
+ * Adapted from Micromodal
+ * - https://github.com/ghosh/Micromodal/blob/master/lib/src/index.js
+ */
+const FOCUSABLE_ELEMENTS = ['a[href]', 'area[href]', 'input:not([disabled]):not([type="hidden"]):not([aria-hidden])', 'select:not([disabled]):not([aria-hidden])', 'textarea:not([disabled]):not([aria-hidden])', 'button:not([disabled]):not([aria-hidden])', 'iframe', 'object', 'embed', '[contenteditable]', '[tabindex]:not([tabindex^="-"])'];
+function getFocusableNodes(container) {
+  const nodes = container.querySelectorAll(FOCUSABLE_ELEMENTS);
+  return Array.from(nodes);
 }
 
 /**
@@ -528,62 +529,72 @@ function setupOffcanvas() {
 
 function setupAutocomplete() {
   // If .autocomplete class is missing, autocomplete is disabled and we should bail out.
-  var searchbox = $('#searchForm_lookfor.autocomplete');
-  if (searchbox.length < 1) {
+  var $searchbox = $('#searchForm_lookfor.autocomplete');
+  if ($searchbox.length === 0) {
     return;
   }
-  // Auto-submit based on config
-  var acCallback = function ac_cb_noop() {};
-  if (searchbox.hasClass("ac-auto-submit")) {
-    acCallback = function autoSubmitAC(item, input) {
-      input.val(item.value);
-      $("#searchForm").submit();
-      return false;
-    };
-  }
-  // Search autocomplete
-  searchbox.autocomplete({
+
+  const typeahead = new Autocomplete({
     rtl: $(document.body).hasClass("rtl"),
     maxResults: 10,
     loadingString: VuFind.translate('loading_ellipsis'),
-    // Auto-submit selected item
-    callback: acCallback,
-    // AJAX call for autocomplete results
-    handler: function vufindACHandler(input, cb) {
-      var query = input.val();
-      var searcher = extractClassParams(input);
-      var hiddenFilters = [];
-      $('#searchForm').find('input[name="hiddenFilters[]"]').each(function hiddenFiltersEach() {
-        hiddenFilters.push($(this).val());
-      });
-      $.fn.autocomplete.ajax({
-        url: VuFind.path + '/AJAX/JSON',
-        data: {
-          q: query,
-          method: 'getACSuggestions',
-          searcher: searcher.searcher,
-          type: searcher.type ? searcher.type : $('#searchForm_type').val(),
-          hiddenFilters: hiddenFilters
-        },
-        dataType: 'json',
-        success: function autocompleteJSON(json) {
-          if (json.data.suggestions.length > 0) {
-            var datums = [];
-            for (var j = 0; j < json.data.suggestions.length; j++) {
-              datums.push(json.data.suggestions[j]);
-            }
-            cb(datums);
-          } else {
-            cb([]);
-          }
-        }
-      });
+  });
+
+  let cache = {};
+  const input = $searchbox[0];
+  typeahead(input, function vufindACHandler(query, callback) {
+    const classParams = extractClassParams(input);
+    const searcher = classParams.searcher;
+    const type = classParams.type ? classParams.type : $('#searchForm_type').val();
+
+    const cacheKey = searcher + "|" + type;
+    if (typeof cache[cacheKey] === "undefined") {
+      cache[cacheKey] = {};
     }
+
+    if (typeof cache[cacheKey][query] !== "undefined") {
+      callback(cache[cacheKey][query]);
+      return;
+    }
+
+    var hiddenFilters = [];
+    $('#searchForm').find('input[name="hiddenFilters[]"]').each(function hiddenFiltersEach() {
+      hiddenFilters.push($(this).val());
+    });
+
+    $.ajax({
+      url: VuFind.path + '/AJAX/JSON',
+      data: {
+        q: query,
+        method: 'getACSuggestions',
+        searcher: searcher,
+        type: type,
+        hiddenFilters,
+      },
+      dataType: 'json',
+      success: function autocompleteJSON(json) {
+        const highlighted = json.data.suggestions.map(
+          (item) => ({
+            text: item.replace(query, `<b>${query}</b>`),
+            value: item,
+          })
+        );
+        cache[cacheKey][query] = highlighted;
+        callback(highlighted);
+      }
+    });
   });
-  // Update autocomplete on type change
-  $('#searchForm_type').change(function searchTypeChange() {
-    searchbox.autocomplete().clearCache();
-  });
+
+  // Bind autocomplete auto submit
+  if ($searchbox.hasClass("ac-auto-submit")) {
+    input.addEventListener("ac-select", (event) => {
+      const value = typeof event.detail === "string"
+        ? event.detail
+        : event.detail.value;
+      input.value = value;
+      $("#searchForm").submit();
+    });
+  }
 }
 
 /**

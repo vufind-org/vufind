@@ -154,6 +154,11 @@ class SierraRest extends AbstractBase implements
     ];
 
     /**
+     * Mappings from patron block codes to VuFind strings
+     */
+    protected $patronBlockMappings = [];
+
+    /**
      * Status codes indicating that a hold is available for pickup
      *
      * @var array
@@ -321,6 +326,7 @@ class SierraRest extends AbstractBase implements
                 $this->config['ItemStatusMappings']
             );
         }
+        $this->patronBlockMappings = $this->config['PatronBlockMappings'] ?? [];
 
         if (isset($this->config['Catalog']['api_version'])) {
             $this->apiVersion = $this->config['Catalog']['api_version'];
@@ -2566,7 +2572,8 @@ class SierraRest extends AbstractBase implements
                 !empty($result['blockInfo'])
                 && trim($result['blockInfo']['code']) != '-'
             ) {
-                $blockReason = [trim($result['blockInfo']['code'])];
+                $code = trim($result['blockInfo']['code']);
+                $blockReason = [$this->patronBlockMappings[$code] ?? $code];
             } else {
                 $blockReason = [];
             }

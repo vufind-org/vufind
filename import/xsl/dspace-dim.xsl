@@ -94,45 +94,37 @@
                 </xsl:if>
 
                 <!-- AUTHOR -->
-                <xsl:if test="dim:field[@element='contributor' and @qualifier='author']">
-                    <xsl:for-each select="dim:field[@element='contributor' and @qualifier='author']">
-                        <field name="author">
-                            <xsl:value-of select="normalize-space(.)"/>
-                        </field>
-                    </xsl:for-each>
-                </xsl:if>
+                <xsl:for-each select="dim:field[@element='contributor' and @qualifier='author']">
+                    <field name="author">
+                        <xsl:value-of select="normalize-space(.)"/>
+                    </field>
+                </xsl:for-each>
 
                 <!-- CO AUTHOR -->
-                <xsl:if test="dim:field[@element='contributor' and @qualifier='other']">
-                    <xsl:for-each select="dim:field[@element='contributor' and @qualifier='other']">
-                        <field name="author2">
-                            <xsl:value-of select="normalize-space(.)"/>
-                        </field>
-                    </xsl:for-each>
-                </xsl:if>
+                <xsl:for-each select="dim:field[@element='contributor' and @qualifier='other']">
+                    <field name="author2">
+                        <xsl:value-of select="normalize-space(.)"/>
+                    </field>
+                </xsl:for-each>
 
                 <!-- EDITOR (treated as corporate author as per Roland Keck's example;
                      this may vary by institution.
                 -->
-                <xsl:if test="dim:field[@element='contributor' and @qualifier='editor']">
-                    <xsl:for-each select="dim:field[@element='contributor' and @qualifier='editor']">
-                        <field name="author_corporate">
-                            <xsl:value-of select="normalize-space(.)"/>
-                        </field>
-                    </xsl:for-each>
-                </xsl:if>
+                <xsl:for-each select="dim:field[@element='contributor' and @qualifier='editor']">
+                    <field name="author_corporate">
+                        <xsl:value-of select="normalize-space(.)"/>
+                    </field>
+                </xsl:for-each>
 
                 <!-- SUBJECT -->
-                <xsl:if test="dim:field[@element='subject']">
-                    <xsl:for-each select="dim:field[@element='subject']">
-                        <field name="topic">
-                            <xsl:value-of select="normalize-space(.)"/>
-                        </field>
-                        <field name="topic_facet">
-                            <xsl:value-of select="normalize-space(.)"/>
-                        </field>
-                    </xsl:for-each>
-                </xsl:if>
+                <xsl:for-each select="dim:field[@element='subject']">
+                    <field name="topic">
+                        <xsl:value-of select="normalize-space(.)"/>
+                    </field>
+                    <field name="topic_facet">
+                        <xsl:value-of select="normalize-space(.)"/>
+                    </field>
+                </xsl:for-each>
 
                 <!-- Published Date -->
                 <xsl:if test="dim:field[@element='date' and @qualifier='issued']">
@@ -192,13 +184,11 @@
                 </xsl:if>
 
                 <!-- Alternative Title -->
-                <xsl:if test="dim:field[@element='title' and @qualifier='alternative']">
-                    <xsl:for-each select="dim:field[@element='title' and @qualifier='alternative']">
-                        <field name="title_alt">
-                            <xsl:value-of select="normalize-space(.)"/>
-                        </field>
-                    </xsl:for-each>
-                </xsl:if>
+                <xsl:for-each select="dim:field[@element='title' and @qualifier='alternative']">
+                    <field name="title_alt">
+                        <xsl:value-of select="normalize-space(.)"/>
+                    </field>
+                </xsl:for-each>
 
                 <!-- Description -->
                 <!-- Two if blocks are used in description, one to check its
@@ -246,13 +236,11 @@
                 </xsl:if>
 
                 <!-- Spatial -->
-                <xsl:if test="dim:field[@qualifier='spatial']">
-                    <xsl:for-each select="dim:field[@qualifier='spatial']">
-                        <field name="geographic_facet">
-                            <xsl:value-of select="normalize-space(.)"/>
-                        </field>
-                    </xsl:for-each>
-                </xsl:if>
+                <xsl:for-each select="dim:field[@qualifier='spatial']">
+                    <field name="geographic_facet">
+                        <xsl:value-of select="normalize-space(.)"/>
+                    </field>
+                </xsl:for-each>
 
                 <!-- ISBN -->
                 <xsl:if test="dim:field[@qualifier='isbn']">

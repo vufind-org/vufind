@@ -50,7 +50,7 @@ trait SecureDatabaseTrait
     {
         // Make example hash for AES
         $alpha = 'abcdefghijklmnopqrstuvwxyz';
-        $chars = str_repeat($alpha . strtoupper($alpha) . '0123456789,.@#$%^&*', 4);
+        $chars = str_repeat($alpha . strtoupper($alpha) . '0123456789,.@#%^&*', 4);
         return ['aes', substr(str_shuffle($chars), 0, 32)];
     }
 

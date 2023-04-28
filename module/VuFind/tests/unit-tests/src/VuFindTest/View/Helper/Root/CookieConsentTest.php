@@ -334,6 +334,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
             ],
+            'rtl' => false,
         ];
         return [
             'consentConfig' => $consentConfig,

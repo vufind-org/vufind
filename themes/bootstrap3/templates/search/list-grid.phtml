@@ -4,9 +4,9 @@
     <?=$this->record($current)->getSearchResult('grid', $this->results)?>
     <?php $it++; ?>
     <?php if ($it % 4 === 0): ?>
-      <br class="grid-large-break"/>
+      <br class="grid-large-break">
     <?php elseif ($it % 2 === 0): ?>
-      <br class="grid-small-break"/>
+      <br class="grid-small-break">
     <?php endif; ?>
   <?php endforeach; ?>
 </div>
