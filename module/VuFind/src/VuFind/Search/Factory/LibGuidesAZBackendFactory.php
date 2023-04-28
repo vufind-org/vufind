@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for LibGuides backends.
+ * Factory for LibGuides A-Z Databases backends.
  *
  * PHP version 7
  *
@@ -30,21 +30,22 @@
 
 namespace VuFind\Search\Factory;
 
-use VuFindSearch\Backend\LibGuides\Backend;
-use VuFindSearch\Backend\LibGuides\Connector;
-use VuFindSearch\Backend\LibGuides\QueryBuilder;
-use VuFindSearch\Backend\LibGuides\Response\RecordCollectionFactory;
+use VuFindSearch\Backend\LibGuidesAZ\Backend;
+use VuFindSearch\Backend\LibGuidesAZ\Connector;
+use VuFindSearch\Backend\LibGuidesAZ\QueryBuilder;
+use VuFindSearch\Backend\LibGuidesAZ\Response\RecordCollectionFactory;
 
 /**
- * Factory for LibGuides backends.
+ * Factory for LibGuides A-Z Databases backends.
  *
  * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
+ * @author   Maccabee Levine <msl321@lehigh.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class LibGuidesBackendFactory extends AbstractLibGuidesBackendFactory
+class LibGuidesAZBackendFactory extends AbstractLibGuidesBackendFactory
 {
     /**
      * Return the service name.
@@ -53,11 +54,11 @@ class LibGuidesBackendFactory extends AbstractLibGuidesBackendFactory
      */
     protected function getServiceName()
     {
-        return 'LibGuides';
+        return 'LibGuidesAZ';
     }
 
     /**
-     * Instantiate the LibGuidesAZ connector.
+     * Instantiate the LibGuides A-Z Databases connector.
      *
      * @param string     $iid     Institution ID
      * @param HttpClient $client  HTTP client
@@ -72,7 +73,7 @@ class LibGuidesBackendFactory extends AbstractLibGuidesBackendFactory
     }
 
     /**
-     * Instantiate the LibGuidesAZ backend.
+     * Instantiate the LibGuides A-Z Databases backend.
      *
      * @param Connector                        $connector     LibGuides connector
      * @param RecordCollectionFactoryInterface $factory       Record collection
@@ -87,7 +88,7 @@ class LibGuidesBackendFactory extends AbstractLibGuidesBackendFactory
     }
 
     /**
-     * Instantiate the LibGuidesAZ record collection factory.
+     * Instantiate the LibGuides A-Z Databases record collection factory.
      *
      * @param callback $callback Record factory callback (null for default)
      *
@@ -99,7 +100,7 @@ class LibGuidesBackendFactory extends AbstractLibGuidesBackendFactory
     }
 
     /**
-     * Create the LibGuides query builder.
+     * Instantiate the LibGuides A-Z Databases query builder.
      *
      * @return QueryBuilder
      */
