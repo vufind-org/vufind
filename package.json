@@ -21,9 +21,9 @@
     "watch-dev:css": "npm run watch-dev:less",
 
     "build:less": "grunt less && npm run lessToSass",
-    "watch:less": "grunt watch:less && npm run watch:lessToSass",
+    "watch:less": "grunt watch:less",
     "build-dev:less": "grunt lessdev && npm run lessToSass",
-    "watch-dev:less": "grunt watch:lessdev && npm run watch:lessToSass",
+    "watch-dev:less": "grunt watch:lessdev",
 
     "build:scss": "grunt scss",
     "watch:scss": "grunt watch:scss",
