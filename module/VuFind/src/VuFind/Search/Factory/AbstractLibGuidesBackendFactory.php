@@ -104,7 +104,7 @@ abstract class AbstractLibGuidesBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * Instantiate the LibGuidesAZ backend.
+     * Instantiate the LibGuides backend.
      *
      * @param Connector                        $connector     LibGuides connector
      * @param RecordCollectionFactoryInterface $factory       Record collection
@@ -114,6 +114,13 @@ abstract class AbstractLibGuidesBackendFactory extends AbstractBackendFactory
      * @return Backend
      */
     abstract protected function createBackendInstance($connector, $factory, $defaultSearch);
+
+    /**
+     * Instantiate the LibGuides QueryBuilder.
+     *
+     * @return QueryBuilder
+     */
+    abstract protected function createQueryBuilderInstance();
 
     /**
      * Create the LibGuides connector.
