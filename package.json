@@ -1,6 +1,6 @@
 {
   "name": "vufind",
-  "version": "8.1.2",
+  "version": "9.0.1",
   "description": "Dev tools to handle css preprocessing, js magic, and compression",
   "repository": {
     "type": "git",
@@ -10,17 +10,25 @@
     "url": "https://vufind.org/jira"
   },
   "scripts": {
-    "css": "npm run less",
+    "build": "npm run build:css",
+    "watch": "npm run watch:css",
+    "build-dev": "npm run build-dev:css",
+    "watch-dev": "npm run watch-dev:css",
+
+    "build:css": "npm run build:less",
     "watch:css": "npm run watch:less",
+    "build-dev:css": "npm run build-dev:less",
+    "watch-dev:css": "npm run watch-dev:less",
 
-    "less": "grunt less",
-    "lessdev": "grunt lessdev",
-    "scss": "grunt scss",
-    "lessToSass": "grunt lessToSass",
-
+    "build:less": "grunt less && npm run lessToSass",
     "watch:less": "grunt watch:less",
-    "watch:lessdev": "grunt watch:lessdev",
+    "build-dev:less": "grunt lessdev && npm run lessToSass",
+    "watch-dev:less": "grunt watch:lessdev",
+
+    "build:scss": "grunt scss",
     "watch:scss": "grunt watch:scss",
+
+    "lessToSass": "grunt lessToSass",
     "watch:lessToSass": "grunt watch:lessToSass"
   },
   "dependencies": {

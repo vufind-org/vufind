@@ -29,7 +29,7 @@
 
 <?php if (!empty($holdings['blocks'])):?>
   <div id="account-block-msg" class="alert alert-danger">
-    <?=$this->transEsc('account_block_options_missing', ['%%details%%' => implode('; ', $holdings['blocks'])]) ?>
+    <?=$this->transEsc('account_block_options_missing', ['%%details%%' => implode('; ', array_map([$this, 'translate'], $holdings['blocks']))]) ?>
   </div>
 <?php endif; ?>
 

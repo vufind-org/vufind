@@ -54,7 +54,7 @@
   <property name="html_validator_quiet" value="" /><!-- set to 1 to prevent the HTML validation from outputting results to the console  -->
   <property name="phpunit_html_validation_params" value="VUFIND_HTML_VALIDATOR=${html_validator} VUFIND_HTML_VALIDATOR_FAIL_TESTS=${html_validator_fail_tests} VUFIND_HTML_VALIDATOR_LOG_FILE=${html_validator_log_file} VUFIND_HTML_VALIDATOR_QUIET=${html_validator_quiet}" />
 
-  <property name="version" value="8.1.2" />
+  <property name="version" value="9.0.1" />
 
   <!-- We only need the -p switch if the password is non-blank -->
   <if>
@@ -360,16 +360,9 @@
       </then>
     </if>
 
-    <!-- fail if a local config.ini already exists -->
-    <property name="local_config_ini" value="${srcdir}/local/config/vufind/config.ini" />
-    <if>
-      <available file="${local_config_ini}" />
-      <then>
-        <fail>${local_config_ini} already exists</fail>
-      </then>
-    </if>
+    <phingcall target="check_local_config" />
 
-    <!-- run extra cleanup action, if any -->
+    <!-- run extra startup action, if any -->
     <if>
       <istrue value="${extra_startup_command}" />
       <then>
@@ -379,10 +372,10 @@
 
     <!-- set up appropriate read/write permissions for Apache -->
     <exec command="chmod -R a+w ${localdir}/cache" />
+    <exec command="touch ${srcdir}/vufind-exception.log" />
+    <exec command="chmod a+w ${srcdir}/vufind-exception.log" />
 
-    <!-- Generate basic configuration -->
-    <php expression="end(explode('/', '${vufindurl}'))" returnProperty="basepath" />
-    <exec command="php ${srcdir}/install.php --basepath=/${basepath} --non-interactive" passthru="true" checkreturn="true" />
+    <phingcall target="configure_install" />
 
     <!-- Activate Selenium (if a path has been provided) -->
     <if>
@@ -402,37 +395,47 @@
     </if>
 
     <!-- build and configure the requested database type -->
+    <phingcall target="setup_database" />
+
+    <!-- start Solr -->
+    <phingcall target="setup_solr" />
+
+    <phingcall target="import_biblios" />
+    <phingcall target="import_authorities" />
+    <phingcall target="build_alphabrowse" />
+  </target>
+
+  <!-- A helper task to check for existing configuration -->
+  <target name="check_local_config" description="check for local configuration and fail if it exists">
+    <!-- fail if a local config.ini already exists -->
+    <property name="local_config_ini" value="${localdir}/config/vufind/config.ini" />
+    <if>
+      <available file="${local_config_ini}" />
+      <then>
+        <fail>${local_config_ini} already exists</fail>
+      </then>
+    </if>
+  </target>
+
+  <!-- Setup basic configuration and run the install command -->
+  <target name="configure_install" description="configure and run installation">
+    <phingcall target="check_local_config" />
+
+    <!-- Generate basic configuration -->
+    <php expression="end(explode('/', '${vufindurl}'))" returnProperty="basepath" />
+    <exec command="php ${srcdir}/install.php --basepath=/${basepath} --non-interactive" passthru="true" checkreturn="true" />
+
+    <!-- Update config.ini to activate DB connection, exception logging and test mode -->
     <if>
       <equals arg1="${dbtype}" arg2="pgsql" />
       <then>
-        <!-- build database -->
-        <exec command="sudo su -c &quot;psql -c \&quot;DROP DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" />
-        <exec command="sudo su -c &quot;psql -c \&quot;DROP USER ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" />
-        <exec command="sudo su -c &quot;psql -c \&quot;CREATE DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
-        <exec command="sudo su -c &quot;psql -c \&quot;CREATE USER ${vufinddbuser} PASSWORD '${vufinddbpass}';\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
-        <exec command="sudo su -c &quot;psql -c \&quot;GRANT ALL ON DATABASE ${vufinddb} TO ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
-        <!--<exec command="sudo su -c &quot;psql -c \&quot;select 'grant SELECT,INSERT,UPDATE,DELETE on '||schemaname||'.'||tablename||' to ${vufinddbuser};' from pg_tables where schemaname in ('${vufinddb}') order by schemaname, tablename;\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />-->
-        <exec command="PGPASSWORD=${vufinddbpass} psql -U ${vufinddbuser} -f ${srcdir}/module/VuFind/sql/pgsql.sql ${vufinddb}" checkreturn="true" />
-
-        <!-- configure VuFind -->
         <property name="db_connection_string" value="pgsql://${vufinddbuser}:${vufinddbpass}@${pgsqlhost}/${vufinddb}" />
       </then>
       <else>
-        <!-- build database -->
-        <exec command="mysqladmin -f -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} drop ${vufinddb}" />
-        <exec command="mysqladmin -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} create ${vufinddb}" checkreturn="true" />
-        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;DROP USER '${vufinddbuser}'@'${mysqlhost}'&quot;" />
-        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;CREATE USER '${vufinddbuser}'@'${mysqlhost}' IDENTIFIED BY '${vufinddbpass}'&quot;" checkreturn="true" />
-        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;GRANT SELECT,INSERT,UPDATE,DELETE ON ${vufinddb}.* TO '${vufinddbuser}'@'${mysqlhost}' WITH GRANT OPTION&quot;" checkreturn="true" />
-        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;FLUSH PRIVILEGES&quot;" checkreturn="true" />
-        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -D ${vufinddb} &lt; ${srcdir}/module/VuFind/sql/mysql.sql" checkreturn="true" />
-
-        <!-- configure VuFind -->
         <property name="db_connection_string" value="mysql://${vufinddbuser}:${vufinddbpass}@${mysqlhost}/${vufinddb}" />
       </else>
     </if>
 
-    <!-- Update config.ini to activate DB connection, exception logging and test mode -->
     <copy file="${srcdir}/config/vufind/config.ini" tofile="${localdir}/config/vufind/config.ini">
       <filterchain>
         <replaceregexp>
@@ -442,8 +445,6 @@
         </replaceregexp>
       </filterchain>
     </copy>
-    <exec command="touch ${srcdir}/vufind-exception.log" />
-    <exec command="chmod a+w ${srcdir}/vufind-exception.log" />
 
     <if>
       <not><istrue value="${disable_csp}" /></not>
@@ -458,8 +459,37 @@
         </copy>
       </then>
     </if>
+  </target>
 
-    <!-- start Solr (use restart in case of old PID files) -->
+  <target name="setup_database" description="setup demo database">
+    <if>
+      <equals arg1="${dbtype}" arg2="pgsql" />
+      <then>
+        <!-- build database -->
+        <exec command="sudo su -c &quot;psql -c \&quot;DROP DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" />
+        <exec command="sudo su -c &quot;psql -c \&quot;DROP USER ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" />
+        <exec command="sudo su -c &quot;psql -c \&quot;CREATE DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
+        <exec command="sudo su -c &quot;psql -c \&quot;CREATE USER ${vufinddbuser} PASSWORD '${vufinddbpass}';\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
+        <exec command="sudo su -c &quot;psql -c \&quot;GRANT ALL ON DATABASE ${vufinddb} TO ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
+        <!--<exec command="sudo su -c &quot;psql -c \&quot;select 'grant SELECT,INSERT,UPDATE,DELETE on '||schemaname||'.'||tablename||' to ${vufinddbuser};' from pg_tables where schemaname in ('${vufinddb}') order by schemaname, tablename;\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />-->
+        <exec command="PGPASSWORD=${vufinddbpass} psql -U ${vufinddbuser} -f ${srcdir}/module/VuFind/sql/pgsql.sql ${vufinddb}" checkreturn="true" />
+      </then>
+      <else>
+        <!-- build database -->
+        <exec command="mysqladmin -f -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} drop ${vufinddb}" />
+        <exec command="mysqladmin -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} create ${vufinddb}" checkreturn="true" />
+        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;DROP USER '${vufinddbuser}'@'${mysqlhost}'&quot;" />
+        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;CREATE USER '${vufinddbuser}'@'${mysqlhost}' IDENTIFIED BY '${vufinddbpass}'&quot;" checkreturn="true" />
+        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;GRANT SELECT,INSERT,UPDATE,DELETE ON ${vufinddb}.* TO '${vufinddbuser}'@'${mysqlhost}' WITH GRANT OPTION&quot;" checkreturn="true" />
+        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;FLUSH PRIVILEGES&quot;" checkreturn="true" />
+        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -D ${vufinddb} &lt; ${srcdir}/module/VuFind/sql/mysql.sql" checkreturn="true" />
+      </else>
+    </if>
+  </target>
+
+  <!-- Set up Solr -->
+  <target name="setup_solr">
+    <!-- Start Solr using restart in case of old PID files -->
     <exec command="SOLR_PID_DIR=${localdir} VUFIND_HOME=${srcdir} SOLR_ADDITIONAL_JVM_OPTIONS=${solr_additional_jvm_options} ${srcdir}/solr.sh restart" passthru="true" checkreturn="true" />
     <!-- fail if Solr did not start up successfully: -->
     <if>
@@ -479,10 +509,6 @@
         <exec command="sleep ${solr_startup_sleep}" />
       </else>
     </if>
-
-    <phingcall target="import_biblios" />
-    <phingcall target="import_authorities" />
-    <phingcall target="build_alphabrowse" />
   </target>
 
   <!-- Import test biblio data -->
@@ -611,6 +637,36 @@ ${git_status}
     <exec command="git reset --hard" passthru="true" />
   </target>
 
+  <!-- Reset database and configuration of the demo setup -->
+  <target name="reset_setup" description="reset configuration and database of demo">
+    <property name="solr_pid_file" value="${localdir}/solr-8983.pid" />
+    <!-- fail if the system is not already running -->
+    <if>
+      <not><available file="${solr_pid_file}" /></not>
+      <then>
+        <fail>Solr PID file (${solr_pid_file}) not detected. Is the demo system not running?</fail>
+      </then>
+    </if>
+
+    <delete>
+      <fileset dir="${localdir}/config/vufind">
+        <patternset>
+          <include name="*.ini" />
+          <include name="*.yaml" />
+          <include name="*.json" />
+        </patternset>
+      </fileset>
+    </delete>
+    <delete>
+      <fileset dir="${localdir}/cache">
+        <include name="**/*" />
+      </fileset>
+    </delete>
+
+    <phingcall target="configure_install" />
+    <phingcall target="setup_database" />
+  </target>
+
   <!-- Prepare VuFind for distribution -->
   <target name="package" description="build VuFind packages for distribution">
     <!-- make sure the work area is empty, then rebuild it -->
@@ -674,6 +730,8 @@ ${git_status}
     <append destFile="${localdir}/import/marc-${BASENAME}.properties" text="building=&quot;${BASENAME}&quot;${line.separator}" />
 
     <copy file="${localdir}/import/import.properties" tofile="${localdir}/import/import-${BASENAME}.properties" />
+    <!-- normalize Unicode to avoid HTML validation warnings -->
+    <append destFile="${localdir}/import/import-${BASENAME}.properties" text="marc.unicode_normalize = C${line.separator}" />
     <reflexive>
       <fileset dir="${localdir}/import">
         <include pattern="import-${BASENAME}.properties" />

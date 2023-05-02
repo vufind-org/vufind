@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Class AbstractBaseFactory
+ * Checkouts controller factory.
  *
  * PHP version 7
  *
- * Copyright (C) Moravian Library 2022.
+ * Copyright (C) The National Library of Finland 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,15 +21,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  HierarchyTree_DataFormatter
- * @author   Josef Moravec <moravec@mzk.cz>
- * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @package  Controller
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-declare(strict_types=1);
-
-namespace VuFind\Hierarchy\TreeDataFormatter;
+namespace VuFind\Controller;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -37,15 +35,15 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Class AbstractBaseFactory
+ * Checkouts controller factory.
  *
  * @category VuFind
- * @package  HierarchyTree_DataFormatter
- * @author   Josef Moravec <moravec@mzk.cz>
- * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @package  Controller
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AbstractBaseFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+class CheckoutsControllerFactory extends AbstractBaseFactory
 {
     /**
      * Create an object
@@ -66,12 +64,13 @@ class AbstractBaseFactory implements \Laminas\ServiceManager\Factory\FactoryInte
         $requestedName,
         array $options = null
     ) {
-        if ($options !== null) {
-            throw new \Exception('Unexpected options sent to factory!');
-        }
-        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
-        $treeDataFormatter = new $requestedName($config->Hierarchy->validateHierarchySequences ?? true);
-        $treeDataFormatter->setSorter($container->get(\VuFind\I18n\Sorter::class));
-        return $treeDataFormatter;
+        return parent::__invoke(
+            $container,
+            $requestedName,
+            [
+                $container->get(\VuFind\Validator\CsrfInterface::class),
+                $container->get(\Laminas\Session\SessionManager::class),
+            ]
+        );
     }
 }
