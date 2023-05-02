@@ -201,10 +201,9 @@ class CheckoutsController extends AbstractBase
             return $patron;
         }
 
-        if (
-            $this->formWasSubmitted('purgeSelected', false)
-            || $this->formWasSubmitted('purgeAll', false)
-        ) {
+        $purgeSelected = $this->formWasSubmitted('purgeSelected', false);
+        $purgeAll = $this->formWasSubmitted('purgeAll', false);
+        if ($purgeSelected || $purgeAll) {
             $csrfToken = $this->getRequest()->getPost()->get('csrf');
             if (!$this->csrf->isValid($csrfToken)) {
                 $this->flashMessenger()
@@ -214,7 +213,7 @@ class CheckoutsController extends AbstractBase
             // After successful token verification, clear list to shrink session:
             $this->csrf->trimTokenList(0);
             $catalog = $this->getILS();
-            if ($this->formWasSubmitted('purgeAll', false)) {
+            if ($purgeAll) {
                 $result = $catalog->purgeTransactionHistory($patron, null);
             } else {
                 $ids = $this->getRequest()->getPost()->get('purgeSelectedIDs', []);
