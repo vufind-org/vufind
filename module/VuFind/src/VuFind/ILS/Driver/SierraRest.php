@@ -792,6 +792,7 @@ class SierraRest extends AbstractBase implements
         foreach ($result['entries'] as $entry) {
             $transaction = [
                 'id' => '',
+                'row_id' => $this->extractId($entry['id']),
                 'item_id' => $this->extractId($entry['item']),
                 'checkoutDate' => $this->dateConverter->convertToDisplayDate(
                     'Y-m-d',
@@ -817,6 +818,63 @@ class SierraRest extends AbstractBase implements
         return [
             'count' => $result['total'] ?? 0,
             'transactions' => $transactions,
+        ];
+    }
+
+    /**
+     * Purge Patron Transaction History
+     *
+     * @param array  $patron The patron array from patronLogin
+     * @param ?array $ids    IDs to purge, or null for all
+     *
+     * @throws ILSException
+     * @return array Associative array of the results
+     */
+    public function purgeTransactionHistory(array $patron, ?array $ids): array
+    {
+        if (null === $ids) {
+            $result = $this->makeRequest(
+                [
+                    'v6', 'patrons', $patron['id'], 'checkouts', 'history',
+                ],
+                '',
+                'DELETE',
+                $patron
+            );
+            if (!empty($result['code'])) {
+                return [
+                    'success' => false,
+                    'status' => $this->formatErrorMessage(
+                        $result['description'] ?? $result['name']
+                    ),
+                ];
+            }
+        } else {
+            foreach ($ids as $id) {
+                $result = $this->makeRequest(
+                    [
+                        'v6', 'patrons', $patron['id'], 'checkouts', 'history', $id,
+                    ],
+                    '',
+                    'DELETE',
+                    $patron
+                );
+                if (!empty($result['code'])) {
+                    return [
+                        'success' => false,
+                        'status' => $this->formatErrorMessage(
+                            $result['description'] ?? $result['name']
+                        ),
+                    ];
+                }
+            }
+        }
+
+        return [
+            'success' => true,
+            'status' => null === $ids
+                ? 'loan_history_all_purged' : 'loan_history_selected_purged',
+            'sysMessage' => '',
         ];
     }
 
@@ -1439,6 +1497,8 @@ class SierraRest extends AbstractBase implements
                     'checkout asc' => 'sort_checkout_date_asc',
                 ],
                 'default_sort' => 'checkout desc',
+                'purge_all'  => $this->config['TransactionHistory']['purgeAll'] ?? true,
+                'purge_selected'  => $this->config['TransactionHistory']['purgeSelected'] ?? true,
             ];
         }
         return $this->config[$function] ?? false;
@@ -1465,6 +1525,10 @@ class SierraRest extends AbstractBase implements
         // Loan history is only available if properly configured
         if ($method == 'getMyTransactionHistory') {
             return !empty($this->config['TransactionHistory']['enabled']);
+        }
+        if ($method == 'purgeTransactionHistory') {
+            return !empty($this->config['TransactionHistory']['enabled'])
+                && $this->apiVersion >= 6;
         }
         return is_callable([$this, $method]);
     }
