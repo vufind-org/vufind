@@ -86,20 +86,18 @@ class MaintenanceController extends AbstractAdmin
         $scripts = $this->getScripts();
         $details = $scripts[$script] ?? null;
         if (empty($details['command'])) {
-            $this->flashMessenger()->addMessage('Unknown command: ' . $script, 'error');
+            $this->flashMessenger()->addErrorMessage('Unknown command: ' . $script);
         } else {
             $code = $output = null;
             exec($details['command'], $output, $code);
             $successCode = intval($details['successCode'] ?? 0);
             if ($code !== $successCode) {
-                $this->flashMessenger()->addMessage(
-                    "Command failed; expected $successCode but received $code",
-                    'error'
+                $this->flashMessenger()->addErrorMessage(
+                    "Command failed; expected $successCode but received $code"
                 );
             } else {
-                $this->flashMessenger()->addMessage(
-                    "Success ($script)! Output = " . implode("\n", $output),
-                    'success'
+                $this->flashMessenger()->addSuccessMessage(
+                    "Success ($script)! Output = " . implode("\n", $output)
                 );
             }
         }
