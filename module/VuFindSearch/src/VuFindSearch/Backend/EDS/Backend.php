@@ -1,4 +1,5 @@
 <?php
+
 /**
  * EDS API Backend
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\EDS;
 
 use Exception;
@@ -194,13 +196,8 @@ class Backend extends AbstractBackend
             "Authentication Token: $authenticationToken, SessionToken: $sessionToken"
         );
 
-        // check to see if there is a parameter to only process this call as a setup
-        if (null !== $params && true == $params->get('setuponly')) {
-            return false;
-        }
-
         // create query parameters from VuFind data
-        $queryString = !empty($query) ? $query->getAllTerms() : '';
+        $queryString = $query->getAllTerms();
         $paramsStr = implode('&', null !== $params ? $params->request() : []);
         $this->debugPrint(
             "Query: $queryString, Limit: $limit, Offset: $offset, "
@@ -226,39 +223,49 @@ class Backend extends AbstractBackend
         } catch (ApiException $e) {
             // if the auth or session token was invalid, try once more
             switch ($e->getApiErrorCode()) {
-            case 104:
-            case 108:
-            case 109:
-                try {
-                    // For error 104, retry auth token; for 108/9, retry sess token:
-                    if ($e->getApiErrorCode() == 104) {
-                        $authenticationToken = $this->getAuthenticationToken(true);
-                    } else {
-                        $sessionToken = $this->getSessionToken(true);
+                case 104:
+                case 108:
+                case 109:
+                    try {
+                        // For error 104, retry auth token; for 108/9, retry sess
+                        // token:
+                        if ($e->getApiErrorCode() == 104) {
+                            $authenticationToken
+                                = $this->getAuthenticationToken(true);
+                        } else {
+                            $sessionToken = $this->getSessionToken(true);
+                        }
+                        $response = $this->client->search(
+                            $searchModel,
+                            $authenticationToken,
+                            $sessionToken
+                        );
+                    } catch (Exception $e) {
+                        throw new BackendException(
+                            $e->getMessage(),
+                            $e->getCode(),
+                            $e
+                        );
                     }
-                    $response = $this->client
-                        ->search($searchModel, $authenticationToken, $sessionToken);
-                } catch (Exception $e) {
-                    throw new BackendException($e->getMessage(), $e->getCode(), $e);
-                }
-                break;
-            case 138:
-                // User requested unavailable deep search results; first extract the
-                // next legal position from the error message:
-                $parts = explode(' ', trim($e->getApiDetailedErrorDescription()));
-                $legalPos = array_pop($parts);
-                // Now calculate the legal page number and throw an exception so the
-                // controller can fix it from here:
-                $legalPage = floor($legalPos / $limit);
-                throw new \VuFindSearch\Backend\Exception\DeepPagingException(
-                    $e->getMessage(),
-                    $e->getCode(),
-                    $legalPage,
-                    $e
-                );
-            default:
-                $response = [];
-                break;
+                    break;
+                case 138:
+                    // User requested unavailable deep search results; first extract
+                    // the next legal position from the error message:
+                    $parts
+                        = explode(' ', trim($e->getApiDetailedErrorDescription()));
+                    $legalPos = array_pop($parts);
+                    // Now calculate the legal page number and throw an exception so
+                    // the controller can fix it from here:
+                    $legalPage = floor($legalPos / $limit);
+                    throw new \VuFindSearch\Backend\Exception\DeepPagingException(
+                        $e->getMessage(),
+                        $e->getCode(),
+                        $legalPage,
+                        $e
+                    );
+                default:
+                    $response = [];
+                    break;
             }
         } catch (Exception $e) {
             $this->debugPrint("Exception found: " . $e->getMessage());
@@ -298,7 +305,8 @@ class Backend extends AbstractBackend
             $hlTerms = (null !== $params)
                 ? $params->get('highlightterms') : null;
             $extras = [];
-            if (null !== $params
+            if (
+                null !== $params
                 && ($eBookFormat = $params->get('ebookpreferredformat'))
             ) {
                 $extras['ebookpreferredformat'] = $eBookFormat;
@@ -312,35 +320,50 @@ class Backend extends AbstractBackend
                 $extras
             );
         } catch (ApiException $e) {
+            // Error codes can be reviewed at
+            // https://connect.ebsco.com/s/article
+            //    /EBSCO-Discovery-Service-API-Reference-Guide-Error-Codes
             // if the auth or session token was invalid, try once more
             switch ($e->getApiErrorCode()) {
-            case 104:
-            case 108:
-            case 109:
-                try {
-                    // For error 104, retry auth token; for 108/9, retry sess token:
-                    if ($e->getApiErrorCode() == 104) {
-                        $authenticationToken = $this->getAuthenticationToken(true);
-                    } else {
-                        $sessionToken = $this->getSessionToken(true);
+                case 104:
+                case 108:
+                case 109:
+                    try {
+                        // For error 104, retry auth token; for 108/9, retry sess
+                        // token:
+                        if ($e->getApiErrorCode() == 104) {
+                            $authenticationToken
+                                = $this->getAuthenticationToken(true);
+                        } else {
+                            $sessionToken = $this->getSessionToken(true);
+                        }
+                        $response = $this->client->retrieve(
+                            $an,
+                            $dbId,
+                            $authenticationToken,
+                            $sessionToken,
+                            $hlTerms
+                        );
+                    } catch (Exception $e) {
+                        throw new BackendException(
+                            $e->getMessage(),
+                            $e->getCode(),
+                            $e
+                        );
                     }
-                    $response = $this->client->retrieve(
-                        $an,
-                        $dbId,
-                        $authenticationToken,
-                        $sessionToken,
-                        $hlTerms
-                    );
-                } catch (Exception $e) {
-                    throw new BackendException($e->getMessage(), $e->getCode(), $e);
-                }
-                break;
-            case 135:
-                // DbId not in profile, fall through to treat as "record not found"
-                $response = [];
-                break;
-            default:
-                throw $e;
+                    break;
+                case 132:
+                case 133:
+                case 135:
+                    /* 132 Record not found
+                     * 133 Simultaneous User Limit Reached
+                     * 135 DbId not in profile
+                     * -> fall through to treat as "record not found"
+                     */
+                    $response = [];
+                    break;
+                default:
+                    throw $e;
             }
         }
         $collection = $this->createRecordCollection(['Records' => $response]);
@@ -362,7 +385,7 @@ class Backend extends AbstractBackend
         // Most parameters need to be flattened from array format, but a few
         // should remain as arrays:
         $arraySettings = [
-            'query', 'facets', 'filters', 'groupFilters', 'rangeFilters', 'limiters'
+            'query', 'facets', 'filters', 'groupFilters', 'rangeFilters', 'limiters',
         ];
         foreach ($params as $key => $param) {
             $options[$key] = in_array($key, $arraySettings)
@@ -526,7 +549,8 @@ class Backend extends AbstractBackend
             $results = $this->client
                 ->authenticate($username, $password, $this->orgId, ['autocomplete']);
             $autoresult = $results['Autocomplete'] ?? [];
-            if (isset($autoresult['Token']) && isset($autoresult['TokenTimeOut'])
+            if (
+                isset($autoresult['Token']) && isset($autoresult['TokenTimeOut'])
                 && isset($autoresult['CustId']) && isset($autoresult['Url'])
             ) {
                 $token = $autoresult['Token'];
@@ -567,7 +591,8 @@ class Backend extends AbstractBackend
     {
         // check to see if the user has logged in/out between the creation
         // of this session token and now
-        if (!$isInvalid && !empty($this->session->sessionID)
+        if (
+            !$isInvalid && !empty($this->session->sessionID)
             && $this->session->sessionGuest == $this->isGuest()
         ) {
             return $this->session->sessionID;
@@ -673,28 +698,30 @@ class Backend extends AbstractBackend
         } catch (ApiException $e) {
             // if the auth or session token was invalid, try once more
             switch ($e->getApiErrorCode()) {
-            case 104:
-            case 108:
-            case 109:
-                try {
-                    // For error 104, retry auth token; for 108/9, retry sess token:
-                    if ($e->getApiErrorCode() == 104) {
-                        $authenticationToken = $this->getAuthenticationToken(true);
-                    } else {
-                        $sessionToken = $this->getSessionToken(true);
+                case 104:
+                case 108:
+                case 109:
+                    try {
+                        // For error 104, retry auth token; for 108/9, retry sess
+                        // token:
+                        if ($e->getApiErrorCode() == 104) {
+                            $authenticationToken
+                                = $this->getAuthenticationToken(true);
+                        } else {
+                            $sessionToken = $this->getSessionToken(true);
+                        }
+                        $response = $this->client
+                            ->info($authenticationToken, $sessionToken);
+                    } catch (Exception $e) {
+                        throw new BackendException(
+                            $e->getMessage(),
+                            $e->getCode(),
+                            $e
+                        );
                     }
-                    $response = $this->client
-                        ->info($authenticationToken, $sessionToken);
-                } catch (Exception $e) {
-                    throw new BackendException(
-                        $e->getMessage(),
-                        $e->getCode(),
-                        $e
-                    );
-                }
-                break;
-            default:
-                $response = [];
+                    break;
+                default:
+                    $response = [];
             }
         }
         if (!empty($response)) {

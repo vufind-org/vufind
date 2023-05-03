@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Laminas\Feed\Feed extension for Open Search
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Feed\Writer\Extension\OpenSearch;
 
 use Laminas\Feed\Uri;
@@ -225,14 +227,19 @@ class Feed extends ParentFeed
     /**
      * Add a link
      *
-     * @param string $url  the url of the link
-     * @param string $role the role of the link
-     * @param string $type the mime type of the link
+     * @param string $url   the url of the link
+     * @param string $role  the role of the link
+     * @param string $type  the mime type of the link
+     * @param string $title Title for the link (optional)
      *
      * @return Feed
      */
-    public function addOpensearchLink($url, $role = null, $type = null)
-    {
+    public function addOpensearchLink(
+        $url,
+        $role = null,
+        $type = null,
+        $title = null
+    ) {
         if (empty($url) || !is_string($url) || !Uri::factory($url)->isValid()) {
             throw new Exception\InvalidArgumentException(
                 'Invalid parameter: "url" must be '
@@ -245,10 +252,10 @@ class Feed extends ParentFeed
                 . 'feed the link points to, i.e. RSS, RDF or Atom'
             );
         }
-        $link = [];
-        $link['url'] = $url;
-        $link['role'] = $role;
-        $link['type'] = $type;
+        $link = compact('url', 'role', 'type');
+        if ($title) {
+            $link['title'] = $title;
+        }
         $this->links[] = $link;
         return $this;
     }

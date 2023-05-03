@@ -1,4 +1,5 @@
 <?php
+
 /**
  * MemCache session handler
  *
@@ -28,6 +29,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
+
 namespace VuFind\Session;
 
 use Laminas\Config\Config;
@@ -98,17 +100,18 @@ class Memcache extends AbstractBase
 
         // Establish connection:
         switch ($clientClass) {
-        case 'Memcache':
-            if (!$this->connection->connect($host, $port, $timeout)) {
-                throw $connectionException;
-            }
-            break;
-        case 'Memcached':
-            $this->connection->setOption(\Memcached::OPT_CONNECT_TIMEOUT, $timeout);
-            if (!$this->connection->addServer($host, $port)) {
-                throw $connectionException;
-            }
-            break;
+            case 'Memcache':
+                if (!$this->connection->connect($host, $port, $timeout)) {
+                    throw $connectionException;
+                }
+                break;
+            case 'Memcached':
+                $this->connection
+                    ->setOption(\Memcached::OPT_CONNECT_TIMEOUT, $timeout);
+                if (!$this->connection->addServer($host, $port)) {
+                    throw $connectionException;
+                }
+                break;
         }
     }
 
@@ -120,7 +123,7 @@ class Memcache extends AbstractBase
      *
      * @return string
      */
-    public function read($sessId)
+    public function read($sessId): string
     {
         // For some reason, Memcache tests fail if we do not pass exactly three
         // parameters to the get method, even though this seems inconsistent with
@@ -140,7 +143,7 @@ class Memcache extends AbstractBase
      *
      * @return bool
      */
-    public function destroy($sessId)
+    public function destroy($sessId): bool
     {
         // Perform standard actions required by all session methods:
         parent::destroy($sessId);
@@ -157,7 +160,7 @@ class Memcache extends AbstractBase
      *
      * @return bool
      */
-    protected function saveSession($sessId, $data)
+    protected function saveSession($sessId, $data): bool
     {
         // Memcached and Memcache have different set() signatures, so we need to
         // behave differently depending on the class of the connection.

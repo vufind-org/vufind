@@ -15,8 +15,8 @@
   <h3><?=$this->transEsc('Search For Items on Reserve')?></h3>
   <form class="form-inline" method="get" name="reservesSearchForm">
     <label for="reservesSearchForm_lookfor"><?=$this->transEsc("Your search terms")?></label>
-    <input id="reservesSearchForm_lookfor" type="text" name="lookfor" size="40" value="<?=$this->escapeHtmlAttr($reservesLookfor)?>" <?=$this->searchOptions('SolrReserves')->autocompleteEnabled() ? ' class="autocomplete searcher:SolrReserves type:Reserves"' : ''?> />
-    <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEscAttr("Find")?>"/>
+    <input id="reservesSearchForm_lookfor" type="text" name="lookfor" size="40" value="<?=$this->escapeHtmlAttr($reservesLookfor)?>" <?=$this->searchOptions('SolrReserves')->autocompleteEnabled() ? ' class="autocomplete searcher:SolrReserves type:Reserves"' : ''?>>
+    <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEscAttr("Find")?>">
   </form>
   <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, "$('#reservesSearchForm_lookfor').focus()", 'SET')?>
 
@@ -29,10 +29,10 @@
             '%%start%%' => $this->localizedNumber($this->results->getStartRecord()),
             '%%end%%' => $this->localizedNumber($this->results->getEndRecord()),
             '%%total%%' => $this->localizedNumber($recordTotal),
-            '%%lookfor%%' => $this->escapeHtml($reservesLookfor)
+            '%%lookfor%%' => $this->escapeHtml($reservesLookfor),
           ];
         ?>
-        <?=$this->translate('showing_results_of_for_html', $transParams); ?><?php if($qtime): ?>,<?php endif; ?>
+        <?=$this->translate('showing_results_of_for_html', $transParams); ?><?php if ($qtime): ?>,<?php endif; ?>
       <?php endif; ?>
       <?php if ($qtime): ?>
         <?=$this->transEsc('query time')?>: <?=$this->localizedNumber($qtime, 2) . $this->transEsc('seconds_abbrev')?>
@@ -78,10 +78,10 @@
   <?php endif; ?>
 </div>
 
-<?php /* Narrow Search Options */ ?>
+<?php /* Refine Search Options */ ?>
 <div class="<?=$this->layoutClass('sidebar')?>">
   <?php foreach ($this->results->getRecommendations('side') as $current): ?>
     <?=$this->recommend($current)?>
   <?php endforeach; ?>
 </div>
-<?php /* End Narrow Search Options */ ?>
+<?php /* End Refine Search Options */ ?>

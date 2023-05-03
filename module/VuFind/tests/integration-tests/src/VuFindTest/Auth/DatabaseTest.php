@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Database authentication test class.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Auth;
 
 use VuFind\Auth\Database;
@@ -59,7 +61,7 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
      */
     public static function setUpBeforeClass(): void
     {
-        static::failIfUsersExist();
+        static::failIfDataExists();
     }
 
     /**
@@ -116,7 +118,7 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
         $post = $overrides + [
             'username' => 'testuser', 'email' => 'user@test.com',
             'password' => 'testpass', 'password2' => 'testpass',
-            'firstname' => 'Test', 'lastname' => 'User'
+            'firstname' => 'Test', 'lastname' => 'User',
         ];
         return $this->getRequest($post);
     }
@@ -132,7 +134,7 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
     protected function getLoginRequest($overrides = [])
     {
         $post = $overrides + [
-            'username' => 'testuser', 'password' => 'testpass'
+            'username' => 'testuser', 'password' => 'testpass',
         ];
         return $this->getRequest($post);
     }

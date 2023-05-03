@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Solr\Response\Json;
 
 use Countable;
@@ -93,7 +94,7 @@ class NamedList implements Countable, Iterator
      *
      * @return int
      */
-    public function count()
+    public function count(): int
     {
         return count($this->list);
     }
@@ -105,6 +106,7 @@ class NamedList implements Countable, Iterator
      *
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return $this->valid() ? $this->current[1] : null;
@@ -115,6 +117,7 @@ class NamedList implements Countable, Iterator
      *
      * @return string
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->valid() ? $this->current[0] : null;
@@ -125,7 +128,7 @@ class NamedList implements Countable, Iterator
      *
      * @return void
      */
-    public function next()
+    public function next(): void
     {
         $this->current = next($this->list);
     }
@@ -135,7 +138,7 @@ class NamedList implements Countable, Iterator
      *
      * @return bool
      */
-    public function valid()
+    public function valid(): bool
     {
         return is_array($this->current);
     }
@@ -145,7 +148,7 @@ class NamedList implements Countable, Iterator
      *
      * @return void
      */
-    public function rewind()
+    public function rewind(): void
     {
         reset($this->list);
         $this->current = current($this->list);

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * XSLT importer support methods.
  *
@@ -25,10 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/indexing Wiki
  */
+
 namespace VuFind\XSLT\Import;
 
 use DOMDocument;
-use VuFind\Config\Locator as ConfigLocator;
 
 /**
  * XSLT support class -- all methods of this class must be public and static;
@@ -180,13 +181,13 @@ class VuFind
     {
         $parser = static::getParser();
         switch (strtolower($parser)) {
-        case 'aperture':
-            return static::harvestWithAperture($url);
-        case 'tika':
-            return static::harvestWithTika($url);
-        default:
-            // Ignore unrecognized parser option:
-            return '';
+            case 'aperture':
+                return static::harvestWithAperture($url);
+            case 'tika':
+                return static::harvestWithTika($url);
+            default:
+                // Ignore unrecognized parser option:
+                return '';
         }
     }
 
@@ -295,10 +296,10 @@ class VuFind
         $descriptorspec = [
             0 => ['pipe', 'r'],
             1 => ['file', $output, 'w'],
-            2 => ['pipe', 'w']
+            2 => ['pipe', 'w'],
         ];
         return [
-            "java -jar $tika $arg -eUTF8 $input", $descriptorspec, []
+            "java -jar $tika $arg -eUTF8 $input", $descriptorspec, [],
         ];
     }
 
@@ -348,9 +349,9 @@ class VuFind
         // that PHP's parse_ini_file() function is not compatible with SolrMarc's
         // style of properties map, so we are parsing this manually.
         $map = [];
-        $mapFile
-            = ConfigLocator::getConfigPath($filename, 'import/translation_maps');
-        foreach (file($mapFile) as $line) {
+        $resolver = static::$serviceLocator->get(\VuFind\Config\PathResolver::class);
+        $mapFile = $resolver->getConfigPath($filename, 'import/translation_maps');
+        foreach ($mapFile ? file($mapFile) : [] as $line) {
             $parts = explode('=', $line, 2);
             if (isset($parts[1])) {
                 $key = trim($parts[0]);
@@ -521,5 +522,69 @@ class VuFind
             }
         }
         return empty($goodMatch) ? $adequateMatch : $goodMatch;
+    }
+
+    /**
+     * Is the provided name inverted ("Last, First") or not ("First Last")?
+     *
+     * @param string $name Name to check
+     *
+     * @return bool
+     */
+    public static function isInvertedName(string $name): bool
+    {
+        $parts = explode(',', $name);
+        // If there are no commas, it's not inverted...
+        if (count($parts) < 2) {
+            return false;
+        }
+        // If there are commas, let's see if the last part is a title,
+        // in which case it could go either way, so we need to recalculate.
+        $lastPart = array_pop($parts);
+        $titles = ['jr', 'sr', 'dr', 'mrs', 'ii', 'iii', 'iv'];
+        if (in_array(strtolower(trim($lastPart, ' .')), $titles)) {
+            return count($parts) > 1;
+        }
+        return true;
+    }
+
+    /**
+     * Invert "Firstname Lastname" authors into "Lastname, Firstname."
+     *
+     * @param string $rawName Raw name
+     *
+     * @return string
+     */
+    public static function invertName(string $rawName): string
+    {
+        // includes the full name, eg.: Bento, Filipe Manuel dos Santos
+        $parts = preg_split('/\s+(?=[^\s]+$)/', $rawName, 2);
+        if (count($parts) != 2) {
+            return $rawName;
+        }
+        [$fnames, $lname] = $parts;
+        return "$lname, $fnames";
+    }
+
+    /**
+     * Call invertName on all matching elements; return a DOMDocument with a
+     * name tag for each inverted name.
+     *
+     * @param array $input DOM elements to adjust
+     *
+     * @return DOMDocument
+     */
+    public static function invertNames($input): DOMDocument
+    {
+        $dom = new DOMDocument('1.0', 'utf-8');
+        foreach ($input as $name) {
+            $inverted = self::isInvertedName($name->textContent)
+                ? $name->textContent
+                : self::invertName($name->textContent);
+            $element = $dom->createElement('name');
+            $element->nodeValue = htmlspecialchars($inverted);
+            $dom->appendChild($element);
+        }
+        return $dom;
     }
 }

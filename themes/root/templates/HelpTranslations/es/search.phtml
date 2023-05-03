@@ -25,7 +25,7 @@
     <p>Por ejemplo, para buscar por "text" o "test" puede realizar la búsqueda:</p>
     <pre class="code">te?t</pre>
 
-    <p>Para sustituir múltiples carácteres (zero o más) use el asterisco (<strong>*</strong>).</p>
+    <p>Para sustituir múltiples caracteres (cero o más) use el asterisco (<strong>*</strong>).</p>
     <p>Por ejemplo, para buscar por "test", "tests" o "tester" introduzca: </p>
     <pre class="code">test*</pre>
 
@@ -35,24 +35,24 @@
 
   <dt><a id="fuzzy_searches"></a>Búsqueda difusa</dt>
   <dd>
-    <p>Aplica el tilde (<strong>~</strong>) al final de un término sólo para buscar un término graficamente similar, la así llamada búsqueda difusa.
-       Por ejemplo, para buscar un término graficamente similar a "mono"</p>
+    <p>Aplica el tilde (<strong>~</strong>) al final de un término sólo para buscar un término gráficamente similar, la así llamada búsqueda difusa.
+       Por ejemplo, para buscar un término gráficamente similar a "mono"</p>
     <pre class="code">mono~</pre>
     <p>Esta búsqueda devolverá resultados con términos como mono, cono o tono.</p>
 
     <p>Puede ajustar el parámetro de similaridad especificando valores entre 0 y 1.
-       Cuanto más cercano el valor al 1, tanto más cercana es la similaridad. Poniendolo al 1
+       Cuanto más cercano el valor al 1, tanto más cercana es la similaridad. Poniéndolo al 1
        se buscará sólo términos escritos similarmente.
        Por ejemplo:</p>
     <pre class="code">mono~0.8</pre>
-    <p>Cuando no se indica el parámetro, se usa el valor estandar, que es el 0.5.</p>
+    <p>Cuando no se indica el parámetro, se usa el valor estándar, que es el 0.5.</p>
   </dd>
 
   <dt><a id="proximity_searches"></a>Búsqueda de proximidad</dt>
   <dd>
     <p>
     Aplicando la búsqueda de proximidad usa el tilde (<strong>~</strong>) al final de un término múltiple.
-    Por ejemplo, para buscar por "marketing" y "Meffert" que estén a distancia inferior a cinco palabras realize la búsqueda siguiente:
+    Por ejemplo, para buscar por "marketing" y "Meffert" que estén a distancia inferior a cinco palabras realice la búsqueda siguiente:
     </p>
     <pre class="code">"marketing Meffert"~5</pre>
   </dd>
@@ -98,7 +98,7 @@
       <dd>
         <p>
             El operador AND es por defecto el operador de conjunción.
-            Ello significa que el operador <strong>AND</strong> será usado por el catálogo automaticamente,
+            Ello significa que el operador <strong>AND</strong> será usado por el catálogo automáticamente,
             sin introducirlo entre los términos de búsqueda.
             El operador <strong>AND</strong> localiza registros que contengan
             todos los términos de búsqueda especificados.
@@ -114,7 +114,7 @@
       <dd>
         <p>
            El operador más (<strong>+</strong>) requiere un término a continuación.
-           Así los resultados deben de figurar de ese término en algún campo del registro.
+           Así los resultados de ese término deben figurar en algún campo del registro.
         </p>
         <p>Por ejemplo, para obtener resultados que contengan "marketing" y pueden contener "Meffert" introduzca:</p>
         <pre class="code">+marketing Meffert</pre>
@@ -132,7 +132,7 @@
       <dt><a id="boolean_not"></a>NOT</dt>
       <dd>
         <p>
-           Utilize el operador <strong>NOT</strong> para localizar registros
+           Utilice el operador <strong>NOT</strong> para localizar registros
            que no contengan el primer término de búsqueda sino el segundo.
         </p>
         <p>

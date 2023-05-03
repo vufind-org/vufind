@@ -30,6 +30,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Solr;
 
 use VuFindSearch\ParamBag;
@@ -93,7 +94,8 @@ class SimilarBuilder implements SimilarBuilderInterface
         $this->uniqueKey = $uniqueKey;
         if (isset($searchConfig->MoreLikeThis)) {
             $mlt = $searchConfig->MoreLikeThis;
-            if (isset($mlt->useMoreLikeThisHandler)
+            if (
+                isset($mlt->useMoreLikeThisHandler)
                 && $mlt->useMoreLikeThisHandler
             ) {
                 $this->useHandler = true;

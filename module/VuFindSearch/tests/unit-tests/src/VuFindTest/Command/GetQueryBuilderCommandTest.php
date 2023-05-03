@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Command;
 
 use PHPUnit\Framework\TestCase;
@@ -49,7 +50,7 @@ class GetQueryBuilderCommandTest extends TestCase
      */
     public function testMismatchedBackendId(): void
     {
-        $command = new GetQueryBuilderCommand('foo', []);
+        $command = new GetQueryBuilderCommand('foo');
         $this
             ->expectExceptionMessage('Expected backend instance foo instead of bar');
         $backend = $this
@@ -77,7 +78,7 @@ class GetQueryBuilderCommandTest extends TestCase
             ->will($this->returnValue('bar'));
         $backend->expects($this->once())->method('getQueryBuilder')
             ->will($this->returnValue($builder));
-        $command = new GetQueryBuilderCommand('bar', []);
+        $command = new GetQueryBuilderCommand('bar');
         $this->assertEquals($builder, $command->execute($backend)->getResult());
     }
 }

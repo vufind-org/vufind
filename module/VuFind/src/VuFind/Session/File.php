@@ -1,4 +1,5 @@
 <?php
+
 /**
  * File-based session handler
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
+
 namespace VuFind\Session;
 
 use Laminas\Config\Config;
@@ -67,7 +69,8 @@ class File extends AbstractBase
         }
 
         // Die if the session directory does not exist and cannot be created.
-        if ((!file_exists($this->path) || !is_dir($this->path))
+        if (
+            (!file_exists($this->path) || !is_dir($this->path))
             && !mkdir($this->path)
         ) {
             throw new \Exception("Cannot access session save path: " . $this->path);
@@ -82,7 +85,7 @@ class File extends AbstractBase
      *
      * @return string
      */
-    public function read($sessId)
+    public function read($sessId): string
     {
         $sessFile = $this->path . '/sess_' . $sessId;
         if (!file_exists($sessFile)) {
@@ -106,7 +109,7 @@ class File extends AbstractBase
      *
      * @return bool
      */
-    public function destroy($sessId)
+    public function destroy($sessId): bool
     {
         // Perform standard actions required by all session methods:
         parent::destroy($sessId);
@@ -127,6 +130,7 @@ class File extends AbstractBase
      *
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function gc($maxlifetime)
     {
         foreach (glob($this->path . "/sess_*") as $filename) {
@@ -145,11 +149,21 @@ class File extends AbstractBase
      *
      * @return bool
      */
-    protected function saveSession($sessId, $data)
+    protected function saveSession($sessId, $data): bool
     {
         $sessFile = $this->path . '/sess_' . $sessId;
         if ($handle = fopen($sessFile, "w")) {
-            $return = fwrite($handle, $data);
+            $return = false;
+            // Lock the file for exclusive access to avoid issues with multiple
+            // processes writing session simultaneously:
+            if (flock($handle, LOCK_EX)) {
+                $return = fwrite($handle, $data);
+                // Make sure that there's no trailing data by truncating the file to
+                // the correct length:
+                ftruncate($handle, strlen($data));
+                fflush($handle);
+                flock($handle, LOCK_UN);
+            }
             fclose($handle);
             if ($return !== false) {
                 return true;

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * QR Code Loader Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\QRCode;
 
 use Laminas\Config\Config;
@@ -61,7 +63,10 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
 
         $theme = $this->getMockBuilder(\VuFindTheme\ThemeInfo::class)
             ->setConstructorArgs(['foo', 'bar'])->getMock();
-        $theme->expects($this->once())->method('findContainingTheme')->with($this->equalTo(['images/noQRCode.gif']))->will($this->returnValue(false));
+        $theme->expects($this->once())
+            ->method('findContainingTheme')
+            ->with($this->equalTo(['images/noQRCode.gif']))
+            ->will($this->returnValue(false));
         $loader = $this->getLoader([], $theme);
         $loader->getImage();
     }

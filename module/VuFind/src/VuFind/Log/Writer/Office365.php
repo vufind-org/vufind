@@ -1,4 +1,5 @@
 <?php
+
 /**
  * HTTP POST log writer for Office365 webhooks.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Log\Writer;
 
 use Laminas\Http\Client;

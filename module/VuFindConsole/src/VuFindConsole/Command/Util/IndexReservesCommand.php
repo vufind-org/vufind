@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Console command: index course reserves into Solr.
  *
@@ -25,9 +26,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Util;
 
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -156,10 +157,12 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
                     'course_id' => $courseId,
                     'course' => $courses[$courseId] ?? '',
                     'department_id' => $departmentId,
-                    'department' => $departments[$departmentId] ?? ''
+                    'department' => $departments[$departmentId] ?? '',
                 ];
             }
-            $index[$id]['bib_id'][] = $record['BIB_ID'];
+            if (!in_array($record['BIB_ID'], $index[$id]['bib_id'])) {
+                $index[$id]['bib_id'][] = $record['BIB_ID'];
+            }
         }
 
         $updates = new UpdateDocument();
@@ -240,7 +243,8 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
 
         // Make sure we have reserves and at least one of: instructors, courses,
         // departments:
-        if ((!empty($instructors) || !empty($courses) || !empty($departments))
+        if (
+            (!empty($instructors) || !empty($courses) || !empty($departments))
             && !empty($reserves)
         ) {
             // Delete existing records
@@ -262,7 +266,15 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
             $output->writeln('Successfully loaded ' . count($reserves) . ' rows.');
             return 0;
         }
-        $output->writeln('Unable to load data.');
+        $missing = array_merge(
+            empty($instructors) ? ['instructors'] : [],
+            empty($courses) ? ['courses'] : [],
+            empty($departments) ? ['departments'] : [],
+            empty($reserves) ? ['reserves'] : []
+        );
+        $output->writeln(
+            'Unable to load data. No data found for: ' . implode(', ', $missing)
+        );
         return 1;
     }
 }

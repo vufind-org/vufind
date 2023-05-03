@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Base class for session handling
  *
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
+
 namespace VuFind\Session;
 
 use Laminas\Config\Config;
@@ -106,7 +108,7 @@ abstract class AbstractBase implements HandlerInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function open($sess_path, $sess_name)
+    public function open($sess_path, $sess_name): bool
     {
         return true;
     }
@@ -117,7 +119,7 @@ abstract class AbstractBase implements HandlerInterface
      *
      * @return bool
      */
-    public function close()
+    public function close(): bool
     {
         return true;
     }
@@ -134,7 +136,7 @@ abstract class AbstractBase implements HandlerInterface
      *
      * @return bool
      */
-    public function destroy($sessId)
+    public function destroy($sessId): bool
     {
         $searchTable = $this->getTable('Search');
         $searchTable->destroySession($sessId);
@@ -153,6 +155,7 @@ abstract class AbstractBase implements HandlerInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
+    #[\ReturnTypeWillChange]
     public function gc($sessMaxLifetime)
     {
         // how often does this get called (if at all)?
@@ -177,7 +180,7 @@ abstract class AbstractBase implements HandlerInterface
      *
      * @return bool
      */
-    public function write($sessId, $data)
+    public function write($sessId, $data): bool
     {
         if ($this->writesDisabled) {
             return true;
@@ -193,5 +196,5 @@ abstract class AbstractBase implements HandlerInterface
      *
      * @return bool
      */
-    abstract protected function saveSession($sessId, $data);
+    abstract protected function saveSession($sessId, $data): bool;
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Recommendation module plugin manager
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
+
 namespace VuFind\Recommend;
 
 use Laminas\ServiceManager\Factory\InvokableFactory;
@@ -113,7 +115,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         EuropeanaResultsDeferred::class => InvokableFactory::class,
         ExpandFacets::class => ExpandFacetsFactory::class,
         ExternalSearch::class => InvokableFactory::class,
-        FacetCloud::class => InvokableFactory::class,
+        FacetCloud::class => ExpandFacetsFactory::class,
         FavoriteFacets::class => FavoriteFacetsFactory::class,
         Libraryh3lp::class => InvokableFactory::class,
         MapSelection::class => MapSelectionFactory::class,
@@ -124,7 +126,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         RecommendLinks::class => InjectConfigManagerFactory::class,
         RemoveFilters::class => InvokableFactory::class,
         SideFacets::class => SideFacetsFactory::class,
-        SideFacetsDeferred::class => InjectConfigManagerFactory::class,
+        SideFacetsDeferred::class => SideFacetsFactory::class,
         SpellingSuggestions::class => InvokableFactory::class,
         SummonBestBets::class => InjectResultsManagerFactory::class,
         SummonBestBetsDeferred::class => InvokableFactory::class,

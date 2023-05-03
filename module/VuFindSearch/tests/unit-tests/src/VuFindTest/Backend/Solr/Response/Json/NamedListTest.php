@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Backend\Solr\Json\Response;
 
 use PHPUnit\Framework\TestCase;
@@ -65,7 +66,7 @@ class NamedListTest extends TestCase
     public function testCountable()
     {
         $list = new NamedList([['first term', 'info'], ['second term', 'info']]);
-        $this->assertEquals(2, count($list));
+        $this->assertCount(2, $list);
     }
 
     /**
@@ -76,6 +77,49 @@ class NamedListTest extends TestCase
     public function testToArray()
     {
         $list = new NamedList([['first term', 'info'], ['second term', 'info2']]);
-        $this->assertEquals(['first term' => 'info', 'second term' => 'info2'], $list->toArray());
+        $this->assertEquals(
+            ['first term' => 'info', 'second term' => 'info2'],
+            $list->toArray()
+        );
+    }
+
+    /**
+     * Test key removal.
+     *
+     * @return void
+     */
+    public function testKeyRemoval()
+    {
+        $list = new NamedList([['first term', 'info'], ['second term', 'info2']]);
+        $list->removeKey('second term');
+        $this->assertEquals(['first term' => 'info'], $list->toArray());
+
+        $list = new NamedList(
+            [
+                ['first term', 'info'],
+                ['second term', 'info2'],
+                ['third term', 'info3'],
+            ]
+        );
+        $list->removeKeys(['first term', 'second term']);
+        $this->assertEquals(['third term' => 'info3'], $list->toArray());
+    }
+
+    /**
+     * Test multiple key removal.
+     *
+     * @return void
+     */
+    public function testMultipleKeyRemoval()
+    {
+        $list = new NamedList(
+            [
+                ['first term', 'info'],
+                ['second term', 'info2'],
+                ['third term', 'info3'],
+            ]
+        );
+        $list->removeKeys(['first term', 'second term']);
+        $this->assertEquals(['third term' => 'info3'], $list->toArray());
     }
 }

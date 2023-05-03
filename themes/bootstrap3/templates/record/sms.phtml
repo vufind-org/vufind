@@ -9,20 +9,21 @@
     . '<li class="active">' . $this->transEsc('Text this') . '</li>';
 ?>
 <?php $validatorCallback = <<<JS
-  function phoneNumberValidation() {
-    return phoneNumberFormHandler('sms_to', '{$this->validation}');
-  }
-JS;
+    function phoneNumberValidation() {
+      return phoneNumberFormHandler('sms_to', '{$this->validation}');
+    }
+    JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $validatorCallback, 'SET'); ?>
 <h2><?=$this->transEsc('Text this') ?>: <span class="title-in-heading"><?=$this->escapeHtml($this->driver->getBreadcrumb())?></span></h2>
-<form method="post" name="smsRecord" class="form-record-sms"<?php if(isset($this->validation) && !empty($this->validation)):?> data-lightbox-onsubmit="phoneNumberValidation"<?php endif; ?>>
+<form method="post" name="smsRecord" class="form-record-sms"<?php if (isset($this->validation) && !empty($this->validation)):?> data-lightbox-onsubmit="phoneNumberValidation"<?php endif; ?>>
   <?=$this->flashmessages()?>
-  <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" />
-  <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" />
+  <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
+  <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
+  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>" name="csrf">
   <div class="form-group">
     <label class="control-label" for="sms_to"><?=$this->transEsc('Number')?>:</label>
-    <input id="sms_to" type="tel" name="to" placeholder="<?=$this->transEscAttr('sms_phone_number')?>" class="form-control"/>
+    <input id="sms_to" type="tel" name="to" value="<?=$this->escapeHtmlAttr($this->to)?>" placeholder="<?=$this->transEscAttr('sms_phone_number')?>" class="form-control">
     <div class="help-block with-errors"></div>
   </div>
   <?php if (is_array($this->carriers) && count($this->carriers) > 1): ?>
@@ -31,16 +32,16 @@ JS;
       <select id="sms_provider" name="provider" class="form-control">
         <option selected="selected" value=""><?=$this->transEsc('Select your carrier')?></option>
         <?php foreach ($this->carriers as $val => $details): ?>
-          <option value="<?=$this->escapeHtmlAttr($val)?>"><?=$this->escapeHtml($details['name'])?></option>
+          <option value="<?=$this->escapeHtmlAttr($val)?>"<?=$val === $this->provider ? " selected" : ""?>><?=$this->escapeHtml($details['name'])?></option>
         <?php endforeach; ?>
       </select>
     </div>
   <?php else: ?>
     <?php $keys = is_array($this->carriers) ? array_keys($this->carriers) : []; ?>
-    <input type="hidden" name="provider" value="<?=$this->escapeHtmlAttr($keys[0] ?? '')?>" />
+    <input type="hidden" name="provider" value="<?=$this->escapeHtmlAttr($keys[0] ?? '')?>">
   <?php endif; ?>
   <?=$this->captcha()->html($this->useCaptcha) ?>
   <div class="form-group">
-    <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEscAttr('Send Text')?>"/>
+    <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEscAttr('Send Text')?>">
   </div>
 </form>

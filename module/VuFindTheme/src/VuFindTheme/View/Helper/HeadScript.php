@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Head script view helper (extended for VuFind's theme system)
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindTheme\View\Helper;
 
 use VuFindTheme\ThemeInfo;
@@ -38,8 +40,7 @@ use VuFindTheme\ThemeInfo;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class HeadScript extends \VuFind\View\Helper\HeadScript
-    implements \Laminas\Log\LoggerAwareInterface
+class HeadScript extends \VuFind\View\Helper\HeadScript implements \Laminas\Log\LoggerAwareInterface
 {
     use ConcatTrait;
     use \VuFind\Log\LoggerAwareTrait;

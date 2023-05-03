@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class to help build URLs and forms in the view based on search settings.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search;
 
 use VuFindSearch\Query\AbstractQuery;
@@ -362,7 +364,7 @@ class UrlQueryHelper
      */
     public function getParams($escape = true)
     {
-        return '?' . $this->buildQueryString($this->urlParams, $escape);
+        return '?' . static::buildQueryString($this->urlParams, $escape);
     }
 
     /**
@@ -375,7 +377,8 @@ class UrlQueryHelper
     protected function parseFilter($filter)
     {
         // Simplistic explode/trim behavior if no callback is provided:
-        if (!isset($this->config['parseFilterCallback'])
+        if (
+            !isset($this->config['parseFilterCallback'])
             || !is_callable($this->config['parseFilterCallback'])
         ) {
             $parts = explode(':', $filter, 2);
@@ -396,7 +399,8 @@ class UrlQueryHelper
     protected function getAliasesForFacetField($field)
     {
         // If no callback is provided, aliases are unsupported:
-        if (!isset($this->config['getAliasesForFacetFieldCallback'])
+        if (
+            !isset($this->config['getAliasesForFacetFieldCallback'])
             || !is_callable($this->config['getAliasesForFacetFieldCallback'])
         ) {
             return [$field];
@@ -435,7 +439,8 @@ class UrlQueryHelper
             foreach ($params['filter'] as $current) {
                 [$currentField, $currentValue]
                     = $this->parseFilter($current);
-                if (!in_array($currentField, $fieldAliases)
+                if (
+                    !in_array($currentField, $fieldAliases)
                     || $currentValue != $value
                 ) {
                     $newFilter[] = $current;
@@ -584,18 +589,45 @@ class UrlQueryHelper
                     if (!$this->filtered($paramName, $paramValue2, $filter)) {
                         $retVal .= '<input type="hidden" name="' .
                             htmlspecialchars($paramName) . '[]" value="' .
-                            htmlspecialchars($paramValue2) . '" />';
+                            htmlspecialchars($paramValue2) . '">';
                     }
                 }
             } else {
                 if (!$this->filtered($paramName, $paramValue, $filter)) {
                     $retVal .= '<input type="hidden" name="' .
                         htmlspecialchars($paramName) . '" value="' .
-                        htmlspecialchars($paramValue) . '" />';
+                        htmlspecialchars($paramValue) . '">';
                 }
             }
         }
         return $retVal;
+    }
+
+    /**
+     * Turn an array into a properly URL-encoded query string.  This is
+     * equivalent to the built-in PHP http_build_query function, but it handles
+     * arrays in a more compact way and ensures that ampersands don't get
+     * messed up based on server-specific settings.
+     *
+     * @param array $a      Array of parameters to turn into a GET string
+     * @param bool  $escape Should we escape the string for use in the view?
+     *
+     * @return string
+     */
+    public static function buildQueryString($a, $escape = true)
+    {
+        $parts = [];
+        foreach ($a as $key => $value) {
+            if (is_array($value)) {
+                foreach ($value as $current) {
+                    $parts[] = urlencode($key . '[]') . '=' . urlencode($current);
+                }
+            } else {
+                $parts[] = urlencode($key) . '=' . urlencode($value);
+            }
+        }
+        $retVal = implode('&', $parts);
+        return $escape ? htmlspecialchars($retVal) : $retVal;
     }
 
     /**
@@ -640,32 +672,5 @@ class UrlQueryHelper
             unset($params['page']);
         }
         return new static($params, $this->queryObject, $this->config, false);
-    }
-
-    /**
-     * Turn an array into a properly URL-encoded query string.  This is
-     * equivalent to the built-in PHP http_build_query function, but it handles
-     * arrays in a more compact way and ensures that ampersands don't get
-     * messed up based on server-specific settings.
-     *
-     * @param array $a      Array of parameters to turn into a GET string
-     * @param bool  $escape Should we escape the string for use in the view?
-     *
-     * @return string
-     */
-    protected function buildQueryString($a, $escape = true)
-    {
-        $parts = [];
-        foreach ($a as $key => $value) {
-            if (is_array($value)) {
-                foreach ($value as $current) {
-                    $parts[] = urlencode($key . '[]') . '=' . urlencode($current);
-                }
-            } else {
-                $parts[] = urlencode($key) . '=' . urlencode($value);
-            }
-        }
-        $retVal = implode('&', $parts);
-        return $escape ? htmlspecialchars($retVal) : $retVal;
     }
 }

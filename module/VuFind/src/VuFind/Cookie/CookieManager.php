@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Cookie Manager
  *
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Cookie;
 
 /**
@@ -221,7 +223,7 @@ class CookieManager
         }
         return setcookie(
             $key,
-            $value,
+            $value ?? '',
             [
                 'expires' => $expire,
                 'path' => $path,

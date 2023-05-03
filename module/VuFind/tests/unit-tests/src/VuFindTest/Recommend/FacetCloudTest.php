@@ -1,4 +1,5 @@
 <?php
+
 /**
  * FacetCloud recommendation module Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Recommend;
 
 use VuFind\Recommend\FacetCloud;
@@ -40,6 +42,8 @@ use VuFind\Recommend\FacetCloud;
  */
 class FacetCloudTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+
     /**
      * Test getEmptyResults()
      *
@@ -61,46 +65,31 @@ class FacetCloudTest extends \PHPUnit\Framework\TestCase
      * @param \VuFind\Search\Solr\Results  $results      populated results object
      * @param \VuFind\Search\Solr\Results  $emptyResults empty results object
      * @param string                       $settings     settings
-     * @param \Laminas\Stdlib\Parameters      $request      request
+     * @param \Laminas\Stdlib\Parameters   $request      request
      *
      * @return FacetCloud
      */
-    protected function getFacetCloud($configLoader = null, $results = null, $emptyResults = null, $settings = '', $request = null)
-    {
-        if (null === $configLoader) {
-            $configLoader = $this->getMockConfigLoader();
-        }
+    protected function getFacetCloud(
+        $configLoader = null,
+        $results = null,
+        $emptyResults = null,
+        $settings = '',
+        $request = null
+    ) {
         if (null === $results) {
             $results = $this->getMockResults();
         }
-        if (null === $emptyResults) {
-            $emptyResults = $this->getMockResults();
-        }
-        if (null === $request) {
-            $request = new \Laminas\Stdlib\Parameters([]);
-        }
-        $fc = new FacetCloud($configLoader, $emptyResults);
+        $fc = new FacetCloud(
+            $configLoader ?? $this->getMockConfigPluginManager([]),
+            $emptyResults ?? $this->getMockResults()
+        );
         $fc->setConfig($settings);
-        $fc->init($results->getParams(), $request);
+        $fc->init(
+            $results->getParams(),
+            $request ?? new \Laminas\Stdlib\Parameters([])
+        );
         $fc->process($results);
         return $fc;
-    }
-
-    /**
-     * Get a mock config loader.
-     *
-     * @param array  $config Configuration to return
-     * @param string $key    Key to store configuration under
-     *
-     * @return \VuFind\Config\PluginManager
-     */
-    protected function getMockConfigLoader($config = [], $key = 'facets')
-    {
-        $loader = $this->getMockBuilder(\VuFind\Config\PluginManager::class)
-            ->disableOriginalConstructor()->getMock();
-        $loader->expects($this->once())->method('get')->with($this->equalTo($key))
-            ->will($this->returnValue(new \Laminas\Config\Config($config)));
-        return $loader;
     }
 
     /**

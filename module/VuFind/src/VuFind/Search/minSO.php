@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Minified Search Object
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for building the Map tab.
  *
@@ -25,12 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\RecordTab;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Factory for building the Map tab.
@@ -76,6 +78,11 @@ class MapFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         $basemapConfig = $container->get(\VuFind\GeoFeatures\BasemapConfig::class);
         $basemapOptions = $basemapConfig->getBasemap('MapTab');
 
-        return new $requestedName($mapTabDisplay, $basemapOptions, $mapTabOptions);
+        return new $requestedName(
+            $mapTabDisplay,
+            $basemapOptions,
+            $mapTabOptions,
+            $container->get(\VuFind\Config\PathResolver::class)
+        );
     }
 }

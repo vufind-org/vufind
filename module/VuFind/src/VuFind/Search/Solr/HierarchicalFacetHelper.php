@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Facet Helper
  *
@@ -25,11 +26,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Solr;
 
+use VuFind\I18n\HasSorterInterface;
+use VuFind\I18n\HasSorterTrait;
 use VuFind\I18n\TranslatableString;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
+use VuFind\Search\Base\HierarchicalFacetHelperInterface;
 use VuFind\Search\UrlQueryHelper;
 
 /**
@@ -41,9 +46,13 @@ use VuFind\Search\UrlQueryHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class HierarchicalFacetHelper implements TranslatorAwareInterface
+class HierarchicalFacetHelper implements
+    HierarchicalFacetHelperInterface,
+    TranslatorAwareInterface,
+    HasSorterInterface
 {
     use TranslatorAwareTrait;
+    use HasSorterTrait;
 
     /**
      * Helper method for building hierarchical facets:
@@ -66,19 +75,19 @@ class HierarchicalFacetHelper implements TranslatorAwareInterface
         $topLevel = $order ?? 'count';
         if (is_string($topLevel)) {
             switch (strtolower(trim($topLevel))) {
-            case 'top':
-                $topLevel = true;
-                break;
-            case 'all':
-                $topLevel = false;
-                break;
-            case '':
-            case 'count':
-                // At present, we assume the incoming list is already sorted by
-                // count, so no further action is needed. If in future we need
-                // to support re-sorting an arbitrary list, rather than simply
-                // operating on raw Solr values, we may need to implement logic.
-                return;
+                case 'top':
+                    $topLevel = true;
+                    break;
+                case 'all':
+                    $topLevel = false;
+                    break;
+                case '':
+                case 'count':
+                    // At present, we assume the incoming list is already sorted by
+                    // count, so no further action is needed. If in future we need
+                    // to support re-sorting an arbitrary list, rather than simply
+                    // operating on raw Solr values, we may need to implement logic.
+                    return;
             }
         }
 
@@ -100,7 +109,7 @@ class HierarchicalFacetHelper implements TranslatorAwareInterface
                 $bText = $b['displayText'] == $b['value']
                     ? $this->formatDisplayText($b['displayText'])
                     : $b['displayText'];
-                return strcasecmp($aText, $bText);
+                return $this->getSorter()->compare($aText, $bText);
             }
             return $a['level'] == $b['level']
                 ? $b['count'] - $a['count']

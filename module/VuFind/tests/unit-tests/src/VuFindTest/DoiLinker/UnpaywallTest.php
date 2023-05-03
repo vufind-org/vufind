@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Unpaywall Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\DoiLinker;
 
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
@@ -73,9 +75,9 @@ class UnpaywallTest extends \PHPUnit\Framework\TestCase
                         [
                             'link' => 'http://sajlis.journals.ac.za/pub/article/download/1434/1332',
                             'label' => 'PDF Full Text',
-                        ]
-                    ]
-                ]
+                        ],
+                    ],
+                ],
             ],
             [
                 'fixture' => $this->getFixture('unpaywall/goodresponseonline'),
@@ -84,13 +86,13 @@ class UnpaywallTest extends \PHPUnit\Framework\TestCase
                         [
                             'link' => 'https://doi.org/10.7553/66-4-1434',
                             'label' => 'online_resources',
-                        ]
-                    ]
-                ]
+                        ],
+                    ],
+                ],
             ],
             [
                 'fixture' => $this->getFixture('unpaywall/badresponse'),
-                'response' => []
+                'response' => [],
             ],
         ];
 

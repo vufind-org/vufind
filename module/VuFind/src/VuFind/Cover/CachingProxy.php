@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Caching Proxy for Cover Images
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/configuration:external_content Wiki
  */
+
 namespace VuFind\Cover;
 
 use Laminas\Http\Client;

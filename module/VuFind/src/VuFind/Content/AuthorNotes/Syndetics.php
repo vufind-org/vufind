@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Syndetics author notes content loader.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Content\AuthorNotes;
 
 /**
@@ -47,8 +49,8 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
         'ANOTES' => [
             'title' => 'Author Notes',
             'file' => 'ANOTES.XML',
-            'div' => '<div id="syn_anotes"></div>'
-        ]
+            'div' => '<div id="syn_anotes"></div>',
+        ],
     ];
 
     /**

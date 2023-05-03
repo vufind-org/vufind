@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Command;
 
 use PHPUnit\Framework\TestCase;
@@ -98,7 +99,7 @@ class GetLuceneHelperCommandTest extends TestCase
             ->will($this->returnValue('bar'));
         $backend->expects($this->once())->method('getQueryBuilder')
             ->will($this->returnValue($qb));
-        $command = new GetLuceneHelperCommand('bar', []);
+        $command = new GetLuceneHelperCommand('bar');
         $this->assertEquals($helper, $command->execute($backend)->getResult());
     }
 }

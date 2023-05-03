@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Minified Search Object
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Search;
 
 /**
@@ -74,19 +76,53 @@ class Minified
     public $hf = [];
 
     /**
-     * ID, start tIme, query Speed, Result total, search TYpe, search CLass id
+     * Search ID
+     *
+     * @var int
      */
     public $id;
 
+    /**
+     * Search start time
+     *
+     * @var float
+     */
     public $i;
 
+    /**
+     * Search duration
+     *
+     * @var float
+     */
     public $s;
 
+    /**
+     * Total result count
+     *
+     * @var int
+     */
     public $r;
 
+    /**
+     * Search type
+     *
+     * @var string
+     */
     public $ty;
 
+    /**
+     * Search class
+     *
+     * @var string
+     */
     public $cl;
+
+    /**
+     * Extra data (not used by default)
+     *
+     * @var array
+     */
+    public $ex = [];
 
     /**
      * Constructor. Building minified object from the
@@ -114,6 +150,9 @@ class Minified
         //      it would be a nightmare to maintain.
         $this->f = $searchObject->getParams()->getRawFilters();
         $this->hf = $searchObject->getParams()->getHiddenFilters();
+
+        // Extra data has implementation-specific contents, store as is
+        $this->ex = $searchObject->getExtraData();
     }
 
     /**
@@ -149,22 +188,22 @@ class Minified
         if (!isset($this->cl)) {
             $fixType = true;    // by default, assume we need to fix type
             switch ($this->ty) {
-            case 'Summon':
-            case 'SummonAdvanced':
-                $this->cl = 'Summon';
-                break;
-            case 'WorldCat':
-            case 'WorldCatAdvanced':
-                $this->cl = 'WorldCat';
-                break;
-            case 'Authority':
-            case 'AuthorityAdvanced':
-                $this->cl = 'SolrAuth';
-                break;
-            default:
-                $this->cl = 'Solr';
-                $fixType = false;
-                break;
+                case 'Summon':
+                case 'SummonAdvanced':
+                    $this->cl = 'Summon';
+                    break;
+                case 'WorldCat':
+                case 'WorldCatAdvanced':
+                    $this->cl = 'WorldCat';
+                    break;
+                case 'Authority':
+                case 'AuthorityAdvanced':
+                    $this->cl = 'SolrAuth';
+                    break;
+                default:
+                    $this->cl = 'Solr';
+                    $fixType = false;
+                    break;
             }
 
             // Now rewrite the type if necessary (only needed for legacy objects):

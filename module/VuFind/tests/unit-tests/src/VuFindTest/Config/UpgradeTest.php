@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Config Upgrade Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Config;
 
 use VuFind\Config\Upgrade;
@@ -70,6 +72,8 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      * and warnings so that further assertions can be performed by calling code if
      * necessary.
      *
+     * @param string $version Version to test
+     *
      * @return array
      */
     protected function checkVersion($version)
@@ -95,7 +99,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         // theme:
         $expectedWarnings = [
             'The Statistics module has been removed from VuFind. '
-            . 'For usage tracking, please configure Google Analytics or Piwik.'
+            . 'For usage tracking, please configure Google Analytics or Matomo.',
         ];
         if ((float)$version < 1.3) {
             $expectedWarnings[] = "WARNING: This version of VuFind does not support "
@@ -135,7 +139,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             [
                 'Author' => ['AuthorFacets', 'SpellingSuggestions'],
                 'CallNumber' => ['TopFacets:ResultsTop'],
-                'WorkKeys' => ['']
+                'WorkKeys' => [''],
             ],
             $results['searches.ini']['TopRecommendations']
         );
@@ -185,7 +189,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             [
                 'institution', 'building', 'format', 'callnumber-first',
                 'author_facet', 'language', 'genre_facet', 'era_facet',
-                'geographic_facet', 'publishDate'
+                'geographic_facet', 'publishDate',
             ],
             array_keys($results['facets.ini']['Results'])
         );
@@ -326,8 +330,10 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             'The [WorldCat] xISBN_secret setting is no longer used and has been removed.',
             'The [WorldCat] xISSN_token setting is no longer used and has been removed.',
             'The [WorldCat] xISSN_secret setting is no longer used and has been removed.',
-            'The Editions related record module is no longer supported due to OCLC\'s xID API shutdown. It has been removed from your settings.',
-            'The WorldCatEditions related record module is no longer supported due to OCLC\'s xID API shutdown. It has been removed from your settings.',
+            'The Editions related record module is no longer supported due to OCLC\'s xID '
+            . 'API shutdown. It has been removed from your settings.',
+            'The WorldCatEditions related record module is no longer supported due to OCLC\'s '
+            . 'xID API shutdown. It has been removed from your settings.',
         ];
         $this->assertEquals($expectedWarnings, $upgrader->getWarnings());
     }
@@ -348,7 +354,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $adminConfig = [
             'ipRegEx' => '/1\.2\.3\.4|1\.2\.3\.5/',
             'username' => ['username1', 'username2'],
-            'permission' => 'access.AdminModule'
+            'permission' => 'access.AdminModule',
         ];
         $this->assertEquals(
             $adminConfig,
@@ -361,7 +367,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             'role' => ['loggedin'],
             'ipRegEx' => '/1\.2\.3\.4|1\.2\.3\.5/',
             'boolean' => 'OR',
-            'permission' => 'access.SummonExtendedResults'
+            'permission' => 'access.SummonExtendedResults',
         ];
         $this->assertEquals(
             $summonConfig,
@@ -384,7 +390,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         );
         $expectedRegex = [
             'MEMBER1' => '/^1\.2\..*/',
-            'MEMBER2' => ['/^2\.3\..*/', '/^3\.4\..*/']
+            'MEMBER2' => ['/^2\.3\..*/', '/^3\.4\..*/'],
         ];
         foreach ($expectedRegex as $code => $regex) {
             $perm = "access.PrimoInstitution.$code";
@@ -394,7 +400,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             );
             $permDetails = [
                 'ipRegEx' => $regex,
-                'permission' => $perm
+                'permission' => $perm,
             ];
             $this->assertEquals($permDetails, $results['permissions.ini'][$perm]);
         }

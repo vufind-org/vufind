@@ -1,15 +1,21 @@
 /*global getUrlRoot, VuFind */
 VuFind.register('channels', function Channels() {
   function addLinkButtons(elem) {
-    var links = JSON.parse(elem.dataset.linkJson);
+    var links;
+    try {
+      links = JSON.parse(elem.dataset.linkJson);
+    } catch (e) {
+      console.error("Error parsing " + elem.dataset.linkJson);
+      return;
+    }
     if (links.length === 0) {
       return;
     }
     var $cont = $(
       '<div class="dropdown">' +
-      '  <button class="btn btn-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">' +
-      '    <i class="fa fa-caret-square-o-down"></i>' +
-      '   </button>' +
+        '<button class="btn btn-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">' +
+          VuFind.icon("ui-dots-menu") +
+        '</button>' +
       '</div>'
     );
     var $list = $('<ul class="dropdown-menu"></ul>');
@@ -100,7 +106,7 @@ VuFind.register('channels', function Channels() {
       var record = $(event.delegateTarget);
       if (!record.data("popover-loaded")) {
         record.popover({
-          content: VuFind.translate('loading') + '...',
+          content: VuFind.translate('loading_ellipsis'),
           html: true,
           placement: 'bottom',
           trigger: 'focus',

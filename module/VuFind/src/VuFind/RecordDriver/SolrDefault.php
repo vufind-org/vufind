@@ -1,11 +1,12 @@
 <?php
+
 /**
  * Default model for Solr records -- used when a more specific model based on
  * the record_format field cannot be found.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010, 2022.
  * Copyright (C) The National Library of Finland 2019.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -28,7 +29,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver;
+
+use VuFindSearch\Command\SearchCommand;
 
 /**
  * Default model for Solr records -- used when a more specific model based on
@@ -45,9 +49,12 @@ namespace VuFind\RecordDriver;
  *
  * @SuppressWarnings(PHPMD.ExcessivePublicCount)
  */
-class SolrDefault extends DefaultRecord implements Feature\VersionAwareInterface
+class SolrDefault extends DefaultRecord implements
+    Feature\PreviousUniqueIdInterface,
+    Feature\VersionAwareInterface
 {
     use Feature\HierarchyAwareTrait;
+    use Feature\PreviousUniqueIdTrait;
     use Feature\VersionAwareTrait;
 
     /**
@@ -57,7 +64,7 @@ class SolrDefault extends DefaultRecord implements Feature\VersionAwareInterface
      * @var array
      */
     protected $preferredSnippetFields = [
-        'contents', 'topic'
+        'contents', 'topic',
     ];
 
     /**
@@ -126,10 +133,12 @@ class SolrDefault extends DefaultRecord implements Feature\VersionAwareInterface
         $recordConfig = null,
         $searchSettings = null
     ) {
+        $this->setSourceIdentifiers('Solr');
         // Load snippet settings:
         $this->snippet = !isset($searchSettings->General->snippets)
             ? false : $searchSettings->General->snippets;
-        if (isset($searchSettings->Snippet_Captions)
+        if (
+            isset($searchSettings->Snippet_Captions)
             && count($searchSettings->Snippet_Captions) > 0
         ) {
             foreach ($searchSettings->Snippet_Captions as $key => $value) {
@@ -215,20 +224,21 @@ class SolrDefault extends DefaultRecord implements Feature\VersionAwareInterface
                 if (isset($this->highlightDetails[$current][0])) {
                     return [
                         'snippet' => $this->highlightDetails[$current][0],
-                        'caption' => $this->getSnippetCaption($current)
+                        'caption' => $this->getSnippetCaption($current),
                     ];
                 }
             }
 
             // No preferred field found, so try for a non-forbidden field:
-            if (isset($this->highlightDetails)
+            if (
+                isset($this->highlightDetails)
                 && is_array($this->highlightDetails)
             ) {
                 foreach ($this->highlightDetails as $key => $value) {
                     if ($value && !in_array($key, $this->forbiddenSnippetFields)) {
                         return [
                             'snippet' => $value[0],
-                            'caption' => $this->getSnippetCaption($key)
+                            'caption' => $this->getSnippetCaption($key),
                         ];
                     }
                 }
@@ -275,7 +285,8 @@ class SolrDefault extends DefaultRecord implements Feature\VersionAwareInterface
     {
         // Shortcut: if this record is not the top record, let's not find out the
         // count. This assumes that contained records cannot contain more records.
-        if (!$this->containerLinking
+        if (
+            !$this->containerLinking
             || empty($this->fields['is_hierarchy_id'])
             || null === $this->searchService
         ) {
@@ -288,9 +299,9 @@ class SolrDefault extends DefaultRecord implements Feature\VersionAwareInterface
         );
         // Disable highlighting for efficiency; not needed here:
         $params = new \VuFindSearch\ParamBag(['hl' => ['false']]);
+        $command = new SearchCommand($this->sourceIdentifier, $query, 0, 0, $params);
         return $this->searchService
-            ->search($this->sourceIdentifier, $query, 0, 0, $params)
-            ->getTotal();
+            ->invoke($command)->getResult()->getTotal();
     }
 
     /**

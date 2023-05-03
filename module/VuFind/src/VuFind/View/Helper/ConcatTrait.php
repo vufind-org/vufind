@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Trait to add asset pipeline functionality (concatenation / minification) to
  * a HeadLink/HeadScript-style view helper.
@@ -28,6 +29,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper;
 
 /**
@@ -146,7 +148,8 @@ trait ConcatTrait
         if ($config === false || $config === 'off') {
             return false;
         }
-        if ($config === '*' || $config === 'on'
+        if (
+            $config === '*' || $config === 'on'
             || $config === 'true' || $config === true
         ) {
             return true;
@@ -190,7 +193,7 @@ trait ConcatTrait
             if ($this->isExcludedFromConcat($item)) {
                 $this->groups[] = [
                     'other' => true,
-                    'item' => $item
+                    'item' => $item,
                 ];
                 $groupTypes[] = 'other';
                 continue;
@@ -205,7 +208,7 @@ trait ConcatTrait
                     ? $this->logError($errorMsg) : error_log($errorMsg);
                 $this->groups[] = [
                     'other' => true,
-                    'item' => $item
+                    'item' => $item,
                 ];
                 $groupTypes[] = 'other';
                 continue;
@@ -216,7 +219,7 @@ trait ConcatTrait
             if ($index === false) {
                 $this->groups[] = [
                     'items' => [$item],
-                    'key' => $absolutePath . filemtime($absolutePath)
+                    'key' => $absolutePath . filemtime($absolutePath),
                 ];
                 $groupTypes[] = $type;
             } else {
@@ -365,7 +368,7 @@ trait ConcatTrait
         if ($this->view) {
             $useCdata = $this->view->plugin('doctype')->isXhtml();
         } else {
-            $useCdata = $this->useCdata;
+            $useCdata = $this->useCdata ?? false;
         }
 
         $escapeStart = ($useCdata) ? '//<![CDATA[' : '//<!--';
@@ -374,6 +377,13 @@ trait ConcatTrait
         $output = [];
         foreach ($this->groups as $group) {
             if (isset($group['other'])) {
+                /**
+                 * PHPStan doesn't like this because of incompatible itemToString
+                 * signatures in HeadLink/HeadScript, but it is safe to use because
+                 * the extra parameters will be ignored appropriately.
+                 *
+                 * @phpstan-ignore-next-line
+                 */
                 $output[] = $this->itemToString(
                     $group['item'],
                     $indent,
@@ -388,6 +398,13 @@ trait ConcatTrait
                 $path = $this->getConcatenatedFilePath($group);
                 $item = $this->setResourceFilePath($group['items'][0], $path);
                 $this->addNonce($item);
+                /**
+                 * PHPStan doesn't like this because of incompatible itemToString
+                 * signatures in HeadLink/HeadScript, but it is safe to use because
+                 * the extra parameters will be ignored appropriately.
+                 *
+                 * @phpstan-ignore-next-line
+                 */
                 $output[] = parent::itemToString(
                     $item,
                     $indent,
@@ -451,7 +468,8 @@ trait ConcatTrait
     {
         // toString must not throw exception
         try {
-            if (!$this->isPipelineActive() || !$this->filterItems()
+            if (
+                !$this->isPipelineActive() || !$this->filterItems()
                 || count($this) == 1
             ) {
                 return parent::toString($indent);

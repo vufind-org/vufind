@@ -44,7 +44,6 @@ rem #   Tweak these in accordance to your needs
 rem # Xmx and Xms set the heap size for the Java Virtual Machine
 rem # You may also want to add the following:
 rem # -XX:+UseParallelGC
-rem # -XX:+AggressiveOpts
 rem ##################################################
 if not "!%INDEX_OPTIONS%!"=="!!" goto indexoptionsfound
 set INDEX_OPTIONS=-Xms512m -Xmx512m -DentityExpansionLimit=0
@@ -119,7 +118,7 @@ for %%a in (%VUFIND_HOME%\import\solrmarc_core_*.jar) do set JAR_FILE=%%a
 rem #####################################################
 rem # Execute Importer
 rem #####################################################
-set RUN_CMD=%JAVA% %INDEX_OPTIONS% -Duser.timezone=UTC -Dlog4j.configuration="file:///%LOG4J_CONFIG%" %EXTRA_SOLRMARC_SETTINGS% -jar %JAR_FILE% %PROPERTIES_FILE% -solrj %VUFIND_HOME%\solr\vendor\dist\solrj-lib -lib_local %VUFIND_HOME%\import\lib_local;%VUFIND_HOME%\solr\vendor\contrib\analysis-extras\lib %1
+set RUN_CMD=%JAVA% %INDEX_OPTIONS% -Duser.timezone=UTC -Dlog4j.configuration="file:///%LOG4J_CONFIG%" %EXTRA_SOLRMARC_SETTINGS% -jar %JAR_FILE% %PROPERTIES_FILE% -solrj %VUFIND_HOME%\solr\vendor\server\solr-webapp\webapp\WEB-INF\lib -lib_local %VUFIND_HOME%\import\lib_local;%VUFIND_HOME%\solr\vendor\modules\analysis-extras\lib %1
 echo Now Importing %1 ...
 echo %RUN_CMD%
 %RUN_CMD%

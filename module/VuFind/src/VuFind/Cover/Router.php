@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Cover image router
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/configuration:external_content Wiki
  */
+
 namespace VuFind\Cover;
 
 use VuFind\Cover\Loader as CoverLoader;
@@ -158,7 +160,8 @@ class Router implements \Laminas\Log\LoggerAwareInterface
             }
             try {
                 // Is the current provider appropriate for the available data?
-                if ($handler['handler']->supports($ids)
+                if (
+                    $handler['handler']->supports($ids)
                     && $handler['handler']->useDirectUrls()
                 ) {
                     $nextMetadata = $handler['handler']
@@ -179,16 +182,13 @@ class Router implements \Laminas\Log\LoggerAwareInterface
 
         if (isset($metadata)) {
             return $metadata;
-        } elseif (isset($dynamicUrl)) {
-            if ($testLoadImage) {
-                $this->coverLoader->loadImage($settings);
-                if ($this->coverLoader->hasLoadedUnavailable()) {
-                    return false;
-                }
-            }
-            return ['url' => $dynamicUrl];
         }
-
-        return false;
+        if ($testLoadImage) {
+            $this->coverLoader->loadImage($settings);
+            if ($this->coverLoader->hasLoadedUnavailable()) {
+                return false;
+            }
+        }
+        return ['url' => $dynamicUrl];
     }
 }

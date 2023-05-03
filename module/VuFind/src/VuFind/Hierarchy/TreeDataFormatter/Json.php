@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Hierarchy Tree Data Formatter (JSON)
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
+
 namespace VuFind\Hierarchy\TreeDataFormatter;
 
 /**
@@ -62,7 +64,7 @@ class Json extends AbstractBase
         $raw = [
             'id' => $record->id,
             'type' => $this->isCollection($record) ? 'collection' : 'record',
-            'title' => $this->pickTitle($record, $parentID)
+            'title' => $this->pickTitle($record, $parentID),
         ];
 
         if (isset($this->childMap[$record->id])) {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DOI linker plugin manager
  *
@@ -25,7 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\DoiLinker;
+
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
  * DOI linker plugin manager
@@ -45,6 +49,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         'browzine' => BrowZine::class,
+        'demo' => Demo::class,
         'unpaywall' => Unpaywall::class,
     ];
 
@@ -55,6 +60,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         BrowZine::class => BrowZineFactory::class,
+        Demo::class => InvokableFactory::class,
         Unpaywall::class => UnpaywallFactory::class,
     ];
 

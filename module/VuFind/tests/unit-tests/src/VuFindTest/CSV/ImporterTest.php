@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CSV Importer Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\CSV;
 
 use VuFind\CSV\Importer;
@@ -43,6 +45,7 @@ use VuFindTest\Container\MockContainer;
 class ImporterTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\PathResolverTrait;
 
     /**
      * Location of fixture files.
@@ -67,6 +70,7 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
     {
         $this->csvFixtureDir = $this->getFixtureDir() . 'csv/';
         $this->container = new MockContainer($this);
+        $this->addPathResolverToContainer($this->container);
     }
 
     /**
@@ -219,15 +223,17 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()->getMock();
         $mockWriter->expects($this->once())->method('save')->with(
             $this->equalTo('Solr'),
-            $this->callback(function ($doc) {
-                $expected = file_get_contents($this->csvFixtureDir . 'test.json');
-                $this->assertJsonStringEqualsJsonString(
-                    $expected,
-                    $doc->getContent()
-                );
-                // If we got past the assertion, we can report success!
-                return true;
-            }),
+            $this->callback(
+                function ($doc) {
+                    $expected = file_get_contents($this->csvFixtureDir . 'test.json');
+                    $this->assertJsonStringEqualsJsonString(
+                        $expected,
+                        $doc->getContent()
+                    );
+                    // If we got past the assertion, we can report success!
+                    return true;
+                }
+            ),
             $this->equalTo('update')
         );
         $this->container->set(\VuFind\Solr\Writer::class, $mockWriter);
@@ -252,9 +258,11 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()->getMock();
         $mockWriter->expects($this->exactly(3))->method('save')->with(
             $this->equalTo('Solr'),
-            $this->callback(function ($doc) {
-                return $doc instanceof RawJSONDocument;
-            }),
+            $this->callback(
+                function ($doc) {
+                    return $doc instanceof RawJSONDocument;
+                }
+            ),
             $this->equalTo('update')
         );
         $this->container->set(\VuFind\Solr\Writer::class, $mockWriter);

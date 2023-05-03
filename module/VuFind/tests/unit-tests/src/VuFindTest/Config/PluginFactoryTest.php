@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Config Factory Test Class
  *
@@ -25,9 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Config;
 
-use VuFind\Config\Locator;
+use VuFind\Config\PathResolver;
+use VuFindTest\Feature\FixtureTrait;
+use VuFindTest\Feature\PathResolverTrait;
 
 /**
  * Config Factory Test Class
@@ -41,19 +45,8 @@ use VuFind\Config\Locator;
  */
 class PluginFactoryTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * Flag -- did writing config files fail?
-     *
-     * @var bool
-     */
-    protected static $writeFailed = false;
-
-    /**
-     * Array of files to clean up after test.
-     *
-     * @var array
-     */
-    protected static $filesToDelete = [];
+    use FixtureTrait;
+    use PathResolverTrait;
 
     /**
      * Plugin factory instance.
@@ -61,59 +54,6 @@ class PluginFactoryTest extends \PHPUnit\Framework\TestCase
      * @var \VuFind\Config\PluginFactory
      */
     protected $factory;
-
-    /**
-     * Standard setup method.
-     *
-     * @return void
-     */
-    public static function setUpBeforeClass(): void
-    {
-        // Create test files:
-        $parentPath = Locator::getLocalConfigPath('unit-test-parent.ini', null, true);
-        $parent = "[Section1]\n"
-            . "a=1\nb=2\nc=3\n"
-            . "[Section2]\n"
-            . "d=4\ne=5\nf=6\n"
-            . "[Section3]\n"
-            . "g=7\nh=8\ni=9\n"
-            . "[Section4]\n"
-            . "j[] = 1\nj[] = 2\nk[a] = 1\nk[b] = 2\n";
-        $childPath = Locator::getLocalConfigPath('unit-test-child.ini', null, true);
-        $child = "[Section1]\n"
-            . "j=10\nk=11\nl=12\n"
-            . "[Section2]\n"
-            . "m=13\nn=14\no=15\n"
-            . "[Section4]\n"
-            . "j[] = 3\nk[c] = 3\n"
-            . "[Parent_Config]\n"
-            . "path=\"{$parentPath}\"\n"
-            . "override_full_sections=Section1\n";
-        $child2Path = Locator::getLocalConfigPath('unit-test-child2.ini', null, true);
-        $child2 = "[Section1]\n"
-            . "j=10\nk=11\nl=12\n"
-            . "[Section2]\n"
-            . "m=13\nn=14\no=15\n"
-            . "[Section4]\n"
-            . "j[] = 3\nk[c] = 3\n"
-            . "[Parent_Config]\n"
-            . "path=\"{$parentPath}\"\n"
-            . "override_full_sections=Section1\n"
-            . "merge_array_settings=true\n";
-
-        // Fail if we are unable to write files:
-        if (null === $parentPath || null === $childPath || null === $child2Path
-            || !file_put_contents($parentPath, $parent)
-            || !file_put_contents($childPath, $child)
-            || !file_put_contents($child2Path, $child2)
-        ) {
-            self::$writeFailed = true;
-            return;
-        }
-
-        // Mark for cleanup:
-        self::$filesToDelete = [$parentPath, $childPath, $child2Path];
-    }
 
     /**
      * Standard setup method.
@@ -134,7 +74,28 @@ class PluginFactoryTest extends \PHPUnit\Framework\TestCase
      */
     protected function getConfig($name)
     {
+        $fileMap = [
+            'unit-test-parent.ini'
+                => $this->getFixturePath('configs/inheritance/unit-test-parent.ini'),
+            'unit-test-child.ini'
+                => $this->getFixturePath('configs/inheritance/unit-test-child.ini'),
+            'unit-test-child2.ini'
+                => $this->getFixturePath('configs/inheritance/unit-test-child2.ini'),
+        ];
+        $realResolver = $this->getPathResolver();
+        $mockResolver = $this->getMockBuilder(PathResolver::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $mockResolver->expects($this->any())
+            ->method('getConfigPath')
+            ->willReturnCallback(
+                function ($filename, $path) use ($fileMap, $realResolver) {
+                    return $fileMap[$filename]
+                        ?? $realResolver->getConfigPath($filename, $path);
+                }
+            );
         $container = new \VuFindTest\Container\MockContainer($this);
+        $container->set(PathResolver::class, $mockResolver);
         return ($this->factory)($container, $name);
     }
 
@@ -170,13 +131,9 @@ class PluginFactoryTest extends \PHPUnit\Framework\TestCase
      */
     public function testInheritance()
     {
-        if (self::$writeFailed) {
-            $this->markTestSkipped('Could not write test configurations.');
-        }
-
         // Make sure load succeeds:
         $config = $this->getConfig('unit-test-child');
-        $this->assertTrue(is_object($config));
+        $this->assertIsObject($config);
 
         // Make sure Section 1 was overridden; values from parent should not be
         // present.
@@ -203,13 +160,9 @@ class PluginFactoryTest extends \PHPUnit\Framework\TestCase
      */
     public function testInheritanceWithArrayMerging()
     {
-        if (self::$writeFailed) {
-            $this->markTestSkipped('Could not write test configurations.');
-        }
-
         // Make sure load succeeds:
         $config = $this->getConfig('unit-test-child2');
-        $this->assertTrue(is_object($config));
+        $this->assertIsObject($config);
 
         // Make sure Section 1 was overridden; values from parent should not be
         // present.
@@ -240,9 +193,6 @@ class PluginFactoryTest extends \PHPUnit\Framework\TestCase
      */
     public function testParentConfigOmission()
     {
-        if (self::$writeFailed) {
-            $this->markTestSkipped('Could not write test configurations.');
-        }
         $config = $this->getConfig('unit-test-child');
         $this->assertFalse(isset($config->Parent_Config));
     }
@@ -256,21 +206,7 @@ class PluginFactoryTest extends \PHPUnit\Framework\TestCase
     {
         $this->expectException(\Laminas\Config\Exception\RuntimeException::class);
 
-        if (self::$writeFailed) {
-            $this->markTestSkipped('Could not write test configurations.');
-        }
         $config = $this->getConfig('unit-test-parent');
         $config->Section1->z = 'bad';
-    }
-
-    /**
-     * Standard teardown method.
-     *
-     * @return void
-     */
-    public static function tearDownAfterClass(): void
-    {
-        // Clean up test files:
-        array_map('unlink', self::$filesToDelete);
     }
 }

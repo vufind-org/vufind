@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Bookplate Related Items Test Class
  *
@@ -25,9 +26,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Related;
 
-use Laminas\Config\Config;
 use VuFind\Config\PluginManager as ConfigManager;
 use VuFind\Related\Bookplate;
 use VuFind\Related\BookplateFactory;
@@ -45,6 +46,8 @@ use VuFindTest\RecordDriver\TestHarness as RecordDriver;
  */
 class BookplateTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+
     /**
      * Test default behavior (no bookplates)
      *
@@ -74,14 +77,14 @@ class BookplateTest extends \PHPUnit\Framework\TestCase
                 'bookplate_full' => 'https://localhost/%%img%%',
                 'bookplate_thumb' => 'https://localhost/%%thumb%%',
                 'bookplate_display_title' => true,
-            ]
+            ],
         ];
         $container = $this->getContainer('config', $config);
         $driver = $this->getTestRecord(
             [
                 'donor_str' => 'Mr. Donor',
                 'donor_image_str' => 'image.jpg',
-                'donor_thumb_str' => 'thumb.jpg'
+                'donor_thumb_str' => 'thumb.jpg',
             ]
         );
         $bookplate = $this->getBookplate($container);
@@ -92,7 +95,7 @@ class BookplateTest extends \PHPUnit\Framework\TestCase
                 'fullUrl' => 'https://localhost/image.jpg',
                 'thumbUrl' => 'https://localhost/thumb.jpg',
                 'displayTitle' => true,
-            ]
+            ],
         ];
         $this->assertEquals($expected, $bookplate->getBookplateDetails());
     }
@@ -113,7 +116,7 @@ class BookplateTest extends \PHPUnit\Framework\TestCase
                 'bookplate_full' => 'https://localhost/%%img%%',
                 'bookplate_thumb' => 'https://localhost/%%thumb%%',
                 'bookplate_display_title' => false,
-            ]
+            ],
         ];
         $container = $this->getContainer('foo', $config);
         $driver = $this->getTestRecord(
@@ -137,7 +140,7 @@ class BookplateTest extends \PHPUnit\Framework\TestCase
                 'fullUrl' => 'https://localhost/image2.jpg',
                 'thumbUrl' => 'https://localhost/thumb2.jpg',
                 'displayTitle' => false,
-            ]
+            ],
         ];
         $this->assertEquals($expected, $bookplate->getBookplateDetails());
     }
@@ -168,9 +171,10 @@ class BookplateTest extends \PHPUnit\Framework\TestCase
         array $config = []
     ): MockContainer {
         $container = new MockContainer($this);
-        $container->get(ConfigManager::class)->expects($this->once())->method('get')
-            ->with($this->equalTo($expectedConfig))
-            ->will($this->returnValue(new Config($config)));
+        $container->set(
+            ConfigManager::class,
+            $this->getMockConfigPluginManager([$expectedConfig => $config])
+        );
         return $container;
     }
 

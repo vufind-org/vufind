@@ -1,4 +1,4 @@
-/*global Hunt, VuFind */
+/*global VuFind, unwrapJQuery */
 VuFind.register('doi', function Doi() {
   function embedDoiLinks(el) {
     var element = $(el);
@@ -28,13 +28,25 @@ VuFind.register('doi', function Doi() {
             $(doiEl).empty();
             for (var i = 0; i < response.data[currentDoi].length; i++) {
               var newLink = $('<a />');
+              newLink.addClass('icon-link');
               newLink.attr('href', response.data[currentDoi][i].link);
-              newLink.text(' ' + response.data[currentDoi][i].label);
+              $('<span/>')
+                .addClass('icon-link__label')
+                .text(response.data[currentDoi][i].label)
+                .appendTo(newLink);
+              if (response.data[currentDoi][i].newWindow) {
+                newLink.attr('target', '_blank');
+              }
+              newLink.attr('rel', 'noreferrer');
               if (typeof response.data[currentDoi][i].icon !== 'undefined') {
                 var icon = $('<img />');
                 icon.attr('src', response.data[currentDoi][i].icon);
-                icon.attr('class', 'doi-icon');
-                $(doiEl).append(icon);
+                icon.addClass('doi-icon icon-link__icon');
+                newLink.prepend(icon);
+              } else if (typeof response.data[currentDoi][i].localIcon !== 'undefined') {
+                var localIcon = $(response.data[currentDoi][i].localIcon);
+                localIcon.addClass('icon-link__icon');
+                newLink.prepend(localIcon);
               }
               $(doiEl).append(newLink);
               $(doiEl).append("<br />");
@@ -47,14 +59,15 @@ VuFind.register('doi', function Doi() {
   // Assign actions to the OpenURL links. This can be called with a container e.g. when
   // combined results fetched with AJAX are loaded.
   function init(_container) {
-    var container = _container || $('body');
+    var container = unwrapJQuery(_container || document.body);
     // assign action to the openUrlWindow link class
-    if (typeof Hunt === 'undefined') {
+    if (VuFind.isPrinting()) {
       embedDoiLinks(container);
     } else {
-      new Hunt(
-        container.find('.doiLink').toArray(),
-        { enter: embedDoiLinks }
+      VuFind.observerManager.createIntersectionObserver(
+        'doiLinks',
+        embedDoiLinks,
+        Array.from(container.querySelectorAll('.ajaxItem'))
       );
     }
   }

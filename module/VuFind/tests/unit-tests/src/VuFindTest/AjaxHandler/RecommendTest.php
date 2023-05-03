@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Recommend test class.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\AjaxHandler;
 
 use VuFind\AjaxHandler\Recommend;
@@ -71,14 +73,14 @@ class RecommendTest extends \VuFindTest\Unit\AjaxHandlerTest
      *
      * @param \VuFind\Search\Solr\Params $params Params to include in container.
      *
-     * @return \VuFind\Search\Solr\Results
+     * @return Results
      */
-    protected function getMockResults($params = null)
+    protected function getMockResults($params = null): Results
     {
         if (null === $params) {
             $params = $this->getMockParams();
         }
-        $results = $this->getMockBuilder(\VuFind\Search\Solr\Results::class)
+        $results = $this->getMockBuilder(Results::class)
             ->disableOriginalConstructor()->getMock();
         $results->expects($this->any())->method('getParams')
             ->will($this->returnValue($params));

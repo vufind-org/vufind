@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Solr aspect of the Search Multi-class (Params)
  *
@@ -22,9 +23,11 @@
  * @category VuFind
  * @package  Search_Solr
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\Solr;
 
 use VuFindSearch\ParamBag;
@@ -35,6 +38,7 @@ use VuFindSearch\ParamBag;
  * @category VuFind
  * @package  Search_Solr
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -102,6 +106,13 @@ class Params extends \VuFind\Search\Base\Params
     protected $facetHelper;
 
     /**
+     * Are we searching by ID only (instead of a normal query)?
+     *
+     * @var bool
+     */
+    protected $searchingById = false;
+
+    /**
      * Config sections to search for facet labels if no override configuration
      * is set.
      *
@@ -140,7 +151,8 @@ class Params extends \VuFind\Search\Base\Params
         if (isset($config->LegacyFields)) {
             $this->facetAliases = $config->LegacyFields->toArray();
         }
-        if (isset($config->Results_Settings->sorted_by_index)
+        if (
+            isset($config->Results_Settings->sorted_by_index)
             && count($config->Results_Settings->sorted_by_index) > 0
         ) {
             $this->setIndexSortedFacets(
@@ -159,7 +171,7 @@ class Params extends \VuFind\Search\Base\Params
         // Define Filter Query
         $filterQuery = [];
         $orFilters = [];
-        $filterList = array_merge(
+        $filterList = array_merge_recursive(
             $this->getHiddenFilters(),
             $this->filterList
         );
@@ -171,7 +183,8 @@ class Params extends \VuFind\Search\Base\Params
                 // Special case -- complex filter, that should be taken as-is:
                 if ($field == '#') {
                     $q = $value;
-                } elseif (substr($value, -1) == '*'
+                } elseif (
+                    substr($value, -1) == '*'
                     || preg_match('/\[[^\]]+\s+TO\s+[^\]]+\]/', $value)
                 ) {
                     // Special case -- allow trailing wildcards and ranges
@@ -180,7 +193,7 @@ class Params extends \VuFind\Search\Base\Params
                     $q = $field . ':"' . addcslashes($value, '"\\') . '"';
                 }
                 if ($orFacet) {
-                    $orFilters[$field] = $orFilters[$field] ?? [];
+                    $orFilters[$field] ??= [];
                     $orFilters[$field][] = $q;
                 } else {
                     $filterQuery[] = $q;
@@ -394,12 +407,12 @@ class Params extends \VuFind\Search\Base\Params
         // special illustrations filter.
         parent::initFilters($request);
         switch ($request->get('illustration', -1)) {
-        case 1:
-            $this->addFilter('illustrated:Illustrated');
-            break;
-        case 0:
-            $this->addFilter('illustrated:"Not Illustrated"');
-            break;
+            case 1:
+                $this->addFilter('illustrated:Illustrated');
+                break;
+            case 0:
+                $this->addFilter('illustrated:"Not Illustrated"');
+                break;
         }
     }
 
@@ -427,6 +440,7 @@ class Params extends \VuFind\Search\Base\Params
             return '"' . addcslashes($i, '"') . '"';
         };
         $ids = array_map($callback, $ids);
+        $this->searchingById = true;
         $this->setOverrideQuery('id:(' . implode(' OR ', $ids) . ')');
     }
 
@@ -460,7 +474,13 @@ class Params extends \VuFind\Search\Base\Params
             'relevance' => ['field' => 'score', 'order' => 'desc'],
             'callnumber' => ['field' => 'callnumber-sort', 'order' => 'asc'],
         ];
+        $tieBreaker = $this->getOptions()->getSortTieBreaker();
+        if ($tieBreaker) {
+            $sort .= ',' . $tieBreaker;
+        }
+
         $normalized = [];
+        $fields = [];
         foreach (explode(',', $sort) as $component) {
             $parts = explode(' ', trim($component));
             $field = reset($parts);
@@ -471,12 +491,16 @@ class Params extends \VuFind\Search\Base\Params
                     $table[$field]['field'],
                     $order ?: $table[$field]['order']
                 );
+                $fields[] = $field;
             } else {
-                $normalized[] = sprintf(
-                    '%s %s',
-                    $field,
-                    $order ?: 'asc'
-                );
+                if (!in_array($field, $fields)) {
+                    $normalized[] = sprintf(
+                        '%s %s',
+                        $field,
+                        $order ?: 'asc'
+                    );
+                    $fields[] = $field;
+                }
             }
         }
         return implode(',', $normalized);
@@ -539,9 +563,10 @@ class Params extends \VuFind\Search\Base\Params
             // If we have an empty search with relevance sort as the primary sort
             // field, see if there is an override configured:
             $sortFields = explode(',', $sort);
-            $allTerms = trim($this->getQuery()->getAllTerms());
-            if ('relevance' === $sortFields[0]
-                && ('' === $allTerms || '*:*' === $allTerms)
+            $allTerms = trim($this->getQuery()->getAllTerms() ?? '');
+            if (
+                'relevance' === $sortFields[0]
+                && ('' === $allTerms || '*:*' === $allTerms || $this->searchingById)
                 && ($relOv = $this->getOptions()->getEmptySearchRelevanceOverride())
             ) {
                 $sort = $relOv;
@@ -616,7 +641,8 @@ class Params extends \VuFind\Search\Base\Params
         } elseif (preg_match($caseInsensitiveRegex, $value, $matches)) {
             // Case insensitive case: [x TO y] OR [X TO Y]; convert
             // only if values in both ranges match up!
-            if (strtolower($matches[3]) == strtolower($matches[1])
+            if (
+                strtolower($matches[3]) == strtolower($matches[1])
                 && strtolower($matches[4]) == strtolower($matches[2])
             ) {
                 $filter['displayText'] = $matches[1] . '-' . $matches[2];
@@ -657,5 +683,42 @@ class Params extends \VuFind\Search\Base\Params
         }
 
         return $filter;
+    }
+
+    /**
+     * Get information on the current state of the boolean checkbox facets.
+     *
+     * @param array $include        List of checkbox filters to return (null for all)
+     * @param bool  $includeDynamic Should we include dynamically-generated
+     * checkboxes that are not part of the include list above?
+     *
+     * @return array
+     */
+    public function getCheckboxFacets(
+        array $include = null,
+        bool $includeDynamic = true
+    ) {
+        // Grab checkbox facet details using the standard method:
+        $facets = parent::getCheckboxFacets($include, $includeDynamic);
+
+        $config = $this->configLoader->get($this->getOptions()->getFacetsIni());
+        $filterField = $config->CustomFilters->custom_filter_field ?? 'vufind';
+
+        // Special case -- inverted checkbox facets should always appear, even on
+        // the "no results" screen, since setting them actually EXPANDS rather than
+        // reduces the result set.
+        foreach ($facets as $i => $facet) {
+            // Append colon on end to ensure that $customFilter is always set.
+            [$field, $customFilter] = explode(':', $facet['filter'] . ':');
+            if (
+                $field == $filterField
+                && isset($config->CustomFilters->inverted_filters[$customFilter])
+            ) {
+                $facets[$i]['alwaysVisible'] = true;
+            }
+        }
+
+        // Return modified list:
+        return $facets;
     }
 }

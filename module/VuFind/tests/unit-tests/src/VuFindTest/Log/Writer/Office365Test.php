@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Office 365 Log Writer Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Log\Writer;
 
 use Laminas\Http\Client;

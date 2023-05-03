@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Generic controller factory.
  *
@@ -25,13 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Controller;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Generic controller factory.
@@ -74,7 +76,8 @@ class AbstractBaseFactory implements FactoryInterface
             // or a string), that means it has no internally configured default, and
             // setAccessPermission was not called above; thus, we should apply the
             // default value:
-            if (isset($permissions['*'])
+            if (
+                isset($permissions['*'])
                 && $controller->getAccessPermission() === null
             ) {
                 $controller->setAccessPermission($permissions['*']);

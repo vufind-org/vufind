@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Cart Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind;
 
 use VuFind\Cookie\CookieManager;
@@ -342,7 +344,7 @@ class Cart
     }
 
     /**
-     * Get cookie SameSite attribute (null if unset).
+     * Get cookie SameSite attribute.
      *
      * @return string
      */

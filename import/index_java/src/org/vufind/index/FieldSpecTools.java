@@ -21,6 +21,7 @@ package org.vufind.index;
 import org.marc4j.marc.Record;
 import org.marc4j.marc.DataField;
 import org.marc4j.marc.Subfield;
+import org.marc4j.marc.VariableField;
 
 import org.solrmarc.index.extractor.formatter.FieldFormatter;
 import org.solrmarc.index.extractor.formatter.FieldFormatterBase;
@@ -93,18 +94,14 @@ public class FieldSpecTools
     {
         Set<String> result = new LinkedHashSet<String>();
         final HashMap<String, Set<String>> parsedTagList = getParsedTagList(tagList);
-        final List fields = SolrIndexer.instance().getFieldSetMatchingTagList(record, tagList);
         final FieldFormatter formatter = removeNonFiling
             ? new FieldFormatterBase(false).addCleanVal(eCleanVal.STRIP_INDICATOR) : null;
-        if (fields != null) {
-            Iterator fieldsIter = fields.iterator();
-            while (fieldsIter.hasNext()) {
-                DataField field = (DataField) fieldsIter.next();
-                for (String subfields : parsedTagList.get(field.getTag())) {
-                    String current = getFieldData(field, subfields, formatter);
-                    if (null != current) {
-                        result.add(current);
-                    }
+        for (VariableField variableField : SolrIndexer.instance().getFieldSetMatchingTagList(record, tagList)) {
+            DataField field = (DataField) variableField;
+            for (String subfields : parsedTagList.get(field.getTag())) {
+                String current = getFieldData(field, subfields, formatter);
+                if (null != current) {
+                    result.add(current);
                 }
             }
         }

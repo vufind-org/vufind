@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink link resolver test class.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
@@ -42,20 +44,6 @@ use Behat\Mink\Element\Element;
 class LinkResolverTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
-     * Standard setup method.
-     *
-     * @return void
-     */
-    public function setUp(): void
-    {
-        // Give up if we're not running in CI:
-        if (!$this->continuousIntegrationRunning()) {
-            $this->markTestSkipped('Continuous integration not running.');
-            return;
-        }
-    }
-
-    /**
      * Get config.ini override settings for testing ILS functions.
      *
      * @param array $openUrlExtras Extra settings for the [OpenURL] section.
@@ -69,7 +57,7 @@ class LinkResolverTest extends \VuFindTest\Integration\MinkTestCase
                 'resolver' => 'demo',
                 'embed' => '1',
                 'url' => 'https://vufind.org/wiki',
-            ]
+            ],
         ];
     }
 
@@ -94,7 +82,9 @@ class LinkResolverTest extends \VuFindTest\Integration\MinkTestCase
         // Search for a known record:
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Record/testsample1');
-        return $session->getPage();
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+        return $page;
     }
 
     /**
@@ -111,9 +101,9 @@ class LinkResolverTest extends \VuFindTest\Integration\MinkTestCase
         if ($click) {
             $this->clickCss($page, '.fulltext');
         }
-        $this->snooze();
 
         // Confirm that the expected fake demo driver data is there:
+        $this->waitForPageLoad($page);
         $electronic = $this->findCss($page, 'a.access-open');
         $this->assertEquals('Electronic', $electronic->getText());
         $this->assertEquals(
@@ -166,7 +156,6 @@ class LinkResolverTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, '#searchForm_lookfor')
             ->setValue('id:testsample1');
         $this->clickCss($page, '.btn.btn-primary');
-        $this->snooze();
 
         // Verify the OpenURL
         $this->assertOpenUrl($page);
@@ -209,7 +198,6 @@ class LinkResolverTest extends \VuFindTest\Integration\MinkTestCase
     {
         // By default, no OpenURL on record page:
         $page = $this->setupRecordPage();
-        $this->snooze();
         $this->assertNull($page->find('css', '.fulltext'));
     }
 

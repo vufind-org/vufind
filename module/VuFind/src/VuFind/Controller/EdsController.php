@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Eds Controller
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
@@ -86,17 +88,6 @@ class EdsController extends AbstractSearch
     }
 
     /**
-     * Home action
-     *
-     * @return mixed
-     */
-    public function homeAction()
-    {
-        $this->setUp();
-        return parent::homeAction();
-    }
-
-    /**
      * Search action -- call standard results action
      *
      * @return mixed
@@ -124,13 +115,7 @@ class EdsController extends AbstractSearch
         $results = $this->getResultsManager()->get('EDS');
         $params = $results->getParams();
         $options = $params->getOptions();
-        $availableLimiters = $options->getAdvancedLimiters();
-        if (!$availableLimiters) {
-            //execute a call to search just to pull in the limiters
-            $this->setUp();
-        }
-
-        return $availableLimiters;
+        return $options->getAdvancedLimiters();
     }
 
     /**
@@ -270,19 +255,5 @@ class EdsController extends AbstractSearch
         }
 
         return $searchModes;
-    }
-
-    /**
-     * Make the initial calls to the EDS API to obtain/generate authentication and
-     * session tokens as well as calling the info method to cache search criteria
-     *
-     * @return void
-     */
-    public function setUp()
-    {
-        $results = $this->getResultsManager()->get($this->searchClassId);
-        $params = $results->getParams();
-        $params->isSetupOnly = true;
-        $results->performAndProcessSearch();
     }
 }

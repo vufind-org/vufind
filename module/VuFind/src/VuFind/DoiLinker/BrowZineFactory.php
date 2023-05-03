@@ -1,4 +1,5 @@
 <?php
+
 /**
  * BrowZine DOI linker factory
  *
@@ -25,12 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\DoiLinker;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * BrowZine DOI linker factory
@@ -71,6 +73,9 @@ class BrowZineFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
         $fullConfig = $container->get(\VuFind\Config\PluginManager::class)
             ->get('BrowZine');
         $config = isset($fullConfig->DOI) ? $fullConfig->DOI->toArray() : [];
-        return new $requestedName($search, $config);
+        $doiServices = isset($fullConfig->DOIServices)
+            ? $fullConfig->DOIServices->toArray()
+            : [];
+        return new $requestedName($search, $config, $doiServices);
     }
 }

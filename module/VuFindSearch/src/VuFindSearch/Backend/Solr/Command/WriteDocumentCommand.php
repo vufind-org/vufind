@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Solr\Command;
 
 use VuFindSearch\Backend\Solr\Backend;
@@ -102,7 +103,7 @@ class WriteDocumentCommand extends \VuFindSearch\Command\CallMethodCommand
             $this->getDocument(),
             $this->getTimeout(),
             $this->getHandler(),
-            $this->getSearchParameters()
+            $this->getSearchParameters(),
         ];
     }
 

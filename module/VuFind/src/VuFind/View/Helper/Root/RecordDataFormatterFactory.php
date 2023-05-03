@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for record driver data formatting view helper
  *
@@ -26,13 +27,14 @@
  * @link     https://vufind.org/wiki/development:architecture:record_data_formatter
  * Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Factory for record driver data formatting view helper
@@ -122,7 +124,7 @@ class RecordDataFormatterFactory implements FactoryInterface
                             'type' => $type,
                             'schemaLabel' => $schemaLabels[$type],
                             'requiredDataFields' => [
-                                ['name' => 'role', 'prefix' => 'CreatorRoles::']
+                                ['name' => 'role', 'prefix' => 'CreatorRoles::'],
                             ],
                         ],
                     ],

@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTest\Search\Solr\V3;
 
 use Laminas\EventManager\Event;
@@ -62,7 +63,7 @@ class ErrorListenerTest extends TestCase
         $exception = HttpErrorException::createFromResponse($response);
         $params    = [
             'command'   => $command,
-            'error'     => $exception
+            'error'     => $exception,
         ];
         $event     = new Event(null, null, $params);
         $listener  = new ErrorListener($backend);
@@ -84,7 +85,7 @@ class ErrorListenerTest extends TestCase
         $exception = HttpErrorException::createFromResponse($response);
         $params    = [
             'command'   => $command,
-            'error'     => $exception
+            'error'     => $exception,
         ];
         $event     = new Event(null, null, $params);
         $listener  = new ErrorListener($backend);

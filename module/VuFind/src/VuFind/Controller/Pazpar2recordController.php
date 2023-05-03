@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Pazpar2 Record Controller
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
@@ -50,7 +52,7 @@ class Pazpar2recordController extends AbstractRecord
         throw new \Exception('Pazpar2 record view not supported.');
 
         // Override some defaults:
-        $this->searchClassId = 'Pazpar2';
+        $this->sourceId = 'Pazpar2';
 
         // Call standard record controller initialization:
         parent::__construct($sm);

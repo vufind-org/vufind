@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SafeMoneyFormat helper factory.
  *
@@ -25,13 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * SafeMoneyFormat helper factory.
@@ -66,9 +68,9 @@ class SafeMoneyFormatFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $defaultCurrency = $config->Site->defaultCurrency ?? null;
-        return new $requestedName($defaultCurrency);
+        return new $requestedName(
+            $container->get(\VuFind\Service\CurrencyFormatter::class),
+            $container->get('ViewHelperManager')->get('escapeHtml')
+        );
     }
 }

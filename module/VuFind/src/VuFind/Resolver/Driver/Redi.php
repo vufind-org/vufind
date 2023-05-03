@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ReDi Link Resolver Driver
  *
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:link_resolver_drivers Wiki
  */
+
 namespace VuFind\Resolver\Driver;
 
 use DOMDocument;
@@ -142,7 +144,9 @@ class Redi extends AbstractBase
                     'title' => $doiTerm->item($i)->textContent
                         . $doiDefinition->item($i)->textContent,
                     'href' => $href,
-                    'service_type' => 'getFullTxt',
+                    'access' => 'unknown',
+                    'coverage' => null,
+                    'service_type' => 'getDOI',
                 ];
             }
         }

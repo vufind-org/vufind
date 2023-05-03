@@ -1,4 +1,5 @@
 <?php
+
 /**
  * XSLT geographic helper tests.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\XSLT\Import;
 
 use VuFind\XSLT\Import\VuFindGeo;
@@ -67,14 +69,26 @@ class VuFindGeoTest extends \PHPUnit\Framework\TestCase
      */
     public function getLogger()
     {
-        $logger = new class {
+        $logger = new class () {
             protected $messages = [];
 
+            /**
+             * Capture a log message
+             *
+             * @param string $msg Log message
+             *
+             * @return void
+             */
             public function log($msg): void
             {
                 $this->messages[] = $msg;
             }
 
+            /**
+             * Get the top message from the message stack
+             *
+             * @return string
+             */
             public function popMessage()
             {
                 return array_pop($this->messages);

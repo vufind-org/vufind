@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for Image CAPTCHA module.
  *
@@ -25,13 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Captcha;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Image CAPTCHA factory.
@@ -71,7 +73,7 @@ class ImageFactory implements FactoryInterface
             'font' => APPLICATION_PATH
                     . '/vendor/webfontkit/open-sans/fonts/opensans-regular.ttf',
             'imgDir' => $container->get(\VuFind\Cache\Manager::class)
-                ->getCache('public')->getOptions()->getCacheDir()
+                ->getCache('public')->getOptions()->getCacheDir(),
         ];
 
         $config = $container->get(\VuFind\Config\PluginManager::class)
@@ -96,10 +98,13 @@ class ImageFactory implements FactoryInterface
             $imageOptions['lineNoiseLevel'] = $config->Captcha->image_lineNoiseLevel;
         }
 
+        $baseUrl = rtrim(
+            ($container->get('ViewHelperManager')->get('url'))('home') ?? '',
+            '/'
+        );
         return new $requestedName(
             new \Laminas\Captcha\Image($imageOptions),
-            rtrim(($container->get('ViewHelperManager')->get('url'))('home'), '/')
-                . '/cache/'
+            "$baseUrl/cache/"
         );
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Console command: VuFind installer.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Install;
 
 use Symfony\Component\Console\Command\Command;
@@ -320,7 +322,7 @@ class InstallCommand extends Command
                 $dir . '/cache',
                 $dir . '/config',
                 $dir . '/harvest',
-                $dir . '/import'
+                $dir . '/import',
             ]
         );
     }
@@ -452,7 +454,7 @@ class InstallCommand extends Command
         $legal = [
             self::MULTISITE_NONE,
             self::MULTISITE_DIR_BASED,
-            self::MULTISITE_HOST_BASED
+            self::MULTISITE_HOST_BASED,
         ];
         while (true) {
             $response = $this->getInput(
@@ -563,24 +565,24 @@ class InstallCommand extends Command
 
         // In multisite mode, we need to make environment variables conditional:
         switch ($this->multisiteMode) {
-        case self::MULTISITE_DIR_BASED:
-            $config = preg_replace(
-                '/SetEnv\s+(\w+)\s+(.*)/',
-                'SetEnvIf Request_URI "^' . $this->basePath . '" $1=$2',
-                $config
-            );
-            break;
-        case self::MULTISITE_HOST_BASED:
-            if (($result = $this->validateHost($this->host)) !== true) {
-                return $result;
-            }
-            $config = preg_replace(
-                '/SetEnv\s+(\w+)\s+(.*)/',
-                'SetEnvIfNoCase Host ' . str_replace('.', '\.', $this->host)
-                . ' $1=$2',
-                $config
-            );
-            break;
+            case self::MULTISITE_DIR_BASED:
+                $config = preg_replace(
+                    '/SetEnv\s+(\w+)\s+(.*)/',
+                    'SetEnvIf Request_URI "^' . $this->basePath . '" $1=$2',
+                    $config
+                );
+                break;
+            case self::MULTISITE_HOST_BASED:
+                if (($result = $this->validateHost($this->host)) !== true) {
+                    return $result;
+                }
+                $config = preg_replace(
+                    '/SetEnv\s+(\w+)\s+(.*)/',
+                    'SetEnvIfNoCase Host ' . str_replace('.', '\.', $this->host)
+                    . ' $1=$2',
+                    $config
+                );
+                break;
         }
 
         $target = $this->overrideDir . '/httpd-vufind.conf';
@@ -696,7 +698,7 @@ class InstallCommand extends Command
                 $moduleDir,
                 $moduleDir . '/config',
                 $moduleDir . '/src',
-                $moduleDir . '/src/' . $module
+                $moduleDir . '/src/' . $module,
             ]
         );
         if ($dirStatus !== true) {
@@ -809,13 +811,13 @@ class InstallCommand extends Command
 
         // Load user settings if we are not forcing defaults:
         if (!$input->getOption('use-defaults')) {
-            $overrideDir = trim($input->getOption('overridedir'));
+            $overrideDir = trim($input->getOption('overridedir') ?? '');
             if (!empty($overrideDir)) {
                 $this->overrideDir = $overrideDir;
             } elseif ($interactive) {
                 $userInputNeeded['overrideDir'] = true;
             }
-            $moduleName = trim($input->getOption('module-name'));
+            $moduleName = trim($input->getOption('module-name') ?? '');
             if (!empty($moduleName) && $moduleName !== 'disabled') {
                 if (($result = $this->validateModules($moduleName)) !== true) {
                     return $this->failWithError($output, $result);
@@ -825,7 +827,7 @@ class InstallCommand extends Command
                 $userInputNeeded['module'] = true;
             }
 
-            $basePath = trim($input->getOption('basepath'));
+            $basePath = trim($input->getOption('basepath') ?? '');
             if (!empty($basePath)) {
                 if (($result = $this->validateBasePath($basePath, true)) !== true) {
                     return $this->failWithError($output, $result);
@@ -938,7 +940,8 @@ class InstallCommand extends Command
 
         // Collect and process parameters, and stop if an error is encountered
         // along the way....
-        if ($this->collectParameters($input, $output) !== 0
+        if (
+            $this->collectParameters($input, $output) !== 0
             || $this->processParameters($output) !== 0
         ) {
             return 1;

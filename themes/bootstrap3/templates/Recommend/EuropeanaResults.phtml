@@ -2,7 +2,7 @@
   <div class="sidegroup rssResults">
     <div class="suggestionHeader">
     <a href="http://www.europeana.eu/portal/" title="Europeana.eu" target="_blank">
-      <img src="<?=$this->imageLink(strtolower($data['feedTitle']) . '.png')?>"/>
+      <img src="<?=$this->imageLink(strtolower($data['feedTitle']) . '.png')?>">
     </a>
     </div>
     <div>
@@ -11,7 +11,7 @@
           <li class="list-group-item suggestedResult <?php (++$i % 2) ? 'alt ' : ''?>record<?=$i?>">
             <div class="resultitem clearfix">
               <?php if (isset($work['enclosure'])): ?>
-                <span class="europeanaImg"><img src="<?=$this->escapeHtmlAttr($work['enclosure'])?>" id="europeanaImage<?=$this->escapeHtmlAttr($workKey)?>"/></span>
+                <span class="europeanaImg"><img src="<?=$this->escapeHtmlAttr($work['enclosure'])?>" id="europeanaImage<?=$this->escapeHtmlAttr($workKey)?>"></span>
               <?php endif; ?>
               <a href="<?=$this->escapeHtmlAttr($work['link'])?>" target="_blank">
                 <span><?=$this->escapeHtml($this->truncate($work['title'], 90))?></span>
@@ -22,7 +22,7 @@
       </ul>
       <p class="olSubjectMore">
         <a href="<?=$this->escapeHtmlAttr($data['sourceLink'])?>" title="<?=$this->escapeHtmlAttr($data['feedTitle'])?>" target="_blank">
-          <?=$this->transEsc('more')?>...
+          <?=$this->transEsc('more_ellipsis')?>
         </a>
       </p>
     </div>

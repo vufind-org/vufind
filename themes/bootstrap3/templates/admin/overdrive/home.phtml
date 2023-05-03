@@ -22,13 +22,13 @@
 
     <ul class="list-group">
         <li class="list-group-item"><?php echo "<strong>Mode: </strong>";
-            echo $this->overdriveConfig->productionMode?"Production":"Integration";?></li>
+            echo $this->overdriveConfig->productionMode ? "Production" : "Integration";?></li>
         <li class="list-group-item"> <?php echo "<strong>Client Key:</strong> " . $this->overdriveConfig->clientKey;?></li>
         <li class="list-group-item"> <?php echo "<strong>Library ID:</strong> " . $this->overdriveConfig->libraryID;?></li>
         <li class="list-group-item"> <?php echo "<strong>Website ID:</strong> " . $this->overdriveConfig->websiteID;?></li>
         <li class="list-group-item"> <?php echo "<strong>ILS Name:</strong> " . $this->overdriveConfig->ILSname;?></li>
         <li class="list-group-item"> <?php echo "<strong>Records in Marc Format: </strong>";
-             echo $this->overdriveConfig->isMarc?"Yes":"No"?></li>
+             echo $this->overdriveConfig->isMarc ? "Yes" : "No"?></li>
     </ul>
 
     <h2><?=$this->transEsc('User Access')?></h2>
@@ -40,8 +40,8 @@
         <li class="list-group-item"><?php echo "<strong>Current User Has Access?:</strong> No"?></li>
         <?php endif;?>
         <li class="list-group-item"><?php echo "<strong>Test User:</strong>"?>
-            <div class="alert alert-info"><i class='fa fa-exclamation-triangle'></i>
-                Feature not ready yet
+            <div class="alert alert-info">
+                <?=$this->icon('warning') ?> Feature not ready yet
             </div>
         </li>
     </ul>

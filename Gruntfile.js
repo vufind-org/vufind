@@ -152,7 +152,7 @@ module.exports = function(grunt) {
             { // Wrap variables in calcs with #{}
               pattern: /calc\([^;]+/gi,
               replacement: function calcVariables(match) {
-                return match.replace(/(\$[^ ]+)/gi, '#{$1}');
+                return match.replace(/(\$[\w\-]+)/gi, '#{$1}');
               },
               order: 4
             },
@@ -212,6 +212,7 @@ module.exports = function(grunt) {
     for (var i in themeList) {
       var config = {
         options: {
+          implementation: require("node-sass"),
           outputStyle: 'compressed'
         },
         files: [{

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Citation view helper
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use VuFind\Date\DateException;
@@ -41,8 +43,7 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Citation extends \Laminas\View\Helper\AbstractHelper
-    implements TranslatorAwareInterface
+class Citation extends \Laminas\View\Helper\AbstractHelper implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
@@ -93,7 +94,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      * @var string[]
      */
     protected $uncappedPhrases = [
-        'even if', 'if only', 'now that', 'on top of'
+        'even if', 'if only', 'now that', 'on top of',
     ];
 
     /**
@@ -171,12 +172,13 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         $this->details = [
             'authors' => $authors,
             'corporateAuthors' => $corporateAuthors,
-            'title' => trim($title), 'subtitle' => trim($subtitle),
+            'title' => trim($title ?? ''),
+            'subtitle' => trim($subtitle ?? ''),
             'pubPlace' => $pubPlaces[0] ?? null,
             'pubName' => $publishers[0] ?? null,
             'pubDate' => $pubDates[0] ?? null,
             'edition' => empty($edition) ? [] : [$edition],
-            'journal' => $driver->tryMethod('getContainerTitle')
+            'journal' => $driver->tryMethod('getContainerTitle'),
         ];
 
         return $this;
@@ -201,7 +203,8 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         // also know if we have a valid corporate author name that it should be
         // left alone... otherwise, it's worth trying to reverse names (for example,
         // this may be dirty data from Summon):
-        if (!($this->driver instanceof \VuFind\RecordDriver\SolrMarc)
+        if (
+            !($this->driver instanceof \VuFind\RecordDriver\SolrMarc)
             && !$isCorporate
         ) {
             $callables[] = function (string $name): string {
@@ -287,7 +290,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         $apa = [
             'title' => $this->getAPATitle(),
             'authors' => $this->getAPAAuthors(),
-            'edition' => $this->getEdition()
+            'edition' => $this->getEdition(),
         ];
 
         // Show a period after the title if it does not already have punctuation
@@ -332,7 +335,8 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
             ' (%s)',
             ':',
             true,
-            'https://dx.doi.org/',
+            'https://doi.org/',
+            false,
             false
         );
     }
@@ -356,6 +360,8 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      * @param string $doiPrefix       Prefix to display in front of DOI; set to
      * false to omit DOIs.
      * @param bool   $labelPageRange  Should we include p./pp. before page ranges?
+     * @param bool   $doiArticleComma Should we put a comma instead of period before
+     * a DOI in an article-style citation?
      *
      * @return string
      */
@@ -367,8 +373,9 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         $yearFormat = ', %s',
         $pageNoSeparator = ',',
         $includePubPlace = false,
-        $doiPrefix = false,
-        $labelPageRange = true
+        $doiPrefix = 'https://doi.org/',
+        $labelPageRange = true,
+        $doiArticleComma = true
     ) {
         $mla = [
             'title' => $this->getMLATitle(),
@@ -391,6 +398,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
             return $partial('Citation/mla.phtml', $mla);
         }
         // If we got this far, we should add other journal-specific details:
+        $mla['doiArticleComma'] = $doiArticleComma;
         $mla['pageRange'] = $this->getPageRange();
         $mla['journal'] = $this->capitalizeTitle($this->details['journal']);
         $mla['numberAndDate'] = $numPrefix . $this->getMLANumberAndDate(
@@ -501,7 +509,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         if (!empty($vol) || !empty($num)) {
             // If only the number is non-empty, move the value to the volume to
             // simplify template behavior:
-            if (empty($vol) && !empty($num)) {
+            if (empty($vol)) {
                 $vol = $num;
                 $num = '';
             }
@@ -597,7 +605,8 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
     protected function fixAbbreviatedNameLetters($str)
     {
         // Fix abbreviated letters.
-        if (strlen($str) == 1
+        if (
+            strlen($str) == 1
             || preg_match('/\s[a-zA-Z]/', substr($str, -2))
         ) {
             return $str . '.';
@@ -764,7 +773,8 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
     protected function getAPAAuthors()
     {
         $authorStr = '';
-        if (isset($this->details['authors'])
+        if (
+            isset($this->details['authors'])
             && is_array($this->details['authors'])
         ) {
             $i = 0;
@@ -811,7 +821,8 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
     protected function getEdition()
     {
         // Find the first edition statement that isn't "1st ed."
-        if (isset($this->details['edition'])
+        if (
+            isset($this->details['edition'])
             && is_array($this->details['edition'])
         ) {
             foreach ($this->details['edition'] as $edition) {
@@ -887,7 +898,8 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
     protected function getMLAAuthors($etAlThreshold = 2)
     {
         $authorStr = '';
-        if (isset($this->details['authors'])
+        if (
+            isset($this->details['authors'])
             && is_array($this->details['authors'])
         ) {
             $i = 0;
@@ -930,11 +942,13 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
     protected function getPublisher($includePubPlace = true)
     {
         $parts = [];
-        if ($includePubPlace && !empty($this->details['pubPlace'])
+        if (
+            $includePubPlace && !empty($this->details['pubPlace'])
         ) {
             $parts[] = $this->stripPunctuation($this->details['pubPlace']);
         }
-        if (!empty($this->details['pubName'])
+        if (
+            !empty($this->details['pubName'])
         ) {
             $parts[] = $this->details['pubName'];
         }

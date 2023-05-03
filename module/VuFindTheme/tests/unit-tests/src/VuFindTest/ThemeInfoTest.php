@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ThemeInfo Test Class
  *
@@ -25,8 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest;
 
+use Laminas\Cache\Storage\StorageInterface;
 use VuFindTheme\ThemeInfo;
 
 /**
@@ -41,6 +44,7 @@ use VuFindTheme\ThemeInfo;
 class ThemeInfoTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\ReflectionTrait;
 
     /**
      * Path to theme fixtures
@@ -50,7 +54,9 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     protected $fixturePath;
 
     /**
-     * Constructor
+     * Generic setup function
+     *
+     * @return void
      */
     public function setUp(): void
     {
@@ -134,7 +140,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
                 'mixin' => $expectedMixin,
                 'mixin_user' => $expectedMixinUser,
                 'child' => $expectedChild,
-                'parent' => $expectedParent
+                'parent' => $expectedParent,
             ],
             $ti->getThemeInfo()
         );
@@ -161,8 +167,15 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
         $ti->setTheme('child');
         $this->assertEquals('child', $ti->findContainingTheme('child.txt'));
         $this->assertEquals('parent', $ti->findContainingTheme('parent.txt'));
-        $this->assertEquals($this->fixturePath . '/parent/parent.txt', $ti->findContainingTheme('parent.txt', true));
-        $expected = ['theme' => 'parent', 'path' => $this->fixturePath . '/parent/parent.txt', 'relativePath' => 'parent.txt'];
+        $this->assertEquals(
+            $this->fixturePath . '/parent/parent.txt',
+            $ti->findContainingTheme('parent.txt', true)
+        );
+        $expected = [
+            'theme' => 'parent',
+            'path' => $this->fixturePath . '/parent/parent.txt',
+            'relativePath' => 'parent.txt',
+        ];
         $this->assertEquals($expected, $ti->findContainingTheme('parent.txt', ThemeInfo::RETURN_ALL_DETAILS));
     }
 
@@ -191,11 +204,11 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
         $files = $ti->findInThemes(
             [
                 'templates/content/*.phtml',
-                'templates/content/*.md'
+                'templates/content/*.md',
             ]
         );
         $this->assertIsArray($files);
-        $this->assertEquals(3, count($files));
+        $this->assertCount(3, $files);
         $this->assertEquals('parent', $files[0]['theme']);
         $this->assertEquals(
             'templates/content/page1.phtml',
@@ -247,26 +260,6 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
         // recursive
         $childHelpers = $ti->getMergedConfig('helpers');
         $this->assertEquals(
-            ['fooFactory', 'fooOverrideFactory'],
-            $childHelpers['factories']['foo']
-        );
-    }
-
-    /**
-     * Test getMergedConfig() using a child theme and flattening
-     *
-     * @return void
-     */
-    public function testGetMergedConfigChildFlattened()
-    {
-        // Use array_replace_recursive
-        $ti = $this->getThemeInfo();
-        $ti->setTheme('child');
-        $childJS = $ti->getMergedConfig('js', true);
-        $this->assertEquals(['extra.js'], $childJS);
-        // recursive
-        $childHelpers = $ti->getMergedConfig('helpers', true);
-        $this->assertEquals(
             'fooOverrideFactory',
             $childHelpers['factories']['foo']
         );
@@ -286,28 +279,161 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(['hello.js', 'extra.js', 'mixin.js'], $mixinJS);
         $mixinHelpers = $ti->getMergedConfig('helpers');
         $this->assertEquals(
-            ['fooFactory', 'fooOverrideFactory', 'fooMixinFactory'],
+            'fooMixinFactory',
             $mixinHelpers['factories']['foo']
         );
     }
 
     /**
-     * Test getMergedConfig() using a mixin and flattening
+     * Test getMergedConfig() on string value in config
      *
      * @return void
      */
-    public function testGetMergedConfigMixinWithFlattening()
+    public function testGetMergedConfigReturnString()
     {
-        // Theme using a mixin
         $ti = $this->getThemeInfo();
-        $ti->setTheme('mixin_user');
-        $mixinJS = $ti->getMergedConfig('js', true);
-        $this->assertEquals(['mixin.js'], $mixinJS);
-        $mixinHelpers = $ti->getMergedConfig('helpers', true);
-        $this->assertEquals(
-            'fooMixinFactory',
-            $mixinHelpers['factories']['foo']
+        $doctype = $ti->getMergedConfig('doctype');
+        $this->assertEquals('HTML5', $doctype);
+    }
+
+    /**
+     * Test getMergedConfig() with no key (return all)
+     *
+     * @return void
+     */
+    public function testGetMergedConfigNoKey()
+    {
+        $ti = $this->getThemeInfo();
+        $config = $ti->getMergedConfig();
+        $this->assertEquals('HTML5', $config['doctype']);
+        $this->assertEqualsCanonicalizing(
+            ['doctype', 'extends', 'js', 'helpers'],
+            array_keys($config)
         );
+    }
+
+    /**
+     * Stress-test our merging algorithm
+     *
+     * @param array $test     Test data
+     * @param array $expected Expected response
+     *
+     * @dataProvider mergeEdgeCasesProvider
+     *
+     * @return void
+     */
+    public function testMergeWithoutOverrideEdgeCases($test, $expected)
+    {
+        $ti = $this->getThemeInfo();
+
+        $merged = $this->callMethod($ti, 'mergeWithoutOverride', $test);
+
+        $this->assertEquals($expected, $merged);
+    }
+
+    /**
+     * Test cases for mergeWithoutOverride
+     *
+     * @return array
+     */
+    public static function mergeEdgeCasesProvider(): array
+    {
+        return [
+            // string
+            [
+                [
+                    'original',
+                    'override',
+                ],
+                'original',
+            ],
+
+            // array
+            [
+                [
+                    ['original'],
+                    ['override'],
+                ],
+                ['override', 'original'],
+            ],
+
+            // string-keyed arrays
+            [
+                [
+                    ['array' => [1], 'string' => 'original', 'sub' => ['a' => 1]],
+                    ['array' => [2], 'string' => 'override', 'sub' => ['a' => 2]],
+                ],
+                ['array' => [2, 1], 'string' => 'original', 'sub' => ['a' => 1]],
+            ],
+
+            // string-keyed arrays: missing
+            [
+                [
+                    ['shared' => [1], 'parent' => 'only'],
+                    ['shared' => [1], 'child' => 'only'],
+                ],
+                ['shared' => [1, 1], 'parent' => 'only', 'child' => 'only'],
+            ],
+
+            // string-keyed string -> array
+            [
+                [
+                    ['mixed' => ['array']],
+                    ['mixed' => 'string'],
+                ],
+                ['mixed' => ['string', 'array']],
+            ],
+
+            // string-keyed array -> string
+            [
+                [
+                    ['mixed' => 'string'],
+                    ['mixed' => ['array']],
+                ],
+                ['mixed' => ['array', 'string']],
+            ],
+
+            // arrays and strings
+            [
+                [
+                    ['mixed' => ['array']],
+                    'not an array',
+                ],
+                [
+                    'mixed' => ['array'],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Test that caching works correctly.
+     *
+     * @return void
+     */
+    public function testCaching(): void
+    {
+        $key = 'parent_doctype';
+        $expected = 'HTML5';
+
+        // Create a mock cache that simulates normal cache functionality;
+        // the first call to getItem returns null, then it expects a call
+        // to setItem, and then the second call to getItem will return an
+        // expected value.
+        $cache = $this->getMockBuilder(StorageInterface::class)->getMock();
+        $cache->expects($this->exactly(2))->method('getItem')
+            ->with($this->equalTo($key))
+            ->willReturnOnConsecutiveCalls(null, $expected);
+        $cache->expects($this->once())->method('setItem')
+            ->with($this->equalTo($key), $this->equalTo($expected));
+
+        // Set cache
+        $ti = $this->getThemeInfo();
+        $ti->setCache($cache);
+
+        // Invoke the helper twice to meet the expectations of the cache mock:
+        $ti->getMergedConfig('doctype');
+        $ti->getMergedConfig('doctype');
     }
 
     /**

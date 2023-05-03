@@ -26,6 +26,7 @@
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Content;
 
 /**
@@ -37,7 +38,8 @@ namespace VuFind\Content;
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
+class ObalkyKnihService implements
+    \VuFindHttp\HttpServiceAwareInterface,
     \Laminas\Log\LoggerAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
@@ -45,11 +47,11 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * API URL
+     * Available base URLs
      *
-     * @var string
+     * @var array
      */
-    protected $apiUrl;
+    protected $baseUrls = [];
 
     /**
      * Http referrer
@@ -66,23 +68,47 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
     protected $sigla;
 
     /**
+     * Array with endpoints, possible endpoints(array keys) are: books, cover, toc,
+     * authority, citation, recommend, alive
+     *
+     * @var array
+     */
+    protected $endpoints;
+
+    /**
+     * Whether to check servers availability before API calls
+     *
+     * @var bool
+     */
+    protected $checkServersAvailability = false;
+
+    /**
      * Constructor
      *
      * @param \Laminas\Config\Config $config Configuration for service
      */
     public function __construct(\Laminas\Config\Config $config)
     {
-        if (!isset($config->base_url) || count($config->base_url) < 1
+        if (
+            !isset($config->base_url) || count($config->base_url) < 1
             || !isset($config->books_endpoint)
         ) {
             throw new \Exception(
                 "Configuration for ObalkyKnih.cz service is not valid"
             );
         }
-        $this->apiUrl = $config->base_url[0] . $config->books_endpoint;
+        $this->baseUrls = $config->base_url;
         $this->cacheLifetime = 1800;
         $this->referrer = $config->referrer ?? null;
         $this->sigla = $config->sigla ?? null;
+        foreach ($config->toArray() as $configItem => $configValue) {
+            $parts = explode('_', $configItem);
+            if ($parts[1] ?? '' === 'endpoint') {
+                $this->endpoints[$parts[0]] = $configValue;
+            }
+        }
+        $this->checkServersAvailability
+            = $config->checkServersAvailability ?? false;
     }
 
     /**
@@ -153,12 +179,22 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
     {
         $param = "multi";
         $query = [];
-        $isbn = isset($ids['isbn']) ? $ids['isbn']->get13() : null;
-        $isbn = $isbn ?? $ids['upc'] ?? $ids['issn'] ?? null;
+        $isbn = null;
+        if (!empty($ids['isbns'])) {
+            $isbn = array_map(
+                function ($isbn) {
+                    return $isbn->get13();
+                },
+                $ids['isbns']
+            );
+        } elseif (!empty($ids['isbn'])) {
+            $isbn = $ids['isbn']->get13();
+        }
+        $isbn ??= $ids['upc'] ?? $ids['issn'] ?? null;
         $oclc = $ids['oclc'] ?? null;
         $isbn = $isbn ?? (isset($ids['ismn']) ? $ids['ismn']->get13() : null);
         $ismn = isset($ids['ismn']) ? $ids['ismn']->get10() : null;
-        $nbn = $ids['nbn'] ?? $this->createLocalIdentifier($ids['recordid']);
+        $nbn = $ids['nbn'] ?? $this->createLocalIdentifier($ids['recordid'] ?? '');
         $uuid = null;
         if (isset($ids['uuid'])) {
             $uuid = (substr($ids['uuid'], 0, 5) === 'uuid:')
@@ -171,7 +207,12 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
             }
         }
 
-        $url = $this->apiUrl . "?";
+        $url = $this->getBaseUrl();
+        if ($url === '') {
+            $this->logWarning('All ObalkyKnih servers are down.');
+            return null;
+        }
+        $url .= $this->endpoints['books'] . "?";
         $url .= http_build_query([$param => json_encode([$query])]);
         $client = $this->getHttpClient($url);
         try {
@@ -180,7 +221,11 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
             $this->logError('Unexpected ' . get_class($e) . ': ' . $e->getMessage());
             return null;
         }
-        return $response->isSuccess() ? json_decode($response->getBody())[0] : null;
+        if ($response->isSuccess()) {
+            $json = json_decode($response->getBody());
+            return empty($json) ? null : $json[0];
+        }
+        return null;
     }
 
     /**
@@ -195,7 +240,42 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
         if (strpos($recordid, '.') !== false) {
             [, $recordid] = explode('.', $recordid, 2);
         }
-        return empty($this->sigla) ? null :
+        return (empty($this->sigla) || empty($recordid)) ? null :
             $this->sigla . '-' . str_replace('-', '', $recordid);
+    }
+
+    /**
+     * Get currently available base URL
+     *
+     * @return string
+     */
+    protected function getBaseUrl(): string
+    {
+        return $this->checkServersAvailability
+            ? $this->getAliveUrl() : $this->baseUrls[0];
+    }
+
+    /**
+     * Check base URLs and return the first available
+     *
+     * @return string
+     */
+    protected function getAliveUrl(): string
+    {
+        $aliveUrl = $this->getCachedData('baseUrl');
+        if ($aliveUrl !== null) {
+            return $aliveUrl;
+        }
+        foreach ($this->baseUrls as $baseUrl) {
+            $url = $baseUrl . $this->endpoints['alive'];
+            $client = $this->getHttpClient($url);
+            $client->setOptions(['timeout' => 2]);
+            $response = $client->send();
+            if ($response->isSuccess()) {
+                $this->putCachedData('baseUrl', $baseUrl, 60);
+                return $baseUrl;
+            }
+        }
+        return '';
     }
 }

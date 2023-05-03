@@ -29,6 +29,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Feature;
 
 use PHPUnit\Framework\SkippedTestError;
@@ -107,6 +108,20 @@ trait AutoRetryTrait
                 // Execute callbacks for interrupted test, unless this is the
                 // last round of testing:
                 if ($this->retriesLeft > 0) {
+                    $logMethod = [
+                        $this,
+                        $annotations['method']['retryLogMethod'][0] ?? 'logWarning',
+                    ];
+                    if (is_callable($logMethod)) {
+                        $method = get_class($this) . '::' . $this->getName(false);
+                        $msg = "RETRY TEST $method ({$this->retriesLeft} left)"
+                            . ' after exception: ' . $e->getMessage() . '.';
+                        call_user_func(
+                            $logMethod,
+                            $msg . ' See PHP error log for details.',
+                            $msg . ' Full exception: ' . (string)$e
+                        );
+                    }
                     foreach ($retryCallbacks as $callback) {
                         if (is_callable([$this, $callback])) {
                             $this->{$callback}();

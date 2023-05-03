@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SideFacets Recommendations Module
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
+
 namespace VuFind\Recommend;
 
 /**
@@ -80,7 +82,7 @@ class TopFacets extends AbstractFacets
 
         // Load other relevant settings:
         $this->baseSettings = [
-            'rows' => $config->Results_Settings->top_rows
+            'rows' => $config->Results_Settings->top_rows,
         ];
 
         // Load boolean configurations:

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * MultiAuth Authentication plugin
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:authentication_handlers Wiki
  */
+
 namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\Request;
@@ -98,7 +100,8 @@ class ChoiceAuth extends AbstractBase
      */
     protected function validateConfig()
     {
-        if (!isset($this->config->ChoiceAuth->choice_order)
+        if (
+            !isset($this->config->ChoiceAuth->choice_order)
             || !strlen($this->config->ChoiceAuth->choice_order)
         ) {
             throw new AuthException(
@@ -297,6 +300,16 @@ class ChoiceAuth extends AbstractBase
     }
 
     /**
+     * Username policy for a new account (e.g. minLength, maxLength)
+     *
+     * @return array
+     */
+    public function getUsernamePolicy()
+    {
+        return $this->proxyAuthMethod('getUsernamePolicy', func_get_args());
+    }
+
+    /**
      * Password policy for a new password (e.g. minLength, maxLength)
      *
      * @return array
@@ -413,11 +426,11 @@ class ChoiceAuth extends AbstractBase
     {
         // Set new strategy; fall back to old one if there is a problem:
         $defaultStrategy = $this->strategy;
-        $this->strategy = trim($request->getPost()->get('auth_method'));
-        if (empty($this->strategy)) {
-            $this->strategy = trim($request->getQuery()->get('auth_method'));
+        $this->strategy = trim($request->getPost()->get('auth_method', ''));
+        if (!$this->strategy) {
+            $this->strategy = trim($request->getQuery()->get('auth_method', ''));
         }
-        if (empty($this->strategy)) {
+        if (!$this->strategy) {
             $this->strategy = $defaultStrategy;
             if (empty($this->strategy)) {
                 throw new AuthException('authentication_error_technical');

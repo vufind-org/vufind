@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Solr\Response\Json;
 
 use ArrayObject;
@@ -139,7 +140,7 @@ class Spellcheck implements IteratorAggregate, Countable
      *
      * @return ArrayIterator
      */
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         return $this->terms->getIterator();
     }
@@ -149,9 +150,9 @@ class Spellcheck implements IteratorAggregate, Countable
     /**
      * Return number of terms.
      *
-     * @return integer
+     * @return int
      */
-    public function count()
+    public function count(): int
     {
         return $this->terms->count();
     }

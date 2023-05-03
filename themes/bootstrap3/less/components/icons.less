@@ -1,24 +1,85 @@
 /**
- * Toolbar Button Icons
+ * Basic alignment and styling for icons
+ * generated through the Icon view helper.
  */
-[class*="btn-type-"]::before {
-  display: inline-block;
-  margin-right: .25rem;
-  font-family: "FontAwesome";
+
+.icon-link {
+  display: inline-flex;
+  gap: 0.25rem;
+  vertical-align: middle;
+}
+.icon-link,
+.icon-link:active,
+.icon-link:focus,
+.icon-link:hover {
+  text-decoration: none;
+}
+.icon-link__icon {
+  flex: none;
+  padding: 0;
+  line-height: inherit;
   color: inherit;
 }
-.btn-type-add::before { content: "\f055"; } // .fa-plus-circle
-.btn-type-cite::before { content: "\f069"; } // .fa-asterisk
-.btn-type-delete::before { content: "\f1f8"; } // .fa-trash
-.btn-type-email::before { content: "\f0e0"; } // .fa-envelope
-.btn-type-empty::before { content: "\f00d"; } // .fa-times
-.btn-type-export::before { content: "\f08e"; } // .fa-external-link
-.btn-type-minus::before { content: "\f056"; } // .fa-minus-circle
-.btn-type-phone::before { content: "\f10b"; } // .fa-mobile
-.btn-type-print::before { content: "\f02f"; } // .fa-print
-.btn-type-save::before { content: "\f005"; } // .fa-star
-.btn-type-permalink::before { content: "\f0c1"; } // .fa-link
+.icon-link__label {
+  text-decoration: @link-hover-decoration;
+}
+span.icon-link .icon-link__label,
+.disabled .icon-link__label,
+[disabled] .icon-link__label {
+  text-decoration: none;
+}
+.icon-link.active .icon-link__icon,
+.icon-link.active .icon-link__label {
+  color: #fff;
+}
 
+// Exceptions
+.banner .icon-link__label,
+.pager .icon-link__label,
+.action-toolbar .icon-link__label {
+  text-decoration: none;
+}
+
+/**
+ * Styling by type
+ */
+
+.icon--font {
+    display: inline-block;
+    max-width: 1.25em;
+    height: min-content; /* FF */
+    height: fit-content;
+    line-height: inherit;
+    text-align: center;
+    vertical-align: top;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon--img {
+    display: inline-block;
+    max-width: 1.25em;
+    height: min-content; /* FF */
+    height: fit-content;
+    text-align: center;
+    vertical-align: top;
+}
+
+.icon--svg {
+    display: inline-block;
+    max-width: 1.25em;
+    max-height: 1.25em;
+    fill: currentColor;
+    vertical-align: text-bottom;
+}
+
+.show--closed,
+.collapsed .show--open {
+    display: none;
+}
+.collapsed .show--closed {
+    display: inline;
+}
 
 /**
  * Assign catalog formats to Font Awesome icons
@@ -28,57 +89,51 @@
   width: 14px;
   filter: brightness(50%);
 }
-// Alias
-.fa-printer:before        {content: "\f02f";} // .fa-print
-// Search Icons
-.fa-grid:before           {content: "\f00a";} // .fa-th
-.fa-visual:before         {content: "\f008";} // .fa-film
-// Type Icons
-.fa-x:before              {content: "\f0f6";} // .fa-file-text-o
-.fa-atlas:before          {content: "\f14e";} // .fa-compass
-.fa-book:before           {content: "\f02d";} // .fa-book
-.fa-braille:before        {content: "\f0a6";} // .fa-hand-o-up
-.fa-cdrom:before          {content: "\f109";} // .fa-laptop
-.fa-chart:before          {content: "\f012";} // .fa-signal
-.fa-chipcartridge:before  {content: "\f109";} // .fa-laptop
-.fa-collage:before        {content: "\f03e";} // .fa-picture-o
-.fa-disccartridge:before  {content: "\f109";} // .fa-laptop
-.fa-drawing:before        {content: "\f03e";} // .fa-picture-o
-.fa-ebook:before          {content: "\f0f6";} // .fa-file-text-o
-.fa-electronic:before     {content: "\f1c6";} // .fa-file-archive-o
-.fa-filmstrip:before      {content: "\f008";} // .fa-film
-.fa-flashcard:before      {content: "\f0e7";} // .fa-bolt
-.fa-floppydisk:before     {content: "\f0c7";} // .fa-save
-.fa-globe:before          {content: "\f0ac";} // .fa-globe
-.fa-journal:before        {content: "\f0f6";} // .fa-file-text-o
-.fa-kit:before            {content: "\f0b1";} // .fa-briefcase
-.fa-manuscript:before     {content: "\f0f6";} // .fa-file-text-o
-.fa-map:before            {content: "\f14e";} // .fa-compass
-.fa-microfilm:before      {content: "\f008";} // .fa-film
-.fa-motionpicture:before  {content: "\f03d";} // .fa-video-camera
-.fa-musicalscore:before   {content: "\f001";} // .fa-music
-.fa-musicrecording:before {content: "\f001";} // .fa-music
-.fa-newspaper:before      {content: "\f0f6";} // .fa-file-text-o
-.fa-online:before         {content: "\f109";} // .fa-laptop
-.fa-painting:before       {content: "\f03e";} // .fa-picture-o
-.fa-photo:before          {content: "\f03e";} // .fa-picture-o
-.fa-photonegative:before  {content: "\f03e";} // .fa-picture-o
-.fa-physicalobject:before {content: "\f187";} // .fa-archive
-.fa-print:before          {content: "\f03e";} // .fa-picture-o
-.fa-sensorimage:before    {content: "\f03e";} // .fa-picture-o
-.fa-serial:before         {content: "\f0f6";} // .fa-file-text-o
-.fa-slide:before          {content: "\f008";} // .fa-film
-.fa-software:before       {content: "\f109";} // .fa-laptop
-.fa-soundcassette:before  {content: "\f025";} // .fa-headphones
-.fa-sounddisc:before      {content: "\f109";} // .fa-laptop
-.fa-soundrecording:before {content: "\f025";} // .fa-headphones
-.fa-tapecartridge:before  {content: "\f109";} // .fa-laptop
-.fa-tapecassette:before   {content: "\f025";} // .fa-headphones
-.fa-tapereel:before       {content: "\f008";} // .fa-film
-.fa-transparency:before   {content: "\f008";} // .fa-film
-.fa-unknown:before        {content: "\f128";} // .fa-question
-.fa-video:before          {content: "\f03d";} // .fa-video-camera
-.fa-videocartridge:before {content: "\f03d";} // .fa-video-camera
-.fa-videocassette:before  {content: "\f03d";} // .fa-video-camera
-.fa-videodisc:before      {content: "\f109";} // .fa-laptop
-.fa-videoreel:before      {content: "\f03d";} // .fa-video-camera
+
+/**
+ * Animations and Effects
+ *
+ * Borrowed from Tailwind CSS (https://tailwindcss.com/docs/animation)
+ */
+
+/* Rotate 360 degrees */
+.icon--spin {
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Fade opacity in and out */
+.icon--pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .5;
+  }
+}
+
+/* Slow, gentle bounce */
+.icon--bounce {
+    animation: bounce 1s infinite;
+}
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(-25%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+

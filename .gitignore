@@ -2,6 +2,8 @@
 \#*
 .\#*
 *~
+# Vim temporary files
+.*.sw[po]
 
 .php_cs_cache
 .phpstan_cache
@@ -19,3 +21,6 @@ lessphp_*.list
 module/VuFind/tests/.phpunit.result.cache
 node_modules
 public/swagger-ui
+local/config/vufind/*.ini
+local/config/vufind/*.json
+local/config/vufind/*.yaml

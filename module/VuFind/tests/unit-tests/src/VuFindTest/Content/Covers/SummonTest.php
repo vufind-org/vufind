@@ -21,11 +21,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Search
+ * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Content\Covers;
 
 use VuFind\Content\Covers\Summon;
@@ -35,7 +36,7 @@ use VuFindCode\ISBN;
  * Unit tests for Summon cover loader.
  *
  * @category VuFind
- * @package  Search
+ * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
@@ -47,7 +48,7 @@ class SummonTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testValidCoverLoading()
+    public function testValidCoverLoading(): void
     {
         $summon = new Summon();
         $this->assertEquals(
@@ -66,9 +67,9 @@ class SummonTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMissingIsbn()
+    public function testMissingIsbn(): void
     {
         $summon = new Summon();
-        $this->assertEquals(false, $summon->getUrl('mykey', 'small', []));
+        $this->assertFalse($summon->getUrl('mykey', 'small', []));
     }
 }

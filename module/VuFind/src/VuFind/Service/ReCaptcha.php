@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Recaptcha service
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Service;
 
 /**
@@ -43,16 +45,14 @@ class ReCaptcha extends \Laminas\ReCaptcha\ReCaptcha
      *
      * This method uses the public key to fetch a recaptcha form.
      *
-     * @param null|string $name Base name for recaptcha form elements
-     *
      * @return string
      *
      * @throws \Laminas\ReCaptcha\Exception
      */
-    public function getHtml($name = null)
+    public function getHtml()
     {
         // Get standard HTML
-        $html = parent::getHtml($name);
+        $html = parent::getHtml();
 
         // Override placeholder div with richer version:
         $div = '<div class="g-recaptcha" data-sitekey="' . $this->siteKey . '"';

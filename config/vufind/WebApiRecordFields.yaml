@@ -1,9 +1,9 @@
 # Key is the field name that can be requested. It has the following subkeys:
 # - vufind.method: name to call (either in the SearchApiController class or the record driver)
 # - vufind.default: true if the field is displayed by default when the request does not specify fields
-# - Swagger specification fields describing the returned data.
+# - OpenAPI 3 specification fields describing the returned data.
 #
-# See http://swagger.io/specification/ for information on the Swagger-specific fields
+# See https://spec.openapis.org/oas/v3.0.3 for information on the format.
 #
 id:
   vufind.method: getUniqueID

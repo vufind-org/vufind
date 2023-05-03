@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Shibboleth authentication test class.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Auth;
 
 use Laminas\Config\Config;
@@ -85,7 +87,7 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
      */
     public static function setUpBeforeClass(): void
     {
-        static::failIfUsersExist();
+        static::failIfDataExists();
     }
 
     /**
@@ -105,9 +107,9 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
     /**
      * Get an authentication object.
      *
-     * @param Config $config Configuration to use (null for default)
-     * @param Config $shibConfig Configuration with IdP
-     * @param boolean $useHeaders use HTTP headers instead of environment variables
+     * @param Config  $config             Configuration to use (null for default)
+     * @param Config  $shibConfig         Configuration with IdP
+     * @param boolean $useHeaders         use HTTP headers instead of environment variables
      * @param boolean $requiredAttributes required attributes
      *
      * @return Shibboleth
@@ -136,6 +138,9 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a working configuration for the Shibboleth object
      *
+     * @param bool $useHeaders         Value for use_headers config setting
+     * @param bool $requiredAttributes Should we include a required attribute in config?
+     *
      * @return Config
      */
     public function getAuthConfig($useHeaders = false, $requiredAttributes = true)
@@ -144,7 +149,7 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
             'login' => 'http://myserver',
             'username' => 'username',
             'email' => 'email',
-            'use_headers' => $useHeaders
+            'use_headers' => $useHeaders,
         ];
         if ($requiredAttributes) {
             $config += [
@@ -204,7 +209,7 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
      * Support method -- get parameters to log into an account (but allow override of
      * individual parameters so we can test different scenarios).
      *
-     * @param array $overrides    Associative array of parameters to override.
+     * @param array   $overrides  Associative array of parameters to override.
      * @param boolean $useHeaders Use headers instead of environment variables
      *
      * @return \Laminas\Http\Request
@@ -213,7 +218,7 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
     {
         $server = $overrides + [
             'username' => 'testuser', 'email' => 'user@test.com',
-            'password' => 'testpass'
+            'password' => 'testpass',
         ];
         $request = new \Laminas\Http\PhpEnvironment\Request();
         if ($useHeaders) {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Trait to add facet prefix and matches settings to a Params object.
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\Search\Params;
 
 use Laminas\Config\Config;

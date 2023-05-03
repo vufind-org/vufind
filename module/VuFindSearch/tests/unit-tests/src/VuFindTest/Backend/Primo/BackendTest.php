@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Backend\Primo;
 
 use InvalidArgumentException;
@@ -97,8 +98,8 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('crossref10.5755/j01.ss.71.2.544', $recs[2]->recordid);
         $this->assertEquals(5706, $coll->getTotal());
         $facets = $coll->getFacets();
-        $this->assertEquals(9, count($facets));
-        $this->assertEquals(19, count($facets['jtitle']));
+        $this->assertCount(9, $facets);
+        $this->assertCount(19, $facets['jtitle']);
         $this->assertEquals(16, $facets['jtitle']['Remedial and Special Education']);
         $this->assertEquals(0, $coll->getOffset());
     }
@@ -123,7 +124,9 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      */
     public function testConstructorSetters()
     {
-        $fact = $this->createMock(\VuFindSearch\Response\RecordCollectionFactoryInterface::class);
+        $fact = $this->createMock(
+            \VuFindSearch\Response\RecordCollectionFactoryInterface::class
+        );
         $conn = $this->getConnectorMock();
         $back = new Backend($conn, $fact);
         $this->assertEquals($fact, $back->getRecordCollectionFactory());
@@ -137,7 +140,9 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      */
     public function testSearchWrapsPrimoException()
     {
-        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectException(
+            \VuFindSearch\Backend\Exception\BackendException::class
+        );
 
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
@@ -154,7 +159,9 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      */
     public function testRetrieveWrapsPrimoException()
     {
-        $this->expectException(\VuFindSearch\Backend\Exception\BackendException::class);
+        $this->expectException(
+            \VuFindSearch\Backend\Exception\BackendException::class
+        );
 
         $conn = $this->getConnectorMock(['getRecord']);
         $conn->expects($this->once())
@@ -172,14 +179,121 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     public function testMergedParamBag()
     {
         $myParams = new ParamBag(['foo' => 'bar']);
-        $expectedParams = ['foo' => 'bar', 'limit' => 10, 'pageNumber' => 1.0, 'query' => [['index' => null, 'lookfor' => 'baz']]];
+        $expectedParams = [
+            'foo' => 'bar',
+            'limit' => 10,
+            'pageNumber' => 1.0,
+            'query' => [
+                [
+                    'index' => null,
+                    'lookfor' => 'baz',
+                ],
+            ],
+        ];
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
             ->method('query')
-            ->with($this->equalTo('inst-id'), $this->equalTo($expectedParams['query']), $this->equalTo($expectedParams))
-            ->will($this->returnValue(['recordCount' => 0, 'documents' => []]));
+            ->with(
+                $this->equalTo('inst-id'),
+                $this->equalTo($expectedParams['query']),
+                $this->equalTo($expectedParams)
+            )->will($this->returnValue(['recordCount' => 0, 'documents' => []]));
         $back = new Backend($conn);
         $back->search(new Query('baz'), 0, 10, $myParams);
+    }
+
+    /**
+     * Data provider for testPcAvailabilityFilter
+     *
+     * @return array
+     */
+    public function getPcAvailabilityData(): array
+    {
+        return [
+            [
+                '',
+                true,
+            ],
+            [
+                true,
+                true,
+            ],
+            [
+                1,
+                true,
+            ],
+            [
+                '1',
+                true,
+            ],
+            [
+                'true',
+                true,
+            ],
+            [
+                false,
+                false,
+            ],
+            [
+                0,
+                false,
+            ],
+            [
+                '0',
+                false,
+            ],
+            [
+                'false',
+                false,
+            ],
+        ];
+    }
+
+    /**
+     * Test pcAvailability filter.
+     *
+     * @param string $value    Input value of filter
+     * @param string $expected Expected output value of filter
+     *
+     * @dataProvider getPcAvailabilityData
+     *
+     * @return void
+     */
+    public function testPcAvailabilityFilter($value, $expected): void
+    {
+        $params = new ParamBag(
+            [
+                'filterList' => [
+                    'pcAvailability' => [
+                        'values' => [
+                            $value,
+                        ],
+                    ],
+                ],
+            ]
+        );
+        $expectedParams = [
+            'limit' => 10,
+            'pageNumber' => 1,
+            'filterList' => [],
+            'pcAvailability' => $expected,
+            'query' => [
+                [
+                    'index' => null,
+                    'lookfor' => 'foo',
+                ],
+            ],
+        ];
+        $conn = $this->getConnectorMock(['query']);
+        $conn->expects($this->once())
+            ->method('query')
+            ->with(
+                $this->equalTo('inst-id'),
+                $this->equalTo($expectedParams['query']),
+                $this->equalTo($expectedParams)
+            )->will($this->returnValue(['recordCount' => 0, 'documents' => []]));
+        $back = new Backend($conn);
+        $back->search(new Query('foo'), 0, 10, $params);
     }
 
     /// Internal API

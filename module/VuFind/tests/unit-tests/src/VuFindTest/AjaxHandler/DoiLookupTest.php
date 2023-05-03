@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DoiLookup test class.
  *
@@ -25,12 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\AjaxHandler;
 
-use Laminas\Config\Config;
+use Laminas\View\Renderer\PhpRenderer;
 use VuFind\AjaxHandler\DoiLookup;
 use VuFind\AjaxHandler\DoiLookupFactory;
-use VuFind\Config\PluginManager as ConfigManager;
 use VuFind\DoiLinker\DoiLinkerInterface;
 use VuFind\DoiLinker\PluginManager;
 
@@ -45,6 +46,8 @@ use VuFind\DoiLinker\PluginManager;
  */
 class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
 {
+    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+
     /**
      * Set up configuration for a test.
      *
@@ -54,11 +57,10 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
      */
     protected function setupConfig($config)
     {
-        $config = new Config($config);
-        $cm = $this->container->createMock(ConfigManager::class, ['get']);
-        $cm->expects($this->once())->method('get')->with($this->equalTo('config'))
-            ->will($this->returnValue($config));
-        $this->container->set(ConfigManager::class, $cm);
+        $this->container->set(
+            \VuFind\Config\PluginManager::class,
+            $this->getMockConfigPluginManager(compact('config'))
+        );
     }
 
     /**
@@ -84,7 +86,14 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
             ->will(
                 $this->returnValue(
                     [
-                        $doi => [['link' => 'http://' . $value, 'label' => $value]]
+                        $doi => [
+                            [
+                                'link' => 'http://' . $value,
+                                'label' => $value,
+                                'icon' => 'remote-icon',
+                                'localIcon' => 'local-icon',
+                            ],
+                        ],
                     ]
                 )
             );
@@ -117,6 +126,29 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
      */
     protected function getHandlerResults($requested = ['bar'])
     {
+        $plugins = [
+            'serverurl' => function ($path) {
+                return "http://localhost/$path";
+            },
+            'url' => function ($route, $options, $params) {
+                return "$route?" . http_build_query($params['query'] ?? []);
+            },
+            'icon' => function ($icon) {
+                return "($icon)";
+            },
+        ];
+
+        $mockRenderer = $this->container->createMock(PhpRenderer::class);
+        $mockRenderer->expects($this->any())
+            ->method('plugin')
+            ->willReturnCallback(
+                function ($plugin) use ($plugins) {
+                    return $plugins[$plugin] ?? null;
+                }
+            );
+
+        $this->container->set('ViewRenderer', $mockRenderer);
+
         $factory = new DoiLookupFactory();
         $handler = $factory($this->container, DoiLookup::class);
         $params = $this->getParamsHelper(['doi' => $requested]);
@@ -124,14 +156,60 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
     }
 
     /**
+     * Data provider for testSingleLookup
+     *
+     * @return array
+     */
+    public function getTestSingleLookupData(): array
+    {
+        return [
+            [
+                ['DOI' => ['resolver' => 'foo']],
+                false,
+                'remote-icon',
+            ],
+            [
+                ['DOI' => ['resolver' => 'foo', 'new_window' => true]],
+                true,
+                'remote-icon',
+            ],
+            [
+                ['DOI' => ['resolver' => 'foo', 'proxy_icons' => true]],
+                false,
+                'http://localhost/cover-show?proxy=remote-icon',
+            ],
+            [
+                [
+                    'DOI' => [
+                        'resolver' => 'foo',
+                        'new_window' => true,
+                        'proxy_icons' => true,
+                    ],
+                ],
+                true,
+                'http://localhost/cover-show?proxy=remote-icon',
+            ],
+        ];
+    }
+
+    /**
      * Test a single DOI lookup.
+     *
+     * @param array  $config     Configuration
+     * @param bool   $newWindow  Expected "new window" setting
+     * @param string $remoteIcon Expected icon value
+     *
+     * @dataProvider getTestSingleLookupData
      *
      * @return void
      */
-    public function testSingleLookup()
-    {
+    public function testSingleLookup(
+        array $config,
+        bool $newWindow,
+        string $remoteIcon
+    ): void {
         // Set up config manager:
-        $this->setupConfig(['DOI' => ['resolver' => 'foo']]);
+        $this->setupConfig($config);
 
         // Set up plugin manager:
         $this->setupPluginManager(
@@ -140,7 +218,19 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
 
         // Test the handler:
         $this->assertEquals(
-            [['bar' => [['link' => 'http://baz', 'label' => 'baz']]]],
+            [
+                [
+                    'bar' => [
+                        [
+                            'link' => 'http://baz',
+                            'label' => 'baz',
+                            'newWindow' => $newWindow,
+                            'icon' => $remoteIcon,
+                            'localIcon' => '(local-icon)',
+                        ],
+                    ],
+                ],
+            ],
             $this->getHandlerResults()
         );
     }
@@ -159,13 +249,25 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
         $this->setupPluginManager(
             [
                 'foo' => $this->getMockPlugin('baz'),
-                'foo2' => $this->getMockPlugin('baz2', 'never')
+                'foo2' => $this->getMockPlugin('baz2', 'never'),
             ]
         );
 
         // Test the handler:
         $this->assertEquals(
-            [['bar' => [['link' => 'http://baz', 'label' => 'baz']]]],
+            [
+                [
+                    'bar' => [
+                        [
+                            'link' => 'http://baz',
+                            'label' => 'baz',
+                            'newWindow' => false,
+                            'icon' => 'remote-icon',
+                            'localIcon' => '(local-icon)',
+                        ],
+                    ],
+                ],
+            ],
             $this->getHandlerResults()
         );
     }
@@ -186,13 +288,25 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
         $this->setupPluginManager(
             [
                 'foo' => $this->getMockPlugin('baz'),
-                'foo2' => $this->getMockPlugin('baz2', 'never')
+                'foo2' => $this->getMockPlugin('baz2', 'never'),
             ]
         );
 
         // Test the handler:
         $this->assertEquals(
-            [['bar' => [['link' => 'http://baz', 'label' => 'baz']]]],
+            [
+                [
+                    'bar' => [
+                        [
+                            'link' => 'http://baz',
+                            'label' => 'baz',
+                            'newWindow' => false,
+                            'icon' => 'remote-icon',
+                            'localIcon' => '(local-icon)',
+                        ],
+                    ],
+                ],
+            ],
             $this->getHandlerResults()
         );
     }
@@ -226,9 +340,25 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
         $this->assertEquals(
             [
                 [
-                    'bar' => [['link' => 'http://baz', 'label' => 'baz']],
-                    'bar2' => [['link' => 'http://baz2', 'label' => 'baz2']],
-                ]
+                    'bar' => [
+                        [
+                            'link' => 'http://baz',
+                            'label' => 'baz',
+                            'newWindow' => false,
+                            'icon' => 'remote-icon',
+                            'localIcon' => '(local-icon)',
+                        ],
+                    ],
+                    'bar2' => [
+                        [
+                            'link' => 'http://baz2',
+                            'label' => 'baz2',
+                            'newWindow' => false,
+                            'icon' => 'remote-icon',
+                            'localIcon' => '(local-icon)',
+                        ],
+                    ],
+                ],
             ],
             $this->getHandlerResults($request)
         );
@@ -250,7 +380,7 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
         $this->setupPluginManager(
             [
                 'foo' => $this->getMockPlugin('baz'),
-                'foo2' => $this->getMockPlugin('baz2')
+                'foo2' => $this->getMockPlugin('baz2'),
             ]
         );
         // Test the handler:
@@ -258,10 +388,22 @@ class DoiLookupTest extends \VuFindTest\Unit\AjaxHandlerTest
             [
                 [
                     'bar' => [
-                        ['link' => 'http://baz', 'label' => 'baz'],
-                        ['link' => 'http://baz2', 'label' => 'baz2'],
-                    ]
-                ]
+                        [
+                            'link' => 'http://baz',
+                            'label' => 'baz',
+                            'newWindow' => false,
+                            'icon' => 'remote-icon',
+                            'localIcon' => '(local-icon)',
+                        ],
+                        [
+                            'link' => 'http://baz2',
+                            'label' => 'baz2',
+                            'newWindow' => false,
+                            'icon' => 'remote-icon',
+                            'localIcon' => '(local-icon)',
+                        ],
+                    ],
+                ],
             ],
             $this->getHandlerResults()
         );

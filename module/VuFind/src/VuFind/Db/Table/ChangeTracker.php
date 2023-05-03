@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Table Definition for change_tracker
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
@@ -287,7 +289,8 @@ class ChangeTracker extends Gateway
         // Are we restoring a previously deleted record, or was the stored
         // record change date before current record change date?  Either way,
         // we need to update the table!
-        if (!empty($row->deleted)
+        if (
+            !empty($row->deleted)
             || $this->strToUtcTime($row->last_record_change) < $change
         ) {
             // Save new values to the object:

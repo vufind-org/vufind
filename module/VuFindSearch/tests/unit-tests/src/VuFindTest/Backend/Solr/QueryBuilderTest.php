@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Backend\Solr;
 
 use VuFindSearch\Backend\Solr\QueryBuilder;
@@ -51,7 +52,6 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     public function testNormalization()
     {
         // Set up an array of expected inputs and outputs:
-        // @codingStandardsIgnoreStart
         $tests = [
             ["", "*:*"],                         // empty query
             ["()", "*:*"],                       // empty parens
@@ -91,7 +91,6 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
             // properly escaped floating braces/brackets:
             ['a:{a TO b} \[ \}', 'a:{a TO b} \[ \}'],
         ];
-        // @codingStandardsIgnoreEnd
 
         $qb = new QueryBuilder();
         foreach ($tests as $test) {
@@ -111,7 +110,6 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     protected function getQuestionTests()
     {
         // Format: [input, expected output, flags array]
-        // @codingStandardsIgnoreStart
         return [
             // trailing question mark:
             ['this?', '(this?) OR (this\?)', []],
@@ -137,7 +135,6 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
             // this does not contain any syntax unsupported by basic Dismax):
             ['"this? that?"', '"this? that?"', ['basic' => true]],
         ];
-        // @codingStandardsIgnoreEnd
     }
 
     /**
@@ -152,7 +149,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     protected function runBasicQuestionTest($qb, $handler, $test)
     {
         [$input, $output, $flags] = $test;
-        if ($handler === 'standard'
+        if (
+            $handler === 'standard'
             || ($handler === 'dismax' && empty($flags['basic']))
         ) {
             // We expect an extra set of parentheses to be added, unless the
@@ -183,7 +181,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     protected function runAdvancedQuestionTest($qb, $handler, $test)
     {
         [$input, $output, $flags] = $test;
-        if ($handler === 'standard'
+        if (
+            $handler === 'standard'
             || ($handler === 'dismax' && empty($flags['basic']))
         ) {
             $advOutput = '((' . $output . '))';
@@ -227,7 +226,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     {
         $this->runQuestionTests(
             [
-                'test' => []
+                'test' => [],
             ],
             'standard'
         );
@@ -242,7 +241,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     {
         $this->runQuestionTests(
             [
-                'test' => ['DismaxHandler' => 'dismax', 'DismaxFields' => ['foo']]
+                'test' => ['DismaxHandler' => 'dismax', 'DismaxFields' => ['foo']],
             ],
             'dismax'
         );
@@ -257,7 +256,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     {
         $this->runQuestionTests(
             [
-                'test' => ['DismaxHandler' => 'edismax', 'DismaxFields' => ['foo']]
+                'test' => ['DismaxHandler' => 'edismax', 'DismaxFields' => ['foo']],
             ],
             'edismax'
         );
@@ -276,9 +275,9 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 'test' => [
                     'DismaxFields' => ['a', 'b'],
                     'ExactSettings' => [
-                        'DismaxFields' => ['c', 'd']
-                    ]
-                ]
+                        'DismaxFields' => ['c', 'd'],
+                    ],
+                ],
             ]
         );
 
@@ -304,7 +303,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     {
         $qb = new QueryBuilder(
             [
-                'test' => ['DismaxFields' => ['a'], 'FilterQuery' => 'a:filter']
+                'test' => ['DismaxFields' => ['a'], 'FilterQuery' => 'a:filter'],
             ]
         );
         $q = new Query('q', 'test');
@@ -322,7 +321,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     {
         $qb = new QueryBuilder(
             [
-                'test' => ['FilterQuery' => 'a:filter']
+                'test' => ['FilterQuery' => 'a:filter'],
             ]
         );
         $q = new Query('q', 'test');
@@ -341,7 +340,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     {
         $qb = new QueryBuilder(
             [
-                'test' => ['FilterQuery' => 'a:filter']
+                'test' => ['FilterQuery' => 'a:filter'],
             ]
         );
         $q = new Query('*:*', 'test');
@@ -366,7 +365,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                     'DismaxFields' => ['test'],
                     'DismaxHandler' => 'dismax',
                     'DismaxParams' => [['bq', 'boost']],
-                ]
+                ],
             ]
         );
 
@@ -392,7 +391,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 'test' => [
                     'QueryFields' => ['test1' => []],
                     'DismaxFields' => ['test2', 'test3^10000'],
-                ]
+                ],
             ]
         );
 
@@ -432,8 +431,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
             [
                 'test' => [
                     'DismaxFields' => ['test1'],
-                    'DismaxParams' => [['bq', 'boost']]
-                ]
+                    'DismaxParams' => [['bq', 'boost']],
+                ],
             ]
         );
 
@@ -466,7 +465,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 ],
                 'b' => [
                     'DismaxFields' => ['field_b'],
-                ]
+                ],
             ]
         );
 
@@ -476,7 +475,11 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
 
         $response = $qb->build($q);
         $processedQ = $response->get('q');
-        $this->assertEquals('((_query_:"{!dismax qf=\"field_a\" mm=\\\'100%\\\'}value1") OR (_query_:"{!dismax qf=\"field_b\" mm=\\\'100%\\\'}value2"))', $processedQ[0]);
+        $this->assertEquals(
+            '((_query_:"{!dismax qf=\"field_a\" mm=\\\'100%\\\'}value1") OR '
+            . '(_query_:"{!dismax qf=\"field_b\" mm=\\\'100%\\\'}value2"))',
+            $processedQ[0]
+        );
     }
 
     /**
@@ -492,12 +495,12 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                     'DismaxFields' => ['field_a'],
                     'QueryFields' => [
                         'field_a' => [['and', 100]],
-                        'field_c' => [['and', 200]]
-                    ]
+                        'field_c' => [['and', 200]],
+                    ],
                 ],
                 'b' => [
                     'DismaxFields' => ['field_b'],
-                ]
+                ],
             ]
         );
 
@@ -507,7 +510,11 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
 
         $response = $qb->build($q);
         $processedQ = $response->get('q');
-        $this->assertEquals('((field_a:(value*)^100 OR field_c:(value*)^200) OR (_query_:"{!dismax qf=\"field_b\" mm=\\\'100%\\\'}value2"))', $processedQ[0]);
+        $this->assertEquals(
+            '((field_a:(value*)^100 OR field_c:(value*)^200) OR '
+            . '(_query_:"{!dismax qf=\"field_b\" mm=\\\'100%\\\'}value2"))',
+            $processedQ[0]
+        );
     }
 
     /**
@@ -522,8 +529,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 'a' => [
                     'QueryFields' => [
                         'field_a' => [['or', '~']],
-                    ]
-                ]
+                    ],
+                ],
             ]
         );
 
@@ -546,8 +553,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 'a' => [
                     'QueryFields' => [
                         'field_a' => [['or', '~']],
-                    ]
-                ]
+                    ],
+                ],
             ]
         );
 
@@ -570,8 +577,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 'a' => [
                     'QueryFields' => [
                         'field_a' => [['or', '~']],
-                    ]
-                ]
+                    ],
+                ],
             ]
         );
 
@@ -605,16 +612,16 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 'GlobalExtraParams' => [
                     [
                         'param' => 'bq',
-                        'value' => 'a:foo'
-                    ]
+                        'value' => 'a:foo',
+                    ],
                 ],
                 'expected1' => [
                     'bf' => ['a:filter'],
-                    'bq' => ['a:foo']
+                    'bq' => ['a:foo'],
                 ],
                 'expected2' => [
                     'bf' => null,
-                    'bq' => ['a:foo']
+                    'bq' => ['a:foo'],
                 ],
             ],
             'Two values' => [
@@ -623,23 +630,23 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                         'param' => 'bq',
                         'value' => [
                             'a:foo',
-                            'a:bar'
-                        ]
-                    ]
+                            'a:bar',
+                        ],
+                    ],
                 ],
                 'expected1' => [
                     'bf' => ['a:filter'],
                     'bq' => [
                         'a:foo',
-                        'a:bar'
-                    ]
+                        'a:bar',
+                    ],
                 ],
                 'expected2' => [
                     'bf' => null,
                     'bq' => [
                         'a:foo',
-                        'a:bar'
-                    ]
+                        'a:bar',
+                    ],
                 ],
             ],
             'Value with SearchTypeIn condition' => [
@@ -650,20 +657,20 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                         'conditions' => [
                             [
                                 'SearchTypeIn' => [
-                                    'test'
-                                ]
-                            ]
-                        ]
-                    ]
+                                    'test',
+                                ],
+                            ],
+                        ],
+                    ],
                 ],
                 'expected1' => [
                     'bf' => ['a:filter'],
-                    'bq' => ['a:foo']
+                    'bq' => ['a:foo'],
                 ],
                 'expected2' => [
                     'bf' => null,
-                    'bq' => null
-                ]
+                    'bq' => null,
+                ],
             ],
             'Value with SearchTypeNotIn condition' => [
                 'GlobalExtraParams' => [
@@ -673,19 +680,19 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                         'conditions' => [
                             [
                                 'SearchTypeNotIn' => [
-                                    'test'
-                                ]
-                            ]
-                        ]
-                    ]
+                                    'test',
+                                ],
+                            ],
+                        ],
+                    ],
                 ],
                 'expected1' => [
                     'bf' => ['a:filter'],
-                    'bq' => null
+                    'bq' => null,
                 ],
                 'expected2' => [
                     'bf' => null,
-                    'bq' => ['a:foo']
+                    'bq' => ['a:foo'],
                 ],
             ],
             'Value with NoDisMaxParams = [bf] condition' => [
@@ -695,18 +702,18 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                         'value' => 'a:foo',
                         'conditions' => [
                             [
-                                'NoDismaxParams' => ['bf']
-                            ]
-                        ]
-                    ]
+                                'NoDismaxParams' => ['bf'],
+                            ],
+                        ],
+                    ],
                 ],
                 'expected1' => [
                     'bf' => ['a:filter'],
-                    'bq' => null
+                    'bq' => null,
                 ],
                 'expected2' => [
                     'bf' => null,
-                    'bq' => ['a:foo']
+                    'bq' => ['a:foo'],
                 ],
             ],
         ];
@@ -715,7 +722,12 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     /**
      * Test generation with GlobalExtraParams using individual queries.
      *
+     * @param array $globalExtraParams Global extra parameters
+     * @param array $expected1         First set of expected fields
+     * @param array $expected2         Second set of expected fields
+     *
      * @return void
+     *
      * @dataProvider globalExtraParamsIndividualQueryDataProvider
      */
     public function testIndividualQueryHandlerWithGlobalExtraParams(
@@ -730,8 +742,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
             'test' => [
                 'DismaxFields' => ['a'],
                 'DismaxParams' => [
-                    ['bf', 'a:filter']
-                ]
+                    ['bf', 'a:filter'],
+                ],
             ],
         ];
         if (!empty($globalExtraParams)) {
@@ -774,13 +786,13 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                         'value' => 'a:foo',
                         'conditions' => [
                             [
-                                'SearchTypeIn' => ['test']
-                            ]
-                        ]
-                    ]
+                                'SearchTypeIn' => ['test'],
+                            ],
+                        ],
+                    ],
                 ],
                 'expected' => [
-                    'bq' => ['a:foo']
+                    'bq' => ['a:foo'],
                 ],
             ],
             'All search types in [test, test2]' => [
@@ -790,13 +802,13 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                         'value' => 'a:foo',
                         'conditions' => [
                             [
-                                'AllSearchTypesIn' => ['test', 'test2']
-                            ]
-                        ]
-                    ]
+                                'AllSearchTypesIn' => ['test', 'test2'],
+                            ],
+                        ],
+                    ],
                 ],
                 'expected' => [
-                    'bq' => ['a:foo']
+                    'bq' => ['a:foo'],
                 ],
             ],
             'All search types in [test, no]' => [
@@ -806,13 +818,13 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                         'value' => 'a:foo',
                         'conditions' => [
                             [
-                                'AllSearchTypesIn' => ['test', 'no']
-                            ]
-                        ]
-                    ]
+                                'AllSearchTypesIn' => ['test', 'no'],
+                            ],
+                        ],
+                    ],
                 ],
                 'expected' => [
-                    'bq' => null
+                    'bq' => null,
                 ],
             ],
             'All search types in [test, test2, no]' => [
@@ -822,13 +834,13 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                         'value' => 'a:foo',
                         'conditions' => [
                             [
-                                'AllSearchTypesIn' => ['test', 'test2', 'no']
-                            ]
-                        ]
-                    ]
+                                'AllSearchTypesIn' => ['test', 'test2', 'no'],
+                            ],
+                        ],
+                    ],
                 ],
                 'expected' => [
-                    'bq' => ['a:foo']
+                    'bq' => ['a:foo'],
                 ],
             ],
         ];
@@ -837,7 +849,11 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     /**
      * Test generation with GlobalExtraParams using a grouped query.
      *
+     * @param array $globalExtraParams Global extra parameters
+     * @param array $expectedFields    Expected fields
+     *
      * @return void
+     *
      * @dataProvider globalExtraParamsGroupedQueryDataProvider
      */
     public function testGroupedQueryHandlerWithGlobalExtraParams(
@@ -851,8 +867,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
             'test' => [
                 'DismaxFields' => ['a'],
                 'DismaxParams' => [
-                    ['bf', 'a:filter']
-                ]
+                    ['bf', 'a:filter'],
+                ],
             ],
         ];
         if (!empty($globalExtraParams)) {
@@ -868,5 +884,54 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 $values
             );
         }
+    }
+
+    /**
+     * Test a fully negated query.
+     *
+     * @return void
+     */
+    public function testNegatedQuery()
+    {
+        $group = new QueryGroup('NOT', [new Query('q')]);
+        $qb = new QueryBuilder([]);
+        $response = $qb->build($group);
+        $this->assertEquals(['(*:* NOT (q))'], $response->get('q'));
+    }
+
+    /**
+     * Test a negated clause of an AND query.
+     *
+     * @return void
+     */
+    public function testNegatedAndQuery()
+    {
+        $subgroup1 = new QueryGroup('NOT', [new Query('q1'), new Query('q2')]);
+        $subgroup2 = new QueryGroup('AND', [new Query('q3'), new Query('q4')]);
+        $group = new QueryGroup('AND', [$subgroup1, $subgroup2]);
+        $qb = new QueryBuilder([]);
+        $response = $qb->build($group);
+        $this->assertEquals(
+            ['((*:* NOT (q1 OR q2)) AND (q3 AND q4))'],
+            $response->get('q')
+        );
+    }
+
+    /**
+     * Test a negated clause of an OR query.
+     *
+     * @return void
+     */
+    public function testNegatedOrQuery()
+    {
+        $subgroup1 = new QueryGroup('NOT', [new Query('q1'), new Query('q2')]);
+        $subgroup2 = new QueryGroup('AND', [new Query('q3'), new Query('q4')]);
+        $group = new QueryGroup('OR', [$subgroup1, $subgroup2]);
+        $qb = new QueryBuilder([]);
+        $response = $qb->build($group);
+        $this->assertEquals(
+            ['((*:* NOT (q1 OR q2)) OR (q3 AND q4))'],
+            $response->get('q')
+        );
     }
 }

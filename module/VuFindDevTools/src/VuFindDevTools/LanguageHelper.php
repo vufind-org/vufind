@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Language Helper for Development Tools Controller
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/indexing:alphabetical_heading_browse Wiki
  */
+
 namespace VuFindDevTools;
 
 use Laminas\I18n\Translator\TextDomain;
@@ -160,30 +162,37 @@ class LanguageHelper
             return $this->configuredLanguages[$lang];
         }
         switch ($lang) {
-        case 'en-gb':
-            return 'British English';
-        case 'pt-br':
-            return 'Brazilian Portuguese';
-        default:
-            return $lang;
+            case 'en-gb':
+                return 'British English';
+            case 'pt-br':
+                return 'Brazilian Portuguese';
+            default:
+                return $lang;
         }
     }
 
     /**
      * Get text domains for a language.
      *
+     * @param bool $includeOptional Include optional translations (e.g. DDC23)
+     *
      * @return array
      */
-    protected function getTextDomains()
+    protected function getTextDomains($includeOptional)
     {
         static $domains = false;
         if (!$domains) {
+            $filter = $includeOptional
+                ? []
+                : ['CallNumberFirst', 'CreatorRoles', 'DDC23'];
             $base = APPLICATION_PATH . '/languages';
             $dir = opendir($base);
             $domains = [];
             while ($current = readdir($dir)) {
-                if ($current != '.' && $current != '..'
+                if (
+                    $current != '.' && $current != '..'
                     && is_dir("$base/$current")
+                    && !in_array($current, $filter)
                 ) {
                     $domains[] = $current;
                 }
@@ -196,14 +205,15 @@ class LanguageHelper
     /**
      * Load a language, including text domains.
      *
-     * @param string $lang Language to load
+     * @param string $lang            Language to load
+     * @param bool   $includeOptional Include optional translations (e.g. DDC23)
      *
      * @return array
      */
-    protected function loadLanguage($lang)
+    protected function loadLanguage($lang, $includeOptional)
     {
         $base = $this->loader->load($lang, null);
-        foreach ($this->getTextDomains() as $domain) {
+        foreach ($this->getTextDomains($includeOptional) as $domain) {
             $current = $this->loader->load($lang, $domain);
             foreach ($current as $k => $v) {
                 if ($k != '@parent_ini') {
@@ -221,14 +231,15 @@ class LanguageHelper
     /**
      * Return details on how $langCode differs from $main.
      *
-     * @param array  $main     The main language (full details)
-     * @param string $langCode The code of a language to compare against $main
+     * @param array  $main            The main language (full details)
+     * @param string $langCode        The code of a language to compare against $main
+     * @param bool   $includeOptional Include optional translations (e.g. DDC23)
      *
      * @return array
      */
-    protected function getLanguageDetails($main, $langCode)
+    protected function getLanguageDetails($main, $langCode, $includeOptional)
     {
-        $lang = $this->loadLanguage($langCode);
+        $lang = $this->loadLanguage($langCode, $includeOptional);
         $details = $this->compareLanguages($main, $lang);
         $details['object'] = $lang;
         $details['name'] = $this->getLangName($langCode);
@@ -239,17 +250,19 @@ class LanguageHelper
     /**
      * Return details on how all languages differ from $main.
      *
-     * @param array $main The main language (full details)
+     * @param array $main            The main language (full details)
+     * @param bool  $includeOptional Include optional translations (e.g. DDC23)
      *
      * @return array
      */
-    protected function getAllLanguageDetails($main)
+    protected function getAllLanguageDetails($main, $includeOptional)
     {
         $details = [];
         $allLangs = $this->getLanguages();
         sort($allLangs);
         foreach ($allLangs as $langCode) {
-            $details[$langCode] = $this->getLanguageDetails($main, $langCode);
+            $details[$langCode] = $this
+                ->getLanguageDetails($main, $langCode, $includeOptional);
         }
         return $details;
     }
@@ -274,7 +287,7 @@ class LanguageHelper
             }
             $data[] = [
                 "lang" => $langCode,
-                "name"=> $diffs['name'],
+                "name" => $diffs['name'],
                 "langtitle" => $langCode . (($langCode != $diffs['name'])
                     ? " (" . $diffs['name'] . ")" : ''),
                 "missing" => count($diffs['notInL2']),
@@ -292,27 +305,26 @@ class LanguageHelper
      * Return language comparison information, using $mainLanguage as the
      * baseline.
      *
-     * @param string $mainLanguage Language code
+     * @param string $mainLanguage    Language code
+     * @param bool   $includeOptional Include optional translations (e.g. DDC23)
      *
      * @return array
      */
-    public function getAllDetails($mainLanguage)
+    public function getAllDetails($mainLanguage, $includeOptional = true)
     {
-        $main = $this->loadLanguage($mainLanguage);
-        $details = $this->getAllLanguageDetails($main);
+        $main = $this->loadLanguage($mainLanguage, $includeOptional);
+        $details = $this->getAllLanguageDetails($main, $includeOptional);
         $dirHelpParts = [
-            APPLICATION_PATH, 'themes', 'root', 'templates', 'HelpTranslations'
+            APPLICATION_PATH, 'themes', 'root', 'templates', 'HelpTranslations',
         ];
         $dirLangParts = [APPLICATION_PATH, 'languages'];
-        return [
-            'details' => $details,
+        return compact('details', 'main', 'includeOptional') + [
             'dirHelp' => implode(DIRECTORY_SEPARATOR, $dirHelpParts)
                 . DIRECTORY_SEPARATOR,
             'dirLang' => implode(DIRECTORY_SEPARATOR, $dirLangParts)
                 . DIRECTORY_SEPARATOR,
             'mainCode' => $mainLanguage,
             'mainName' => $this->getLangName($mainLanguage),
-            'main' => $main,
             'summaryData' => $this->summarizeData($details),
         ];
     }

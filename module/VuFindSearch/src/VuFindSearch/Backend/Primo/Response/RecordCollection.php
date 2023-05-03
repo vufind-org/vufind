@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Primo\Response;
 
 use VuFindSearch\Response\AbstractRecordCollection;
@@ -72,13 +73,28 @@ class RecordCollection extends AbstractRecordCollection
     }
 
     /**
-     * Return facet information.
+     * Return available facets.
+     *
+     * Returns an associative array with the field name as key. The value is an
+     * associative array of available facets for the field, indexed by facet value.
      *
      * @return array
      */
     public function getFacets()
     {
         return $this->response['facets'] ?? [];
+    }
+
+    /**
+     * Set facets.
+     *
+     * @param array $facets Facet fields
+     *
+     * @return void
+     */
+    public function setFacets(array $facets): void
+    {
+        $this->response['facets'] = $facets;
     }
 
     /**
@@ -96,6 +112,9 @@ class RecordCollection extends AbstractRecordCollection
 
     /**
      * Return any errors.
+     *
+     * Each error can be a translatable string or an array that the Flashmessages
+     * view helper understands.
      *
      * @return array
      */

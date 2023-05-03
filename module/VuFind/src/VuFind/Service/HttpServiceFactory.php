@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind HTTP Service factory.
  *
@@ -25,13 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Service;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * VuFind HTTP Service factory.
@@ -80,6 +82,8 @@ class HttpServiceFactory implements FactoryInterface
         }
         $defaults = isset($config->Http)
             ? $config->Http->toArray() : [];
-        return new $requestedName($options, $defaults);
+        $config = !empty($config->Proxy->local_addresses)
+            ? ['localAddressesRegEx' => $config->Proxy->local_addresses] : [];
+        return new $requestedName($options, $defaults, $config);
     }
 }

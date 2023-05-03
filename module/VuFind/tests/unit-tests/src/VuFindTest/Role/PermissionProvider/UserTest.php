@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PermissionProvider User Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Role\PermissionProvider;
 
 use LmcRbacMvc\Service\AuthorizationService;
@@ -57,15 +59,15 @@ class UserTest extends \PHPUnit\Framework\TestCase
         [
                 ['username','mbeh'],
                 ['email','markus.beh@ub.uni-freiburg.de'],
-                ['college', 'Albert Ludwigs Universität Freiburg']
+                ['college', 'Albert Ludwigs Universität Freiburg'],
         ],
         'testuser2' =>
         [
                 ['username','mbeh2'],
                 ['email','markus.beh@ub.uni-freiburg.de'],
                 ['college', 'Villanova University'],
-                ['major', 'alumni']
-        ]
+                ['major', 'alumni'],
+        ],
     ];
 
     /**

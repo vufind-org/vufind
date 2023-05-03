@@ -1,4 +1,5 @@
 <?php
+
 /**
  * LocaleDetectorFactory Test Class
  *
@@ -25,11 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\I18n\Locale;
 
-use SlmLocale\Strategy\CookieStrategy;
 use SlmLocale\Strategy\HttpAcceptLanguageStrategy;
 use SlmLocale\Strategy\QueryStrategy;
+use VuFind\I18n\Locale\LocaleDetectorCookieStrategy;
 use VuFind\I18n\Locale\LocaleDetectorFactory;
 use VuFind\I18n\Locale\LocaleDetectorParamStrategy;
 use VuFind\I18n\Locale\LocaleSettings;
@@ -59,10 +61,7 @@ class LocaleDetectorFactoryTest extends \PHPUnit\Framework\TestCase
     {
         $factory = new LocaleDetectorFactory();
         $strategies = $this->callMethod($factory, 'getStrategies', func_get_args());
-        foreach ($strategies as $strategy) {
-            $strategyClasses[] = get_class($strategy);
-        }
-        return $strategyClasses;
+        return array_map('get_class', iterator_to_array($strategies));
     }
 
     /**
@@ -76,8 +75,8 @@ class LocaleDetectorFactoryTest extends \PHPUnit\Framework\TestCase
             [
                 LocaleDetectorParamStrategy::class,
                 QueryStrategy::class,
-                CookieStrategy::class,
-                HttpAcceptLanguageStrategy::class
+                LocaleDetectorCookieStrategy::class,
+                HttpAcceptLanguageStrategy::class,
             ],
             $this->getStrategyClasses()
         );
@@ -99,8 +98,8 @@ class LocaleDetectorFactoryTest extends \PHPUnit\Framework\TestCase
             [
                 LocaleDetectorParamStrategy::class,
                 QueryStrategy::class,
-                CookieStrategy::class,
-                HttpAcceptLanguageStrategy::class
+                LocaleDetectorCookieStrategy::class,
+                HttpAcceptLanguageStrategy::class,
             ],
             $this->getStrategyClasses($mockSettings)
         );
@@ -123,7 +122,7 @@ class LocaleDetectorFactoryTest extends \PHPUnit\Framework\TestCase
             [
                 LocaleDetectorParamStrategy::class,
                 QueryStrategy::class,
-                CookieStrategy::class,
+                LocaleDetectorCookieStrategy::class,
             ],
             $this->getStrategyClasses($mockSettings)
         );

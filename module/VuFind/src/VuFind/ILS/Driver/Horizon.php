@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Horizon ILS Driver
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use Laminas\Log\LoggerAwareInterface;
@@ -175,32 +177,32 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             }
         } else {
             switch ($status) {
-            case 'i': // checked in
-                $available = 1;
-                $reserve   = 'N';
-                break;
-            case 'rb': // Reserve Bookroom
-                $available = 0;
-                $reserve   = 'Y';
-                break;
-            case 'h': // being held
-                $available = 0;
-                $reserve   = 'N';
-                break;
-            case 'l': // lost
-                $available = 0;
-                $reserve   = 'N';
-                $duedate   = ''; // No due date for lost items
-                break;
-            case 'm': // missing
-                $available = 0;
-                $reserve   = 'N';
-                $duedate   = ''; // No due date for missing items
-                break;
-            default:
-                $available = 0;
-                $reserve   = 'N';
-                break;
+                case 'i': // checked in
+                    $available = 1;
+                    $reserve   = 'N';
+                    break;
+                case 'rb': // Reserve Bookroom
+                    $available = 0;
+                    $reserve   = 'Y';
+                    break;
+                case 'h': // being held
+                    $available = 0;
+                    $reserve   = 'N';
+                    break;
+                case 'l': // lost
+                    $available = 0;
+                    $reserve   = 'N';
+                    $duedate   = ''; // No due date for lost items
+                    break;
+                case 'm': // missing
+                    $available = 0;
+                    $reserve   = 'N';
+                    $duedate   = ''; // No due date for missing items
+                    break;
+                default:
+                    $available = 0;
+                    $reserve   = 'N';
+                    break;
             }
         }
 
@@ -258,13 +260,13 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
         ];
 
         $sqlLeftOuterJoin = [
-           "circ_history ch on ch.item# = i.item#"
+           "circ_history ch on ch.item# = i.item#",
         ];
 
         // Where
         $sqlWhere = [
             "i.bib# = " . addslashes($id),
-            "i.staff_only = 0"
+            "i.staff_only = 0",
         ];
 
         $sqlArray = [
@@ -272,7 +274,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             'from' => $sqlFrom,
             'innerJoin' => $sqlInnerJoin,
             'leftOuterJoin' => $sqlLeftOuterJoin,
-            'where' => $sqlWhere
+            'where' => $sqlWhere,
         ];
 
         return $sqlArray;
@@ -386,7 +388,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             'status'       => $row['STATUS'],
             'location'     => $row['LOCATION'],
             'reserve'      => $statusValues['reserve'],
-            'callnumber'   => $row['CALLNUMBER']
+            'callnumber'   => $row['CALLNUMBER'],
         ];
 
         return $status;
@@ -446,7 +448,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             'expressions' => $sqlExpressions,
             'from'        => $sqlFrom,
             'innerJoin'   => $sqlInnerJoin,
-            'where'       => $sqlWhere
+            'where'       => $sqlWhere,
         ];
 
         return $sqlArray;
@@ -548,7 +550,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
                     'cat_password' => $password,
                     'email' => $row['EMAIL'],
                     'major' => null,
-                    'college' => null
+                    'college' => null,
                 ];
 
                 $this->debug(json_encode($user));
@@ -592,7 +594,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             "convert(varchar(12),dateadd(dd, r.expire_date, '1 jan 1970'))   " .
                              "as REQUEST_EXPIRE",
             "convert(varchar(12),dateadd(dd, r.request_date, '1 jan 1970'))  " .
-                             "as CREATED"
+                             "as CREATED",
         ];
 
         // From
@@ -602,22 +604,22 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
         $sqlJoin = [
             "borrower_barcode bb on bb.borrower# = r.borrower#",
             "location l          on l.location = r.pickup_location",
-            "title t             on t.bib# = r.bib#"
+            "title t             on t.bib# = r.bib#",
         ];
 
         $sqlLeftOuterJoin = [
             "item i             on i.item# = r.item#",
-            "pubdate_inverted p on p.bib# = r.bib#"
+            "pubdate_inverted p on p.bib# = r.bib#",
         ];
 
         // Where
         $sqlWhere = [
-            "bb.bbarcode='" . addslashes($patron['id']) . "'"
+            "bb.bbarcode='" . addslashes($patron['id']) . "'",
         ];
 
         $sqlOrder = [
             "SORT",
-            "t.processed"
+            "t.processed",
         ];
 
         $sqlArray = [
@@ -626,7 +628,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             'join'          => $sqlJoin,
             'leftOuterJoin' => $sqlLeftOuterJoin,
             'where'         => $sqlWhere,
-            'order'         => $sqlOrder
+            'order'         => $sqlOrder,
         ];
 
         return $sqlArray;
@@ -685,7 +687,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
                 'item_id'          => $row['ITEM_ID'],
                 'volume'           => $row['VOLUME'],
                 'publication_year' => $row['PUBLICATION_YEAR'],
-                'title'            => $row['TITLE']
+                'title'            => $row['TITLE'],
             ];
         }
         return false;
@@ -810,7 +812,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
                     'createdate' => $row['CREATEDATE'],
                     'duedate'    => $row['DUEDATE'],
                     'id'         => $row['ID'],
-                    'title'      => $row['TITLE']
+                    'title'      => $row['TITLE'],
                 ];
             }
 
@@ -860,7 +862,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
                     'address2' => $row['ADDRESS2'],
                     'zip' => $row['ZIP'],
                     'phone' => $row['PHONE'],
-                    'group' => null
+                    'group' => null,
                 ];
 
                 $this->debug(json_encode($profile));
@@ -915,7 +917,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
         // Left Outer Join
         $sqlLeftOuterJoin = [
             "request r on r.item#=c.item#",
-            "pubdate_inverted p on p.bib# = i.bib#"
+            "pubdate_inverted p on p.bib# = i.bib#",
         ];
 
         // Where
@@ -925,7 +927,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
         // Order by
         $sqlOrder = [
             "i.due_date",
-            "t.processed"
+            "t.processed",
         ];
 
         $sqlArray = [
@@ -934,7 +936,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             'join'          => $sqlJoin,
             'leftOuterJoin' => $sqlLeftOuterJoin,
             'where'         => $sqlWhere,
-            'order'         => $sqlOrder
+            'order'         => $sqlOrder,
         ];
 
         return $sqlArray;
@@ -982,7 +984,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             'dueStatus'        => $dueStatus,
             'volume'           => $row['VOLUME'],
             'publication_year' => $row['PUBLICATION_YEAR'],
-            'title'            => $row['TITLE']
+            'title'            => $row['TITLE'],
         ];
     }
 
@@ -1059,7 +1061,6 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
         // This functionality first appeared in Horizon 7.4 - check our version
         $hzVersionRequired = "7.4.0.0";
         if ($this->checkHzVersion($hzVersionRequired)) {
-
             // Set the Sybase or MSSQL rowcount limit (TODO: account for $page)
             $limitsql = "set rowcount {$limit}";
             // for Sybase ASE 12.5 : "set rowcount $limit"

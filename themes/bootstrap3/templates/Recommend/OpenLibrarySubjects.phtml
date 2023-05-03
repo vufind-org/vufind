@@ -8,9 +8,9 @@
         <a href="http://openlibrary.org<?=$work['key']?>" title="<?=$this->transEscAttr('Get full text')?>" target="_blank">
           <span class="olSubjectCover">
           <?php if (isset($work['cover_id']) && !empty($work['cover_id'])): ?>
-            <img src="http://covers.openlibrary.org/b/<?=$this->escapeHtmlAttr($work['cover_id_type'])?>/<?=$this->escapeHtmlAttr($work['cover_id'])?>-S.jpg" class="olSubjectImage" alt="<?=$this->escapeHtmlAttr($work['title'])?>" />
+            <img src="http://covers.openlibrary.org/b/<?=$this->escapeHtmlAttr($work['cover_id_type'])?>/<?=$this->escapeHtmlAttr($work['cover_id'])?>-S.jpg" class="olSubjectImage" alt="<?=$this->escapeHtmlAttr($work['title'])?>">
           <?php else: ?>
-            <img src="<?=$this->imageLink('noCover2.gif')?>" class="olSubjectImage" alt="<?=$this->escapeHtmlAttr($work['title'])?>" />
+            <img src="<?=$this->imageLink('noCover2.gif')?>" class="olSubjectImage" alt="<?=$this->escapeHtmlAttr($work['title'])?>">
           <?php endif; ?>
           </span>
           <span><?=$this->escapeHtmlAttr($this->truncate($work['title'], 50))?></span>
@@ -24,7 +24,7 @@
   </ul>
   <p class="olSubjectMore">
     <a href="http://openlibrary.org/subjects" title="Open Library" target="_blank">
-      <?=$this->transEsc('more')?>...
+      <?=$this->transEsc('more_ellipsis')?>
     </a>
   </p>
 </div>

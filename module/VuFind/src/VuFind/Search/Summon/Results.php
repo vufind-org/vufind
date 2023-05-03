@@ -1,10 +1,11 @@
 <?php
+
 /**
  * Summon Search Results
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2011.
+ * Copyright (C) Villanova University 2011, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,7 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\Summon;
+
+use VuFindSearch\Command\SearchCommand;
 
 /**
  * Summon Search Parameters
@@ -85,14 +89,15 @@ class Results extends \VuFind\Search\Base\Results
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord() - 1;
         $params = $this->getParams()->getBackendParameters();
-        $collection = $this->getSearchService()->search(
+        $command = new SearchCommand(
             $this->backendId,
             $query,
             $offset,
             $limit,
             $params
         );
-
+        $collection = $this->getSearchService()
+            ->invoke($command)->getResult();
         $this->responseFacets = $collection->getFacets();
         $this->resultTotal = $collection->getTotal();
 
@@ -117,7 +122,7 @@ class Results extends \VuFind\Search\Base\Results
                 $this->responseFacets[] = [
                     'fieldName' => $dateFacet,
                     'displayName' => $dateFacet,
-                    'counts' => []
+                    'counts' => [],
                 ];
             }
         }
@@ -279,9 +284,10 @@ class Results extends \VuFind\Search\Base\Results
     {
         $this->suggestions = [];
         foreach ($spelling as $current) {
+            $current = $current['suggestion'];
             if (!isset($this->suggestions[$current['originalQuery']])) {
                 $this->suggestions[$current['originalQuery']] = [
-                    'suggestions' => []
+                    'suggestions' => [],
                 ];
             }
             $this->suggestions[$current['originalQuery']]['suggestions'][]
@@ -383,14 +389,15 @@ class Results extends \VuFind\Search\Base\Results
             }
         }
         $params = $params->getBackendParameters();
-        $collection = $this->getSearchService()->search(
+        $command = new SearchCommand(
             $this->backendId,
             $query,
             0,
             0,
             $params
         );
-
+        $collection = $this->getSearchService()->invoke($command)
+            ->getResult();
         $facets = $collection->getFacets();
         $ret = [];
         foreach ($facets as $data) {
@@ -402,7 +409,7 @@ class Results extends \VuFind\Search\Base\Results
                         'label' => $data['displayName'],
                         'list' => $list,
                     ],
-                    'more' => null
+                    'more' => null,
                 ];
             }
         }

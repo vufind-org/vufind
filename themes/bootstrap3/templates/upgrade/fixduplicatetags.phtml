@@ -17,18 +17,18 @@ otherwise, it is recommended that you fix these.  Click Submit to proceed.</p>
 
 <p>See <a target="_jira" href="https://vufind.org/jira/browse/VUFIND-805">https://vufind.org/jira/browse/VUFIND-805</a> and <a target="_jira" href="https://vufind.org/jira/browse/VUFIND-1187">https://vufind.org/jira/browse/VUFIND-1187</a> for more details.</p>
 
-<br />
+<br>
 
 <form method="post" action="<?=$this->url('upgrade-fixduplicatetags')?>">
-  <input type="submit" name="submit" value="<?=$this->transEscAttr('Submit') ?>" /><br /><br />
-  <input type="submit" name="skip" value="<?=$this->transEscAttr('skip_step') ?>." id="skip" />
+  <input type="submit" name="submit" value="<?=$this->transEscAttr('Submit') ?>"><br><br>
+  <input type="submit" name="skip" value="<?=$this->transEscAttr('skip_step') ?>." id="skip">
 </form>
 <?php
 $confirmText = $this->transEsc('skip_confirm');
 $script = <<<JS
-$('#skip').click(function(e) {
-  return confirm('${confirmText}');
-});
-JS;
+    $('#skip').click(function(e) {
+      return confirm('${confirmText}');
+    });
+    JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');

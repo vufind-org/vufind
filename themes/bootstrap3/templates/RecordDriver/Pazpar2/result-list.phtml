@@ -1,5 +1,5 @@
 <?php
-  $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $this->recordLinker()->getUrl($this->driver));
+  $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $this->recordLinker($this->results)->getUrl($this->driver));
   $cover = $coverDetails['html'];
   $thumbnail = false;
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
@@ -11,9 +11,9 @@
     <?php $thumbnail = ob_get_contents(); ?>
   <?php ob_end_clean(); ?>
 <?php endif; ?>
-<input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
-<input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
-<div class="media<?=$this->driver->supportsAjaxStatus()?' ajaxItem':''?>">
+<input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId">
+<input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource">
+<div class="media<?=$this->driver->supportsAjaxStatus() ? ' ajaxItem' : ''?>">
   <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
     <?=$thumbnail ?>
   <?php endif; ?>
@@ -28,17 +28,17 @@
       <?php $summAuthors = $this->driver->getPrimaryAuthorsWithHighlighting(); if (!empty($summAuthors)): ?>
         <?=$this->transEsc('by')?>
         <?php $authorCount = count($summAuthors); foreach ($summAuthors as $i => $summAuthor): ?>
-          <a href="<?=$this->record($this->driver)->getLink('author', $this->highlight($summAuthor, null, true, false))?>"><?=$this->highlight($summAuthor)?></a><?=$i + 1 < $authorCount ? ',' : ''?>
+          <a href="<?=$this->record($this->driver)->getLink('author', $this->highlight($summAuthor, null, true, false))?>" class="result-author"><?=$this->highlight($summAuthor)?></a><?=$i + 1 < $authorCount ? ',' : ''?>
         <?php endforeach; ?>
       <?php endif; ?>
 
       <?php $journalTitle = $this->driver->getContainerTitle(); $summDate = $this->driver->getPublicationDates(); ?>
       <?php if (!empty($journalTitle)): ?>
-        <?=!empty($summAuthor) ? '<br />' : ''?>
+        <?=!empty($summAuthor) ? '<br>' : ''?>
         <?=/* TODO: handle highlighting more elegantly here */ $this->transEsc('Published in') . ' <a href="' . $this->record($this->driver)->getLink('journaltitle', str_replace(['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'], '', $journalTitle)) . '">' . $this->highlight($journalTitle) . '</a>';?>
         <?=!empty($summDate) ? ' (' . $this->escapeHtml($summDate[0]) . ')' : ''?>
       <?php elseif (!empty($summDate)): ?>
-        <?=!empty($summAuthor) ? '<br />' : ''?>
+        <?=!empty($summAuthor) ? '<br>' : ''?>
         <?=$this->transEsc('Published') . ' ' . $this->escapeHtml($summDate[0])?>
       <?php endif; ?>
       <?php $summInCollection = $this->driver->getContainingCollections();
@@ -59,11 +59,11 @@
         <?php if ($this->driver->supportsAjaxStatus()): ?>
           <strong class="hideIfDetailed"><?=$this->transEsc('Call Number')?>:</strong>
           <span class="callnumber ajax-availability hidden">
-            <?=$this->transEsc('Loading')?>...
-          </span><br class="hideIfDetailed"/>
+            <?=$this->transEsc('loading_ellipsis')?>
+          </span><br class="hideIfDetailed">
           <strong><?=$this->transEsc('Located')?>:</strong>
           <span class="location ajax-availability hidden">
-            <?=$this->transEsc('Loading')?>...
+            <?=$this->transEsc('loading_ellipsis')?>
           </span>
           <div class="locationDetails"></div>
         <?php else: ?>
@@ -86,27 +86,31 @@
 
         if ($openUrlActive || $doiActive || !empty($urls)): ?>
         <?php if ($openUrlActive): ?>
-          <br/>
+          <br>
           <?=$openUrl->renderTemplate()?>
         <?php endif; ?>
         <?php if ($doiActive): ?>
-          <br/>
+          <br>
           <?=$doi->renderTemplate()?>
         <?php endif; ?>
         <?php if (!is_array($urls)) $urls = [];
-          if(!$this->driver->isCollection()):
+          if (!$this->driver->isCollection()):
             foreach ($urls as $current): ?>
-              <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><i class="fa fa-external-link" aria-hidden="true"></i> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a><br/>
+              <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new">
+                <?=$this->icon('external-link') ?>
+                <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?>
+              </a><br>
           <?php endforeach; ?>
         <?php endif; ?>
       <?php endif; ?>
 
       <div class="result-formats">
         <?=$this->record($this->driver)->getFormatList() ?>
+        <?=$this->record($this->driver)->getLabelList() ?>
 
         <?php if (!$openUrlActive && empty($urls) && $this->driver->supportsAjaxStatus()): ?>
           <span class="status ajax-availability small">
-            <span class="label label-default"><?=$this->transEsc('Loading')?>...</span>
+            <span class="label label-default"><?=$this->transEsc('loading_ellipsis')?></span>
           </span>
         <?php endif; ?>
       </div>
@@ -115,7 +119,7 @@
         <?=$this->record($this->driver)->getPreviews()?>
       </div>
 
-      <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>':''?>
+      <?=$this->driver->supportsCoinsOpenUrl() ? '<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>' : ''?>
     </div>
   </div>
   <?php if ($thumbnail && $thumbnailAlignment == 'right'): ?>

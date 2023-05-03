@@ -11,13 +11,13 @@
       <?php $snippet = $driver->getHighlightedSnippet(); ?>
       <?php $summary = $driver->getSummary(); ?>
       <?php if (!empty($snippet)): ?>
-        <br /><?=$this->highlight($snippet['snippet'])?>
+        <br><?=$this->highlight($snippet['snippet'])?>
       <?php elseif (!empty($summary)): ?>
-        <br /><?=$this->escapeHtml($summary[0])?>
+        <br><?=$this->escapeHtml($summary[0])?>
       <?php endif; ?>
     </li>
     <?php endforeach; ?>
   </ul>
-  <p><a href="<?=$this->url($searchObject->getOptions()->getSearchAction()) . $searchObject->getUrlQuery()->setLimit($searchObject->getOptions()->getDefaultLimit())?>"><?=$this->transEsc('Find More')?>...</a></p>
+  <p><a href="<?=$this->url($searchObject->getOptions()->getSearchAction()) . $searchObject->getUrlQuery()->setLimit($searchObject->getOptions()->getDefaultLimit())?>"><?=$this->transEsc('find_more_ellipsis')?></a></p>
 </div>
 <?php endif ?>

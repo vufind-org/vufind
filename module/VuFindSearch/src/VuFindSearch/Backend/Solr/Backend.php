@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SOLR backend.
  *
@@ -25,27 +26,23 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Solr;
 
 use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\Backend\Exception\BackendException;
-
 use VuFindSearch\Backend\Exception\RemoteErrorException;
-
 use VuFindSearch\Backend\Solr\Document\DocumentInterface;
 use VuFindSearch\Backend\Solr\Response\Json\Terms;
 use VuFindSearch\Exception\InvalidArgumentException;
 use VuFindSearch\Feature\GetIdsInterface;
 use VuFindSearch\Feature\RandomInterface;
-
 use VuFindSearch\Feature\RetrieveBatchInterface;
 use VuFindSearch\Feature\SimilarInterface;
 use VuFindSearch\Feature\WorkExpressionsInterface;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
-
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
-
 use VuFindSearch\Response\RecordCollectionInterface;
 
 /**
@@ -57,9 +54,12 @@ use VuFindSearch\Response\RecordCollectionInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class Backend extends AbstractBackend
-    implements SimilarInterface, RetrieveBatchInterface, RandomInterface,
-    GetIdsInterface, WorkExpressionsInterface
+class Backend extends AbstractBackend implements
+    SimilarInterface,
+    RetrieveBatchInterface,
+    RandomInterface,
+    GetIdsInterface,
+    WorkExpressionsInterface
 {
     /**
      * Limit for records per query in a batch retrieval.
@@ -440,21 +440,14 @@ class Backend extends AbstractBackend
     ) {
         $connector = $this->getConnector();
 
-        // If we have a custom timeout, remember the old timeout value and then
-        // override it with a different one:
-        $oldTimeout = null;
-        if (is_int($timeout ?? null)) {
-            $oldTimeout = $connector->getTimeout();
-            $connector->setTimeout($timeout);
-        }
-
         // Write!
-        $connector->write($doc, $handler ?? 'update', $params);
-
-        // Restore previous timeout value, if necessary:
-        if (null !== $oldTimeout) {
-            $connector->setTimeout($oldTimeout);
-        }
+        $connector->callWithHttpOptions(
+            is_int($timeout ?? null) ? compact('timeout') : [],
+            'write',
+            $doc,
+            $handler,
+            $params
+        );
 
         // Save the core name in the results in case the caller needs it.
         return ['core' => $connector->getCore()];
@@ -588,7 +581,8 @@ class Backend extends AbstractBackend
     protected function refineBrowseException(RemoteErrorException $e)
     {
         $error = $e->getMessage() . $e->getResponse();
-        if (strstr($error, 'does not exist') || strstr($error, 'no such table')
+        if (
+            strstr($error, 'does not exist') || strstr($error, 'no such table')
             || strstr($error, 'couldn\'t find a browse index')
         ) {
             throw new RemoteErrorException(

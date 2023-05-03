@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Record fallback loader plugin manager
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\Record\FallbackLoader;
 
 /**
@@ -44,6 +46,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
+        'solr' => Solr::class,
         'summon' => Summon::class,
     ];
 
@@ -53,7 +56,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        Summon::class => SummonFactory::class,
+        Solr::class => SolrFactory::class,
+        Summon::class => AbstractFallbackLoaderFactory::class,
     ];
 
     /**

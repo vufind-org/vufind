@@ -33,12 +33,24 @@
         <tr>
           <th><?=$this->transEsc('Start Time')?>: </th>
           <?php $startTime = $core->xpath('//lst[@name="' . $coreName . '"]/date[@name="startTime"]') ?>
-          <td><?=$this->escapeHtml(strftime("%b %d, %Y %l:%M:%S%p", strtotime((string)array_pop($startTime))))?></td>
+          <td>
+            <?php $startTime = (string)array_pop($startTime); ?>
+            <?=!empty($startTime)
+              ? $this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime(DATE_RFC3339_EXTENDED, $startTime))
+              : '-'
+            ?>
+          </td>
         </tr>
         <tr>
           <th><?=$this->transEsc('Last Modified')?>: </th>
           <?php $lastModified = $core->xpath('//lst[@name="' . $coreName . '"]/lst/date[@name="lastModified"]') ?>
-          <td><?=$this->escapeHtml(strftime("%b %d, %Y %l:%M:%S%p", strtotime((string)array_pop($lastModified))))?></td>
+          <td>
+            <?php $lastModified = (string)array_pop($lastModified); ?>
+            <?=!empty($lastModified)
+              ? $this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime(DATE_RFC3339_EXTENDED, $lastModified))
+              : '-'
+            ?>
+            </td>
         </tr>
         <tr>
           <th><?=$this->transEsc('Uptime')?>: </th>

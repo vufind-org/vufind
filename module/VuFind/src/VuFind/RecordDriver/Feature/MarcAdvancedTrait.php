@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Functions to add advanced MARC-driven functionality to a record driver already
  * powered by the standard index spec. Depends upon MarcReaderTrait.
@@ -28,6 +29,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver\Feature;
 
 use VuFind\View\Helper\Root\RecordLinker;
@@ -61,7 +63,7 @@ trait MarcAdvancedTrait
         '651' => 'geographic',
         '653' => '',
         '655' => 'genre/form',
-        '656' => 'occupation'
+        '656' => 'occupation',
     ];
 
     /**
@@ -79,7 +81,7 @@ trait MarcAdvancedTrait
         '3' => 'nal',
         '4' => 'unknown',
         '5' => 'cash',
-        '6' => 'rvm'
+        '6' => 'rvm',
     ];
 
     /**
@@ -152,7 +154,7 @@ trait MarcAdvancedTrait
                             'heading' => $current,
                             'type' => $fieldType,
                             'source' => $source,
-                            'id' => $this->getSubfield($result, '0')
+                            'id' => $this->getSubfield($result, '0'),
                         ];
                     } else {
                         $retval[] = $current;
@@ -189,22 +191,22 @@ trait MarcAdvancedTrait
         $biblioLevel = strtoupper($leader[7]);
 
         switch ($biblioLevel) {
-        case 'M': // Monograph
-            return "Monograph";
-        case 'S': // Serial
-            return "Serial";
-        case 'A': // Monograph Part
-            return "MonographPart";
-        case 'B': // Serial Part
-            return "SerialPart";
-        case 'C': // Collection
-            return "Collection";
-        case 'D': // Collection Part
-            return "CollectionPart";
-        case 'I': // Integrating Resource
-            return "IntegratingResource";
-        default:
-            return "Unknown";
+            case 'M': // Monograph
+                return "Monograph";
+            case 'S': // Serial
+                return "Serial";
+            case 'A': // Monograph Part
+                return "MonographPart";
+            case 'B': // Serial Part
+                return "SerialPart";
+            case 'C': // Collection
+                return "Collection";
+            case 'D': // Collection Part
+                return "CollectionPart";
+            case 'I': // Integrating Resource
+                return "IntegratingResource";
+            default:
+                return "Unknown";
         }
     }
 
@@ -225,15 +227,70 @@ trait MarcAdvancedTrait
      */
     public function getFilteredXML()
     {
-        $record = clone $this->getMarcReader();
-        // The default implementation does not filter out any fields
-        // $marc = new \File_MARCXML(
-        //    $record->toFormat('MARCXML'), \File_MARCXML::SOURCE_STRING
-        //);
-        // $marc->deleteFields('9', true);
-        // return $marc->toXML();
+        // The default implementation does not filter out any fields. You can do
+        // simple filtering using MarcReader's getFilteredRecord method, or more
+        // complex changes by using the XML DOM.
         //
-        return $record->toFormat('MARCXML');
+        // Example for removing field 520, 9xx fields and subfield 0 from all fields
+        // with getFilteredRecord:
+        //
+        //
+        // return $this->getMarcReader()->getFilteredRecord(
+        //     [
+        //         [
+        //             'tag' => '520',
+        //         ],
+        //         [
+        //             'tag' => '9..',
+        //         ],
+        //         [
+        //             'tag' => '...',
+        //             'subfields' => '0',
+        //         ],
+        //     ]
+        // )->toFormat('MARCXML');
+        //
+        //
+        // Example for removing field 520 using DOM (note that the fields must be
+        // removed in a second loop to not affect the iteration of fields) and adding
+        // a new 955 field:
+        //
+        // $collection = new \DOMDocument();
+        // $collection->preserveWhiteSpace = false;
+        // $collection->loadXML($this->getMarcReader()->toFormat('MARCXML'));
+        // $record = $collection->getElementsByTagName('record')->item(0);
+        // $fieldsToRemove = [];
+        // foreach ($record->getElementsByTagName('datafield') as $field) {
+        //     $tag = $field->getAttribute('tag');
+        //     if ('520' === $tag) {
+        //         $fieldsToRemove[] = $field;
+        //     }
+        // }
+        // foreach ($fieldsToRemove as $field) {
+        //     $record->removeChild($field);
+        // }
+        //
+        // $field = $collection->createElement('datafield');
+        // $tag = $collection->createAttribute('tag');
+        // $tag->value = '955';
+        // $field->appendChild($tag);
+        // $ind1 = $collection->createAttribute('ind1');
+        // $ind1->value = ' ';
+        // $field->appendChild($ind1);
+        // $ind2 = $collection->createAttribute('ind2');
+        // $ind2->value = ' ';
+        // $field->appendChild($ind2);
+        // $subfield = $collection->createElement('subfield');
+        // $code = $collection->createAttribute('code');
+        // $code->value = 'a';
+        // $subfield->appendChild($code);
+        // $subfield->appendChild($collection->createTextNode('VuFind'));
+        // $field->appendChild($subfield);
+        // $record->appendChild($field);
+        //
+        // return $collection->saveXML();
+
+        return $this->getMarcReader()->toFormat('MARCXML');
     }
 
     /**
@@ -487,7 +544,12 @@ trait MarcAdvancedTrait
     public function getTOC()
     {
         $toc = [];
-        if ($fields = $this->getMarcReader()->getFields('505')) {
+        if (
+            $fields = $this->getMarcReader()->getFields(
+                '505',
+                ['a', 'g', 'r', 't', 'u']
+            )
+        ) {
             foreach ($fields as $field) {
                 // Implode all the subfields into a single string, then explode
                 // on the -- separators (filtering out empty chunks). Due to
@@ -552,7 +614,7 @@ trait MarcAdvancedTrait
         // Which fields/subfields should we check for URLs?
         $fieldsToCheck = [
             '856' => ['y', 'z', '3'],   // Standard URL
-            '555' => ['a']              // Cumulative index/finding aids
+            '555' => ['a'],              // Cumulative index/finding aids
         ];
 
         foreach ($fieldsToCheck as $field => $subfields) {
@@ -652,16 +714,16 @@ trait MarcAdvancedTrait
         // Assign notes based on the relationship type
         $value = $field['tag'];
         switch ($value) {
-        case '780':
-            if (in_array($relationshipIndicator, range('0', '7'))) {
-                $value .= '_' . $relationshipIndicator;
-            }
-            break;
-        case '785':
-            if (in_array($relationshipIndicator, range('0', '8'))) {
-                $value .= '_' . $relationshipIndicator;
-            }
-            break;
+            case '780':
+                if (in_array($relationshipIndicator, range('0', '7'))) {
+                    $value .= '_' . $relationshipIndicator;
+                }
+                break;
+            case '785':
+                if (in_array($relationshipIndicator, range('0', '8'))) {
+                    $value .= '_' . $relationshipIndicator;
+                }
+                break;
         }
 
         return 'note_' . $value;
@@ -693,46 +755,48 @@ trait MarcAdvancedTrait
         // If no reference found, check the next link type instead
         foreach ($linkTypes as $linkType) {
             switch (trim($linkType)) {
-            case 'oclc':
-                foreach ($linkFields as $current) {
-                    if ($oclc = $this->getIdFromLinkingField($current, 'OCoLC')) {
-                        $link = ['type' => 'oclc', 'value' => $oclc];
+                case 'oclc':
+                    foreach ($linkFields as $current) {
+                        $oclc = $this->getIdFromLinkingField($current, 'OCoLC');
+                        if ($oclc) {
+                            $link = ['type' => 'oclc', 'value' => $oclc];
+                        }
                     }
-                }
-                break;
-            case 'dlc':
-                foreach ($linkFields as $current) {
-                    if ($dlc = $this->getIdFromLinkingField($current, 'DLC', true)) {
-                        $link = ['type' => 'dlc', 'value' => $dlc];
+                    break;
+                case 'dlc':
+                    foreach ($linkFields as $current) {
+                        $dlc = $this->getIdFromLinkingField($current, 'DLC', true);
+                        if ($dlc) {
+                            $link = ['type' => 'dlc', 'value' => $dlc];
+                        }
                     }
-                }
-                break;
-            case 'id':
-                foreach ($linkFields as $current) {
-                    if ($bibLink = $this->getIdFromLinkingField($current)) {
-                        $link = ['type' => 'bib', 'value' => $bibLink];
+                    break;
+                case 'id':
+                    foreach ($linkFields as $current) {
+                        if ($bibLink = $this->getIdFromLinkingField($current)) {
+                            $link = ['type' => 'bib', 'value' => $bibLink];
+                        }
                     }
-                }
-                break;
-            case 'isbn':
-                if ($isbn = $this->getSubfield($field, 'z')) {
-                    $link = [
-                        'type' => 'isn', 'value' => $isbn,
-                        'exclude' => $this->getUniqueId()
-                    ];
-                }
-                break;
-            case 'issn':
-                if ($issn = $this->getSubfield($field, 'x')) {
-                    $link = [
-                        'type' => 'isn', 'value' => $issn,
-                        'exclude' => $this->getUniqueId()
-                    ];
-                }
-                break;
-            case 'title':
-                $link = ['type' => 'title', 'value' => $title];
-                break;
+                    break;
+                case 'isbn':
+                    if ($isbn = $this->getSubfield($field, 'z')) {
+                        $link = [
+                            'type' => 'isn', 'value' => $isbn,
+                            'exclude' => $this->getUniqueId(),
+                        ];
+                    }
+                    break;
+                case 'issn':
+                    if ($issn = $this->getSubfield($field, 'x')) {
+                        $link = [
+                            'type' => 'isn', 'value' => $issn,
+                            'exclude' => $this->getUniqueId(),
+                        ];
+                    }
+                    break;
+                case 'title':
+                    $link = ['type' => 'title', 'value' => $title];
+                    break;
             }
             // Exit loop if we have a link
             if (isset($link)) {
@@ -743,7 +807,7 @@ trait MarcAdvancedTrait
         return !isset($link) ? false : [
             'title' => $this->getRecordLinkNote($field),
             'value' => $title,
-            'link'  => $link
+            'link'  => $link,
         ];
     }
 
@@ -825,7 +889,7 @@ trait MarcAdvancedTrait
             $instructions[$key] = [
                 'mode' => $instructionParts[0],
                 'params' => $instructionParts[1] ?? null,
-                'field' => $instructionParts[2] ?? $defaultField
+                'field' => $instructionParts[2] ?? $defaultField,
             ];
         }
 
@@ -890,6 +954,12 @@ trait MarcAdvancedTrait
 
             // Set up proper namespacing and extract just the <record> tag:
             $xml->record->addAttribute('xmlns', "http://www.loc.gov/MARC21/slim");
+            // There's a quirk in SimpleXML that strips the first namespace
+            // declaration, hence the double xmlns: prefix:
+            $xml->record->addAttribute(
+                'xmlns:xmlns:xsi',
+                'http://www.w3.org/2001/XMLSchema-instance'
+            );
             $xml->record->addAttribute(
                 'xsi:schemaLocation',
                 'http://www.loc.gov/MARC21/slim ' .
@@ -936,7 +1006,8 @@ trait MarcAdvancedTrait
     {
         $fields024 = $this->getMarcReader()->getFields('024');
         foreach ($fields024 as $field) {
-            if ($field['i1'] == 2
+            if (
+                $field['i1'] == 2
                 && $subfield = $this->getSubfield($field, 'a')
             ) {
                 return $subfield;

@@ -4,6 +4,6 @@
         . "VuFind.loadHtml(\$('#edsResultsDeferredRecommend'), url);";
 ?>
 <div id="edsResultsDeferredRecommend">
-    <p><?=$this->icon('spinner') ?> <?=$this->transEsc("Loading")?>...</p>
+    <p><?=$this->icon('spinner') ?> <?=$this->transEsc('loading_ellipsis')?></p>
     <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $loadJs, 'SET')?>
 </div>

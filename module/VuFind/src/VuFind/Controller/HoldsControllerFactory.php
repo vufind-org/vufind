@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Holds controller factory.
  *
@@ -25,12 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Controller;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Holds controller factory.
@@ -66,8 +68,8 @@ class HoldsControllerFactory extends AbstractBaseFactory
             $container,
             $requestedName,
             [
-                $container->get(\VuFind\Validator\Csrf::class),
-                $container->get(\VuFind\Cache\Manager::class)->getCache('object')
+                $container->get(\VuFind\Validator\CsrfInterface::class),
+                $container->get(\VuFind\Cache\Manager::class)->getCache('object'),
             ]
         );
     }

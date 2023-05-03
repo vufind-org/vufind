@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Solr Search Object Options Test
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Search\Solr;
 
 use VuFind\Config\PluginManager;
@@ -41,17 +43,7 @@ use VuFind\Search\Solr\Options;
  */
 class OptionsTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * Get mock configuration plugin manager
-     *
-     * @return PluginManager
-     */
-    protected function getMockConfigManager()
-    {
-        return $this->getMockBuilder(PluginManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-    }
+    use \VuFindTest\Feature\ConfigPluginManagerTrait;
 
     /**
      * Get Options object
@@ -61,9 +53,9 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
      *
      * @return Options
      */
-    protected function getOptions($configManager = null)
+    protected function getOptions(PluginManager $configManager = null): Options
     {
-        return new Options($configManager ?? $this->getMockConfigManager());
+        return new Options($configManager ?? $this->getMockConfigPluginManager([]));
     }
 
     /**
@@ -71,8 +63,30 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetSearchClassId()
+    public function testGetSearchClassId(): void
     {
         $this->assertEquals('Solr', $this->getOptions()->getSearchClassId());
+    }
+
+    /**
+     * Test default sort tie-breaker behavior.
+     *
+     * @return void
+     */
+    public function testDefaultSortTieBreaker(): void
+    {
+        $this->assertNull($this->getOptions()->getSortTieBreaker());
+    }
+
+    /**
+     * Test configuration of sort tie-breaker setting.
+     *
+     * @return void
+     */
+    public function testSortTieBreakerConfiguration(): void
+    {
+        $configs = ['searches' => ['General' => ['tie_breaker_sort' => 'foo']]];
+        $options = $this->getOptions($this->getMockConfigPluginManager($configs));
+        $this->assertEquals('foo', $options->getSortTieBreaker());
     }
 }

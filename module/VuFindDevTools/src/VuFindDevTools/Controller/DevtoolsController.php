@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Development Tools Controller
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/indexing:alphabetical_heading_browse Wiki
  */
+
 namespace VuFindDevTools\Controller;
 
 use VuFind\I18n\Locale\LocaleSettings;
@@ -114,7 +116,7 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
     public function iconAction()
     {
         $config = $this->serviceLocator->get(\VuFindTheme\ThemeInfo::class)
-            ->getMergedConfig('icons', true);
+            ->getMergedConfig('icons');
         $aliases = array_keys($config['aliases'] ?? []);
         sort($aliases);
         return compact('aliases');
@@ -132,6 +134,9 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
         $langs = $this->serviceLocator->get(LocaleSettings::class)
             ->getEnabledLocales();
         $helper = new LanguageHelper($loader, $langs);
-        return $helper->getAllDetails($this->params()->fromQuery('main', 'en'));
+        return $helper->getAllDetails(
+            $this->params()->fromQuery('main', 'en'),
+            (bool)$this->params()->fromQuery('includeOptional', 1)
+        );
     }
 }

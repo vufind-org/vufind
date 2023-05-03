@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Multiple ILS authentication module that works with MultiBackend driver
  *
@@ -28,6 +29,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:authentication_handlers Wiki
  */
+
 namespace VuFind\Auth;
 
 use VuFind\Exception\Auth as AuthException;
@@ -65,6 +67,13 @@ class MultiILS extends ILS
         // We should have target either separately or already embedded into username
         if ($target) {
             $username = "$target.$username";
+        } else {
+            [$target] = explode('.', $username);
+        }
+
+        // Check that the target is valid:
+        if (!in_array($target, $this->getLoginTargets())) {
+            throw new AuthException('authentication_error_admin');
         }
 
         return $this->handleLogin($username, $password, $loginMethod);

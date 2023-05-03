@@ -1,12 +1,12 @@
-<div class="search-grid">
+<div class="<?=$this->escapeHtmlAttr(trim('search-grid ' . ($this->resultsClass ?? '')))?>">
   <?php $it = 0; ?>
   <?php foreach ($this->results->getResults() as $current): ?>
-    <?=$this->record($current)->getSearchResult('grid')?>
+    <?=$this->record($current)->getSearchResult('grid', $this->results)?>
     <?php $it++; ?>
     <?php if ($it % 4 === 0): ?>
-      <br class="grid-large-break"/>
+      <br class="grid-large-break">
     <?php elseif ($it % 2 === 0): ?>
-      <br class="grid-small-break"/>
+      <br class="grid-small-break">
     <?php endif; ?>
   <?php endforeach; ?>
 </div>

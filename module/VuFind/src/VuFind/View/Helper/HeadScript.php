@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Head script view helper (extended for VuFind's theme system)
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper;
 
 /**
@@ -35,6 +37,10 @@ namespace VuFind\View\Helper;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
+ *
+ * @method getWhitespace(string|int $indent)
+ * @method getIndent()
+ * @method getSeparator()
  */
 class HeadScript extends \Laminas\View\Helper\HeadScript
 {
@@ -106,7 +112,8 @@ class HeadScript extends \Laminas\View\Helper\HeadScript
         // Look for existing entry and remove it if found. Comparison method
         // copied from isDuplicate().
         foreach ($this->getContainer() as $offset => $item) {
-            if (($item->source === null)
+            if (
+                ($item->source === null)
                 && array_key_exists('src', $item->attributes)
                 && ($src === $item->attributes['src'])
             ) {

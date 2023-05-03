@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFindHighlighter Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\UrlHighlight;
 
 use PHPUnit\Framework\MockObject\MockObject;
@@ -44,31 +46,49 @@ use VuFind\View\Helper\Root\ProxyUrl;
 class VuFindHighlighterTest extends \PHPUnit\Framework\TestCase
 {
     /**
+     * Mock proxy object
+     *
      * @var ProxyUrl&MockObject
      */
-    private $proxyUrl;
+    protected $proxyUrl;
 
     /**
+     * VuFind highlighter object
+     *
      * @var VuFindHighlighter
      */
-    private $vuFindHighlighter;
+    protected $vuFindHighlighter;
 
+    /**
+     * Generic setup method
+     *
+     * @return void
+     */
     public function setUp(): void
     {
         $this->proxyUrl = $this->createMock(ProxyUrl::class);
         $this->vuFindHighlighter = new VuFindHighlighter($this->proxyUrl);
     }
 
+    /**
+     * Generic teardown method
+     *
+     * @return void
+     */
     public function tearDown(): void
     {
         unset($this->proxyUrl, $this->vuFindHighlighter);
     }
 
     /**
-     * @dataProvider getHighlightDataProvider
+     * Test the highlight method
      *
-     * @param string $url
-     * @param string $expected
+     * @param string $url      URL
+     * @param string $expected Expected result
+     *
+     * @return void
+     *
+     * @dataProvider getHighlightDataProvider
      */
     public function testGetHighlight(string $url, string $expected): void
     {
@@ -83,6 +103,8 @@ class VuFindHighlighterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Data provider for testGetHighlight()
+     *
      * @return array[]
      */
     public function getHighlightDataProvider(): array

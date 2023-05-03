@@ -1,4 +1,5 @@
 <?php
+
 /**
  * KohaILSDI ILS Driver
  *
@@ -27,12 +28,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
+use Laminas\Log\LoggerAwareInterface;
 use PDO;
 use PDOException;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
+use VuFindHttp\HttpServiceAwareInterface;
 
 /**
  * VuFind Driver for Koha, using web APIs (ILSDI)
@@ -47,8 +51,7 @@ use VuFind\Exception\ILS as ILSException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
-    \VuFindHttp\HttpServiceAwareInterface, \Laminas\Log\LoggerAwareInterface
+class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, LoggerAwareInterface
 {
     use \VuFind\Cache\CacheTrait {
         getCacheKey as protected getBaseCacheKey;
@@ -528,10 +531,13 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
      * driver ini file.
      *
      * @param string $function The name of the feature to be checked
+     * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function)
+    public function getConfig($function, $params = [])
     {
         if ('getMyTransactionHistory' === $function) {
             if (empty($this->config['TransactionHistory']['enabled'])) {
@@ -545,9 +551,9 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                     'return desc' => 'sort_return_date_desc',
                     'return asc' => 'sort_return_date_asc',
                     'due desc' => 'sort_due_date_desc',
-                    'due asc' => 'sort_due_date_asc'
+                    'due asc' => 'sort_due_date_asc',
                 ],
-                'default_sort' => 'checkout desc'
+                'default_sort' => 'checkout desc',
             ];
         }
         return $this->config[$function] ?? false;
@@ -581,7 +587,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             if (!$this->pickupEnableBranchcodes) {
                 // No defaultPickupLocation is defined in config
                 // AND no pickupLocations are defined either
-                if (isset($holdDetails['item_id']) && (empty($holdDetails['level'])
+                if (
+                    isset($holdDetails['item_id']) && (empty($holdDetails['level'])
                     || $holdDetails['level'] == 'item')
                 ) {
                     // We try to get the actual branchcode the item is found at
@@ -597,7 +604,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                         $this->debug('Connection failed: ' . $e->getMessage());
                         $this->throwAsIlsException($e);
                     }
-                } elseif (!empty($holdDetails['level'])
+                } elseif (
+                    !empty($holdDetails['level'])
                     && $holdDetails['level'] == 'title'
                 ) {
                     // We try to get the actual branchcodes the title is found at
@@ -702,7 +710,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         } catch (\Exception $e) {
             return [
                 "success" => false,
-                "sysMessage" => "hold_date_invalid"
+                "sysMessage" => "hold_date_invalid",
             ];
         }
 
@@ -727,7 +735,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $this->debug("Fatal error: Patron has already reserved this item.");
             return [
                 "success" => false,
-                "sysMessage" => "It seems you have already reserved this item."
+                "sysMessage" => "It seems you have already reserved this item.",
             ];
         }
 
@@ -749,7 +757,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             // In older versions of Koha, the date parameters were named differently
             // and even never implemented, so if we got IllegalParameter, we know
             // the Koha version is before 20.05 and could retry without expiry_date
-            // parameter. See https://git.koha-community.org/Koha-community/Koha/commit/c8bf308e1b453023910336308d59566359efc535
+            // parameter. See:
+            // https://git.koha-community.org/Koha-community/Koha/commit/c8bf308e1b453023910336308d59566359efc535
             $rsp = $this->makeRequest($rqString);
         }
         //TODO - test this new functionality
@@ -898,29 +907,29 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 $sql = "select date_due as DUEDATE from issues
                     where itemnumber = :inum";
                 switch ($rowItem['NOTFORLOAN']) {
-                case 0:
-                    // If the item is available for loan, then check its current
-                    // status
-                    $issueSqlStmt = $this->getDb()->prepare($sql);
-                    $issueSqlStmt->execute([':inum' => $inum]);
-                    $rowIssue = $issueSqlStmt->fetch();
-                    if ($rowIssue) {
+                    case 0:
+                        // If the item is available for loan, then check its current
+                        // status
+                        $issueSqlStmt = $this->getDb()->prepare($sql);
+                        $issueSqlStmt->execute([':inum' => $inum]);
+                        $rowIssue = $issueSqlStmt->fetch();
+                        if ($rowIssue) {
+                            $available = false;
+                            $status = 'Checked out';
+                            $duedate = $rowIssue['DUEDATE'];
+                        } else {
+                            $available = true;
+                            $status = 'Available';
+                            // No due date for an available item
+                            $duedate = '';
+                        }
+                        break;
+                    case 1: // The item is not available for loan
+                    default:
                         $available = false;
-                        $status = 'Checked out';
-                        $duedate = $rowIssue['DUEDATE'];
-                    } else {
-                        $available = true;
-                        $status = 'Available';
-                        // No due date for an available item
+                        $status = 'Not for loan';
                         $duedate = '';
-                    }
-                    break;
-                case 1: // The item is not available for loan
-                default:
-                    $available = false;
-                    $status = 'Not for loan';
-                    $duedate = '';
-                    break;
+                        break;
                 }
             }
             /*
@@ -970,7 +979,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             }
 
             $onTransfer = false;
-            if (($rowItem["TRANSFERFROM"] != null)
+            if (
+                ($rowItem["TRANSFERFROM"] != null)
                 && ($rowItem["TRANSFERTO"] != null)
             ) {
                 $branchSqlStmt->execute([':branch' => $rowItem["TRANSFERFROM"]]);
@@ -1069,7 +1079,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         $rescount = 0;
         foreach ($itemSqlStmt->fetchAll() as $rowItem) {
             $items[] = [
-                'id' => $rowItem['id']
+                'id' => $rowItem['id'],
             ];
             $rescount++;
         }
@@ -1132,75 +1142,75 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             $sqlStmt->execute([':id' => $id]);
             foreach ($sqlStmt->fetchAll() as $row) {
                 switch ($row['fine']) {
-                case 'ACCOUNT':
-                    $fineValue = 'Account creation fee';
-                    break;
-                case 'ACCOUNT_RENEW':
-                    $fineValue = 'Account renewal fee';
-                    break;
-                case 'LOST':
-                    $fineValue = 'Lost item';
-                    break;
-                case 'MANUAL':
-                    $fineValue = 'Manual fee';
-                    break;
-                case 'NEW_CARD':
-                    $fineValue = 'New card';
-                    break;
-                case 'OVERDUE':
-                    $fineValue = 'Fine';
-                    break;
-                case 'PROCESSING':
-                    $fineValue = 'Lost item processing fee';
-                    break;
-                case 'RENT':
-                    $fineValue = 'Rental fee';
-                    break;
-                case 'RENT_DAILY':
-                    $fineValue = 'Daily rental fee';
-                    break;
-                case 'RENT_RENEW':
-                    $fineValue = 'Renewal of rental item';
-                    break;
-                case 'RENT_DAILY_RENEW':
-                    $fineValue = 'Renewal of daily rental item';
-                    break;
-                case 'RESERVE':
-                    $fineValue = 'Hold fee';
-                    break;
-                case 'RESERVE_EXPIRED':
-                    $fineValue = 'Hold waiting too long';
-                    break;
-                case 'Payout':
-                    $fineValue = 'Payout';
-                    break;
-                case 'PAYMENT':
-                    $fineValue = 'Payment';
-                    break;
-                case 'WRITEOFF':
-                    $fineValue = 'Writeoff';
-                    break;
-                case 'FORGIVEN':
-                    $fineValue = 'Forgiven';
-                    break;
-                case 'CREDIT':
-                    $fineValue = 'Credit';
-                    break;
-                case 'LOST_FOUND':
-                    $fineValue = 'Lost item fee refund';
-                    break;
-                case 'OVERPAYMENT':
-                    $fineValue = 'Overpayment refund';
-                    break;
-                case 'REFUND':
-                    $fineValue = 'Refund';
-                    break;
-                case 'CANCELLATION':
-                    $fineValue = 'Cancelled charge';
-                    break;
-                default:
-                    $fineValue = "Unknown Charge";
-                    break;
+                    case 'ACCOUNT':
+                        $fineValue = 'Account creation fee';
+                        break;
+                    case 'ACCOUNT_RENEW':
+                        $fineValue = 'Account renewal fee';
+                        break;
+                    case 'LOST':
+                        $fineValue = 'Lost item';
+                        break;
+                    case 'MANUAL':
+                        $fineValue = 'Manual fee';
+                        break;
+                    case 'NEW_CARD':
+                        $fineValue = 'New card';
+                        break;
+                    case 'OVERDUE':
+                        $fineValue = 'Fine';
+                        break;
+                    case 'PROCESSING':
+                        $fineValue = 'Lost item processing fee';
+                        break;
+                    case 'RENT':
+                        $fineValue = 'Rental fee';
+                        break;
+                    case 'RENT_DAILY':
+                        $fineValue = 'Daily rental fee';
+                        break;
+                    case 'RENT_RENEW':
+                        $fineValue = 'Renewal of rental item';
+                        break;
+                    case 'RENT_DAILY_RENEW':
+                        $fineValue = 'Renewal of daily rental item';
+                        break;
+                    case 'RESERVE':
+                        $fineValue = 'Hold fee';
+                        break;
+                    case 'RESERVE_EXPIRED':
+                        $fineValue = 'Hold waiting too long';
+                        break;
+                    case 'Payout':
+                        $fineValue = 'Payout';
+                        break;
+                    case 'PAYMENT':
+                        $fineValue = 'Payment';
+                        break;
+                    case 'WRITEOFF':
+                        $fineValue = 'Writeoff';
+                        break;
+                    case 'FORGIVEN':
+                        $fineValue = 'Forgiven';
+                        break;
+                    case 'CREDIT':
+                        $fineValue = 'Credit';
+                        break;
+                    case 'LOST_FOUND':
+                        $fineValue = 'Lost item fee refund';
+                        break;
+                    case 'OVERPAYMENT':
+                        $fineValue = 'Overpayment refund';
+                        break;
+                    case 'REFUND':
+                        $fineValue = 'Refund';
+                        break;
+                    case 'CANCELLATION':
+                        $fineValue = 'Cancelled charge';
+                        break;
+                    default:
+                        $fineValue = "Unknown Charge";
+                        break;
                 }
 
                 $transactionLst[] = [
@@ -1426,7 +1436,8 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                     ? [$row['TYPE']]
                     : [$this->blockTerms[$row['TYPE']]];
 
-                if (!empty($this->showBlockComments[$row['TYPE']])
+                if (
+                    !empty($this->showBlockComments[$row['TYPE']])
                     && !empty($row['COMMENT'])
                 ) {
                     $block[] = $row['COMMENT'];
@@ -1476,15 +1487,15 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
             if (isset($params['sort'])) {
                 $parts = explode(' ', $params['sort'], 2);
                 switch ($parts[0]) {
-                case 'return':
-                    $sort = 'RETURNED';
-                    break;
-                case 'due':
-                    $sort = 'DUEDATE';
-                    break;
-                default:
-                    $sort = 'ISSUEDATE';
-                    break;
+                    case 'return':
+                        $sort = 'RETURNED';
+                        break;
+                    case 'due':
+                        $sort = 'DUEDATE';
+                        break;
+                    default:
+                        $sort = 'ISSUEDATE';
+                        break;
                 }
                 $sort .= isset($parts[1]) && 'asc' === $parts[1] ? ' asc' : ' desc';
             } else {
@@ -1517,7 +1528,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         }
         return [
             'count' => $totalCount,
-            'transactions' => $historicLoans
+            'transactions' => $historicLoans,
         ];
     }
 
@@ -1552,7 +1563,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
                 "GetServices",
                 [
                     "patron_id" => $id,
-                    "item_id" => $this->getField($loan->{'itemnumber'})
+                    "item_id" => $this->getField($loan->{'itemnumber'}),
                 ]
             );
             $end = microtime(true);
@@ -1979,7 +1990,7 @@ class KohaILSDI extends \VuFind\ILS\Driver\AbstractBase implements
         return [
             'success' => $result,
             'status' => $result ? 'new_password_success'
-                : 'password_error_not_unique'
+                : 'password_error_not_unique',
         ];
     }
 

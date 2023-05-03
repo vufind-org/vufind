@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ResultFeed Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Integration\View\Helper\Root;
 
 use VuFind\View\Helper\Root\ResultFeed;
@@ -74,7 +76,7 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
                 [
                     new \VuFind\Record\Router(
                         new \Laminas\Config\Config([])
-                    )
+                    ),
                 ]
             )->getMock();
         $recordLinker->expects($this->any())->method('getUrl')
@@ -94,11 +96,21 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockTranslator()
     {
+        $translations = [
+            'Results for' => 'Results for',
+            'showing_results_of_html' => 'Showing <strong>%%start%% - %%end%%'
+                . '</strong> results of <strong>%%total%%</strong>',
+        ];
         $mock = $this->getMockBuilder(\Laminas\I18n\Translator\TranslatorInterface::class)
             ->getMock();
         $mock->expects($this->any())->method('translate')
-            ->withConsecutive(['Results for'], ['showing_results_of_html', 'default'])
-            ->willReturnOnConsecutiveCalls('Results for', 'Showing <strong>%%start%% - %%end%%</strong> results of <strong>%%total%%</strong>');
+            ->will(
+                $this->returnCallback(
+                    function ($str, $params, $default) use ($translations) {
+                        return $translations[$str] ?? $default ?? $str;
+                    }
+                )
+            );
         return $mock;
     }
 
@@ -126,7 +138,7 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
         $helper->setTranslator($this->getMockTranslator());
         $helper->setView($this->getPhpRenderer($this->getPlugins()));
         $feed = $helper($results, '/test/path');
-        $this->assertTrue(is_object($feed));
+        $this->assertIsObject($feed);
         $rss = $feed->export('rss');
 
         // Make sure it's really an RSS feed:
@@ -134,6 +146,9 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
 
         // Make sure custom Dublin Core elements are present:
         $this->assertTrue(strstr($rss, 'dc:format') !== false);
+
+        // Make sure custom Atom link elements are present:
+        $this->assertTrue(strstr($rss, 'atom:link') !== false);
 
         // Now re-parse it and check for some expected values:
         $parsedFeed = \Laminas\Feed\Reader\Reader::importString($rss);

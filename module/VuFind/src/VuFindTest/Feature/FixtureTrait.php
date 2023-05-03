@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Feature;
 
 use RuntimeException;
@@ -54,6 +55,29 @@ trait FixtureTrait
     }
 
     /**
+     * Resolve fixture path.
+     *
+     * @param string $filename Filename relative to fixture directory.
+     * @param string $module   Module containing fixture.
+     *
+     * @return string
+     * @throws RuntimeException
+     */
+    protected function getFixturePath($filename, $module = 'VuFind')
+    {
+        $realFilename = realpath($this->getFixtureDir($module) . $filename);
+        if (
+            !$realFilename || !file_exists($realFilename)
+            || !is_readable($realFilename)
+        ) {
+            throw new RuntimeException(
+                sprintf('Unable to resolve fixture to fixture file: %s', $filename)
+            );
+        }
+        return $realFilename;
+    }
+
+    /**
      * Load a fixture file.
      *
      * @param string $filename Filename relative to fixture directory.
@@ -64,15 +88,7 @@ trait FixtureTrait
      */
     protected function getFixture($filename, $module = 'VuFind')
     {
-        $realFilename = realpath($this->getFixtureDir($module) . $filename);
-        if (!$realFilename || !file_exists($realFilename)
-            || !is_readable($realFilename)
-        ) {
-            throw new RuntimeException(
-                sprintf('Unable to resolve fixture to fixture file: %s', $filename)
-            );
-        }
-        return file_get_contents($realFilename);
+        return file_get_contents($this->getFixturePath($filename, $module));
     }
 
     /**

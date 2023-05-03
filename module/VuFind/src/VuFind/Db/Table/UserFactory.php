@@ -1,4 +1,5 @@
 <?php
+
 /**
  * User table gateway factory.
  *
@@ -25,12 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Db\Table;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * User table gateway factory.
@@ -65,7 +67,8 @@ class UserFactory extends GatewayFactory
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
         $session = null;
-        if (isset($config->Authentication->privacy)
+        if (
+            isset($config->Authentication->privacy)
             && $config->Authentication->privacy
         ) {
             $sessionManager = $container

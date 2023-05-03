@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ILS driver plugin manager
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use Laminas\ServiceManager\Factory\InvokableFactory;
@@ -53,6 +55,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'demo' => Demo::class,
         'evergreen' => Evergreen::class,
         'folio' => Folio::class,
+        'genieplus' => GeniePlus::class,
         'horizon' => Horizon::class,
         'horizonxmlapi' => HorizonXMLAPI::class,
         'innovative' => Innovative::class,
@@ -65,7 +68,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'paia' => PAIA::class,
         'polaris' => Polaris::class,
         'sample' => Sample::class,
-        'sierra' => Sierra::class,
         'sierrarest' => SierraRest::class,
         'symphony' => Symphony::class,
         'unicorn' => Unicorn::class,
@@ -88,6 +90,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Demo::class => DemoFactory::class,
         Evergreen::class => DriverWithDateConverterFactory::class,
         Folio::class => FolioFactory::class,
+        GeniePlus::class => GeniePlusFactory::class,
         Horizon::class => DriverWithDateConverterFactory::class,
         HorizonXMLAPI::class => DriverWithDateConverterFactory::class,
         Innovative::class => InvokableFactory::class,
@@ -100,14 +103,13 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         PAIA::class => PAIAFactory::class,
         Polaris::class => InvokableFactory::class,
         Sample::class => InvokableFactory::class,
-        Sierra::class => InvokableFactory::class,
         SierraRest::class => SierraRestFactory::class,
         Symphony::class => SymphonyFactory::class,
-        Unicorn::class => DriverWithDateConverterFactory::class,
+        Unicorn::class => UnicornFactory::class,
         Virtua::class => InvokableFactory::class,
         Voyager::class => DriverWithDateConverterFactory::class,
         VoyagerRestful::class => VoyagerRestfulFactory::class,
-        XCNCIP2::class => DriverWithDateConverterFactory::class,
+        XCNCIP2::class => XCNCIP2Factory::class,
     ];
 
     /**

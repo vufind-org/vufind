@@ -5,11 +5,13 @@
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Checked Out Items') . '</li>';
 
+  $this->headScript()->appendFile('checkouts.js');
+
   // Check if "Renew All" button can be displayed:
   $renewAll = !$this->ilsPaging || !$paginator;
 ?>
 
-<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="Expand Sidebar">
+<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="<?=$this->transEsc('sidebar_expand')?>">
   <?=$this->transEsc('Your Account') ?>
 </a>
 
@@ -29,7 +31,7 @@
             $transParams = [
               '%%start%%' => $this->localizedNumber($paginator->getAbsoluteItemNumber(1)),
               '%%end%%' => $this->localizedNumber($end),
-              '%%total%%' => $this->localizedNumber($paginator->getTotalItemCount())
+              '%%total%%' => $this->localizedNumber($paginator->getTotalItemCount()),
             ];
           ?>
           <?=$this->translate('showing_items_of_html', $transParams); ?>
@@ -41,16 +43,31 @@
     </nav>
     <?php if ($this->renewForm): ?>
     <form name="renewals" method="post" id="renewals" data-clear-account-cache="checkedOut" data-disable-on-submit>
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>" name="csrf"/>
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>" name="csrf">
+      <input type="hidden" id="submitType" name="renewSelected" value="1">
       <div class="toolbar">
         <div class="checkbox">
           <label>
-            <input type="checkbox" name="selectAll" class="checkbox-select-all"/>
+            <input type="checkbox" name="selectAll" class="checkbox-select-all">
             <?=$this->transEsc('select_page')?>
           </label>
-          <input type="submit" class="btn btn-default" id="renewSelected" name="renewSelected" value="<?=$this->transEscAttr("renew_selected")?>" />
+          <div class="btn-group">
+            <input type="submit" id="renewSelected" name="renewSelected" value="<?=$this->transEscAttr('renew_selected')?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-lightbox-ignore>
+            <ul class="dropdown-menu">
+              <li class="disabled"><a><?=$this->transEsc('confirm_renew_selected_text')?></a></li>
+              <li><a href="#" id="confirm_renew_selected_yes"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+              <li><a href="#" class="confirm_renew_no"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+            </ul>
+          </div>
           <?php if ($renewAll): ?>
-            <input type="submit" class="btn btn-default" id="renewAll" name="renewAll" value="<?=$this->transEscAttr('renew_all')?>" />
+            <div class="btn-group">
+              <input type="submit" id="renewAll" name="renewAll" value="<?=$this->transEscAttr('renew_all')?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-lightbox-ignore>
+              <ul class="dropdown-menu">
+                <li class="disabled"><a><?=$this->transEsc('confirm_renew_all_text')?></a></li>
+                <li><a href="#" id="confirm_renew_all_yes"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+                <li><a href="#" class="confirm_renew_no"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+              </ul>
+            </div>
           <?php endif; ?>
         </div>
       </div>
@@ -69,7 +86,7 @@
       <?php endif; ?>
       <?php if (isset($ilsDetails['renewable']) && $ilsDetails['renewable'] && isset($ilsDetails['renew_details'])): ?>
         <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['renew_details']); ?>
-        <input class="pull-left flip" type="hidden" name="renewAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" />
+        <input class="pull-left flip" type="hidden" name="renewAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>">
       <?php endif; ?>
     <?php endforeach; ?>
 
@@ -82,10 +99,10 @@
               <?php if (isset($ilsDetails['renewable']) && $ilsDetails['renewable'] && isset($ilsDetails['renew_details'])): ?>
                 <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['renew_details']); ?>
                 <label>
-                  <input class="checkbox-select-item" type="checkbox" name="renewSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" id="checkbox_<?=$safeId?>" />
+                  <input class="checkbox-select-item" type="checkbox" name="renewSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" id="checkbox_<?=$safeId?>">
                 </label>
-                <input type="hidden" name="selectAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" />
-                <input type="hidden" name="renewAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" />
+                <input type="hidden" name="selectAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>">
+                <input type="hidden" name="renewAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>">
               <?php else: ?>
                 <label> </label>
               <?php endif; ?>
@@ -117,44 +134,44 @@
                   $title = empty($title) ? $this->transEsc('Title not available') : $this->escapeHtml($title);
                   echo '<a href="' . $this->escapeHtmlAttr($this->recordLinker()->getUrl($resource)) .
                     '" class="title">' . $title . '</a>';
-                } elseif (isset($ilsDetails['title']) && !empty($ilsDetails['title'])){
+                } elseif (isset($ilsDetails['title']) && !empty($ilsDetails['title'])) {
                   // If the record is not available in Solr, perhaps the ILS driver sent us a title we can show...
                   echo $this->escapeHtml($ilsDetails['title']);
                 } else {
                   // Last resort -- indicate that no title could be found.
                   echo $this->transEsc('Title not available');
                 }
-              ?><br/>
+              ?><br>
               <?php $listAuthors = $resource->getPrimaryAuthors(); if (!empty($listAuthors)): ?>
                 <?=$this->transEsc('by')?>:
-                <a href="<?=$this->record($resource)->getLink('author', $listAuthors[0])?>"><?=$this->escapeHtml($listAuthors[0])?></a><?php if (count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?><br/>
+                <a href="<?=$this->record($resource)->getLink('author', $listAuthors[0])?>"><?=$this->escapeHtml($listAuthors[0])?></a><?php if (count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?><br>
               <?php endif; ?>
               <?php if (count($resource->getFormats()) > 0): ?>
                 <?=$this->record($resource)->getFormatList() ?>
-                <br/>
+                <br>
               <?php endif; ?>
               <?php if (!empty($ilsDetails['volume'])): ?>
                 <strong><?=$this->transEsc('Volume')?>:</strong> <?=$this->escapeHtml($ilsDetails['volume'])?>
-                <br />
+                <br>
               <?php endif; ?>
 
               <?php if (!empty($ilsDetails['publication_year'])): ?>
                 <strong><?=$this->transEsc('Year of Publication')?>:</strong> <?=$this->escapeHtml($ilsDetails['publication_year'])?>
-                <br />
+                <br>
               <?php endif; ?>
               <?php if ($this->displayItemBarcode && !empty($ilsDetails['barcode'])): ?>
                 <strong><?=$this->transEsc('Barcode')?>:</strong> <?=$this->escapeHtml($ilsDetails['barcode'])?>
-                <br />
+                <br>
               <?php endif; ?>
 
               <?php if (!empty($ilsDetails['institution_name']) && (empty($ilsDetails['borrowingLocation']) || $ilsDetails['institution_name'] != $ilsDetails['borrowingLocation'])): ?>
                 <strong><?=$this->transEscWithPrefix('location_', $ilsDetails['institution_name'])?></strong>
-                <br />
+                <br>
               <?php endif; ?>
 
               <?php if (!empty($ilsDetails['borrowingLocation'])): ?>
                 <strong><?=$this->transEsc('Borrowing Location')?>:</strong> <?=$this->transEscWithPrefix('location_', $ilsDetails['borrowingLocation'])?>
-                <br />
+                <br>
               <?php endif; ?>
 
               <?php if (isset($ilsDetails['renew'])): ?>
@@ -162,7 +179,7 @@
                 <?php if (isset($ilsDetails['renewLimit'])): ?>
                   / <?=$this->transEsc($ilsDetails['renewLimit'])?>
                 <?php endif; ?>
-                <br />
+                <br>
               <?php endif; ?>
 
               <?php $showStatus = true; ?>
@@ -199,7 +216,7 @@
               <?=$thumbnail ?>
             <?php endif ?>
           </div>
-          <?=$resource->tryMethod('supportsCoinsOpenUrl')?'<span class="Z3988" title="' . $this->escapeHtmlAttr($resource->getCoinsOpenUrl()) . '"></span>':''?>
+          <?=$resource->tryMethod('supportsCoinsOpenUrl') ? '<span class="Z3988" title="' . $this->escapeHtmlAttr($resource->getCoinsOpenUrl()) . '"></span>' : ''?>
         </li>
       <?php endforeach; ?>
     </ul>

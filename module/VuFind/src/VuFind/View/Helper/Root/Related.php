@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Related records view helper
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use VuFind\Config\PluginManager as ConfigManager;
@@ -111,7 +113,7 @@ class Related extends \Laminas\View\Helper\AbstractHelper
     public function getList(\VuFind\RecordDriver\AbstractBase $driver)
     {
         $retVal = [];
-        $config = $this->getConfigForSource($driver->getSourceIdentifier());
+        $config = $this->getConfigForSource($driver->getSearchBackendIdentifier());
         foreach ($config as $current) {
             $parts = explode(':', $current, 2);
             $type = $parts[0];

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Icon view helper
  *
@@ -25,12 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\View\Helper\AbstractHelper;
 use Laminas\View\Helper\EscapeHtmlAttr;
-use Laminas\View\Helper\HeadLink;
 
 /**
  * Icon view helper
@@ -86,13 +87,6 @@ class Icon extends AbstractHelper
     protected $esc;
 
     /**
-     * HeadLink helper
-     *
-     * @var HeadLink
-     */
-    protected $headLink;
-
-    /**
      * Are we in right to left text mode?
      *
      * @var boolean
@@ -109,17 +103,15 @@ class Icon extends AbstractHelper
     /**
      * Constructor
      *
-     * @param array            $config   Icon configuration
-     * @param StorageInterface $cache    Cache instance
-     * @param EscapeHtmlAttr   $escAttr  EscapeHtmlAttr view helper
-     * @param HeadLink         $headLink HeadLink view helper
-     * @param bool             $rtl      Are we in right to left text mode?
+     * @param array            $config  Icon configuration
+     * @param StorageInterface $cache   Cache instance
+     * @param EscapeHtmlAttr   $escAttr EscapeHtmlAttr view helper
+     * @param bool             $rtl     Are we in right to left text mode?
      */
     public function __construct(
         array $config,
         StorageInterface $cache,
         EscapeHtmlAttr $escAttr,
-        HeadLink $headLink,
         bool $rtl = false
     ) {
         $this->config = $config;
@@ -128,7 +120,6 @@ class Icon extends AbstractHelper
         $this->iconMap = $this->config['aliases'] ?? [];
         $this->cache = $cache;
         $this->esc = $escAttr;
-        $this->headLink = $headLink;
         $this->rtl = $rtl;
     }
 
@@ -221,11 +212,6 @@ class Icon extends AbstractHelper
      */
     public function __invoke(string $name, $attrs = []): string
     {
-        if (!$this->styleAppended) {
-            $this->headLink->appendStylesheet('icon-helper.css');
-            $this->styleAppended = true;
-        }
-
         // Class name shortcut
         if (is_string($attrs)) {
             $attrs = ['class' => $attrs];
@@ -239,15 +225,17 @@ class Icon extends AbstractHelper
             $attrs['class'] = trim(($attrs['class'] ?? '') . ' ' . $class);
 
             // Surface set config and add icon and attrs
-            $cached = $this->getView()->render(
-                'Helpers/icons/' . $template,
-                array_merge(
-                    $this->config['sets'][$set] ?? [],
-                    [
-                        'icon' => ($this->esc)($icon),
-                        'attrs' => $this->compileAttrs($attrs),
-                        'extra' => $attrs,
-                    ]
+            $cached = trim(
+                $this->getView()->render(
+                    'Helpers/icons/' . $template,
+                    array_merge(
+                        $this->config['sets'][$set] ?? [],
+                        [
+                            'icon' => ($this->esc)($icon),
+                            'attrs' => $this->compileAttrs($attrs),
+                            'extra' => $attrs,
+                        ]
+                    )
                 )
             );
 

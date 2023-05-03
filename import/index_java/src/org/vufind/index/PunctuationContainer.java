@@ -22,12 +22,16 @@ import java.util.LinkedHashSet;
 import java.util.regex.Pattern;
 import java.util.Map;
 import java.util.Set;
+import org.apache.log4j.Logger;
 
 /**
  * Singleton for storing punctuation configuration information.
  */
 public class PunctuationContainer
 {
+    // Initialize logging category
+    static Logger logger = Logger.getLogger(ConfigManager.class.getName());
+
     private static ThreadLocal<PunctuationContainer> containerCache =
         new ThreadLocal<PunctuationContainer>()
         {
@@ -38,18 +42,25 @@ public class PunctuationContainer
             }
         };
 
-    private Set<Pattern> punctuationRegEx = new LinkedHashSet<Pattern>();
-    private Set<String> punctuationPairs = new LinkedHashSet<String>();
-    private Set<String> untrimmedAbbreviations = new LinkedHashSet<String>();
+    private static String configFilename = "author-classification.ini";
+
+    private Set<Pattern> punctuationRegEx = null;
+    private Set<String> punctuationPairs = null;
+    private Set<String> untrimmedAbbreviations = null;
 
     public Set<Pattern> getPunctuationRegEx()
     {
         // Populate set if empty:
-        if (punctuationRegEx.size() == 0) {
-            Map<String, String> all = ConfigManager.instance().getSanitizedConfigSection("author-classification.ini", "PunctuationRegExToStrip");
+        if (punctuationRegEx == null) {
             punctuationRegEx = new LinkedHashSet<Pattern>();
-            for (String pattern : all.values()) {
-                punctuationRegEx.add(Pattern.compile(pattern, Pattern.UNICODE_CHARACTER_CLASS));
+            String configSection = "PunctuationRegExToStrip";
+            Map<String, String> all = ConfigManager.instance().getConfigSection(configFilename, configSection);
+            if (all.isEmpty()) {
+                logger.warn(configSection + " section missing from " + configFilename);
+            } else {
+                for (String pattern : all.values()) {
+                    punctuationRegEx.add(Pattern.compile(pattern, Pattern.UNICODE_CHARACTER_CLASS));
+                }
             }
         }
         return punctuationRegEx;
@@ -58,9 +69,15 @@ public class PunctuationContainer
     public Set<String> getPunctuationPairs()
     {
         // Populate set if empty:
-        if (punctuationPairs.size() == 0) {
-            Map<String, String> all = ConfigManager.instance().getSanitizedConfigSection("author-classification.ini", "PunctuationMatchedChars");
-            punctuationPairs = new LinkedHashSet<String>(all.values());
+        if (punctuationPairs == null) {
+            String configSection = "PunctuationMatchedChars";
+            Map<String, String> all = ConfigManager.instance().getConfigSection(configFilename, configSection);
+            if (all.isEmpty()) {
+                punctuationPairs = new LinkedHashSet<String>();
+                logger.warn(configSection + " section missing from " + configFilename);
+            } else {
+                punctuationPairs = new LinkedHashSet<String>(all.values());
+            }
         }
         return punctuationPairs;
     }
@@ -68,9 +85,15 @@ public class PunctuationContainer
     public Set<String> getUntrimmedAbbreviations()
     {
         // Populate set if empty:
-        if (untrimmedAbbreviations.size() == 0) {
-            Map<String, String> all = ConfigManager.instance().getSanitizedConfigSection("author-classification.ini", "PunctuationUntrimmedAbbreviations");
-            untrimmedAbbreviations = new LinkedHashSet<String>(all.values());
+        if (untrimmedAbbreviations == null) {
+            String configSection = "PunctuationUntrimmedAbbreviations";
+            Map<String, String> all = ConfigManager.instance().getConfigSection(configFilename, configSection);
+            if (all.isEmpty()) {
+                untrimmedAbbreviations = new LinkedHashSet<String>();
+                logger.warn(configSection + " section missing from " + configFilename);
+            } else {
+                untrimmedAbbreviations = new LinkedHashSet<String>(all.values());
+            }
         }
         return untrimmedAbbreviations;
     }
