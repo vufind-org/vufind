@@ -62,7 +62,7 @@ class ResourceContainer
     /**
      * Favicon
      *
-     * @var string
+     * @var string|array|null
      */
     protected $favicon = null;
 
@@ -372,7 +372,7 @@ class ResourceContainer
     /**
      * Set the favicon.
      *
-     * @param string $favicon New favicon path.
+     * @param string|array $favicon New favicon path.
      *
      * @return void
      */
@@ -384,7 +384,7 @@ class ResourceContainer
     /**
      * Get the favicon (null for none).
      *
-     * @return string
+     * @return string|array|null
      */
     public function getFavicon()
     {
