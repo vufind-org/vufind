@@ -132,24 +132,20 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
         $favicon = $this->container->getFavicon();
         if (!empty($favicon)) {
             $imageLink = $this->getView()->plugin('imageLink');
-            if (is_array($favicon)) {
-                foreach($favicon as $attrs) {
-                    $headLink(
-                        [
-                            'href' => $imageLink($attrs['href']),
-                            'rel' => $attrs['rel'],
-                            'sizes' => $attrs['sizes'],
-                            'type' => $attrs['type'],
-                        ]
-                    );
+            if(is_array($favicon)) {
+                foreach ($favicon as $attrs) {
+                    if (isset($attrs['href'])) {
+                        $attrs['href'] = $imageLink($attrs['href']);
+                    }
+                    $attrs['rel'] = $attrs['rel'] ?? 'icon';
+                    $headLink($attrs);
                 }
-            }
-            // Not an array: treat `favicons` as a simple file path.
-            else {
+            } else {
                 $headLink(
                     [
                         'href' => $imageLink($favicon),
-                        'type' => 'image/x-icon', 'rel' => 'shortcut icon'
+                        'type' => 'image/x-icon',
+                        'rel' => 'icon'
                     ]
                 );
             }
