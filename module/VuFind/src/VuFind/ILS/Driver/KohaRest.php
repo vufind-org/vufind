@@ -1649,7 +1649,6 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 ],
                 'default_sort' => '-checkout_date',
                 'purge_all' => $this->config['TransactionHistory']['purgeAll'] ?? true,
-
             ];
         } elseif ('getMyTransactions' === $function) {
             $limit = $this->config['Loans']['max_page_size'] ?? 100;
