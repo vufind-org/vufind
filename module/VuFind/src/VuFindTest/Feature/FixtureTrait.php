@@ -101,6 +101,10 @@ trait FixtureTrait
      */
     protected function getJsonFixture($filename, $module = 'VuFind')
     {
-        return json_decode($this->getFixture($filename, $module), true);
+        try {
+            return json_decode($this->getFixture($filename, $module), true, 512, JSON_THROW_ON_ERROR);
+        } catch (\Exception $e) {
+            throw new \Exception("Could not decode JSON file $filename: " . (string)$e, 0, $e);
+        }
     }
 }
