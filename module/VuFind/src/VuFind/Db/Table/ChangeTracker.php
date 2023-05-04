@@ -122,7 +122,7 @@ class ChangeTracker extends Gateway
                 ->equalTo('core', $core)
                 ->greaterThanOrEqualTo('deleted', $from)
                 ->lessThanOrEqualTo('deleted', $until);
-            if ($order) {
+            if ($order !== null) {
                 $select->order($order);
             }
             if ($offset > 0) {
