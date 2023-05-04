@@ -63,7 +63,7 @@ return [
      *          'type' => 'image/png',
      *          'sizes' => '32x32',
      *      ],
-    *       [
+     *       [
      *          'href' => 'favicon-180x180.png',
      *          'rel' => 'apple-touch-icon',
      *          'type' => 'image/png',

@@ -129,7 +129,7 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
                     if (isset($attrs['href'])) {
                         $attrs['href'] = $imageLink($attrs['href']);
                     }
-                    $attrs['rel'] = $attrs['rel'] ?? 'icon';
+                    $attrs['rel'] ??= 'icon';
                     $headLink($attrs);
                 }
             } else {
@@ -137,7 +137,7 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
                     [
                         'href' => $imageLink($favicon),
                         'type' => 'image/x-icon',
-                        'rel' => 'icon'
+                        'rel' => 'icon',
                     ]
                 );
             }
