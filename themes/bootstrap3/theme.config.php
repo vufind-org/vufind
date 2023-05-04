@@ -7,7 +7,6 @@ return [
         //'bootstrap-custom.css',
         'compiled.css',
         'print.css:print',
-        'flex-fallback.css::lt IE 10', // flex polyfill
     ],
     'js' => [
         /**
@@ -40,16 +39,13 @@ return [
         ['file' => 'vendor/bootstrap.min.js', 'priority' => 120],
         ['file' => 'vendor/bootstrap-accessibility.min.js', 'priority' => 130],
         ['file' => 'vendor/validator.min.js', 'priority' => 140],
-        ['file' => 'lib/form-attr-polyfill.js', 'priority' => 210], // input[form] polyfill, cannot load conditionally, since we need all versions of IE
-        ['file' => 'lib/autocomplete.js', 'priority' => 220],
+        ['file' => 'vendor/autocomplete.js', 'priority' => 220],
+        ['file' => 'lib/ajax_request_queue.js', 'priority' => 230],
         ['file' => 'common.js', 'priority' => 310],
         ['file' => 'lightbox.js', 'priority' => 320],
         ['file' => 'truncate.js', 'priority' => 330],
         ['file' => 'trigger_print.js', 'priority' => 340],
-    ],
-    'less' => [
-        'active' => false,
-        'compiled.less'
+        ['file' => 'observer_manager.js', 'priority' => 350],
     ],
     /**
      * Configuration for a single or multiple favicons.
@@ -89,8 +85,8 @@ return [
             'flashmessages' => 'VuFind\View\Helper\Bootstrap3\Flashmessages',
             'highlight' => 'VuFind\View\Helper\Bootstrap3\Highlight',
             'layoutClass' => 'VuFind\View\Helper\Bootstrap3\LayoutClass',
-            'search' => 'VuFind\View\Helper\Bootstrap3\Search'
-        ]
+            'search' => 'VuFind\View\Helper\Bootstrap3\Search',
+        ],
     ],
     'icons' => [
         'defaultSet' => 'FontAwesome',
@@ -132,6 +128,9 @@ return [
              */
             'addthis-bookmark' => 'FontAwesome:bookmark-o',
             'barcode' => 'FontAwesome:barcode',
+            'browzine-issue' => 'Alias:format-serial',
+            'browzine-pdf' => 'FontAwesome:file-pdf-o',
+            'browzine-retraction' => 'FontAwesome:exclamation',
             'cart' => 'FontAwesome:suitcase',
             'cart-add' => 'FontAwesome:plus',
             'cart-empty' => 'FontAwesome:times',
@@ -212,8 +211,8 @@ return [
             'format-videoreel' => 'FontAwesome:video-camera',
             'hierarchy-tree' => 'FontAwesome:sitemap',
             'lightbox-close' => 'FontAwesome:times',
-            'more' => 'FontAwesome:long-arrow-right',
-            'more-rtl' => 'FontAwesome:long-arrow-left',
+            'more' => 'FontAwesome:chevron-circle-right',
+            'more-rtl' => 'FontAwesome:chevron-circle-left',
             'my-account' => 'FontAwesome:user-circle-o',
             'my-account-notification' => 'Alias:notification',
             'my-account-warning' => 'Alias:warning',
@@ -242,7 +241,7 @@ return [
             'place-hold' => 'FontAwesome:flag',
             'place-ill-request' => 'FontAwesome:exchange',
             'place-recall' => 'FontAwesome:flag',
-            'place-storage-retrieval' => 'FontAwesome:flag',
+            'place-storage-retrieval' => 'FontAwesome:truck',
             'print' => 'FontAwesome:print',
             'profile' => 'FontAwesome:user',
             'profile-card-delete' => 'Alias:ui-delete',
@@ -253,8 +252,11 @@ return [
             'profile-email' => 'FontAwesome:envelope',
             'profile-sms' => 'FontAwesome:phone',
             'qrcode' => 'FontAwesome:qrcode',
+            'rating-half' => 'FontAwesome:star-half',
+            'rating-full' => 'FontAwesome:star',
             'search' => 'FontAwesome:search',
             'search-delete' => 'Alias:ui-delete',
+            'search-filter-remove' => 'FontAwesome:times',
             'search-rss' => 'FontAwesome:rss',
             'search-save' => 'Alias:ui-save',
             'search-schedule-alert' => 'FontAwesome:exclamation-circle',
@@ -264,10 +266,10 @@ return [
             'sign-out' => 'FontAwesome:sign-out',
             'spinner' => 'FontAwesome:spinner:icon--spin',
             'status-available' => 'FontAwesome:check',
-            'status-indicator' => 'FontAwesome:circle',
             'status-pending' => 'FontAwesome:clock-o',
             'status-ready' => 'FontAwesome:bell',
             'status-unavailable' => 'FontAwesome:times',
+            'status-unknown' => 'FontAwesome:circle',
             'tag-add' => 'Alias:ui-add',
             'tag-remove' => 'Alias:ui-remove',
             'tree-context' => 'FontAwesome:sitemap',
@@ -299,9 +301,9 @@ return [
             'user-storage-retrievals' => 'FontAwesome:archive',
             'view-grid' => 'FontAwesome:th',
             'view-list' => 'FontAwesome:list',
-            'view-visual' => 'FontAwesome:visual',
+            'view-visual' => 'FontAwesome:th-large',
             'warning' => 'FontAwesome:exclamation-triangle',
         ],
     ],
-    'doctype' => 'HTML5'
+    'doctype' => 'HTML5',
 ];

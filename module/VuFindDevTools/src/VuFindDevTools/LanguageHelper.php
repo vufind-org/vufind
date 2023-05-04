@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Language Helper for Development Tools Controller
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/indexing:alphabetical_heading_browse Wiki
  */
+
 namespace VuFindDevTools;
 
 use Laminas\I18n\Translator\TextDomain;
@@ -160,12 +162,12 @@ class LanguageHelper
             return $this->configuredLanguages[$lang];
         }
         switch ($lang) {
-        case 'en-gb':
-            return 'British English';
-        case 'pt-br':
-            return 'Brazilian Portuguese';
-        default:
-            return $lang;
+            case 'en-gb':
+                return 'British English';
+            case 'pt-br':
+                return 'Brazilian Portuguese';
+            default:
+                return $lang;
         }
     }
 
@@ -187,7 +189,8 @@ class LanguageHelper
             $dir = opendir($base);
             $domains = [];
             while ($current = readdir($dir)) {
-                if ($current != '.' && $current != '..'
+                if (
+                    $current != '.' && $current != '..'
                     && is_dir("$base/$current")
                     && !in_array($current, $filter)
                 ) {
@@ -284,7 +287,7 @@ class LanguageHelper
             }
             $data[] = [
                 "lang" => $langCode,
-                "name"=> $diffs['name'],
+                "name" => $diffs['name'],
                 "langtitle" => $langCode . (($langCode != $diffs['name'])
                     ? " (" . $diffs['name'] . ")" : ''),
                 "missing" => count($diffs['notInL2']),
@@ -312,7 +315,7 @@ class LanguageHelper
         $main = $this->loadLanguage($mainLanguage, $includeOptional);
         $details = $this->getAllLanguageDetails($main, $includeOptional);
         $dirHelpParts = [
-            APPLICATION_PATH, 'themes', 'root', 'templates', 'HelpTranslations'
+            APPLICATION_PATH, 'themes', 'root', 'templates', 'HelpTranslations',
         ];
         $dirLangParts = [APPLICATION_PATH, 'languages'];
         return compact('details', 'main', 'includeOptional') + [

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Abstract factory for backends.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Factory;
 
 use Laminas\Cache\Storage\StorageInterface;
@@ -72,17 +74,20 @@ abstract class AbstractBackendFactory implements FactoryInterface
     /**
      * Create HTTP Client
      *
-     * @param int   $timeout Request timeout
-     * @param array $options Other options
+     * @param int    $timeout Request timeout
+     * @param array  $options Other options
+     * @param string $url     Request URL (needed for proper local address check when
+     * the client is being proxified)
      *
      * @return \Laminas\Http\Client
      */
     protected function createHttpClient(
         ?int $timeout = null,
-        array $options = []
+        array $options = [],
+        string $url = null
     ): \Laminas\Http\Client {
         $client = $this->serviceLocator->get(\VuFindHttp\HttpService::class)
-            ->createClient();
+            ->createClient($url);
         if (null !== $timeout) {
             $options['timeout'] = $timeout;
         }

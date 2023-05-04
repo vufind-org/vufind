@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Cache Key Generator Trait
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:architecture:caching
  */
+
 namespace VuFind\Cache;
 
 /**
@@ -54,7 +56,8 @@ trait KeyGeneratorTrait
         $key = get_class($this) . (!empty($suffix) ? '_' . $suffix : '');
 
         // Test the build key
-        if ($this->cache
+        if (
+            $this->cache
             && !preg_match($this->cache->getOptions()->getKeyPattern(), $key)
         ) {
             // The key violates the currently set StorageAdapter key_pattern. Our

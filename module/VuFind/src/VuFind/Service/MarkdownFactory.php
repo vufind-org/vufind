@@ -27,6 +27,7 @@
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://knihovny.cz Main Page
  */
+
 namespace VuFind\Service;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -75,7 +76,7 @@ class MarkdownFactory implements FactoryInterface
      * @var string[]
      */
     protected static $defaultExtensions = [
-        'Autolink', 'DisallowedRawHtml', 'Strikethrough', 'Table', 'TaskList'
+        'Autolink', 'DisallowedRawHtml', 'Strikethrough', 'Table', 'TaskList',
     ];
 
     /**
@@ -237,7 +238,7 @@ class MarkdownFactory implements FactoryInterface
             'enable_em',
             'enable_strong',
             'use_asterisk',
-            'use_underscore'
+            'use_underscore',
         ];
         foreach ($configOptions as $option) {
             $config['commonmark'][$option]
@@ -248,9 +249,8 @@ class MarkdownFactory implements FactoryInterface
         }
         $markdown = $this->config['Markdown'] ?? [];
         $config['commonmark']['unordered_list_markers']
-            = $config['commonmark']['unordered_list_markers']
-                ?? $markdown['unordered_list_markers']
-                ?? ['-', '*', '+'];
+            ??= $markdown['unordered_list_markers']
+            ?? ['-', '*', '+'];
         unset($this->config['Markdown']['unordered_list_markers']);
 
         return $config;

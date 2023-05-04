@@ -1,4 +1,5 @@
 <?php
+
 /**
  * HTTP POST log writer for Slack
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Log\Writer;
 
 use Laminas\Http\Client;
@@ -67,7 +69,7 @@ class Slack extends Post
         ':warning: ',            // WARN
         ':speech_balloon: ',     // NOTICE
         ':information_source: ', // INFO
-        ':beetle: '              // DEBUG
+        ':beetle: ',              // DEBUG
     ];
 
     /**
@@ -102,7 +104,7 @@ class Slack extends Post
             'channel' => $this->channel,
             'username' => $this->username,
             'text' => $this->messageIcons[$event['priority']]
-                . $this->formatter->format($event) . PHP_EOL
+                . $this->formatter->format($event) . PHP_EOL,
         ];
         return json_encode($data);
     }

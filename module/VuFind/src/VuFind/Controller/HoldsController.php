@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Holds Controller
  *
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Controller;
 
 use Laminas\Cache\Storage\StorageInterface;
@@ -46,6 +48,7 @@ use VuFind\Validator\CsrfInterface;
  */
 class HoldsController extends AbstractBase
 {
+    use Feature\CatchIlsExceptionsTrait;
     use \VuFind\Cache\CacheTrait;
 
     /**
@@ -136,7 +139,8 @@ class HoldsController extends AbstractBase
                 $cancelStatus,
                 $patron
             );
-            if ($cancelStatus && $cancelStatus['function'] !== 'getCancelHoldLink'
+            if (
+                $cancelStatus && $cancelStatus['function'] !== 'getCancelHoldLink'
                 && isset($current['cancel_details'])
             ) {
                 // Enable cancel form if necessary:
@@ -145,7 +149,8 @@ class HoldsController extends AbstractBase
 
             // Add update details if appropriate
             if (isset($current['updateDetails'])) {
-                if (empty($holdConfig['updateFields'])
+                if (
+                    empty($holdConfig['updateFields'])
                     || '' === $current['updateDetails']
                 ) {
                     unset($current['updateDetails']);
@@ -208,7 +213,7 @@ class HoldsController extends AbstractBase
         }
         // If the user input contains a value not found in the session
         // legal list, something has been tampered with -- abort the process.
-        if ($this->holds()->validateIds($selectedIds)) {
+        if (!$this->holds()->validateIds($selectedIds)) {
             $this->flashMessenger()
                 ->addErrorMessage('error_inconsistent_parameters');
             return $this->inLightbox()
@@ -317,7 +322,8 @@ class HoldsController extends AbstractBase
                     } else {
                         $ids1 = array_column($pickupLocations, 'locationID');
                         $ids2 = array_column($locations, 'locationID');
-                        if (count($ids1) !== count($ids2) || array_diff($ids1, $ids2)
+                        if (
+                            count($ids1) !== count($ids2) || array_diff($ids1, $ids2)
                         ) {
                             $differences = true;
                             // Find out any common pickup locations:
@@ -375,14 +381,15 @@ class HoldsController extends AbstractBase
             );
         }
         $dateValidationResults = [
-            'errors' => []
+            'errors' => [],
         ];
         $frozenThroughValidationResults = [
             'frozenThroughTS' => null,
             'errors' => [],
         ];
         // The dates are not required unless one of them is set, so check that first:
-        if (!empty($gatheredDetails['startDate'])
+        if (
+            !empty($gatheredDetails['startDate'])
             || !empty($gatheredDetails['requiredBy'])
         ) {
             $dateValidationResults = $this->holds()->validateDates(

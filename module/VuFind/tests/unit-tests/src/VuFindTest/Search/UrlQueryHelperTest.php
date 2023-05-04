@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Search;
 
 use VuFind\Search\Factory\UrlQueryHelperFactory;
@@ -74,7 +75,7 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
             $helper->getParamArray()
         );
         $this->assertEquals(
-            '<input type="hidden" name="foo" value="bar" />',
+            '<input type="hidden" name="foo" value="bar">',
             $helper->asHiddenFields(['lookfor' => '/.*/'])
         );
     }

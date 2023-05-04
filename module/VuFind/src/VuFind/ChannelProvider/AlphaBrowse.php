@@ -1,10 +1,11 @@
 <?php
+
 /**
  * Alphabrowse channel provider.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2016.
+ * Copyright (C) Villanova University 2016, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\ChannelProvider;
 
 use Laminas\Mvc\Controller\Plugin\Url;
@@ -33,6 +35,8 @@ use VuFind\Record\Router as RecordRouter;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Results;
 use VuFindSearch\Command\AlphabeticBrowseCommand;
+use VuFindSearch\Command\RetrieveBatchCommand;
+use VuFindSearch\Command\RetrieveCommand;
 use VuFindSearch\ParamBag;
 
 /**
@@ -44,8 +48,7 @@ use VuFindSearch\ParamBag;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AlphaBrowse extends AbstractChannelProvider
-    implements TranslatorAwareInterface
+class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
@@ -198,10 +201,11 @@ class AlphaBrowse extends AbstractChannelProvider
         // If the search results did not include the object we were looking for,
         // we need to fetch it from the search service:
         if (empty($channels) && is_object($driver) && $channelToken !== null) {
-            $driver = $this->searchService->retrieve(
+            $command = new RetrieveCommand(
                 $driver->getSourceIdentifier(),
                 $channelToken
-            )->first();
+            );
+            $driver = $this->searchService->invoke($command)->getResult()->first();
             if ($driver) {
                 $channels[] = $this->buildChannelFromRecord($driver);
             }
@@ -230,13 +234,14 @@ class AlphaBrowse extends AbstractChannelProvider
                     'title' => $item['extras']['title'][0][0],
                     'source' => $this->source,
                     'thumbnail' => false, // TODO: better thumbnails!
-                    'id' => $id
+                    'id' => $id,
                 ];
             }
         }
         // If we have a cover router and a non-empty ID list, look up thumbnails:
         if ($this->coverRouter && !empty($ids)) {
-            $records = $this->searchService->retrieveBatch($this->source, $ids);
+            $command = new RetrieveBatchCommand($this->source, $ids);
+            $records = $this->searchService->invoke($command)->getResult();
             $thumbs = [];
             // First map record drivers to an ID => thumb array...
             foreach ($records as $record) {
@@ -273,7 +278,7 @@ class AlphaBrowse extends AbstractChannelProvider
                 ['%%title%%' => $driver->getBreadcrumb()]
             ),
             'providerId' => $this->providerId,
-            'links' => []
+            'links' => [],
         ];
         $raw = $driver->getRawData();
         $from = isset($raw[$this->solrField]) ? (array)$raw[$this->solrField] : null;
@@ -301,21 +306,21 @@ class AlphaBrowse extends AbstractChannelProvider
                 'label' => 'View Record',
                 'icon' => 'fa-file-text-o',
                 'url' => $this->url
-                    ->fromRoute($route['route'], $route['params'])
+                    ->fromRoute($route['route'], $route['params']),
             ];
             $retVal['links'][] = [
                 'label' => 'channel_expand',
                 'icon' => 'fa-search-plus',
                 'url' => $this->url->fromRoute('channels-record')
                     . '?id=' . urlencode($driver->getUniqueID())
-                    . '&source=' . urlencode($driver->getSourceIdentifier())
+                    . '&source=' . urlencode($driver->getSourceIdentifier()),
             ];
             $retVal['links'][] = [
                 'label' => 'channel_browse',
                 'icon' => 'fa-list',
                 'url' => $this->url->fromRoute('alphabrowse-home')
                     . '?source=' . urlencode($this->browseIndex)
-                    . '&from=' . $from[0]
+                    . '&from=' . $from[0],
             ];
         }
         return $retVal;

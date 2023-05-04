@@ -1,10 +1,11 @@
 <?php
+
 /**
  * Abstract base class for channel providers relying on the ILS.
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2018, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,11 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\ChannelProvider;
 
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Results;
+use VuFindSearch\Command\RetrieveBatchCommand;
 
 /**
  * Abstract base class for channel providers relying on the ILS.
@@ -40,8 +43,7 @@ use VuFind\Search\Base\Results;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-abstract class AbstractILSChannelProvider extends AbstractChannelProvider
-    implements TranslatorAwareInterface
+abstract class AbstractILSChannelProvider extends AbstractChannelProvider implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
@@ -174,7 +176,8 @@ abstract class AbstractILSChannelProvider extends AbstractChannelProvider
             return [];
         }
         // Look up the record drivers for the recently returned IDs:
-        $records = $this->searchService->retrieveBatch('Solr', $ids)->getRecords();
+        $command = new RetrieveBatchCommand('Solr', $ids);
+        $records = $this->searchService->invoke($command)->getResult()->getRecords();
         // Build the return value:
         $retVal = [
             'title' => $this->translate($this->channelTitle),

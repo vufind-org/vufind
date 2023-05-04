@@ -1,10 +1,11 @@
 <?php
+
 /**
  * AuthorFacets aspect of the Search Multi-class (Results)
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,7 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\SolrAuthorFacets;
+
+use VuFindSearch\Command\SearchCommand;
 
 /**
  * AuthorFacets Search Results
@@ -49,9 +53,9 @@ class Results extends \VuFind\Search\Solr\Results
         $query = $this->getParams()->getQuery();
         $params = $this->getParams()->getBackendParameters();
         // Perform the search:
+        $command = new SearchCommand($this->backendId, $query, 0, 0, $params);
         $collection = $this->getSearchService()
-            ->search($this->backendId, $query, 0, 0, $params);
-
+            ->invoke($command)->getResult();
         $this->responseFacets = $collection->getFacets();
 
         // Get the facets from which we will build our results:

@@ -468,7 +468,7 @@ li.jstree-facet ul {
   body.offcanvas {
     overflow-x: hidden;
     /* Prevent scroll on narrow devices */
-  
+
   }
   body.offcanvas .sidebar {
     position: fixed;

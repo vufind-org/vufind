@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 
 /**
  * Class AuthTokenTest
@@ -27,6 +26,9 @@ declare(strict_types=1);
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
+declare(strict_types=1);
+
 namespace VuFindTest\Auth;
 
 use VuFind\Auth\AuthToken;
@@ -42,6 +44,11 @@ use VuFind\Auth\AuthToken;
  */
 class AuthTokenTest extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * Test getting a header value
+     *
+     * @return void
+     */
     public function testGetHeaderValue()
     {
         $token = new AuthToken('token', 10);
@@ -50,6 +57,11 @@ class AuthTokenTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('Basic token', $token->getHeaderValue());
     }
 
+    /**
+     * Test isExpired() method
+     *
+     * @return void
+     */
     public function testIsExpired()
     {
         $token = new AuthToken('token', 1);
@@ -58,6 +70,11 @@ class AuthTokenTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($token->isExpired());
     }
 
+    /**
+     * Test getExpiresIn() method
+     *
+     * @return void
+     */
     public function testGetExpiresIn()
     {
         $token = new AuthToken('token', 11);

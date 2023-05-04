@@ -28,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Feature;
 
 /**
@@ -41,6 +42,8 @@ namespace VuFindTest\Feature;
  */
 trait LiveDatabaseTrait
 {
+    use PathResolverTrait;
+
     /**
      * Flag to allow other traits to test for the presence of this one (to enforce
      * dependencies).
@@ -73,6 +76,7 @@ trait LiveDatabaseTrait
                 $config['vufind']['config_reader']
             );
             $container->set(\VuFind\Config\PluginManager::class, $configManager);
+            $this->addPathResolverToContainer($container);
             $adapterFactory = new \VuFind\Db\AdapterFactory(
                 $configManager->get('config')
             );
@@ -135,11 +139,11 @@ trait LiveDatabaseTrait
         $checks = [
             [
                 'table' => \VuFind\Db\Table\User::class,
-                'name' => 'users'
+                'name' => 'users',
             ],
             [
                 'table' => \VuFind\Db\Table\Tags::class,
-                'name' => 'tags'
+                'name' => 'tags',
             ],
         ];
         foreach ($checks as $check) {

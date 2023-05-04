@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Record Driver Marc Advanced Trait Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\RecordDriver\Feature;
 
 use VuFind\RecordDriver\SolrMarc;
@@ -53,10 +55,13 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
     {
         $record = new \VuFind\Marc\MarcReader($this->getFixture($fixture));
         $obj = $this->getMockBuilder(SolrMarc::class)
-            ->onlyMethods(['getMarcReader'])->getMock();
+            ->onlyMethods(['getMarcReader', 'getUniqueId'])->getMock();
         $obj->expects($this->any())
             ->method('getMarcReader')
             ->will($this->returnValue($record));
+        $obj->expects($this->any())
+            ->method('getUniqueId')
+            ->will($this->returnValue('123'));
         return $obj;
     }
 
@@ -104,7 +109,7 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             [
                 ['name' => 'Development Series &\'><"'],
-                ['name' => 'Development', 'number' => 'no. 2']
+                ['name' => 'Development', 'number' => 'no. 2'],
             ],
             $obj->getSeries()
         );
@@ -121,8 +126,8 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
             [
                 [
                     'url' => 'https://vufind.org/vufind/',
-                    'desc' => 'VuFind Home Page'
-                ]
+                    'desc' => 'VuFind Home Page',
+                ],
             ],
             $obj->getURLs()
         );

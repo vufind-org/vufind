@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Generate/NonTabRecordAction command test.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Command\Generate;
 
 use Symfony\Component\Console\Tester\CommandTester;
@@ -88,11 +90,11 @@ class NonTabRecordActionCommandTest extends \PHPUnit\Framework\TestCase
                             'defaults' => [
                                 'controller' => 'Example',
                                 'action'     => 'Foo',
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ];
         $tools = $this->getMockGeneratorTools(
             ['getModuleConfigPath', 'backUpFile', 'writeModuleConfig']
@@ -121,11 +123,11 @@ class NonTabRecordActionCommandTest extends \PHPUnit\Framework\TestCase
                             'defaults' => [
                                 'controller' => 'Example',
                                 'action'     => 'Home',
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ];
         $command = new NonTabRecordActionCommand($tools, $config);
         $commandTester = new CommandTester($command);

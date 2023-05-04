@@ -133,8 +133,8 @@
    <!-- Generic Fields -->
    <field name="language" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="format" type="string" indexed="true" stored="true" multiValued="true"/>
-   <field name="author" type="textProper" indexed="true" stored="true" multiValued="true" termVectors="true"/>
-   <field name="author_variant" type="text" indexed="true" stored="true" multiValued="true" termVectors="true"/>
+   <field name="author" type="textProper" indexed="true" stored="true" multiValued="true" termVectors="true" storeOffsetsWithPositions="true"/>
+   <field name="author_variant" type="text" indexed="true" stored="true" multiValued="true" termVectors="true" storeOffsetsWithPositions="true"/>
    <field name="author_role" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="author_facet" type="textFacet" indexed="true" stored="true" multiValued="true"/>
    <field name="author_sort" type="string" indexed="true" stored="true"/>
@@ -180,9 +180,6 @@
    <field name="author2_role" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="author_corporate" type="textProper" indexed="true" stored="true" multiValued="true"/>
    <field name="author_corporate_role" type="string" indexed="true" stored="true" multiValued="true"/>
-   <!-- the author_fuller and author2_fuller fields are deprecated and should no longer be used. -->
-   <field name="author_fuller" type="textProper" indexed="true" stored="true" multiValued="true" />
-   <field name="author2_fuller" type="textProper" indexed="true" stored="true" multiValued="true" />
    <field name="author_additional" type="textProper" indexed="true" stored="true" multiValued="true"/>
    <field name="title_alt" type="text" indexed="true" stored="true" multiValued="true"/>
    <field name="title_old" type="text" indexed="true" stored="true" multiValued="true"/>

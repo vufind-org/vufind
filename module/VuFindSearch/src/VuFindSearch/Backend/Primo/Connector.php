@@ -31,6 +31,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Primo;
 
 use Laminas\Http\Client as HttpClient;
@@ -84,7 +85,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         'recordCount' => 0,
         'documents' => [],
         'facets' => [],
-        'error' => 'empty_search_disallowed'
+        'error' => 'empty_search_disallowed',
     ];
 
     /**
@@ -216,24 +217,24 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             foreach ($terms as $thisTerm) {
                 //set the index to search
                 switch ($thisTerm['index']) {
-                case "AllFields":
-                    $lookin = "any";
-                    break;
-                case "Title":
-                    $lookin = "title";
-                    break;
-                case "Author":
-                    $lookin = "creator";
-                    break;
-                case "Subject":
-                    $lookin = "sub";
-                    break;
-                case "Abstract":
-                    $lookin = "desc";
-                    break;
-                case "ISSN":
-                    $lookin = "issn";
-                    break;
+                    case "AllFields":
+                        $lookin = "any";
+                        break;
+                    case "Title":
+                        $lookin = "title";
+                        break;
+                    case "Author":
+                        $lookin = "creator";
+                        break;
+                    case "Subject":
+                        $lookin = "sub";
+                        break;
+                    case "Abstract":
+                        $lookin = "desc";
+                        break;
+                    case "ISSN":
+                        $lookin = "issn";
+                        break;
                 }
 
                 //set the lookfor terms to search
@@ -543,6 +544,9 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
                     $item['issn'][] = (string)$issn;
                 }
             }
+            foreach ($addata->doi as $doi) {
+                $item['doi_str_mv'][] = (string)$doi;
+            }
 
             // Remove dash-less ISSNs if there are corresponding dashed ones
             // (We could convert dash-less ISSNs to dashed ones, but try to stay
@@ -613,7 +617,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             'recordCount' => $totalhits,
             'documents' => $items,
             'facets' => $facets,
-            'didYouMean' => $didYouMean
+            'didYouMean' => $didYouMean,
         ];
     }
 
@@ -732,7 +736,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         $highlightFields = [
             'title' => 'title',
             'creator' => 'author',
-            'description' => 'description'
+            'description' => 'description',
         ];
 
         $hilightDetails = [];

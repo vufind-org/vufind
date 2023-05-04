@@ -4,7 +4,9 @@
     return;
   }
   if (isset($this->tabs['Versions'])) {
-    $url = !empty($this->full) ? $this->recordLinker()->getTabUrl($this->driver, 'Versions') . '#tabnav' : '#versions';
+    $url = !empty($this->full)
+      ? ($this->recordLinker()->getTabUrl($this->driver, 'Versions', [], ['query' => ['sid' => $this->searchId]]) . '#tabnav')
+      : '#versions';
     $translationKey = 'other_versions_link';
   } else {
     $url = $this->recordLinker()->getVersionsSearchUrl($this->driver);
@@ -14,8 +16,8 @@
   }
 ?>
 <div class="record-versions">
-  <a href="<?=$this->escapeHtmlAttr($url)?>">
-    <?=$this->icon('more') ?>
-    <?=$this->transEsc($translationKey, ['%%count%%' => $versions])?>
+  <a class="icon-link" href="<?=$this->escapeHtmlAttr($url)?>">
+    <?=$this->icon('more', 'icon-link__icon') ?>
+    <span class="icon-link__label"><?=$this->transEsc($translationKey, ['%%count%%' => $versions])?></span>
   </a>
 </div>

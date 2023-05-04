@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Primo Central Search Parameters
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\Primo;
 
 use VuFindSearch\ParamBag;
@@ -150,7 +152,7 @@ class Params extends \VuFind\Search\Base\Params
             }
             $result[$field] = [
                 'facetOp' => $facetOp,
-                'values' => $filter
+                'values' => $filter,
             ];
         }
         return $result;

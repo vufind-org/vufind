@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Admin Maintenance Controller
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindAdmin\Controller;
 
 /**
@@ -67,7 +69,7 @@ class MaintenanceController extends AbstractAdmin
         // If cache is unset, we didn't go through the loop above, so no message
         // needs to be displayed.
         if (isset($cache)) {
-            $this->flashMessenger()->addMessage('Cache(s) cleared.', 'success');
+            $this->flashMessenger()->addSuccessMessage('Cache(s) cleared.');
         }
         return $this->forwardTo('AdminMaintenance', 'Home');
     }
@@ -120,13 +122,12 @@ class MaintenanceController extends AbstractAdmin
     {
         $daysOld = intval($this->params()->fromQuery('daysOld', $minAge));
         if ($daysOld < $minAge) {
-            $this->flashMessenger()->addMessage(
+            $this->flashMessenger()->addErrorMessage(
                 str_replace(
                     '%%age%%',
                     $minAge,
                     'Expiration age must be at least %%age%% days.'
-                ),
-                'error'
+                )
             );
         } else {
             $search = $this->getTable($table);
@@ -139,7 +140,7 @@ class MaintenanceController extends AbstractAdmin
             } else {
                 $msg = str_replace('%%count%%', $count, $successString);
             }
-            $this->flashMessenger()->addMessage($msg, 'success');
+            $this->flashMessenger()->addSuccessMessage($msg);
         }
         return $this->forwardTo('AdminMaintenance', 'Home');
     }

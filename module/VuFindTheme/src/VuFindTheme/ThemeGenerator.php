@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class to generate a new theme from a template and reconfigure VuFind to use it.
  *
@@ -26,10 +27,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTheme;
 
 use Laminas\Config\Config;
 use VuFind\Config\Locator as ConfigLocator;
+use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
 
 /**
@@ -45,6 +48,25 @@ use VuFind\Config\Writer as ConfigWriter;
 class ThemeGenerator extends AbstractThemeUtility implements GeneratorInterface
 {
     use \VuFindConsole\ConsoleOutputTrait;
+
+    /**
+     * Config file path resolver
+     *
+     * @var PathResolver
+     */
+    protected $pathResolver;
+
+    /**
+     * Constructor
+     *
+     * @param ThemeInfo    $info         Theme info object
+     * @param PathResolver $pathResolver Config file path resolver
+     */
+    public function __construct(ThemeInfo $info, PathResolver $pathResolver = null)
+    {
+        parent::__construct($info);
+        $this->pathResolver = $pathResolver;
+    }
 
     /**
      * Generate a new theme from a template.
@@ -82,7 +104,9 @@ class ThemeGenerator extends AbstractThemeUtility implements GeneratorInterface
     public function configure(Config $config, $name)
     {
         // Enable theme
-        $configPath = ConfigLocator::getLocalConfigPath('config.ini', null, true);
+        $configPath = $this->pathResolver
+            ? $this->pathResolver->getLocalConfigPath('config.ini', null, true)
+            : ConfigLocator::getLocalConfigPath('config.ini', null, true);
         if (!file_exists($configPath)) {
             return $this
                 ->setLastError("Expected configuration file missing: $configPath");
@@ -94,7 +118,7 @@ class ThemeGenerator extends AbstractThemeUtility implements GeneratorInterface
         // Enable dropdown
         $settingPrefixes = [
             'bootstrap' => 'bs3',
-            'custom' => strtolower(str_replace(' ', '', $name))
+            'custom' => strtolower(str_replace(' ', '', $name)),
         ];
         // - Set alternate_themes
         $this->writeln("\t\t[Site] > alternate_themes");
@@ -119,13 +143,14 @@ class ThemeGenerator extends AbstractThemeUtility implements GeneratorInterface
         $this->writeln("\t\t[Site] > selectable_themes");
         $dropSetting = [
             $settingPrefixes['bootstrap'] . ':Bootstrap',
-            $settingPrefixes['custom'] . ':' . ucwords($name)
+            $settingPrefixes['custom'] . ':' . ucwords($name),
         ];
         if (isset($config->Site->selectable_themes)) {
             $themes = explode(',', $config->Site->selectable_themes);
             foreach ($themes as $t) {
                 $parts = explode(':', $t);
-                if ($parts[0] !== $settingPrefixes['bootstrap']
+                if (
+                    $parts[0] !== $settingPrefixes['bootstrap']
                     && $parts[0] !== $settingPrefixes['custom']
                 ) {
                     $dropSetting[] = $t;

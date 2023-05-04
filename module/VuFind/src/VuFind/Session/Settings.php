@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Container for session settings, allowing those settings to be configured
  * "just in case" they are needed, without invoking the heavy weight of
@@ -28,6 +29,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Session;
 
 use Laminas\Session\SessionManager;

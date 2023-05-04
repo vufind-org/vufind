@@ -1,5 +1,6 @@
 <?php
   $this->headScript()->appendFile('vendor/jsTree/jstree.min.js');
+  $this->headScript()->appendFile('jstree-vufind-facet-plugin.js');
   $this->headScript()->appendFile('facets.js');
 
   $results = $this->recommend->getResults();
@@ -68,11 +69,14 @@
 <?php $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions() ?>
 <?php if (!empty($activeFacets) && $results->getResultTotal() > 0): ?>
   <?php foreach ($activeFacets as $field => $facetName): ?>
-    <div class="facet-group" id="side-panel-<?=$this->escapeHtmlAttr($field) ?>">
-      <button class="title<?php if (in_array($field, $collapsedFacets)): ?> collapsed<?php endif ?>" data-toggle="collapse" data-target="#side-collapse-<?=$this->escapeHtmlAttr($field) ?>" >
-        <?=$this->transEsc($facetName)?>
+    <?php $collapsed = in_array($field, $collapsedFacets); ?>
+    <?php // Data-title attribute is for analytics use.  Do not remove. ?>
+    <div class="facet-group" id="side-panel-<?=$this->escapeHtmlAttr($field) ?>" data-title="<?=$this->escapeHtmlAttr($facetName) ?>">
+      <button class="title<?php if ($collapsed): ?> collapsed<?php endif ?>" data-toggle="collapse" data-target="#side-collapse-<?=$this->escapeHtmlAttr($field) ?>" >
+        <span class="facet-title"><?=$this->transEsc($facetName)?></span>
+        <?=$this->icon('collapse', 'facet-title-icon') ?>
       </button>
-      <div id="side-collapse-<?=$this->escapeHtmlAttr($field) ?>" class="collapse<?php if (!in_array($field, $collapsedFacets)): ?> in<?php endif ?>" data-facet="<?=$this->escapeHtmlAttr($field) ?>"<?php if (in_array($field, $forceUncollapsedFacets)): ?> data-force-in="1"<?php endif ?>>
+      <div id="side-collapse-<?=$this->escapeHtmlAttr($field) ?>" class="collapse<?php if (!in_array($field, $collapsedFacets)): ?> in<?php endif ?>"<?php if (!in_array($field, $hierarchicalFacets)):?> data-facet="<?=$this->escapeHtmlAttr($field) ?>"<?php endif ?><?php if (in_array($field, $forceUncollapsedFacets)): ?> data-force-in="1"<?php endif ?>>
         <span class="facet-load-failed hidden"> <?=$this->transEsc('ajax_load_interrupted')?></span>
         <?php if (in_array($field, $hierarchicalFacets)): ?>
           <?=
@@ -85,10 +89,14 @@
                   'title' => $field,
                   'sortOptions' => $hierarchicalFacetSortOptions[$field] ?? $hierarchicalFacetSortOptions['*'] ?? null,
                   'collapsedFacets' => $collapsedFacets,
-                  'results' => $this->results
+                  'results' => $this->results,
                 ]
             );
           ?>
+        <?php else: ?>
+          <div class="facet-load-indicator hidden">
+            <?=$this->icon('spinner') ?> <?=$this->transEsc('loading_ellipsis')?>
+          </div>
         <?php endif; ?>
       </div>
     </div>

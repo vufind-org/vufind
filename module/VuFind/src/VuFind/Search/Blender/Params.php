@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Blender Search Parameters
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\Blender;
 
 use VuFind\Search\Base\Params as BaseParams;
@@ -119,7 +121,8 @@ class Params extends \VuFind\Search\Solr\Params
             'type',
             'sort',
             'filter',
-            'hiddenFilters'
+            'hiddenFilters',
+            'daterange',
         ];
         foreach ($this->searchParams as $params) {
             $translatedRequest = clone $request;

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OpenUrl helper factory.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -68,9 +70,10 @@ class OpenUrlFactory implements FactoryInterface
         }
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
+        $pathResolver = $container->get(\VuFind\Config\PathResolver::class);
         $openUrlRules = json_decode(
             file_get_contents(
-                \VuFind\Config\Locator::getConfigPath('OpenUrlRules.json')
+                $pathResolver->getConfigPath('OpenUrlRules.json')
             ),
             true
         );

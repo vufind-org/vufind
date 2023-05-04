@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Base Search Object Parameters Test
  *
@@ -28,6 +29,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Search\Base;
 
 use VuFind\Config\PluginManager;
@@ -80,7 +82,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         ?Options $options = null,
         ?PluginManager $configManager = null
     ): Params {
-        $configManager = $configManager ?? $this->getMockConfigPluginManager([]);
+        $configManager ??= $this->getMockConfigPluginManager([]);
         return $this->getMockForAbstractClass(
             Params::class,
             [$options ?? $this->getMockOptions($configManager), $configManager]
@@ -156,7 +158,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                         'displayText' => 'baz',
                         'field' => 'format',
                         'operator' => 'OR',
-                    ]
+                    ],
                 ],
                 'building_label' => [
                     [
@@ -170,8 +172,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                         'displayText' => 'sub',
                         'field' => 'building',
                         'operator' => 'NOT',
-                    ]
-                ]
+                    ],
+                ],
             ],
             $params->getFilterList()
         );
@@ -192,8 +194,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                         'displayText' => 'sub',
                         'field' => 'building',
                         'operator' => 'NOT',
-                    ]
-                ]
+                    ],
+                ],
 
             ],
             $params->getFilterList()
@@ -209,8 +211,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                         'displayText' => 'sub',
                         'field' => 'building',
                         'operator' => 'NOT',
-                    ]
-                ]
+                    ],
+                ],
 
             ],
             $params->getFilterList()
@@ -270,7 +272,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             $params,
             'facetAliases',
             [
-                'foo_old' => 'foo'
+                'foo_old' => 'foo',
             ]
         );
 

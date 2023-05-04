@@ -1,4 +1,5 @@
 <?php
+
 /**
  * XSLT helper tests.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\XSLT\Import;
 
 use VuFind\XSLT\Import\VuFind;
@@ -40,6 +42,8 @@ use VuFind\XSLT\Import\VuFind;
  */
 class VuFindTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\PathResolverTrait;
+
     /**
      * Support method -- set up a mock container for testing the class.
      *
@@ -78,6 +82,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
     public function testGetConfig()
     {
         $container = $this->getMockContainer();
+        $this->addPathResolverToContainer($container);
         $config = new \Laminas\Config\Config([]);
         $container->get(\VuFind\Config\PluginManager::class)->expects($this->once())
             ->method('get')->with('config')->will($this->returnValue($config));

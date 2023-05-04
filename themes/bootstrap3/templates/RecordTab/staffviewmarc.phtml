@@ -2,4 +2,9 @@
     // Set page title.
     $this->headTitle($this->translate('Staff View') . ': ' . $this->driver->getBreadcrumb());
 ?>
+<h2>MARC</h2>
 <?=\VuFind\XSLT\Processor::process('record-marc.xsl', $this->driver->getXML('marc21'))?>
+<?php if ($this->config()->alwaysDisplayIndexRecordInStaffView()): ?>
+    <h2><?=$this->transEsc('Record in the Search Index')?></h2>
+    <?=$this->render('RecordTab/staffviewarray.phtml')?>
+<?php endif; ?>

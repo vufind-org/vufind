@@ -26,12 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTest\Search\Primo;
 
 use Laminas\EventManager\Event;
 use VuFind\Search\Primo\InjectOnCampusListener;
 use VuFindSearch\Backend\Primo\Backend;
-
 use VuFindSearch\Backend\Primo\Connector;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Service;

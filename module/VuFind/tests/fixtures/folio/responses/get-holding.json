@@ -1,0 +1,207 @@
+[
+    {
+        "comment": "Initial token check"
+    },
+    {
+        "expectedMethod": "GET",
+        "expectedPath": "\/instance-storage\/instances",
+        "expectedParams": {
+            "query": "(hrid==\"foo\")"
+        },
+        "body": {
+            "instances": [
+                {
+                    "id": "instanceid",
+                    "_version": 1,
+                    "hrid": "foo",
+                    "source": "MARC",
+                    "title": "The bride of the tomb; or, Lancelot Darling's betrothed \/ By Mrs. Alex. McVeigh Miller.",
+                    "indexTitle": "Bride of the tomb; or, lancelot darling's betrothed",
+                    "editions": [],
+                    "series": [
+                        "Munro's library ; v. 1, no. 2"
+                    ],
+                    "identifiers": [],
+                    "contributors": [
+                        {
+                            "name": "Miller, Alex. McVeigh, Mrs",
+                            "contributorTypeId": "contypeID",
+                            "contributorTypeText": "Contributor",
+                            "contributorNameTypeId": "conNameTypeID",
+                            "primary": true
+                        }
+                    ],
+                    "subjects": [
+                        "Dime novels Specimens",
+                        "Genre: Popular literature Specimens",
+                        "Genre: Mystery and detective fiction"
+                    ],
+                    "classifications": [
+                        {
+                            "classificationNumber": "PS2394 .M643 1883",
+                            "classificationTypeId": "ctypeId"
+                        }
+                    ],
+                    "publication": [
+                        {
+                            "publisher": "Norman L. Munro",
+                            "place": "New York",
+                            "dateOfPublication": "1883"
+                        }
+                    ],
+                    "publicationFrequency": [],
+                    "publicationRange": [],
+                    "publicationPeriod": {
+                        "start": 1883
+                    },
+                    "electronicAccess": [],
+                    "instanceTypeId": "insttypeID",
+                    "instanceFormatIds": [],
+                    "instanceFormats": [],
+                    "physicalDescriptions": [
+                        "144 p.  ; 19 cm."
+                    ],
+                    "languages": [
+                        "eng"
+                    ],
+                    "notes": [],
+                    "modeOfIssuanceId": "moiid",
+                    "previouslyHeld": false,
+                    "staffSuppress": false,
+                    "discoverySuppress": false,
+                    "statisticalCodeIds": [],
+                    "statusUpdatedDate": "2022-12-22T23:34:26.209+0000",
+                    "holdingsRecords2": [],
+                    "natureOfContentTermIds": []
+                }
+            ],
+            "totalRecords": 1,
+            "resultInfo": {
+                "totalRecords": 1,
+                "facets": [],
+                "diagnostics": []
+            }
+        },
+        "bodyType": "json",
+        "code": 200
+    },
+    {
+        "expectedMethod": "GET",
+        "expectedPath": "\/holdings-storage\/holdings",
+        "expectedParams": {
+            "query": "(instanceId==\"instanceid\" NOT discoverySuppress==true)",
+            "offset": 0,
+            "limit": 1000
+        },
+        "body": {
+            "holdingsRecords": [
+                {
+                    "id": "holdingid",
+                    "_version": 1,
+                    "hrid": "hr-holdingid",
+                    "holdingsTypeId": "holdingtypeid",
+                    "instanceId": "instanceid",
+                    "permanentLocationId": "location-id",
+                    "effectiveLocationId": "location-id",
+                    "electronicAccess": [],
+                    "callNumberTypeId": "cntypeid",
+                    "callNumber": "PS2394 .M643 1883",
+                    "administrativeNotes": [],
+                    "notes": [],
+                    "holdingsStatements": [],
+                    "holdingsStatementsForIndexes": [],
+                    "holdingsStatementsForSupplements": [],
+                    "discoverySuppress": false,
+                    "statisticalCodeIds": [],
+                    "holdingsItems": [],
+                    "bareHoldingsItems": [],
+                    "sourceId": "sourceid"
+                }
+            ],
+            "totalRecords": 1,
+            "resultInfo": {
+                "totalRecords": 1,
+                "facets": [],
+                "diagnostics": []
+            }
+        },
+        "bodyType": "json",
+        "code": 200
+    },
+    {
+        "expectedMethod": "GET",
+        "expectedPath": "\/item-storage\/items",
+        "expectedParams": {
+            "query": "(holdingsRecordId==\"holdingid\" NOT discoverySuppress==true)",
+            "offset": 0,
+            "limit": 1000
+        },
+        "body": {
+            "items": [
+                {
+                    "id": "itemid",
+                    "_version": 1,
+                    "hrid": "hr-itemid",
+                    "holdingsRecordId": "holdingid",
+                    "barcode": "barcode-test",
+                    "effectiveShelvingOrder": "PS 42394 M643 41883 11",
+                    "yearCaption": [],
+                    "copyNumber": "1",
+                    "numberOfPieces": "1",
+                    "descriptionOfPieces": "1",
+                    "administrativeNotes": [],
+                    "circulationNotes": [],
+                    "status": {
+                        "name": "Available",
+                        "date": "2022-12-22T20:25:19.050+00:00"
+                    },
+                    "materialTypeId": "materialid",
+                    "permanentLoanTypeId": "loantypeid",
+                    "permanentLocationId": "location-id",
+                    "effectiveLocationId": "location-id",
+                    "electronicAccess": [],
+                    "statisticalCodeIds": []
+                }
+            ],
+            "totalRecords": 1,
+            "resultInfo": {
+                "totalRecords": 1,
+                "facets": [],
+                "diagnostics": []
+            }
+        },
+        "bodyType": "json",
+        "code": 200
+    },
+    {
+        "expectedMethod": "GET",
+        "expectedPath": "\/locations",
+        "expectedParams": {
+            "offset": 0,
+            "limit": 1000
+        },
+        "body": {
+            "locations": [
+                {
+                    "id": "location-id",
+                    "name": "Spec Coll",
+                    "code": "DCOC",
+                    "discoveryDisplayName": "Special Collections",
+                    "isActive": true,
+                    "institutionId": "fakeinst",
+                    "campusId": "fakecamp",
+                    "libraryId": "fakelib",
+                    "details": {},
+                    "primaryServicePoint": "fakepsp",
+                    "servicePointIds": [
+                        "fakepsp"
+                    ],
+                    "servicePoints": []
+                }
+           ],
+            "totalRecords": 1
+        },
+        "bodyType": "json",
+        "code": 200
+    }
+]

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Form Test Class
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Form;
 
 use Symfony\Component\Yaml\Yaml;
@@ -72,7 +74,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($form->getHelp());
         $this->assertEquals('VuFind Feedback', $form->getEmailSubject([]));
         $this->assertEquals(
-            'Thank you for your feedback.',
+            'feedback_response',
             $form->getSubmitResponse()
         );
         $this->assertEquals([[], 'Email/form.phtml'], $form->formatEmailMessage([]));
@@ -82,7 +84,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
             'Laminas\InputFilter\InputFilter',
             get_class($form->getInputFilter())
         );
-        $this->assertEquals(0, count($form->getSecondaryHandlers()));
+        $this->assertCount(0, $form->getSecondaryHandlers());
     }
 
     /**
@@ -182,11 +184,11 @@ class FormTest extends \PHPUnit\Framework\TestCase
             $form->getRecipient()
         );
 
-        $this->assertEquals('Send us your feedback!', $form->getTitle());
+        $this->assertEquals('feedback_title', $form->getTitle());
         $this->assertNull($form->getHelp());
         $this->assertEquals('VuFind Feedback', $form->getEmailSubject([]));
         $this->assertEquals(
-            'Thank you for your feedback.',
+            'feedback_response',
             $form->getSubmitResponse()
         );
         $expectedFields = [
@@ -221,13 +223,13 @@ class FormTest extends \PHPUnit\Framework\TestCase
         $postParams = [
             'message' => 'x',
             'name' => 'y',
-            'email' => 'z@foo.com'
+            'email' => 'z@foo.com',
         ];
 
         $this->assertEquals(
             [
                 $expectedFields,
-                'Email/form.phtml'
+                'Email/form.phtml',
             ],
             $form->formatEmailMessage($postParams)
         );
@@ -379,7 +381,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                     'label' => 'feedback_email',
                     'settings' => [
                         'size' => 254,
-                        'aria-label' => 'Test label'
+                        'aria-label' => 'Test label',
                     ],
                 ],
                 [
@@ -423,19 +425,21 @@ class FormTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock Form object.
      *
-     * @param string $formId Form identifier
+     * @param string $formId  Form identifier
+     * @param array  $params  Parameters to pass to setFormId
+     * @param array  $prefill Prefill data to pass to setFormId
      *
      * @return Form
      * @throws \Exception
      */
-    protected function getMockTestForm($formId)
+    protected function getMockTestForm($formId, $params = [], $prefill = [])
     {
         $form = new Form(
             $this->getMockTestFormYamlReader(),
             $this->createMock(\Laminas\View\HelperPluginManager::class),
             $this->createMock(\VuFind\Form\Handler\PluginManager::class)
         );
-        $form->setFormId($formId);
+        $form->setFormId($formId, $params, $prefill);
         return $form;
     }
 
@@ -465,12 +469,12 @@ class FormTest extends \PHPUnit\Framework\TestCase
             [
                 'o1' => [
                     'value' => 'value-1',
-                    'label' => 'label-1'
+                    'label' => 'label-1',
                 ],
                 'o2' => [
                     'value' => 'value-2',
-                    'label' => 'label-2'
-                ]
+                    'label' => 'label-2',
+                ],
             ],
             $el['optionGroups']['group-1']['options']
         );
@@ -481,12 +485,12 @@ class FormTest extends \PHPUnit\Framework\TestCase
             [
                 'o1' => [
                     'value' => 'option-1',
-                    'label' => 'option-1'
+                    'label' => 'option-1',
                 ],
                 'o2' => [
                     'value' => 'option-2',
-                    'label' => 'option-2'
-                ]
+                    'label' => 'option-2',
+                ],
             ],
             $el['optionGroups']['group-1']['options']
         );
@@ -497,12 +501,12 @@ class FormTest extends \PHPUnit\Framework\TestCase
             [
                 'o1' => [
                     'label' => 'label-1',
-                    'value' => 'value-1'
+                    'value' => 'value-1',
                 ],
                 'o2' => [
                     'label' => 'label-2',
-                    'value' => 'value-2'
-                ]
+                    'value' => 'value-2',
+                ],
             ],
             $el['options']
         );
@@ -513,12 +517,12 @@ class FormTest extends \PHPUnit\Framework\TestCase
             [
                 'o1' => [
                     'label' => 'option-1',
-                    'value' => 'option-1'
+                    'value' => 'option-1',
                 ],
                 'o2' => [
                     'label' => 'option-2',
-                    'value' => 'option-2'
-                ]
+                    'value' => 'option-2',
+                ],
             ],
             $el['options']
         );
@@ -529,12 +533,12 @@ class FormTest extends \PHPUnit\Framework\TestCase
             [
                 'o1' => [
                     'label' => 'label-1',
-                    'value' => 'value-1'
+                    'value' => 'value-1',
                 ],
                 'o2' => [
                     'label' => 'label-2',
-                    'value' => 'value-2'
-                ]
+                    'value' => 'value-2',
+                ],
             ],
             $el['options']
         );
@@ -545,12 +549,12 @@ class FormTest extends \PHPUnit\Framework\TestCase
             [
                 'o1' => [
                     'label' => 'option-1',
-                    'value' => 'option-1'
+                    'value' => 'option-1',
                 ],
                 'o2' => [
                     'label' => 'option-2',
-                    'value' => 'option-2'
-                ]
+                    'value' => 'option-2',
+                ],
             ],
             $el['options']
         );
@@ -561,12 +565,12 @@ class FormTest extends \PHPUnit\Framework\TestCase
             [
                 'o1' => [
                     'label' => 'label-1',
-                    'value' => 'value-1'
+                    'value' => 'value-1',
                 ],
                 'o2' => [
                     'label' => 'label-2',
-                    'value' => 'value-2'
-                ]
+                    'value' => 'value-2',
+                ],
             ],
             $el['options']
         );
@@ -577,12 +581,12 @@ class FormTest extends \PHPUnit\Framework\TestCase
             [
                 'o1' => [
                     'label' => 'option-1',
-                    'value' => 'option-1'
+                    'value' => 'option-1',
                 ],
                 'o2' => [
                     'label' => 'option-2',
-                    'value' => 'option-2'
-                ]
+                    'value' => 'option-2',
+                ],
             ],
             $el['options']
         );
@@ -676,7 +680,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
         // Test checkbox with all options required
         $ids = [
             'TestCheckboxWithAllOptionsRequired',  // options with value
-            'TestCheckboxWithAllOptionsRequired-2' // options with label and value
+            'TestCheckboxWithAllOptionsRequired-2', // options with label and value
         ];
 
         foreach ($ids as $id) {
@@ -706,7 +710,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
         // Test checkbox with one required option
         $ids = [
             'TestCheckboxWithOneOptionRequired',  // options with value
-            'TestCheckboxWithOneOptionRequired-2' // options with label and value
+            'TestCheckboxWithOneOptionRequired-2', // options with label and value
         ];
 
         foreach ($ids as $id) {
@@ -742,7 +746,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
             // options with value
             'TestCheckboxWithOneOptionThatIsRequired',
             // options with label and value
-            'TestCheckboxWithOneOptionThatIsRequired-2'
+            'TestCheckboxWithOneOptionThatIsRequired-2',
         ];
 
         foreach ($ids as $id) {
@@ -803,27 +807,26 @@ class FormTest extends \PHPUnit\Framework\TestCase
     public function getEmailSubjectsData(): array
     {
         return [
-            'with placeholders'
-                => [
-                    'TestSubjectEmailWithPlaceholders',
-                    'Subject One Two option-1'
-                ],
-            'without placeholders'
-                => [
-                    'TestSubjectEmailWithoutPlaceholders',
-                    'Subject without placeholders'
-                ],
-       ];
+            'with placeholders' => [
+                'TestSubjectEmailWithPlaceholders',
+                'Subject One Two option-1',
+            ],
+            'without placeholders' => [
+                'TestSubjectEmailWithoutPlaceholders',
+                'Subject without placeholders',
+            ],
+        ];
     }
 
     /**
      * Test email subjects.
-     * @dataProvider getEmailSubjectsData
      *
      * @param string $formToTest      ID of the form to test.
      * @param string $expectedSubject String to be expected.
      *
      * @return void
+     *
+     * @dataProvider getEmailSubjectsData
      */
     public function testEmailSubjects(
         string $formToTest,
@@ -834,13 +837,135 @@ class FormTest extends \PHPUnit\Framework\TestCase
             [
                 'text1' => 'One',
                 'text2' => 'Two',
-                'checkbox' => ['o1']
+                'checkbox' => ['o1'],
             ]
         );
         $this->assertTrue($form->isValid());
         $this->assertEquals(
             $expectedSubject,
             $form->getEmailSubject($form->getData())
+        );
+    }
+
+    /**
+     * Test prefilling values for inputs from form configuration
+     *
+     * @return void
+     */
+    public function testPrefill(): void
+    {
+        $form = $this->getMockTestForm(
+            'TestPrefill',
+            [],
+            [
+                'message' => 'Here is your message', // Should be prefilled
+                'secret_code' => 'new_secret', // Should be prefilled
+                'phone' => '123456789', //Should not be prefilled
+            ]
+        );
+        $this->assertEquals(
+            [
+                [
+                    'type' => 'text',
+                    'name' => 'name',
+                    'group' => '__sender__',
+                    'label' => 'Sender Name',
+                    'settings' => ['size' => 50],
+                ],
+                [
+                    'type' => 'email',
+                    'name' => 'email',
+                    'group' => '__sender__',
+                    'label' => 'feedback_email',
+                    'settings' => ['size' => 254],
+                ],
+                [
+                    'type' => 'textarea',
+                    'name' => 'message',
+                    'label' => 'Comments',
+                    'settings' => [
+                        'cols' => 50,
+                        'rows' => 8,
+                        'value' => 'Here is your message',
+                    ],
+                ],
+                [
+                    'type' => 'text',
+                    'name' => 'phone',
+                    'label' => 'Phone Number',
+                    'settings' => ['size' => 50],
+                ],
+                [
+                    'type' => 'hidden',
+                    'name' => 'secret_code',
+                    'label' => '',
+                    'settings' => [
+                        'value' => 'new_secret',
+                    ],
+                ],
+                [
+                    'type' => 'submit',
+                    'name' => 'submit',
+                    'label' => 'Send',
+                ],
+            ],
+            $form->getFormElementConfig()
+        );
+    }
+
+    /**
+     * Test protecting fields from being prefilled
+     *
+     * @return void
+     */
+    public function testPrefillProtectedFields(): void
+    {
+        $form = $this->getMockTestForm(
+            'TestPrefillProtectedFields',
+            ['userAgent' => 'VuFind Browser 1.0'],
+            [
+                'userAgent' => 'My Browser 1.0',
+                'submit'    => 'Bad submit value',
+            ]
+        );
+        $this->assertEquals(
+            [
+                [
+                    'type' => 'text',
+                    'name' => 'name',
+                    'group' => '__sender__',
+                    'label' => 'Sender Name',
+                    'settings' => ['size' => 50],
+                ],
+                [
+                    'type' => 'email',
+                    'name' => 'email',
+                    'group' => '__sender__',
+                    'label' => 'feedback_email',
+                    'settings' => ['size' => 254],
+                ],
+                [
+                    'type' => 'textarea',
+                    'name' => 'message',
+                    'label' => 'Comments',
+                    'settings' => [
+                        'cols' => 50,
+                        'rows' => 8,
+                    ],
+                ],
+                [
+                    'type' => 'hidden',
+                    'name' => 'useragent',
+                    'label' => 'User Agent',
+                    'settings' => ['value' => 'VuFind Browser 1.0'],
+                ],
+                [
+                    'type' => 'submit',
+                    'name' => 'submit',
+                    'label' => 'Send',
+                ],
+            ],
+            $form->getFormElementConfig()
         );
     }
 }

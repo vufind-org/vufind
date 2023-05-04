@@ -1,4 +1,5 @@
 <?php
+
 /**
  * XSLT importer support methods.
  *
@@ -25,10 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/indexing Wiki
  */
+
 namespace VuFind\XSLT\Import;
 
 use DOMDocument;
-use VuFind\Config\Locator as ConfigLocator;
 
 /**
  * XSLT support class -- all methods of this class must be public and static;
@@ -180,13 +181,13 @@ class VuFind
     {
         $parser = static::getParser();
         switch (strtolower($parser)) {
-        case 'aperture':
-            return static::harvestWithAperture($url);
-        case 'tika':
-            return static::harvestWithTika($url);
-        default:
-            // Ignore unrecognized parser option:
-            return '';
+            case 'aperture':
+                return static::harvestWithAperture($url);
+            case 'tika':
+                return static::harvestWithTika($url);
+            default:
+                // Ignore unrecognized parser option:
+                return '';
         }
     }
 
@@ -295,10 +296,10 @@ class VuFind
         $descriptorspec = [
             0 => ['pipe', 'r'],
             1 => ['file', $output, 'w'],
-            2 => ['pipe', 'w']
+            2 => ['pipe', 'w'],
         ];
         return [
-            "java -jar $tika $arg -eUTF8 $input", $descriptorspec, []
+            "java -jar $tika $arg -eUTF8 $input", $descriptorspec, [],
         ];
     }
 
@@ -348,9 +349,9 @@ class VuFind
         // that PHP's parse_ini_file() function is not compatible with SolrMarc's
         // style of properties map, so we are parsing this manually.
         $map = [];
-        $mapFile
-            = ConfigLocator::getConfigPath($filename, 'import/translation_maps');
-        foreach (file($mapFile) as $line) {
+        $resolver = static::$serviceLocator->get(\VuFind\Config\PathResolver::class);
+        $mapFile = $resolver->getConfigPath($filename, 'import/translation_maps');
+        foreach ($mapFile ? file($mapFile) : [] as $line) {
             $parts = explode('=', $line, 2);
             if (isset($parts[1])) {
                 $key = trim($parts[0]);

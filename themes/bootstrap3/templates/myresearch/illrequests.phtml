@@ -9,7 +9,7 @@
     $this->headScript()->appendFile('requests.js');
 ?>
 
-<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="Expand Sidebar">
+<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="<?=$this->transEsc('sidebar_expand')?>">
   <?=$this->transEsc('Your Account') ?>
 </a>
 
@@ -23,10 +23,10 @@
   <?php if (!empty($this->recordList)): ?>
     <?php if ($this->cancelForm): ?>
       <form name="updateForm" class="inline" method="post" id="cancelILLRequest" data-clear-account-cache="illRequests">
-        <input type="hidden" id="submitType" name="cancelSelected" value="1"/>
-        <input type="hidden" id="cancelConfirm" name="confirm" value="0"/>
+        <input type="hidden" id="submitType" name="cancelSelected" value="1">
+        <input type="hidden" id="cancelConfirm" name="confirm" value="0">
         <div class="btn-group">
-          <input id="cancelSelected" name="cancelSelected" type="submit" value="<?=$this->transEscAttr("ill_request_cancel_selected") ?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown"/>
+          <input id="cancelSelected" name="cancelSelected" type="submit" value="<?=$this->transEscAttr("ill_request_cancel_selected") ?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
           <ul class="dropdown-menu">
             <li class="disabled"><a><?=$this->transEsc("confirm_ill_request_cancel_selected_text") ?></a></li>
             <li><a href="#" id="confirm_cancel_selected_yes"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
@@ -34,7 +34,7 @@
           </ul>
         </div>
         <div class="btn-group">
-          <input id="cancelAll" name="cancelAll" type="submit" value="<?=$this->transEscAttr("ill_request_cancel_all") ?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown"/>
+          <input id="cancelAll" name="cancelAll" type="submit" value="<?=$this->transEscAttr("ill_request_cancel_all") ?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
           <ul class="dropdown-menu">
             <li class="disabled"><a><?=$this->transEsc("confirm_ill_request_cancel_all_text") ?></a></li>
             <li><a href="#" id="confirm_cancel_all_yes"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
@@ -52,9 +52,9 @@
           <?php if ($this->cancelForm && isset($ilsDetails['cancel_details'])): ?>
             <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $resource->getUniqueId()); ?>
             <div class="checkbox">
-              <input type="hidden" name="cancelAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" />
+              <input type="hidden" name="cancelAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>">
               <label>
-                <input type="checkbox" name="cancelSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" id="checkbox_<?=$safeId?>" />
+                <input type="checkbox" name="cancelSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" id="checkbox_<?=$safeId?>">
               </label>
             </div>
           <?php endif; ?>
@@ -84,31 +84,31 @@
                   $title = empty($title) ? $this->transEsc('Title not available') : $this->escapeHtml($title);
                   echo '<a href="' . $this->escapeHtmlAttr($this->recordLinker()->getUrl($resource))
                     . '" class="title">' . $title . '</a>';
-                } elseif (isset($ilsDetails['title']) && !empty($ilsDetails['title'])){
+                } elseif (isset($ilsDetails['title']) && !empty($ilsDetails['title'])) {
                   // If the record is not available in Solr, perhaps the ILS driver sent us a title we can show...
                   echo $this->escapeHtml($ilsDetails['title']);
                 } else {
                   // Last resort -- indicate that no title could be found.
                   echo $this->transEsc('Title not available');
                 }
-              ?><br/>
+              ?><br>
               <?php $listAuthors = $resource->getPrimaryAuthors(); if (!empty($listAuthors)): ?>
                 <?=$this->transEsc('by')?>:
-                <a href="<?=$this->record($resource)->getLink('author', $listAuthors[0])?>"><?=$this->escapeHtml($listAuthors[0])?></a><?php if (count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?><br/>
+                <a href="<?=$this->record($resource)->getLink('author', $listAuthors[0])?>"><?=$this->escapeHtml($listAuthors[0])?></a><?php if (count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?><br>
               <?php endif; ?>
 
               <?php if (count($resource->getFormats()) > 0): ?>
                 <?=$this->record($resource)->getFormatList() ?>
-                <br/>
+                <br>
               <?php endif; ?>
               <?php if (isset($ilsDetails['volume']) && !empty($ilsDetails['volume'])): ?>
                 <strong><?=$this->transEsc('Volume')?>:</strong> <?=$this->escapeHtml($ilsDetails['volume'])?>
-                <br />
+                <br>
               <?php endif; ?>
 
               <?php if (isset($ilsDetails['publication_year']) && !empty($ilsDetails['publication_year'])): ?>
                 <strong><?=$this->transEsc('Year of Publication')?>:</strong> <?=$this->escapeHtml($ilsDetails['publication_year'])?>
-                <br />
+                <br>
               <?php endif; ?>
 
               <?php /* Depending on the ILS driver, the "location" value may be a string or an ID; figure out the best
@@ -131,7 +131,7 @@
               <?php if (!empty($pickupDisplay)): ?>
                 <strong><?=$this->transEsc('pick_up_location') ?>:</strong>
                 <?=$pickupTranslate ? $this->transEsc($pickupDisplay) : $this->escapeHtml($pickupDisplay)?>
-                <br />
+                <br>
               <?php endif; ?>
 
               <?php if (!empty($ilsDetails['create'])): ?>
@@ -141,7 +141,7 @@
               <?php if (!empty($ilsDetails['expire'])): ?>
                 <strong><?=$this->transEsc('ill_request_expires') ?>:</strong> <?=$this->escapeHtml($ilsDetails['expire']) ?>
               <?php endif; ?>
-              <br />
+              <br>
 
               <?php if (isset($this->cancelResults['items'])): ?>
                 <?php foreach ($this->cancelResults['items'] as $itemId => $cancelResult): ?>
@@ -171,7 +171,7 @@
               <?=$thumbnail ?>
             <?php endif ?>
           </div>
-          <?=$resource->tryMethod('supportsCoinsOpenUrl')?'<span class="Z3988" title="' . $this->escapeHtmlAttr($resource->getCoinsOpenUrl()) . '"></span>':''?>
+          <?=$resource->tryMethod('supportsCoinsOpenUrl') ? '<span class="Z3988" title="' . $this->escapeHtmlAttr($resource->getCoinsOpenUrl()) . '"></span>' : ''?>
         </li>
       <?php endforeach; ?>
     </ul>

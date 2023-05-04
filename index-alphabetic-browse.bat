@@ -1,6 +1,6 @@
 @echo off
 rem #####################################################
-rem Make sure that environment edits are local and that we have access to the 
+rem Make sure that environment edits are local and that we have access to the
 rem Windows command extensions.
 rem #####################################################
 setlocal enableextensions
@@ -13,7 +13,7 @@ rem ##################################################
 rem # Set SOLR_HOME
 rem ##################################################
 if not "!%VUFIND_HOME%!"=="!!" goto vufindhomefound
-rem VUFIND_HOME not set -- try to call env.bat to 
+rem VUFIND_HOME not set -- try to call env.bat to
 rem fix the problem before we give up completely
 if exist env.bat goto useenvbat
 rem If env.bat doesn't exist, the user hasn't run the installer yet.
@@ -44,7 +44,7 @@ set JAVA="%JAVA_HOME%\bin\java"
 :javaset
 
 cd %VUFIND_HOME%\import
-SET CLASSPATH="browse-indexing.jar;%SOLR_HOME%\jars\*;%SOLR_HOME%\..\vendor\contrib\analysis-extras\lib\*;%SOLR_HOME%\..\vendor\server\solr-webapp\webapp\WEB-INF\lib\*"
+SET CLASSPATH="browse-indexing.jar;%VUFIND_HOME%\import\lib\*;%SOLR_HOME%\jars\*;%SOLR_HOME%\..\vendor\modules\analysis-extras\lib\*;%SOLR_HOME%\..\vendor\server\solr-webapp\webapp\WEB-INF\lib\*"
 
 SET bib_index=%SOLR_HOME%\biblio\index
 SET auth_index=%SOLR_HOME%\authority\index

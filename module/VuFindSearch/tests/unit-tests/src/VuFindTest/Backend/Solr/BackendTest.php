@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Backend\Solr;
 
 use InvalidArgumentException;
@@ -51,6 +52,7 @@ use VuFindSearch\Query\Query;
 class BackendTest extends TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\ReflectionTrait;
 
     /**
      * Test retrieving a record.
@@ -202,7 +204,7 @@ class BackendTest extends TestCase
                     'Adult children of aging parents' => 7,
                     'Automobile drivers\' tests' => 7,
                     'Fathers and daughters' => 7,
-                ]
+                ],
             ],
             $facets
         );
@@ -500,8 +502,8 @@ class BackendTest extends TestCase
         $back = new Backend($conn);
         $query = new Query('foo');
         $result = $back->getIds($query, 0, 10);
-        $this->assertTrue($result instanceof RecordCollection);
-        $this->assertEquals(0, count($result));
+        $this->assertInstanceOf(RecordCollection::class, $result);
+        $this->assertCount(0, $result);
     }
 
     /**
@@ -558,7 +560,7 @@ class BackendTest extends TestCase
 
         // Test that random proxies search; stub out injectResponseWriter() to prevent it
         // from injecting unwanted extra parameters into $params:
-        $back = $this->getMockBuilder(__NAMESPACE__ . '\BackendMock')
+        $back = $this->getMockBuilder(Backend::class)
             ->onlyMethods(['search', 'injectResponseWriter'])
             ->setConstructorArgs([$this->getConnectorMock()])
             ->getMock();
@@ -587,6 +589,16 @@ class BackendTest extends TestCase
                 $this->equalTo($doc),
                 $this->equalTo('update'),
                 $this->isNull()
+            )
+            ->will(
+                $this->returnCallback(
+                    function () use ($connector) {
+                        // Call client factory for expectations to be met:
+                        $factory = $this->getProperty($connector, 'clientFactory');
+                        $factory('');
+                        return true;
+                    }
+                )
             );
         $connector->expects($this->once())->method('getUrl')
             ->will($this->returnValue('http://localhost:8983/solr/core/biblio'));
@@ -644,17 +656,19 @@ class BackendTest extends TestCase
     protected function getConnectorMock(array $mock = [], $client = null)
     {
         $map = new HandlerMap(['select' => ['fallback' => true]]);
-        $client = $client ?? new \Laminas\Http\Client();
         return $this->getMockBuilder(\VuFindSearch\Backend\Solr\Connector::class)
             ->onlyMethods($mock)
-            ->setConstructorArgs(['http://example.org/', $map, $client])
+            ->setConstructorArgs(
+                [
+                    'http://localhost/',
+                    $map,
+                    function () use ($client) {
+                        // If client is provided, return it since it may have test
+                        // expectations:
+                        return $client ?? new \Laminas\Http\Client();
+                    },
+                ]
+            )
             ->getMock();
-    }
-}
-
-class BackendMock extends \VuFindSearch\Backend\Solr\Backend
-{
-    public function injectResponseWriter(\VuFindSearch\ParamBag $params)
-    {
     }
 }

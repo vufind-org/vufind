@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Table Definition for search
  *
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
@@ -290,6 +292,7 @@ class Search extends Gateway
                 $minified = $normalized->getMinified();
                 $minified->id = $existingRow->getSearchObject()->id;
                 $existingRow->search_object = serialize($minified);
+                $existingRow->session_id = $sessionId;
                 $existingRow->save();
             }
             // Register the appropriate search history database row with the current
@@ -303,7 +306,7 @@ class Search extends Gateway
         $this->insert(
             [
                 'created' => date('Y-m-d H:i:s'),
-                'checksum' => $normalized->getChecksum()
+                'checksum' => $normalized->getChecksum(),
             ]
         );
         $row = $this->getRowById($this->getLastInsertValue());

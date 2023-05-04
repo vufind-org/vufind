@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Factory;
 
 /**
@@ -48,17 +49,9 @@ class SolrAuthBackendFactory extends AbstractSolrBackendFactory
         $this->searchConfig = 'authority';
         $this->searchYaml = 'authsearchspecs.yaml';
         $this->facetConfig = 'authority';
-    }
-
-    /**
-     * Get the Solr core.
-     *
-     * @return string
-     */
-    protected function getSolrCore()
-    {
-        $config = $this->config->get($this->mainConfig);
-        return $config->Index->default_authority_core ?? 'authority';
+        $this->indexNameSetting = 'default_authority_core';
+        $this->defaultIndexName = 'authority';
+        $this->allowFallbackForIndexName = true;
     }
 
     /**

@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Captcha;
 
 /**
@@ -54,8 +55,8 @@ class IntervalTest extends \PHPUnit\Framework\TestCase
         $config = new \Laminas\Config\Config(
             [
                 'Captcha' => [
-                    'time_from_session_start' => 20
-                ]
+                    'time_from_session_start' => 20,
+                ],
             ]
         );
 

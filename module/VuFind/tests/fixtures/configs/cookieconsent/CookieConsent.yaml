@@ -1,0 +1,53 @@
+---
+CookieConsent:
+  Categories:
+    essential:
+      Title: CookieConsent::essential_cookies_title_html
+      Description: CookieConsent::essential_cookies_description_html
+      DefaultEnabled: true
+      Essential: true
+      Cookies:
+        - Name: '{{consent_cookie_name}}'
+          Domain: '{{vufind_cookie_domain}}'
+          Description: CookieConsent::cookie_description_consent_html
+          Expiration: '{{consent_cookie_expiration}}'
+          ExpirationUnit: days
+        - Name: '{{vufind_session_cookie}}'
+          Domain: '{{vufind_cookie_domain}}'
+          Description: CookieConsent::cookie_description_session_html
+          Expiration: session
+        - Name: evercookie
+          Domain: '{{vufind_cookie_domain}}'
+          Description: Forever
+          Expiration: never
+        - Name: custom
+          Domain: '{{vufind_cookie_domain}}'
+          Description: Weird expiration
+          Expiration: 12-13 months
+    matomo:
+      Title: CookieConsent::analytics_cookies_title_html
+      Description: CookieConsent::analytics_cookies_description_html
+      DefaultEnabled: false
+      Essential: false
+      ControlVuFindServices:
+        - matomo
+      Cookies:
+        - Name: _pk_id.*
+          Domain: '{{current_host_name}}'
+          Description: CookieConsent::cookie_description_matomo_id_html
+          Expiration: 13
+          ExpirationUnit: months
+          ThirdParty: true
+      AutoClearCookies:
+        - Name: '/^_pk_/'
+    unused:
+      Title: Unused
+      Description: Not enabled
+      DefaultEnabled: false
+      Essential: false
+      Cookies:
+        - Name: foo
+          Domain: '{{current_host_name}}'
+          Description: Not real
+          Expiration: 13
+          ExpirationUnit: months

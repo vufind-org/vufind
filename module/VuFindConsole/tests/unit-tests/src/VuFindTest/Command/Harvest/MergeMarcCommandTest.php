@@ -1,4 +1,5 @@
 <?php
+
 /**
  * MergeMarc command test.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Command\Harvest;
 
 use Symfony\Component\Console\Tester\CommandTester;
@@ -48,7 +50,7 @@ class MergeMarcCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testWithoutParameters()
+    public function testWithoutParameters(): void
     {
         $this->expectException(
             \Symfony\Component\Console\Exception\RuntimeException::class
@@ -66,7 +68,7 @@ class MergeMarcCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMergingDirectory()
+    public function testMergingDirectory(): void
     {
         $command = new MergeMarcCommand();
         $commandTester = new CommandTester($command);
@@ -74,22 +76,39 @@ class MergeMarcCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester->execute(compact('directory'));
         $xmlns = MergeMarcCommand::MARC21_NAMESPACE;
         $expected = <<<EXPECTED
-<marc:collection xmlns:marc="$xmlns">
-<!-- $directory/a.xml -->
-<marc:record id="a"/>
-<!-- $directory/b.xml -->
-<marc:record xmlns="http://www.loc.gov/MARC21/slim" id="b"/>
-<!-- $directory/c.xml -->
-<marc:record id="c"/>
-<marc:record id="d"/>
-<!-- $directory/d.xml -->
-<marc:record id="e"/>
-<marc:record id="f"/>
-</marc:collection>
+            <marc:collection xmlns:marc="$xmlns">
+            <!-- $directory/a.xml -->
+            <marc:record id="a"/>
+            <!-- $directory/b.xml -->
+            <marc:record xmlns="http://www.loc.gov/MARC21/slim" id="b"/>
+            <!-- $directory/c.xml -->
+            <marc:record id="c"/>
+            <marc:record id="d"/>
+            <!-- $directory/d.xml -->
+            <marc:record id="e"/>
+            <marc:record id="f"/>
+            </marc:collection>
 
-EXPECTED;
+            EXPECTED;
         $this->assertEquals($expected, $commandTester->getDisplay());
         $this->assertEquals(0, $commandTester->getStatusCode());
+    }
+
+    /**
+     * Test that merging an invalid MARC file generates an exception
+     *
+     * @return void
+     */
+    public function testBadFile(): void
+    {
+        $command = new MergeMarcCommand();
+        $commandTester = new CommandTester($command);
+        $directory = $this->getFixtureDir('VuFindConsole') . 'bad-xml';
+        $filename = realpath($directory . "/bad.xml");
+        $expected = "Problem loading XML file: $filename\n"
+            . "Premature end of data in tag open-without-close line 1 in $filename";
+        $this->expectExceptionMessage($expected);
+        $commandTester->execute(compact('directory'));
     }
 
     /**
@@ -97,7 +116,7 @@ EXPECTED;
      *
      * @return void
      */
-    public function testMissingDirectory()
+    public function testMissingDirectory(): void
     {
         $command = new MergeMarcCommand();
         $commandTester = new CommandTester($command);

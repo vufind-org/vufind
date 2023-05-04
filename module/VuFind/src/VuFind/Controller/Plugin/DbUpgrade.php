@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Action Helper - Database upgrade tools
  *
@@ -26,10 +27,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Controller\Plugin;
 
 use Laminas\Db\Adapter\Adapter as DbAdapter;
-use Laminas\Db\Metadata\Metadata as DbMetadata;
+use Laminas\Db\Metadata\Source\Factory as DbMetadataSourceFactory;
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 
 /**
@@ -64,6 +66,15 @@ class DbUpgrade extends AbstractPlugin
      * @var array
      */
     protected $tableInfo = false;
+
+    /**
+     * Deprecated columns, keyed by table name
+     *
+     * @var array
+     */
+    protected $deprecatedColumns = [
+        'search' => ['folder_id'],
+    ];
 
     /**
      * Given a SQL file, parse it for table creation commands.
@@ -150,7 +161,9 @@ class DbUpgrade extends AbstractPlugin
     protected function getTableInfo($reload = false)
     {
         if ($reload || !$this->tableInfo) {
-            $metadata = new DbMetadata($this->getAdapter());
+            $metadata = DbMetadataSourceFactory::createSourceFromAdapter(
+                $this->getAdapter()
+            );
             $tables = $metadata->getTables();
             $this->tableInfo = [];
             foreach ($tables as $current) {
@@ -185,17 +198,35 @@ class DbUpgrade extends AbstractPlugin
         $table,
         $collation
     ) {
+        $collation = strtolower($collation);
+
         // Get column summary:
         $sql = "SHOW FULL COLUMNS FROM `{$table}`";
         $results = $this->getAdapter()->query($sql, DbAdapter::QUERY_MODE_EXECUTE);
 
+        // Get expected column types:
+        // Parse column names out of the CREATE TABLE SQL, which will always be
+        // the first entry in the array; we assume the standard mysqldump
+        // formatting is used here.
+        preg_match_all(
+            '/^  `([^`]*)`\s+([^\s,]+)[\t ,]+.*$/m',
+            $this->dbCommands[$table][0],
+            $matches
+        );
+        $expectedTypes = array_combine($matches[1], $matches[2]);
+
         // Load details:
         $retVal = [];
         foreach ($results as $current) {
-            if (!empty($current->Collation)
-                && strtolower($current->Collation) !== strtolower($collation)
-            ) {
-                $retVal[$current->Field] = (array)$current;
+            // json fields default to utf8mb4_bin, and we only support that:
+            if (($expectedTypes[$current->Field] ?? '') === 'json') {
+                continue;
+            }
+            if (!empty($current->Collation)) {
+                $normalizedCollation = strtolower($current->Collation);
+                if ($normalizedCollation !== $collation) {
+                    $retVal[$current->Field] = (array)$current;
+                }
             }
         }
         return $retVal;
@@ -259,7 +290,8 @@ class DbUpgrade extends AbstractPlugin
             $table['Name'],
             $collation
         );
-        if (strcasecmp($collation, $table['Collation']) !== 0
+        if (
+            strcasecmp($collation, $table['Collation']) !== 0
             || strcasecmp($charset, $tableCharset) !== 0
             || !empty($problemColumns)
         ) {
@@ -367,23 +399,27 @@ class DbUpgrade extends AbstractPlugin
             $fields = [
                 'fields' => $current->getColumns(),
                 'deleteRule' => $current->getDeleteRule(),
-                'updateRule' => $current->getUpdateRule()
+                'updateRule' => $current->getUpdateRule(),
             ];
             switch ($current->getType()) {
-            case 'FOREIGN KEY':
-                $retVal['foreign'][$current->getName()] = $fields;
-                break;
-            case 'PRIMARY KEY':
-                $retVal['primary']['primary'] = $fields;
-                break;
-            case 'UNIQUE':
-                $retVal['unique'][$current->getName()] = $fields;
-                break;
-            default:
-                throw new \Exception(
-                    'Unexpected constraint type: ' . $current->getType()
-                );
-                break;
+                case 'FOREIGN KEY':
+                    $retVal['foreign'][$current->getName()] = $fields;
+                    break;
+                case 'PRIMARY KEY':
+                    $retVal['primary']['primary'] = $fields;
+                    break;
+                case 'UNIQUE':
+                    $retVal['unique'][$current->getName()] = $fields;
+                    break;
+                case 'CHECK':
+                    // We don't get enough information from getConstraints() to
+                    // handle CHECK constraints, so just ignore them for now:
+                    break;
+                default:
+                    throw new \Exception(
+                        'Unexpected constraint type: ' . $current->getType()
+                    );
+                    break;
             }
         }
         return $retVal;
@@ -424,6 +460,28 @@ class DbUpgrade extends AbstractPlugin
         $sqlcommands = '';
         foreach ($tables as $table) {
             $sqlcommands .= $this->query($this->dbCommands[$table][0], $logsql);
+        }
+        return $sqlcommands;
+    }
+
+    /**
+     * Remove deprecated columns based on the output of getDeprecatedColumns().
+     *
+     * @param array $details Output of getDeprecatedColumns()
+     * @param bool  $logsql  Should we return the SQL as a string rather than
+     * execute it?
+     *
+     * @throws \Exception
+     * @return string       SQL if $logsql is true, empty string otherwise
+     */
+    public function removeDeprecatedColumns($details, $logsql = false)
+    {
+        $sqlcommands = '';
+        foreach ($details as $table => $columns) {
+            foreach ($columns as $column) {
+                $query = "ALTER TABLE `$table` DROP COLUMN `$column`;";
+                $sqlcommands .= $this->query($query, $logsql);
+            }
         }
         return $sqlcommands;
     }
@@ -633,7 +691,8 @@ class DbUpgrade extends AbstractPlugin
                     );
                 }
                 $actualConstr = $this->normalizeConstraints($actual[$type][$name]);
-                if ($constraint['deleteRule'] !== $actualConstr['deleteRule']
+                if (
+                    $constraint['deleteRule'] !== $actualConstr['deleteRule']
                     || $constraint['updateRule'] !== $actualConstr['updateRule']
                 ) {
                     $modified[$name] = $constraint;
@@ -698,7 +757,8 @@ class DbUpgrade extends AbstractPlugin
             foreach ($foreignKeyMatches[0] as $i => $sql) {
                 $fkName = $foreignKeyMatches[1][$i];
                 // Skip constraint if we're logging and it's missing
-                if (isset($missingConstraints[$table])
+                if (
+                    isset($missingConstraints[$table])
                     && $this->constraintIsMissing(
                         $fkName,
                         $missingConstraints[$table]
@@ -725,7 +785,7 @@ class DbUpgrade extends AbstractPlugin
                     'sql' => $sql,
                     'fields' => $this->explodeFields($foreignKeyMatches[2][$i]),
                     'deleteRule' => $deleteRule,
-                    'updateRule' => $updateRule
+                    'updateRule' => $updateRule,
                 ];
             }
 
@@ -775,6 +835,22 @@ class DbUpgrade extends AbstractPlugin
     }
 
     /**
+     * Given a current row default, return true if the current nullability matches
+     * the one found in the SQL provided as the $sql parameter. Return false if there
+     * is a mismatch that will require table structure updates.
+     *
+     * @param bool   $currentNullable Current nullability
+     * @param string $sql             SQL to compare against
+     *
+     * @return bool
+     */
+    protected function nullableMatches(bool $currentNullable, string $sql): bool
+    {
+        $expectedNullable = stripos($sql, 'NOT NULL') ? false : true;
+        return $expectedNullable === $currentNullable;
+    }
+
+    /**
      * Given a table column object, return true if the object's type matches the
      * specified $type parameter.  Return false if there is a mismatch that will
      * require table structure updates.
@@ -791,8 +867,9 @@ class DbUpgrade extends AbstractPlugin
 
         // If it's not a blob or a text (which don't have explicit sizes in our SQL),
         // we should see what the character length is, if any:
-        if ($type != 'blob' && $type != 'text' && $type !== 'mediumtext'
-            && $type != 'longtext'
+        if (
+            $type != 'blob' && $type != 'text' && $type !== 'mediumtext'
+            && $type != 'longtext' && $type != 'json'
         ) {
             $charLen = $column->getCharacterMaximumLength();
             if ($charLen) {
@@ -804,13 +881,18 @@ class DbUpgrade extends AbstractPlugin
         // this is a display width which we can't retrieve using the column metadata
         // object.  Since display width is not important to VuFind, we should ignore
         // this factor when comparing things.
-        if ($type == 'int' || $type == 'tinyint' || $type == 'smallint'
+        if (
+            $type == 'int' || $type == 'tinyint' || $type == 'smallint'
             || $type == 'mediumint' || $type == 'bigint'
         ) {
             [$expectedType] = explode('(', $expectedType);
         }
 
-        return $type == $expectedType;
+        // Some versions of MariaDB store json fields as longtext, while MySQL
+        // actually has an explicit json type. We need a special case to handle
+        // this inconsistency. See: https://mariadb.com/kb/en/json-data-type/
+        return $type == $expectedType
+            || ($type === 'longtext' && $expectedType === 'json');
     }
 
     /**
@@ -864,6 +946,25 @@ class DbUpgrade extends AbstractPlugin
     }
 
     /**
+     * Get a list of deprecated columns found in the database.
+     *
+     * @return array
+     */
+    public function getDeprecatedColumns()
+    {
+        $result = [];
+        foreach ($this->deprecatedColumns as $table => $columns) {
+            $tableData = $this->getTableColumns(($table));
+            foreach ($columns as $column) {
+                if (isset($tableData[$column])) {
+                    $result[$table] = array_merge($result[$table] ?? [], [$column]);
+                }
+            }
+        }
+        return $result;
+    }
+
+    /**
      * Get a list of changed columns in the database tables (associative array,
      * key = table name, value = array of column name => new data type).
      *
@@ -910,15 +1011,21 @@ class DbUpgrade extends AbstractPlugin
             $actualColumns = $this->getTableColumns($table);
             foreach ($expectedColumns as $i => $column) {
                 // Skip column if we're logging and it's missing
-                if (isset($missingColumns[$table])
+                if (
+                    isset($missingColumns[$table])
                     && $this->columnIsMissing($column, $missingColumns[$table])
                 ) {
                     continue;
                 }
                 $currentColumn = $actualColumns[$column];
-                if (!$this->typeMatches($currentColumn, $expectedTypes[$i])
+                if (
+                    !$this->typeMatches($currentColumn, $expectedTypes[$i])
                     || !$this->defaultMatches(
                         $currentColumn->getColumnDefault(),
+                        $columnDefinitions[$column]
+                    )
+                    || !$this->nullableMatches(
+                        $currentColumn->getIsNullable(),
                         $columnDefinitions[$column]
                     )
                 ) {
@@ -1077,7 +1184,8 @@ class DbUpgrade extends AbstractPlugin
             foreach ($expectedKeys as $name => $expected) {
                 if (!isset($actualKeys[$name])) {
                     $add[$name] = $expected;
-                } elseif ($actualKeys[$name]['unique'] !== $expected['unique']
+                } elseif (
+                    $actualKeys[$name]['unique'] !== $expected['unique']
                     || $actualKeys[$name]['definition'] !== $expected['definition']
                 ) {
                     $drop[] = $name;

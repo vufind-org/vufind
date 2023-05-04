@@ -1,0 +1,11 @@
+<?php
+$this->headScript()->appendFile('vendor/cookieconsent.umd.js');
+$this->headScript()->appendFile('cookie.js');
+
+$configJson = json_encode(
+    [
+        'consentDialog' => $this->consentDialogConfig,
+        'controlledVuFindServices' => $this->controlledVuFindServices,
+    ]
+);
+$this->headScript()->appendScript("window.addEventListener('load', function() { VuFind.cookie.setupConsent($configJson); });");

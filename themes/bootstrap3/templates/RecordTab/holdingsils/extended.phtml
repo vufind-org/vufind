@@ -1,4 +1,4 @@
-<?php if (strlen($holding['barcode'] ?? '') > 0): ?>
+<?php if ($this->holdings()->holdingIsVisible($holding)): ?>
   <?php
     $check = $holding['check'] ?? false;
     $checkStorageRetrievalRequest = $holding['checkStorageRetrievalRequest'] ?? false;
@@ -13,15 +13,15 @@
         <span class="holding-field enumchron">
           <?php if ($holding['enumchron'] ?? false): ?>
             (<?=$this->escapeHtml($holding['enumchron'])?>)
-          <?php endif; ?>         
+          <?php endif; ?>
         </span>
         <span class="holding-field barcode">
           <?=$this->escapeHtml($holding['barcode'])?>
         </span>
         <span class="holding-field availability">
           <?php if ($holding['reserve'] == "Y"): ?>
-            <link property="availability" href="http://schema.org/InStoreOnly" />
-            <?=$this->transEsc("On Reserve - Ask at Circulation Desk")?><br />
+            <link property="availability" href="http://schema.org/InStoreOnly">
+            <?=$this->transEsc("On Reserve - Ask at Circulation Desk")?><br>
           <?php endif; ?>
 
           <?php if ($holding['use_unknown_message'] ?? false): ?>
@@ -29,10 +29,10 @@
           <?php else: ?>
             <?php if ($holding['availability']): ?>
               <?php /* Begin Available Items (Holds) */ ?>
-              <span class="text-success"><?=$this->transEsc("Available")?><link property="availability" href="http://schema.org/InStock" /></span>
+              <span class="text-success"><?=$this->transEsc("Available")?><link property="availability" href="http://schema.org/InStock"></span>
             <?php else: ?>
               <?php /* Begin Unavailable Items (Recalls) */ ?>
-              <span class="text-danger"><?=$this->transEsc($holding['status'])?><link property="availability" href="http://schema.org/OutOfStock" /></span>
+              <span class="text-danger"><?=$this->transEsc($holding['status'])?><link property="availability" href="http://schema.org/OutOfStock"></span>
               <?php if ($holding['returnDate'] ?? false): ?>
                 <span class="small return-date"><?=$this->escapeHtml($holding['returnDate'])?></span>
               <?php endif; ?>
@@ -47,24 +47,36 @@
         </span>
         <span class="holding-field storage-retrieval">
           <?php if ($holding['storageRetrievalRequestLink'] ?? false): ?>
-            <a class="<?=$checkStorageRetrievalRequest ? 'checkStorageRetrievalRequest ' : ''?> placeStorageRetrievalRequest" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['storageRetrievalRequestLink']))?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($checkStorageRetrievalRequest ? "storage_retrieval_request_check_text" : "storage_retrieval_request_place_text")?></a>
+            <a class="<?=$checkStorageRetrievalRequest ? 'checkStorageRetrievalRequest ' : ''?> placeStorageRetrievalRequest icon-link" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['storageRetrievalRequestLink']))?>">
+              <?=$this->icon('place-storage-retrieval', 'icon-link__icon') ?>
+              <span class="icon-link__label"><?=$this->transEsc($checkStorageRetrievalRequest ? "storage_retrieval_request_check_text" : "storage_retrieval_request_place_text")?></span>
+            </a>
           <?php endif; ?>
         </span>
         <span class="holding-field ill-request">
           <?php if ($holding['ILLRequestLink'] ?? false): ?>
-            <a class="<?=$checkILLRequest ? 'checkILLRequest ' : ''?>placeILLRequest" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['ILLRequestLink']))?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($checkILLRequest ? "ill_request_check_text" : "ill_request_place_text")?></a>
+            <a class="<?=$checkILLRequest ? 'checkILLRequest ' : ''?>placeILLRequest icon-link" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['ILLRequestLink']))?>">
+              <?=$this->icon('place-ill-request', 'icon-link__icon') ?>
+              <span class="icon-link__label"><?=$this->transEsc($checkILLRequest ? "ill_request_check_text" : "ill_request_place_text")?></span>
+            </a>
           <?php endif; ?>
         </span>
         <?php if ($holding['availability'] ?? false): ?>
           <span class="holding-field place-hold">
             <?php if ($holding['link'] ?? false): ?>
-              <a class="<?=$check ? 'checkRequest ' : ''?>placehold" <?php if (!empty($holding['linkLightbox'])): ?>data-lightbox <?php endif; ?>href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['link']))?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?></a>
+              <a class="<?=$check ? 'checkRequest ' : ''?>placehold icon-link" <?php if (!empty($holding['linkLightbox'])): ?>data-lightbox <?php endif; ?>href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['link']))?>">
+                <?=$this->icon('place-hold', 'icon-link__icon') ?>
+                <span class="icon-link__label"><?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?></span>
+              </a>
             <?php endif; ?>
           </span>
         <?php else: ?>
           <span class="holding-field recall">
             <?php if ($holding['link'] ?? false): ?>
-              <a class="<?=$check ? 'checkRequest' : ''?> placehold" <?php if (!empty($holding['linkLightbox'])): ?>data-lightbox <?php endif; ?>href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['link']))?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($check ? "Check Recall" : "Recall This")?></a>
+              <a class="<?=$check ? 'checkRequest' : ''?> placehold icon-link" <?php if (!empty($holding['linkLightbox'])): ?>data-lightbox <?php endif; ?>href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['link']))?>">
+                <?=$this->icon('place-recall', 'icon-link__icon') ?>
+                <span class="icon-link__label"><?=$this->transEsc($check ? "Check Recall" : "Recall This")?></span>
+              </a>
             <?php endif; ?>
             <?=$this->relais()->renderButtonIfActive($this->driver ?? null)?>
           </span>
@@ -85,17 +97,17 @@
       <?php endif; ?>
       <?php /* Embed item structured data: library, barcode, call number */ ?>
       <?php if ($holding['location'] ?? false): ?>
-        <meta property="seller" content="<?=$this->escapeHtmlAttr($holding['location'])?>" />
+        <meta property="seller" content="<?=$this->escapeHtmlAttr($holding['location'])?>">
       <?php endif; ?>
       <?php if ($holding['barcode'] ?? false): ?>
-        <meta property="serialNumber" content="<?=$this->escapeHtmlAttr($holding['barcode'])?>" />
+        <meta property="serialNumber" content="<?=$this->escapeHtmlAttr($holding['barcode'])?>">
       <?php endif; ?>
       <?php if ($holding['callnumber'] ?? false): ?>
-        <meta property="sku" content="<?=$this->escapeHtmlAttr($holding['callnumber'])?>" />
+        <meta property="sku" content="<?=$this->escapeHtmlAttr($holding['callnumber'])?>">
       <?php endif; ?>
       <?php /* Declare that the item is to be borrowed, not for sale */ ?>
-      <link property="businessFunction" href="http://purl.org/goodrelations/v1#LeaseOut" />
-      <link property="itemOffered" href="#record" />
+      <link property="businessFunction" href="http://purl.org/goodrelations/v1#LeaseOut">
+      <link property="itemOffered" href="#record">
     </td>
   </tr>
 <?php endif; ?>

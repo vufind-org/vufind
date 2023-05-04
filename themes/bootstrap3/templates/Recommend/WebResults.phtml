@@ -11,9 +11,9 @@
       <?php $snippet = $driver->getHighlightedSnippet(); ?>
       <?php $summary = $driver->getSummary(); ?>
       <?php if (!empty($snippet)): ?>
-        <br /><?=$this->highlight($snippet['snippet'])?>
+        <br><?=$this->highlight($snippet['snippet'])?>
       <?php elseif (!empty($summary)): ?>
-        <br /><?=$this->escapeHtml($summary[0])?>
+        <br><?=$this->escapeHtml($summary[0])?>
       <?php endif; ?>
     </li>
     <?php endforeach; ?>

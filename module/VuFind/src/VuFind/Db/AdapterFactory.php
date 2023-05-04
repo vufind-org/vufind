@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Database utility class. May be used as a service or as a standard
  * Laminas factory.
@@ -26,13 +27,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Db;
 
 use Laminas\Config\Config;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
@@ -126,12 +127,12 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
     public function getDriverName($type)
     {
         switch (strtolower($type)) {
-        case 'mysql':
-            return 'mysqli';
-        case 'oci8':
-            return 'Oracle';
-        case 'pgsql':
-            return 'Pdo_Pgsql';
+            case 'mysql':
+                return 'mysqli';
+            case 'oci8':
+                return 'Oracle';
+            case 'pgsql':
+                return 'Pdo_Pgsql';
         }
         return $type;
     }
@@ -146,9 +147,9 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
     protected function getDriverOptions($driver)
     {
         switch ($driver) {
-        case 'mysqli':
-            return ($this->config->Database->verify_server_certificate ?? false)
-                ? [] : [MYSQLI_CLIENT_SSL_DONT_VERIFY_SERVER_CERT];
+            case 'mysqli':
+                return ($this->config->Database->verify_server_certificate ?? false)
+                    ? [] : [MYSQLI_CLIENT_SSL_DONT_VERIFY_SERVER_CERT];
         }
         return [];
     }
@@ -165,17 +166,18 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         // Set up custom options by database type:
         $driver = strtolower($options['driver']);
         switch ($driver) {
-        case 'mysqli':
-            $options['charset'] = $this->config->Database->charset ?? 'utf8mb4';
-            if (strtolower($options['charset']) === 'latin1') {
-                throw new \Exception(
-                    'The latin1 encoding is no longer supported for MySQL databases'
-                    . ' in VuFind. Please convert your database to utf8 using VuFind'
-                    . ' 7.x or earlier BEFORE upgrading to this version.'
-                );
-            }
-            $options['options'] = ['buffer_results' => true];
-            break;
+            case 'mysqli':
+                $options['charset'] = $this->config->Database->charset ?? 'utf8mb4';
+                if (strtolower($options['charset']) === 'latin1') {
+                    throw new \Exception(
+                        'The latin1 encoding is no longer supported for MySQL'
+                        . ' databases in VuFind. Please convert your database'
+                        . ' to utf8 using VuFind 7.x or earlier BEFORE'
+                        . ' upgrading to this version.'
+                    );
+                }
+                $options['options'] = ['buffer_results' => true];
+                break;
         }
 
         // Set up database connection:

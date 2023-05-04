@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SwitchTab Recommendations Module
  * Recommends to use another SearchTab
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
+
 namespace VuFind\Recommend;
 
 /**
@@ -114,7 +116,7 @@ class SwitchTab implements RecommendInterface
      *
      * @param array $tabEnv tabConfig
      *
-     * @return string
+     * @return array|null
      */
     public function getActiveTab($tabEnv)
     {

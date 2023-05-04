@@ -1,0 +1,137 @@
+// Converted from _main.scss by replacing all css variables with less variables
+// mapped to bootstrap variables and and prefixing existing variables with 'cc-'.
+// Variables search regex: var\(--(cc.*?)\)
+// Variables replacement: $$1
+
+$cc-translate-y: 1.6em;
+$cc-modal-box-shadow: 0 0.625em 1.875em rgba(0, 0, 2, .3);
+$cc-modal-margin: 1em;
+$cc-btn-gap: 5px;
+$cc-modal-transition-duration: .25s;
+
+// Mappings from bootstrap:
+$cc-font-weight-bold: $headings-font-weight;
+$cc-btn-border-radius: $btn-border-radius-base;
+$cc-bg: $modal-content-bg;
+$cc-modal-border-radius: $border-radius-base;
+$cc-font-family: $font-family-base;
+$cc-primary-color: $text-color;
+$cc-secondary-color: lighten($text-color, 10%);
+$cc-link-color: $link-color;
+$cc-btn-primary-bg: $btn-primary-bg;
+$cc-btn-primary-color: $btn-primary-color;
+$cc-btn-primary-border-color: $btn-primary-bg;
+$cc-btn-primary-hover-bg: $btn-primary-color;
+$cc-btn-primary-hover-color: $btn-primary-bg;
+$cc-btn-primary-hover-border-color: darken($btn-primary-border, 12%);
+$cc-btn-secondary-bg: $btn-default-bg;
+$cc-btn-secondary-color: $btn-default-color;
+$cc-btn-secondary-border-color: $btn-default-border;
+$cc-btn-secondary-hover-bg: $cc-btn-secondary-color;
+$cc-btn-secondary-hover-color: $cc-btn-secondary-bg;
+$cc-btn-secondary-hover-border-color: darken($btn-default-border, 12%);
+$cc-toggle-knob-height: 23px;
+$cc-toggle-knob-width: 50px;
+$cc-toggle-knob-icon-width: 2px;
+$cc-toggle-on-bg: $gray-light;
+$cc-toggle-off-bg: lighten($cc-toggle-on-bg, 10%);
+$cc-toggle-on-knob-bg: $body-bg;
+$cc-toggle-off-knob-bg: $body-bg;
+$cc-toggle-shadow: $cc-toggle-on-bg;
+$cc-toggle-readonly-bg: lighten($gray-light, 20%);
+$cc-toggle-readonly-knob-bg: $body-bg;
+$cc-toggle-readonly-knob-icon-color: $cc-toggle-readonly-bg;
+$cc-separator-border-color: $well-border;
+$cc-footer-color: $text-color;
+$cc-footer-bg: $panel-footer-bg;
+$cc-footer-border-color: $panel-default-border;
+$cc-overlay-bg: $modal-backdrop-bg;
+$cc-cookie-category-block-bg: $gray-lighter;
+$cc-cookie-category-block-contents-bg: $list-group-bg;
+$cc-cookie-category-block-border: $list-group-border;
+$cc-cookie-category-block-hover-bg: darken($cc-cookie-category-block-bg, 10%);
+$cc-cookie-category-block-hover-border: $cc-cookie-category-block-border;
+$cc-cookie-category-expanded-block-bg: $cc-cookie-category-block-bg;
+$cc-cookie-category-expanded-block-hover-bg: $cc-cookie-category-block-hover-bg;
+
+#cc-main {
+
+    color: $cc-primary-color;
+    font-family: $cc-font-family;
+    font-size: 16px;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    position: relative;
+    line-height: 1.15;
+    -webkit-text-size-adjust: 100%;
+
+    b,
+    em,
+    strong,
+    a,
+    .cm__title{
+        font-weight: $cc-font-weight-bold;
+    }
+
+    a,
+    .cc__link{
+        font-weight: 600;
+        color: $cc-link-color;
+        position: relative;
+        background-image: linear-gradient(currentColor, currentColor);
+        background-position: 0% 100%;
+        background-repeat: no-repeat;
+        background-size: 0% 1px;
+        transition: background-size .25s, color .25s ease;
+
+        &:hover{
+            color: $cc-primary-color;
+            background-size: 100% 1px;
+        }
+    }
+
+    /* Use Firefox's thin style scrollbar */
+    .cm__desc,
+    .pm__body{
+        scrollbar-width: thin;
+        overscroll-behavior: none;
+    }
+
+    /* Show webkit's "cool" scrollbar only on non mobile screens */
+    @media screen and (min-width: 640px){
+        .cm__desc,
+        .pm__body {
+            &::-webkit-scrollbar-thumb{
+                border: .25em solid $cc-bg;
+                -webkit-background-clip: padding-box;
+                background-clip: padding-box;
+                border-radius: 1em;
+                background: $cc-toggle-readonly-bg;
+
+                &:hover {
+                    background: $cc-toggle-off-bg;
+                }
+            }
+
+            &::-webkit-scrollbar {
+                background: transparent;
+                width: 12px;
+            }
+        }
+    }
+}
+
+/** Disable page scroll **/
+html.disable--interaction{
+
+    &.show--consent,
+    &.show--consent body{
+        height: auto!important;
+        overflow: hidden!important;
+    }
+}
+
+@import "./cookie-consent-modal";
+@import "./cookie-preferences-modal";

@@ -1,10 +1,11 @@
 <?php
+
 /**
  * Mink test class for blended search.
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2022.
+ * Copyright (C) The National Library of Finland 2022-2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 /**
@@ -40,20 +42,6 @@ namespace VuFindTest\Mink;
 class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
-     * Standard setup method.
-     *
-     * @return void
-     */
-    public function setUp(): void
-    {
-        // Give up if we're not running in CI:
-        if (!$this->continuousIntegrationRunning()) {
-            $this->markTestSkipped('Continuous integration not running.');
-            return;
-        }
-    }
-
-    /**
      * Get config settings for Blender.ini.
      *
      * @return array
@@ -65,6 +53,15 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
                 'Solr' => 'Items in Library',
                 'SolrAuth' => 'Authors',
             ],
+            'Blending' => [
+                'initialResults' => [
+                    'Solr',
+                    'Solr',
+                    'SolrAuth',
+                    'SolrAuth',
+                ],
+                'blockSize' => 7,
+            ],
             'CheckboxFacets' => [
                 'blender_backend:Solr' => 'Items in Library',
                 'blender_backend:SolrAuth' => 'Authors',
@@ -72,7 +69,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
             'General' => [
                 'default_side_recommend[]'
                     => 'SideFacetsDeferred:Results:CheckboxFacets:Blender',
-            ]
+            ],
         ];
     }
 
@@ -109,17 +106,20 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
         return [
             [
                 ['page' => 1],
-                $expectedFirstPage
+                $expectedFirstPage,
             ],
             [
                 ['page' => 2],
-                $expected
-            ]
+                $expected,
+            ],
         ];
     }
 
     /**
      * Test blended search
+     *
+     * @param array $queryParams    Query parameters
+     * @param array $expectedLabels Expected labels
      *
      * @dataProvider getSearchData
      *
@@ -128,7 +128,15 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
     public function testSearch(array $queryParams, array $expectedLabels): void
     {
         $this->changeConfigs(
-            ['Blender' => $this->getBlenderIniOverrides()],
+            [
+                'config' => [
+                    'SearchTabs' => [
+                        'Solr' => 'Catalog',
+                        'Blender' => 'Blended',
+                    ],
+                ],
+                'Blender' => $this->getBlenderIniOverrides(),
+            ],
             ['Blender']
         );
 
@@ -145,11 +153,22 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals(1 + $offset, intval($start));
         $this->assertEquals(20 + $offset, intval($limit));
 
-        $i = 0;
-        foreach ($this->findCss($page, '.result span.label-source') as $label) {
-            $this->assertEquals($expectedLabels[$i], $label->getText(), $i);
-            ++$i;
+        for ($i = 0; $i < count($expectedLabels); $i++) {
+            $this->assertEquals(
+                $expectedLabels[$i],
+                $this->findCss($page, '.result span.label-source', null, $i)
+                    ->getText(),
+                "Result index $i"
+            );
         }
+
+        // Go to record screen and check active tab:
+        $this->clickCss($page, '#result0 .title');
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            'Blended',
+            $this->findCss($page, '.searchbox li.active')->getText()
+        );
     }
 
     /**

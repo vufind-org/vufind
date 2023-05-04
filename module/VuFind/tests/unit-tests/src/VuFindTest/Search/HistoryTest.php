@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Search;
 
 use VuFind\Db\Table\Search as SearchTable;
@@ -66,7 +67,7 @@ class HistoryTest extends \PHPUnit\Framework\TestCase
             [
                 'Account' => [
                     'schedule_searches' => false,
-                ]
+                ],
             ]
         );
         $history = $this->getHistory(null, null, $config);
@@ -85,7 +86,7 @@ class HistoryTest extends \PHPUnit\Framework\TestCase
             [
                 'Account' => [
                     'schedule_searches' => true,
-                ]
+                ],
             ]
         );
         $history = $this->getHistory(null, null, $config);
@@ -106,8 +107,8 @@ class HistoryTest extends \PHPUnit\Framework\TestCase
             [
                 'Account' => [
                     'schedule_searches' => true,
-                    'scheduled_search_frequencies' => 'Always'
-                ]
+                    'scheduled_search_frequencies' => 'Always',
+                ],
             ]
         );
         $history = $this->getHistory(null, null, $config);
@@ -126,9 +127,9 @@ class HistoryTest extends \PHPUnit\Framework\TestCase
                 'Account' => [
                     'schedule_searches' => true,
                     'scheduled_search_frequencies' => [
-                        1 => 'One', 2 => 'Two'
-                    ]
-                ]
+                        1 => 'One', 2 => 'Two',
+                    ],
+                ],
             ]
         );
         $history = $this->getHistory(null, null, $config);

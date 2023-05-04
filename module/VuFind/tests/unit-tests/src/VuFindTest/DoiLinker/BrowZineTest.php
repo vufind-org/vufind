@@ -1,4 +1,5 @@
 <?php
+
 /**
  * BrowZine Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\DoiLinker;
 
 use VuFind\DoiLinker\BrowZine;
@@ -47,6 +49,8 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Given a connector, wrap it up in a backend and backend manager
+     *
+     * @param Connector $connector Connector
      *
      * @return BackendManager
      */
@@ -102,9 +106,9 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
                             'label' => 'PDF Full Text',
                             'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
                             'data' => $rawData['data'],
-                        ]
-                    ]
-                ]
+                        ],
+                    ],
+                ],
             ],
             [
                 'config' => ['filterType' => 'exclude', 'filter' => ['browzineWebLink']],
@@ -115,9 +119,9 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
                             'label' => 'PDF Full Text',
                             'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
                             'data' => $rawData['data'],
-                        ]
-                    ]
-                ]
+                        ],
+                    ],
+                ],
             ],
             [
                 'config' => ['filterType' => 'include', 'filter' => ['browzineWebLink']],
@@ -128,9 +132,9 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
                             'label' => 'View Complete Issue',
                             'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-open-book-icon.svg',
                             'data' => $rawData['data'],
-                        ]
-                    ]
-                ]
+                        ],
+                    ],
+                ],
             ],
         ];
 

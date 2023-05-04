@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink Feedback module test class.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
@@ -41,20 +43,6 @@ use Behat\Mink\Element\Element;
  */
 class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
 {
-    /**
-     * Standard setup method.
-     *
-     * @return void
-     */
-    public function setUp(): void
-    {
-        // Give up if we're not running in CI:
-        if (!$this->continuousIntegrationRunning()) {
-            $this->markTestSkipped('Continuous integration not running.');
-            return;
-        }
-    }
-
     /**
      * Get config.ini override settings for testing feedback.
      *
@@ -119,7 +107,6 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testFeedbackForm()
     {
-        // By default, no OpenURL on record page:
         $page = $this->setupPage();
         $this->fillInAndSubmitFeedbackForm($page);
         $this->assertEquals(
@@ -138,7 +125,7 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
         // By default, no OpenURL on record page:
         $page = $this->setupPage(
             [
-                'Captcha' => ['types' => ['demo'], 'forms' => 'feedback']
+                'Captcha' => ['types' => ['demo'], 'forms' => 'feedback'],
             ]
         );
         $this->fillInAndSubmitFeedbackForm($page);
@@ -169,8 +156,8 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
                 'Captcha' => [
                     'types' => ['interval'],
                     'forms' => 'feedback',
-                    'action_interval' => 60
-                ]
+                    'action_interval' => 60,
+                ],
             ]
         );
         // Test that submission is blocked:
@@ -180,14 +167,14 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCss($page, '#modal .alert-danger')->getText(),
         );
 
-        // Set up with minimal delay and test that submission is passed:
+        // Set up with no real delay and test that submission is passed:
         $page = $this->setupPage(
             [
                 'Captcha' => [
                     'types' => ['interval'],
                     'forms' => 'feedback',
-                    'action_interval' => 1
-                ]
+                    'action_interval' => 0,
+                ],
             ]
         );
         $this->fillInAndSubmitFeedbackForm($page);

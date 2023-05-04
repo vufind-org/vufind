@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Factory;
 
 /**
@@ -48,17 +49,8 @@ class SolrDefaultBackendFactory extends AbstractSolrBackendFactory
         $this->searchConfig = 'searches';
         $this->searchYaml = 'searchspecs.yaml';
         $this->facetConfig = 'facets';
-    }
-
-    /**
-     * Get the Solr core.
-     *
-     * @return string
-     */
-    protected function getSolrCore()
-    {
-        $config = $this->config->get($this->mainConfig);
-        return $config->Index->default_core ?? 'biblio';
+        $this->defaultIndexName = 'biblio';
+        $this->allowFallbackForIndexName = true;
     }
 
     /**

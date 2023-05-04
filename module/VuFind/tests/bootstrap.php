@@ -1,12 +1,33 @@
 <?php
 
-// Define application environment (default to testing)
-defined('APPLICATION_ENV')
-    || define(
-        'APPLICATION_ENV',
-        (getenv('VUFIND_ENV') ? getenv('VUFIND_ENV') : 'testing')
-    );
+/**
+ * Bootstrap logic for PHPUnit
+ *
+ * PHP version 7
+ *
+ * Copyright (C) Villanova University 2023.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * @category VuFind
+ * @package  Tests
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
+ */
 
+require __DIR__ . '/bootstrap_constants.php';
 require __DIR__ . '/../../../config/constants.config.php';
 
 chdir(APPLICATION_PATH);
@@ -31,8 +52,9 @@ if (file_exists('vendor/autoload.php')) {
 }
 
 // Make sure local config dir exists:
-if ($localDir = \VuFind\Config\Locator::getLocalConfigPath('', null, true)) {
-    if (!file_exists($localDir)) {
-        mkdir($localDir, 0777, true);
-    }
+if (!defined('LOCAL_OVERRIDE_DIR')) {
+    throw new \Exception('LOCAL_OVERRIDE_DIR must be defined');
+}
+if (!file_exists(LOCAL_OVERRIDE_DIR)) {
+    mkdir(LOCAL_OVERRIDE_DIR, 0777, true);
 }

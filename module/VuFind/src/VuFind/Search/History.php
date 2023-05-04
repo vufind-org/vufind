@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Search History Helper
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search;
 
 use Laminas\Config\Config;
@@ -118,6 +120,8 @@ class History
         $saved = $schedule = $unsaved = [];
         foreach ($searchHistory as $current) {
             $search = $current->getSearchObject()->deminify($this->resultsManager);
+            // $current->saved may be 1 (MySQL) or true (PostgreSQL), so we should
+            // avoid a strict === comparison here:
             if ($current->saved == 1) {
                 $saved[] = $search;
             } else {
@@ -145,7 +149,7 @@ class History
         // If custom frequencies are not provided, return defaults:
         if (!isset($this->config->Account->scheduled_search_frequencies)) {
             return [
-                0 => 'schedule_none', 1 => 'schedule_daily', 7 => 'schedule_weekly'
+                0 => 'schedule_none', 1 => 'schedule_daily', 7 => 'schedule_weekly',
             ];
         }
         // If we have a setting, make sure it is properly formatted as an array:

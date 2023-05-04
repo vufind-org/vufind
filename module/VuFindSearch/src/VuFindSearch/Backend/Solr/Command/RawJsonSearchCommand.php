@@ -27,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Solr\Command;
 
 use VuFindSearch\Backend\Solr\Backend;
@@ -87,7 +88,7 @@ class RawJsonSearchCommand extends \VuFindSearch\Command\CallMethodCommand
             $this->getQuery(),
             $this->getOffset(),
             $this->getLimit(),
-            $this->getSearchParameters()
+            $this->getSearchParameters(),
         ];
     }
 

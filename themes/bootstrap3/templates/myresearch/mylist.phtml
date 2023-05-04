@@ -25,7 +25,7 @@
   $user = $this->auth()->isLoggedIn();
 ?>
 
-<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="Expand Sidebar">
+<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="<?=$this->transEsc('sidebar_expand')?>">
   <?=$this->transEsc('Your Account') ?>
 </a>
 
@@ -48,7 +48,7 @@
           $transParams = [
             '%%start%%' => $this->localizedNumber($this->results->getStartRecord()),
             '%%end%%' => $this->localizedNumber($this->results->getEndRecord()),
-            '%%total%%' => $this->localizedNumber($recordTotal)
+            '%%total%%' => $this->localizedNumber($recordTotal),
           ];
         ?>
         <?=$this->translate('showing_items_of_html', $transParams); ?>
@@ -57,14 +57,14 @@
     <div class="search-controls">
       <?php if (isset($list)): ?>
         <?php if ($list->editAllowed($account->isLoggedIn())): ?>
-          <a href="<?=$this->url('editList', ['id' => $list->id]) ?>" class="btn btn-link">
-            <?=$this->icon('user-list-edit') ?>
-            <?=$this->transEsc("edit_list")?>
+          <a href="<?=$this->url('editList', ['id' => $list->id]) ?>" class="btn btn-link icon-link">
+            <?=$this->icon('user-list-edit', 'icon-link__icon') ?>
+            <span class="icon-link__label"><?=$this->transEsc("edit_list")?></span>
           </a>
           <div class="btn-group">
-            <a class="btn btn-link dropdown-toggle" data-toggle="dropdown" href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>">
-              <?=$this->icon('user-list-delete') ?>
-              <?=$this->transEsc("delete_list")?>
+            <a class="btn btn-link dropdown-toggle icon-link" data-toggle="dropdown" href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>">
+              <?=$this->icon('user-list-delete', 'icon-link__icon') ?>
+              <span class="icon-link__label"><?=$this->transEsc("delete_list")?></span>
             </a>
             <ul class="dropdown-menu">
               <li class="dropdown-header"><?=$this->transEsc('confirm_delete') ?></li>

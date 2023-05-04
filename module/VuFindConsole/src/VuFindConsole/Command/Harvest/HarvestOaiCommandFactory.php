@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for OAI harvest command.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Harvest;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -89,6 +91,10 @@ class HarvestOaiCommandFactory implements FactoryInterface
         return new $requestedName(
             $container->get(\VuFindHttp\HttpService::class)->createClient(),
             $this->getHarvestRoot(),
+            null,
+            false,
+            null,
+            $container->get(\VuFind\Config\PathResolver::class),
             ...($options ?? [])
         );
     }

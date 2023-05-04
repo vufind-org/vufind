@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DedupeCommand test.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Command\Util;
 
 use Symfony\Component\Console\Input\InputInterface;
@@ -141,12 +143,12 @@ class DedupeCommandTest extends \PHPUnit\Framework\TestCase
                 [
                     $this->isInstanceOf(InputInterface::class),
                     $this->isInstanceOf(OutputInterface::class),
-                    'Please specify an input file: '
+                    'Please specify an input file: ',
                 ],
                 [
                     $this->isInstanceOf(InputInterface::class),
                     $this->isInstanceOf(OutputInterface::class),
-                    'Please specify an output file: '
+                    'Please specify an output file: ',
                 ]
             )->willReturnOnConsecutiveCalls($fixture, $outputFilename);
         $this->setSuccessfulExpectations($command, $outputFilename);

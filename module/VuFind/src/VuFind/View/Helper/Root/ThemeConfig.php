@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Theme config view helper
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
@@ -76,7 +78,7 @@ class ThemeConfig extends AbstractHelper
         $path = (array)$path;
         $key = array_shift($path) ?? '';
 
-        $mergedConfig = $this->themeInfo->getMergedConfig($key, true);
+        $mergedConfig = $this->themeInfo->getMergedConfig($key);
 
         // Follow the path
         $nextNode = $mergedConfig;

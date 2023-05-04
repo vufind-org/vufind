@@ -1,4 +1,5 @@
 <?php
+
 /**
  * AlphaBrowse Module Controller
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/indexing:alphabetical_heading_browse Wiki
  */
+
 namespace VuFind\Controller;
 
 use Laminas\Config\Config;
@@ -58,7 +60,7 @@ class AlphabrowseController extends AbstractBase
         'topic'  => 'By Topic',
         'author' => 'By Author',
         'title'  => 'By Title',
-        'lcc'    => 'By Call Number'
+        'lcc'    => 'By Call Number',
     ];
 
     /**
@@ -69,7 +71,7 @@ class AlphabrowseController extends AbstractBase
     protected $defaultExtras = [
         'title' => 'author:format:publishDate',
         'lcc' => 'title',
-        'dewey' => 'title'
+        'dewey' => 'title',
     ];
 
     /**

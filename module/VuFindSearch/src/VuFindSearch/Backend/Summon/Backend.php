@@ -26,21 +26,17 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Summon;
 
 use SerialsSolutions\Summon\Laminas as Connector;
 use SerialsSolutions_Summon_Exception as SummonException;
 use SerialsSolutions_Summon_Query as SummonQuery;
-
 use VuFindSearch\Backend\AbstractBackend;
-
 use VuFindSearch\Backend\Exception\BackendException;
-
 use VuFindSearch\Feature\RetrieveBatchInterface;
-
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
-
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Response\RecordCollectionInterface;
 
@@ -177,7 +173,7 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
                 [
                     'idsToFetch' => $currentPage,
                     'pageNumber' => 1,
-                    'pageSize' => $pageSize
+                    'pageSize' => $pageSize,
                 ]
             );
             try {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * AuthorInfo Recommendations Module
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
+
 namespace VuFind\Recommend;
 
 use Laminas\I18n\Translator\TranslatorInterface;
@@ -123,7 +125,8 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     public function setConfig($settings)
     {
         $parts = explode(':', $settings);
-        if (isset($parts[0]) && !empty($parts[0])
+        if (
+            isset($parts[0]) && !empty($parts[0])
             && strtolower(trim($parts[0])) !== 'false'
         ) {
             $this->useViaf = true;
@@ -215,7 +218,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
         $last = $nameParts[0];
         // - move all names up an index, move last name to last
         // - Last, First M. -> First M. Last
-        for ($i = 1;$i < count($nameParts);$i++) {
+        for ($i = 1; $i < count($nameParts); $i++) {
             $nameParts[$i - 1] = $nameParts[$i];
         }
         $nameParts[count($nameParts) - 1] = $last;

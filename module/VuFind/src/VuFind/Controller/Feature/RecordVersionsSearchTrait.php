@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Action Feature Trait - Record Versions Search
  * Depends on method getSearchResultsView and record driver's method getWorkKeys.
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Controller\Feature;
 
 /**

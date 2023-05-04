@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 
 /**
  * Class Email
@@ -27,6 +26,9 @@ declare(strict_types=1);
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
+declare(strict_types=1);
+
 namespace VuFind\Form\Handler;
 
 use Laminas\Config\Config;
@@ -122,10 +124,9 @@ class Email implements HandlerInterface, LoggerAwareInterface
         $recipients = $form->getRecipient($params->fromPost());
         $emailSubject = $form->getEmailSubject($params->fromPost());
 
-        $sendSuccess = true;
-        $success = false;
+        $result = true;
         foreach ($recipients as $recipient) {
-            [$success, $errorMsg] = $this->sendEmail(
+            $success = $this->sendEmail(
                 $recipient['name'],
                 $recipient['email'],
                 $senderName,
@@ -136,12 +137,9 @@ class Email implements HandlerInterface, LoggerAwareInterface
                 $emailMessage
             );
 
-            $sendSuccess = $sendSuccess && $success;
-            if (!$success) {
-                $this->logError($errorMsg);
-            }
+            $result = $result && $success;
         }
-        return $success;
+        return $result;
     }
 
     /**
@@ -155,9 +153,9 @@ class Email implements HandlerInterface, LoggerAwareInterface
     {
         $config = $this->mainConfig;
         $email = $form->getEmailFromAddress()
-            ?: $config->sender_email ?? 'noreply@vufind.org';
+            ?: $config->Feedback->sender_email ?? 'noreply@vufind.org';
         $name = $form->getEmailFromName()
-            ?: $config->sender_name ?? 'VuFind Feedback';
+            ?: $config->Feedback->sender_name ?? 'VuFind Feedback';
 
         return [$name, $email];
     }
@@ -174,7 +172,7 @@ class Email implements HandlerInterface, LoggerAwareInterface
      * @param string $emailSubject   Email subject
      * @param string $emailMessage   Email message
      *
-     * @return array with elements success:boolean, errorMessage:string (optional)
+     * @return bool
      */
     protected function sendEmail(
         $recipientName,
@@ -185,7 +183,7 @@ class Email implements HandlerInterface, LoggerAwareInterface
         $replyToEmail,
         $emailSubject,
         $emailMessage
-    ): array {
+    ): bool {
         try {
             $this->mailer->send(
                 new Address($recipientEmail, $recipientName),
@@ -196,9 +194,12 @@ class Email implements HandlerInterface, LoggerAwareInterface
                 !empty($replyToEmail)
                     ? new Address($replyToEmail, $replyToName) : null
             );
-            return [true, null];
+            return true;
         } catch (MailException $e) {
-            return [false, $e->getMessage()];
+            $this->logError(
+                "Failed to send email to '$recipientEmail': " . $e->getMessage()
+            );
+            return false;
         }
     }
 }

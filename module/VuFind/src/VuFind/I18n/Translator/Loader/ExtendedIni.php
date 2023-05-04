@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Translate Adapter ExtendedIni
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\I18n\Translator\Loader;
 
 use Laminas\I18n\Exception\InvalidArgumentException;

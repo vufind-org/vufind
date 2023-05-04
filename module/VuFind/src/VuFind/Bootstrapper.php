@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Bootstrapper
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind;
 
 use Laminas\Mvc\MvcEvent;
@@ -156,7 +158,7 @@ class Bootstrapper
             [
                 "{$this->config->Site->locale}.UTF8",
                 "{$this->config->Site->locale}.UTF-8",
-                $this->config->Site->locale
+                $this->config->Site->locale,
             ]
         );
         date_default_timezone_set($this->config->Site->timezone);
@@ -215,7 +217,8 @@ class Bootstrapper
         $settings = $this->container->get(LocaleSettings::class);
         $language = $settings->getUserLocale();
         $authManager = $this->container->get(\VuFind\Auth\Manager::class);
-        if (($user = $authManager->isLoggedIn())
+        if (
+            ($user = $authManager->isLoggedIn())
             && $user->last_language != $language
         ) {
             $user->updateLastLanguage($language);

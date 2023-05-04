@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Browse controller view helper
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
@@ -51,24 +53,24 @@ class Browse extends AbstractHelper
     public function getSolrField($action, $backup = null)
     {
         $action = strtolower($action);
-        $backup = strtolower($backup);
+        $backup = strtolower($backup ?? '');
         switch ($action) {
-        case 'dewey':
-            return 'dewey-hundreds';
-        case 'lcc':
-            return 'callnumber-first';
-        case 'author':
-            return 'author_facet';
-        case 'topic':
-            return 'topic_facet';
-        case 'genre':
-            return 'genre_facet';
-        case 'region':
-            return 'geographic_facet';
-        case 'era':
-            return 'era_facet';
+            case 'dewey':
+                return 'dewey-hundreds';
+            case 'lcc':
+                return 'callnumber-first';
+            case 'author':
+                return 'author_facet';
+            case 'topic':
+                return 'topic_facet';
+            case 'genre':
+                return 'genre_facet';
+            case 'region':
+                return 'geographic_facet';
+            case 'era':
+                return 'era_facet';
         }
-        if ($backup == null) {
+        if (empty($backup)) {
             return $action;
         }
         return $this->getSolrField($backup);

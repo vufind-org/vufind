@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Action Helper - Requests Support Methods
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Controller\Plugin;
 
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
@@ -145,7 +147,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
      */
     public function validateIds($ids): bool
     {
-        return (bool)array_diff($ids, $this->getValidIds());
+        return !(bool)array_diff($ids, $this->getValidIds());
     }
 
     /**
@@ -251,7 +253,8 @@ abstract class AbstractRequestBase extends AbstractPlugin
         if (!in_array('requestGroup', $extraHoldFields)) {
             return true;
         }
-        if (!isset($gatheredDetails['level'])
+        if (
+            !isset($gatheredDetails['level'])
             || $gatheredDetails['level'] !== 'title'
         ) {
             return true;
@@ -347,6 +350,9 @@ abstract class AbstractRequestBase extends AbstractPlugin
      */
     protected function getDateFromArray($dateArray)
     {
+        if (!isset($dateArray[2])) {
+            return 0;
+        }
         [$d, $m, $y] = $dateArray;
         return mktime(
             0,

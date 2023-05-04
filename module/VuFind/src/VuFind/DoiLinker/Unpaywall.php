@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Unpaywall DOI linker
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:doi_linkers Wiki
  */
+
 namespace VuFind\DoiLinker;
 
 use VuFind\I18n\Translator\TranslatorAwareInterface;
@@ -39,7 +41,9 @@ use VuFindHttp\HttpServiceAwareInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:doi_linkers Wiki
  */
-class Unpaywall implements DoiLinkerInterface, TranslatorAwareInterface,
+class Unpaywall implements
+    DoiLinkerInterface,
+    TranslatorAwareInterface,
     HttpServiceAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
@@ -81,7 +85,8 @@ class Unpaywall implements DoiLinkerInterface, TranslatorAwareInterface,
      * Given an array of DOIs, perform a lookup and return an associative array
      * of arrays, keyed by DOI. Each array contains one or more associative arrays
      * with required 'link' (URL to related resource) and 'label' (display text)
-     * keys and an optional 'icon' (URL to icon graphic) key.
+     * keys and an optional 'icon' (URL to icon graphic) or localIcon (name of
+     * configured icon in theme) key.
      *
      * @param array $doiArray DOIs to look up
      *

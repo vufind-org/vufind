@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Results as feed" view helper
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use DateTime;
@@ -118,6 +120,7 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
 
         // Create the parent feed
         $feed = new Feed();
+        $feed->setType('rss');
         if (null !== $this->overrideTitle) {
             $feed->setTitle($this->translate($this->overrideTitle));
         } else {
@@ -145,7 +148,7 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
                     [
                         '%%start%%' => $results->getStartRecord(),
                         '%%end%%' => $results->getEndRecord(),
-                        '%%total%%' => $results->getResultTotal()
+                        '%%total%%' => $results->getResultTotal(),
                     ]
                 )
             )

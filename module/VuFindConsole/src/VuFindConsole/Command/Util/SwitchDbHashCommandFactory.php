@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for Util/SwitchDbHashCommand.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Util;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -69,6 +71,8 @@ class SwitchDbHashCommandFactory implements FactoryInterface
         return new $requestedName(
             $config,
             $tableManager->get(\VuFind\Db\Table\User::class),
+            null,
+            $container->get(\VuFind\Config\PathResolver::class),
             ...($options ?? [])
         );
     }

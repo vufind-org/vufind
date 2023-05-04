@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Console command plugin manager
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFindConsole\Command;
 
 use Laminas\ServiceManager\Factory\InvokableFactory;
@@ -71,9 +73,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'util/cleanup_record_cache' => Util\CleanUpRecordCacheCommand::class,
         'util/commit' => Util\CommitCommand::class,
         'util/createHierarchyTrees' => Util\CreateHierarchyTreesCommand::class,
-        'util/cssBuilder' => Util\CssBuilderCommand::class,
         'util/dedupe' => Util\DedupeCommand::class,
         'util/deletes' => Util\DeletesCommand::class,
+        'util/expire_access_tokens' => Util\ExpireAccessTokensCommand::class,
         'util/expire_auth_hashes' => Util\ExpireAuthHashesCommand::class,
         'util/expire_external_sessions' => Util\ExpireExternalSessionsCommand::class,
         'util/expire_searches' => Util\ExpireSearchesCommand::class,
@@ -81,6 +83,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'util/index_reserves' => Util\IndexReservesCommand::class,
         'util/lint_marc' => Util\LintMarcCommand::class,
         'util/optimize' => Util\OptimizeCommand::class,
+        'util/purge_cached_record' => Util\PurgeCachedRecordCommand::class,
         'util/scssBuilder' => Util\ScssBuilderCommand::class,
         'util/sitemap' => Util\SitemapCommand::class,
         'util/suppressed' => Util\SuppressedCommand::class,
@@ -130,9 +133,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Util\CommitCommand::class => Util\AbstractSolrCommandFactory::class,
         Util\CreateHierarchyTreesCommand::class =>
         Util\CreateHierarchyTreesCommandFactory::class,
-        Util\CssBuilderCommand::class => Util\CssBuilderCommandFactory::class,
         Util\DedupeCommand::class => InvokableFactory::class,
         Util\DeletesCommand::class => Util\AbstractSolrCommandFactory::class,
+        Util\ExpireAccessTokensCommand::class =>
+            Util\ExpireAccessTokensCommandFactory::class,
         Util\ExpireAuthHashesCommand::class =>
             Util\ExpireAuthHashesCommandFactory::class,
         Util\ExpireExternalSessionsCommand::class =>
@@ -145,6 +149,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             Util\AbstractSolrAndIlsCommandFactory::class,
         Util\LintMarcCommand::class => InvokableFactory::class,
         Util\OptimizeCommand::class => Util\AbstractSolrCommandFactory::class,
+        Util\PurgeCachedRecordCommand::class => Util\PurgeCachedRecordCommandFactory::class,
         Util\ScssBuilderCommand::class => Util\ScssBuilderCommandFactory::class,
         Util\SitemapCommand::class => Util\SitemapCommandFactory::class,
         Util\SuppressedCommand::class =>

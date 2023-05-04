@@ -92,32 +92,28 @@
                 </xsl:for-each>
 
                 <!-- SUBJECT -->
-                <xsl:if test="//nlm:kwd-group">
-                    <xsl:for-each select="//nlm:kwd-group">
-                        <xsl:if test="position()=1">
-                            <xsl:for-each select="./nlm:kwd">
-                                <xsl:if test="normalize-space()">
-                                    <field name="topic">
-                                        <xsl:value-of select="normalize-space()"/>
-                                    </field>
-                                    <field name="topic_facet">
-                                        <xsl:value-of select="normalize-space()"/>
-                                    </field>
-                                </xsl:if>
-                            </xsl:for-each>
-                        </xsl:if>
-                    </xsl:for-each>
-                </xsl:if>
-                <xsl:if test="//nlm:subject">
-                    <xsl:for-each select="//nlm:subject">
-                        <field name="topic">
-                            <xsl:value-of select="normalize-space()"/>
-                        </field>
-                        <field name="topic_facet">
-                            <xsl:value-of select="normalize-space()"/>
-                        </field>
-                    </xsl:for-each>
-                </xsl:if>
+                <xsl:for-each select="//nlm:kwd-group">
+                    <xsl:if test="position()=1">
+                        <xsl:for-each select="./nlm:kwd">
+                            <xsl:if test="normalize-space()">
+                                <field name="topic">
+                                    <xsl:value-of select="normalize-space()"/>
+                                </field>
+                                <field name="topic_facet">
+                                    <xsl:value-of select="normalize-space()"/>
+                                </field>
+                            </xsl:if>
+                        </xsl:for-each>
+                    </xsl:if>
+                </xsl:for-each>
+                <xsl:for-each select="//nlm:subject">
+                    <field name="topic">
+                        <xsl:value-of select="normalize-space()"/>
+                    </field>
+                    <field name="topic_facet">
+                        <xsl:value-of select="normalize-space()"/>
+                    </field>
+                </xsl:for-each>
 
                 <!-- DESCRIPTION -->
                 <xsl:if test="//nlm:abstract/nlm:p">

@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 
 /**
  * Class SorterTest
@@ -27,6 +26,9 @@ declare(strict_types=1);
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
+declare(strict_types=1);
+
 namespace VuFindTest\I18n;
 
 use VuFind\I18n\Sorter;
@@ -56,7 +58,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
                     'locale' => 'en',
                     'respectLocale' => false,
                 ],
-                -1
+                -1,
             ],
             [
                 [
@@ -64,7 +66,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
                     'locale' => 'en',
                     'respectLocale' => false,
                 ],
-                0
+                0,
             ],
             [
                 [
@@ -72,7 +74,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
                     'locale' => 'en',
                     'respectLocale' => false,
                 ],
-                1
+                1,
             ],
             [
                 [
@@ -80,7 +82,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
                     'locale' => 'en',
                     'respectLocale' => false,
                 ],
-                0
+                0,
             ],
             [
                 [
@@ -88,7 +90,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
                     'locale' => 'en',
                     'respectLocale' => true,
                 ],
-                -1
+                -1,
             ],
             [
                 [
@@ -96,7 +98,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
                     'locale' => 'en',
                     'respectLocale' => true,
                 ],
-                0
+                0,
             ],
             [
                 [
@@ -104,7 +106,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
                     'locale' => 'en',
                     'respectLocale' => true,
                 ],
-                1
+                1,
             ],
             [
                 [
@@ -112,7 +114,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
                     'locale' => 'en',
                     'respectLocale' => true,
                 ],
-                0
+                0,
             ],
             [
                 [
@@ -120,7 +122,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
                     'locale' => 'cs',
                     'respectLocale' => false,
                 ],
-                1
+                1,
             ],
             [
                 [
@@ -128,7 +130,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
                     'locale' => 'cs',
                     'respectLocale' => true,
                 ],
-                -1
+                -1,
             ],
             [
                 [
@@ -136,13 +138,16 @@ class SorterTest extends \PHPUnit\Framework\TestCase
                     'locale' => 'cs',
                     'respectLocale' => true,
                 ],
-                0
+                0,
             ],
         ];
     }
 
     /**
      * Test compare function
+     *
+     * @param array $test     Test data
+     * @param int   $expected Expected result
      *
      * @dataProvider compareProvider
      *
@@ -239,6 +244,9 @@ class SorterTest extends \PHPUnit\Framework\TestCase
     /**
      * Test sort function
      *
+     * @param array $test     Test data
+     * @param array $expected Expected result
+     *
      * @dataProvider sortProvider
      *
      * @return void
@@ -313,6 +321,9 @@ class SorterTest extends \PHPUnit\Framework\TestCase
     /**
      * Test asort function
      *
+     * @param array $test     Test data
+     * @param array $expected Expected result
+     *
      * @dataProvider asortProvider
      *
      * @return void
@@ -326,6 +337,11 @@ class SorterTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($result);
     }
 
+    /**
+     * Data provider for testNatsort()
+     *
+     * @return array
+     */
     public static function natsortProvider(): array
     {
         return [
@@ -350,6 +366,9 @@ class SorterTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test natsort function
+     *
+     * @param array $test     Test data
+     * @param array $expected Expected result
      *
      * @dataProvider natsortProvider
      *
