@@ -51,6 +51,30 @@ return [
         'active' => false,
         'compiled.less'
     ],
+    /**
+     * Configuration for a single or multiple favicons.
+     *
+     * Can be a single string that is a path to an .ico icon relative to the theme image folder.
+     * 
+     * For multiple favicons the value must be an array of arrays of attributes
+     * that will be rendered as link elements.
+     * 
+     * Example:
+     *  [
+     *      [
+     *          'href' => 'favicon-32x32.png',
+     *          'rel' => 'icon',
+     *          'type' => 'image/png',
+     *          'sizes' => '32x32',
+     *      ],
+    *       [
+     *          'href' => 'favicon-180x180.png',
+     *          'rel' => 'apple-touch-icon',
+     *          'type' => 'image/png',
+     *          'sizes' => '180x180',
+     *      ],
+     *  ]
+     */
     'favicon' => 'vufind-favicon.ico',
     'helpers' => [
         'factories' => [
