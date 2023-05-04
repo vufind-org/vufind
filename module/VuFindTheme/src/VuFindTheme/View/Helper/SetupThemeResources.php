@@ -117,17 +117,6 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
             );
         }
 
-        // Compile and load LESS (make sure we prepend them in the appropriate order
-        // theme resources should load before extras added by individual templates):
-        foreach (array_reverse($this->container->getLessCss()) as $current) {
-            $parts = $this->container->parseSetting($current);
-            $headLink()->forcePrependStylesheet(
-                $headLink()->addLessStylesheet(trim($parts[0])),
-                isset($parts[1]) ? trim($parts[1]) : 'all',
-                isset($parts[2]) ? trim($parts[2]) : false
-            );
-        }
-
         // Insert link elements for favicons specified in the `favicons` property of theme.config.php.
         // If `favicon` is a string then treat it as a single file path to an .ico icon.
         // If `favicon` is an array then treat each item as an assoc array of html attributes and render a link element for each.
