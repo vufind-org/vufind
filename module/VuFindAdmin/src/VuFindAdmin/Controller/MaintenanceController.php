@@ -65,12 +65,14 @@ class MaintenanceController extends AbstractAdmin
         // Load the AdminScripts.ini settings
         $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
             ->get('AdminScripts')->toArray();
+        $globalConfig = $config['Global'] ?? [];
+        unset($config['Global']);
 
         // Filter out any commands that the current user does not have permission to run:
         $permission = $this->permission();
-        $filter = function ($script) use ($permission) {
-            return !isset($script['permission'])
-                || $permission->isAuthorized($script['permission']);
+        $filter = function ($script) use ($permission, $globalConfig) {
+            $requiredPermission = $script['permission'] ?? $globalConfig['defaultPermission'] ?? null;
+            return empty($requiredPermission) || $permission->isAuthorized($requiredPermission);
         };
         return array_filter($config, $filter);
     }
