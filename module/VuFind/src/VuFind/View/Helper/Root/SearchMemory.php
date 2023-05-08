@@ -76,7 +76,7 @@ class SearchMemory extends AbstractHelper
             $searchClassId = $lastSearch->getBackendId();
             $params = $lastSearch->getParams();
             // Use last settings for params that are not stored in the search:
-            foreach (['limit', 'view', 'sort'] as $setting) {
+            foreach (['limit', 'view', 'sort', 'page'] as $setting) {
                 $value
                     = $this->memory->retrieveLastSetting($searchClassId, $setting);
                 if ($value) {

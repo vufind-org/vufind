@@ -178,6 +178,7 @@ class Memory
             'limit' => $params->getLimit(),
             'sort' => $sort === $defaultSort ? null : $sort,
             'view' => $params->getView(),
+            'page' => $params->getPage(),
         ];
         // Special case: RSS view should not be persisted:
         if (strtolower($settings['view']) == 'rss') {
