@@ -14,6 +14,7 @@
   $cover = $coverDetails['html'];
   $thumbnail = false;
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('list');
+  $describedById = $this->record($this->driver)->getTitleDescribedById();
 ?>
 <li class="result<?php if ($this->driver->supportsAjaxStatus()): ?> ajaxItem<?php endif ?>">
   <?php if ($cover):
@@ -36,7 +37,7 @@
         <div class="resultItemLine1">
           <?php $missing = $this->driver instanceof \VuFind\RecordDriver\Missing; ?>
           <?php if (!$missing): ?><a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->driver))?>" class="getFull" data-view="<?=$this->params->getOptions()->getListViewOption() ?>"><?php endif; ?>
-            <span class="title"><?=$this->record($this->driver)->getTitleHtml()?></span>
+            <span id="<?=$describedById?>" class="title"><?=$this->record($this->driver)->getTitleHtml()?></span>
           <?php if (!$missing): ?></a><?php endif; ?>
           <?php foreach ($this->driver->tryMethod('getTitlesAltScript', [], []) as $altTitle): ?>
             <div class="title-alt">

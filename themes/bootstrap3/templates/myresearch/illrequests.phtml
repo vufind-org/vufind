@@ -48,13 +48,14 @@
       <?php foreach ($this->recordList as $resource): ?>
         <?php $iteration++; ?>
         <?php $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
+        <?php $describedById = $this->record($resource)->getTitleDescribedById(); ?>
         <li id="record<?=$this->escapeHtmlAttr($resource->getUniqueId()) ?>" class="result">
           <?php if ($this->cancelForm && isset($ilsDetails['cancel_details'])): ?>
             <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $resource->getUniqueId()); ?>
             <div class="checkbox">
               <input type="hidden" name="cancelAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>">
               <label>
-                <input type="checkbox" name="cancelSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" id="checkbox_<?=$safeId?>">
+                <input type="checkbox" name="cancelSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" id="checkbox_<?=$safeId?>" aria-describedby="<?=$describedById?>" aria-label="<?=$this->transEscAttr('select_item_ill_request_cancel')?>">
               </label>
             </div>
           <?php endif; ?>
@@ -82,11 +83,11 @@
                 if (is_a($resource, 'VuFind\\RecordDriver\\SolrDefault') && !is_a($resource, 'VuFind\\RecordDriver\\Missing')) {
                   $title = $resource->getTitle();
                   $title = empty($title) ? $this->transEsc('Title not available') : $this->escapeHtml($title);
-                  echo '<a href="' . $this->escapeHtmlAttr($this->recordLinker()->getUrl($resource))
+                  echo '<a id="' . $describedById . '" href="' . $this->escapeHtmlAttr($this->recordLinker()->getUrl($resource))
                     . '" class="title">' . $title . '</a>';
                 } elseif (isset($ilsDetails['title']) && !empty($ilsDetails['title'])) {
                   // If the record is not available in Solr, perhaps the ILS driver sent us a title we can show...
-                  echo $this->escapeHtml($ilsDetails['title']);
+                  echo '<span id="' . $describedById . '">' . $this->escapeHtml($ilsDetails['title']) . '</span>';
                 } else {
                   // Last resort -- indicate that no title could be found.
                   echo $this->transEsc('Title not available');

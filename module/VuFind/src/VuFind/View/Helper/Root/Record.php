@@ -707,4 +707,14 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     {
         return array_values(array_unique($links, SORT_REGULAR));
     }
+
+    /**
+     * Get the unique title id of the record
+     *
+     * @return string
+     */
+    public function getTitleDescribedById()
+    {
+        return "{$this->driver->getSourceIdentifier()}|{$this->driver->getUniqueId()}";
+    }
 }

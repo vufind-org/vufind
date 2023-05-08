@@ -93,13 +93,14 @@
     <ul class="record-list">
       <?php $i = 0; foreach ($this->transactions as $resource): ?>
         <?php $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
+        <?php $describedById = $this->record($resource)->getTitleDescribedById(); ?>
         <li id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>" class="result">
           <?php if ($this->renewForm): ?>
             <div class="checkbox">
               <?php if (isset($ilsDetails['renewable']) && $ilsDetails['renewable'] && isset($ilsDetails['renew_details'])): ?>
                 <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['renew_details']); ?>
                 <label>
-                  <input class="checkbox-select-item" type="checkbox" name="renewSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" id="checkbox_<?=$safeId?>">
+                  <input class="checkbox-select-item" type="checkbox" name="renewSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" id="checkbox_<?=$safeId?>" aria-describedby="<?=$describedById?>" aria-label="<?=$this->transEscAttr('select_item_checked_out_renew')?>">
                 </label>
                 <input type="hidden" name="selectAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>">
                 <input type="hidden" name="renewAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>">
@@ -132,11 +133,11 @@
                 if (is_a($resource, 'VuFind\\RecordDriver\\SolrDefault') && !is_a($resource, 'VuFind\\RecordDriver\\Missing')) {
                   $title = $resource->getTitle();
                   $title = empty($title) ? $this->transEsc('Title not available') : $this->escapeHtml($title);
-                  echo '<a href="' . $this->escapeHtmlAttr($this->recordLinker()->getUrl($resource)) .
+                  echo '<a id="' . $describedById . '" href="' . $this->escapeHtmlAttr($this->recordLinker()->getUrl($resource)) .
                     '" class="title">' . $title . '</a>';
                 } elseif (isset($ilsDetails['title']) && !empty($ilsDetails['title'])) {
                   // If the record is not available in Solr, perhaps the ILS driver sent us a title we can show...
-                  echo $this->escapeHtml($ilsDetails['title']);
+                  echo '<span id="' . $describedById . '">' . $this->escapeHtml($ilsDetails['title']) . '</span>';
                 } else {
                   // Last resort -- indicate that no title could be found.
                   echo $this->transEsc('Title not available');
