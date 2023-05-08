@@ -1,7 +1,7 @@
 {
     "__comment__": [
-        "Rename this file from composer.local.json.dist to composer.local.json to"
-        "manage your local dependencies without changing the core composer.json."
+        "Rename this file from composer.local.json.dist to composer.local.json to",
+        "manage your local dependencies without changing the core composer.json.",
         "See https://github.com/wikimedia/composer-merge-plugin for more details."
     ],
     "require": {
