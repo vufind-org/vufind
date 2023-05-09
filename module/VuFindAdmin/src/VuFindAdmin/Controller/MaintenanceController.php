@@ -50,8 +50,60 @@ class MaintenanceController extends AbstractAdmin
         $view = $this->createViewModel();
         $view->caches = $this->serviceLocator->get(\VuFind\Cache\Manager::class)
             ->getCacheList();
+        $view->scripts = $this->getScripts();
         $view->setTemplate('admin/maintenance/home');
         return $view;
+    }
+
+    /**
+     * Get a list of the names of scripts available to run thorugh the admin panel.
+     *
+     * @return array
+     */
+    protected function getScripts(): array
+    {
+        // Load the AdminScripts.ini settings
+        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
+            ->get('AdminScripts')->toArray();
+        $globalConfig = $config['Global'] ?? [];
+        unset($config['Global']);
+
+        // Filter out any commands that the current user does not have permission to run:
+        $permission = $this->permission();
+        $filter = function ($script) use ($permission, $globalConfig) {
+            $requiredPermission = $script['permission'] ?? $globalConfig['defaultPermission'] ?? null;
+            return empty($requiredPermission) || $permission->isAuthorized($requiredPermission);
+        };
+        return array_filter($config, $filter);
+    }
+
+    /**
+     * Run script action.
+     *
+     * @return mixed
+     */
+    public function scriptAction()
+    {
+        $script = $this->params()->fromRoute('name');
+        $scripts = $this->getScripts();
+        $details = $scripts[$script] ?? null;
+        if (empty($details['command'])) {
+            $this->flashMessenger()->addErrorMessage('Unknown command: ' . $script);
+        } else {
+            $code = $output = null;
+            exec($details['command'], $output, $code);
+            $successCode = intval($details['successCode'] ?? 0);
+            if ($code !== $successCode) {
+                $this->flashMessenger()->addErrorMessage(
+                    "Command failed; expected $successCode but received $code"
+                );
+            } else {
+                $this->flashMessenger()->addSuccessMessage(
+                    "Success ($script)! Output = " . implode("\n", $output)
+                );
+            }
+        }
+        return $this->redirect()->toRoute('admin/maintenance');
     }
 
     /**
