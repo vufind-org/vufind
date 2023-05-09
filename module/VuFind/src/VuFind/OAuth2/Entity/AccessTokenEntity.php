@@ -54,6 +54,7 @@ class AccessTokenEntity implements AccessTokenEntityInterface, \JsonSerializable
      *
      * @return string
      */
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         $properties = [
