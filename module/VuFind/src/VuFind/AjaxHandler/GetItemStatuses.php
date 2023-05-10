@@ -6,6 +6,7 @@
  * PHP version 7
  *
  * Copyright (C) Villanova University 2018.
+ * Copyright (C) The National Library of Finland 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,6 +26,7 @@
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Chris Delis <cedelis@uillinois.edu>
  * @author   Tuan Nguyen <tuan@yorku.ca>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -52,6 +54,7 @@ use VuFind\Session\Settings as SessionSettings;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Chris Delis <cedelis@uillinois.edu>
  * @author   Tuan Nguyen <tuan@yorku.ca>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
