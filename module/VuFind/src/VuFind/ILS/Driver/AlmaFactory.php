@@ -69,7 +69,6 @@ class AlmaFactory implements FactoryInterface
         // passed in as options):
         $driver = new $requestedName(
             $container->get(\VuFind\Date\Converter::class),
-            $container->get(\VuFind\Config\PluginManager::class),
             ...($options ?: [])
         );
 

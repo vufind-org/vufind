@@ -79,13 +79,6 @@ class Alma extends AbstractBase implements
     protected $dateConverter;
 
     /**
-     * Configuration loader
-     *
-     * @var \VuFind\Config\PluginManager
-     */
-    protected $configLoader;
-
-    /**
      * Mappings from location type to item status. Overrides any other item status.
      *
      * @var array
@@ -95,15 +88,11 @@ class Alma extends AbstractBase implements
     /**
      * Constructor
      *
-     * @param \VuFind\Date\Converter       $dateConverter Date converter object
-     * @param \VuFind\Config\PluginManager $configLoader  Plugin manager
+     * @param \VuFind\Date\Converter $dateConverter Date converter object
      */
-    public function __construct(
-        \VuFind\Date\Converter $dateConverter,
-        \VuFind\Config\PluginManager $configLoader
-    ) {
+    public function __construct(\VuFind\Date\Converter $dateConverter)
+    {
         $this->dateConverter = $dateConverter;
-        $this->configLoader = $configLoader;
     }
 
     /**
@@ -145,7 +134,7 @@ class Alma extends AbstractBase implements
      *                                     to the response.
      *
      * @throws ILSException
-     * @return NULL|SimpleXMLElement
+     * @return null|SimpleXMLElement|array
      */
     protected function makeRequest(
         $path,
@@ -378,17 +367,17 @@ class Alma extends AbstractBase implements
         // use a paginator for paging through many items.
         $apiPagingParams = '';
         if ($options['itemLimit'] ?? null) {
-            $apiPagingParams = 'limit=' . urlencode($options['itemLimit'])
+            $apiPagingParams = '&limit=' . urlencode($options['itemLimit'])
                 . '&offset=' . urlencode($options['offset'] ?? 0);
         }
 
         // The path for the API call. We call "ALL" available items, but not at once
         // as a pagination mechanism is used. If paging params are not set for some
         // reason, the first 10 items are called which is the default API behaviour.
-        $itemsPath = '/bibs/' . rawurlencode($id) . '/holdings/ALL/items?'
-            . $apiPagingParams
-            . '&order_by=library,location,enum_a,enum_b&direction=desc'
-            . '&expand=due_date';
+        $itemsPath = '/bibs/' . rawurlencode($id) . '/holdings/ALL/items'
+            . '?order_by=library,location,enum_a,enum_b&direction=desc'
+            . '&expand=due_date'
+            . $apiPagingParams;
 
         if ($items = $this->makeRequest($itemsPath)) {
             // Get the total number of items returned from the API call and set it to
