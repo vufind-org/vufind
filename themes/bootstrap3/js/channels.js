@@ -102,7 +102,7 @@ VuFind.register('channels', function Channels() {
     $(op).on('swipe', function channelDrag() {
       switchPopover(false);
     });
-    $(op).find('.channel-record').unbind('click').click(function channelRecord(event) {
+    $(op).find('.channel-record').unbind('click').on("click", function channelRecord(event) {
       var record = $(event.delegateTarget);
       if (!record.data("popover-loaded")) {
         record.popover({
@@ -181,8 +181,8 @@ VuFind.register('channels', function Channels() {
 
   bindChannelAddMenu = function bindChannelAddMenuFunc(iteration, channel) {
     var scope = $(channel).parent(".channel-wrapper");
-    $(scope).find('.channel-add-menu .dropdown-menu a').click(selectAddedChannel);
-    $(scope).find('.channel-add-menu .add-btn').click(function addChannels(e) {
+    $(scope).find('.channel-add-menu .dropdown-menu a').on("click", selectAddedChannel);
+    $(scope).find('.channel-add-menu .add-btn').on("click", function addChannels(e) {
       var links = $(e.target).closest('.channel-add-menu').find('.dropdown-menu a');
       for (var i = 0; i < links.length && i < 2; i++) {
         links[i].click();

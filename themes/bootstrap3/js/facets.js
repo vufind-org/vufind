@@ -301,7 +301,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
 
   function setup() {
     lightboxFacetSorting();
-    $('.js-facet-next-page').click(function facetLightboxMore() {
+    $('.js-facet-next-page').on("click", function facetLightboxMore() {
       var button = $(this);
       var page = parseInt(button.attr('data-page'), 10);
       if (button.attr('disabled')) {
@@ -329,7 +329,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
     $('#modal').on('show.bs.modal', function facetListHeight() {
       $('#modal .lightbox-scroll').css('max-height', window.innerHeight - margin);
     });
-    $(window).resize(function facetListResize() {
+    $(window).on("resize", function facetListResize() {
       $('#modal .lightbox-scroll').css('max-height', window.innerHeight - margin);
     });
   }

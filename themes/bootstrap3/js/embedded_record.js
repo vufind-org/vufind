@@ -16,7 +16,7 @@ VuFind.register('embedded', function embedded() {
         storage.push(str);
       }
     }
-    sessionStorage.setItem(_STORAGEKEY, $.unique(storage).join(_DELIM));
+    sessionStorage.setItem(_STORAGEKEY, $.uniqueSort(storage).join(_DELIM));
   }
   function addToStorage(id, tab) {
     _STATUS[id] = tab;
@@ -77,7 +77,7 @@ VuFind.register('embedded', function embedded() {
       });
     }
     if (click && !$tab.parent().hasClass('default')) {
-      $tab.click();
+      $tab.trigger("click");
     }
     return true;
   }

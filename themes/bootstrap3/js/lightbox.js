@@ -113,10 +113,10 @@ VuFind.register('lightbox', function Lightbox() {
       $(forms[i]).on('submit', _formSubmit);
     }
     // Select all checkboxes
-    $('#modal').find('.checkbox-select-all').change(function lbSelectAllCheckboxes() {
+    $('#modal').find('.checkbox-select-all').on("change", function lbSelectAllCheckboxes() {
       $(this).closest('.modal-body').find('.checkbox-select-item').prop('checked', this.checked);
     });
-    $('#modal').find('.checkbox-select-item').change(function lbSelectAllDisable() {
+    $('#modal').find('.checkbox-select-item').on("change", function lbSelectAllDisable() {
       $(this).closest('.modal-body').find('.checkbox-select-all').prop('checked', false);
     });
     // Recaptcha
@@ -424,8 +424,8 @@ VuFind.register('lightbox', function Lightbox() {
     // information about which button was clicked here as checking focused button
     // doesn't work on all browsers and platforms.
     $('form[data-lightbox]').each(function bindFormSubmitsLightbox(i, form) {
-      $(form).find('[type=submit]').click(_storeClickedStatus);
-      $('[type="submit"][form="' + form.id + '"]').click(_storeClickedStatus);
+      $(form).find('[type=submit]').on("click", _storeClickedStatus);
+      $('[type="submit"][form="' + form.id + '"]').on("click", _storeClickedStatus);
     });
 
     // Display images in the lightbox
