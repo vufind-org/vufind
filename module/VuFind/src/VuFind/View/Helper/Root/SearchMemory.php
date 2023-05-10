@@ -84,6 +84,7 @@ class SearchMemory extends AbstractHelper
                     $params->$method($value);
                 }
             }
+
             $urlHelper = $this->getView()->plugin('url');
             $url = $urlHelper($lastSearch->getOptions()->getSearchAction())
                 . $lastSearch->getUrlQuery()->getParams(false);
