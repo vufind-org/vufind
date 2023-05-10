@@ -292,7 +292,7 @@ class GetItemStatuses extends AbstractBase implements
                 $useUnknownStatus = true;
             }
             // Check for non-reserves:
-            if ($info['reserve'] === 'N') {
+            if ($info['reserve'] !== 'Y') {
                 $reserve = false;
             }
             // Store call number/location info:
@@ -500,18 +500,12 @@ class GetItemStatuses extends AbstractBase implements
     ): string {
         if ($useUnknownStatus) {
             $key = 'unknown';
+        } elseif ('false' === $available) {
+            $key = 'unavailable';
+        } elseif ('uncertain' === $available) {
+            $key = 'uncertain';
         } else {
-            switch ($available) {
-                case 'false':
-                    $key = 'unavailable';
-                    break;
-                case 'uncertain':
-                    $key = 'uncertain';
-                    break;
-                default:
-                    $key = 'available';
-                    break;
-            }
+            $key = 'available';
         }
         return $messages[$key] ?? '';
     }

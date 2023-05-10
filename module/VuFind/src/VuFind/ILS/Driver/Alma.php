@@ -265,15 +265,86 @@ class Alma extends AbstractBase implements
     }
 
     /**
-     * Given an item, return the availability status.
+     * Given an item, return its availability and status.
      *
      * @param \SimpleXMLElement $item Item data
      *
-     * @return bool
+     * @return array Availability and status
      */
-    protected function getAvailabilityFromItem($item)
+    protected function getItemAvailabilityAndStatus(\SimpleXMLElement $item): array
     {
-        return (string)$item->item_data->base_status === '1';
+        // Check location type to status mappings first since they override
+        // everything else:
+        [$available, $status] = $this->getItemStatusFromLocationTypeMap($item);
+
+        // Normal checks for status if no mapping found above:
+        if (null === $status) {
+            $status = (string)$item->item_data->base_status[0]->attributes()['desc'];
+            $duedate = $item->item_data->due_date
+                ? $this->parseDate((string)$item->item_data->due_date) : null;
+            if ($duedate && 'Item not in place' === $status) {
+                $status = 'Checked Out';
+            }
+
+            $processType = (string)($item->item_data->process_type ?? '');
+            if ($processType && 'LOAN' !== $processType) {
+                $status = $this->getTranslatableStatusString(
+                    $item->item_data->process_type
+                );
+            }
+        }
+
+        // Normal check for availability if no mapping found above:
+        if (null === $available) {
+            $available = (string)$item->item_data->base_status === '1'
+                ? ItemStatus::STATUS_AVAILABLE
+                : ItemStatus::STATUS_UNAVAILABLE;
+        }
+
+        return [$available, $status];
+    }
+
+    /**
+     * Given an item, return its availability and status based on location type
+     * mappings.
+     *
+     * @param \SimpleXMLElement $item Item data
+     *
+     * @return array Availability and status
+     */
+    protected function getItemStatusFromLocationTypeMap(\SimpleXMLElement $item): array
+    {
+        $available = null;
+        $status = null;
+        if (!$this->locationTypeToItemStatus) {
+            return [null, null];
+        }
+
+        $locationType = $this->getItemLocationType($item);
+        if (
+            $locationType
+            && isset($this->locationTypeToItemStatus[$locationType])
+        ) {
+            $parts = explode(
+                ':',
+                $this->locationTypeToItemStatus[$locationType]
+            );
+            $status = new TranslatableString($parts[0], $parts[0]);
+            if (isset($parts[1])) {
+                switch ($parts[1]) {
+                    case 'unavailable':
+                        $available = ItemStatus::STATUS_UNAVAILABLE;
+                        break;
+                    case 'uncertain':
+                        $available = ItemStatus::STATUS_UNCERTAIN;
+                        break;
+                    default:
+                        $available = ItemStatus::STATUS_AVAILABLE;
+                        break;
+                }
+            }
+        }
+        return [$available, $status];
     }
 
     /**
@@ -330,55 +401,11 @@ class Alma extends AbstractBase implements
                 $holdingId = (string)$item->holding_data->holding_id;
                 $itemId = (string)$item->item_data->pid;
                 $barcode = (string)$item->item_data->barcode;
-                $status = (string)$item->item_data->base_status[0]
-                    ->attributes()['desc'];
-                $duedate = $item->item_data->due_date
-                    ? $this->parseDate((string)$item->item_data->due_date) : null;
-                if ($duedate && 'Item not in place' === $status) {
-                    $status = 'Checked Out';
-                }
-
                 $itemNotes = !empty($item->item_data->public_note)
                     ? [(string)$item->item_data->public_note] : null;
-
-                $processType = (string)($item->item_data->process_type ?? '');
-                if ($processType && 'LOAN' !== $processType) {
-                    $status = $this->getTranslatableStatusString(
-                        $item->item_data->process_type
-                    );
-                }
-
-                $available = null;
-                if ($this->locationTypeToItemStatus) {
-                    $locationType = $this->getItemLocationType($item);
-                    if (
-                        $locationType
-                        && isset($this->locationTypeToItemStatus[$locationType])
-                    ) {
-                        $parts = explode(
-                            ':',
-                            $this->locationTypeToItemStatus[$locationType]
-                        );
-                        $status = new TranslatableString($parts[0], $parts[0]);
-                        if (isset($parts[1])) {
-                            switch ($parts[1]) {
-                                case 'unavailable':
-                                    $available = ItemStatus::STATUS_AVAILABLE;
-                                    break;
-                                case 'uncertain':
-                                    $available = ItemStatus::STATUS_UNCERTAIN;
-                                    break;
-                                default:
-                                    $available = ItemStatus::STATUS_AVAILABLE;
-                                    break;
-                            }
-                        }
-                    }
-                }
-
-                if (null === $available) {
-                    $available = $this->getAvailabilityFromItem($item);
-                }
+                $duedate = $item->item_data->due_date
+                    ? $this->parseDate((string)$item->item_data->due_date) : null;
+                [$available, $status] = $this->getItemAvailabilityAndStatus($item);
 
                 $description = null;
                 if (!empty($item->item_data->description)) {
