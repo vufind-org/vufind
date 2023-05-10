@@ -389,9 +389,11 @@ class AbstractSearch extends AbstractBase
 
             // Remember the current URL as the last search.
             $this->rememberSearch($results);
+
+            // Try to save the page of the search into additional parameters:
             if ($page = $view->params->getPage()) {
                 $results->setAdditionalParameters([
-                    'page' => $page
+                    'page' => $page,
                 ]);
             }
             // Add to search history:
