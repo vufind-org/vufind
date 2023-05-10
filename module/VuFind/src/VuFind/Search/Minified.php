@@ -125,6 +125,13 @@ class Minified
     public $ex = [];
 
     /**
+     * Additional parameters
+     *
+     * @var array
+     */
+    public $ap = [];
+
+    /**
      * Constructor. Building minified object from the
      *    searchObject passed in. Needs to be kept
      *    up-to-date with the deminify() function on
@@ -153,6 +160,9 @@ class Minified
 
         // Extra data has implementation-specific contents, store as is
         $this->ex = $searchObject->getExtraData();
+
+        // Additional parameters contains data i.e page number.
+        $this->ap = $searchObject->getAdditionalParameters();
     }
 
     /**

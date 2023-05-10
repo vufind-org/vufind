@@ -182,6 +182,13 @@ abstract class Results
     protected $hierarchicalFacetHelper = null;
 
     /**
+     * Additional parameters
+     *
+     * @var array
+     */
+    protected $additionalParameters = [];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Params $params        Object representing user
@@ -614,8 +621,6 @@ abstract class Results
      * @param array $data Extra data
      *
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function setExtraData(array $data): void
     {
@@ -623,6 +628,33 @@ abstract class Results
         if (!empty($data)) {
             error_log(get_class($this) . ': Extra data passed but not handled');
         }
+    }
+
+    /**
+     * Get additional parameters for the search.
+     *
+     * Additional parameters is used to store i.e page of the results.
+     * Contents must be serializable. It is recommended to make the array as small
+     * as possible.
+     *
+     * @return array
+     */
+    public function getAdditionalParameters(): array
+    {
+        // Not implemented in the base class
+        return $this->additionalParameters;
+    }
+
+    /**
+     * Set additional parameters for the search.
+     *
+     * @param array $data Additional parameters
+     *
+     * @return void
+     */
+    public function setAdditionalParameters(array $data): void
+    {
+        $this->additionalParameters = $data;
     }
 
     /**
@@ -639,6 +671,7 @@ abstract class Results
         $this->queryTime = $minified->s;
         $this->resultTotal = $minified->r;
         $this->setExtraData($minified->ex);
+        $this->setAdditionalParameters($minified->ap);
     }
 
     /**

@@ -84,10 +84,15 @@ class SearchMemory extends AbstractHelper
                     $params->$method($value);
                 }
             }
-
             $urlHelper = $this->getView()->plugin('url');
             $url = $urlHelper($lastSearch->getOptions()->getSearchAction())
                 . $lastSearch->getUrlQuery()->getParams(false);
+
+            // Try to append page number from extra params saved in results object
+            $additionalParameters = $lastSearch->getAdditionalParameters();
+            if ($additionalParameters['page']) {
+                $url .= "&page={$additionalParameters['page']}";
+            }
 
             $escaper = $this->getView()->plugin('escapeHtml');
             return $prefix . '<a href="' . $escaper($url) . '">' . $link . '</a>'
