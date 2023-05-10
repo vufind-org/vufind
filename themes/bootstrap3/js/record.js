@@ -72,8 +72,8 @@ function refreshCommentList($target, recordId, recordSource) {
       var $commentList = $target.find('.comment-list');
       $commentList.empty();
       $commentList.append(VuFind.updateCspNonce(response.data.html));
-      $commentList.find('.delete').unbind('click').on("click", function commentRefreshDeleteClick() {
-        var commentId = $(this).attr('id').substr('recordComment'.length);
+      $commentList.find('.delete').off("click").on("click", function commentRefreshDeleteClick() {
+        var commentId = $(this).attr('id').substring('recordComment'.length);
         deleteRecordComment(this, recordId, recordSource, commentId);
         return false;
       });
@@ -103,7 +103,7 @@ function refreshRecordRating(recordId, recordSource) {
 function registerAjaxCommentRecord(_context) {
   var context = typeof _context === "undefined" ? document : _context;
   // Form submission
-  $(context).find('form.comment-form').unbind('submit').on("submit", function commentFormSubmit() {
+  $(context).find('form.comment-form').off("submit").on("submit", function commentFormSubmit() {
     var form = this;
     var id = form.id.value;
     var recordSource = form.source.value;
@@ -164,7 +164,7 @@ function handleAjaxTabLinks(_context) {
     var $a = $(this);
     var href = $a.attr('href');
     if (typeof href !== 'undefined' && href.match(/\/AjaxTab[/?]/)) {
-      $a.unbind('click').on("click", function linkClick() {
+      $a.off("click").on("click", function linkClick() {
         var tabid = $('.record-tabs .nav-tabs li.active').data('tab');
         var $tab = $('.' + tabid + '-tab');
         $tab.html('<div class="tab-pane ' + tabid + '-tab">' + VuFind.loading() + '</div>');

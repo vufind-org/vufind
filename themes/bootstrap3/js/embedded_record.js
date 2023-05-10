@@ -144,12 +144,12 @@ VuFind.register('embedded', function embedded() {
             } else {
               var $firstTab = $(longNode).find('.list-tab-toggle.active');
               if ($firstTab.length === 0) {
-                $firstTab = $(longNode).find('.list-tab-toggle:eq(0)');
+                $firstTab = $(longNode).find('.list-tab-toggle').first();
               }
               ajaxLoadTab($firstTab.attr('id'), true);
             }
             // Bind tab clicks
-            longNode.find('.list-tab-toggle').click(function embeddedTabLoad() {
+            longNode.find('.list-tab-toggle').on('click', function embeddedTabLoad() {
               if (!$(this).parent().hasClass('noajax')) {
                 addToStorage(divID, this.id);
               }

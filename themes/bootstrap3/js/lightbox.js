@@ -414,10 +414,10 @@ VuFind.register('lightbox', function Lightbox() {
   function bind(el) {
     var target = el || document;
     $(target).find('a[data-lightbox]')
-      .unbind('click', _constrainLink)
+      .off('click', _constrainLink)
       .on('click', _constrainLink);
     $(target).find('form[data-lightbox]')
-      .unbind('submit', _formSubmit)
+      .off('submit', _formSubmit)
       .on('submit', _formSubmit);
 
     // Handle submit buttons attached to a form as well as those in a form. Store
@@ -430,8 +430,8 @@ VuFind.register('lightbox', function Lightbox() {
 
     // Display images in the lightbox
     $('[data-lightbox-image]', el).each(function lightboxOpenImage(i, link) {
-      $(link).unbind("click", _constrainLink);
-      $(link).bind("click", function lightboxImageRender(event) {
+      $(link).off("click", _constrainLink);
+      $(link).on("click", function lightboxImageRender(event) {
         event.preventDefault();
         var url = link.dataset.lightboxHref || link.href || link.src;
         var imageCheck = $.ajax({

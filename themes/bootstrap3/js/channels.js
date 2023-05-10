@@ -102,7 +102,7 @@ VuFind.register('channels', function Channels() {
     $(op).on('swipe', function channelDrag() {
       switchPopover(false);
     });
-    $(op).find('.channel-record').unbind('click').on("click", function channelRecord(event) {
+    $(op).find('.channel-record').off("click").on("click", function channelRecord(event) {
       var record = $(event.delegateTarget);
       if (!record.data("popover-loaded")) {
         record.popover({

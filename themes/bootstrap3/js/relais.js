@@ -46,7 +46,7 @@ VuFind.register('relais', function Relais() {
   function errorCallback(failLink) {
     $('#requestButton').html("<input class='btn btn-primary' data-dismiss='modal' id='cancelRelaisRequest' type='submit' value='" + VuFind.translate('close') + "'>");
     $('#requestMessage').html(VuFind.translate('relais_error_html', {'%%url%%': failLink}));
-    $('#cancelRelaisRequest').unbind('click').on("click", cancelRequestOnClick);
+    $('#cancelRelaisRequest').off("click").on("click", cancelRequestOnClick);
   }
 
   function makeRequest(url, failLink) {
@@ -58,7 +58,7 @@ VuFind.register('relais', function Relais() {
         var obj = JSON.parse(response.data.result);
         $('#requestButton').html("<input class='btn btn-primary' data-dismiss='modal' id='cancelRelaisRequest' type='submit' value='" + VuFind.translate('close') + "'>");
         $('#requestMessage').html("<b>" + VuFind.translate('relais_success_label') + "</b> " + VuFind.translate('relais_success_message', {'%%id%%': obj.RequestNumber}));
-        $('#cancelRelaisRequest').unbind('click').on("click", cancelRequestOnClick);
+        $('#cancelRelaisRequest').off("click").on("click", cancelRequestOnClick);
       },
       error: function makeRequestErrorWrapper() { errorCallback(failLink); }
     });
@@ -80,14 +80,14 @@ VuFind.register('relais', function Relais() {
             "<input class='btn btn-primary' id='makeRelaisRequest' type='submit' value='" + VuFind.translate('confirm_dialog_yes') + "'>"
             + "&nbsp;<input class='btn btn-primary' data-dismiss='modal' id='cancelRelaisRequest' type='submit' value='" + VuFind.translate('confirm_dialog_no') + "'>"
           );
-          $('#makeRelaisRequest').unbind('click').on("click", function makeRequestOnClick() {
+          $('#makeRelaisRequest').off("click").on("click", function makeRequestOnClick() {
             var orderUrl = VuFind.path + '/AJAX/JSON?' + $.param({
               method: 'relaisOrder',
               oclcNumber: oclc
             });
             makeRequest(orderUrl, failLink);
           });
-          $('#cancelRelaisRequest').unbind('click').on("click", cancelRequestOnClick);
+          $('#cancelRelaisRequest').off("click").on("click", cancelRequestOnClick);
         } else {
           errorCallback(failLink);
         }
