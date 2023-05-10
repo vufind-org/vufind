@@ -30,6 +30,8 @@
 
 namespace VuFind\Controller\Feature;
 
+use VuFind\Service\Feature\RecordVersionsTrait;
+
 /**
  * VuFind Action Feature Trait - Record Versions Search
  *
@@ -41,6 +43,8 @@ namespace VuFind\Controller\Feature;
  */
 trait RecordVersionsSearchTrait
 {
+    use RecordVersionsTrait;
+
     /**
      * Show results of versions search.
      *
@@ -65,13 +69,9 @@ trait RecordVersionsSearchTrait
             return $this->forwardTo('Search', 'Home');
         }
 
-        $mapFunc = function ($val) {
-            return '"' . addcslashes($val, '"') . '"';
-        };
-
         $query = $this->getRequest()->getQuery();
-        $query->lookfor = implode(' OR ', array_map($mapFunc, (array)$keys));
-        $query->type = 'WorkKeys';
+        $query->lookfor = $this->getSearchStringFromWorkKeys((array)$keys);
+        $query->type = $this->getWorkKeysSearchType();
 
         // Don't save to history -- history page doesn't handle correctly:
         $this->saveToHistory = false;

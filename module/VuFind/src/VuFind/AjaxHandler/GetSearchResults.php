@@ -55,6 +55,7 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
+    use \VuFind\Service\Feature\RecordVersionsTrait;
 
     /**
      * ResultsManager
@@ -207,12 +208,9 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
         if ('versions' === $searchType) {
             $id = $searchParams['id'] ?? null;
             $keys = $searchParams['keys'] ?? null;
-            $record = null;
             if ($id) {
                 $record = $this->recordLoader->load($id, $backend, true);
-                if ($record instanceof \VuFind\RecordDriver\Missing) {
-                    $record = null;
-                } else {
+                if (!($record instanceof \VuFind\RecordDriver\Missing)) {
                     $keys = $record->tryMethod('getWorkKeys');
                 }
             }
@@ -220,12 +218,8 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
                 return null;
             }
 
-            $mapFunc = function ($val) {
-                return '"' . addcslashes($val, '"') . '"';
-            };
-
-            $searchParams['lookfor'] = implode(' OR ', array_map($mapFunc, (array)$keys));
-            $searchParams['type'] = 'WorkKeys';
+            $searchParams['lookfor'] = $this->getSearchStringFromWorkKeys((array)$keys);
+            $searchParams['type'] = $this->getWorkKeysSearchType();
         }
 
         $results = $this->resultsManager->get($backend);
