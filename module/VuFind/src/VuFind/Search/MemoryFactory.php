@@ -67,10 +67,17 @@ class MemoryFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
+        $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
         $session = new Container(
             'Search',
-            $container->get(\Laminas\Session\SessionManager::class)
+            $sessionManager
         );
-        return new $requestedName($session);
+        return new $requestedName(
+            $session,
+            $sessionManager->getId(),
+            $container->get('Request'),
+            $container->get(\VuFind\Db\Table\PluginManager::class)->get('Search'),
+            $container->get(\VuFind\Search\Results\PluginManager::class)
+        );
     }
 }

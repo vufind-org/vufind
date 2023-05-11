@@ -15,7 +15,7 @@
   <?php if (!empty($this->containingLists)): ?>
     <p><?=$this->transEsc('This item is already part of the following list/lists') ?>:
     <?php foreach ($this->containingLists as $i => $list): ?>
-      <a href="<?=$this->url('userList', ['id' => $list['id']]) ?>" data-lightbox-ignore><?=$this->escapeHtml($list['title'])?></a><?php if($i < count($this->containingLists) - 1): ?>, <?php endif; ?>
+      <a href="<?=$this->url('userList', ['id' => $list['id']]) ?>" data-lightbox-ignore><?=$this->escapeHtml($list['title'])?></a><?php if ($i < count($this->containingLists) - 1): ?>, <?php endif; ?>
     <?php endforeach; ?>
     </p><hr/>
   <?php endif; ?>

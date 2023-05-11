@@ -5,8 +5,9 @@
   }
   $seeAlso = $this->driver->getSeeAlso();
   $useFor = $this->driver->getUseFor();
+  $recordLinker = $this->recordLinker($this->results);
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
-  $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $this->recordLinker()->getUrl($this->driver));
+  $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $recordLinker->getUrl($this->driver));
   $cover = $coverDetails['html'];
 ?>
 <?php if ($cover): ?>
@@ -22,7 +23,7 @@
   <?php endif ?>
   <div class="media-body">
     <div class="resultItemLine1">
-      <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->driver))?>" class="title"><?=$this->escapeHtml($heading)?></a>
+      <a href="<?=$this->escapeHtmlAttr($recordLinker->getUrl($this->driver))?>" class="title"><?=$this->escapeHtml($heading)?></a>
     </div>
 
     <div class="resultItemLine2">

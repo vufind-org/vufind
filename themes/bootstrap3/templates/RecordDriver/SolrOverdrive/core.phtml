@@ -17,10 +17,10 @@ $button2 = false;
 if ($avail->code == 'od_code_login_for_avail') {
     $message = $this->transEsc('od_code_login_for_avail');
     $alert_level = "info";
-} elseif($avail->code == 'od_account_noaccess') {
+} elseif ($avail->code == 'od_account_noaccess') {
     $message = $this->transEsc('od_code_contentnotavail');
     $alert_level = "info";
-} elseif($avail->data) {
+} elseif ($avail->data) {
     $checkedOut = $isOnHold = false;
     $checkedOutResult = $this->driver->isCheckedOut();
     if (!$checkedOutResult->status && $user) {

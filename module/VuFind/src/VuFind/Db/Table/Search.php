@@ -290,6 +290,7 @@ class Search extends Gateway
                 $minified = $normalized->getMinified();
                 $minified->id = $existingRow->getSearchObject()->id;
                 $existingRow->search_object = serialize($minified);
+                $existingRow->session_id = $sessionId;
                 $existingRow->save();
             }
             // Register the appropriate search history database row with the current

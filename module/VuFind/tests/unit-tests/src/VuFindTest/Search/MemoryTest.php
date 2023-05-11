@@ -49,10 +49,10 @@ class MemoryTest extends \PHPUnit\Framework\TestCase
      */
     public function testBasicMemory()
     {
-        $mem = new Memory(new Container('test'));
+        $mem = $this->getMemory();
         $this->assertEquals(null, $mem->retrieveSearch());
         $url = 'http://test';
-        $mem->rememberSearch($url);
+        $mem->rememberSearch($url, -123);
         $this->assertEquals($url, $mem->retrieveSearch());
     }
 
@@ -63,9 +63,9 @@ class MemoryTest extends \PHPUnit\Framework\TestCase
      */
     public function testForgetting()
     {
-        $mem = new Memory(new Container('test'));
+        $mem = $this->getMemory();
         $url = 'http://test';
-        $mem->rememberSearch($url);
+        $mem->rememberSearch($url, -123);
         $this->assertEquals($url, $mem->retrieveSearch());
         $mem->forgetSearch();
         $this->assertEquals(null, $mem->retrieveSearch());
@@ -78,8 +78,8 @@ class MemoryTest extends \PHPUnit\Framework\TestCase
      */
     public function testEmptyURL()
     {
-        $mem = new Memory(new Container('test'));
-        $mem->rememberSearch('');
+        $mem = $this->getMemory();
+        $mem->rememberSearch('', -123);
         $this->assertEquals(null, $mem->retrieveSearch());
     }
 
@@ -90,12 +90,38 @@ class MemoryTest extends \PHPUnit\Framework\TestCase
      */
     public function testDisable()
     {
-        $mem = new Memory(new Container('test'));
+        $mem = $this->getMemory();
         $url = 'http://test';
-        $mem->rememberSearch($url);
+        $mem->rememberSearch($url, -123);
         $this->assertEquals($url, $mem->retrieveSearch());
         $mem->disable();
-        $mem->rememberSearch('http://ignoreme');
+        $mem->rememberSearch('http://ignoreme', -124);
         $this->assertEquals($url, $mem->retrieveSearch());
+    }
+
+    /**
+     * Create a search memory class
+     *
+     * @return Memory
+     */
+    protected function getMemory(): Memory
+    {
+        $mockRequest = $this->getMockBuilder(
+            \Laminas\Http\PhpEnvironment\Request::class
+        )->disableOriginalConstructor()
+            ->getMock();
+        $mockSearchTable = $this->getMockBuilder(\VuFind\Db\Table\Search::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $mockManager = $this->getMockBuilder(
+            \VuFind\Search\Results\PluginManager::class
+        )->disableOriginalConstructor()->getMock();
+        return new Memory(
+            new Container('test'),
+            'fake_session',
+            $mockRequest,
+            $mockSearchTable,
+            $mockManager
+        );
     }
 }

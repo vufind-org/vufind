@@ -424,18 +424,20 @@ class FormTest extends \PHPUnit\Framework\TestCase
      * Get a mock Form object.
      *
      * @param string $formId Form identifier
+     * @param array  $params Parameters to pass to setFormId
+     * @param array  $prefill Prefill data to pass to setFormId
      *
      * @return Form
      * @throws \Exception
      */
-    protected function getMockTestForm($formId)
+    protected function getMockTestForm($formId, $params = [], $prefill = [])
     {
         $form = new Form(
             $this->getMockTestFormYamlReader(),
             $this->createMock(\Laminas\View\HelperPluginManager::class),
             $this->createMock(\VuFind\Form\Handler\PluginManager::class)
         );
-        $form->setFormId($formId);
+        $form->setFormId($formId, $params, $prefill);
         return $form;
     }
 
@@ -841,6 +843,128 @@ class FormTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             $expectedSubject,
             $form->getEmailSubject($form->getData())
+        );
+    }
+
+    /**
+     * Test prefilling values for inputs from form configuration
+     *
+     * @return void
+     */
+    public function testPrefill(): void
+    {
+        $form = $this->getMockTestForm(
+            'TestPrefill',
+            [],
+            [
+                'message' => 'Here is your message', // Should be prefilled
+                'secret_code' => 'new_secret', // Should be prefilled
+                'phone' => '123456789', //Should not be prefilled
+            ]
+        );
+        $this->assertEquals(
+            [
+                [
+                    'type' => 'text',
+                    'name' => 'name',
+                    'group' => '__sender__',
+                    'label' => 'Sender Name',
+                    'settings' => ['size' => 50],
+                ],
+                [
+                    'type' => 'email',
+                    'name' => 'email',
+                    'group' => '__sender__',
+                    'label' => 'feedback_email',
+                    'settings' => ['size' => 254],
+                ],
+                [
+                    'type' => 'textarea',
+                    'name' => 'message',
+                    'label' => 'Comments',
+                    'settings' => [
+                        'cols' => 50,
+                        'rows' => 8,
+                        'value' => 'Here is your message',
+                    ],
+                ],
+                [
+                    'type' => 'text',
+                    'name' => 'phone',
+                    'label' => 'Phone Number',
+                    'settings' => ['size' => 50],
+                ],
+                [
+                    'type' => 'hidden',
+                    'name' => 'secret_code',
+                    'label' => '',
+                    'settings' => [
+                        'value' => 'new_secret',
+                    ],
+                ],
+                [
+                    'type' => 'submit',
+                    'name' => 'submit',
+                    'label' => 'Send',
+                ],
+            ],
+            $form->getFormElementConfig()
+        );
+    }
+
+    /**
+     * Test protecting fields from being prefilled
+     *
+     * @return void
+     */
+    public function testPrefillProtectedFields(): void
+    {
+        $form = $this->getMockTestForm(
+            'TestPrefillProtectedFields',
+            ['userAgent' => 'VuFind Browser 1.0'],
+            [
+                'userAgent' => 'My Browser 1.0',
+                'submit'    => 'Bad submit value',
+            ]
+        );
+        $this->assertEquals(
+            [
+                [
+                    'type' => 'text',
+                    'name' => 'name',
+                    'group' => '__sender__',
+                    'label' => 'Sender Name',
+                    'settings' => ['size' => 50],
+                ],
+                [
+                    'type' => 'email',
+                    'name' => 'email',
+                    'group' => '__sender__',
+                    'label' => 'feedback_email',
+                    'settings' => ['size' => 254],
+                ],
+                [
+                    'type' => 'textarea',
+                    'name' => 'message',
+                    'label' => 'Comments',
+                    'settings' => [
+                        'cols' => 50,
+                        'rows' => 8,
+                    ],
+                ],
+                [
+                    'type' => 'hidden',
+                    'name' => 'useragent',
+                    'label' => 'User Agent',
+                    'settings' => ['value' => 'VuFind Browser 1.0'],
+                ],
+                [
+                    'type' => 'submit',
+                    'name' => 'submit',
+                    'label' => 'Send',
+                ],
+            ],
+            $form->getFormElementConfig()
         );
     }
 }

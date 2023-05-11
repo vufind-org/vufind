@@ -16,7 +16,7 @@
 
     <div class="external-links">
       <?php $pLink = $this->driver->getPLink();
-          if($pLink): ?>
+          if ($pLink): ?>
         <span>
           <a href="<?=$this->escapeHtmlAttr($pLink)?>">
             <?=$this->transEsc('View in EDS')?>
@@ -65,7 +65,7 @@
         <?php if (!empty($item['Data'])): ?>
         <tr>
           <th><?=empty($item['Label']) ? '' : $this->transEsc($item['Label']) . ':'?></th>
-          <td><?=$this->driver->linkUrls($item['Data'])?></td>
+          <td class="record__biblio-value"><?=$this->driver->linkUrls($item['Data'])?></td>
         </tr>
         <?php endif; ?>
       <?php endforeach; ?>

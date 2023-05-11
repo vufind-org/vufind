@@ -478,7 +478,9 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Make sure we're printing
         $this->assertEqualsWithTimeout(
             'print=1',
-            [$this, 'getCurrentQueryString']
+            function () {
+                return $this->getCurrentQueryString(true);
+            }
         );
     }
 

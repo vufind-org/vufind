@@ -234,7 +234,9 @@ $(document).ready(function hierarchyTreeReady() {
               204: function jsTree204Status(/*json, status, request*/) { // No Content
                 buildTreeWithXml(cb);
               },
-              503: function jsTree503Status(/*json, status, request*/) { // Service Unavailable
+              503: function jsTree503Status(json /*, status, request*/) { // Service Unavailable
+                var response = JSON.parse(json.responseText);
+                console.error("JSON tree unavailable; message: " + (typeof response.error.message === "string" ? response.error.message : json.responseText));
                 buildTreeWithXml(cb);
               }
             }

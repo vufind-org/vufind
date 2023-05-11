@@ -16,7 +16,7 @@ JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $validatorCallback, 'SET'); ?>
 <h2><?=$this->transEsc('Text this') ?>: <span class="title-in-heading"><?=$this->escapeHtml($this->driver->getBreadcrumb())?></span></h2>
-<form method="post" name="smsRecord" class="form-record-sms"<?php if(isset($this->validation) && !empty($this->validation)):?> data-lightbox-onsubmit="phoneNumberValidation"<?php endif; ?>>
+<form method="post" name="smsRecord" class="form-record-sms"<?php if (isset($this->validation) && !empty($this->validation)):?> data-lightbox-onsubmit="phoneNumberValidation"<?php endif; ?>>
   <?=$this->flashmessages()?>
   <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" />
   <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" />

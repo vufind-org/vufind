@@ -32,7 +32,7 @@
             '%%lookfor%%' => $this->escapeHtml($reservesLookfor)
           ];
         ?>
-        <?=$this->translate('showing_results_of_for_html', $transParams); ?><?php if($qtime): ?>,<?php endif; ?>
+        <?=$this->translate('showing_results_of_for_html', $transParams); ?><?php if ($qtime): ?>,<?php endif; ?>
       <?php endif; ?>
       <?php if ($qtime): ?>
         <?=$this->transEsc('query time')?>: <?=$this->localizedNumber($qtime, 2) . $this->transEsc('seconds_abbrev')?>

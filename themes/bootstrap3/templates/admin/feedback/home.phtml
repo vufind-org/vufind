@@ -13,7 +13,7 @@ $this->headTitle($this->translate('VuFind Administration - Feedback Management')
         <?=$this->translate('Form name')?>
         <select name="form_name" id="form_name" class="form-control">
           <option value="ALL"><?=$this->translate('All')?></option>
-          <?php foreach($this->uniqueForms as $formName):?>
+          <?php foreach ($this->uniqueForms as $formName):?>
             <option value="<?=$this->escapeHtmlAttr($formName)?>"<?php if ($formName === ($this->params['form_name'] ?? null)): ?> selected="selected"<?php endif;?>>
               <?=$this->escapeHtml($formName) ?>
             </option>
@@ -24,7 +24,7 @@ $this->headTitle($this->translate('VuFind Administration - Feedback Management')
         <?=$this->translate('Site URL')?>
         <select name="site_url" id="site_url" class="form-control">
           <option value="ALL"><?=$this->translate('All')?></option>
-          <?php foreach($this->uniqueSites as $site):?>
+          <?php foreach ($this->uniqueSites as $site):?>
             <option value="<?=$this->escapeHtmlAttr($site)?>"<?php if ($site === ($this->params['site_url'] ?? null)): ?> selected="selected"<?php endif;?>>
               <?=$this->escapeHtml($site) ?>
             </option>

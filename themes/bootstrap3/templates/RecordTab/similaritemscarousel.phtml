@@ -37,7 +37,7 @@
               </div>
             </a>
           </div>
-          <?php if(($index + 1) % $perPage == 0 && $index < count($similarRecords) - 1): ?>
+          <?php if (($index + 1) % $perPage == 0 && $index < count($similarRecords) - 1): ?>
       </div>
       <div class="item">
           <?php endif; ?>
@@ -63,11 +63,11 @@
   $script .= <<<JS
 var normalizeHeightCount = $('#similar-items-carousel img').length;
 function normalizeHeights() {
-  if(--normalizeHeightCount > 0) return;
+  if (--normalizeHeightCount > 0) return;
   var tallest = 0;
   var items = $('#similar-items-carousel .hover-overlay');
   items.each(function() { //add heights to array
-    if(tallest < $(this).height()) {
+    if (tallest < $(this).height()) {
       tallest = $(this).height();
     }
   });

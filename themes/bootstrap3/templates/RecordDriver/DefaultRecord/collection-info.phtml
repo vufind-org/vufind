@@ -9,12 +9,12 @@
   <?php if ($QRCode || $cover || $preview): ?>
     <div class="media-left <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
       <?php /* Display thumbnail if appropriate: */ ?>
-      <?php if($cover): ?>
+      <?php if ($cover): ?>
         <?=$cover?>
       <?php endif; ?>
 
       <?php /* Display qrcode if appropriate: */ ?>
-      <?php if($QRCode): ?>
+      <?php if ($QRCode): ?>
         <span class="hidden-xs">
           <br/><img alt="<?=$this->transEscAttr('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
         </span>

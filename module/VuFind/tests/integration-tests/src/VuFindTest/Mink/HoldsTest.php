@@ -75,7 +75,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Move the current page to a record by performing a search.
+     * Move the current page to a record with a direct link.
      *
      * @param string $id ID of record to access.
      *
@@ -86,6 +86,27 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Record/' . urlencode($id));
         $page = $session->getPage();
+        $this->waitForPageLoad($page);
+        return $page;
+    }
+
+    /**
+     * Move the current page to a record by performing a search.
+     *
+     * @param string $id ID of record to access.
+     *
+     * @return DocumentElement
+     */
+    protected function gotoRecordWithSearch(
+        string $id = 'testsample1'
+    ): DocumentElement {
+        $session = $this->getMinkSession();
+        $session->visit(
+            $this->getVuFindUrl() . '/Search/Results?lookfor='
+            . urlencode("id:($id)")
+        );
+        $page = $session->getPage();
+        $this->clickCss($page, '#result0 a.record-cover-link');
         $this->waitForPageLoad($page);
         return $page;
     }
@@ -146,7 +167,8 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
                 'Demo' => $this->getDemoIniOverrides(),
             ]
         );
-        $page = $this->gotoRecordById();
+        // Use search to find a record to simulate a typical use case:
+        $page = $this->gotoRecordWithSearch();
         $element = $this->findCss($page, '.alert.alert-info a');
         $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();

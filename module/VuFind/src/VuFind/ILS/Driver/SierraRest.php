@@ -55,6 +55,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\I18n\HasSorterTrait;
+    use \VuFind\Service\Feature\RetryTrait;
 
     /**
      * Driver configuration
@@ -145,6 +146,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         'd' => 'In Process',
         '-' => 'On Shelf',
         'Charged' => 'Charged',
+        'Ordered' => 'Ordered',
     ];
 
     /**
@@ -209,6 +211,26 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      * @var bool
      */
     protected $checkFreezability = false;
+
+    /**
+     * Number of retries in case an API request fails with a retryable error (see
+     * $retryableRequestExceptionPatterns below).
+     *
+     * @var int
+     */
+    protected $httpRetryCount = 2;
+
+    /**
+     * Exception message regexp patterns for request errors that can be retried
+     *
+     * @var array
+     */
+    protected $retryableRequestExceptionPatterns = [
+        // cURL adapter:
+        '/Error in cURL request: Empty reply from server/',
+        // Socket adapter:
+        '/A valid response status line was not found in the provided string/',
+    ];
 
     /**
      * Constructor
@@ -302,6 +324,10 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             if ($this->apiVersion < 5) {
                 $this->apiBase = 'v' . floor($this->apiVersion);
             }
+        }
+
+        if (null !== ($retries = $this->config['Catalog']['http_retries'] ?? null)) {
+            $this->httpRetryCount = (int)$retries;
         }
 
         $this->sortItemsByEnumChron
@@ -1504,6 +1530,73 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         $patron = false,
         $returnStatus = false
     ) {
+        // Status logging callback:
+        $statusCallback = function ($attempt, $exception) use (
+            $hierarchy,
+            $params,
+            $method
+        ): void {
+            $apiUrl = $this->getApiUrlFromHierarchy($hierarchy);
+            $status = $exception
+                ? (' failed (' . $exception->getMessage() . ')')
+                : ' succeeded';
+            $msg = "$method request for '$apiUrl' with params "
+                . var_export($params, true)
+                . "$status on attempt $attempt";
+            $this->logWarning($msg);
+        };
+
+        // Callback that checks for a retryable exception:
+        $retryableCallback = function ($attempt, $exception) {
+            // Get the original HTTP exception:
+            if (!($previous = $exception->getPrevious())) {
+                return false;
+            }
+            $msg = $previous->getMessage();
+            foreach ($this->retryableRequestExceptionPatterns as $pattern) {
+                if (preg_match($pattern, $msg)) {
+                    return true;
+                }
+            }
+            return false;
+        };
+
+        $args = func_get_args();
+        return $this->callWithRetry(
+            function () use ($args) {
+                return call_user_func_array([$this, 'requestCallback'], $args);
+            },
+            $statusCallback,
+            [
+                'retryCount' => $this->httpRetryCount,
+                'retryableExceptionCallback' => $retryableCallback,
+            ]
+        );
+    }
+
+    /**
+     * Callback used by makeRequest
+     *
+     * @param array  $hierarchy    Array of values to embed in the URL path of the
+     * request
+     * @param array  $params       A keyed array of query data
+     * @param string $method       The http request method to use (Default is GET)
+     * @param array  $patron       Patron information, if available
+     * @param bool   $returnStatus Whether to return HTTP status code and response
+     * as a keyed array instead of just the response
+     *
+     * @throws ILSException
+     * @return mixed JSON response decoded to an associative array, an array of HTTP
+     * status code and JSON response when $returnStatus is true or null on
+     * authentication error when using patron-specific access
+     */
+    protected function requestCallback(
+        $hierarchy,
+        $params = false,
+        $method = 'GET',
+        $patron = false,
+        $returnStatus = false
+    ) {
         // Clear current access token if it's not specific to the given patron
         if ($patron && $this->isPatronSpecificAccess()
             && $this->sessionCache->accessTokenPatron != $patron['cat_username']
@@ -1519,12 +1612,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         }
 
         // Set up the request
-        $apiUrl = $this->config['Catalog']['host'];
-
-        // Add hierarchy
-        foreach ($hierarchy as $value) {
-            $apiUrl .= '/' . urlencode($value);
-        }
+        $apiUrl = $this->getApiUrlFromHierarchy($hierarchy);
 
         // Create proxy request
         $client = $this->createHttpClient($apiUrl);
@@ -1611,6 +1699,22 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 'statusCode' => $response->getStatusCode(),
                 'response' => $decodedResult
             ] : $decodedResult;
+    }
+
+    /**
+     * Build an API URL from a hierarchy array
+     *
+     * @param array $hierarchy Hierarchy
+     *
+     * @return string
+     */
+    protected function getApiUrlFromHierarchy(array $hierarchy): string
+    {
+        $url = $this->config['Catalog']['host'];
+        foreach ($hierarchy as $value) {
+            $url .= '/' . urlencode($value);
+        }
+        return $url;
     }
 
     /**
@@ -1908,10 +2012,22 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      */
     protected function getItemStatusesForBib($id, $checkHoldings)
     {
+        $bibFields = 'bibLevel';
         // If we need to look at bib call numbers, retrieve varFields:
-        $bibFields = empty($this->config['CallNumber']['bib_fields'])
-            ? 'bibLevel' : 'bibLevel,varFields';
+        if (!empty($this->config['CallNumber']['bib_fields'])) {
+            $bibFields .= ',varFields';
+        }
+        // Retrieve orders if needed:
+        if (!empty($this->config['Holdings']['display_orders'])) {
+            $bibFields .= ',orders';
+        }
         $bib = $this->getBibRecord($id, $bibFields);
+        $bibCallNumber = $this->getBibCallNumber($bib);
+        $orders = [];
+        foreach ($bib['orders'] ?? [] as $order) {
+            $location = $order['location']['code'];
+            $orders[$location][] = $order;
+        }
         $holdingsData = [];
         if ($checkHoldings && $this->apiVersion >= 5.1) {
             $holdingsResult = $this->makeRequest(
@@ -1924,22 +2040,20 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                 ],
                 'GET'
             );
-            if (!empty($holdingsResult['entries'])) {
-                foreach ($holdingsResult['entries'] as $entry) {
-                    $location = '';
-                    foreach ($entry['fixedFields'] as $code => $field) {
-                        if ($code === static::HOLDINGS_LINE_NUMBER
-                            || $field['label'] === 'LOCATION'
-                        ) {
-                            $location = $field['value'];
-                            break;
-                        }
+            foreach ($holdingsResult['entries'] ?? [] as $entry) {
+                $location = '';
+                foreach ($entry['fixedFields'] as $code => $field) {
+                    if ($code === static::HOLDINGS_LINE_NUMBER
+                        || $field['label'] === 'LOCATION'
+                    ) {
+                        $location = $field['value'];
+                        break;
                     }
-                    if ('' === $location) {
-                        continue;
-                    }
-                    $holdingsData[$location][] = $entry;
                 }
+                if ('' === $location) {
+                    continue;
+                }
+                $holdingsData[$location][] = $entry;
             }
         }
 
@@ -1970,7 +2084,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                     }
                     throw new ILSException($msg);
                 }
-                return $statuses;
+                break;
             }
 
             foreach ($result['entries'] as $item) {
@@ -1999,7 +2113,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
                     'reserve' => 'N',
                     'callnumber' => isset($item['callNumber'])
                         ? preg_replace('/^\|a/', '', $item['callNumber'])
-                        : $this->getBibCallNumber($bib),
+                        : $bibCallNumber,
                     'duedate' => $duedate,
                     'number' => $volume,
                     'barcode' => $item['barcode'],
@@ -2060,8 +2174,57 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             $statuses[] = $entry;
         }
 
+        // Add orders
+        foreach ($orders as $locationCode => $orderSet) {
+            $location = $this->translateLocation($orderSet[0]['location']);
+            $statuses[] = [
+                'id' => $id,
+                'item_id' => "ORDER_{$id}_$locationCode",
+                'location' => $location,
+                'callnumber' => $bibCallNumber,
+                'number' => '',
+                'status' => $this->mapStatusCode('Ordered'),
+                'reserve' => 'N',
+                'item_notes' => $this->getOrderMessages($orderSet),
+                'availability' => false,
+                'duedate' => '',
+                'barcode' => '',
+                'sort' => $sort--
+            ];
+        }
+
         usort($statuses, [$this, 'statusSortFunction']);
         return $statuses;
+    }
+
+    /**
+     * Get textual messages for orders
+     *
+     * @param array $orders Orders
+     *
+     * @return array
+     */
+    protected function getOrderMessages(array $orders): array
+    {
+        $messages = [];
+        foreach ($orders as $order) {
+            $messages[] = $this->translate(
+                [
+                    'HoldingStatus',
+                    1 === $order['copies']
+                        ? 'copy_ordered_on_date'
+                        : 'copies_ordered_on_date'
+                ],
+                [
+                    '%%copies%%' => $order['copies'],
+                    '%%date%%' => $this->dateConverter->convertToDisplayDate(
+                        'Y-m-d',
+                        $order['date']
+                    ),
+                ]
+            );
+        }
+        return $messages;
     }
 
     /**
@@ -2305,7 +2468,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
         // item is out. Use duedate to check if it's actually checked out.
         if (isset($item['status']['duedate'])) {
             $duedate = $this->dateConverter->convertToDisplayDate(
-                \DateTime::ISO8601,
+                \DateTime::ATOM,
                 $item['status']['duedate']
             );
             $status = $this->mapStatusCode('Charged');
@@ -2324,7 +2487,7 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
             $today = $this->dateConverter->convertToDisplayDate('U', time());
             if (isset($item['fixedFields']['68'])) {
                 $checkedIn = $this->dateConverter->convertToDisplayDate(
-                    \DateTime::ISO8601,
+                    \DateTime::ATOM,
                     $item['fixedFields']['68']['value']
                 );
                 if ($checkedIn == $today) {
@@ -2501,7 +2664,9 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
     }
 
     /**
-     * Fetch a bib record from Sierra
+     * Fetch fields for a bib record from Sierra
+     *
+     * Note: This method can return cached data
      *
      * @param int    $id     Bib record id
      * @param string $fields Fields to request
@@ -2511,12 +2676,34 @@ class SierraRest extends AbstractBase implements TranslatorAwareInterface,
      */
     protected function getBibRecord($id, $fields, $patron = false)
     {
-        return $this->makeRequest(
+        $cacheId = "bib|$id";
+        $fieldsArray = explode(',', $fields);
+        if ($cached = $this->getCachedData($cacheId)) {
+            if (!array_diff($fieldsArray, $cached['fields'])) {
+                // We already have all required fields cached:
+                return $cached['data'];
+            }
+        } else {
+            $cached = [
+                'fields' => [],
+                'data' => [],
+            ];
+        }
+        // Fetch requested fields as well as any cached fields to keep everything in
+        // sync:
+        $allFields = array_unique([...$fieldsArray, ...$cached['fields']]);
+        $result = $this->makeRequest(
             [$this->apiBase, 'bibs', $this->extractBibId($id)],
-            ['fields' => $fields],
+            ['fields' => implode(',', $allFields)],
             'GET',
             $patron
         );
+        if (null !== $result) {
+            $cached['fields'] = $allFields;
+            $cached['data'] = $result;
+            $this->putCachedData($cacheId, $cached, 300);
+        }
+        return $result;
     }
 
     /**

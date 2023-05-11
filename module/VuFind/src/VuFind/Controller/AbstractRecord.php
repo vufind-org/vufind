@@ -342,8 +342,12 @@ class AbstractRecord extends AbstractBase
                 if (true === $driver->tryMethod('isCollection')) {
                     $params = $this->params()->fromQuery()
                         + $this->params()->fromRoute();
+                    $options = [];
+                    if ($sid = $this->getSearchMemory()->getCurrentSearchId()) {
+                        $options['query'] = compact($sid);
+                    }
                     $collectionUrl = $this->url()
-                        ->fromRoute($collectionRoute, $params);
+                        ->fromRoute($collectionRoute, $params, $options);
                     return $this->redirect()->toUrl($collectionUrl);
                 }
             }

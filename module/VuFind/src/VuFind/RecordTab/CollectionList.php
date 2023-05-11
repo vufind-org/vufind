@@ -28,6 +28,7 @@
 namespace VuFind\RecordTab;
 
 use VuFind\Recommend\PluginManager as RecommendManager;
+use VuFind\Search\Memory as SearchMemory;
 use VuFind\Search\RecommendListener;
 use VuFind\Search\SearchRunner;
 
@@ -64,6 +65,13 @@ class CollectionList extends AbstractBase
     protected $recommendManager;
 
     /**
+     * Search memory
+     *
+     * @var SearchMemory
+     */
+    protected $searchMemory;
+
+    /**
      * Search class id
      *
      * @var string
@@ -75,11 +83,16 @@ class CollectionList extends AbstractBase
      *
      * @param SearchRunner     $runner Search runner
      * @param RecommendManager $recMan Recommendation manager
+     * @param SearchMemory     $sm     Search memory
      */
-    public function __construct(SearchRunner $runner, RecommendManager $recMan)
-    {
+    public function __construct(
+        SearchRunner $runner,
+        RecommendManager $recMan,
+        SearchMemory $sm
+    ) {
         $this->runner = $runner;
         $this->recommendManager = $recMan;
+        $this->searchMemory = $sm;
     }
 
     /**
@@ -124,6 +137,12 @@ class CollectionList extends AbstractBase
             };
             $this->results
                 = $this->runner->run($request, $this->searchClassId, $cb);
+            // Add search id from the originating search for paginator:
+            $this->results->getUrlQuery()->setDefaultParameter(
+                'sid',
+                $this->searchMemory->getCurrentSearchId(),
+                true
+            );
         }
         return $this->results;
     }

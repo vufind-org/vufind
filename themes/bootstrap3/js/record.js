@@ -24,7 +24,7 @@ function checkRequestIsValid(element, requestType, icon = 'place-hold') {
       if (response.data.status) {
         $(element).removeClass('disabled')
           .attr('title', response.data.msg)
-          .html(VuFind.icon(icon) + VuFind.updateCspNonce(response.data.msg));
+          .html(VuFind.icon(icon) + '<span class="icon-link__label">' + VuFind.updateCspNonce(response.data.msg) + "</span>");
       } else {
         $(element).remove();
       }
@@ -211,6 +211,7 @@ ajaxLoadTab = function ajaxLoadTabReal($newTab, tabid, setHash, tabUrl) {
   } else {
     url = VuFind.path + getUrlRoot(document.URL) + '/AjaxTab';
     postData.tab = tabid;
+    postData.sid = VuFind.getCurrentSearchId();
   }
   $.ajax({
     url: url,

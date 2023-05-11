@@ -44,6 +44,7 @@ use VuFindSearch\Command\RetrieveCommand;
 class InstallController extends AbstractBase
 {
     use Feature\ConfigPathTrait;
+    use Feature\SecureDatabaseTrait;
 
     /**
      * Use preDispatch event to block access when appropriate.
@@ -673,31 +674,10 @@ class InstallController extends AbstractBase
      */
     protected function checkSecurity()
     {
-        // Are configuration settings missing?
-        $config = $this->getConfig();
-        if (!isset($config->Authentication->hash_passwords)
-            || !$config->Authentication->hash_passwords
-            || !isset($config->Authentication->encrypt_ils_password)
-            || !$config->Authentication->encrypt_ils_password
-        ) {
-            $status = false;
-        } else {
-            $status = true;
-        }
-
-        // If we're correctly configured, check that the data in the database is ok:
-        if ($status) {
-            try {
-                $rows = $this->getTable('user')->getInsecureRows();
-                $status = (count($rows) == 0);
-            } catch (\Exception $e) {
-                // Any exception means we have a problem!
-                $status = false;
-            }
-        }
-
         return [
-            'title' => 'Security', 'status' => $status, 'fix' => 'fixsecurity'
+            'title' => 'Security',
+            'status' => $this->hasSecureDatabase(),
+            'fix' => 'fixsecurity'
         ];
     }
 
@@ -714,21 +694,18 @@ class InstallController extends AbstractBase
     {
         $changed = false;
 
-        if (!isset($config->Authentication->hash_passwords)
-            || !$config->Authentication->hash_passwords
-            || !isset($config->Authentication->encrypt_ils_password)
-            || !$config->Authentication->encrypt_ils_password
+        if (!($config->Authentication->hash_passwords ?? false)
+            || !($config->Authentication->encrypt_ils_password ?? false)
         ) {
             $writer->set('Authentication', 'hash_passwords', true);
             $writer->set('Authentication', 'encrypt_ils_password', true);
             $changed = true;
         }
         // Only rewrite encryption key if we don't already have one:
-        if (!isset($config->Authentication->ils_encryption_key)
-            || empty($config->Authentication->ils_encryption_key)
-        ) {
-            $enc_key = sha1(microtime(true) . mt_rand(10000, 90000));
-            $writer->set('Authentication', 'ils_encryption_key', $enc_key);
+        if (empty($config->Authentication->ils_encryption_key)) {
+            [$algorithm, $key] = $this->getSecureAlgorithmAndKey();
+            $writer->set('Authentication', 'ils_encryption_algo', $algorithm);
+            $writer->set('Authentication', 'ils_encryption_key', $key);
             $changed = true;
         }
 

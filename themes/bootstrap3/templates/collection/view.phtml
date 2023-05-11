@@ -27,6 +27,14 @@
       $this->layout()->breadcrumbs = '<li><a href="' . $this->url('collections-home') . '">' . $this->transEsc('Collections') . '</a></li> ';
   }
   $this->layout()->breadcrumbs .= '<li class="active" aria-current="page">' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li>';
+
+  // Set up search box:
+  $this->layout()->searchbox = $this->context($this)->renderInContext(
+      'search/searchbox.phtml',
+      [
+        'ignoreHiddenFiltersInRequest' => true,
+      ]
+  );
 ?>
 
 <?php if (isset($this->scrollData) && ($this->scrollData['previousRecord'] || $this->scrollData['nextRecord'])): ?>

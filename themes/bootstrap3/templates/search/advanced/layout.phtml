@@ -83,29 +83,29 @@
         <div id="groupJoin" class="form-inline pull-right flip">
           <label for="groupJoinOptions"><?=$this->transEsc("search_match")?>:</label>
           <select id="groupJoinOptions" name="join" class="form-control">
-            <option value="AND"<?php if($searchDetails && $searchDetails->getOperator() == 'ALL'):?> selected<?php endif; ?>><?= $this->transEsc('group_AND') ?></option>
-            <option value="OR"<?php if($searchDetails && $searchDetails->getOperator() == 'OR'):?> selected<?php endif; ?>><?= $this->transEsc('group_OR') ?></option>
+            <option value="AND"<?php if ($searchDetails && $searchDetails->getOperator() == 'ALL'):?> selected<?php endif; ?>><?= $this->transEsc('group_AND') ?></option>
+            <option value="OR"<?php if ($searchDetails && $searchDetails->getOperator() == 'OR'):?> selected<?php endif; ?>><?= $this->transEsc('group_OR') ?></option>
           </select>
         </div>
       </div>
-      <span id="groupPlaceHolder" class="hidden">
-        <?=$this->icon('ui-add') ?>
-        <a href="#" role="button"><?= $this->transEsc('add_search_group') ?></a>
-      </span>
+      <a role="button" class="icon-link hidden" id="groupPlaceHolder" href="#">
+        <?=$this->icon('ui-add', 'icon-link__icon') ?>
+        <span class="icon-link__label"><?= $this->transEsc('add_search_group') ?></span>
+      </a>
       <?php /* fallback to a fixed set of search groups/fields if JavaScript is turned off */ ?>
       <div class="no-js">
-        <?php if(!empty($this->formOverride)): ?>
+        <?php if (!empty($this->formOverride)): ?>
           <?=$this->formOverride ?>
         <?php else: ?>
           <?php for($group = 0; $group < 3 || $group <= $setGroupCount; $group++): ?>
-            <?php if($group == 0): ?>
+            <?php if ($group == 0): ?>
               <div id="new_group_template">
             <?php endif; ?>
             <div id="group<?=$group ?>" class="adv-group">
               <div class="adv-group-terms">
                 <label class="adv-group-label"><?=$this->transEsc("adv_search_label")?>:</label>
                 <?php for($search = 0; $search < 3 || (isset($setQueries[$group]) && $search < count($setQueries[$group])); $search++): ?>
-                  <?php if($group == 0 && $search == 0): ?>
+                  <?php if ($group == 0 && $search == 0): ?>
                     <div id="new_search_template">
                   <?php endif; ?>
                   <div id="search<?=$group . '_' . $search ?>" class="adv-search">
@@ -120,21 +120,24 @@
                       <span class="sr-only"><?=$this->transEsc('remove') ?></span>
                     </a>
                   </div>
-                  <?php if($group == 0 && $search == 0): ?>
+                  <?php if ($group == 0 && $search == 0): ?>
                     </div>
-                    <span class="float-left">
-                      <?=$this->icon('ui-add', 'search_place_holder hidden') ?>
-                      <a href="#" class="add_search_link hidden" role="button"><?=$this->transEsc("add_search")?></a>
-                    </span>
+                    <div class="float-left">
+                      <span class="search_place_holder hidden"></span>
+                      <a href="#" class="add_search_link icon-link hidden" role="button">
+                        <?=$this->icon('ui-add', 'icon-link__icon') ?>
+                        <span class="icon-link__label"><?=$this->transEsc("add_search")?></span>
+                      </a>
+                    </div>
                   <?php endif; ?>
                 <?php endfor; ?>
               </div>
               <div class="adv-group-match">
                 <label class="search_bool"><?=$this->transEsc("search_match")?>:&nbsp;</label>
                 <select name="bool<?=$group ?>[]" id="search_bool<?=$group ?>" class="form-control">
-                  <option value="AND"<?php if(isset($setSearchGroups[$group]) && 'AND' == $setSearchGroups[$group]):?> selected<?php endif; ?>><?=$this->transEsc("search_AND")?></option>
-                  <option value="OR"<?php if(isset($setSearchGroups[$group]) && 'OR' == $setSearchGroups[$group]):?> selected<?php endif; ?>><?=$this->transEsc("search_OR")?></option>
-                  <option value="NOT"<?php if(isset($setSearchGroups[$group]) && 'NOT' == $setSearchGroups[$group]):?> selected<?php endif; ?>><?=$this->transEsc("search_NOT")?></option>
+                  <option value="AND"<?php if (isset($setSearchGroups[$group]) && 'AND' == $setSearchGroups[$group]):?> selected<?php endif; ?>><?=$this->transEsc("search_AND")?></option>
+                  <option value="OR"<?php if (isset($setSearchGroups[$group]) && 'OR' == $setSearchGroups[$group]):?> selected<?php endif; ?>><?=$this->transEsc("search_OR")?></option>
+                  <option value="NOT"<?php if (isset($setSearchGroups[$group]) && 'NOT' == $setSearchGroups[$group]):?> selected<?php endif; ?>><?=$this->transEsc("search_NOT")?></option>
                 </select>
               </div>
               <a href="#" class="adv-group-close hidden" role="button">
@@ -142,7 +145,7 @@
                 <?=$this->transEsc("del_search")?>
               </a>
             </div>
-            <?php if($group == 0): ?>
+            <?php if ($group == 0): ?>
               </div>
             <?php endif; ?>
           <?php endfor; ?>
@@ -206,7 +209,7 @@
 </div>
 <?php
 $script = <<<JS
-$('#groupPlaceHolder a').click(function(e) {
+$('#groupPlaceHolder').click(function(e) {
   addGroup(null, null, null, true);
   return false;
 })

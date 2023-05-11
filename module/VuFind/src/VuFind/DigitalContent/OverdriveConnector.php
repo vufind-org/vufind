@@ -77,18 +77,14 @@ class OverdriveConnector implements LoggerAwareInterface,
     protected $sessionContainer;
 
     /**
-     * Record Config
-     *
-     * Main configurations
+     * Overdrive-specific configuration
      *
      * @var Config
      */
     protected $recordConfig;
 
     /**
-     * Record Config
-     *
-     * Overdrive configurations
+     * Main VuFind configuration
      *
      * @var Config
      */
@@ -287,7 +283,7 @@ class OverdriveConnector implements LoggerAwareInterface,
      * @param array $overDriveIds The Overdrive ID (reserve IDs) of the
      *                            eResources
      *
-     * @return array|bool see getAvailability
+     * @return object|bool see getAvailability
      *
      * @todo if more tan 25 passed in, make multiple calls
      */
@@ -358,9 +354,9 @@ class OverdriveConnector implements LoggerAwareInterface,
     }
 
     /**
-     * Get Colllection Token
+     * Get Collection Token
      *
-     * Gets the colleciton token for the Overdrive collection. The collection
+     * Gets the collection token for the Overdrive collection. The collection
      * token doesn't change much but according to
      * the OD API docs it could change and should be retrieved each session.
      * Also, the collection token depends on the user if the user is in a
@@ -1098,10 +1094,14 @@ class OverdriveConnector implements LoggerAwareInterface,
                 return false;
             }
             if ($headers === null) {
-                $headers = [
-                    "Authorization: {$tokenData->token_type} " .
-                    "{$tokenData->access_token}", "User-Agent: VuFind"
-                ];
+                $headers = [];
+                if (isset($tokenData->token_type)
+                    && isset($tokenData->access_token)
+                ) {
+                    $headers[] = "Authorization: {$tokenData->token_type} "
+                        . $tokenData->access_token;
+                }
+                $headers[] = "User-Agent: VuFind";
             }
             $client->setHeaders($headers);
             $client->setMethod($requestType);
@@ -1215,7 +1215,7 @@ class OverdriveConnector implements LoggerAwareInterface,
                     return false;
                 } else {
                     $tokenData->expirationTime = time()
-                        + $tokenData->expires_in;
+                        + ($tokenData->expires_in ?? 0);
                     $this->getSessionContainer()->tokenData = $tokenData;
                     return $tokenData;
                 }
@@ -1487,10 +1487,10 @@ class OverdriveConnector implements LoggerAwareInterface,
         $conf = $this->getConfig();
         $fullKey = $this->getCacheKey($key);
         $item = $this->cache->getItem($fullKey);
-        $this->debug(
-            "pulling item from cache for key $key : " . $item['entry']
-        );
         if (null !== $item) {
+            $this->debug(
+                "pulling item from cache for key $key : " . $item['entry']
+            );
             // Return value if still valid:
             if (time() - $item['time'] < $conf->tokenCacheLifetime) {
                 return $item['entry'];

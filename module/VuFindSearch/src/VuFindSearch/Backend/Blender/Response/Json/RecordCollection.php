@@ -28,6 +28,8 @@
  */
 namespace VuFindSearch\Backend\Blender\Response\Json;
 
+use VuFindSearch\Response\RecordInterface;
+
 /**
  * JSON-based record collection for records from multiple sources.
  *
@@ -215,19 +217,34 @@ class RecordCollection
         foreach ($collections as $backendId => $collection) {
             $result[$backendId] = [];
             $records = $collection->getRecords();
-            $label = $this->config->Backends[$backendId];
             foreach ($records as $record) {
                 $record->setSourceIdentifiers(
                     $record->getSourceIdentifier(),
                     $backendId
                 );
-                if ($label) {
-                    $record->addLabel($label, 'source');
-                }
                 $result[$backendId][] = $record;
             }
         }
         return $result;
+    }
+
+    /**
+     * Add a record to the collection.
+     *
+     * @param RecordInterface $record        Record to add
+     * @param bool            $checkExisting Whether to check for existing record in
+     * the collection (slower, but makes sure there are no duplicates)
+     *
+     * @return void
+     */
+    public function add(RecordInterface $record, $checkExisting = true)
+    {
+        $label = $this->config->Backends[$record->getSearchBackendIdentifier()]
+            ?? '';
+        if ($label) {
+            $record->addLabel($label, 'source');
+        }
+        parent::add($record, $checkExisting);
     }
 
     /**

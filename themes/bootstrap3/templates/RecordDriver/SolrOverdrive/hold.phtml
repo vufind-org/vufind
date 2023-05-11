@@ -1,7 +1,7 @@
 <div class="odaction">
  <div class="media clearfix">
      <div class="pull-right <?=$this->escapeHtmlAttr($coverDetails['size'])?> img-col">
-         <?php if($cover): ?>
+         <?php if ($cover): ?>
              <img alt="Cover Image" class="recordcover" src="<?=$this->escapeHtmlAttr($cover)?>">
          <?php endif; ?>
      </div>
@@ -29,11 +29,11 @@
 
     <div class="action <?=$action ?>">
 
-    <?php if($action == "checkoutConfirm"): ?>
-        <?php  if($result->status):?>
+    <?php if ($action == "checkoutConfirm"): ?>
+        <?php if ($result->status): ?>
             <div class="odformats">
                 <h3><?=$this->transEsc("od_dl_formats"); ?></h3>
-                <?php foreach($formats as $key => $format):?>
+                <?php foreach ($formats as $key => $format): ?>
                 <ul><li><?=$this->translate($format->name) ?></li></ul>
                 <?php endforeach;?>
             </div>
@@ -44,19 +44,19 @@
                 <input class="btn btn-primary" name="doCheckout" value="<?=$this->transEscAttr("od_but_checkout_s"); ?>" type="submit">
             </div>
             </form>
-        <?php elseif($result->code == "OD_CODE_ALREADY_CHECKED_OUT"): ?>
+        <?php elseif ($result->code == "OD_CODE_ALREADY_CHECKED_OUT"): ?>
             <div class="alert alert-warning">
                 <?=$this->icon('overdrive-warning') ?>
                 <div class="moreInfo">
                     <?=$this->transEsc("od_is_checkedout", ["%%due_date%%" => $result->data->checkout->expires]); ?>
                 </div>
             </div>
-        <?php elseif($result->code == "OD_CODE_ALREADY_ON_HOLD"): ?>
+        <?php elseif ($result->code == "OD_CODE_ALREADY_ON_HOLD"): ?>
             <div class="alert alert-warning">
                 <?=$this->icon('overdrive-warning') ?>
                 <div class="moreInfo">
                     <?=$this->transEsc("od_is_on_hold");
-                    if($hold->holdReadyForCheckout):
+                    if ($hold->holdReadyForCheckout):
                         echo $this->transEsc("od_hold_now_avail", ["%%expireDate%%" => $result->data->hold->holdExpires]);
                     else:
                         echo $this->transEsc(
@@ -76,9 +76,9 @@
             </div>
 
         <?php endif;?>
-    <?php elseif($action == "holdConfirm"):    ?>
+    <?php elseif ($action == "holdConfirm"): ?>
 
-        <?php  if($result->status):?>
+        <?php if ($result->status): ?>
      <form class="form-record-hold" method="POST" name="placeHold" data-lightbox-onclose="VuFind.refreshPage">
          <div class="form-group hold-required-by">
              <label class="control-label"><?=$this->transEsc("Email Address"); ?></label>
@@ -89,19 +89,19 @@
              <input class="btn btn-primary" name="placeHold" value="<?=$this->transEscAttr("od_but_hold_s"); ?>" type="submit">
          </div>
      </form>
-        <?php elseif($result->code == "OD_CODE_ALREADY_CHECKED_OUT"): ?>
+        <?php elseif ($result->code == "OD_CODE_ALREADY_CHECKED_OUT"): ?>
         <div class="alert alert-warning">
             <?=$this->icon('overdrive-warning') ?>
             <div class="moreInfo">
                 <?=$this->transEsc("od_is_checkedout", ["%%due_date%%" => $result->data->checkout->expires]); ?>
             </div>
         </div>
-        <?php elseif($result->code == "OD_CODE_ALREADY_ON_HOLD"): ?>
+        <?php elseif ($result->code == "OD_CODE_ALREADY_ON_HOLD"): ?>
         <div class="alert alert-warning">
             <?=$this->icon('overdrive-warning') ?>
             <div class="moreInfo">
                 <?=$this->transEsc("od_is_on_hold");
-                if($hold->holdReadyForCheckout):
+                if ($hold->holdReadyForCheckout):
                     echo $this->transEsc("od_hold_now_avail", ["%%expireDate%%" => $result->data->hold->holdExpires]);
                 else:
                     echo $this->transEsc(
@@ -122,7 +122,7 @@
 
         <?php endif;?>
 
-    <?php elseif($action == "cancelHoldConfirm"): ?>
+    <?php elseif ($action == "cancelHoldConfirm"): ?>
             <form class="" method="POST" name="cancelHold" data-lightbox-onclose="VuFind.refreshPage">
 
                 <div class="form-group pull-right">
@@ -132,7 +132,7 @@
             </form>
 
 
-    <?php elseif($action == "returnTitleConfirm"): ?>
+    <?php elseif ($action == "returnTitleConfirm"): ?>
         <form class="" method="POST" name="returnTitle" data-lightbox-onclose="VuFind.refreshPage">
             <div class="pull-right">
 
@@ -141,14 +141,14 @@
             </div>
         </form>
 
-    <?php elseif($action == "getTitleConfirm"): ?>
+    <?php elseif ($action == "getTitleConfirm"): ?>
 
             <div class="pull-right">
 
                 <input name="doAction" value="getTitle" type="hidden">
                 <div class="odformats">
                     <h3><?=$this->transEsc("od_dl_formats"); ?></h3>
-                    <?php foreach($formats as $key => $format):?>
+                    <?php foreach ($formats as $key => $format): ?>
                         <a data-lightbox-ignore class="btn btn-primary" target="_blank"
                            href="<?=$this->url('overdrive-hold') . "?od_id=$od_id&rec_id=$rec_id&action=getTitle&getTitleFormat=$key"?>">
                             <?=$this->translate($format) ?></a>
@@ -157,8 +157,8 @@
             </div>
             <form class="" method="POST" name="getTitle" data-lightbox-onclose="VuFind.refreshPage"></form>
 
-    <?php elseif($action == 'placeHold'): ?>
-        <?php  if($result->status):?>
+    <?php elseif ($action == 'placeHold'): ?>
+        <?php if ($result->status): ?>
             <div class="alert alert-success">
               <?=$this->icon('overdrive-success') ?>
               <?=$this->transEsc("od_hold_place_success", ["%%holdListPosition%%" => $result->data->holdListPosition]); ?>
@@ -176,8 +176,8 @@
             <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?=$this->transEsc("close"); ?></button>
         </div>
 
-        <?php elseif($action == 'cancelHold'): ?>
-        <?php  if($result->status):?>
+        <?php elseif ($action == 'cancelHold'): ?>
+        <?php if ($result->status): ?>
           <div class="alert alert-success">
             <?=$this->icon('overdrive-success') ?>
             <?=$this->transEsc("od_hold_cancel_success"); ?>
@@ -194,8 +194,8 @@
           <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?=$this->transEsc("close"); ?></button>
         </div>
 
-    <?php elseif($action == "doCheckout"): ?>
-        <?php  if($result->status):?>
+    <?php elseif ($action == "doCheckout"): ?>
+        <?php if ($result->status): ?>
       <div class="alert alert-success">
         <?=$this->icon('overdrive-success') ?>
         <?=$this->transEsc("od_docheckout_success", ['%%expireDate%%' => $result->data->expires]); ?>
@@ -203,7 +203,7 @@
 
             <div class="odformats">
                 <h3><?=$this->transEsc("od_dl_formats"); ?></h3>
-                <?php foreach($formats as $key => $format): ?>
+                <?php foreach ($formats as $key => $format): ?>
                     <a data-lightbox-ignore class="btn btn-primary" target="_blank"
                        href="<?=$this->url('overdrive-hold') . "?od_id=$od_id&rec_id=$rec_id&action=getTitle&getTitleFormat=$key"?>">
                         <?=$this->translate($format->name) ?></a>
@@ -221,8 +221,8 @@
             <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?=$this->transEsc("close"); ?></button>
         </div>
 
-    <?php elseif($action == "returnTitle"): ?>
-    <?php if($result->status):?>
+    <?php elseif ($action == "returnTitle"): ?>
+    <?php if ($result->status): ?>
       <div class="alert alert-success">
         <?=$this->icon('overdrive-success') ?>
         <?=$this->transEsc("od_return_success"); ?>
@@ -235,8 +235,8 @@
       </div>
         <?php endif;?>
 
-        <?php elseif($action == "getTitle"): ?>
-    <?php if($result->status):?>
+        <?php elseif ($action == "getTitle"): ?>
+    <?php if ($result->status): ?>
             <div class="alert alert-success">
                 <?=$this->icon('overdrive-success') ?>
                 <?=$this->transEsc("od_return_success"); ?>

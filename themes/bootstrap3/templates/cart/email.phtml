@@ -15,7 +15,7 @@
   <?php endforeach; ?>
   <div class="form-group">
     <label class="control-label"><?=$this->transEsc('Title')?>:</label>
-    <?php if(count($this->records) > 1): ?>
+    <?php if (count($this->records) > 1): ?>
       <button type="button" class="btn btn-default hidden" data-toggle="collapse" data-target="#itemhide">
         <?=count($this->records) . ' ' . $this->transEsc('items') ?>
       </button>

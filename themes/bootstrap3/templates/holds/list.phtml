@@ -105,7 +105,7 @@
                   $title = empty($title) ? $this->transEsc('Title not available') : $this->escapeHtml($title);
                   echo '<a href="' . $this->escapeHtmlAttr($this->recordLinker()->getUrl($resource))
                     . '" class="title">' . $title . '</a>';
-                } elseif (isset($ilsDetails['title']) && !empty($ilsDetails['title'])){
+                } elseif (isset($ilsDetails['title']) && !empty($ilsDetails['title'])) {
                   // If the record is not available in Solr, perhaps the ILS driver sent us a title we can show...
                   echo '<span class="title">' . $this->escapeHtml($ilsDetails['title']) . '</span>';
                 } else {

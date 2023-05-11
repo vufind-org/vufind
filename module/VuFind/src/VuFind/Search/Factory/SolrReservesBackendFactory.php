@@ -45,7 +45,7 @@ class SolrReservesBackendFactory extends AbstractSolrBackendFactory
     public function __construct()
     {
         parent::__construct();
-        $this->solrCore = 'reserves';
+        $this->defaultIndexName = 'reserves';
         $this->searchConfig = 'reserves';
         $this->searchYaml = 'reservessearchspecs.yaml';
         $this->facetConfig = 'reserves';
