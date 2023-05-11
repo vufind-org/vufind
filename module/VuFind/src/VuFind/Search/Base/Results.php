@@ -650,7 +650,7 @@ abstract class Results
 
     /**
      * Set optional parameters for the search.
-     * 
+     *
      * The optional parameters mechanism is used for storing search parameters
      * that may be useful for reproducing the full context of a user's search,
      * but which do not impact the contents of the search result set -- e.g. page number.
