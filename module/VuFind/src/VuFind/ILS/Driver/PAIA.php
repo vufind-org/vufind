@@ -3,7 +3,7 @@
 /**
  * PAIA ILS Driver for VuFind to get patron information
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Oliver Goldschmidt, Magda Roos, Till Kinstler, André Lahmann 2013,
  * 2014, 2015.

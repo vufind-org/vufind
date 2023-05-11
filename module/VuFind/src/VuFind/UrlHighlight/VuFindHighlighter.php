@@ -3,7 +3,7 @@
 /**
  * Provide URL formatted as HTML and prefixed with proxy if applicable
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2020.
  *

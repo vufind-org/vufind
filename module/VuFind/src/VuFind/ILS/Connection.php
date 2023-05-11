@@ -6,7 +6,7 @@
  * This wrapper works with a driver class to pass information from the ILS to
  * VuFind.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *

@@ -4,7 +4,7 @@
  * RemoteAddress utility factory. This uses the core Laminas RemoteAddress but
  * configures it according to VuFind settings.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *

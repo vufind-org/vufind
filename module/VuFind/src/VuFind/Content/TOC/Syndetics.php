@@ -3,7 +3,7 @@
 /**
  * Syndetics TOC content loader.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The University of Chicago 2017.
  *

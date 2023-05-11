@@ -3,7 +3,7 @@
 /**
  * Factory for SolrDefault-based record drivers that do not need a search service.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
