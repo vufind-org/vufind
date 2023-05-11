@@ -10,7 +10,7 @@
     "license": "GPL-2.0",
     "config": {
         "platform": {
-            "php": "7.4.1"
+            "php": "8.0"
         },
         "process-timeout": 0,
         "allow-plugins": {
@@ -24,7 +24,7 @@
         "ext-sodium": "*"
     },
     "require": {
-        "php": ">=7.4.1",
+        "php": ">=8.0",
         "ahand/mobileesp": "dev-master",
         "cap60552/php-sip2": "1.0.0",
         "colinmollenhour/credis": "1.14.0",
