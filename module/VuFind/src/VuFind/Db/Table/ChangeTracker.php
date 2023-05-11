@@ -93,6 +93,7 @@ class ChangeTracker extends Gateway
      * @param int    $offset  Record number to retrieve first.
      * @param int    $limit   Retrieval limit (null for no limit)
      * @param array  $columns Columns to retrieve (null for all)
+     * @param string $order   Sort order
      *
      * @return callable
      */
@@ -102,7 +103,8 @@ class ChangeTracker extends Gateway
         $until,
         $offset = 0,
         $limit = null,
-        $columns = null
+        $columns = null,
+        $order = null
     ) {
         return function ($select) use (
             $core,
@@ -110,7 +112,8 @@ class ChangeTracker extends Gateway
             $until,
             $offset,
             $limit,
-            $columns
+            $columns,
+            $order
         ) {
             if ($columns !== null) {
                 $select->columns($columns);
@@ -119,7 +122,9 @@ class ChangeTracker extends Gateway
                 ->equalTo('core', $core)
                 ->greaterThanOrEqualTo('deleted', $from)
                 ->lessThanOrEqualTo('deleted', $until);
-            $select->order('deleted');
+            if ($order !== null) {
+                $select->order($order);
+            }
             if ($offset > 0) {
                 $select->offset($offset);
             }
@@ -173,7 +178,9 @@ class ChangeTracker extends Gateway
             $from,
             $until,
             $offset,
-            $limit
+            $limit,
+            null,
+            'deleted'
         );
         return $this->select($callback);
     }
