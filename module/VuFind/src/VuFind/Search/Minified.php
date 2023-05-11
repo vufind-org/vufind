@@ -163,7 +163,7 @@ class Minified
         // Extra data has implementation-specific contents, store as is
         $this->ex = $searchObject->getExtraData();
 
-        // Additional parameters contains data i.e page number.
+        // Optional parameters contains data i.e page number.
         $this->op = $searchObject->getOptionalParameters();
     }
 
