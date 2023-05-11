@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f6e5b9793ac0df3a87114d1fb848aac1",
+    "content-hash": "1ec4c5b928c1a58c0ff038524a76f53a",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -1720,22 +1720,22 @@
         },
         {
             "name": "laminas/laminas-config",
-            "version": "3.7.0",
+            "version": "3.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-config.git",
-                "reference": "e43d13dcfc273d4392812eb395ce636f73f34dfd"
+                "reference": "46baad58d0b12cf98539e04334eff40a1fdfb9a0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-config/zipball/e43d13dcfc273d4392812eb395ce636f73f34dfd",
-                "reference": "e43d13dcfc273d4392812eb395ce636f73f34dfd",
+                "url": "https://api.github.com/repos/laminas/laminas-config/zipball/46baad58d0b12cf98539e04334eff40a1fdfb9a0",
+                "reference": "46baad58d0b12cf98539e04334eff40a1fdfb9a0",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "laminas/laminas-stdlib": "^3.6",
-                "php": "^7.3 || ~8.0.0 || ~8.1.0",
+                "php": "~8.0.0 || ~8.1.0 || ~8.2.0",
                 "psr/container": "^1.0"
             },
             "conflict": {
@@ -1743,11 +1743,11 @@
                 "zendframework/zend-config": "*"
             },
             "require-dev": {
-                "laminas/laminas-coding-standard": "~1.0.0",
-                "laminas/laminas-filter": "^2.7.2",
-                "laminas/laminas-i18n": "^2.10.3",
-                "laminas/laminas-servicemanager": "^3.7",
-                "phpunit/phpunit": "^9.5.5"
+                "laminas/laminas-coding-standard": "~2.4.0",
+                "laminas/laminas-filter": "~2.23.0",
+                "laminas/laminas-i18n": "~2.19.0",
+                "laminas/laminas-servicemanager": "~3.19.0",
+                "phpunit/phpunit": "~9.5.25"
             },
             "suggest": {
                 "laminas/laminas-filter": "^2.7.2; install if you want to use the Filter processor",
@@ -1784,7 +1784,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2021-10-01T16:07:46+00:00"
+            "time": "2022-10-16T14:21:22+00:00"
         },
         {
             "name": "laminas/laminas-crypt",
