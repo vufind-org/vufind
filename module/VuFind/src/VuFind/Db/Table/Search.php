@@ -3,7 +3,7 @@
 /**
  * Table Definition for search
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2016-2017.

@@ -4,7 +4,7 @@
  * VuFind Action Feature Trait - Record Versions Search
  * Depends on method getSearchResultsView and record driver's method getWorkKeys.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2020.
  *

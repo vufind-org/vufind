@@ -3,7 +3,7 @@
 /**
  * Related Records: WorldCat-based similarity
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2009, 2022.
  *

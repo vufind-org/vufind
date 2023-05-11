@@ -3,7 +3,7 @@
 /**
  * Localization based number formatting
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) snowflake productions gmbh 2014.
  *

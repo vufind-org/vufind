@@ -3,7 +3,7 @@
 /**
  * Translate view helper Test Class (and by extension, the TranslatorAwareTrait)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *

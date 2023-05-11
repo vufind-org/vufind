@@ -3,7 +3,7 @@
 /**
  * OAuth2 authorization code repository implementation.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2022.
  *

@@ -13,7 +13,7 @@ VuFind.register('channels', function Channels() {
     }
     var $cont = $(
       '<div class="dropdown">' +
-        '<button class="btn btn-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">' +
+        '<button class="btn btn-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" aria-label="' + VuFind.translate('toggle_dropdown') + '">' +
           VuFind.icon("ui-dots-menu") +
         '</button>' +
       '</div>'

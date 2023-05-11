@@ -3,7 +3,7 @@
 /**
  * Url view helper (extending core Laminas helper with additional functionality)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *

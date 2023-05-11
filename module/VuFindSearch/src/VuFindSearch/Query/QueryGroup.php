@@ -3,7 +3,7 @@
 /**
  * A group of single/simples queries, joined by boolean operator.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *

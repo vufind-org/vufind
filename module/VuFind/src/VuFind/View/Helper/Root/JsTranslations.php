@@ -3,7 +3,7 @@
 /**
  * JsTranslations helper for passing translation text to Javascript
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *

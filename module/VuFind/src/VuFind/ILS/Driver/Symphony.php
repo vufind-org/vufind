@@ -3,7 +3,7 @@
 /**
  * Symphony Web Services (symws) ILS Driver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -1638,7 +1638,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     protected function getPolicyList($policyType)
     {
         try {
-            $cacheKey = 'symphony' . hash('sha256', "${policyType}");
+            $cacheKey = 'symphony' . hash('sha256', "{$policyType}");
 
             if (isset($this->policies[$policyType])) {
                 return $this->policies[$policyType];

@@ -3,7 +3,7 @@
 /**
  * VF Configuration Upgrade Tool
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
