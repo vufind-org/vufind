@@ -3,7 +3,7 @@
 /**
  * "Get Side Facets" AJAX handler
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2018-2019.
  *

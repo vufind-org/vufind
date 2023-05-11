@@ -3,7 +3,7 @@
 /**
  * Configuration File Path Resolver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2022.

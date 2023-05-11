@@ -4,7 +4,7 @@
  * SwitchTab Recommendations Module
  * Recommends to use another SearchTab
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *

@@ -3,7 +3,7 @@
 /**
  * Symphony Web Services (symws) ILS Driver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *

@@ -3,7 +3,7 @@
 /**
  * VuFind Configuration Locator - A static compatibility wrapper around PathResolver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *

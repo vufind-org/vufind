@@ -3,7 +3,7 @@
 /**
  * Controller for configurable forms (feedback etc).
  *
- * PHP version 7
+ * PHP version 8
  *
  * @category VuFind
  * @package  Controller

@@ -3,7 +3,7 @@
 /**
  * PrintArrayHtml Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Michigan State University 2023.
  *

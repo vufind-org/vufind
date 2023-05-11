@@ -3,7 +3,7 @@
 /**
  * Base class to enable sharing of common methods between SMS subclasses
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2009.
  *

@@ -3,7 +3,7 @@
 /**
  * Base class for session handling
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010,
  *               Leipzig University Library <info@ub.uni-leipzig.de> 2018.
