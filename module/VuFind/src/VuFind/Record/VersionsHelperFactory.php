@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for GetSearchResults AJAX handler.
+ * Versions helper factory.
  *
  * PHP version 7
  *
@@ -21,29 +21,30 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  AJAX
+ * @package  Record
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\AjaxHandler;
+namespace VuFind\Record;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for GetSearchResults AJAX handler.
+ * Versions helper factory.
  *
  * @category VuFind
- * @package  AJAX
+ * @package  Record
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class GetSearchResultsFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+class VersionsHelperFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -58,8 +59,6 @@ class GetSearchResultsFactory implements \Laminas\ServiceManager\Factory\Factory
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
         ContainerInterface $container,
@@ -69,18 +68,8 @@ class GetSearchResultsFactory implements \Laminas\ServiceManager\Factory\Factory
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $result = new $requestedName(
-            $container->get(\VuFind\Session\Settings::class),
-            $container->get(\VuFind\Search\Results\PluginManager::class),
-            $container->get('ViewRenderer'),
-            $container->get(\VuFind\Record\Loader::class),
-            $container->get(\VuFind\Auth\Manager::class)->isLoggedIn() ?: null,
-            $container->get(\Laminas\Session\SessionManager::class)->getId(),
-            $container->get(\VuFind\Search\SearchNormalizer::class),
-            $container->get(\VuFind\Db\Table\PluginManager::class)->get(\VuFind\Db\Table\Search::class),
-            $container->get(\VuFind\Config\PluginManager::class)->get('config')->toArray(),
-            $container->get(\VuFind\Record\VersionsHelper::class)
+        return new $requestedName(
+            $container->get(\VuFind\Record\Loader::class)
         );
-        return $result;
     }
 }

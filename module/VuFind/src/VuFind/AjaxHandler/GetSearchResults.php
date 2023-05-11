@@ -35,6 +35,7 @@ use Laminas\View\Renderer\PhpRenderer;
 use VuFind\Db\Row\User as UserRow;
 use VuFind\Db\Table\Search;
 use VuFind\Record\Loader as RecordLoader;
+use VuFind\Record\VersionsHelper;
 use VuFind\Search\Base\Results;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFind\Search\SearchNormalizer;
@@ -55,7 +56,6 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
-    use \VuFind\Service\Feature\RecordVersionsTrait;
 
     /**
      * ResultsManager
@@ -114,6 +114,13 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     protected $config;
 
     /**
+     * Record versions helper
+     *
+     * @var VersionsHelper
+     */
+    protected $versionsHelper;
+
+    /**
      * Elements to render for each search results page.
      *
      * @var array
@@ -152,6 +159,7 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
      * @param SearchNormalizer $normalizer      Search normalizer
      * @param SearchTable      $searchTable     Search table
      * @param array            $config          Main configuration
+     * @param VersionsHelper   $versionsHelper  Versions helper
      */
     public function __construct(
         SessionSettings $sessionSettings,
@@ -162,7 +170,8 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
         string $sessionId,
         SearchNormalizer $normalizer,
         Search $searchTable,
-        array $config
+        array $config,
+        VersionsHelper $versionsHelper
     ) {
         $this->sessionSettings = $sessionSettings;
         $this->resultsManager = $resultsManager;
@@ -173,6 +182,7 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
         $this->searchNormalizer = $normalizer;
         $this->searchTable = $searchTable;
         $this->config = $config;
+        $this->versionsHelper = $versionsHelper;
     }
 
     /**
@@ -199,27 +209,23 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
      *
      * @return ?Results
      */
-    protected function getSearchResults(Params $params): Results
+    protected function getSearchResults(Params $params): ?Results
     {
         parse_str($params->fromQuery('querystring', ''), $searchParams);
-
         $backend = $params->fromQuery('source', DEFAULT_SEARCH_BACKEND);
         $searchType = $params->fromQuery('searchType', '');
         if ('versions' === $searchType) {
-            $id = $searchParams['id'] ?? null;
-            $keys = $searchParams['keys'] ?? null;
-            if ($id) {
-                $record = $this->recordLoader->load($id, $backend, true);
-                if (!($record instanceof \VuFind\RecordDriver\Missing)) {
-                    $keys = $record->tryMethod('getWorkKeys');
-                }
-            }
-            if (empty($keys)) {
+            $driverAndKeys = $this->versionsHelper->getDriverAndWorkKeysFromParams(
+                $searchParams,
+                $backend
+            );
+            if (empty($driverAndKeys['keys'])) {
                 return null;
             }
 
-            $searchParams['lookfor'] = $this->getSearchStringFromWorkKeys((array)$keys);
-            $searchParams['type'] = $this->getWorkKeysSearchType();
+            $searchParams['lookfor'] = $this->versionsHelper
+                ->getSearchStringFromWorkKeys((array)$driverAndKeys['keys']);
+            $searchParams['type'] = $this->versionsHelper->getWorkKeysSearchType();
         }
 
         $results = $this->resultsManager->get($backend);

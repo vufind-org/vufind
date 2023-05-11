@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Trait that provides support methods for record versions search
+ * Helper that provides support methods for record versions search
  *
  * PHP version 7
  *
@@ -21,25 +21,67 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Service
+ * @package  Record
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
 
-namespace VuFind\Service\Feature;
+namespace VuFind\Record;
 
 /**
- * Trait that provides support methods for record versions search
+ * Helper that provides support methods for record versions search
  *
  * @category VuFind
- * @package  Service
+ * @package  Record
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-trait RecordVersionsTrait
+class VersionsHelper
 {
+    /**
+     * Record loader
+     *
+     * @var Loader
+     */
+    protected $recordLoader;
+
+    /**
+     * Constructor
+     *
+     * @param Loader $recordLoader Record loader
+     */
+    public function __construct(
+        Loader $recordLoader
+    ) {
+        $this->recordLoader = $recordLoader;
+    }
+
+    /**
+     * Get record driver and work keys from query params
+     *
+     * @param array  $params  Query params containing id and/or keys
+     * @param string $backend Search backend ID
+     *
+     * @return array with driver and keys
+     */
+    public function getDriverAndWorkKeysFromParams(
+        array $params,
+        string $backend
+    ): array {
+        $id = $params['id'] ?? null;
+        $keys = $params['keys'] ?? null;
+        $driver = null;
+        if ($id) {
+            $driver = $this->recordLoader->load($id, $backend, true);
+            if (!($driver instanceof \VuFind\RecordDriver\Missing)) {
+                $keys = $driver->tryMethod('getWorkKeys') ?? $keys;
+            }
+        }
+        return compact('driver', 'keys');
+    }
+
     /**
      * Convert work keys to a search string
      *
@@ -47,7 +89,7 @@ trait RecordVersionsTrait
      *
      * @return string
      */
-    protected function getSearchStringFromWorkKeys(array $keys): string
+    public function getSearchStringFromWorkKeys(array $keys): string
     {
         $mapFunc = function ($val) {
             return '"' . addcslashes($val, '"') . '"';
@@ -61,7 +103,7 @@ trait RecordVersionsTrait
      *
      * @return string
      */
-    protected function getWorkKeysSearchType(): string
+    public function getWorkKeysSearchType(): string
     {
         return 'WorkKeys';
     }
