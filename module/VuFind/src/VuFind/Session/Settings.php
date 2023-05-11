@@ -6,7 +6,7 @@
  * instantiating the session itself. See \VuFind\Session\ManagerFactory for
  * details on the use of this object.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  *

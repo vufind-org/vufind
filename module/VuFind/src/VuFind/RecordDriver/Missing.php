@@ -4,7 +4,7 @@
  * Model for missing records -- used for saved favorites that have been deleted
  * from the index.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *

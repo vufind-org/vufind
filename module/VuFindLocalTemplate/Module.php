@@ -3,7 +3,7 @@
 /**
  * Template for code module for storing local overrides.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *

@@ -3,7 +3,7 @@
 /**
  * VuFind Action Feature Trait - Secure database detection trait
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2023.
  *

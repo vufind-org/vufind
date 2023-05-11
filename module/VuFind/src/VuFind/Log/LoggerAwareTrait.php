@@ -3,7 +3,7 @@
 /**
  * Extension of \Laminas\Log\LoggerAwareTrait with some convenience methods.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *

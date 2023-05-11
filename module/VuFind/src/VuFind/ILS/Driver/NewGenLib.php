@@ -3,7 +3,7 @@
 /**
  * ILS Driver for NewGenLib
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Verus Solutions Pvt.Ltd 2010.
  *

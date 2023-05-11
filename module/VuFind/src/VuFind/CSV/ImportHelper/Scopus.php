@@ -3,7 +3,7 @@
 /**
  * Helpers for Scopus CSV import example.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *

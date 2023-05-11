@@ -4,7 +4,7 @@
  * Database utility class. May be used as a service or as a standard
  * Laminas factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
