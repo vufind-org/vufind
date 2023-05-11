@@ -1,4 +1,4 @@
-/*global Autocomplete, grecaptcha, isPhoneNumberValid */
+/*global Autocomplete, grecaptcha, isPhoneNumberValid, loadCovers */
 /*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
 
 // IE 9< console polyfill
@@ -105,18 +105,6 @@ var VuFind = (function VuFind() {
         }
       }
     );
-  };
-
-  var init = function init() {
-    for (var i = 0; i < _submodules.length; i++) {
-      if (this[_submodules[i]].init) {
-        this[_submodules[i]].init();
-      }
-    }
-    _initialized = true;
-
-    initDisableSubmitOnClick();
-    initClickHandlers();
   };
 
   var addTranslations = function addTranslations(s) {
@@ -258,6 +246,65 @@ var VuFind = (function VuFind() {
     _searchId = searchId;
   };
 
+  function setupQRCodeLinks(_container) {
+    var container = _container || $('body');
+
+    container.find('a.qrcodeLink').click(function qrcodeToggle() {
+      var holder = $(this).next('.qrcode');
+      if (holder.find('img').length === 0) {
+        // We need to insert the QRCode image
+        var template = holder.find('.qrCodeImgTag').html();
+        holder.html(template);
+      }
+    });
+  }
+
+  /**
+   * Initialize result page scripts.
+   *
+   * @param {string|JQuery} container
+   */
+  var initResultScripts = function initResultScripts(container) {
+    let jqContainer = typeof container === 'string' ? $(container) : container;
+    if (typeof this.openurl !== 'undefined') {
+      this.openurl.init(jqContainer);
+    }
+    if (typeof this.itemStatuses !== 'undefined') {
+      this.itemStatuses.init(jqContainer);
+    }
+    if (typeof this.saveStatuses !== 'undefined') {
+      this.saveStatuses.init(jqContainer);
+    }
+    if (typeof this.recordVersions !== 'undefined') {
+      this.recordVersions.init(jqContainer);
+    }
+    if (typeof this.cart !== 'undefined') {
+      this.cart.registerToggles(jqContainer);
+    }
+    if (typeof this.embedded !== 'undefined') {
+      this.embedded.init(jqContainer);
+    }
+    this.lightbox.bind(jqContainer);
+    setupQRCodeLinks(jqContainer);
+    if (typeof loadCovers === 'function') {
+      loadCovers();
+    }
+  };
+
+  var init = function init() {
+    for (var i = 0; i < _submodules.length; i++) {
+      if (this[_submodules[i]].init) {
+        this[_submodules[i]].init();
+      }
+    }
+    _initialized = true;
+
+    initDisableSubmitOnClick();
+    initClickHandlers();
+    // handle QR code links
+    setupQRCodeLinks();
+  };
+
   //Reveal
   return {
     defaultSearchBackend: defaultSearchBackend,
@@ -281,7 +328,8 @@ var VuFind = (function VuFind() {
     translate: translate,
     updateCspNonce: updateCspNonce,
     getCurrentSearchId: getCurrentSearchId,
-    setCurrentSearchId: setCurrentSearchId
+    setCurrentSearchId: setCurrentSearchId,
+    initResultScripts: initResultScripts
   };
 })();
 
@@ -606,7 +654,12 @@ function unwrapJQuery(node) {
 
 function setupJumpMenus(_container) {
   var container = _container || $('body');
-  container.find('select.jumpMenu').change(function jumpMenu(){ $(this).parent('form').submit(); });
+  container.find('select.jumpMenu').change(function jumpMenu() {
+    // Check if jumpMenu is still enabled:
+    if ($(this).hasClass('jumpMenu')) {
+      $(this).parent('form').submit();
+    }
+  });
 }
 
 function setupMultiILSLoginFields(loginMethods, idPrefix) {
@@ -636,19 +689,6 @@ function setupMultiILSLoginFields(loginMethods, idPrefix) {
   }).change();
 }
 
-function setupQRCodeLinks(_container) {
-  var container = _container || $('body');
-
-  container.find('a.qrcodeLink').click(function qrcodeToggle() {
-    var holder = $(this).next('.qrcode');
-    if (holder.find('img').length === 0) {
-      // We need to insert the QRCode image
-      var template = holder.find('.qrCodeImgTag').html();
-      holder.html(template);
-    }
-  });
-}
-
 $(document).ready(function commonDocReady() {
   // Start up all of our submodules
   VuFind.init();
@@ -661,9 +701,6 @@ $(document).ready(function commonDocReady() {
 
   // support "jump menu" dropdown boxes
   setupJumpMenus();
-
-  // handle QR code links
-  setupQRCodeLinks();
 
   // Checkbox select all
   $('.checkbox-select-all').on('change', function selectAllCheckboxes() {
