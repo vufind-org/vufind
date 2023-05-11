@@ -78,7 +78,7 @@ class CssPreCompilerTest extends \PHPUnit\Framework\TestCase
     protected static function makeFakeThemeStructure($ext)
     {
         $temp = sys_get_temp_dir();
-        $testDest = $temp . "/vufind_${ext}_comp_test/";
+        $testDest = $temp . "/vufind_{$ext}_comp_test/";
         // Create directory structure, recursively
         mkdir($testDest . "themes/child/$ext", 0777, true);
         mkdir($testDest . 'themes/empty', 0777, true);

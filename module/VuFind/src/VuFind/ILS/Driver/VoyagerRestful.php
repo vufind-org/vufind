@@ -1829,7 +1829,7 @@ class VoyagerRestful extends Voyager implements
         ];
 
         $sql = $this->buildSqlFromArray($sqlArray);
-        $outersql = "select count(avail.item_id) CNT from (${sql['string']}) avail" .
+        $outersql = "select count(avail.item_id) CNT from ({$sql['string']}) avail" .
             ' where avail.STATUS=1'; // 1 = not charged
 
         try {

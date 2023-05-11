@@ -52,6 +52,7 @@ class RefreshTokenEntity implements RefreshTokenEntityInterface, \JsonSerializab
      *
      * @return string
      */
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         $properties = [
