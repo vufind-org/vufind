@@ -184,11 +184,11 @@ abstract class Results
     protected $hierarchicalFacetHelper = null;
 
     /**
-     * Additional parameters
+     * Optional parameters
      *
      * @var array
      */
-    protected $additionalParameters = [];
+    protected $optionalParameters = [];
 
     /**
      * Constructor
@@ -633,30 +633,35 @@ abstract class Results
     }
 
     /**
-     * Get additional parameters for the search.
+     * Get optional parameters for the search.
      *
-     * Additional parameters is used to store i.e page of the results.
+     * The optional parameters mechanism is used for storing search parameters
+     * that may be useful for reproducing the full context of a user's search,
+     * but which do not impact the contents of the search result set -- e.g. page number.
      * Contents must be serializable. It is recommended to make the array as small
      * as possible.
      *
      * @return array
      */
-    public function getAdditionalParameters(): array
+    public function getOptionalParameters(): array
     {
-        // Not implemented in the base class
-        return $this->additionalParameters;
+        return $this->optionalParameters;
     }
 
     /**
-     * Set additional parameters for the search.
+     * Set optional parameters for the search.
+     * 
+     * The optional parameters mechanism is used for storing search parameters
+     * that may be useful for reproducing the full context of a user's search,
+     * but which do not impact the contents of the search result set -- e.g. page number.
      *
      * @param array $data Additional parameters
      *
      * @return void
      */
-    public function setAdditionalParameters(array $data): void
+    public function setOptionalParameters(array $data): void
     {
-        $this->additionalParameters = $data;
+        $this->optionalParameters = $data;
     }
 
     /**
@@ -673,7 +678,7 @@ abstract class Results
         $this->queryTime = $minified->s;
         $this->resultTotal = $minified->r;
         $this->setExtraData($minified->ex);
-        $this->setAdditionalParameters($minified->ap);
+        $this->setOptionalParameters($minified->op);
     }
 
     /**

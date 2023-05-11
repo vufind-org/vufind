@@ -127,11 +127,11 @@ class Minified
     public $ex = [];
 
     /**
-     * Additional parameters
+     * Optional parameters
      *
      * @var array
      */
-    public $ap = [];
+    public $op = [];
 
     /**
      * Constructor. Building minified object from the
@@ -164,7 +164,7 @@ class Minified
         $this->ex = $searchObject->getExtraData();
 
         // Additional parameters contains data i.e page number.
-        $this->ap = $searchObject->getAdditionalParameters();
+        $this->op = $searchObject->getOptionalParameters();
     }
 
     /**

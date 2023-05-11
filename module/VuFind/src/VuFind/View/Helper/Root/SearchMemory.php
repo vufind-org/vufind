@@ -91,10 +91,13 @@ class SearchMemory extends AbstractHelper
             $url = $urlHelper($lastSearch->getOptions()->getSearchAction())
                 . $lastSearch->getUrlQuery()->getParams(false);
 
-            // Try to append page number from extra params saved in results object
-            $additionalParameters = $lastSearch->getAdditionalParameters();
-            if ($additionalParameters['page']) {
-                $url .= "&page={$additionalParameters['page']}";
+            // Try to append page number and page size from optional params saved in results object
+            $optionalParameters = $lastSearch->getOptionalParameters();
+            if (!empty($optionalParameters['page'])) {
+                $url .= "&page={$optionalParameters['page']}";
+            }
+            if (!empty($optionalParameters['limit'])) {
+                $url .= "&limit={$optionalParameters['limit']}";
             }
 
             $escaper = $this->getView()->plugin('escapeHtml');
