@@ -3,7 +3,7 @@
 /**
  * Abstract base class to hold shared logic for theme utilities.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  *

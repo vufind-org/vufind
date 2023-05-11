@@ -3,7 +3,7 @@
 /**
  * Legacy adapter: search query parameters to AbstractQuery object
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -69,7 +69,7 @@ abstract class QueryAdapter
             $operator = $search['g'][0]['b'];
             return new QueryGroup(
                 $operator,
-                array_map(['self', 'deminify'], $search['g'])
+                array_map(self::class . '::deminify', $search['g'])
             );
         } else {
             // Special case: The outer-most group-of-groups.
@@ -77,7 +77,7 @@ abstract class QueryAdapter
                 $operator = $search[0]['j'];
                 return new QueryGroup(
                     $operator,
-                    array_map(['self', 'deminify'], $search)
+                    array_map(self::class . '::deminify', $search)
                 );
             } else {
                 // Simple query

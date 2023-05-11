@@ -3,7 +3,7 @@
 /**
  * Abstract base class of SOLR error listeners.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *

@@ -3,7 +3,7 @@
 /**
  * Blender aspect of the Search Multi-class (Results)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2015-2019.
  *

@@ -6,7 +6,7 @@
  * Needed for the Windows version of the alphabetical browse database generator,
  * since Windows sort does not support deduplication. Assumes presorted input.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
