@@ -161,7 +161,7 @@ abstract class AbstractAPI extends AbstractBase implements
         try {
             $response = $client->send();
         } catch (\Exception $e) {
-            $this->logError("Unexpected " . get_class($e) . ": " . (string)$e);
+            $this->logError("Unexpected " . $e::class . ": " . (string)$e);
             throw new ILSException("Error during send operation.");
         }
         $code = $response->getStatusCode();

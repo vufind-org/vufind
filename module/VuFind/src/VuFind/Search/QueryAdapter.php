@@ -134,7 +134,7 @@ abstract class QueryAdapter
                             = call_user_func($showName, $group->getHandler()) . ':'
                             . $group->getString();
                     } else {
-                        throw new \Exception('Unexpected ' . get_class($group));
+                        throw new \Exception('Unexpected ' . $group::class);
                     }
                 }
                 // Is this an exclusion (NOT) group or a normal group?
@@ -149,7 +149,7 @@ abstract class QueryAdapter
                     $groups[] = $str;
                 }
             } else {
-                throw new \Exception('Unexpected ' . get_class($search));
+                throw new \Exception('Unexpected ' . $search::class);
             }
         }
 

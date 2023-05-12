@@ -225,7 +225,7 @@ trait TranslatorAwareTrait
                 $parts[0] = 'default';
             }
             if ($target instanceof \VuFind\I18n\TranslatableStringInterface) {
-                $class = get_class($target);
+                $class = $target::class;
                 $parts[1] = new $class(
                     $parts[1],
                     $target->getDisplayString(),

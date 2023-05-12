@@ -115,7 +115,7 @@ class HoldingsWorldCatTest extends \PHPUnit\Framework\TestCase
         $commandObj->expects($this->any())->method('getResult')
             ->will($this->returnValue(true));
         $checkCommand = function ($command) {
-            return get_class($command) === \VuFindSearch\Backend\WorldCat\Command\GetHoldingsCommand::class
+            return $command::class === \VuFindSearch\Backend\WorldCat\Command\GetHoldingsCommand::class
                     && $command->getArguments()[0] === "bar"
                     && $command->getTargetIdentifier() === "WorldCat";
         };

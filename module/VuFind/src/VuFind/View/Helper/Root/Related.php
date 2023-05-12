@@ -140,7 +140,7 @@ class Related extends \Laminas\View\Helper\AbstractHelper
     public function render($related)
     {
         $template = 'Related/%s.phtml';
-        $className = get_class($related);
+        $className = $related::class;
         $context = ['related' => $related];
         return $this->renderClassTemplate($template, $className, $context);
     }

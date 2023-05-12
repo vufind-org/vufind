@@ -312,7 +312,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
         $this->container
             ->set(\VuFind\Db\Table\PluginManager::class, $mockTableManager);
         $driverManager = new \VuFind\ILS\Driver\PluginManager($this->container);
-        $parts = explode('\\', get_class($driver));
+        $parts = explode('\\', $driver::class);
         $driverClass = end($parts);
         $mockConfigReader = $this->getMockConfigPluginManager(
             [

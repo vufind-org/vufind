@@ -74,7 +74,7 @@ class SummonTest extends \PHPUnit\Framework\TestCase
         $commandObj->expects($this->once())->method('getResult')
             ->will($this->returnValue($collection));
         $checkCommand = function ($command) use ($expectedParams) {
-            return get_class($command) === \VuFindSearch\Command\RetrieveCommand::class
+            return $command::class === \VuFindSearch\Command\RetrieveCommand::class
                 && $command->getTargetIdentifier() === "Summon"
                 && $command->getArguments()[0] === 'bar'
                 && $command->getArguments()[1] == $expectedParams;

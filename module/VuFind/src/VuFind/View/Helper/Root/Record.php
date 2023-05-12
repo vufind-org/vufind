@@ -374,7 +374,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     public function getTab(\VuFind\RecordTab\TabInterface $tab)
     {
         $context = ['driver' => $this->driver, 'tab' => $tab];
-        $classParts = explode('\\', get_class($tab));
+        $classParts = explode('\\', $tab::class);
         $template = 'RecordTab/' . strtolower(array_pop($classParts)) . '.phtml';
         $oldContext = $this->contextHelper->apply($context);
         $html = $this->view->render($template);
