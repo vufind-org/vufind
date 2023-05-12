@@ -55,7 +55,7 @@
             <div class="checkbox">
               <input type="hidden" name="cancelAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>">
               <label>
-                <input type="checkbox" name="cancelSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" id="checkbox_<?=$safeId?>" aria-describedby="<?=$describedById?>" aria-label="<?=$this->transEscAttr('select_item_ill_request_cancel')?>">
+                <input type="checkbox" name="cancelSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" id="checkbox_<?=$safeId?>" aria-describedby="<?=$this->escapeHtmlAttr($describedById)?>" aria-label="<?=$this->transEscAttr('select_item_ill_request_cancel')?>">
               </label>
             </div>
           <?php endif; ?>

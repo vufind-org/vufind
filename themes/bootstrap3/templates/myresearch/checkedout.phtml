@@ -100,7 +100,7 @@
               <?php if (isset($ilsDetails['renewable']) && $ilsDetails['renewable'] && isset($ilsDetails['renew_details'])): ?>
                 <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['renew_details']); ?>
                 <label>
-                  <input class="checkbox-select-item" type="checkbox" name="renewSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" id="checkbox_<?=$safeId?>" aria-describedby="<?=$describedById?>" aria-label="<?=$this->transEscAttr('select_item_checked_out_renew')?>">
+                  <input class="checkbox-select-item" type="checkbox" name="renewSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" id="checkbox_<?=$safeId?>" aria-describedby="<?=$this->escapeHtmlAttr($describedById)?>" aria-label="<?=$this->transEscAttr('select_item_checked_out_renew')?>">
                 </label>
                 <input type="hidden" name="selectAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>">
                 <input type="hidden" name="renewAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>">

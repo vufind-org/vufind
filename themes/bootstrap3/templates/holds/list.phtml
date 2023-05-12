@@ -71,7 +71,7 @@
             <?php endif; ?>
             <div class="checkbox">
               <label>
-                <input type="checkbox" name="selectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details'] ?? $ilsDetails['updateDetails']) ?>" id="checkbox_<?=$safeId?>" class="checkbox-select-item" aria-describedby="<?=$describedById?>" aria-label="<?=$this->transEscAttr('select_item_hold_cancel')?>">
+                <input type="checkbox" name="selectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details'] ?? $ilsDetails['updateDetails']) ?>" id="checkbox_<?=$safeId?>" class="checkbox-select-item" aria-describedby="<?=$this->escapeHtmlAttr($describedById)?>" aria-label="<?=$this->transEscAttr('select_item_hold_cancel')?>">
               </label>
             </div>
           <?php elseif ($this->cancelForm || $this->updateForm): ?>
