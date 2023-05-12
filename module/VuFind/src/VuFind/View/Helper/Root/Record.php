@@ -709,11 +709,11 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get the unique title id of the record
+     * Get the source identifier + unique id of the record
      *
      * @return string
      */
-    public function getTitleDescribedById()
+    public function getUniqueIdWithSource()
     {
         return "{$this->driver->getSourceIdentifier()}|{$this->driver->getUniqueId()}";
     }
