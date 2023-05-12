@@ -249,7 +249,7 @@ var VuFind = (function VuFind() {
   function setupQRCodeLinks(_container) {
     var container = _container || $('body');
 
-    container.find('a.qrcodeLink').click(function qrcodeToggle() {
+    container.find('a.qrcodeLink').on('click', function qrcodeToggle() {
       var holder = $(this).next('.qrcode');
       if (holder.find('img').length === 0) {
         // We need to insert the QRCode image
