@@ -42,6 +42,7 @@
   },
   "devDependencies": {
     "eslint": "^8.15.0",
+    "eslint-plugin-no-jquery": "^2.7.0",
     "grunt-contrib-watch": "^1.1.0",
     "jshint": "^2.13.4",
     "jstree": "3.3.15",
