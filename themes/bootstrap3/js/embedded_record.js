@@ -155,7 +155,8 @@ VuFind.register('embedded', function embedded() {
               }
               return ajaxLoadTab(this.id);
             });
-            longNode.find('[id^=usercomment]').find('input[type=submit]').unbind('click').click(
+            longNode.find('[id^=usercomment]').find('input[type=submit]').off("click").on(
+              "click",
               function embeddedComments() {
                 return registerAjaxCommentRecord(longNode);
               }
