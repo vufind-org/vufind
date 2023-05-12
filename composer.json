@@ -10,7 +10,7 @@
     "license": "GPL-2.0",
     "config": {
         "platform": {
-            "php": "7.4.1"
+            "php": "8.0"
         },
         "process-timeout": 0,
         "allow-plugins": {
@@ -24,7 +24,7 @@
         "ext-sodium": "*"
     },
     "require": {
-        "php": ">=7.4.1",
+        "php": ">=8.0",
         "ahand/mobileesp": "dev-master",
         "cap60552/php-sip2": "1.0.0",
         "colinmollenhour/credis": "1.14.0",
@@ -42,7 +42,7 @@
         "laminas/laminas-config": "3.7.0",
         "laminas/laminas-crypt": "3.8.0",
         "laminas/laminas-db": "2.15.1",
-        "laminas/laminas-diactoros": "2.17.0",
+        "laminas/laminas-diactoros": "2.18.1",
         "laminas/laminas-dom": "2.12.1",
         "laminas/laminas-escaper": "2.12.0",
         "laminas/laminas-eventmanager": "3.5.0",
@@ -100,7 +100,7 @@
         "behat/mink-selenium2-driver": "1.6.0",
         "dmore/chrome-mink-driver": "2.9.2",
         "firebase/php-jwt": "6.4.0",
-        "friendsofphp/php-cs-fixer": "3.14.4",
+        "friendsofphp/php-cs-fixer": "3.15.1",
         "phploc/phploc": "7.0.2",
         "phpmd/phpmd": "2.13.0",
         "phpstan/phpstan": "1.10.3",

@@ -3,7 +3,7 @@
 /**
  * Support class to build reserves data from CSV file(s).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *

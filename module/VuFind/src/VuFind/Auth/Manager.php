@@ -3,7 +3,7 @@
 /**
  * Wrapper class for handling logged-in user in session.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *

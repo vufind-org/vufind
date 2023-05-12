@@ -3,7 +3,7 @@
 /**
  * Abstract base class for language commands.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *

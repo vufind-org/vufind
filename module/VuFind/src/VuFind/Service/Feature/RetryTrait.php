@@ -3,7 +3,7 @@
 /**
  * Trait that provides support for calling a method with configurable retries
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2023.
  *

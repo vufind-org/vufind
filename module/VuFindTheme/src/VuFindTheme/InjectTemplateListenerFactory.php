@@ -3,7 +3,7 @@
 /**
  * Factory for InjectTemplateListener
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) 2019 Leipzig University Library
  *

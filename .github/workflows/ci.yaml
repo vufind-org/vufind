@@ -11,16 +11,16 @@ jobs:
       VUFIND_LOCAL_DIR: $GITHUB_WORKSPACE/local
     strategy:
       matrix:
-        php-version: ['7.4', '8.0', '8.1']
+        php-version: ['8.0', '8.1', '8.2']
         # We run most tests on all platforms, but we only run Javascript-related tests in 8.1.
         # Since the results should be the same on all platforms, we don't need to repeat them.
         include:
-          - php-version: 7.4
-            phing_tasks: "qa-php"
           - php-version: 8.0
             phing_tasks: "qa-php"
           - php-version: 8.1
             phing_tasks: "qa-console"
+          - php-version: 8.2
+            phing_tasks: "qa-php"
 
     steps:
       - name: Setup PHP

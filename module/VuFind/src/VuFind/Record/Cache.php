@@ -3,7 +3,7 @@
 /**
  * Record Cache
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) University of Freiburg 2014.
  * Copyright (C) The National Library of Finland 2015.

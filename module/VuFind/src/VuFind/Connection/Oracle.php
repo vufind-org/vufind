@@ -3,7 +3,7 @@
 /**
  * Oracle support code for VTLS Virtua Driver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) University of Southern Queensland 2008.
  *

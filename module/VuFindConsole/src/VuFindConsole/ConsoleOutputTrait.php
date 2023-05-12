@@ -3,7 +3,7 @@
 /**
  * Console output trait (used to add output support to other classes).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *

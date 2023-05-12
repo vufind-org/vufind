@@ -3,7 +3,7 @@
 /**
  * Polaris ILS Driver
  *
- * PHP version 7
+ * PHP version 8
  *
  *
  * This program is free software; you can redistribute it and/or modify

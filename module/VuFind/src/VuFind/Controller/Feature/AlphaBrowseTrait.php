@@ -4,7 +4,7 @@
  * VuFind Action Feature Trait - Alphabetic browse support
  * Depends on direct access to the Service Manager.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021
  *
