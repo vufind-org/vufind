@@ -84,7 +84,7 @@ class InjectTemplateListenerFactory implements FactoryInterface
             array_merge($prefixes, $modules),
             function ($prefix) use ($exclude) {
                 foreach ($exclude as $current) {
-                    if (strpos($prefix, $current) === 0) {
+                    if (str_starts_with($prefix, $current)) {
                         return false;
                     }
                 }

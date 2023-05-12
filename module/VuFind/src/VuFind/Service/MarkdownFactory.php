@@ -187,7 +187,7 @@ class MarkdownFactory implements FactoryInterface
      */
     protected function getExtensionClass(string $extension): string
     {
-        $extensionClass = (strpos($extension, '\\') !== false)
+        $extensionClass = (str_contains($extension, '\\'))
             ? $extension
             : sprintf(
                 'League\CommonMark\Extension\%s\%sExtension',

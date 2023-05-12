@@ -353,7 +353,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
             ['driver' => $this->driver, 'lookfor' => $lookfor]
         );
 
-        $prepend = (strpos($link, '?') === false) ? '?' : '&amp;';
+        $prepend = (!str_contains($link, '?')) ? '?' : '&amp;';
 
         $link .= $this->getView()->plugin('searchTabs')
             ->getCurrentHiddenFilterParams(

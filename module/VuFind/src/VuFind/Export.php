@@ -350,7 +350,7 @@ class Export
             $active = [];
             foreach ($formatSettings as $format => $allowedContexts) {
                 if (
-                    strpos($allowedContexts, $context) !== false
+                    str_contains($allowedContexts, $context)
                     || ($context == 'record' && $allowedContexts == 1)
                 ) {
                     $active[] = $format;

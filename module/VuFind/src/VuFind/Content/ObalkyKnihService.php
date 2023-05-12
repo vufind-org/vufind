@@ -237,7 +237,7 @@ class ObalkyKnihService implements
      */
     protected function createLocalIdentifier(string $recordid): ?string
     {
-        if (strpos($recordid, '.') !== false) {
+        if (str_contains($recordid, '.')) {
             [, $recordid] = explode('.', $recordid, 2);
         }
         return (empty($this->sigla) || empty($recordid)) ? null :

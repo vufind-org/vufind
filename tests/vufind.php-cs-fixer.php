@@ -23,6 +23,7 @@ $rules = [
     'linebreak_after_opening_tag' => true,
     'lowercase_cast' => true,
     'magic_constant_casing' => true,
+    'modernize_strpos' => true,
     'native_function_casing' => true,
     'no_alias_functions' => true,
     'no_blank_lines_after_class_opening' => true,

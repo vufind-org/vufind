@@ -801,7 +801,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
                     // the list. Useful for two-item lists including corporate
                     // authors as the first entry.
                     $skipComma = ($i + 2 == $authorCount)
-                        && (strpos($authorStr . $author, ',') === false);
+                        && (!str_contains($authorStr . $author, ','));
                     $authorStr .= $author . ($skipComma ? ' ' : ', ');
                 } else { // First and only
                     $authorStr .= $this->stripPunctuation($author) . '.';
@@ -883,7 +883,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
     {
         // If there is no comma in the name, we don't need to reverse it and
         // should leave its punctuation alone (since it was adjusted earlier).
-        return strpos($author, ',') === false
+        return !str_contains($author, ',')
             ? $author : $this->reverseName($this->stripPunctuation($author));
     }
 
@@ -914,7 +914,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
                         // Only add a comma if there are commas already in the
                         // preceding text. This helps, for example, with cases where
                         // the first author is a corporate author.
-                        $finalJoin = strpos($authorStr, ',') !== false ? ', ' : ' ';
+                        $finalJoin = str_contains($authorStr, ',') ? ', ' : ' ';
                         $authorStr .= $finalJoin . $this->translate('and') . ' '
                             . $this->formatSecondaryMLAAuthor($author);
                     } elseif ($i > 0) {

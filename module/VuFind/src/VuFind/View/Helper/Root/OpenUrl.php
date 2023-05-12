@@ -160,7 +160,7 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
             $imageOpenUrl = $params['openUrlImageBasedOverride']
                 ? $params['openUrlImageBasedOverride'] : $params['openUrl'];
             $params['openUrlImageBasedSrc'] = $base
-                . ((false === strpos($base, '?')) ? '?' : '&')
+                . ((!str_contains($base, '?')) ? '?' : '&')
                 . $imageOpenUrl;
         }
 
