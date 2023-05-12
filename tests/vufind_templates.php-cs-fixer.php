@@ -39,6 +39,7 @@ $rules = [
     'no_trailing_whitespace_in_comment' => false, // disabled for readability; we want < ?php // comment ? > not < ?php //comment? >
     'no_unneeded_control_parentheses' => true,
     'no_unneeded_curly_braces' => true,
+    'no_unneeded_final_method' => true,
     'no_unreachable_default_argument_value' => true,
     'no_unused_imports' => true,
     'no_useless_return' => true,
