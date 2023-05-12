@@ -2383,7 +2383,7 @@ class SierraRest extends AbstractBase implements
                     foreach ($subfields as $subfield) {
                         if (
                             $subfieldCodes
-                            && false === strpos(
+                            && !str_contains(
                                 $subfieldCodes,
                                 (string)$subfield['tag']
                             )

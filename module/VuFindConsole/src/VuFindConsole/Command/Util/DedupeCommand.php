@@ -117,7 +117,7 @@ class DedupeCommand extends Command
      */
     protected function writeToOutputFile($handle, $text)
     {
-        fputs($handle, $text);
+        fwrite($handle, $text);
     }
 
     /**

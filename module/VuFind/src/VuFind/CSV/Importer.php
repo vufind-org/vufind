@@ -230,7 +230,7 @@ class Importer
         $config = new ImporterConfig($options['General'] ?? []);
         $this->processHeader($config, $in, $options['General']['header'] ?? 'none');
         foreach ($options as $section => $settings) {
-            if (strpos($section, ':') !== false) {
+            if (str_contains($section, ':')) {
                 [$type, $details] = explode(':', $section);
                 switch (strtolower(trim($type))) {
                     case 'column':
