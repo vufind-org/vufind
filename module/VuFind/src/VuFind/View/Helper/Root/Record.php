@@ -415,8 +415,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
      */
     public function getCheckbox($idPrefix = '', $formAttr = false, $number = null)
     {
-        $id = $this->driver->getSourceIdentifier() . '|'
-            . $this->driver->getUniqueId();
+        $id = $this->getUniqueIdWithSource();
         $context
             = ['id' => $id, 'number' => $number, 'prefix' => $idPrefix];
         if ($formAttr) {
