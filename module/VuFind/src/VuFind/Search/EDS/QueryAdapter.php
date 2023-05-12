@@ -104,7 +104,7 @@ class QueryAdapter extends \VuFind\Search\QueryAdapter
                 throw new \Exception('Unexpected ' . get_class($search));
             }
         }
-        $output = '(' . join(' ', $all) . ')';
+        $output = '(' . implode(' ', $all) . ')';
 
         return $output;
     }

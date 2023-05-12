@@ -725,7 +725,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
 
         // We've dealt with capitalization of words; now we need to deal with
         // multi-word phrases:
-        $adjustedTitle = ucfirst(join(' ', $newwords));
+        $adjustedTitle = ucfirst(implode(' ', $newwords));
         foreach ($this->uncappedPhrases as $phrase) {
             // We need to cover two cases: the phrase at the start of a title,
             // and the phrase in the middle of a title:
