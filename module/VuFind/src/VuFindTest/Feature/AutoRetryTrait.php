@@ -6,7 +6,7 @@
  *
  * Inspired by discussion here at https://stackoverflow.com/questions/7705169
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *

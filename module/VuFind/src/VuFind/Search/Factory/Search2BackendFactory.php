@@ -3,7 +3,7 @@
 /**
  * Factory for a second Solr backend
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Staats- und Universitätsbibliothek Hamburg 2018.
  *

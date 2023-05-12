@@ -3,7 +3,7 @@
 /**
  * AJAX handler to comment on a record.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *

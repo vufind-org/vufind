@@ -3,7 +3,7 @@
 /**
  * EBSCO EDS API Search Model
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Serials Solutions 2011.
  *
