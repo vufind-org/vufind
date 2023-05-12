@@ -54,13 +54,8 @@
 </div>
 
 <?php if ($saveSupported): ?>
-  <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
-    <?=
-      $this->context($this)->renderInContext(
-          "myresearch/menu.phtml",
-          ['active' => 'history']
-      );
-    ?>
+  <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
+    <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'history'])?>
   </div>
 <?php endif; ?>
 

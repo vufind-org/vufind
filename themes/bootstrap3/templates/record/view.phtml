@@ -81,7 +81,7 @@
     <?=$this->driver->supportsCoinsOpenURL() ? '<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenURL()) . '"></span>' : ''?>
   </div>
 
-  <div class="<?=$this->layoutClass('sidebar')?>">
+  <div class="<?=$this->layoutClass('sidebar')?>" role="region" aria-label="<?=$this->translate('Related Items')?>">
     <?php foreach ($sidebarList as $current): ?>
       <?=$this->related()->render($current)?>
     <?php endforeach; ?>

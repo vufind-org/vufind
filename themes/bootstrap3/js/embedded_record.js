@@ -16,7 +16,7 @@ VuFind.register('embedded', function embedded() {
         storage.push(str);
       }
     }
-    sessionStorage.setItem(_STORAGEKEY, $.unique(storage).join(_DELIM));
+    sessionStorage.setItem(_STORAGEKEY, $.uniqueSort(storage).join(_DELIM));
   }
   function addToStorage(id, tab) {
     _STATUS[id] = tab;
@@ -77,7 +77,7 @@ VuFind.register('embedded', function embedded() {
       });
     }
     if (click && !$tab.parent().hasClass('default')) {
-      $tab.click();
+      $tab.trigger("click");
     }
     return true;
   }
@@ -144,12 +144,12 @@ VuFind.register('embedded', function embedded() {
             } else {
               var $firstTab = $(longNode).find('.list-tab-toggle.active');
               if ($firstTab.length === 0) {
-                $firstTab = $(longNode).find('.list-tab-toggle:eq(0)');
+                $firstTab = $(longNode).find('.list-tab-toggle').first();
               }
               ajaxLoadTab($firstTab.attr('id'), true);
             }
             // Bind tab clicks
-            longNode.find('.list-tab-toggle').click(function embeddedTabLoad() {
+            longNode.find('.list-tab-toggle').on('click', function embeddedTabLoad() {
               if (!$(this).parent().hasClass('noajax')) {
                 addToStorage(divID, this.id);
               }
