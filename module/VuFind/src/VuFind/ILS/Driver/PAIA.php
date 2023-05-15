@@ -112,7 +112,7 @@ class PAIA extends DAIA
 
     /**
      * Account blocks that should not be reported to the user.
-     * 
+     *
      * @see method `getAccountBlocks`
      * @var array
      */
@@ -2199,7 +2199,8 @@ class PAIA extends DAIA
     public function getAccountBlocks($patron)
     {
         $blocks = [];
-        if (!$this->paiaCheckScope(self::SCOPE_UPDATE_PATRON)
+        if (
+            !$this->paiaCheckScope(self::SCOPE_UPDATE_PATRON)
             && !in_array(self::SCOPE_UPDATE_PATRON, $this->mutedScopes)
         ) {
             array_push(
@@ -2207,7 +2208,8 @@ class PAIA extends DAIA
                 'no_update_patron_scope'
             );
         } else {
-            if (!$this->paiaCheckScope(self::SCOPE_UPDATE_PATRON_NAME)
+            if (
+                !$this->paiaCheckScope(self::SCOPE_UPDATE_PATRON_NAME)
                 && !in_array(self::SCOPE_UPDATE_PATRON_NAME, $this->mutedScopes)
             ) {
                 array_push(
@@ -2215,7 +2217,8 @@ class PAIA extends DAIA
                     'no_update_patron_name_scope'
                 );
             }
-            if (!$this->paiaCheckScope(self::SCOPE_UPDATE_PATRON_EMAIL)
+            if (
+                !$this->paiaCheckScope(self::SCOPE_UPDATE_PATRON_EMAIL)
                 && !in_array(self::SCOPE_UPDATE_PATRON_EMAIL, $this->mutedScopes)
             ) {
                 array_push(
@@ -2223,7 +2226,8 @@ class PAIA extends DAIA
                     'no_update_patron_email_scope'
                 );
             }
-            if (!$this->paiaCheckScope(self::SCOPE_UPDATE_PATRON_ADDRESS)
+            if (
+                !$this->paiaCheckScope(self::SCOPE_UPDATE_PATRON_ADDRESS)
                 && !in_array(self::SCOPE_UPDATE_PATRON_ADDRESS, $this->mutedScopes)
             ) {
                 array_push(
@@ -2232,7 +2236,8 @@ class PAIA extends DAIA
                 );
             }
         }
-        if (!$this->paiaCheckScope(self::SCOPE_READ_PATRON)
+        if (
+            !$this->paiaCheckScope(self::SCOPE_READ_PATRON)
             && !in_array(self::SCOPE_READ_PATRON, $this->mutedScopes)
         ) {
             array_push(
@@ -2240,7 +2245,8 @@ class PAIA extends DAIA
                 'no_read_patron_scope'
             );
         }
-        if (!$this->paiaCheckScope(self::SCOPE_READ_FEES)
+        if (
+            !$this->paiaCheckScope(self::SCOPE_READ_FEES)
             && !in_array(self::SCOPE_READ_FEES, $this->mutedScopes)
         ) {
             array_push(
@@ -2248,7 +2254,8 @@ class PAIA extends DAIA
                 'no_read_fees_scope'
             );
         }
-        if (!$this->paiaCheckScope(self::SCOPE_READ_ITEMS)
+        if (
+            !$this->paiaCheckScope(self::SCOPE_READ_ITEMS)
             && !in_array(self::SCOPE_READ_ITEMS, $this->mutedScopes)
         ) {
             array_push(
@@ -2256,7 +2263,8 @@ class PAIA extends DAIA
                 'no_read_items_scope'
             );
         }
-        if (!$this->paiaCheckScope(self::SCOPE_WRITE_ITEMS)
+        if (
+            !$this->paiaCheckScope(self::SCOPE_WRITE_ITEMS)
             && !in_array(self::SCOPE_WRITE_ITEMS, $this->mutedScopes)
         ) {
             array_push(
@@ -2264,7 +2272,8 @@ class PAIA extends DAIA
                 'no_write_items_scope'
             );
         }
-        if (!$this->paiaCheckScope(self::SCOPE_CHANGE_PASSWORD)
+        if (
+            !$this->paiaCheckScope(self::SCOPE_CHANGE_PASSWORD)
             && !in_array(self::SCOPE_CHANGE_PASSWORD, $this->mutedScopes)
         ) {
             array_push(
@@ -2272,7 +2281,8 @@ class PAIA extends DAIA
                 'no_change_password_scope'
             );
         }
-        if (!$this->paiaCheckScope(self::SCOPE_READ_NOTIFICATIONS)
+        if (
+            !$this->paiaCheckScope(self::SCOPE_READ_NOTIFICATIONS)
             && !in_array(self::SCOPE_READ_NOTIFICATIONS, $this->mutedScopes)
         ) {
             array_push(
@@ -2280,7 +2290,8 @@ class PAIA extends DAIA
                 'no_read_notifications_scope'
             );
         }
-        if (!$this->paiaCheckScope(self::SCOPE_DELETE_NOTIFICATIONS)
+        if (
+            !$this->paiaCheckScope(self::SCOPE_DELETE_NOTIFICATIONS)
             && !in_array(self::SCOPE_DELETE_NOTIFICATIONS, $this->mutedScopes)
         ) {
             array_push(

@@ -576,7 +576,13 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
         */
     }
 
-    public function testGetAccountBlocks() {
+    /**
+     * Test getAccountBlocks
+     *
+     * @return void
+     */
+    public function testGetAccountBlocks()
+    {
         $patron = [];
         $paia = $this->createMockConnector();
         $blocks = $paia->getAccountBlocks($patron);
