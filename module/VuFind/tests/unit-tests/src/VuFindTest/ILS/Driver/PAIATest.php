@@ -57,7 +57,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
             [
                 'baseUrl'            => 'http://paia.gbv.de/',
                 'grantType'          => 'password',
-                'muteAccountBlocksNotificationForScopes' => ['delete_notifications']
+                'muteAccountBlocksNotificationForScopes' => ['delete_notifications'],
             ],
     ];
 
