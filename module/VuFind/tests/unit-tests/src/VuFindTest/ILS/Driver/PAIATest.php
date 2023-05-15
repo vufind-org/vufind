@@ -57,6 +57,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
             [
                 'baseUrl'            => 'http://paia.gbv.de/',
                 'grantType'          => 'password',
+                'muteAccountBlocksNotificationForScopes' => ['delete_notifications']
             ],
     ];
 
@@ -573,6 +574,16 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
 
             $this->assertEquals($this->failedRenewTestResult, $result_fail);
         */
+    }
+
+    public function testGetAccountBlocks() {
+        $patron = [];
+        $paia = $this->createMockConnector();
+        $blocks = $paia->getAccountBlocks($patron);
+        $this->assertEquals([
+            'no_update_patron_scope',
+            'no_read_notifications_scope',
+        ], $blocks);
     }
 
     /**
