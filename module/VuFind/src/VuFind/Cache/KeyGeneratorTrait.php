@@ -58,7 +58,8 @@ trait KeyGeneratorTrait
         // Test the build key
         if (
             $this->cache
-            && !preg_match($this->cache->getOptions()->getKeyPattern(), $key)
+            && ($keyPattern = $this->cache->getOptions()->getKeyPattern())
+            && !preg_match($keyPattern, $key)
         ) {
             // The key violates the currently set StorageAdapter key_pattern. Our
             // best guess is to remove any characters that do not match the only
