@@ -101,7 +101,7 @@ class CopyStringCommand extends AbstractCommand
         if (!$fHandle) {
             throw new \Exception('Cannot open ' . $filename . ' for writing.');
         }
-        fputs($fHandle, "\n$key = \"" . $value . "\"\n");
+        fwrite($fHandle, "\n$key = \"" . $value . "\"\n");
         fclose($fHandle);
     }
 

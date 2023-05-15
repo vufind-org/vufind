@@ -74,7 +74,7 @@ class UserCommentsFactory implements \Laminas\ServiceManager\Factory\FactoryInte
             ->get('config');
         $captchaConfig = $config->Captcha->forms ?? '';
         $useCaptcha = trim($captchaConfig) === '*'
-            || strpos($captchaConfig, 'userComments') !== false;
+            || str_contains($captchaConfig, 'userComments');
         return new $requestedName(
             'enabled' === $capabilities->getCommentSetting(),
             $useCaptcha

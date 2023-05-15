@@ -102,7 +102,7 @@ trait AutoRetryTrait
                 return;
             } catch (\Exception $e) {
                 // Don't retry skipped tests!
-                if (get_class($e) == SkippedTestError::class) {
+                if ($e::class == SkippedTestError::class) {
                     throw $e;
                 }
                 // Execute callbacks for interrupted test, unless this is the

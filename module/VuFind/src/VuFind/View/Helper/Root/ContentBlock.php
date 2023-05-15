@@ -53,7 +53,7 @@ class ContentBlock extends \Laminas\View\Helper\AbstractHelper
     public function __invoke($block)
     {
         $template = 'ContentBlock/%s.phtml';
-        $className = get_class($block);
+        $className = $block::class;
         $context = $block->getContext();
         return $this->renderClassTemplate($template, $className, $context);
     }

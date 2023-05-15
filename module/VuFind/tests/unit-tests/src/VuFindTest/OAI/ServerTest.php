@@ -51,7 +51,7 @@ class ServerTest extends \PHPUnit\Framework\TestCase
     {
         $server = $this->getServer();
         $this->assertTrue(
-            false !== strpos($server->getResponse(), '<error code="badVerb">Missing Verb Argument</error>')
+            str_contains($server->getResponse(), '<error code="badVerb">Missing Verb Argument</error>')
         );
     }
 
