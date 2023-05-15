@@ -51,7 +51,7 @@
             </a>
           <?php endif; ?>
         <?php else: ?>
-          <?php /* Begin Unavailable Items (Holds/Recalls) */ ?>
+          <?php /* Begin Unavailable Items (Recalls) */ ?>
           <span class="text-danger"><?=$this->transEsc($holding['status'])?><link property="availability" href="http://schema.org/OutOfStock"></span>
           <?php if ($holding['returnDate'] ?? false): ?>&ndash; <span class="small"><?=$this->escapeHtml($holding['returnDate'])?></span><?php endif; ?>
           <?php if ($holding['duedate'] ?? false): ?>
