@@ -233,7 +233,7 @@ class PAIA extends DAIA
             $this->debug('Caching not enabled, disabling it by default.');
         }
 
-        $this->accountBlockNotificationsForMissingScopes = 
+        $this->accountBlockNotificationsForMissingScopes =
             $this->config['PAIA']['accountBlockNotificationsForMissingScopes'] ?? [];
     }
 
