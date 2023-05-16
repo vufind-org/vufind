@@ -59,7 +59,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'grantType'          => 'password',
                 'accountBlockNotificationsForMissingScopes' => [
                     'read_notifications',
-                    'update_patron'
+                    'update_patron',
                 ],
             ],
     ];
