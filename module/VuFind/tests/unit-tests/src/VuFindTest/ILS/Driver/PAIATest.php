@@ -587,8 +587,8 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
         $paia = $this->createMockConnector();
         $blocks = $paia->getAccountBlocks($patron);
         $this->assertEquals([
-            'no_update_patron_scope',
-            'no_read_notifications_scope',
+            'ILSMessages:no_update_patron_scope',
+            'ILSMessages:no_read_notifications_scope',
         ], $blocks);
     }
 

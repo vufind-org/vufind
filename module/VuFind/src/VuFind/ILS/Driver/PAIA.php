@@ -2206,38 +2206,38 @@ class PAIA extends DAIA
         $blocks = [];
 
         if ($report(self::SCOPE_UPDATE_PATRON)) {
-            $blocks[] = 'no_update_patron_scope';
+            $blocks[] = 'ILSMessages:no_update_patron_scope';
         } else {
             if ($report(self::SCOPE_UPDATE_PATRON_NAME)) {
-                $blocks[] = 'no_update_patron_name_scope';
+                $blocks[] = 'ILSMessages:no_update_patron_name_scope';
             }
             if ($report(self::SCOPE_UPDATE_PATRON_EMAIL)) {
-                $blocks[] = 'no_update_patron_email_scope';
+                $blocks[] = 'ILSMessages:no_update_patron_email_scope';
             }
             if ($report(self::SCOPE_UPDATE_PATRON_ADDRESS)) {
-                $blocks[] = 'no_update_patron_address_scope';
+                $blocks[] = 'ILSMessages:no_update_patron_address_scope';
             }
         }
         if ($report(self::SCOPE_READ_PATRON)) {
-            $blocks[] = 'no_read_patron_scope';
+            $blocks[] = 'ILSMessages:no_read_patron_scope';
         }
         if ($report(self::SCOPE_READ_FEES)) {
-            $blocks[] = 'no_read_fees_scope';
+            $blocks[] = 'ILSMessages:no_read_fees_scope';
         }
         if ($report(self::SCOPE_READ_ITEMS)) {
-            $blocks[] = 'no_read_items_scope';
+            $blocks[] = 'ILSMessages:no_read_items_scope';
         }
         if ($report(self::SCOPE_WRITE_ITEMS)) {
-            $blocks[] = 'no_write_items_scope';
+            $blocks[] = 'ILSMessages:no_write_items_scope';
         }
         if ($report(self::SCOPE_CHANGE_PASSWORD)) {
-            $blocks[] = 'no_change_password_scope';
+            $blocks[] = 'ILSMessages:no_change_password_scope';
         }
         if ($report(self::SCOPE_READ_NOTIFICATIONS)) {
-            $blocks[] = 'no_read_notifications_scope';
+            $blocks[] = 'ILSMessages:no_read_notifications_scope';
         }
         if ($report(self::SCOPE_DELETE_NOTIFICATIONS)) {
-            $blocks[] = 'no_delete_notifications_scope';
+            $blocks[] = 'ILSMessages:no_delete_notifications_scope';
         }
 
         return count($blocks) ? $blocks : false;
