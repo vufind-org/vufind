@@ -111,12 +111,12 @@ class PAIA extends DAIA
     ];
 
     /**
-     * Account blocks that should not be reported to the user.
+     * Account blocks that should be reported to the user.
      *
      * @see method `getAccountBlocks`
      * @var array
      */
-    protected $mutedScopes;
+    protected $accountBlockNotificationsForMissingScopes;
 
     /**
      * PAIA scopes as defined in
@@ -233,7 +233,8 @@ class PAIA extends DAIA
             $this->debug('Caching not enabled, disabling it by default.');
         }
 
-        $this->mutedScopes = $this->config['PAIA']['muteAccountBlocksNotificationForScopes'] ?? [];
+        $this->accountBlockNotificationsForMissingScopes = 
+            $this->config['PAIA']['accountBlockNotificationsForMissingScopes'] ?? [];
     }
 
     // public functions implemented to satisfy Driver Interface
@@ -2200,7 +2201,7 @@ class PAIA extends DAIA
          */
         $report = function ($scope) {
             return !$this->paiaCheckScope($scope)
-            && !in_array($scope, $this->mutedScopes);
+            && in_array($scope, $this->accountBlockNotificationsForMissingScopes);
         };
 
         $blocks = [];
