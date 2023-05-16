@@ -233,11 +233,7 @@ class PAIA extends DAIA
             $this->debug('Caching not enabled, disabling it by default.');
         }
 
-        if (isset($this->config['PAIA']['muteAccountBlocksNotificationForScopes'])) {
-            $this->mutedScopes = $this->config['PAIA']['muteAccountBlocksNotificationForScopes'];
-        } else {
-            $this->mutedScopes = [];
-        }
+        $this->mutedScopes = $this->config['PAIA']['muteAccountBlocksNotificationForScopes'] ?? [];
     }
 
     // public functions implemented to satisfy Driver Interface
@@ -2198,107 +2194,52 @@ class PAIA extends DAIA
      */
     public function getAccountBlocks($patron)
     {
+        /**
+         * A boolean indicating whether the scope should be
+         * reported as an account block.
+         */
+        $report = function ($scope) {
+            return !$this->paiaCheckScope($scope)
+            && !in_array($scope, $this->mutedScopes);
+        };
+
         $blocks = [];
-        if (
-            !$this->paiaCheckScope(self::SCOPE_UPDATE_PATRON)
-            && !in_array(self::SCOPE_UPDATE_PATRON, $this->mutedScopes)
-        ) {
-            array_push(
-                $blocks,
-                'no_update_patron_scope'
-            );
+
+        if ($report(self::SCOPE_UPDATE_PATRON)) {
+            $blocks[] = 'no_update_patron_scope';
         } else {
-            if (
-                !$this->paiaCheckScope(self::SCOPE_UPDATE_PATRON_NAME)
-                && !in_array(self::SCOPE_UPDATE_PATRON_NAME, $this->mutedScopes)
-            ) {
-                array_push(
-                    $blocks,
-                    'no_update_patron_name_scope'
-                );
+            if ($report(self::SCOPE_UPDATE_PATRON_NAME)) {
+                $blocks[] = 'no_update_patron_name_scope';
             }
-            if (
-                !$this->paiaCheckScope(self::SCOPE_UPDATE_PATRON_EMAIL)
-                && !in_array(self::SCOPE_UPDATE_PATRON_EMAIL, $this->mutedScopes)
-            ) {
-                array_push(
-                    $blocks,
-                    'no_update_patron_email_scope'
-                );
+            if ($report(self::SCOPE_UPDATE_PATRON_EMAIL)) {
+                $blocks[] = 'no_update_patron_email_scope';
             }
-            if (
-                !$this->paiaCheckScope(self::SCOPE_UPDATE_PATRON_ADDRESS)
-                && !in_array(self::SCOPE_UPDATE_PATRON_ADDRESS, $this->mutedScopes)
-            ) {
-                array_push(
-                    $blocks,
-                    'no_update_patron_address_scope'
-                );
+            if ($report(self::SCOPE_UPDATE_PATRON_ADDRESS)) {
+                $blocks[] = 'no_update_patron_address_scope';
             }
         }
-        if (
-            !$this->paiaCheckScope(self::SCOPE_READ_PATRON)
-            && !in_array(self::SCOPE_READ_PATRON, $this->mutedScopes)
-        ) {
-            array_push(
-                $blocks,
-                'no_read_patron_scope'
-            );
+        if ($report(self::SCOPE_READ_PATRON)) {
+            $blocks[] = 'no_read_patron_scope';
         }
-        if (
-            !$this->paiaCheckScope(self::SCOPE_READ_FEES)
-            && !in_array(self::SCOPE_READ_FEES, $this->mutedScopes)
-        ) {
-            array_push(
-                $blocks,
-                'no_read_fees_scope'
-            );
+        if ($report(self::SCOPE_READ_FEES)) {
+            $blocks[] = 'no_read_fees_scope';
         }
-        if (
-            !$this->paiaCheckScope(self::SCOPE_READ_ITEMS)
-            && !in_array(self::SCOPE_READ_ITEMS, $this->mutedScopes)
-        ) {
-            array_push(
-                $blocks,
-                'no_read_items_scope'
-            );
+        if ($report(self::SCOPE_READ_ITEMS)) {
+            $blocks[] = 'no_read_items_scope';
         }
-        if (
-            !$this->paiaCheckScope(self::SCOPE_WRITE_ITEMS)
-            && !in_array(self::SCOPE_WRITE_ITEMS, $this->mutedScopes)
-        ) {
-            array_push(
-                $blocks,
-                'no_write_items_scope'
-            );
+        if ($report(self::SCOPE_WRITE_ITEMS)) {
+            $blocks[] = 'no_write_items_scope';
         }
-        if (
-            !$this->paiaCheckScope(self::SCOPE_CHANGE_PASSWORD)
-            && !in_array(self::SCOPE_CHANGE_PASSWORD, $this->mutedScopes)
-        ) {
-            array_push(
-                $blocks,
-                'no_change_password_scope'
-            );
+        if ($report(self::SCOPE_CHANGE_PASSWORD)) {
+            $blocks[] = 'no_change_password_scope';
         }
-        if (
-            !$this->paiaCheckScope(self::SCOPE_READ_NOTIFICATIONS)
-            && !in_array(self::SCOPE_READ_NOTIFICATIONS, $this->mutedScopes)
-        ) {
-            array_push(
-                $blocks,
-                'no_read_notifications_scope'
-            );
+        if ($report(self::SCOPE_READ_NOTIFICATIONS)) {
+            $blocks[] = 'no_read_notifications_scope';
         }
-        if (
-            !$this->paiaCheckScope(self::SCOPE_DELETE_NOTIFICATIONS)
-            && !in_array(self::SCOPE_DELETE_NOTIFICATIONS, $this->mutedScopes)
-        ) {
-            array_push(
-                $blocks,
-                'no_delete_notifications_scope'
-            );
+        if ($report(self::SCOPE_DELETE_NOTIFICATIONS)) {
+            $blocks[] = 'no_delete_notifications_scope';
         }
+
         return count($blocks) ? $blocks : false;
     }
 }
