@@ -396,7 +396,7 @@ class LoggerFactory implements FactoryInterface
                     $newWriter->setVerbosity($verbosity);
                 } else {
                     throw new \Exception(
-                        get_class($newWriter) . ' does not support verbosity.'
+                        $newWriter::class . ' does not support verbosity.'
                     );
                 }
             }

@@ -134,11 +134,11 @@ abstract class QueryAdapter
                             = call_user_func($showName, $group->getHandler()) . ':'
                             . $group->getString();
                     } else {
-                        throw new \Exception('Unexpected ' . get_class($group));
+                        throw new \Exception('Unexpected ' . $group::class);
                     }
                 }
                 // Is this an exclusion (NOT) group or a normal group?
-                $str = join(
+                $str = implode(
                     ' ' . call_user_func($translate, $search->getOperator())
                     . ' ',
                     $thisGroup
@@ -149,18 +149,18 @@ abstract class QueryAdapter
                     $groups[] = $str;
                 }
             } else {
-                throw new \Exception('Unexpected ' . get_class($search));
+                throw new \Exception('Unexpected ' . $search::class);
             }
         }
 
         // Base 'advanced' query
         $operator = call_user_func($translate, $query->getOperator());
-        $output = '(' . join(') ' . $operator . ' (', $groups) . ')';
+        $output = '(' . implode(') ' . $operator . ' (', $groups) . ')';
 
         // Concatenate exclusion after that
         if (count($excludes) > 0) {
             $output .= ' ' . call_user_func($translate, 'NOT') . ' (('
-                . join(') ' . call_user_func($translate, 'OR') . ' (', $excludes)
+                . implode(') ' . call_user_func($translate, 'OR') . ' (', $excludes)
                 . '))';
         }
 

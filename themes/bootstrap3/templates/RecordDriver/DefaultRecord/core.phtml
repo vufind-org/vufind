@@ -43,6 +43,13 @@
   <div class="media-body">
 
     <h1 property="name"><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h1>
+
+    <?php if ($this->driver->getExtraDetail('cached_record') && !$this->translationEmpty('cached_record_warning')): ?>
+      <div class="alert alert-warning">
+        <?=$this->transEsc('cached_record_warning')?>
+      </div>
+    <?php endif; ?>
+
     <?php foreach ($this->driver->tryMethod('getFullTitlesAltScript', [], []) as $altTitle): ?>
       <div class="title-alt">
         <?=$this->escapeHtml($altTitle)?>

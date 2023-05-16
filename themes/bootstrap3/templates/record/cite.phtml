@@ -26,7 +26,7 @@
       // version of the relevant strings.
       $shortCaption = $this->translate($format . ' Citation');
       $longCaption = $this->translate($format . ' Edition Citation');
-      $caption = (strpos($longCaption, 'Citation') > 0 && strpos($shortCaption, 'Citation') === false)
+      $caption = (strpos($longCaption, 'Citation') > 0 && !str_contains($shortCaption, 'Citation'))
         ? $shortCaption : $longCaption;
     ?>
     <strong><?=$this->escapeHtml($caption)?></strong>

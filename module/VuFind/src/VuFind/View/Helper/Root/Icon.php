@@ -140,7 +140,7 @@ class Icon extends AbstractHelper
         $class = null;
 
         // Override set from config (ie. FontAwesome:icon)
-        if (strpos($icon, ':') !== false) {
+        if (str_contains($icon, ':')) {
             $parts = explode(':', $icon, 3);
             $set = $parts[0];
             $icon = $parts[1];

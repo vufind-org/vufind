@@ -144,6 +144,9 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
                 && $this->recordCache->isFallback($source)
             ) {
                 $results = $this->recordCache->lookup($id, $source);
+                if (!empty($results)) {
+                    $results[0]->setExtraDetail('cached_record', true);
+                }
             }
 
             if (!empty($results)) {

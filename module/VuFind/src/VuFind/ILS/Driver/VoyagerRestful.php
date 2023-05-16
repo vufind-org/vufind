@@ -2698,7 +2698,7 @@ class VoyagerRestful extends Voyager implements
             return $data;
         }
 
-        if (strpos($patron['id'], '.') === false) {
+        if (!str_contains($patron['id'], '.')) {
             $this->debug(
                 "getUBRequestDetails: no prefix in patron id '{$patron['id']}'"
             );

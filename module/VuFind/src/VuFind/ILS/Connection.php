@@ -250,7 +250,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         // done so!
         if ($this->hasNoILSFailover()) {
             $noILS = $this->driverManager->get('NoILS');
-            if (get_class($noILS) != $this->getDriverClass()) {
+            if ($noILS::class != $this->getDriverClass()) {
                 $this->setDriver($noILS);
                 $this->initializeDriver();
                 return true;

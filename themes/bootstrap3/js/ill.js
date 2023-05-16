@@ -1,7 +1,7 @@
 /*global VuFind */
 /*exported setUpILLRequestForm */
 function setUpILLRequestForm(recordId) {
-  $("#ILLRequestForm #pickupLibrary").change(function illPickupChange() {
+  $("#ILLRequestForm #pickupLibrary").on("change", function illPickupChange() {
     $("#ILLRequestForm #pickupLibraryLocation option").remove();
     $("#ILLRequestForm #pickupLibraryLocationLabel .loading-icon").show();
     var url = VuFind.path + '/AJAX/JSON?' + $.param({
@@ -28,5 +28,5 @@ function setUpILLRequestForm(recordId) {
         $("#ILLRequestForm #pickupLibraryLocationLabel .loading-icon").hide();
       });
   });
-  $("#ILLRequestForm #pickupLibrary").change();
+  $("#ILLRequestForm #pickupLibrary").trigger("change");
 }

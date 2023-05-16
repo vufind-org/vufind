@@ -59,7 +59,7 @@ class Recommend extends \Laminas\View\Helper\AbstractHelper
         $index = null
     ) {
         $template = 'Recommend/%s.phtml';
-        $className = get_class($recommend);
+        $className = $recommend::class;
         $context = [
             'recommend' => $recommend,
             'location' => $location,

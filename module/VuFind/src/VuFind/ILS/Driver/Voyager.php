@@ -897,7 +897,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
                         $line = '';
                         foreach ($subfields as $subfield) {
                             if (
-                                false === strpos($subfieldCodes, $subfield['code'])
+                                !str_contains($subfieldCodes, $subfield['code'])
                             ) {
                                 continue;
                             }

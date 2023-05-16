@@ -189,7 +189,7 @@ function getBookPreviews() {
   }
 }
 
-$(document).ready(function previewDocReady() {
+$(function previewDocReady() {
   if (!Array.prototype.indexOf) {
     setIndexOf();
   }

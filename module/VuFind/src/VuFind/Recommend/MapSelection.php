@@ -338,7 +338,7 @@ class MapSelection implements
         $params = $this->searchFilters;
         // Check to makes sure we have a geographic search
         $filters = $params->get('fq');
-        return (!empty($filters) && strpos($filters[0], $this->geoField) !== false)
+        return (!empty($filters) && str_contains($filters[0], $this->geoField))
             ? $this->fetchDataFromSearchService() : [];
     }
 

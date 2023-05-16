@@ -739,7 +739,7 @@ class Unicorn extends AbstractBase implements
             // extract the failed IDs.
             foreach ($lines as $line) {
                 // error lines start with '**'
-                if (strpos(trim($line), '**') === 0) {
+                if (str_starts_with(trim($line), '**')) {
                     [, $holdKey] = explode(':', $line);
                     $failures[] = trim($holdKey, '()');
                 }
@@ -1399,7 +1399,7 @@ class Unicorn extends AbstractBase implements
 
             $decoded_holding = '';
             foreach ($field['subfields'] as $subfield) {
-                if (strpos('68x', $subfield['code']) !== false) {
+                if (str_contains('68x', $subfield['code'])) {
                     continue;
                 }
                 $decoded_holding .= ' ' . $subfield['data'];
