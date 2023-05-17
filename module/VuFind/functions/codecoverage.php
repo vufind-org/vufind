@@ -1,0 +1,85 @@
+<?php
+
+/**
+ * Setup remote code coverage support if requested
+ *
+ * PHP version 8
+ *
+ * Copyright (C) The National Library of Finland 2023.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * @category VuFind
+ * @package  Profiling
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
+ */
+
+use SebastianBergmann\CodeCoverage\CodeCoverage;
+use SebastianBergmann\CodeCoverage\Driver\Selector;
+use SebastianBergmann\CodeCoverage\Filter;
+use SebastianBergmann\CodeCoverage\Report\PHP as PHPReport;
+
+/**
+ * Setup remote code coverage support if requested
+ *
+ * @return void
+ */
+function setupRemoteCodeCoverage(): void
+{
+    if (!($coverageHeader = $_SERVER['HTTP_X_VUFIND_REMOTE_COVERAGE'] ?? null)) {
+        return;
+    }
+    if (!($command = json_decode($coverageHeader, true))) {
+        throw new \Exception('Cannot decode remote coverage header');
+    }
+    $action = $command['action'] ?? null;
+    $testName = $command['testName'] ?? null;
+    $outputDir = $command['outputDir'] ?? null;
+    if ('record' !== $action || !$testName || !$outputDir) {
+        throw new \Exception('Invalid remote coverage command');
+    }
+    if (!is_dir($outputDir)) {
+        throw new \Exception("Bad output directory $outputDir");
+    }
+
+    $filter = new Filter();
+    $filter->includeDirectory(__DIR__ . '/../../');
+
+    $coverage = new CodeCoverage(
+        (new Selector())->forLineCoverage($filter),
+        $filter
+    );
+
+    $outputDir .= '/' . urlencode($testName);
+    if (!is_dir($outputDir)) {
+        if (!mkdir($outputDir)) {
+            throw new \Exception("Failed to create output directory $outputDir");
+        }
+    }
+    $outputFile = $outputDir . '/coverage-' . time() . '-' . getmypid() . '.cov';
+    header('X-VuFind-Coverage: ' . basename($outputFile));
+
+    $coverage->start($testName);
+
+    // Write coverage report on shutdown:
+    $shutdownFunc = function () use ($coverage, $outputFile): void {
+        $coverage->stop();
+        $reporter = new PHPReport();
+        $result = $reporter->process($coverage);
+        file_put_contents($outputFile, $result);
+    };
+    register_shutdown_function($shutdownFunc);
+}

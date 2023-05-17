@@ -13,5 +13,10 @@ if (PHP_SAPI === 'cli') {
     return $app->getServiceManager()
         ->get(\VuFindConsole\ConsoleRunner::class)->run();
 } else {
+    // Setup remote code coverage if enabled:
+    if (getenv('VUFIND_CODE_COVERAGE')) {
+        include __DIR__ . '/../module/VuFind/functions/codecoverage.php';
+        setupRemoteCodeCoverage();
+    }
     $app->run();
 }
