@@ -115,7 +115,7 @@
         $this->layout()->searchbox = $this->render('search/searchbox.phtml');
       }
     ?>
-    <header class="hidden-print">
+    <header class="site-banner hidden-print">
       <?php if (isset($this->layout()->srmessage)): // message for benefit of screen-reader users ?>
         <span class="sr-only" role="heading" aria-level="1"><?=$this->layout()->srmessage ?></span>
       <?php endif; ?>
