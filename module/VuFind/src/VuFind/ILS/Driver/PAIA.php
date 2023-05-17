@@ -2195,52 +2195,22 @@ class PAIA extends DAIA
      */
     public function getAccountBlocks($patron)
     {
-        /**
-         * A boolean indicating whether the scope should be
-         * reported as an account block.
-         */
-        $report = function ($scope) {
-            return !$this->paiaCheckScope($scope)
-            && in_array($scope, $this->accountBlockNotificationsForMissingScopes);
-        };
-
         $blocks = [];
 
-        if ($report(self::SCOPE_UPDATE_PATRON)) {
-            $blocks[] = 'ILSMessages:no_update_patron_scope';
-        } else {
-            if ($report(self::SCOPE_UPDATE_PATRON_NAME)) {
-                $blocks[] = 'ILSMessages:no_update_patron_name_scope';
+        foreach ($this->accountBlockNotificationsForMissingScopes as $scope => $message) {
+            if (!$this->paiaCheckScope($scope)) {
+                $blocks[$scope] = $message;
             }
-            if ($report(self::SCOPE_UPDATE_PATRON_EMAIL)) {
-                $blocks[] = 'ILSMessages:no_update_patron_email_scope';
-            }
-            if ($report(self::SCOPE_UPDATE_PATRON_ADDRESS)) {
-                $blocks[] = 'ILSMessages:no_update_patron_address_scope';
-            }
-        }
-        if ($report(self::SCOPE_READ_PATRON)) {
-            $blocks[] = 'ILSMessages:no_read_patron_scope';
-        }
-        if ($report(self::SCOPE_READ_FEES)) {
-            $blocks[] = 'ILSMessages:no_read_fees_scope';
-        }
-        if ($report(self::SCOPE_READ_ITEMS)) {
-            $blocks[] = 'ILSMessages:no_read_items_scope';
-        }
-        if ($report(self::SCOPE_WRITE_ITEMS)) {
-            $blocks[] = 'ILSMessages:no_write_items_scope';
-        }
-        if ($report(self::SCOPE_CHANGE_PASSWORD)) {
-            $blocks[] = 'ILSMessages:no_change_password_scope';
-        }
-        if ($report(self::SCOPE_READ_NOTIFICATIONS)) {
-            $blocks[] = 'ILSMessages:no_read_notifications_scope';
-        }
-        if ($report(self::SCOPE_DELETE_NOTIFICATIONS)) {
-            $blocks[] = 'ILSMessages:no_delete_notifications_scope';
         }
 
-        return count($blocks) ? $blocks : false;
+        // Special case: if update patron is missing, we don't need to also add
+        // more specific messages.
+        if (isset($blocks[self::SCOPE_UPDATE_PATRON])) {
+            unset($blocks[self::SCOPE_UPDATE_PATRON_NAME]);
+            unset($blocks[self::SCOPE_UPDATE_PATRON_EMAIL]);
+            unset($blocks[self::SCOPE_UPDATE_PATRON_ADDRESS]);
+        }
+
+        return count($blocks) ? array_values($blocks) : false;
     }
 }
