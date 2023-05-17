@@ -80,7 +80,7 @@
 
     <?php if ($this->cart()->isActive()): ?>
       <li>
-        <?=$this->render('record/cart-buttons.phtml', ['cartId' => $this->record($this->driver)->getUniqueHtmlElementId()]); ?>
+        <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?>
       </li>
     <?php endif; ?>
 
