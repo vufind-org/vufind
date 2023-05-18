@@ -14,7 +14,7 @@
   $cover = $coverDetails['html'];
   $thumbnail = false;
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('list');
-  $describedById = $this->record($this->driver)->getUniqueHtmlElementId();
+  $describedById = ($this->inLightbox ? 'modal-' : '') . $this->record($this->driver)->getUniqueHtmlElementId();
 ?>
 <li class="result<?php if ($this->driver->supportsAjaxStatus()): ?> ajaxItem<?php endif ?>">
   <?php if ($cover):

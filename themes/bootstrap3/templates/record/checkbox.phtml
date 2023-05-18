@@ -1,6 +1,7 @@
 <?php $label = isset($this->context) ? 'select_item_' . $this->context : 'select_item'; ?>
+<?php $describedById = $this->escapeHtmlAttr(($this->inLightbox ? 'modal-' : '') . $this->id); ?>
 <label class="record-checkbox hidden-print">
-  <input class="checkbox-select-item" type="checkbox" name="ids[]" value="<?=$this->escapeHtmlAttr($this->id) ?>"<?php if (isset($this->formAttr)): ?> form="<?=$this->formAttr ?>"<?php endif; ?> aria-describedby="<?=$this->escapeHtmlAttr($this->id) ?>" aria-label="<?=$this->transEscAttr($label)?>">
+  <input class="checkbox-select-item" type="checkbox" name="ids[]" value="<?=$this->escapeHtmlAttr($this->id) ?>"<?php if (isset($this->formAttr)): ?> form="<?=$this->formAttr ?>"<?php endif; ?> aria-describedby="<?=$describedById?>" aria-label="<?=$this->transEscAttr($label)?>">
   <span class="checkbox-icon"></span>
 </label>
 <input type="hidden" name="idsAll[]" value="<?=$this->escapeHtmlAttr($this->id) ?>"<?php if (isset($this->formAttr)): ?> form="<?=$this->formAttr ?>"<?php endif; ?>>
