@@ -23,7 +23,6 @@
  * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -43,7 +42,6 @@ use VuFind\Solr\Utils as SolrUtils;
  * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -391,12 +389,6 @@ class AbstractSearch extends AbstractBase
 
             // Remember the current URL as the last search.
             $this->rememberSearch($results);
-
-            // Get the page and page size to be saved into optional parameters:
-            $results->setOptionalParameters([
-                'page' => $view->params->getPage(),
-                'limit' => $view->params->getLimit(),
-            ]);
 
             // Add to search history:
             if ($this->saveToHistory) {

@@ -23,7 +23,6 @@
  * @category VuFind
  * @package  Search_Base
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -43,7 +42,6 @@ use VuFindSearch\Service as SearchService;
  * @category VuFind
  * @package  Search_Base
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -182,13 +180,6 @@ abstract class Results
      * @var HierarchicalFacetHelperInterface
      */
     protected $hierarchicalFacetHelper = null;
-
-    /**
-     * Optional parameters
-     *
-     * @var array
-     */
-    protected $optionalParameters = [];
 
     /**
      * Constructor
@@ -633,38 +624,6 @@ abstract class Results
     }
 
     /**
-     * Get optional parameters for the search.
-     *
-     * The optional parameters mechanism is used for storing search parameters
-     * that may be useful for reproducing the full context of a user's search,
-     * but which do not impact the contents of the search result set -- e.g. page number.
-     * Contents must be serializable. It is recommended to make the array as small
-     * as possible.
-     *
-     * @return array
-     */
-    public function getOptionalParameters(): array
-    {
-        return $this->optionalParameters;
-    }
-
-    /**
-     * Set optional parameters for the search.
-     *
-     * The optional parameters mechanism is used for storing search parameters
-     * that may be useful for reproducing the full context of a user's search,
-     * but which do not impact the contents of the search result set -- e.g. page number.
-     *
-     * @param array $data Additional parameters
-     *
-     * @return void
-     */
-    public function setOptionalParameters(array $data): void
-    {
-        $this->optionalParameters = $data;
-    }
-
-    /**
      * Restore settings from a minified object found in the database.
      *
      * @param \VuFind\Search\Minified $minified Minified Search Object
@@ -678,7 +637,6 @@ abstract class Results
         $this->queryTime = $minified->s;
         $this->resultTotal = $minified->r;
         $this->setExtraData($minified->ex);
-        $this->setOptionalParameters($minified->op);
     }
 
     /**

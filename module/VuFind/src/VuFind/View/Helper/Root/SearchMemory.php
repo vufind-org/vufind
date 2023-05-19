@@ -88,17 +88,18 @@ class SearchMemory extends AbstractHelper
             }
 
             $urlHelper = $this->getView()->plugin('url');
-            $url = $urlHelper($lastSearch->getOptions()->getSearchAction())
-                . $lastSearch->getUrlQuery()->getParams(false);
-
+            $url = $urlHelper($lastSearch->getOptions()->getSearchAction());
+            $queryHelper = $lastSearch->getUrlQuery();
             // Try to append page number and page size from optional params saved in results object
-            $optionalParameters = $lastSearch->getOptionalParameters();
-            if (!empty($optionalParameters['page'])) {
-                $url .= "&page={$optionalParameters['page']}";
-            }
+            $optionalParameters = $params->getOptionalParameters();
             if (!empty($optionalParameters['limit'])) {
-                $url .= "&limit={$optionalParameters['limit']}";
+                $queryHelper = $queryHelper->setLimit($optionalParameters['limit']);
             }
+            if (!empty($optionalParameters['page'])) {
+                $queryHelper = $queryHelper->setPage($optionalParameters['page']);
+            }
+
+            $url .= $queryHelper->getParams(false);
 
             $escaper = $this->getView()->plugin('escapeHtml');
             return $prefix . '<a href="' . $escaper($url) . '">' . $link . '</a>'

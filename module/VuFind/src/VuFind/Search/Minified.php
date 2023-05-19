@@ -162,9 +162,7 @@ class Minified
 
         // Extra data has implementation-specific contents, store as is
         $this->ex = $searchObject->getExtraData();
-
-        // Optional parameters contains data i.e page number.
-        $this->op = $searchObject->getOptionalParameters();
+        $this->setOptionalParameters($searchObject);
     }
 
     /**
@@ -224,5 +222,21 @@ class Minified
                     ? 'advanced' : 'basic';
             }
         }
+    }
+
+    /**
+     * Set optional parameters from the search object.
+     * Optional parameters contains page number and results limit per page.
+     *
+     * @param object $searchObject Search Object to minify
+     *
+     * @return void
+     */
+    protected function setOptionalParameters($searchObject): void
+    {
+        $this->op = [
+            'page' => $searchObject->getParams()->getPage(),
+            'limit' => $searchObject->getParams()->getLimit(),
+        ];
     }
 }

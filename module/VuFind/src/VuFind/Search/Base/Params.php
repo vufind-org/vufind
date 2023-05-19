@@ -199,6 +199,13 @@ class Params
     protected $facetAliases = [];
 
     /**
+     * Optional parameters.
+     *
+     * @var array
+     */
+    protected $optionalParameters = [];
+
+    /**
      * Config loader
      *
      * @var \VuFind\Config\PluginManager
@@ -1785,6 +1792,7 @@ class Params
         $this->filterList = $minified->f;
         $this->hiddenFilters = $minified->hf;
         $this->searchType = $minified->ty;
+        $this->optionalParameters = $minified->op;
 
         // Deminified searches will always have defaults already applied;
         // we don't want to accidentally manipulate them further.
@@ -1795,6 +1803,16 @@ class Params
 
         // Search terms, we need to expand keys
         $this->query = QueryAdapter::deminify($minified->t);
+    }
+
+    /**
+     * Get optional parameters.
+     *
+     * @return array
+     */
+    public function getOptionalParameters(): array
+    {
+        return $this->optionalParameters;
     }
 
     /**
