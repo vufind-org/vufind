@@ -3,7 +3,7 @@
 /**
  * GoogleAnalytics helper factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -74,7 +74,6 @@ class GoogleAnalyticsFactory implements FactoryInterface
         $options = [
             'create_options_js' =>
                 $config->GoogleAnalytics->create_options_js ?? null,
-            'universal' => $config->GoogleAnalytics->universal ?? false,
         ];
         return new $requestedName($key, $options);
     }

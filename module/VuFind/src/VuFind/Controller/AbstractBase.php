@@ -4,7 +4,7 @@
  * VuFind controller base class (defines some methods that can be shared by other
  * controllers).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -669,9 +669,11 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
      * separate logic is used for storing followup information when VuFind
      * forces the user to log in from another context.
      *
+     * @param bool $allowCurrentUrl Whether the current URL is valid for followup
+     *
      * @return void
      */
-    protected function setFollowupUrlToReferer()
+    protected function setFollowupUrlToReferer(bool $allowCurrentUrl = true)
     {
         // lbreferer is the stored current url of the lightbox
         // which overrides the url from the server request when present
@@ -689,7 +691,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
         // want internal post-login redirects.
         $baseUrl = $this->getServerUrl('home');
         $baseUrlNorm = $this->normalizeUrlForComparison($baseUrl);
-        if (0 !== strpos($refererNorm, $baseUrlNorm)) {
+        if (!str_starts_with($refererNorm, $baseUrlNorm)) {
             return;
         }
 
@@ -707,7 +709,12 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
         // ignore this and instead rely on any previously stored referer.
         $myUserLogin = $this->getServerUrl('myresearch-userlogin');
         $mulNorm = $this->normalizeUrlForComparison($myUserLogin);
-        if (0 === strpos($refererNorm, $mulNorm)) {
+        if (str_starts_with($refererNorm, $mulNorm)) {
+            return;
+        }
+
+        // Check that the referer is not current URL if not allowed:
+        if (!$allowCurrentUrl && $this->getRequest()->getUriString() === $referer) {
             return;
         }
 

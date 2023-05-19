@@ -3,7 +3,7 @@
 /**
  * VuFind Driver for Koha, using REST API
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2016-2023.
  * Copyright (C) Moravian Library 2019.
@@ -729,6 +729,45 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
+     * Purge Patron Transaction History
+     *
+     * @param array  $patron The patron array from patronLogin
+     * @param ?array $ids    IDs to purge, or null for all
+     *
+     * @throws ILSException
+     * @return array Associative array of the results
+     */
+    public function purgeTransactionHistory(array $patron, ?array $ids): array
+    {
+        if (null !== $ids) {
+            throw new ILSException('Unsupported function');
+        }
+        $result = $this->makeRequest(
+            [
+                'path' => [
+                    'v1', 'contrib', 'kohasuomi', 'patrons', $patron['id'],
+                    'checkouts', 'history',
+                ],
+                'method' => 'DELETE',
+                'errors' => true,
+            ]
+        );
+        if (!in_array($result['code'], [200, 202, 204])) {
+            return  [
+                'success' => false,
+                'status' => 'An error has occurred',
+                'sys_message' => $result['data']['error'] ?? $result['code'],
+            ];
+        }
+
+        return [
+            'success' => true,
+            'status' => 'loan_history_all_purged',
+            'sys_message' => '',
+        ];
+    }
+
+    /**
      * Get Patron Holds
      *
      * This is responsible for retrieving all holds by a specific patron.
@@ -769,6 +808,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 ? ''
                 : $requestId;
             $updateDetails = ($available || $inTransit) ? '' : $requestId;
+            // Note: Expiration date is the last interest date until the hold becomes
+            // available for pickup. Then it becomes the last pickup date.
+            $expirationDate = $this->convertDate($entry['expiration_date']);
             $holds[] = [
                 'id' => $entry['biblio_id'],
                 'item_id' => $entry['hold_id'],
@@ -777,9 +819,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     $entry['pickup_library_id'] ?? null
                 ),
                 'create' => $this->convertDate($entry['hold_date'] ?? null),
-                'expire' => $this->convertDate($entry['expiration_date'] ?? null),
+                'expire' => $available ? null : $expirationDate,
                 'position' => $entry['priority'],
                 'available' => $available,
+                'last_pickup_date' => $available ? $expirationDate : null,
                 'frozen' => $frozen,
                 'frozenThrough' => $frozen
                     ? $this->convertDate($entry['suspended_until'] ?? null) : null,
@@ -1554,6 +1597,28 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
+     * Provide an array of URL data (in the same format returned by the record
+     * driver's getURLs method) for the specified bibliographic record.
+     *
+     * @param string $id Bibliographic record ID
+     *
+     * @return array
+     */
+    public function getUrlsForRecord(string $id): array
+    {
+        $links = [];
+        $opacUrl = $this->config['Catalog']['opacURL'] ?? false;
+        if ($opacUrl) {
+            $url = strstr($opacUrl, '%%id%%') === false
+                ? $opacUrl . urlencode($id)
+                : str_replace('%%id%%', urlencode($id), $opacUrl);
+            $desc = $this->translate('view_in_opac');
+            $links[] = compact('url', 'desc');
+        }
+        return $links;
+    }
+
+    /**
      * Public Function which retrieves renew, hold and cancel settings from the
      * driver ini file.
      *
@@ -1583,6 +1648,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     '+title' => 'sort_title',
                 ],
                 'default_sort' => '-checkout_date',
+                'purge_all' => $this->config['TransactionHistory']['purgeAll'] ?? true,
             ];
         } elseif ('getMyTransactions' === $function) {
             $limit = $this->config['Loans']['max_page_size'] ?? 100;

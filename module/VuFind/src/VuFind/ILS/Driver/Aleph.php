@@ -3,7 +3,7 @@
 /**
  * Aleph ILS driver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) UB/FU Berlin
  *
@@ -465,7 +465,7 @@ class Aleph extends AbstractBase implements
      */
     protected function appendQueryString($url, $params)
     {
-        $sep = (strpos($url, "?") === false) ? '?' : '&';
+        $sep = (!str_contains($url, "?")) ? '?' : '&';
         if ($params != null) {
             foreach ($params as $key => $value) {
                 $url .= $sep . $key . "=" . urlencode($value);
@@ -532,7 +532,7 @@ class Aleph extends AbstractBase implements
     protected function parseId($id)
     {
         $result = null;
-        if (strpos($id, self::RECORD_ID_BASE_SEPARATOR) !== false) {
+        if (str_contains($id, self::RECORD_ID_BASE_SEPARATOR)) {
             $result = explode(self::RECORD_ID_BASE_SEPARATOR, $id);
             $base = $result[0];
             if (!in_array($base, $this->bib)) {
@@ -1085,31 +1085,28 @@ class Aleph extends AbstractBase implements
         $patron = $details['patron'];
         $patronId = $patron['id'];
         $count = 0;
-        $statuses = [];
+        $items = [];
         foreach ($details['details'] as $id) {
             try {
                 $result = $this->doRestDLFRequest(
                     [
                         'patron', $patronId, 'circulationActions', 'requests',
-                         'holds', $id,
+                        'holds', $id,
                     ],
                     null,
                     "DELETE"
                 );
+                $count++;
+                $items[$id] = ['success' => true, 'status' => 'cancel_hold_ok'];
             } catch (Aleph\RestfulException $e) {
-                $statuses[$id] = [
-                    'success' => false, 'status' => 'cancel_hold_failed',
+                $items[$id] = [
+                    'success' => false,
+                    'status' => 'cancel_hold_failed',
                     'sysMessage' => $e->getMessage(),
                 ];
             }
-            if (isset($result)) {
-                $count++;
-                $statuses[$id]
-                    = ['success' => true, 'status' => 'cancel_hold_ok'];
-            }
         }
-        $statuses['count'] = $count;
-        return $statuses;
+        return ['count' => $count, 'items' => $items];
     }
 
     /**
@@ -1272,7 +1269,7 @@ class Aleph extends AbstractBase implements
             }
         }
         $fullName = $profile['fullname'];
-        if (strpos($fullName, ",") === false) {
+        if (!str_contains($fullName, ",")) {
             $profile['lastname'] = $fullName;
             $profile['firstname'] = "";
         } else {
@@ -1318,7 +1315,7 @@ class Aleph extends AbstractBase implements
                 true
             );
         } catch (\Exception $ex) {
-            if (strpos($ex->getMessage(), 'Error in Verification') !== false) {
+            if (str_contains($ex->getMessage(), 'Error in Verification')) {
                 return null;
             }
             $this->throwAsIlsException($ex);

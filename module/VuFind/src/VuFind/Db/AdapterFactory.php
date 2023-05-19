@@ -4,7 +4,7 @@
  * Database utility class. May be used as a service or as a standard
  * Laminas factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -217,7 +217,7 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         $credentials = $matches[1] ?? null;
         $host = $port = null;
         if (isset($matches[2])) {
-            if (strpos($matches[2], ':') !== false) {
+            if (str_contains($matches[2], ':')) {
                 [$host, $port] = explode(':', $matches[2]);
             } else {
                 $host = $matches[2];

@@ -3,7 +3,7 @@
 /**
  * Abstract base class for language commands.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -103,7 +103,7 @@ abstract class AbstractCommand extends Command
         if (!$fHandle) {
             throw new \Exception('Cannot open ' . $filename . ' for writing.');
         }
-        fputs($fHandle, "\n$key = \"" . $value . "\"\n");
+        fwrite($fHandle, "\n$key = \"" . $value . "\"\n");
         fclose($fHandle);
     }
 

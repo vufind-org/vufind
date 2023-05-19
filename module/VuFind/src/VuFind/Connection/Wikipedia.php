@@ -3,7 +3,7 @@
 /**
  * Wikipedia connection class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -153,7 +153,7 @@ class Wikipedia implements TranslatorAwareInterface
         foreach ($infobox as $row) {
             $data  = explode("=", $row);
             $key   = trim(array_shift($data));
-            $value = trim(join("=", $data));
+            $value = trim(implode("=", $data));
 
             // At the moment we only want stuff related to the image.
             switch (strtolower($key)) {
@@ -342,7 +342,7 @@ class Wikipedia implements TranslatorAwareInterface
         // Convert multiple newlines into two breaks
         // We DO want this to be greedy
         $pattern[] = "/\n{2,}/s";
-        $replacement[] = '<br/><br/>';
+        $replacement[] = '<br><br>';
 
         return preg_replace($pattern, $replacement, $body);
     }

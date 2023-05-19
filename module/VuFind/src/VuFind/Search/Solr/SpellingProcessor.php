@@ -3,7 +3,7 @@
 /**
  * Solr spelling processor.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -263,7 +263,7 @@ class SpellingProcessor
             $targetTerm = "";
             foreach ($this->tokenize($query) as $token) {
                 // Is the term part of the current token?
-                if (strpos($token, (string)$term) !== false) {
+                if (str_contains($token, (string)$term)) {
                     $inToken = true;
                     // We need to replace the whole token
                     $targetTerm = $token;

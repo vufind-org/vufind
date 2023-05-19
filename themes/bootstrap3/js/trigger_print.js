@@ -21,7 +21,7 @@ function waitForItemStatuses(fn) {
   });
 }
 
-$(document).ready(function triggerPrint() {
+$(function triggerPrint() {
   if (!VuFind.isPrinting()) {
     return;
   }

@@ -12,15 +12,15 @@
     </th>
     <td>
       <?php if ($holding['reserve'] == "Y"): ?>
-        <link property="availability" href="http://schema.org/InStoreOnly" />
-        <?=$this->transEsc("On Reserve - Ask at Circulation Desk")?><br />
+        <link property="availability" href="http://schema.org/InStoreOnly">
+        <?=$this->transEsc("On Reserve - Ask at Circulation Desk")?><br>
       <?php endif; ?>
       <?php if ($holding['use_unknown_message'] ?? false): ?>
         <span class="text-muted"><?=$this->transEsc("status_unknown_message")?></span>
       <?php else: ?>
         <?php if ($holding['availability'] ?? false): ?>
           <?php /* Begin Available Items (Holds) */ ?>
-           <span class="text-success"><?=$this->transEsc("Available")?><link property="availability" href="http://schema.org/InStock" /></span>
+           <span class="text-success"><?=$this->transEsc("Available")?><link property="availability" href="http://schema.org/InStock"></span>
           <?php if ($holding['link'] ?? false): ?>
             <a class="<?=$check ? 'checkRequest ' : ''?>placehold icon-link" <?php if (!empty($holding['linkLightbox'])): ?>data-lightbox <?php endif; ?>href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['link']))?>">
               <?=$this->icon('place-hold', 'icon-link__icon') ?>
@@ -41,7 +41,7 @@
           <?php endif; ?>
         <?php else: ?>
           <?php /* Begin Unavailable Items (Recalls) */ ?>
-          <span class="text-danger"><?=$this->transEsc($holding['status'])?><link property="availability" href="http://schema.org/OutOfStock" /></span>
+          <span class="text-danger"><?=$this->transEsc($holding['status'])?><link property="availability" href="http://schema.org/OutOfStock"></span>
           <?php if ($holding['returnDate'] ?? false): ?>&ndash; <span class="small"><?=$this->escapeHtml($holding['returnDate'])?></span><?php endif; ?>
           <?php if ($holding['duedate'] ?? false): ?>
             &ndash; <span class="small"><?=$this->transEsc("Due")?>: <?=$this->escapeHtml($holding['duedate'])?></span>
@@ -70,17 +70,17 @@
       <?php endif; ?>
       <?php /* Embed item structured data: library, barcode, call number */ ?>
       <?php if ($holding['location'] ?? false): ?>
-        <meta property="seller" content="<?=$this->escapeHtmlAttr($holding['location'])?>" />
+        <meta property="seller" content="<?=$this->escapeHtmlAttr($holding['location'])?>">
       <?php endif; ?>
       <?php if ($holding['barcode'] ?? false): ?>
-        <meta property="serialNumber" content="<?=$this->escapeHtmlAttr($holding['barcode'])?>" />
+        <meta property="serialNumber" content="<?=$this->escapeHtmlAttr($holding['barcode'])?>">
       <?php endif; ?>
       <?php if ($holding['callnumber'] ?? false): ?>
-        <meta property="sku" content="<?=$this->escapeHtmlAttr($holding['callnumber'])?>" />
+        <meta property="sku" content="<?=$this->escapeHtmlAttr($holding['callnumber'])?>">
       <?php endif; ?>
       <?php /* Declare that the item is to be borrowed, not for sale */ ?>
-      <link property="businessFunction" href="http://purl.org/goodrelations/v1#LeaseOut" />
-      <link property="itemOffered" href="#record" />
+      <link property="businessFunction" href="http://purl.org/goodrelations/v1#LeaseOut">
+      <link property="itemOffered" href="#record">
     </td>
   </tr>
 <?php endif; ?>

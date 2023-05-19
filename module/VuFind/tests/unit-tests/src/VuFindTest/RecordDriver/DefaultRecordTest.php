@@ -3,7 +3,7 @@
 /**
  * DefaultRecord Record Driver Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -536,6 +536,40 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
     public function testGetCleanISBNs($result, $mode, $filterInvalid)
     {
         $this->assertEquals($result, $this->getDriver()->getCleanISBNs($mode, $filterInvalid));
+    }
+
+    /**
+     * Test whether author deduplication works corrrectly.
+     *
+     * @return void
+     */
+    public function testGetDeduplicatedAuthors()
+    {
+        $authorName = 'Tester, Marc';
+
+        $overrides = [
+            'author' => $authorName,
+            'author_role' => 'aut',
+            'author2' => [$authorName],
+            'author2_role' => ['trl'],
+            'author_corporate' => [],
+            'author_corporate_role' => [],
+        ];
+
+        $expectedResult = [
+            'primary' => [
+                $authorName => [
+                    'role' => ['aut', 'trl'],
+                ],
+            ],
+            'secondary' => [],
+            'corporate' => [],
+        ];
+
+        $driver = $this->getDriver($overrides);
+        $deduplicatedAuthors = $driver->getDeduplicatedAuthors();
+
+        $this->assertEquals($deduplicatedAuthors, $expectedResult);
     }
 
     /**

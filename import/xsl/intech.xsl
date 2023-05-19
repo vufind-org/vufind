@@ -62,26 +62,22 @@
                 </field>
 
                 <!-- LANGUAGE -->
-                <xsl:if test="dc:language">
-                    <xsl:for-each select="dc:language">
-                        <xsl:if test="string-length() > 0">
-                            <field name="language">
-                                <xsl:value-of select="php:function('VuFind::mapString', normalize-space(string(.)), 'language_map_iso639-1.properties')"/>
-                            </field>
-                        </xsl:if>
-                    </xsl:for-each>
-                </xsl:if>
+                <xsl:for-each select="dc:language">
+                    <xsl:if test="string-length() > 0">
+                        <field name="language">
+                            <xsl:value-of select="php:function('VuFind::mapString', normalize-space(string(.)), 'language_map_iso639-1.properties')"/>
+                        </field>
+                    </xsl:if>
+                </xsl:for-each>
 
                 <!-- SUBJECT -->
-                <xsl:if test="dc:subject">
-                    <xsl:for-each select="dc:subject">
-                        <xsl:if test="string-length() > 0">
-                            <field name="topic">
-                                <xsl:value-of select="normalize-space()"/>
-                            </field>
-                        </xsl:if>
-                    </xsl:for-each>
-                </xsl:if>
+                <xsl:for-each select="dc:subject">
+                    <xsl:if test="string-length() > 0">
+                        <field name="topic">
+                            <xsl:value-of select="normalize-space()"/>
+                        </field>
+                    </xsl:if>
+                </xsl:for-each>
 
                 <!-- DESCRIPTION -->
                 <xsl:if test="dc:description">
@@ -91,24 +87,22 @@
                 </xsl:if>
 
                 <!-- ADVISOR / CONTRIBUTOR -->
-                <xsl:if test="dc:contributor">
-                    <xsl:for-each select="dc:contributor">
-                        <xsl:if test="normalize-space()">
-                            <xsl:choose>
-                                <xsl:when test="php:function('VuFind::isInvertedName', string(normalize-space()))">
-                                    <field name="author2">
-                                        <xsl:value-of select="normalize-space()"/>
-                                    </field>
-                                </xsl:when>
-                                <xsl:otherwise>
-                                    <field name="author2">
-                                        <xsl:value-of select="php:function('VuFind::invertName', string(normalize-space()))"/>
-                                    </field>
-                                </xsl:otherwise>
-                            </xsl:choose>
-                        </xsl:if>
-                    </xsl:for-each>
-                </xsl:if>
+                <xsl:for-each select="dc:contributor">
+                    <xsl:if test="normalize-space()">
+                        <xsl:choose>
+                            <xsl:when test="php:function('VuFind::isInvertedName', string(normalize-space()))">
+                                <field name="author2">
+                                    <xsl:value-of select="normalize-space()"/>
+                                </field>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <field name="author2">
+                                    <xsl:value-of select="php:function('VuFind::invertName', string(normalize-space()))"/>
+                                </field>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </xsl:if>
+                </xsl:for-each>
 
                 <!-- TYPE -->
                 <field name="format">Electronic</field>
@@ -119,39 +113,37 @@
                 </xsl:if>
 
                 <!-- AUTHOR -->
-                <xsl:if test="dc:creator">
-                    <xsl:for-each select="dc:creator">
-                        <xsl:if test="normalize-space()">
+                <xsl:for-each select="dc:creator">
+                    <xsl:if test="normalize-space()">
+                        <xsl:choose>
+                            <xsl:when test="php:function('VuFind::isInvertedName', string(normalize-space()))">
+                                <field name="author">
+                                    <xsl:value-of select="normalize-space()"/>
+                                </field>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <field name="author">
+                                    <xsl:value-of select="php:function('VuFind::invertName', string(normalize-space()))"/>
+                                </field>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                        <!-- use first author value for sorting -->
+                        <xsl:if test="position()=1">
                             <xsl:choose>
                                 <xsl:when test="php:function('VuFind::isInvertedName', string(normalize-space()))">
-                                    <field name="author">
+                                    <field name="author_sort">
                                         <xsl:value-of select="normalize-space()"/>
                                     </field>
                                 </xsl:when>
                                 <xsl:otherwise>
-                                    <field name="author">
+                                    <field name="author_sort">
                                         <xsl:value-of select="php:function('VuFind::invertName', string(normalize-space()))"/>
                                     </field>
                                 </xsl:otherwise>
                             </xsl:choose>
-                            <!-- use first author value for sorting -->
-                            <xsl:if test="position()=1">
-                                <xsl:choose>
-                                    <xsl:when test="php:function('VuFind::isInvertedName', string(normalize-space()))">
-                                        <field name="author_sort">
-                                            <xsl:value-of select="normalize-space()"/>
-                                        </field>
-                                    </xsl:when>
-                                    <xsl:otherwise>
-                                        <field name="author_sort">
-                                            <xsl:value-of select="php:function('VuFind::invertName', string(normalize-space()))"/>
-                                        </field>
-                                    </xsl:otherwise>
-                                </xsl:choose>
-                            </xsl:if>
                         </xsl:if>
-                    </xsl:for-each>
-                </xsl:if>
+                    </xsl:if>
+                </xsl:for-each>
 
                 <!-- TITLE -->
                 <xsl:if test="dc:title[normalize-space()]">

@@ -435,7 +435,7 @@ $cc-toggle-border-radius: 4em;
             box-shadow: 0 0 0 1px $cc-toggle-on-bg;
 
             &:after{
-                transform: translateX(calc(#{$cc-toggle-knob-width} - #{$cc-toggle-knob-height))};
+                transform: translateX(calc(#{$cc-toggle-knob-width} - #{$cc-toggle-knob-height}));
                 background-color: $cc-toggle-on-knob-bg;
             }
 
@@ -760,7 +760,7 @@ $cc-toggle-border-radius: 4em;
 
 #cc-main{
     .pm--box{
-        transform: translateY(calc(-50% + #{$cc-translate-y))};
+        transform: translateY(calc(-50% + #{$cc-translate-y}));
     }
 
     .pm--bar{

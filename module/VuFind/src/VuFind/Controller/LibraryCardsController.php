@@ -3,7 +3,7 @@
 /**
  * LibraryCards Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2015-2019.
@@ -218,7 +218,7 @@ class LibraryCardsController extends AbstractBase
                 ->addMessage('authentication_error_technical', 'error');
         }
 
-        $this->setFollowupUrlToReferer();
+        $this->setFollowupUrlToReferer(false);
         if ($url = $this->getFollowupUrl()) {
             $this->clearFollowupUrl();
             return $this->redirect()->toUrl($this->adjustCardRedirectUrl($url));

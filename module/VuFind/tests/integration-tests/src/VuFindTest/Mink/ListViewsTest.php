@@ -3,7 +3,7 @@
 /**
  * List views (i.e. tabs/accordion) test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -94,6 +94,9 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @retryCallback tearDownAfterClass
      *
+     * @skip_html_validation true
+     * @todo                 Enable HTML validation when the issues are fixed in the upstream code
+     *
      * @return void
      */
     public function testFavoritesInTabMode()
@@ -126,6 +129,9 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
      * Test that we can save a favorite from accordion mode.
      *
      * @depends testFavoritesInTabMode
+     *
+     * @skip_html_validation true
+     * @todo                 Enable HTML validation when the issues are fixed in the upstream code
      *
      * @return void
      */

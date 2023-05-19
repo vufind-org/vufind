@@ -3,7 +3,7 @@
 /**
  * Helper class for displaying search-related HTML chunks.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -80,7 +80,7 @@ abstract class AbstractSearch extends AbstractHelper
         $html .= $msg;
         $normalizer = $results->getOptions()->getSpellingNormalizer();
         foreach ($spellingSuggestions as $term => $details) {
-            $html .= '<br/>' . $view->escapeHtml($term) . ' &raquo; ';
+            $html .= '<br>' . $view->escapeHtml($term) . ' &raquo; ';
             $i = 0;
             foreach ($details['suggestions'] as $word => $data) {
                 if ($i++ > 0) {

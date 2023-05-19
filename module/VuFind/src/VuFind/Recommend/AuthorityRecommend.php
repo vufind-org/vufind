@@ -3,7 +3,7 @@
 /**
  * AuthorityRecommend Recommendations Module
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2012.
  *
@@ -268,7 +268,7 @@ class AuthorityRecommend implements RecommendInterface
      */
     protected function isModeActive($mode)
     {
-        return $this->mode === '*' || strpos($this->mode, $mode) !== false;
+        return $this->mode === '*' || str_contains($this->mode, $mode);
     }
 
     /**

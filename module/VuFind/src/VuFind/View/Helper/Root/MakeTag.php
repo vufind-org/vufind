@@ -3,7 +3,7 @@
 /**
  * Make tag view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -373,7 +373,7 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
         $htmlAttrs = $this->getView()->plugin('htmlAttributes')($attrs);
 
         if (empty($contents) && in_array($tagName, $this->voidElements)) {
-            return '<' . $tagName . $htmlAttrs . ' />';
+            return '<' . $tagName . $htmlAttrs . '>';
         }
 
         // Special option: escape content

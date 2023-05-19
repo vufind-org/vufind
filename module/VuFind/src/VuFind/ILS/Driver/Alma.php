@@ -3,7 +3,7 @@
 /**
  * Alma ILS Driver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -157,7 +157,7 @@ class Alma extends AbstractBase implements
             }
 
             // Create the API URL
-            $url = strpos($path, '://') === false ? $this->baseUrl . $path : $path;
+            $url = !str_contains($path, '://') ? $this->baseUrl . $path : $path;
 
             // Create client with API URL
             $client = $this->httpService->createClient($url);
@@ -201,7 +201,7 @@ class Alma extends AbstractBase implements
 
         $duration = round(microtime(true) - $startTime, 4);
         $urlParams = $client->getRequest()->getQuery()->toString();
-        $fullUrl = $url . (strpos($url, '?') === false ? '?' : '&') . $urlParams;
+        $fullUrl = $url . (!str_contains($url, '?') ? '?' : '&') . $urlParams;
         $this->debug(
             "[$duration] $method request '$fullUrl' results ($statusCode):\n"
             . $answer
@@ -1620,7 +1620,7 @@ class Alma extends AbstractBase implements
     {
         // Remove trailing Z from end of date
         // e.g. from Alma we get dates like 2012-07-13Z without time, which is wrong)
-        if (strpos($date, 'T') === false && substr($date, -1) === 'Z') {
+        if (!str_contains($date, 'T') && substr($date, -1) === 'Z') {
             $date = substr($date, 0, -1);
         }
 

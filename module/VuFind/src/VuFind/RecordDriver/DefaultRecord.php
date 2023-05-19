@@ -3,7 +3,7 @@
 /**
  * Default model for records
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -443,7 +443,7 @@ class DefaultRecord extends AbstractBase
                 $keys = array_keys($array1);
                 foreach ($keys as $author) {
                     if (isset($array2[$author])) {
-                        $array1[$author] = array_merge(
+                        $array1[$author] = array_merge_recursive(
                             $array1[$author],
                             $array2[$author]
                         );

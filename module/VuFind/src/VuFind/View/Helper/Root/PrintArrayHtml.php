@@ -3,7 +3,7 @@
 /**
  * View helper to print an array formatted for HTML display.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Michigan State University 2023.
  *
@@ -81,14 +81,14 @@ class PrintArrayHtml extends AbstractHelper
                     $html .= $makeTag("span", $key . ":", ["class" => "term"])
                              . (
                                  (is_array($value) && !$valueIsSingleKeyList)
-                                 ? "<br/>\n" : " "
+                                 ? "<br>\n" : " "
                              );
                 }
 
                 $html .= $this->__invoke($value, $nextIndentLevel, $nextIndentFirst);
             }
         } else {
-            $html = $makeTag("span", $entry, ["class" => "detail"]) . "<br/>\n";
+            $html = $makeTag("span", $entry, ["class" => "detail"]) . "<br>\n";
         }
         return $html;
     }

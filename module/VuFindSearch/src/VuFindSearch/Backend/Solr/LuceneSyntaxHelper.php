@@ -3,7 +3,7 @@
 /**
  * Lucene query syntax helper class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2016.
@@ -570,7 +570,7 @@ class LuceneSyntaxHelper
 
         // If the string consists only of control characters and/or BOOLEANs with no
         // other input, wipe it out entirely to prevent weird errors:
-        $operators = ['AND', 'OR', 'NOT', '+', '-', '"', '&', '|'];
+        $operators = ['AND', 'OR', 'NOT', '+', '-', '"', '&&', '||'];
         if (trim(str_replace($operators, '', $input)) == '') {
             return '';
         }

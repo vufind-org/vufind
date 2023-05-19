@@ -3,9 +3,9 @@
 /**
  * Mink record actions test class.
  *
- * PHP version 7
+ * PHP version 8
  *
- * Copyright (C) Villanova University 2011.
+ * Copyright (C) Villanova University 2011-2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -37,6 +38,7 @@ namespace VuFindTest\Mink;
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  * @retry    4
@@ -638,27 +640,34 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Add comment with rating
         $this->clickCss($page, '.record-tabs .usercomments a');
+        $this->waitForPageLoad($page);
         $this->findCss($page, '.comment-form');
         $this->findCss($page, 'form.comment-form [name="comment"]')->setValue('one');
         $this->clickCss($page, 'form.comment-form div.star-rating label', null, 10);
         // Check that "Clear" link is present before submitting:
         $this->findCss($page, 'form.comment-form a');
         $this->clickCss($page, 'form.comment-form .btn-primary');
-        // Check result
-        $this->waitForPageLoad($page);
-        $inputs = $page->findAll('css', $checked);
-        $this->assertCount(1, $inputs);
-        $this->assertEquals('80', $inputs[0]->getValue());
+        // Check result (wait for the value to update):
+        $this->assertEqualsWithTimeout(
+            [1, '80'],
+            function () use ($page, $checked) {
+                $inputs = $page->findAll('css', $checked);
+                return [count($inputs), $inputs ? $inputs[0]->getValue() : null];
+            }
+        );
         if ($allowRemove) {
             // Clear rating when adding another comment
             $this->findCss($page, 'form.comment-form [name="comment"]')->setValue('two');
             $this->clickCss($page, 'form.comment-form a');
             $this->clickCss($page, 'form.comment-form .btn-primary');
-            // Check result
-            $this->waitForPageLoad($page);
-            $inputs = $page->findAll('css', $checked);
-            $this->assertCount(1, $inputs);
-            $this->assertEquals('70', $inputs[0]->getValue());
+            // Check result (wait for the value to update):
+            $this->assertEqualsWithTimeout(
+                [1, '70'],
+                function () use ($page, $checked) {
+                    $inputs = $page->findAll('css', $checked);
+                    return [count($inputs), $inputs ? $inputs[0]->getValue() : null];
+                }
+            );
         } else {
             // Check that the "Clear" link is no longer available:
             $this->unFindCss($page, 'form.comment-form a');
@@ -666,6 +675,25 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Logout
         $this->clickCss($page, '.logoutOptions a.logout');
+    }
+
+    /**
+     * Test export button found in toolbar
+     *
+     * @return void
+     */
+    public function testRefWorksExportButton()
+    {
+        // Go to a record view
+        $page = $this->gotoRecord();
+        // Click the first Export option in the drop-down menu
+        $this->clickCss($page, '.export-toggle');
+        $this->clickCss($page, '#export-options li a');
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            'Send to RefWorks',
+            $this->findCss($page, '#export-form input.btn.btn-primary')->getValue()
+        );
     }
 
     /**

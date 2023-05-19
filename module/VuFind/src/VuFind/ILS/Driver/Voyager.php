@@ -3,7 +3,7 @@
 /**
  * Voyager ILS Driver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  * Copyright (C) The National Library of Finland 2014-2016.
@@ -897,7 +897,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
                         $line = '';
                         foreach ($subfields as $subfield) {
                             if (
-                                false === strpos($subfieldCodes, $subfield['code'])
+                                !str_contains($subfieldCodes, $subfield['code'])
                             ) {
                                 continue;
                             }
