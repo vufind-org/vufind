@@ -58,8 +58,8 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'baseUrl'            => 'http://paia.gbv.de/',
                 'grantType'          => 'password',
                 'accountBlockNotificationsForMissingScopes' => [
-                    'update_patron' => 'ILSMessages:no_update_patron_scope',
-                    'read_notifications' => 'ILSMessages:no_read_notifications_scope',
+                    'update_patron' => 'ILSMessages::no_update_patron_scope',
+                    'read_notifications' => 'ILSMessages::no_read_notifications_scope',
                 ],
             ],
     ];
@@ -590,8 +590,8 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
         $paia = $this->createMockConnector();
         $blocks = $paia->getAccountBlocks($patron);
         $this->assertEquals([
-            'ILSMessages:no_update_patron_scope',
-            'ILSMessages:no_read_notifications_scope',
+            'ILSMessages::no_update_patron_scope',
+            'ILSMessages::no_read_notifications_scope',
         ], $blocks);
     }
 
