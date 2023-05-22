@@ -409,6 +409,18 @@
       <istrue value="${apachectl}" />
       <then>
         <copy file="${localdir}/httpd-vufind.conf" tofile="${apacheconfdir}/vufindtest.conf" />
+        <if>
+          <istrue value="${phpunit_remote_coverage}" />
+          <then>
+            <reflexive file="${apacheconfdir}/vufindtest.conf">
+              <filterchain>
+                <replaceregexp>
+                  <regexp pattern="#SetEnv VUFIND_CODE_COVERAGE 1" replace="SetEnv VUFIND_CODE_COVERAGE 1" />
+                </replaceregexp>
+              </filterchain>
+            </reflexive>
+          </then>
+        </if>
         <exec command="${apachectl} restart" passthru="true" />
       </then>
     </if>
