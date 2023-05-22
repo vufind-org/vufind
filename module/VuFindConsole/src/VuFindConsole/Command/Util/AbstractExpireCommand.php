@@ -93,7 +93,7 @@ class AbstractExpireCommand extends Command
     public function __construct(Gateway $table, $name = null)
     {
         if (!method_exists($table, 'deleteExpired')) {
-            $tableName = get_class($table);
+            $tableName = $table::class;
             throw new \Exception("$tableName does not support deleteExpired()");
         }
         $this->table = $table;

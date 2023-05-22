@@ -127,7 +127,7 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
         $commandObj->expects($this->once())->method('getResult')
             ->will($this->returnValue($rci));
         $checkCommand = function ($command) {
-            return get_class($command) === \VuFindSearch\Command\SearchCommand::class
+            return $command::class === \VuFindSearch\Command\SearchCommand::class
                 && $command->getTargetIdentifier() === "bar"
                 && $command->getArguments()[0]->getAllTerms() === 'hierarchy_parent_id:"foo"'
                 && $command->getArguments()[1] === 0

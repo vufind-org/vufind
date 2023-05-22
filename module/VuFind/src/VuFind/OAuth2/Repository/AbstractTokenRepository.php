@@ -92,7 +92,7 @@ class AbstractTokenRepository
     {
         if (!is_a($token, $this->entityClass)) {
             throw new \InvalidArgumentException(
-                get_class($token) . ' is not ' . $this->entityClass
+                $token::class . ' is not ' . $this->entityClass
             );
         }
 

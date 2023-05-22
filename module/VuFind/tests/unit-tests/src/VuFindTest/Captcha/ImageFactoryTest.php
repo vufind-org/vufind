@@ -93,7 +93,7 @@ class ImageFactoryTest extends \PHPUnit\Framework\TestCase
                 $this->constructorArgs = func_get_args();
             }
         };
-        $result = $factory($container, get_class($fakeImage));
+        $result = $factory($container, $fakeImage::class);
         $expectedFont = APPLICATION_PATH
         . '/vendor/webfontkit/open-sans/fonts/opensans-regular.ttf';
         $this->assertFileExists($expectedFont);

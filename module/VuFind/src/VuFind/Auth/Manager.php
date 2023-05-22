@@ -343,7 +343,7 @@ class Manager implements
                 $auth = $this->getAuth($selected);
             }
         }
-        return get_class($auth);
+        return $auth::class;
     }
 
     /**

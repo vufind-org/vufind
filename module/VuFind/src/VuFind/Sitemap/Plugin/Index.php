@@ -137,7 +137,7 @@ class Index extends AbstractGeneratorPlugin
                 );
                 foreach ($result['ids'] as $item) {
                     $loc = htmlspecialchars($recordUrl . urlencode($item));
-                    if (strpos($loc, 'http') === false) {
+                    if (!str_contains($loc, 'http')) {
                         $loc = 'http://' . $loc;
                     }
                     $recordCount++;

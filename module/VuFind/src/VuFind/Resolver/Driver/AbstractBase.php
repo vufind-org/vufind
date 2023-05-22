@@ -71,7 +71,7 @@ abstract class AbstractBase implements DriverInterface
     public function getResolverUrl($openURL)
     {
         $url = $this->baseUrl;
-        $url .= strpos($url, '?') === false ? '?' : '&';
+        $url .= !str_contains($url, '?') ? '?' : '&';
         $url .= $openURL;
         return $url;
     }
