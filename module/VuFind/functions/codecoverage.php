@@ -42,31 +42,41 @@ function setupVuFindRemoteCodeCoverage(): void
     if (!($coverageHeader = $_SERVER['HTTP_X_VUFIND_REMOTE_COVERAGE'] ?? null)) {
         return;
     }
+
+    $error = function ($msg) {
+        error_log("setupVuFindRemoteCodeCoverage: $msg");
+        throw new \Exception($msg);
+    };
+
     if (!($command = json_decode($coverageHeader, true))) {
-        throw new \Exception('Cannot decode remote coverage header');
+        $error('Cannot decode remote coverage header');
     }
     $action = $command['action'] ?? null;
     $testName = $command['testName'] ?? null;
     $outputDir = $command['outputDir'] ?? null;
     if ('record' !== $action || !$testName || !$outputDir) {
-        throw new \Exception('Invalid remote coverage command');
+        $error('Invalid remote coverage command');
     }
     if (!is_dir($outputDir)) {
-        throw new \Exception("Bad output directory $outputDir");
+        $error("setupVuFindRemoteCodeCoverage: Bad output directory $outputDir");
     }
 
-    $filter = new Filter();
-    $filter->includeDirectory(__DIR__ . '/../../');
+    try {
+        $filter = new Filter();
+        $filter->includeDirectory(__DIR__ . '/../../');
 
-    $coverage = new CodeCoverage(
-        (new Selector())->forLineCoverage($filter),
-        $filter
-    );
+        $coverage = new CodeCoverage(
+            (new Selector())->forLineCoverage($filter),
+            $filter
+        );
+    } catch (\Exception $e) {
+        $error("Failed to create collector: " . (string)$e);
+    }
 
     $outputDir .= '/' . urlencode($testName);
     if (!is_dir($outputDir)) {
         if (!mkdir($outputDir)) {
-            throw new \Exception("Failed to create output directory $outputDir");
+            $error("Failed to create output directory $outputDir");
         }
     }
     $outputFile = $outputDir . '/coverage-' . time() . '-' . getmypid() . '.cov';
