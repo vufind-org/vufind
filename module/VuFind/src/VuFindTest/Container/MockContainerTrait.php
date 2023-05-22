@@ -95,7 +95,11 @@ trait MockContainerTrait
         if ($methods) {
             $builder->onlyMethods($methods);
         }
-        return $builder->getMock();
+        try {
+            return $builder->getMock();
+        } catch (\Throwable $e) {
+            throw new \Exception("Cannot mock service $id", $e->getCode(), $e);
+        }
     }
 
     /**
@@ -158,6 +162,20 @@ trait MockContainerTrait
     public function set($id, $obj)
     {
         $this->mockServices[$id] = $obj;
+        return $this;
+    }
+
+    /**
+     * Add an alias.
+     *
+     * @param string $alias  Alias of the service.
+     * @param string $target Target service.
+     *
+     * @return object
+     */
+    public function setAlias($alias, $target)
+    {
+        $this->mockAliases[$alias] = $target;
         return $this;
     }
 }

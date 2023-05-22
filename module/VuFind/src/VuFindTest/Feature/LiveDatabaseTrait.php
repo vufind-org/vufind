@@ -59,6 +59,97 @@ trait LiveDatabaseTrait
     protected $liveTableManager = null;
 
     /**
+     * Get merged module config for database access.
+     *
+     * @return array
+     */
+    protected function getMergedConfig(): array
+    {
+        $dm = new \DoctrineModule\Module();
+        $dmConfig = $dm->getConfig();
+        $dmo = new \DoctrineORMModule\Module();
+        $dmoConfig = $dmo->getConfig();
+        $vfConfig
+            = include APPLICATION_PATH . '/module/VuFind/config/module.config.php';
+        return array_replace_recursive($dmConfig, $dmoConfig, $vfConfig);
+    }
+
+    /**
+     * Set up minimum Doctrine dependencies in the provided container.
+     *
+     * @param object $container Container to populate
+     *
+     * @return void
+     */
+    protected function addDoctrineDependenciesToContainer($container): void
+    {
+        $container->setAlias(
+            'doctrine.entitymanager.orm_vufind',
+            \Doctrine\ORM\EntityManager::class
+        );
+        $container->setAlias(
+            'doctrine.connection.orm_vufind',
+            \VuFind\Db\Connection::class
+        );
+        $connectionFactory = new \VuFind\Db\ConnectionFactory();
+        $container->set(
+            \VuFind\Db\Connection::class,
+            $connectionFactory($container, \VuFind\Db\Connection::class)
+        );
+        $config = $container->get('config');
+        $cacheFactory = new \DoctrineModule\Service\CacheFactory(('filesystem'));
+        $container->set(
+            \Doctrine\Common\Cache\FilesystemCache::class,
+            // Use a different directory name for tests to avoid permission issues:
+            new \Doctrine\Common\Cache\FilesystemCache(
+                $config['doctrine']['cache']['filesystem']['directory'] . '_testmode'
+            )
+        );
+        $container->set(
+            'doctrine.cache.filesystem',
+            $cacheFactory($container, 'filesystem')
+        );
+        $driverFactory = new \DoctrineModule\Service\DriverFactory('orm_default');
+        $container->set(
+            'doctrine.driver.orm_default',
+            $driverFactory($container, 'orm_default')
+        );
+        $configFactory
+            = new \DoctrineORMModule\Service\ConfigurationFactory('orm_vufind');
+        $container->set(
+            'doctrine.configuration.orm_vufind',
+            $configFactory($container, 'orm_vufind')
+        );
+        $eventManagerFactory
+            = new \DoctrineModule\Service\EventManagerFactory('orm_default');
+        $container->set(
+            'doctrine.eventmanager.orm_default',
+            $eventManagerFactory($container, 'orm_default')
+        );
+        $entityResolverFactory
+            = new \DoctrineORMModule\Service\EntityResolverFactory('orm_default');
+        $container->set(
+            'doctrine.entity_resolver.orm_default',
+            $entityResolverFactory($container, 'orm_default')
+        );
+        $entityManagerFactory = new \DoctrineORMModule\Service\EntityManagerFactory(
+            'orm_vufind'
+        );
+        $container->set(
+            \Doctrine\ORM\EntityManager::class,
+            $entityManagerFactory($container, 'orm_vufind')
+        );
+        $container->set(
+            \VuFind\Db\Entity\PluginManager::class,
+            new \VuFind\Db\Entity\PluginManager($container, [])
+        );
+        $container->set(
+            \VuFind\Db\Service\PluginManager::class,
+            new \VuFind\Db\Service\PluginManager($container, [])
+        );
+    }
+
+    /**
      * Get a real, working table manager.
      *
      * @return \VuFind\Db\Table\PluginManager
@@ -67,15 +158,16 @@ trait LiveDatabaseTrait
     {
         if (!$this->liveTableManager) {
             // Set up the bare minimum services to actually load real configs:
-            $config = include APPLICATION_PATH
-                . '/module/VuFind/config/module.config.php';
+            $config = $this->getMergedConfig();
             $container = new \VuFindTest\Container\MockContainer($this);
+            $container->set('config', $config);
             $configManager = new \VuFind\Config\PluginManager(
                 $container,
                 $config['vufind']['config_reader']
             );
             $container->set(\VuFind\Config\PluginManager::class, $configManager);
             $this->addPathResolverToContainer($container);
+            $this->addDoctrineDependenciesToContainer($container);
             $adapterFactory = new \VuFind\Db\AdapterFactory(
                 $configManager->get('config')
             );
@@ -84,7 +176,6 @@ trait LiveDatabaseTrait
                 $adapterFactory->getAdapter()
             );
             $container->set(\VuFind\Tags::class, new \VuFind\Tags());
-            $container->set('config', $config);
             $container->set(
                 \VuFind\Db\Row\PluginManager::class,
                 new \VuFind\Db\Row\PluginManager($container, [])

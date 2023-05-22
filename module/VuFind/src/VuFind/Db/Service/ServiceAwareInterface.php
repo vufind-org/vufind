@@ -1,10 +1,10 @@
 <?php
 /**
- * Table Definition for ratings
+ * Marker interface for classes that depend on the \VuFind\Db\Service\PluginManager
  *
  * PHP version 7
  *
- * Copyright (C) The National Library of Finland 2022.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,43 +20,38 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Db_Table
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  Db_Service
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-namespace VuFind\Db\Table;
-
-use Laminas\Db\Adapter\Adapter;
-use VuFind\Db\Row\RowGateway;
+namespace VuFind\Db\Service;
 
 /**
- * Table Definition for ratings
+ * Marker interface for classes that depend on the \VuFind\Db\Service\PluginManager
  *
  * @category VuFind
- * @package  Db_Table
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  Db_Service
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Ratings extends Gateway
+interface ServiceAwareInterface
 {
     /**
-     * Constructor
+     * Get the plugin manager.  Throw an exception if it is missing.
      *
-     * @param Adapter       $adapter Database adapter
-     * @param PluginManager $tm      Table manager
-     * @param array         $cfg     Laminas configuration
-     * @param RowGateway    $rowObj  Row prototype object (null for default)
-     * @param string        $table   Name of database table to interface with
+     * @throws \Exception
+     * @return \VuFind\Db\Service\PluginManager
      */
-    public function __construct(
-        Adapter $adapter,
-        PluginManager $tm,
-        $cfg,
-        ?RowGateway $rowObj = null,
-        $table = 'ratings'
-    ) {
-        parent::__construct($adapter, $tm, $cfg, $rowObj, $table);
-    }
+    public function getDbServiceManager();
+
+    /**
+     * Set the plugin manager.
+     *
+     * @param \VuFind\Db\Service\PluginManager $manager Plugin manager
+     *
+     * @return void
+     */
+    public function setDbServiceManager(\VuFind\Db\Service\PluginManager $manager);
 }

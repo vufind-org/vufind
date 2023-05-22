@@ -41,10 +41,12 @@ use VuFind\XSLT\Import\VuFind as ArticleStripper;
  * @link     https://vufind.org Main Page
  */
 abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
+    \VuFind\Db\Service\ServiceAwareInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface,
     \VuFindSearch\Response\RecordInterface
 {
     use \VuFind\Db\Table\DbTableAwareTrait;
+    use \VuFind\Db\Service\ServiceAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFindSearch\Response\RecordTrait;
 
@@ -252,8 +254,10 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
         // Cache data since comments list may ask for same information repeatedly:
         $cacheKey = $userId ?? '-';
         if (!isset($this->ratingCache[$cacheKey])) {
-            $table = $this->getDbTable('Ratings');
-            $this->ratingCache[$cacheKey] = $table->getForResource(
+            $ratingsService = $this->getDbService(
+                \VuFind\Db\Service\RatingsService::class
+            );
+            $this->ratingCache[$cacheKey] = $ratingsService->getForResource(
                 $this->getUniqueId(),
                 $this->getSourceIdentifier(),
                 $userId
@@ -277,11 +281,14 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      */
     public function getRatingBreakdown(array $groups)
     {
-        return $this->getDbTable('Ratings')->getCountsForResource(
-            $this->getUniqueId(),
-            $this->getSourceIdentifier(),
-            $groups
-        );
+        return $this->getDbService(
+            \VuFind\Db\Service\RatingsService::class
+        )
+            ->getCountsForResource(
+                $this->getUniqueId(),
+                $this->getSourceIdentifier(),
+                $groups
+            );
     }
 
     /**

@@ -104,4 +104,14 @@ class Ratings implements EntityInterface
      * )
      */
     protected $created = '2000-01-01 00:00:00';
+
+    /**
+     * Get user.
+     *
+     * @return \VuFind\Db\Entity\User
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
 }
