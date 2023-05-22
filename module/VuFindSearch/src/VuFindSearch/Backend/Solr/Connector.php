@@ -98,6 +98,13 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     protected $uniqueKey;
 
     /**
+     * Url of the last request
+     *
+     * @var string
+     */
+    protected $lastUrl = "";
+
+    /**
      * Constructor
      *
      * @param string|array        $url       SOLR core URL or an array of alternative
@@ -155,6 +162,16 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     public function getUniqueKey()
     {
         return $this->uniqueKey;
+    }
+
+    /**
+     * Get the last request url.
+     *
+     * @return string
+     */
+    public function getLastUrl()
+    {
+        return $this->lastUrl;
     }
 
     /**
@@ -444,6 +461,8 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         $this->debug(
             sprintf('=> %s %s', $client->getMethod(), $client->getUri())
         );
+
+        $this->lastUrl = $client->getUri();
 
         $time     = microtime(true);
         $response = $client->send();

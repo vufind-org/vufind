@@ -609,6 +609,23 @@ class BackendTest extends TestCase
         );
     }
 
+    /**
+     * Test extra request details
+     *
+     * @return void
+     */
+    public function testExtraRequestDetails()
+    {
+        $connector = $this->getConnectorMock(['getLastUrl']);
+        $connector->expects($this->once())->method('getLastUrl')
+            ->will($this->returnValue('someUrl'));
+        $backend = new Backend($connector);
+        $this->assertEquals(
+            ['solrRequestUrl' => 'someUrl'],
+            $backend->getExtraRequestDetails()
+        );
+    }
+
     /// Internal API
 
     /**

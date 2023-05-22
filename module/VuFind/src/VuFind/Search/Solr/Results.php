@@ -98,6 +98,13 @@ class Results extends \VuFind\Search\Base\Results
     protected $cursorMark = null;
 
     /**
+     * Extra search details.
+     *
+     * @var null|array
+     */
+    protected $extraSearchDetails = null;
+
+    /**
      * Get spelling processor.
      *
      * @return SpellingProcessor
@@ -196,6 +203,8 @@ class Results extends \VuFind\Search\Base\Results
                 throw $e;
             }
         }
+
+        $this->extraSearchDetails = $command->getExtraRequestDetails();
 
         $this->responseFacets = $collection->getFacets();
         $this->responseQueryFacets = $collection->getQueryFacets();
@@ -410,5 +419,15 @@ class Results extends \VuFind\Search\Base\Results
         $flare->total = $this->resultTotal;
         $flare->children = $this->responsePivotFacets;
         return $flare;
+    }
+
+    /**
+     * Get the extra search details
+     *
+     * @return null|array
+     */
+    public function getExtraSearchDetails()
+    {
+        return $this->extraSearchDetails;
     }
 }
