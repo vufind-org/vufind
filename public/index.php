@@ -15,8 +15,10 @@ if (PHP_SAPI === 'cli') {
 } else {
     // Setup remote code coverage if enabled:
     if (getenv('VUFIND_CODE_COVERAGE')) {
+        $modules = $app->getServiceManager()
+            ->get(\Laminas\ModuleManager\ModuleManager::class)->getModules();
         include __DIR__ . '/../module/VuFind/functions/codecoverage.php';
-        setupVuFindRemoteCodeCoverage();
+        setupVuFindRemoteCodeCoverage($modules);
     }
     $app->run();
 }
