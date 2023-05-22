@@ -37,7 +37,7 @@ use SebastianBergmann\CodeCoverage\Report\PHP as PHPReport;
  *
  * @return void
  */
-function setupRemoteCodeCoverage(): void
+function setupVuFindRemoteCodeCoverage(): void
 {
     if (!($coverageHeader = $_SERVER['HTTP_X_VUFIND_REMOTE_COVERAGE'] ?? null)) {
         return;
