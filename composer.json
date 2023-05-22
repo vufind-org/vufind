@@ -103,7 +103,9 @@
         "friendsofphp/php-cs-fixer": "3.15.1",
         "phploc/phploc": "7.0.2",
         "phpmd/phpmd": "2.13.0",
-        "phpstan/phpstan": "1.10.3",
+        "phpstan/phpstan": "1.10.15",
+        "phpunit/php-code-coverage": "9.2.26",
+        "phpunit/phpcov": "^8.2",
         "phpunit/phpunit": "9.6.4",
         "sebastian/phpcpd": "6.0.3",
         "squizlabs/php_codesniffer": "3.7.2"
