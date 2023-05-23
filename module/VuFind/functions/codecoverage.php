@@ -35,9 +35,11 @@ use SebastianBergmann\CodeCoverage\Report\PHP as PHPReport;
 /**
  * Setup remote code coverage support if requested
  *
+ * @param array $modules Active modules
+ *
  * @return void
  */
-function setupVuFindRemoteCodeCoverage(): void
+function setupVuFindRemoteCodeCoverage(array $modules): void
 {
     if (!($coverageHeader = $_SERVER['HTTP_X_VUFIND_REMOTE_COVERAGE'] ?? null)) {
         return;
@@ -63,7 +65,12 @@ function setupVuFindRemoteCodeCoverage(): void
 
     try {
         $filter = new Filter();
-        $filter->includeDirectory(__DIR__ . '/../../');
+        foreach ($modules as $module) {
+            $moduleDir = __DIR__ . "/../../$module";
+            if (!str_contains($module, '\\') && is_dir($moduleDir)) {
+                $filter->includeDirectory("$moduleDir/src/");
+            }
+        }
 
         $coverage = new CodeCoverage(
             (new Selector())->forLineCoverage($filter),
