@@ -792,6 +792,21 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     public function getStatuses($ids)
     {
         $this->checkIntermittentFailure();
+
+        if ($this->isFailing(__METHOD__, 0)) {
+            return array_map(
+                function ($id) {
+                    return [
+                        [
+                            'id' => $id,
+                            'error' => 'Simulated failure',
+                        ],
+                    ];
+                },
+                $ids
+            );
+        }
+
         return array_map([$this, 'getStatus'], $ids);
     }
 
@@ -812,6 +827,13 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     public function getHolding($id, array $patron = null, array $options = [])
     {
         $this->checkIntermittentFailure();
+
+        if ($this->isFailing(__METHOD__, 0)) {
+            return [
+                'id' => $id,
+                'error' => 'Simulated failure',
+            ];
+        }
 
         // Get basic status info:
         $status = $this->getSimulatedStatus($id, $patron);
