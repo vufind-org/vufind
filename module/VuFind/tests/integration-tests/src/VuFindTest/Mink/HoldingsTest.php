@@ -322,7 +322,7 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
             $item['use_unknown_message'] = true;
             $item['availability'] = false;
         } else {
-            $item['availability'] = $availability ?? ItemStatus::STATUS_UNCERTAIN;
+            $item['availability'] = ItemStatus::STATUS_UNCERTAIN;
         }
         $item['status'] = $statusMsg;
         $item['location'] = 'main';
