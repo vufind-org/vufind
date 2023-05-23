@@ -735,6 +735,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                 'location_code' => 'DCOC',
                 'reserve' => 'TODO',
                 'addLink' => true,
+                'summary' => [],
             ],
         ];
         $this->assertEquals($expected, $this->driver->getHolding("foo"));
@@ -776,6 +777,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'location_code' => 'DCOC',
                     'reserve' => 'TODO',
                     'addLink' => true,
+                    'summary' => [],
                 ],
             ],
         ];
@@ -815,6 +817,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                 'location_code' => 'DCOC',
                 'reserve' => 'TODO',
                 'addLink' => true,
+                'summary' => [],
             ],
         ];
         $this->assertEquals($expected, $this->driver->getHolding("instanceid"));
@@ -851,6 +854,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                 'location_code' => 'DCOC',
                 'reserve' => 'TODO',
                 'addLink' => true,
+                'summary' => [],
             ],
         ];
         $this->assertEquals($expected, $this->driver->getHolding("instanceid"));
@@ -889,6 +893,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                 'location_code' => 'DCOC',
                 'reserve' => 'TODO',
                 'addLink' => true,
+                'summary' => [],
             ],
             [
                 'callnumber_prefix' => '',
@@ -912,6 +917,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                 'location_code' => 'DCOC',
                 'reserve' => 'TODO',
                 'addLink' => true,
+                'summary' => [],
             ],
         ];
         $this->assertEquals($expected, $this->driver->getHolding("instanceid"));
