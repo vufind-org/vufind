@@ -137,7 +137,12 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
                     // For this case we have available items in both locations:
                     $location = $this->findCss($page, '.result-body .callnumAndLocation .groupLocation .text-success');
                     $this->assertEquals('Test Location', $location->getText());
-                    $location = $this->findCss($page, '.result-body .callnumAndLocation .groupLocation .text-success', null, 1);
+                    $location = $this->findCss(
+                        $page,
+                        '.result-body .callnumAndLocation .groupLocation .text-success',
+                        null,
+                        1
+                    );
                     $this->assertEquals('Main Library', $location->getText());
                 } else {
                     $location = $this->findCss($page, '.result-body .callnumAndLocation .groupLocation .text-danger');
