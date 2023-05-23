@@ -133,10 +133,18 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
         if ($availability) {
             // Extra items, check for different display styles:
             if ('group' === $multipleLocations) {
-                $location = $this->findCss($page, '.result-body .callnumAndLocation .groupLocation .text-danger');
-                $this->assertEquals('Test Location', $location->getText());
-                $location = $this->findCss($page, '.result-body .callnumAndLocation .groupLocation .text-success');
-                $this->assertEquals('Main Library', $location->getText());
+                if (ItemStatus::STATUS_AVAILABLE === $availability) {
+                    // For this case we have available items in both locations:
+                    $location = $this->findCss($page, '.result-body .callnumAndLocation .groupLocation .text-success');
+                    $this->assertEquals('Test Location', $location->getText());
+                    $location = $this->findCss($page, '.result-body .callnumAndLocation .groupLocation .text-success', null, 1);
+                    $this->assertEquals('Main Library', $location->getText());
+                } else {
+                    $location = $this->findCss($page, '.result-body .callnumAndLocation .groupLocation .text-danger');
+                    $this->assertEquals('Test Location', $location->getText());
+                    $location = $this->findCss($page, '.result-body .callnumAndLocation .groupLocation .text-success');
+                    $this->assertEquals('Main Library', $location->getText());
+                }
             } else {
                 $location = $this->findCss($page, '.result-body .callnumAndLocation .location');
                 $this->assertEquals(
@@ -330,6 +338,17 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
             $item['services'] = ['loan', 'presentation'];
         }
         $items[] = $item;
+
+        // If the requested item is available or uncertain, add one more item to test
+        // handling order:
+        if ($addExtraItems && ItemStatus::STATUS_AVAILABLE === $availability) {
+            // Test Location:
+            $item = $this->getFakeItem();
+            $item['availability'] = ItemStatus::STATUS_AVAILABLE;
+            $item['status'] = 'Foo';
+            $items[] = $item;
+        }
+
         return [
             'Records' => [
                 'services' => [],
