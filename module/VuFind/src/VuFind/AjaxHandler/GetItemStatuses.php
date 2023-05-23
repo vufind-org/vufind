@@ -283,7 +283,6 @@ class GetItemStatuses extends AbstractBase implements
         $useUnknownStatus = false;
         $available = 'false';
         $services = [];
-        $reserve = !empty($record);
 
         foreach ($record as $info) {
             // Find an available copy
@@ -293,10 +292,6 @@ class GetItemStatuses extends AbstractBase implements
             // Check for a use_unknown_message flag
             if ($info['use_unknown_message'] ?? false) {
                 $useUnknownStatus = true;
-            }
-            // Check for non-reserves:
-            if ($info['reserve'] !== 'Y') {
-                $reserve = false;
             }
             // Store call number/location info:
             $callNumbers[] = $this->formatCallNo(
@@ -340,6 +335,8 @@ class GetItemStatuses extends AbstractBase implements
                 $useUnknownStatus
             );
         }
+
+        $reserve = ($record[0]['reserve'] ?? 'N') === 'Y';
 
         // Send back the collected details:
         return [
@@ -428,6 +425,8 @@ class GetItemStatuses extends AbstractBase implements
             $useUnknownStatus
         );
 
+        $reserve = ($record[0]['reserve'] ?? 'N') === 'Y';
+
         // Send back the collected details:
         return [
             'id' => $record[0]['id'],
@@ -435,11 +434,9 @@ class GetItemStatuses extends AbstractBase implements
             'availability_message' => $availabilityMessage,
             'location' => false,
             'locationList' => $locationList,
-            'reserve' =>
-                ($record[0]['reserve'] == 'Y' ? 'true' : 'false'),
-            'reserve_message' => $record[0]['reserve'] == 'Y'
-                ? $this->translate('on_reserve')
-                : $this->translate('Not On Reserve'),
+            'reserve' => $reserve ? 'true' : 'false',
+            'reserve_message'
+                => $this->translate($reserve ? 'on_reserve' : 'Not On Reserve'),
             'callnumber' => false,
         ];
     }
