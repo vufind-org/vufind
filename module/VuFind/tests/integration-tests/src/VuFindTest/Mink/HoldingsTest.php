@@ -241,8 +241,7 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
         string $expected,
         string $expectedType,
         string $multipleLocations
-    ): void
-    {
+    ): void {
         $this->changeConfigs(
             [
                 'config' => $this->getConfigIniOverrides(false, $multipleLocations),
