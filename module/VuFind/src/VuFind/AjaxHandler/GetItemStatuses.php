@@ -374,9 +374,14 @@ class GetItemStatuses extends AbstractBase implements
         $available = 'false';
         foreach ($record as $info) {
             // Find an available copy
-            if ($info['availability'] && 'true' !== $available) {
-                $available = $locations[$info['location']]['available']
-                    = $this->availabilityToString($info['availability']);
+            if ($info['availability']) {
+                $availStr = $this->availabilityToString($info['availability']);
+                if ('true' !== $available) {
+                    $available = $availStr;
+                }
+                if ('true' !== ($locations[$info['location']]['available'] ?? null)) {
+                    $locations[$info['location']]['available'] = $availStr;
+                }
             }
             // Check for a use_unknown_message flag
             if ($info['use_unknown_message'] ?? false) {
