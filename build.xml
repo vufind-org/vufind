@@ -239,10 +239,21 @@
 
   <!-- PHPUnit -->
   <target name="phpunit" description="Run tests">
-    <!-- Clean up any previous tmp files -->
+    <!-- Clean up any previous tmp files but keep the directory if it exists to avoid changing its permissions -->
     <property name="coveragedir" value="${builddir}/reports/coverage" />
-    <delete dir="${coveragedir}/tmp" includeemptydirs="true" failonerror="false" />
-    <mkdir dir="${coveragedir}/tmp" />
+    <if>
+      <available file="${coveragedir}/tmp" type="dir" />
+      <then>
+        <delete>
+          <fileset dir="${coveragedir}/tmp">
+            <include name="**/*" />
+          </fileset>
+        </delete>
+      </then>
+      <else>
+        <mkdir dir="${coveragedir}/tmp" />
+      </else>
+    </if>
 
     <!-- Run tests -->
     <if>
