@@ -699,7 +699,7 @@ class Folio extends AbstractAPI implements
             // "issues" is a non-standard key introduced in #1708 but retained for back-compatibility
             // "summary" is the standard way to represent holdings according to spec
             'issues' => $holdingDetails['holdingsStatements'],
-            'summary' => implode("\n", array_unique($holdingDetails['holdingsStatements'])),
+            'summary' => array_unique($holdingDetails['holdingsStatements']),
             'supplements' => $holdingDetails['holdingsSupplements'],
             'indexes' => $holdingDetails['holdingsIndexes'],
             'location' => $locationName,
