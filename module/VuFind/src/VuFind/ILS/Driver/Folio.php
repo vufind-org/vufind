@@ -696,9 +696,6 @@ class Folio extends AbstractAPI implements
             'holdings_notes' => $holdingDetails['hasHoldingNotes']
                 ? $holdingDetails['holdingNotes'] : null,
             'item_notes' => !empty(implode($itemNotes)) ? $itemNotes : null,
-            // "issues" is a non-standard key introduced in #1708 but retained for back-compatibility
-            // "summary" is the standard way to represent holdings according to spec
-            'issues' => $holdingDetails['holdingsStatements'],
             'summary' => array_unique($holdingDetails['holdingsStatements']),
             'supplements' => $holdingDetails['holdingsSupplements'],
             'indexes' => $holdingDetails['holdingsIndexes'],
