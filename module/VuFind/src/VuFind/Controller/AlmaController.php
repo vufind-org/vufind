@@ -397,7 +397,7 @@ class AlmaController extends AbstractBase
                 error_log(
                     'Could not send the \'set-password-email\' to user with ' .
                     'primary ID \'' . $user->cat_id . '\' | username \'' .
-                    $user->username . '\': ' . $e->getMessage()
+                    $user->username . '\''
                 );
             }
         }

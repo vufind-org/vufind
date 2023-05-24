@@ -549,7 +549,7 @@ class AbstractRecord extends AbstractBase
                 $this->flashMessenger()->addMessage('email_success', 'success');
                 return $this->redirectToRecord();
             } catch (MailException $e) {
-                $this->flashMessenger()->addMessage($e->getMessage(), 'error');
+                $this->flashMessenger()->addMessage('email_failure', 'error');
             }
         }
 
