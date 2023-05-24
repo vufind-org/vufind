@@ -87,7 +87,7 @@ class SimilarItemsCarouselTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($rci));
 
         $checkCommand = function ($command) {
-            return get_class($command) === \VuFindSearch\Command\SimilarCommand::class
+            return $command::class === \VuFindSearch\Command\SimilarCommand::class
                 && $command->getTargetIdentifier() === "foo"
                 && $command->getArguments()[0] === "bar"
                 && $command->getArguments()[1]->getArrayCopy() === ['rows' => [40]];

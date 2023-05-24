@@ -1676,7 +1676,7 @@ class XCNCIP2 extends AbstractBase implements
         $blocks = array_filter(
             $blocks,
             function ($item) {
-                return strpos($item, 'Block') === 0;
+                return str_starts_with($item, 'Block');
             }
         );
         return !empty($blocks);

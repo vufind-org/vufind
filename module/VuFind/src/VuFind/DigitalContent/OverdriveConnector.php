@@ -204,10 +204,10 @@ class OverdriveConnector implements
 
                 if ($conf->noAccessString) {
                     if (
-                        strpos(
+                        str_contains(
                             $this->getSessionContainer()->odAccessMessage,
                             (string)$conf->noAccessString
-                        ) !== false
+                        )
                     ) {
                         // this user should not have access to OD
                         $result->code = "od_account_noaccess";

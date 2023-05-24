@@ -163,7 +163,7 @@ class UserEntity implements UserEntityInterface, ClaimSetInterface
                     }
                     break;
                 case 'block_status':
-                    // account_blocked is a flag indicating whether the patron has
+                    // block_status is a flag indicating whether the patron has
                     // blocks:
                     $result[$claim] = $blocked;
                     break;

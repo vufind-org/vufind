@@ -93,7 +93,7 @@ class Captcha extends \Laminas\View\Helper\AbstractHelper
     {
         return $this->renderClassTemplate(
             'Captcha/%s',
-            strtolower(get_class($captcha)),
+            strtolower($captcha::class),
             ['captcha' => $captcha]
         );
     }

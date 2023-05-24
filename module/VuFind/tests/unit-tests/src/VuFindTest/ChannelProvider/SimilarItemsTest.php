@@ -279,7 +279,7 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
         $target = 'Solr'
     ) {
         return function ($command) use ($class, $args, $target) {
-            return get_class($command) === $class
+            return $command::class === $class
                 && $command->getArguments() == $args
                 && $command->getTargetIdentifier() === $target;
         };

@@ -96,7 +96,7 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
                 );
             }
         };
-        return get_class($readerClass);
+        return $readerClass::class;
     }
 
     /**

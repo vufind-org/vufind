@@ -152,7 +152,7 @@ class WriterTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockSearchService($expectedCommand, $result)
     {
-        $resultCommand = $this->getMockBuilder(get_class($expectedCommand))
+        $resultCommand = $this->getMockBuilder($expectedCommand::class)
             ->disableOriginalConstructor()
             ->getMock();
         $resultCommand->expects($this->once())->method('getResult')

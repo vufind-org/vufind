@@ -109,7 +109,7 @@ class TranslatorFactory implements DelegatorFactoryInterface
             // note of it:
             $logger = $container->get(\VuFind\Log\Logger::class);
             $logger->debug(
-                'Problem loading cache: ' . get_class($e) . ' exception: '
+                'Problem loading cache: ' . $e::class . ' exception: '
                 . $e->getMessage()
             );
         }

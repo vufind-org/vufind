@@ -111,6 +111,14 @@ class PAIA extends DAIA
     ];
 
     /**
+     * Account blocks that should be reported to the user.
+     *
+     * @see method `getAccountBlocks`
+     * @var array
+     */
+    protected $accountBlockNotificationsForMissingScopes;
+
+    /**
      * PAIA scopes as defined in
      * http://gbv.github.io/paia/paia.html#access-tokens-and-scopes
      *
@@ -224,6 +232,9 @@ class PAIA extends DAIA
         } else {
             $this->debug('Caching not enabled, disabling it by default.');
         }
+
+        $this->accountBlockNotificationsForMissingScopes =
+            $this->config['PAIA']['accountBlockNotificationsForMissingScopes'] ?? [];
     }
 
     // public functions implemented to satisfy Driver Interface
@@ -2170,5 +2181,36 @@ class PAIA extends DAIA
         }
         // return TRUE on success
         return true;
+    }
+
+    /**
+     * Check whether the patron has any blocks on their account.
+     *
+     * @param array $patron Patron data from patronLogin().
+     *
+     * @return mixed A boolean false if no blocks are in place and an array
+     * of block reasons if blocks are in place
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getAccountBlocks($patron)
+    {
+        $blocks = [];
+
+        foreach ($this->accountBlockNotificationsForMissingScopes as $scope => $message) {
+            if (!$this->paiaCheckScope($scope)) {
+                $blocks[$scope] = $message;
+            }
+        }
+
+        // Special case: if update patron is missing, we don't need to also add
+        // more specific messages.
+        if (isset($blocks[self::SCOPE_UPDATE_PATRON])) {
+            unset($blocks[self::SCOPE_UPDATE_PATRON_NAME]);
+            unset($blocks[self::SCOPE_UPDATE_PATRON_EMAIL]);
+            unset($blocks[self::SCOPE_UPDATE_PATRON_ADDRESS]);
+        }
+
+        return count($blocks) ? array_values($blocks) : false;
     }
 }

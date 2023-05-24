@@ -125,7 +125,7 @@ class Suggester
 
         // Get suggestions:
         if ($module) {
-            if (strpos($module, ':') === false) {
+            if (!str_contains($module, ':')) {
                 $module .= ':'; // force colon to avoid warning in explode below
             }
             [$name, $params] = explode(':', $module, 2);

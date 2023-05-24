@@ -163,7 +163,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($this->createMock(\VuFindSearch\Response\RecordCollectionInterface::class)));
 
         $checkCommand = function ($command) {
-            return get_class($command) === \VuFindSearch\Command\RandomCommand::class
+            return $command::class === \VuFindSearch\Command\RandomCommand::class
                 && $command->getTargetIdentifier() === "Solr"
                 && $command->getArguments()[0]->getAllTerms() === "john smith"
                 && $command->getArguments()[1] === 10
@@ -211,7 +211,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($this->createMock(\VuFindSearch\Response\RecordCollectionInterface::class)));
 
         $checkCommand = function ($command) {
-            return get_class($command) === \VuFindSearch\Command\RandomCommand::class
+            return $command::class === \VuFindSearch\Command\RandomCommand::class
                 && $command->getTargetIdentifier() === "Solr"
                 && $command->getArguments()[0]->getAllTerms() === "john smith"
                 && $command->getArguments()[1] === 10
@@ -260,7 +260,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($results));
 
         $checkCommand = function ($command) {
-            return get_class($command) === \VuFindSearch\Command\RandomCommand::class
+            return $command::class === \VuFindSearch\Command\RandomCommand::class
                 && $command->getTargetIdentifier() === "Solr"
                 && $command->getArguments()[0]->getAllTerms() === "john smith"
                 && $command->getArguments()[1] === 10
@@ -313,7 +313,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($results));
 
         $checkCommand = function ($command) {
-            return get_class($command) === \VuFindSearch\Command\RandomCommand::class
+            return $command::class === \VuFindSearch\Command\RandomCommand::class
                 && $command->getTargetIdentifier() === "Solr"
                 && $command->getArguments()[0]->getAllTerms() === "john smith"
                 && $command->getArguments()[1] === 10
