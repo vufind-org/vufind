@@ -728,7 +728,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                 'is_holdable' => true,
                 'holdings_notes' => null,
                 'item_notes' => null,
-                'summary' => [],
+                'summary' => ["foo", "bar baz"],
                 'supplements' => [],
                 'indexes' => [],
                 'location' => 'Special Collections',
@@ -741,7 +741,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getHolding with HRID-based lookup
+     * Test getStatuses.
      *
      * @return void
      */
@@ -769,7 +769,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'is_holdable' => true,
                     'holdings_notes' => null,
                     'item_notes' => null,
-                    'summary' => [],
+                    'summary' => ["foo", "bar baz"],
                     'supplements' => [],
                     'indexes' => [],
                     'location' => 'Special Collections',
