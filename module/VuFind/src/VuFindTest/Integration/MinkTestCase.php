@@ -31,7 +31,6 @@ namespace VuFindTest\Integration;
 
 use Behat\Mink\Driver\Selenium2Driver;
 use Behat\Mink\Element\Element;
-use Behat\Mink\Session;
 use DMore\ChromeDriver\ChromeDriver;
 use PHPUnit\Util\Test;
 use Symfony\Component\Yaml\Yaml;
@@ -82,6 +81,16 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @var PathResolver
      */
     protected $pathResolver;
+
+    /**
+     * Get name of the current test
+     *
+     * @return string
+     */
+    protected function getTestName(): string
+    {
+        return $this::class . '::' . $this->getName(false);
+    }
 
     /**
      * Reconfigure VuFind for the current test.
@@ -259,6 +268,12 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     {
         if (empty($this->session)) {
             $this->session = new Session($this->getMinkDriver());
+            if ($coverageDir = getenv('VUFIND_REMOTE_COVERAGE_DIR')) {
+                $this->session->setRemoteCoverageConfig(
+                    $this->getTestName(),
+                    $coverageDir
+                );
+            }
             $this->session->start();
         }
         return $this->session;
@@ -527,8 +542,8 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
                 return;
             }
             $this->logWarning(
-                'RETRY setValue after failure in ' . get_class($this) . '::'
-                . $this->getName(false) . "(try $i)."
+                'RETRY setValue after failure in ' . $this->getTestName()
+                . " (try $i)."
             );
 
             $this->snooze();
@@ -881,7 +896,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             . implode(PHP_EOL . PHP_EOL, $messages);
 
         if ($logFile) {
-            $method = get_class($this) . '::' . $this->getName(false);
+            $method = $this->getTestName();
             file_put_contents(
                 $logFile,
                 date('Y-m-d H:i:s') . ' [' . strtoupper($level) . "] [$method] "
