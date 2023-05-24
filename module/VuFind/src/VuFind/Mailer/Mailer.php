@@ -29,6 +29,7 @@
 
 namespace VuFind\Mailer;
 
+use Laminas\Log\LoggerAwareInterface;
 use Laminas\Mail\Address;
 use Laminas\Mail\AddressList;
 use Laminas\Mail\Header\ContentType;
@@ -38,6 +39,7 @@ use Laminas\Mime\Message as MimeMessage;
 use Laminas\Mime\Mime;
 use Laminas\Mime\Part as MimePart;
 use VuFind\Exception\Mail as MailException;
+use VuFind\Log\LoggerAwareTrait;
 
 /**
  * VuFind Mailer Class
@@ -51,6 +53,7 @@ use VuFind\Exception\Mail as MailException;
 class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
+    use LoggerAwareTrait;
 
     /**
      * Mail transport
@@ -314,6 +317,7 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
             }
             $this->getTransport()->send($message);
         } catch (\Exception $e) {
+            $this->logError($e->getMessage());
             throw new MailException($e->getMessage());
         }
     }
