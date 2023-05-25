@@ -182,6 +182,13 @@ abstract class Results
     protected $hierarchicalFacetHelper = null;
 
     /**
+     * Extra search details.
+     *
+     * @var null|array
+     */
+    protected $extraSearchBackendDetails = null;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Params $params        Object representing user
@@ -786,6 +793,16 @@ abstract class Results
             $page++;
         } while ($limit == -1 && !empty($facetfields));
         return $facets;
+    }
+
+    /**
+     * Get the extra search details
+     *
+     * @return null|array
+     */
+    public function getExtraSearchBackendDetails()
+    {
+        return $this->extraSearchBackendDetails;
     }
 
     /**
