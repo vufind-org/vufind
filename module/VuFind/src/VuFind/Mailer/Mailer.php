@@ -48,7 +48,7 @@ use VuFind\Exception\Mail as MailException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Mailer implements 
+class Mailer implements
     \VuFind\I18n\Translator\TranslatorAwareInterface,
     \Laminas\Log\LoggerAwareInterface
 {
