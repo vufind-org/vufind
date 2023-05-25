@@ -65,8 +65,8 @@
       <?=$this->record($this->driver)->renderTemplate('versions-link.phtml')?>
     <?php endif; ?>
 
-    <?php $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false; ?>
-    <?php if ($summary): ?>
+    <?php $summary = $this->driver->getSummary(); ?>
+    <?php if ($summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false): ?>
       <p><?=$this->truncate($summary, 300)?></p>
 
       <?php if (strlen($summary) > 300): ?>

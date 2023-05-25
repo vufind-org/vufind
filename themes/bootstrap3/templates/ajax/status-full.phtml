@@ -4,9 +4,15 @@
     <th><?=$this->transEsc('Call Number')?></th>
     <th><?=$this->transEsc('Status')?></th>
   </tr>
-  <?php $i = 0; foreach ($this->statusItems as $item): ?>
-    <?php if (++$i == 5) break; // Show no more than 5 items ?>
-    <?php $callNumPrefix = !empty($item['callnumber_prefix']) ? $item['callnumber_prefix'] . ' ' : '';?>
+  <?php $i = 0; ?>
+  <?php foreach ($this->statusItems as $item): ?>
+    <?php
+      if (++$i == 5) {
+        // Show no more than 5 items
+        break;
+      }
+      $callNumPrefix = !empty($item['callnumber_prefix']) ? $item['callnumber_prefix'] . ' ' : '';
+    ?>
     <tr>
       <td class="fullLocation">
         <?php $locationText = $this->transEscWithPrefix('location_', $item['location']); ?>

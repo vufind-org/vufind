@@ -1,5 +1,6 @@
 <div class="view-buttons hidden-xs">
-  <?php $viewList = $this->params->getViewList(); if (count($viewList) > 1): ?>
+  <?php $viewList = $this->params->getViewList(); ?>
+  <?php if (count($viewList) > 1): ?>
     <?php foreach ($viewList as $viewType => $viewData): ?>
       <?php $viewDesc = $this->translate($viewData['desc']); ?>
       <?php if (!$viewData['selected']): ?>

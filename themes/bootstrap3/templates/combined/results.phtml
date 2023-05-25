@@ -52,7 +52,8 @@
 ?>
 <?=$this->flashmessages()?>
 <form id="search-cart-form" class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
-  <?php $recs = $combinedResults->getRecommendations('top'); if (!empty($recs)): ?>
+  <?php $recs = $combinedResults->getRecommendations('top'); ?>
+  <?php if (!empty($recs)): ?>
     <div>
       <?php foreach ($recs as $current): ?>
         <?=$this->recommend($current)?>
