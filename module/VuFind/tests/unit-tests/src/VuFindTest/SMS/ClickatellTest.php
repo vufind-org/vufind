@@ -83,7 +83,7 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
      */
     public function testUnknownException()
     {
-        $client = $this->getMockClient($this->getMockClient(), []);
+        $client = $this->getMockClient();
         $expectedUri = $this->expectedBaseUri . '&to=1234567890&text=hello';
         $client->expects($this->once())
             ->method('setMethod')
