@@ -30,7 +30,6 @@
 namespace VuFindTest\SMS;
 
 use VuFind\SMS\Clickatell;
-use VuFind\XSLT\Import\VuFind;
 
 /**
  * SMS test
