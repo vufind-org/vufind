@@ -128,6 +128,9 @@ abstract class CallMethodCommand extends AbstractBase
             );
         }
         $args = $this->getArguments();
+        if ($backend instanceof ExtraRequestDetailsInterface) {
+            $backend->resetExtraRequestDetails();
+        }
         $this->finalizeExecution(
             call_user_func([$backend, $this->method], ...$args)
         );

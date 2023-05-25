@@ -34,6 +34,7 @@ namespace VuFindSearch\Backend\Solr;
 use Laminas\Http\Client\Adapter\Exception\TimeoutException;
 use Laminas\Http\Client as HttpClient;
 use Laminas\Http\Request;
+use Laminas\Uri\Http;
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Backend\Exception\HttpErrorException;
 use VuFindSearch\Backend\Exception\RemoteErrorException;
@@ -100,9 +101,9 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     /**
      * Url of the last request
      *
-     * @var string
+     * @var ?Http
      */
-    protected $lastUrl = "";
+    protected $lastUrl = null;
 
     /**
      * Constructor
@@ -167,7 +168,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     /**
      * Get the last request url.
      *
-     * @return string
+     * @return ?Http
      */
     public function getLastUrl()
     {
