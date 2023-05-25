@@ -177,6 +177,16 @@ class Backend extends AbstractBackend implements
     }
 
     /**
+     * Clears all accumulated extra request details
+     *
+     * @return void
+     */
+    public function resetExtraRequestDetails()
+    {
+        $this->connector->resetLastUrl();
+    }
+
+    /**
      * Perform a search and return record collection of only record identifiers.
      *
      * @param AbstractQuery $query  Search query

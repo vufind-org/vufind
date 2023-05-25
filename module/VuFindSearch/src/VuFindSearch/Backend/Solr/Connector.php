@@ -175,6 +175,16 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
+     * Clears the last url
+     *
+     * @return void
+     */
+    public function resetLastUrl()
+    {
+        $this->lastUrl = null;
+    }
+
+    /**
      * Return document specified by id.
      *
      * @param string   $id     The document to retrieve from Solr
