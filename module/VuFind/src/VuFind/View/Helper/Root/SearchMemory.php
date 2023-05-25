@@ -90,7 +90,7 @@ class SearchMemory extends AbstractHelper
             $urlHelper = $this->getView()->plugin('url');
             $url = $urlHelper($lastSearch->getOptions()->getSearchAction());
             $queryHelper = $lastSearch->getUrlQuery();
-            // Try to append page number and page size from optional params saved in results object
+            // Try to append page number and page size from search context parameters saved in params object
             $searchContext = $params->getSavedSearchContextParameters();
             if (!empty($searchContext['limit'])) {
                 $queryHelper = $queryHelper->setLimit($searchContext['limit']);
