@@ -76,7 +76,7 @@ class Mail extends \Exception
     public const ERROR_TOO_MANY_RECIPIENTS = 4;
 
     /**
-     * SMS unknow carrier.
+     * SMS unknown carrier.
      *
      * @var int
      */
