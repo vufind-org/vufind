@@ -83,11 +83,11 @@ class Mail extends \Exception
     public const ERROR_UNKNOWN_CARRIER = 5;
 
     /**
-     * Required extension missing.
+     * Response unknown.
      *
      * @var int
      */
-    public const ERROR_EXTENSION_MISSING = 6;
+    public const ERROR_RESPONSE_UNKNOWN = 6;
 
     /**
      * Returns the error message, but excludes too technical messages.

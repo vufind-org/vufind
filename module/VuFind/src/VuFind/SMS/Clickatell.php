@@ -83,7 +83,7 @@ class Clickatell extends AbstractBase
         }
         $response = $result->isSuccess() ? trim($result->getBody()) : '';
         if (empty($response)) {
-            throw new MailException('Problem sending text.', MailException::ERROR_UNKNOWN);
+            throw new MailException('Problem sending text.', MailException::ERROR_RESPONSE_UNKNOWN);
         }
         if ('ID:' !== substr($response, 0, 3)) {
             throw new MailException($response, MailException::ERROR_UNKNOWN);
@@ -173,7 +173,7 @@ class Clickatell extends AbstractBase
         if (!function_exists('iconv')) {
             throw new MailException(
                 'Clickatell requires iconv PHP extension.',
-                MailException::ERROR_EXTENSION_MISSING
+                MailException::ERROR_UNKNOWN
             );
         }
         // Normalize UTF-8 if intl extension is installed:
