@@ -24,6 +24,7 @@
  * @package  Search_Base
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -46,6 +47,7 @@ use VuFindSearch\Query\QueryGroup;
  * @package  Search_Base
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -197,6 +199,13 @@ class Params
      * @var array
      */
     protected $facetAliases = [];
+
+    /**
+     * Search context parameters.
+     *
+     * @var array
+     */
+    protected $searchContextParameters = [];
 
     /**
      * Config loader
@@ -1785,6 +1794,7 @@ class Params
         $this->filterList = $minified->f;
         $this->hiddenFilters = $minified->hf;
         $this->searchType = $minified->ty;
+        $this->searchContextParameters = $minified->scp;
 
         // Deminified searches will always have defaults already applied;
         // we don't want to accidentally manipulate them further.
@@ -1795,6 +1805,19 @@ class Params
 
         // Search terms, we need to expand keys
         $this->query = QueryAdapter::deminify($minified->t);
+    }
+
+    /**
+     * Get remembered search context parameters from saved search. We track these separately since
+     * in some contexts we want to use them (e.g. linking back to a search in breadcrumbs), but in
+     * other contexts we want to ignore them (e.g. comparing two searches to see if they represent
+     * the same query -- because page 1 and page 2 still represent the same overall search).
+     *
+     * @return array
+     */
+    public function getSavedSearchContextParameters(): array
+    {
+        return $this->searchContextParameters;
     }
 
     /**

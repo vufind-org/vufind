@@ -728,7 +728,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                 'is_holdable' => true,
                 'holdings_notes' => null,
                 'item_notes' => null,
-                'issues' => [],
+                'summary' => ["foo", "bar baz"],
                 'supplements' => [],
                 'indexes' => [],
                 'location' => 'Special Collections',
@@ -741,7 +741,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getHolding with HRID-based lookup
+     * Test getStatuses.
      *
      * @return void
      */
@@ -769,7 +769,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'is_holdable' => true,
                     'holdings_notes' => null,
                     'item_notes' => null,
-                    'issues' => [],
+                    'summary' => ["foo", "bar baz"],
                     'supplements' => [],
                     'indexes' => [],
                     'location' => 'Special Collections',
@@ -808,7 +808,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                 'is_holdable' => true,
                 'holdings_notes' => ["Fake note"],
                 'item_notes' => null,
-                'issues' => [],
+                'summary' => [],
                 'supplements' => ['Fake supplement statement With a note!'],
                 'indexes' => [],
                 'location' => 'Special Collections',
@@ -844,7 +844,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                 'is_holdable' => true,
                 'holdings_notes' => ["Fake note"],
                 'item_notes' => null,
-                'issues' => [],
+                'summary' => [],
                 'supplements' => ['Fake supplement statement With a note!'],
                 'indexes' => [],
                 'location' => 'Special Collections',
@@ -882,7 +882,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                 'is_holdable' => true,
                 'holdings_notes' => ["Fake note"],
                 'item_notes' => null,
-                'issues' => [],
+                'summary' => [],
                 'supplements' => ['Fake supplement statement With a note!'],
                 'indexes' => [],
                 'location' => 'Special Collections',
@@ -905,7 +905,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                 'is_holdable' => true,
                 'holdings_notes' => ["Fake note"],
                 'item_notes' => null,
-                'issues' => [],
+                'summary' => [],
                 'supplements' => ['Fake supplement statement With a note!'],
                 'indexes' => [],
                 'location' => 'Special Collections',
