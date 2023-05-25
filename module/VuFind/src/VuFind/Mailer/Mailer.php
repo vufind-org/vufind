@@ -29,7 +29,6 @@
 
 namespace VuFind\Mailer;
 
-use Laminas\Log\LoggerAwareInterface;
 use Laminas\Mail\Address;
 use Laminas\Mail\AddressList;
 use Laminas\Mail\Header\ContentType;
@@ -39,7 +38,6 @@ use Laminas\Mime\Message as MimeMessage;
 use Laminas\Mime\Mime;
 use Laminas\Mime\Part as MimePart;
 use VuFind\Exception\Mail as MailException;
-use VuFind\Log\LoggerAwareTrait;
 
 /**
  * VuFind Mailer Class
@@ -50,10 +48,12 @@ use VuFind\Log\LoggerAwareTrait;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
+class Mailer implements 
+    \VuFind\I18n\Translator\TranslatorAwareInterface,
+    \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
-    use LoggerAwareTrait;
+    use \VuFind\Log\LoggerAwareTrait;
 
     /**
      * Mail transport
