@@ -717,7 +717,8 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     public function getUniqueHtmlElementId($idPrefix = "")
     {
         return preg_replace(
-            "/\s+/", "_",
+            "/\s+/",
+            "_",
             ($idPrefix ? $idPrefix . '-' : '') . $this->getUniqueIdWithSourcePrefix()
         );
     }
