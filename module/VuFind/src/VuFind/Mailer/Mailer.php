@@ -256,27 +256,42 @@ class Mailer implements
         // Validate email addresses:
         if ($this->maxRecipients > 0) {
             if ($this->maxRecipients < count($recipients)) {
-                throw new MailException('Too Many Email Recipients');
+                throw new MailException(
+                    'Too Many Email Recipients',
+                    MailException::ERROR_TOO_MANY_RECIPIENTS
+                );
             }
         }
         $validator = new \Laminas\Validator\EmailAddress();
         if (count($recipients) == 0) {
-            throw new MailException('Invalid Recipient Email Address');
+            throw new MailException(
+                'Invalid Recipient Email Address',
+                MailException::ERROR_INVALID_RECIPIENT
+            );
         }
         foreach ($recipients as $current) {
             if (!$validator->isValid($current->getEmail())) {
-                throw new MailException('Invalid Recipient Email Address');
+                throw new MailException(
+                    'Invalid Recipient Email Address',
+                    MailException::ERROR_INVALID_RECIPIENT
+                );
             }
         }
         foreach ($replyTo as $current) {
             if (!$validator->isValid($current->getEmail())) {
-                throw new MailException('Invalid Reply-To Email Address');
+                throw new MailException(
+                    'Invalid Reply-To Email Address',
+                    MailException::ERROR_INVALID_REPLY_TO
+                );
             }
         }
         $fromEmail = ($from instanceof Address)
             ? $from->getEmail() : $from;
         if (!$validator->isValid($fromEmail)) {
-            throw new MailException('Invalid Sender Email Address');
+            throw new MailException(
+                'Invalid Sender Email Address',
+                MailException::ERROR_INVALID_SENDER
+            );
         }
 
         if (
@@ -318,7 +333,7 @@ class Mailer implements
             $this->getTransport()->send($message);
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
-            throw new MailException($e->getMessage());
+            throw new MailException($e->getMessage(), MailException::ERROR_DEFAULT);
         }
     }
 

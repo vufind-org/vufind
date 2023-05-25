@@ -40,4 +40,38 @@ namespace VuFind\Exception;
  */
 class Mail extends \Exception
 {
+    /**
+     * Default error message when the error is not known exactly.
+     *
+     * @var int
+     */
+    public static const ERROR_DEFAULT = 0;
+
+    /**
+     * Mail recipient address is invalid.
+     *
+     * @var int
+     */
+    public static const ERROR_INVALID_RECIPIENT = 1;
+
+    /**
+     * Mail sender address is invalid.
+     *
+     * @var int
+     */
+    public static const ERROR_INVALID_SENDER = 2;
+
+    /**
+     * Mail reply to address is invalid.
+     *
+     * @var int
+     */
+    public static const ERROR_INVALID_REPLY_TO = 3;
+
+    /**
+     * Mail too many recipients.
+     *
+     * @var int
+     */
+    public static const ERROR_TOO_MANY_RECIPIENTS = 4;
 }
