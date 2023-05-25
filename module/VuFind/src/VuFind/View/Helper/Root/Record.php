@@ -415,7 +415,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
      */
     public function getCheckbox($idPrefix = '', $formAttr = false, $number = null)
     {
-        $id = $this->getUniqueHtmlElementId();
+        $id = $this->getUniqueHtmlElementId($idPrefix);
         $context
             = ['id' => $id, 'number' => $number, 'prefix' => $idPrefix];
         if ($formAttr) {
@@ -710,11 +710,16 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     /**
      * Get the source identifier + unique id of the record without spaces
      *
+     * @param string $idPrefix Prefix for HTML ids
+     *
      * @return string
      */
-    public function getUniqueHtmlElementId()
+    public function getUniqueHtmlElementId($idPrefix = "")
     {
-        return preg_replace("/\s+/", "_", $this->getUniqueIdWithSourcePrefix());
+        return preg_replace(
+            "/\s+/", "_",
+            ($idPrefix ? $idPrefix . '-' : '') . $this->getUniqueIdWithSourcePrefix()
+        );
     }
 
     /**
