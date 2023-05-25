@@ -30,6 +30,7 @@
 namespace VuFindTest\SMS;
 
 use VuFind\SMS\Clickatell;
+use VuFind\XSLT\Import\VuFind;
 
 /**
  * SMS test
@@ -74,6 +75,41 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
         ];
         $obj = $this->getClickatell();
         $this->assertEquals($expected, $obj->getCarriers());
+    }
+
+    /**
+     * Test unexpected carrier error
+     *
+     * @return void
+     */
+    public function testUnknownException()
+    {
+        $client = $this->getMockClient($this->getMockClient(), []);
+        $expectedUri = $this->expectedBaseUri . '&to=1234567890&text=hello';
+        $client->expects($this->once())
+            ->method('setMethod')
+            ->with($this->equalTo('GET'))
+            ->will($this->returnValue($client));
+        $client->expects($this->once())
+            ->method('setUri')
+            ->with($this->equalTo($expectedUri))
+            ->will($this->returnValue($client));
+        $client->expects($this->once())
+            ->method('send')
+            ->will(
+                $this->throwException(
+                    new \VuFind\Exception\Mail(
+                        'Technical message',
+                        \VuFind\Exception\Mail::ERROR_UNKNOWN
+                    )
+                )
+            );
+        $obj = $this->getClickatell($client);
+        try {
+            $obj->text('Clickatell', '1234567890', 'test@example.com', 'hello');
+        } catch (\VuFind\Exception\Mail $e) {
+            $this->assertEquals('email_failure', $e->getDisplayMessage());
+        }
     }
 
     /**
