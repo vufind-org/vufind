@@ -365,11 +365,11 @@ class RecordTest extends \PHPUnit\Framework\TestCase
             ->withConsecutive(
                 [
                     'record/checkbox.phtml',
-                    ['id' => 'Solr|000105196', 'number' => 1, 'prefix' => 'bar', 'formAttr' => 'foo'],
+                    ['id' => 'bar-Solr|000105196', 'number' => 1, 'prefix' => 'bar', 'formAttr' => 'foo'],
                 ],
                 [
                     'record/checkbox.phtml',
-                    ['id' => 'Solr|000105196', 'number' => 2, 'prefix' => 'bar', 'formAttr' => 'foo'],
+                    ['id' => 'bar-Solr|000105196', 'number' => 2, 'prefix' => 'bar', 'formAttr' => 'foo'],
                 ]
             )
             ->willReturnOnConsecutiveCalls('success', 'success');
