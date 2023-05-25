@@ -76,6 +76,20 @@ class Mail extends \Exception
     public const ERROR_TOO_MANY_RECIPIENTS = 4;
 
     /**
+     * SMS unknow carrier.
+     *
+     * @var int
+     */
+    public const ERROR_UNKNOWN_CARRIER = 5;
+
+    /**
+     * Required extension missing.
+     *
+     * @var int
+     */
+    public const ERROR_EXTENSION_MISSING = 6;
+
+    /**
      * Returns the error message, but excludes too technical messages.
      *
      * @return string

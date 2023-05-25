@@ -137,7 +137,10 @@ class Mailer extends AbstractBase
     {
         $knownCarriers = array_keys($this->carriers);
         if (empty($provider) || !in_array($provider, $knownCarriers)) {
-            throw new MailException('Unknown Carrier');
+            throw new MailException(
+                'Unknown Carrier',
+                MailException::ERROR_UNKNOWN_CARRIER
+            );
         }
 
         $to = $this->filterPhoneNumber($to)

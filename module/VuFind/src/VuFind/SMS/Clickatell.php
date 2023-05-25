@@ -79,14 +79,14 @@ class Clickatell extends AbstractBase
         try {
             $result = $this->client->setMethod('GET')->setUri($url)->send();
         } catch (\Exception $e) {
-            throw new MailException($e->getMessage());
+            throw new MailException($e->getMessage(), MailException::ERROR_UNKNOWN);
         }
         $response = $result->isSuccess() ? trim($result->getBody()) : '';
         if (empty($response)) {
-            throw new MailException('Problem sending text.');
+            throw new MailException('Problem sending text.', MailException::ERROR_UNKNOWN);
         }
         if ('ID:' !== substr($response, 0, 3)) {
-            throw new MailException($response);
+            throw new MailException($response, MailException::ERROR_UNKNOWN);
         }
         return true;
     }
@@ -171,9 +171,10 @@ class Clickatell extends AbstractBase
     {
         // Clickatell expects UCS-2 encoding:
         if (!function_exists('iconv')) {
-            // @codeCoverageIgnoreStart
-            throw new MailException('Clickatell requires iconv PHP extension.');
-            // @codeCoverageIgnoreEnd
+            throw new MailException(
+                'Clickatell requires iconv PHP extension.',
+                MailException::ERROR_EXTENSION_MISSING
+            );
         }
         // Normalize UTF-8 if intl extension is installed:
         if (class_exists('Normalizer')) {
