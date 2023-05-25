@@ -614,8 +614,6 @@ abstract class Results
      * @param array $data Extra data
      *
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function setExtraData(array $data): void
     {
