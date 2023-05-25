@@ -626,6 +626,32 @@ class BackendTest extends TestCase
         );
     }
 
+    /**
+     * Test reset extra request details
+     *
+     * @return void
+     */
+    public function testResetExtraRequestDetails()
+    {
+        $connector = $this->getConnectorMock(['getLastUrl', 'resetLastUrl']);
+        $connector->expects($this->once())->method('resetLastUrl');
+        $connector->expects($this->exactly(2))->method('getLastUrl')
+            ->willReturnOnConsecutiveCalls(
+                $this->returnValue('someUrl'),
+                $this->returnValue(null)
+            );
+        $backend = new Backend($connector);
+        $this->assertEquals(
+            ['solrRequestUrl' => 'someUrl'],
+            $backend->getExtraRequestDetails()
+        );
+        $backend->resetExtraRequestDetails();
+        $this->assertEquals(
+            ['solrRequestUrl' => null],
+            $backend->getExtraRequestDetails()
+        );
+    }
+
     /// Internal API
 
     /**
