@@ -78,7 +78,7 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test unexpected carrier error
+     * Test unknown exception message error
      *
      * @return void
      */
