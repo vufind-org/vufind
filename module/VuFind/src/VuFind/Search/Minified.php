@@ -127,11 +127,11 @@ class Minified
     public $ex = [];
 
     /**
-     * Optional parameters
+     * Search context parameters
      *
      * @var array
      */
-    public $op = [];
+    public $scp = [];
 
     /**
      * Constructor. Building minified object from the
@@ -162,7 +162,7 @@ class Minified
 
         // Extra data has implementation-specific contents, store as is
         $this->ex = $searchObject->getExtraData();
-        $this->setOptionalParameters($searchObject);
+        $this->setSearchContextParameters($searchObject);
     }
 
     /**
@@ -225,16 +225,16 @@ class Minified
     }
 
     /**
-     * Set optional parameters from the search object.
-     * Optional parameters contains page number and results limit per page.
+     * Set search context parameters from the search object.
+     * Search context parameters contains i.e page number and results limit per page.
      *
      * @param object $searchObject Search Object to minify
      *
      * @return void
      */
-    protected function setOptionalParameters($searchObject): void
+    protected function setSearchContextParameters($searchObject): void
     {
-        $this->op = [
+        $this->scp = [
             'page' => $searchObject->getParams()->getPage(),
             'limit' => $searchObject->getParams()->getLimit(),
         ];

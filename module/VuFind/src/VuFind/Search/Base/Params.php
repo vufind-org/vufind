@@ -201,11 +201,11 @@ class Params
     protected $facetAliases = [];
 
     /**
-     * Optional parameters.
+     * Search context parameters.
      *
      * @var array
      */
-    protected $optionalParameters = [];
+    protected $searchContextParameters = [];
 
     /**
      * Config loader
@@ -1794,7 +1794,7 @@ class Params
         $this->filterList = $minified->f;
         $this->hiddenFilters = $minified->hf;
         $this->searchType = $minified->ty;
-        $this->optionalParameters = $minified->op;
+        $this->searchContextParameters = $minified->scp;
 
         // Deminified searches will always have defaults already applied;
         // we don't want to accidentally manipulate them further.
@@ -1808,13 +1808,16 @@ class Params
     }
 
     /**
-     * Get optional parameters.
+     * Get remembered search context parameters from saved search. We track these separately since
+     * in some contexts we want to use them (e.g. linking back to a search in breadcrumbs), but in
+     * other contexts we want to ignore them (e.g. comparing two searches to see if they represent
+     * the same query -- because page 1 and page 2 still represent the same overall search).
      *
      * @return array
      */
-    public function getOptionalParameters(): array
+    public function getSavedSearchContextParameters(): array
     {
-        return $this->optionalParameters;
+        return $this->searchContextParameters;
     }
 
     /**

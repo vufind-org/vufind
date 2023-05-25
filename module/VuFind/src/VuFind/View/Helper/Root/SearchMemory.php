@@ -91,12 +91,12 @@ class SearchMemory extends AbstractHelper
             $url = $urlHelper($lastSearch->getOptions()->getSearchAction());
             $queryHelper = $lastSearch->getUrlQuery();
             // Try to append page number and page size from optional params saved in results object
-            $optionalParameters = $params->getOptionalParameters();
-            if (!empty($optionalParameters['limit'])) {
-                $queryHelper = $queryHelper->setLimit($optionalParameters['limit']);
+            $searchContext = $params->getSavedSearchContextParameters();
+            if (!empty($searchContext['limit'])) {
+                $queryHelper = $queryHelper->setLimit($searchContext['limit']);
             }
-            if (!empty($optionalParameters['page'])) {
-                $queryHelper = $queryHelper->setPage($optionalParameters['page']);
+            if (!empty($searchContext['page'])) {
+                $queryHelper = $queryHelper->setPage($searchContext['page']);
             }
 
             $url .= $queryHelper->getParams(false);
