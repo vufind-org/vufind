@@ -190,10 +190,7 @@ class SearchController extends AbstractSolrSearch
                 $this->flashMessenger()->addMessage('email_success', 'success');
                 return $this->redirect()->toUrl($view->url);
             } catch (MailException $e) {
-                $this->flashMessenger()->addMessage(
-                    $e->getCode() ? $e->getMessage() : 'email_failure',
-                    'error'
-                );
+                $this->flashMessenger()->addMessage($e->getDisplayMessage(), 'error');
             }
         }
         return $view;

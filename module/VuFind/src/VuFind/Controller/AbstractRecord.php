@@ -549,10 +549,7 @@ class AbstractRecord extends AbstractBase
                 $this->flashMessenger()->addMessage('email_success', 'success');
                 return $this->redirectToRecord();
             } catch (MailException $e) {
-                $this->flashMessenger()->addMessage(
-                    $e->getCode() ? $e->getMessage() : 'email_failure',
-                    'error'
-                );
+                $this->flashMessenger()->addMessage($e->getDisplayMessage(), 'error');
             }
         }
 
@@ -618,10 +615,7 @@ class AbstractRecord extends AbstractBase
                 $this->flashMessenger()->addMessage('sms_success', 'success');
                 return $this->redirectToRecord();
             } catch (MailException $e) {
-                $this->flashMessenger()->addMessage(
-                    $e->getCode() ? $e->getMessage() : 'email_failure',
-                    'error'
-                );
+                $this->flashMessenger()->addMessage($e->getDisplayMessage(), 'error');
             }
         }
 

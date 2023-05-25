@@ -1696,10 +1696,7 @@ class MyResearchController extends AbstractBase
                     $this->flashMessenger()
                         ->addMessage('recovery_email_sent', 'success');
                 } catch (MailException $e) {
-                    $this->flashMessenger()->addMessage(
-                        $e->getCode() ? $e->getMessage() : 'email_failure',
-                        'error'
-                    );
+                    $this->flashMessenger()->addMessage($e->getDisplayMessage(), 'error');
                 }
             }
         }
@@ -1818,10 +1815,7 @@ class MyResearchController extends AbstractBase
                         $this->sendChangeNotificationEmail($user, $to);
                     }
                 } catch (MailException $e) {
-                    $this->flashMessenger()->addMessage(
-                        $e->getCode() ? $e->getMessage() : 'email_failure',
-                        'error'
-                    );
+                    $this->flashMessenger()->addMessage($e->getDisplayMessage(), 'error');
                 }
             }
         }

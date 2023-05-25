@@ -45,7 +45,7 @@ class Mail extends \Exception
      *
      * @var int
      */
-    public const ERROR_DEFAULT = 0;
+    public const ERROR_UNKNOWN = 0;
 
     /**
      * Mail recipient address is invalid.
@@ -74,4 +74,18 @@ class Mail extends \Exception
      * @var int
      */
     public const ERROR_TOO_MANY_RECIPIENTS = 4;
+
+    /**
+     * Returns the error message, but excludes too technical messages.
+     *
+     * @return string
+     */
+    public function getDisplayMessage(): string
+    {
+        // If application env is development, we can display too technical messages
+        if ('development' === APPLICATION_ENV || $this->getCode() !== self::ERROR_UNKNOWN) {
+            return $this->getMessage();
+        }
+        return 'email_failure';
+    }
 }

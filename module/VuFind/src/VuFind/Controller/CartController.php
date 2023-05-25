@@ -290,10 +290,7 @@ class CartController extends AbstractBase
                 );
                 return $this->redirectToSource('success', 'bulk_email_success');
             } catch (MailException $e) {
-                $this->flashMessenger()->addMessage(
-                    $e->getCode() ? $e->getMessage() : 'email_failure',
-                    'error'
-                );
+                $this->flashMessenger()->addMessage($e->getDisplayMessage(), 'error');
             }
         }
 
