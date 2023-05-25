@@ -333,7 +333,7 @@ class Mailer implements
             $this->getTransport()->send($message);
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
-            throw new MailException($e->getMessage(), MailException::ERROR_DEFAULT);
+            throw new MailException($e->getMessage(), MailException::ERROR_UNKNOWN);
         }
     }
 
