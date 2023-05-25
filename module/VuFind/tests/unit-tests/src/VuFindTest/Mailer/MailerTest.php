@@ -361,15 +361,14 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     public function testUnknownException()
     {
         $mailer = $this->createMock(Mailer::class);
-        $mailer->expects(
-            $this->once())->method('send')->will(
-                $this->throwException(
-                    new \VuFind\Exception\Mail(
-                        'Technical message',
-                        \VuFind\Exception\Mail::ERROR_UNKNOWN
-                    )
+        $mailer->expects($this->once())->method('send')->will(
+            $this->throwException(
+                new \VuFind\Exception\Mail(
+                    'Technical message',
+                    \VuFind\Exception\Mail::ERROR_UNKNOWN
                 )
-            );
+            )
+        );
         try {
             $mailer->send('to@example.com', 'from@example.com', 'subject', 'body');
         } catch (\VuFind\Exception\Mail $e) {
