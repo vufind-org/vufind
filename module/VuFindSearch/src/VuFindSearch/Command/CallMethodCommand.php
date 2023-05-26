@@ -62,7 +62,7 @@ abstract class CallMethodCommand extends AbstractBase
     /**
      * Optional search details.
      *
-     * @var null|array
+     * @var ?array
      */
     protected $extraRequestDetails = null;
 
@@ -102,9 +102,9 @@ abstract class CallMethodCommand extends AbstractBase
     /**
      * Get extra request details.
      *
-     * @return null|array
+     * @return ?array
      */
-    public function getExtraRequestDetails(): null|array
+    public function getExtraRequestDetails(): ?array
     {
         return $this->extraRequestDetails;
     }
