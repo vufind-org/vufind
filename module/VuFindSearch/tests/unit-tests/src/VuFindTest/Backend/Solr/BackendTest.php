@@ -31,6 +31,7 @@ namespace VuFindTest\Backend\Solr;
 
 use InvalidArgumentException;
 use Laminas\Http\Response;
+use Laminas\Uri\Http;
 use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Exception\RemoteErrorException;
 use VuFindSearch\Backend\Solr\Backend;
@@ -616,12 +617,13 @@ class BackendTest extends TestCase
      */
     public function testExtraRequestDetails()
     {
+        $solrUri = new Http("https://www.someExampleSolr.com");
         $connector = $this->getConnectorMock(['getLastUrl']);
         $connector->expects($this->once())->method('getLastUrl')
-            ->will($this->returnValue('someUrl'));
+            ->will($this->returnValue($solrUri));
         $backend = new Backend($connector);
         $this->assertEquals(
-            ['solrRequestUrl' => 'someUrl'],
+            ['solrRequestUrl' => $solrUri],
             $backend->getExtraRequestDetails()
         );
     }
@@ -633,16 +635,17 @@ class BackendTest extends TestCase
      */
     public function testResetExtraRequestDetails()
     {
+        $solrUri = new Http("https://www.someExampleSolr.com");
         $connector = $this->getConnectorMock(['getLastUrl', 'resetLastUrl']);
         $connector->expects($this->once())->method('resetLastUrl');
         $connector->expects($this->exactly(2))->method('getLastUrl')
             ->willReturnOnConsecutiveCalls(
-                $this->returnValue('someUrl'),
+                $this->returnValue($solrUri),
                 $this->returnValue(null)
             );
         $backend = new Backend($connector);
         $this->assertEquals(
-            ['solrRequestUrl' => 'someUrl'],
+            ['solrRequestUrl' => $solrUri],
             $backend->getExtraRequestDetails()
         );
         $backend->resetExtraRequestDetails();
