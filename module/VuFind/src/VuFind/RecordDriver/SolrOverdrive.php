@@ -125,7 +125,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
                     $formatType = $format->formatType;
                     $formats[$formatType] = $formatNames[$formatType];
                 }
-           } else {
+            } else {
                 // Not locked in, we can show all formats
                 foreach ($this->getDigitalFormats() as $format) {
                     $formats[$format->id] = $formatNames[$format->id];
