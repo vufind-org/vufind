@@ -184,7 +184,7 @@ abstract class Results
     /**
      * Extra search details.
      *
-     * @var null|array
+     * @var ?array
      */
     protected $extraSearchBackendDetails = null;
 
@@ -798,7 +798,7 @@ abstract class Results
     /**
      * Get the extra search details
      *
-     * @return null|array
+     * @return ?array
      */
     public function getExtraSearchBackendDetails()
     {
