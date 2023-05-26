@@ -692,7 +692,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                 $return_string .= $d . " " . $data['data'][$i] . " ";
                 $i++;
             }
-       } else {
+        } else {
             // Chrono
             // Important note: strtotime() expects
             // 01/02/2000 = 2nd Jan 2000
