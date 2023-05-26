@@ -29,7 +29,7 @@
 
 namespace VuFind\SMS;
 
-use VuFind\Exception\Mail as MailException;
+use VuFind\Exception\SMS as SMSException;
 
 /**
  * Class for text messaging via Clickatell's HTTP API
@@ -79,14 +79,14 @@ class Clickatell extends AbstractBase
         try {
             $result = $this->client->setMethod('GET')->setUri($url)->send();
         } catch (\Exception $e) {
-            throw new MailException($e->getMessage(), MailException::ERROR_UNKNOWN);
+            throw new SMSException($e->getMessage(), SMSException::ERROR_UNKNOWN);
         }
         $response = $result->isSuccess() ? trim($result->getBody()) : '';
         if (empty($response)) {
-            throw new MailException('Problem sending text.', MailException::ERROR_RESPONSE_UNKNOWN);
+            throw new SMSException('Problem sending text.', SMSException::ERROR_RESPONSE_UNKNOWN);
         }
         if ('ID:' !== substr($response, 0, 3)) {
-            throw new MailException($response, MailException::ERROR_UNKNOWN);
+            throw new SMSException($response, SMSException::ERROR_UNKNOWN);
         }
         return true;
     }
@@ -171,9 +171,9 @@ class Clickatell extends AbstractBase
     {
         // Clickatell expects UCS-2 encoding:
         if (!function_exists('iconv')) {
-            throw new MailException(
+            throw new SMSException(
                 'Clickatell requires iconv PHP extension.',
-                MailException::ERROR_UNKNOWN
+                SMSException::ERROR_UNKNOWN
             );
         }
         // Normalize UTF-8 if intl extension is installed:

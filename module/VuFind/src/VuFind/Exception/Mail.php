@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2011.
+ * Copyright (C) Villanova University 2011-2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -42,6 +42,7 @@ class Mail extends \Exception
 {
     /**
      * Default error message when the error is not known exactly.
+     * Will return $defaultDisplayMessage if APPLICATION_ENV is not development.
      *
      * @var int
      */
@@ -76,18 +77,11 @@ class Mail extends \Exception
     public const ERROR_TOO_MANY_RECIPIENTS = 4;
 
     /**
-     * SMS unknown carrier.
+     * Safe error message to return
      *
-     * @var int
+     * @var string
      */
-    public const ERROR_UNKNOWN_CARRIER = 5;
-
-    /**
-     * Response unknown.
-     *
-     * @var int
-     */
-    public const ERROR_RESPONSE_UNKNOWN = 6;
+    protected $defaultDisplayMessage = 'email_failure';
 
     /**
      * Returns the error message, but excludes too technical messages.
@@ -100,6 +94,6 @@ class Mail extends \Exception
         if ('development' === APPLICATION_ENV || $this->getCode() !== self::ERROR_UNKNOWN) {
             return $this->getMessage();
         }
-        return 'email_failure';
+        return $this->defaultDisplayMessage;
     }
 }

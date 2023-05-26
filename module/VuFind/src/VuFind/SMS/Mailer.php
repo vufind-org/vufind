@@ -29,7 +29,7 @@
 
 namespace VuFind\SMS;
 
-use VuFind\Exception\Mail as MailException;
+use VuFind\Exception\SMS as SMSException;
 
 /**
  * VuFind Mailer Class for SMS messages
@@ -130,16 +130,16 @@ class Mailer extends AbstractBase
      * @param string $from     The email address to use as sender
      * @param string $message  The message to send
      *
-     * @throws \VuFind\Exception\Mail
+     * @throws \VuFind\Exception\SMS
      * @return void
      */
     public function text($provider, $to, $from, $message)
     {
         $knownCarriers = array_keys($this->carriers);
         if (empty($provider) || !in_array($provider, $knownCarriers)) {
-            throw new MailException(
+            throw new SMSException(
                 'Unknown Carrier',
-                MailException::ERROR_UNKNOWN_CARRIER
+                SMSException::ERROR_UNKNOWN_CARRIER
             );
         }
 

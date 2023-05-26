@@ -97,17 +97,17 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
             ->method('send')
             ->will(
                 $this->throwException(
-                    new \VuFind\Exception\Mail(
+                    new \VuFind\Exception\SMS(
                         'Technical message',
-                        \VuFind\Exception\Mail::ERROR_UNKNOWN
+                        \VuFind\Exception\SMS::ERROR_UNKNOWN
                     )
                 )
             );
         $obj = $this->getClickatell($client);
         try {
             $obj->text('Clickatell', '1234567890', 'test@example.com', 'hello');
-        } catch (\VuFind\Exception\Mail $e) {
-            $this->assertEquals('email_failure', $e->getDisplayMessage());
+        } catch (\VuFind\Exception\SMS $e) {
+            $this->assertEquals('sms_failure', $e->getDisplayMessage());
         }
     }
 
@@ -145,7 +145,7 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
      */
     public function testUnexpectedResponse()
     {
-        $this->expectException(\VuFind\Exception\Mail::class);
+        $this->expectException(\VuFind\Exception\SMS::class);
         $this->expectExceptionMessage('badbadbad');
 
         $client = $this->getMockClient();
@@ -175,7 +175,7 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
      */
     public function testFailureResponse()
     {
-        $this->expectException(\VuFind\Exception\Mail::class);
+        $this->expectException(\VuFind\Exception\SMS::class);
         $this->expectExceptionMessage('Problem sending text.');
 
         $client = $this->getMockClient();
@@ -204,7 +204,7 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
      */
     public function testClientException()
     {
-        $this->expectException(\VuFind\Exception\Mail::class);
+        $this->expectException(\VuFind\Exception\SMS::class);
         $this->expectExceptionMessage('Foo');
 
         $client = $this->getMockClient();
