@@ -908,7 +908,7 @@ class Folio extends AbstractAPI implements
         $usernameField = $this->config['User']['username_field'] ?? 'username';
         $passwordField = $this->config['User']['password_field'] ?? false;
         if (
-            array_key_exists('shib_cql', $this->config['User'])
+            isset($this->config['User']['shib_cql'])
             && array_key_exists('Shib-Session-ID', $_SERVER)
         ) {
             $cql = $this->config['User']['shib_cql'];
