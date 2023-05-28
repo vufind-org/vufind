@@ -26,7 +26,8 @@
     <?php foreach ($this->libraryCards as $record): ?>
       <tr>
         <td><?=$this->escapeHtml($record['card_name'])?></td>
-        <?php $username = $record['cat_username']; if ($this->multipleTargets): ?>
+        <?php $username = $record['cat_username']; ?>
+        <?php if ($this->multipleTargets): ?>
           <?php $target = ''; ?>
           <?php if (strstr($username, '.')): ?>
             <?php [$target, $username] = explode('.', $username, 2); ?>

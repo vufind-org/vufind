@@ -100,7 +100,7 @@
         "behat/mink-selenium2-driver": "1.6.0",
         "dmore/chrome-mink-driver": "2.9.2",
         "firebase/php-jwt": "6.4.0",
-        "friendsofphp/php-cs-fixer": "3.15.1",
+        "friendsofphp/php-cs-fixer": "3.17.0",
         "phploc/phploc": "7.0.2",
         "phpmd/phpmd": "2.13.0",
         "phpstan/phpstan": "1.10.15",

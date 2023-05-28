@@ -3,7 +3,10 @@
     <!-- Previous page link -->
     <?php if (isset($this->previous)): ?>
       <li>
-        <?php $newParams = $this->params; $newParams['page'] = $this->previous; ?>
+        <?php
+          $newParams = $this->params;
+          $newParams['page'] = $this->previous;
+        ?>
         <a href="<?= $this->currentPath() . '?' . http_build_query($newParams, '', '&amp;'); ?>">
           <span aria-hidden="true">&laquo;</span> <?=$this->transEsc('Prev')?>
         </a>
@@ -15,7 +18,10 @@
     <!-- First page link -->
     <?php if (isset($this->first) && $this->first != $this->current): ?>
       <li>
-        <?php $newParams = $this->params; $newParams['page'] = $this->first; ?>
+        <?php
+          $newParams = $this->params;
+          $newParams['page'] = $this->first;
+        ?>
         <a href="<?= $this->currentPath() . '?' . http_build_query($newParams, '', '&amp;'); ?>">
           <?=$this->transEsc('First')?>
         </a>
@@ -28,7 +34,10 @@
     <?php foreach ($this->pagesInRange as $page): ?>
       <?php if ($page != $this->current): ?>
         <li>
-          <?php $newParams = $this->params; $newParams['page'] = $page; ?>
+          <?php
+            $newParams = $this->params;
+            $newParams['page'] = $page;
+          ?>
           <a href="<?= $this->currentPath() . '?' . http_build_query($newParams, '', '&amp;'); ?>">
             <?=$page?>
           </a>
@@ -41,7 +50,10 @@
     <!-- Last page link -->
     <?php if (isset($this->last) && $this->last != $this->current): ?>
       <li>
-        <?php $newParams = $this->params; $newParams['page'] = $this->last; ?>
+        <?php
+          $newParams = $this->params;
+          $newParams['page'] = $this->last;
+        ?>
         <a href="<?= $this->currentPath() . '?' . http_build_query($newParams, '', '&amp;'); ?>">
           <?=$this->transEsc('Last')?>
         </a>
@@ -53,7 +65,10 @@
     <!-- Next page link -->
     <?php if (isset($this->next)): ?>
       <li>
-        <?php $newParams = $this->params; $newParams['page'] = $this->next; ?>
+        <?php
+          $newParams = $this->params;
+          $newParams['page'] = $this->next;
+        ?>
         <a href="<?= $this->currentPath() . '?' . http_build_query($newParams, '', '&amp;'); ?>">
           <?=$this->transEsc('Next')?> <span aria-hidden="true">&raquo;</span>
         </a>

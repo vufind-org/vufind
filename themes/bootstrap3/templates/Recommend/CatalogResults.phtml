@@ -1,9 +1,16 @@
-<?php $searchObject = $this->recommend->getResults(); $results = $searchObject->getResults(); if (!empty($results)): ?>
+<?php
+  $searchObject = $this->recommend->getResults();
+  $results = $searchObject->getResults();
+?>
+<?php if (!empty($results)): ?>
   <h4><?=$this->transEsc('Catalog Results')?></h4>
   <ul class="list-group">
     <?php foreach ($results as $driver): ?>
       <li class="list-group-item catalog-result">
-        <?php $formats = $driver->getFormats(); $format = $formats[0] ?? ''; ?>
+        <?php
+          $formats = $driver->getFormats();
+          $format = $formats[0] ?? '';
+        ?>
         <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($driver))?>" class="title <?=$this->record($driver)->getFormatClass($format)?>">
           <?=$this->record($driver)->getTitleHtml()?>
         </a>

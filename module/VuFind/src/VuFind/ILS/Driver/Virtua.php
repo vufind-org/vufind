@@ -273,7 +273,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                     case '5401':  // 'Staff Use'
                         $available = false;
                         break;
-                // Otherwise it's available
+                        // Otherwise it's available
                     case '7200':  // 'External Loan Only'
                     case '3100':  // 'In Library use only'
                     case '2700':  // 'Limited Loan'
@@ -692,12 +692,11 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                 $return_string .= $d . " " . $data['data'][$i] . " ";
                 $i++;
             }
-
-        // Chrono
-        // Important note: strtotime() expects
-        // 01/02/2000 = 2nd Jan 2000
-        // 01-02-2000 = 1st Feb 2000 <= Use hyphens
         } else {
+            // Chrono
+            // Important note: strtotime() expects
+            // 01/02/2000 = 2nd Jan 2000
+            // 01-02-2000 = 1st Feb 2000 <= Use hyphens
             $pattern = implode("", $data['pattern']);
             switch (strtolower(trim($pattern))) {
                 // Error case

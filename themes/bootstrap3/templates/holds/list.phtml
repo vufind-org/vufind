@@ -113,7 +113,8 @@
                   echo $this->transEsc('Title not available');
                 }
               ?><br>
-              <?php $listAuthors = $resource->getPrimaryAuthors(); if (!empty($listAuthors)): ?>
+              <?php $listAuthors = $resource->getPrimaryAuthors(); ?>
+              <?php if (!empty($listAuthors)): ?>
                 <?=$this->transEsc('by')?>:
                 <a href="<?=$this->record($resource)->getLink('author', $listAuthors[0])?>"><?=$this->escapeHtml($listAuthors[0])?></a><?php if (count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?><br>
               <?php endif; ?>
@@ -208,7 +209,11 @@
               <?php if (isset($this->cancelResults['items'])): ?>
                 <?php foreach ($this->cancelResults['items'] as $itemId => $cancelResult): ?>
                   <?php if ($itemId == $ilsDetails['item_id'] && $cancelResult['success'] == false): ?>
-                    <div class="alert alert-danger"><?=$this->transEsc($cancelResult['status']) ?><?php if ($cancelResult['sysMessage'] ?? false) echo ' : ' . $this->transEsc($cancelResult['sysMessage']); ?></div>
+                    <div class="alert alert-danger"><?=$this->transEsc($cancelResult['status']) ?><?php
+                      if ($cancelResult['sysMessage'] ?? false) {
+                        echo ' : ' . $this->transEsc($cancelResult['sysMessage']);
+                      }
+                    ?></div>
                   <?php endif; ?>
                 <?php endforeach; ?>
               <?php endif; ?>
@@ -216,7 +221,11 @@
               <?php if (isset($ilsDetails['reqnum']) && !empty($this->updateResults[$ilsDetails['reqnum']])): ?>
                 <?php $updateResult = $this->updateResults[$ilsDetails['reqnum']]; ?>
                 <?php if (!$updateResult['success']): ?>
-                  <div class="alert alert-danger"><?=$this->transEsc($updateResult['status']) ?><?php if (!empty($updateResult['sysMessage'])) echo ': ' . $this->transEsc($updateResult['sysMessage']); ?></div>
+                  <div class="alert alert-danger"><?=$this->transEsc($updateResult['status']) ?><?php
+                    if (!empty($updateResult['sysMessage'])) {
+                      echo ': ' . $this->transEsc($updateResult['sysMessage']);
+                    }
+                  ?></div>
                 <?php endif; ?>
               <?php endif; ?>
             </div>
