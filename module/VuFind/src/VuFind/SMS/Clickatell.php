@@ -83,7 +83,7 @@ class Clickatell extends AbstractBase
         }
         $response = $result->isSuccess() ? trim($result->getBody()) : '';
         if (empty($response)) {
-            throw new SMSException('Problem sending text.', SMSException::ERROR_RESPONSE_UNKNOWN);
+            throw new SMSException('Problem sending text.', SMSException::ERROR_UNKNOWN);
         }
         if ('ID:' !== substr($response, 0, 3)) {
             throw new SMSException($response, SMSException::ERROR_UNKNOWN);

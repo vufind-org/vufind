@@ -32,7 +32,6 @@ namespace VuFind\Controller;
 use VuFind\Exception\BadRequest as BadRequestException;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
-use VuFind\Exception\SMS as SMSException;
 use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
 use VuFindSearch\ParamBag;
 
@@ -615,7 +614,7 @@ class AbstractRecord extends AbstractBase
                 $sms->text($view->provider, $view->to, null, $body);
                 $this->flashMessenger()->addMessage('sms_success', 'success');
                 return $this->redirectToRecord();
-            } catch (SMSException $e) {
+            } catch (MailException $e) {
                 $this->flashMessenger()->addMessage($e->getDisplayMessage(), 'error');
             }
         }

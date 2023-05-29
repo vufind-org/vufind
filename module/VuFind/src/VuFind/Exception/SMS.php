@@ -48,13 +48,6 @@ class SMS extends \VuFind\Exception\Mail
     public const ERROR_UNKNOWN_CARRIER = 5;
 
     /**
-     * Response unknown.
-     *
-     * @var int
-     */
-    public const ERROR_RESPONSE_UNKNOWN = 6;
-
-    /**
      * Safe error message to return
      *
      * @var string
