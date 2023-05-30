@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "15723ac3ffa9b846b14fc1c850193729",
+    "content-hash": "7040426df1523377bdff5cffe0f23043",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -764,16 +764,16 @@
         },
         {
             "name": "doctrine/deprecations",
-            "version": "v1.0.0",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/deprecations.git",
-                "reference": "0e2a4f1f8cdfc7a92ec3b01c9334898c806b30de"
+                "reference": "8cffffb2218e01f3b370bf763e00e81697725259"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/deprecations/zipball/0e2a4f1f8cdfc7a92ec3b01c9334898c806b30de",
-                "reference": "0e2a4f1f8cdfc7a92ec3b01c9334898c806b30de",
+                "url": "https://api.github.com/repos/doctrine/deprecations/zipball/8cffffb2218e01f3b370bf763e00e81697725259",
+                "reference": "8cffffb2218e01f3b370bf763e00e81697725259",
                 "shasum": ""
             },
             "require": {
@@ -801,9 +801,9 @@
             "homepage": "https://www.doctrine-project.org/",
             "support": {
                 "issues": "https://github.com/doctrine/deprecations/issues",
-                "source": "https://github.com/doctrine/deprecations/tree/v1.0.0"
+                "source": "https://github.com/doctrine/deprecations/tree/v1.1.0"
             },
-            "time": "2022-05-02T15:47:09+00:00"
+            "time": "2023-05-29T18:55:17+00:00"
         },
         {
             "name": "doctrine/event-manager",
@@ -3692,33 +3692,34 @@
         },
         {
             "name": "laminas/laminas-recaptcha",
-            "version": "3.4.0",
+            "version": "3.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-recaptcha.git",
-                "reference": "f3bdb2fcaf859b9f725f397dc1bc38b4a7696a71"
+                "reference": "ead14136a0ded44d1a72f4885df0f3333065d919"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-recaptcha/zipball/f3bdb2fcaf859b9f725f397dc1bc38b4a7696a71",
-                "reference": "f3bdb2fcaf859b9f725f397dc1bc38b4a7696a71",
+                "url": "https://api.github.com/repos/laminas/laminas-recaptcha/zipball/ead14136a0ded44d1a72f4885df0f3333065d919",
+                "reference": "ead14136a0ded44d1a72f4885df0f3333065d919",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "laminas/laminas-http": "^2.15",
-                "laminas/laminas-json": "^3.3",
-                "laminas/laminas-stdlib": "^3.6",
-                "php": "^7.3 || ~8.0.0 || ~8.1.0"
+                "laminas/laminas-stdlib": "^3.10.1",
+                "php": "~8.0.0 || ~8.1.0 || ~8.2.0"
             },
             "conflict": {
                 "zendframework/zendservice-recaptcha": "*"
             },
             "require-dev": {
-                "laminas/laminas-coding-standard": "~2.3.0",
+                "laminas/laminas-coding-standard": "~2.4.0",
                 "laminas/laminas-config": "^3.7",
                 "laminas/laminas-validator": "^2.15",
-                "phpunit/phpunit": "^9.5.4"
+                "phpunit/phpunit": "^9.5.26",
+                "psalm/plugin-phpunit": "^0.18.0",
+                "vimeo/psalm": "^5.0.0"
             },
             "suggest": {
                 "laminas/laminas-validator": "~2.0, if using ReCaptcha's Mailhide API"
@@ -3753,7 +3754,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2021-11-28T18:10:25+00:00"
+            "time": "2022-12-05T21:28:54+00:00"
         },
         {
             "name": "laminas/laminas-router",
@@ -9716,16 +9717,16 @@
         },
         {
             "name": "pdepend/pdepend",
-            "version": "2.13.0",
+            "version": "2.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pdepend/pdepend.git",
-                "reference": "31be7cd4f305f3f7b52af99c1cb13fc938d1cfad"
+                "reference": "1121d4b04af06e33e9659bac3a6741b91cab1de1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pdepend/pdepend/zipball/31be7cd4f305f3f7b52af99c1cb13fc938d1cfad",
-                "reference": "31be7cd4f305f3f7b52af99c1cb13fc938d1cfad",
+                "url": "https://api.github.com/repos/pdepend/pdepend/zipball/1121d4b04af06e33e9659bac3a6741b91cab1de1",
+                "reference": "1121d4b04af06e33e9659bac3a6741b91cab1de1",
                 "shasum": ""
             },
             "require": {
@@ -9759,9 +9760,15 @@
                 "BSD-3-Clause"
             ],
             "description": "Official version of pdepend to be handled with Composer",
+            "keywords": [
+                "PHP Depend",
+                "PHP_Depend",
+                "dev",
+                "pdepend"
+            ],
             "support": {
                 "issues": "https://github.com/pdepend/pdepend/issues",
-                "source": "https://github.com/pdepend/pdepend/tree/2.13.0"
+                "source": "https://github.com/pdepend/pdepend/tree/2.14.0"
             },
             "funding": [
                 {
@@ -9769,7 +9776,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-02-28T20:56:15+00:00"
+            "time": "2023-05-26T13:15:18+00:00"
         },
         {
             "name": "phar-io/manifest",
@@ -11907,16 +11914,16 @@
         },
         {
             "name": "symfony/dependency-injection",
-            "version": "v5.4.23",
+            "version": "v5.4.24",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/dependency-injection.git",
-                "reference": "bb7b7988c898c94f5338e16403c52b5a3cae1d93"
+                "reference": "4645e032d0963fb614969398ca28e47605b1a7da"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/dependency-injection/zipball/bb7b7988c898c94f5338e16403c52b5a3cae1d93",
-                "reference": "bb7b7988c898c94f5338e16403c52b5a3cae1d93",
+                "url": "https://api.github.com/repos/symfony/dependency-injection/zipball/4645e032d0963fb614969398ca28e47605b1a7da",
+                "reference": "4645e032d0963fb614969398ca28e47605b1a7da",
                 "shasum": ""
             },
             "require": {
@@ -11976,7 +11983,7 @@
             "description": "Allows you to standardize and centralize the way objects are constructed in your application",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/dependency-injection/tree/v5.4.23"
+                "source": "https://github.com/symfony/dependency-injection/tree/v5.4.24"
             },
             "funding": [
                 {
@@ -11992,7 +11999,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-04-21T15:04:16+00:00"
+            "time": "2023-05-05T14:42:55+00:00"
         },
         {
             "name": "symfony/event-dispatcher",
@@ -12435,16 +12442,16 @@
         },
         {
             "name": "symfony/process",
-            "version": "v5.4.23",
+            "version": "v5.4.24",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/process.git",
-                "reference": "4b842fc4b61609e0a155a114082bd94e31e98287"
+                "reference": "e3c46cc5689c8782944274bb30702106ecbe3b64"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/process/zipball/4b842fc4b61609e0a155a114082bd94e31e98287",
-                "reference": "4b842fc4b61609e0a155a114082bd94e31e98287",
+                "url": "https://api.github.com/repos/symfony/process/zipball/e3c46cc5689c8782944274bb30702106ecbe3b64",
+                "reference": "e3c46cc5689c8782944274bb30702106ecbe3b64",
                 "shasum": ""
             },
             "require": {
@@ -12477,7 +12484,7 @@
             "description": "Executes commands in sub-processes",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/process/tree/v5.4.23"
+                "source": "https://github.com/symfony/process/tree/v5.4.24"
             },
             "funding": [
                 {
@@ -12493,7 +12500,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-04-18T13:50:24+00:00"
+            "time": "2023-05-17T11:26:05+00:00"
         },
         {
             "name": "symfony/stopwatch",

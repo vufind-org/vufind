@@ -61,7 +61,7 @@
         "laminas/laminas-paginator": "2.13.0",
         "laminas/laminas-paginator-adapter-laminasdb": "1.3.0",
         "laminas/laminas-psr7bridge": "1.7.0",
-        "laminas/laminas-recaptcha": "3.4.0",
+        "laminas/laminas-recaptcha": "3.6.0",
         "laminas/laminas-serializer": "2.13.0",
         "laminas/laminas-servicemanager": "3.17.0",
         "laminas/laminas-session": "2.13.0",

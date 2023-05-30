@@ -28,6 +28,7 @@
  */
 
 namespace VuFind\Service;
+use \Laminas\ReCaptcha\ReCaptcha as LaminasReCaptcha;
 
 /**
  * Recaptcha service
@@ -38,8 +39,39 @@ namespace VuFind\Service;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ReCaptcha extends \Laminas\ReCaptcha\ReCaptcha
+class ReCaptcha
 {
+    /**
+     * Proxied helper
+     *
+     * @var LaminasRecaptcha
+     */
+    protected $recaptcha;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->recaptcha = new LaminasReCaptcha(...func_get_args());
+    }
+
+    /**
+     * Proxy calls to the Laminas ReCaptcha object.
+     *
+     * @param string $method Method to call
+     * @param array  $args   Method arguments
+     *
+     * @return mixed
+     */
+    public function __call($method, $args)
+    {
+        if (is_callable([$this->recaptcha, $method])) {
+            return $this->recaptcha->$method(...$args);
+        }
+        throw new \Exception("Unsupported method: $method");
+    }
+
     /**
      * Get the HTML code for the captcha
      *
@@ -52,7 +84,7 @@ class ReCaptcha extends \Laminas\ReCaptcha\ReCaptcha
     public function getHtml()
     {
         // Get standard HTML
-        $html = parent::getHtml();
+        $html = $this->recaptcha->getHtml();
 
         // Override placeholder div with richer version:
         $div = '<div class="g-recaptcha" data-sitekey="' . $this->siteKey . '"';
