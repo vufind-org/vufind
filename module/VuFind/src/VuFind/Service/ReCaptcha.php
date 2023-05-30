@@ -88,8 +88,8 @@ class ReCaptcha
         $html = $this->recaptcha->getHtml();
 
         // Override placeholder div with richer version:
-        $div = '<div class="g-recaptcha" data-sitekey="' . $this->siteKey . '"';
-        foreach ($this->options as $key => $option) {
+        $div = '<div class="g-recaptcha" data-sitekey="' . $this->recaptcha->getSiteKey() . '"';
+        foreach ($this->recaptcha->getOptions() as $key => $option) {
             if ($key == 'lang') {
                 continue;
             }
