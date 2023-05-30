@@ -21,7 +21,8 @@
 
     <div class="resultItemLine3">
       <?=$this->escapeHtml($url)?>
-      <?php $lastMod = $this->driver->getLastModified(); if (!empty($lastMod)): ?>
+      <?php $lastMod = $this->driver->getLastModified(); ?>
+      <?php if (!empty($lastMod)): ?>
         <br><?=$this->transEsc('Last Modified')?>: <?=$this->escapeHtml(trim(str_replace(['T', 'Z'], ' ', $lastMod)))?>
       <?php endif; ?>
     </div>

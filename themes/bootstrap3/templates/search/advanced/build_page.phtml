@@ -15,7 +15,8 @@ $(document).ready(function() {
   // Build page
   <?php if (isset($this->searchDetails) && is_object($this->searchDetails)): ?>
     <?php foreach ($this->searchDetails->getQueries() as $searchGroup): ?>
-      <?php $i = 0; foreach ($searchGroup->getQueries() as $search): ?>
+      <?php $i = 0; ?>
+      <?php foreach ($searchGroup->getQueries() as $search): ?>
         <?php if (++$i == 1): ?>
           var new_group = addGroup('<?=addslashes($search->getString())?>', '<?=addslashes($search->getHandler())?>', '<?=$searchGroup->isNegated() ? 'NOT' : $searchGroup->getOperator()?>');
         <?php else: ?>

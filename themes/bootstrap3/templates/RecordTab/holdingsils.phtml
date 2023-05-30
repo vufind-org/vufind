@@ -48,7 +48,8 @@
     <?php endif; ?>
   <?php endif; ?>
 <?php endif; ?>
-<?php $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); if (!empty($holdingTitleHold)): ?>
+<?php $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); ?>
+<?php if (!empty($holdingTitleHold)): ?>
   <a class="placehold icon-link" data-lightbox title="<?=$this->transEscAttr('request_place_text')?>" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holdingTitleHold))?>">
     <?=$this->icon('place-hold', 'icon-link__icon') ?>
     <span class="icon-link__label"><?=$this->transEsc('title_hold_place')?></span>
@@ -90,7 +91,8 @@
 ?>
 <table class="table table-striped truncate-field" data-truncate="<?=$this->htmlSafeJsonEncode($truncateSettings)?>">
   <caption class="sr-only"><?=$this->transEsc('holdings_details_from', ['%%location%%' => $this->transEsc($holding['location'])]) ?></caption>
-  <?php $callNos = $this->tab->getUniqueCallNumbers($holding['items'], true); if (!empty($callNos)): ?>
+  <?php $callNos = $this->tab->getUniqueCallNumbers($holding['items'], true); ?>
+  <?php if (!empty($callNos)): ?>
   <tr>
     <th><?=$this->transEsc("Call Number")?>: </th>
     <td>
