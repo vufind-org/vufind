@@ -28,7 +28,8 @@
  */
 
 namespace VuFind\Service;
-use \Laminas\ReCaptcha\ReCaptcha as LaminasReCaptcha;
+
+use Laminas\ReCaptcha\ReCaptcha as LaminasReCaptcha;
 
 /**
  * Recaptcha service
