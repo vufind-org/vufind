@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f4c412fc371d517f8a3a9d01ee1a725a",
+    "content-hash": "1fd490aebd8c554276b26e157a6f3a85",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -209,16 +209,16 @@
         },
         {
             "name": "colinmollenhour/credis",
-            "version": "v1.14.0",
+            "version": "v1.15.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/colinmollenhour/credis.git",
-                "reference": "dccc8a46586475075fbb012d8bd523b8a938c2dc"
+                "reference": "28810439de1d9597b7ba11794ed9479fb6f3de7c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/colinmollenhour/credis/zipball/dccc8a46586475075fbb012d8bd523b8a938c2dc",
-                "reference": "dccc8a46586475075fbb012d8bd523b8a938c2dc",
+                "url": "https://api.github.com/repos/colinmollenhour/credis/zipball/28810439de1d9597b7ba11794ed9479fb6f3de7c",
+                "reference": "28810439de1d9597b7ba11794ed9479fb6f3de7c",
                 "shasum": ""
             },
             "require": {
@@ -250,9 +250,9 @@
             "homepage": "https://github.com/colinmollenhour/credis",
             "support": {
                 "issues": "https://github.com/colinmollenhour/credis/issues",
-                "source": "https://github.com/colinmollenhour/credis/tree/v1.14.0"
+                "source": "https://github.com/colinmollenhour/credis/tree/v1.15.0"
             },
-            "time": "2022-11-09T01:18:39+00:00"
+            "time": "2023-04-18T15:34:23+00:00"
         },
         {
             "name": "composer/package-versions-deprecated",
@@ -1923,22 +1923,22 @@
         },
         {
             "name": "laminas/laminas-diactoros",
-            "version": "2.18.1",
+            "version": "2.25.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-diactoros.git",
-                "reference": "31d4ac32fb4fba90f95bf5f7fa727ae1ab4098a4"
+                "reference": "13f45e5ba09c9b27752247d3be186fc49c2ca3a5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-diactoros/zipball/31d4ac32fb4fba90f95bf5f7fa727ae1ab4098a4",
-                "reference": "31d4ac32fb4fba90f95bf5f7fa727ae1ab4098a4",
+                "url": "https://api.github.com/repos/laminas/laminas-diactoros/zipball/13f45e5ba09c9b27752247d3be186fc49c2ca3a5",
+                "reference": "13f45e5ba09c9b27752247d3be186fc49c2ca3a5",
                 "shasum": ""
             },
             "require": {
                 "php": "~8.0.0 || ~8.1.0 || ~8.2.0",
                 "psr/http-factory": "^1.0",
-                "psr/http-message": "^1.0"
+                "psr/http-message": "^1.1"
             },
             "conflict": {
                 "zendframework/zend-diactoros": "*"
@@ -1953,11 +1953,11 @@
                 "ext-gd": "*",
                 "ext-libxml": "*",
                 "http-interop/http-factory-tests": "^0.9.0",
-                "laminas/laminas-coding-standard": "^2.4.0",
-                "php-http/psr7-integration-tests": "^1.1.1",
-                "phpunit/phpunit": "^9.5.25",
-                "psalm/plugin-phpunit": "^0.17.0",
-                "vimeo/psalm": "^4.28"
+                "laminas/laminas-coding-standard": "^2.5",
+                "php-http/psr7-integration-tests": "^1.2",
+                "phpunit/phpunit": "^9.5.28",
+                "psalm/plugin-phpunit": "^0.18.4",
+                "vimeo/psalm": "^5.6"
             },
             "type": "library",
             "extra": {
@@ -2016,7 +2016,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2023-04-17T15:44:17+00:00"
+            "time": "2023-04-08T00:31:34+00:00"
         },
         {
             "name": "laminas/laminas-dom",
@@ -3481,37 +3481,37 @@
         },
         {
             "name": "laminas/laminas-paginator",
-            "version": "2.13.0",
+            "version": "2.17.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-paginator.git",
-                "reference": "2d6a9d21f5d67963347d497cd53873e3e693b0b5"
+                "reference": "d0fca60a32656fe095045d76af7ad3a3bfc297f9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-paginator/zipball/2d6a9d21f5d67963347d497cd53873e3e693b0b5",
-                "reference": "2d6a9d21f5d67963347d497cd53873e3e693b0b5",
+                "url": "https://api.github.com/repos/laminas/laminas-paginator/zipball/d0fca60a32656fe095045d76af7ad3a3bfc297f9",
+                "reference": "d0fca60a32656fe095045d76af7ad3a3bfc297f9",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "laminas/laminas-stdlib": "^3.10.1",
-                "php": "^7.4 || ~8.0.0 || ~8.1.0"
+                "php": "~8.0.0 || ~8.1.0 || ~8.2.0"
             },
             "conflict": {
                 "zendframework/zend-paginator": "*"
             },
             "require-dev": {
-                "laminas/laminas-cache": "^3.1.2",
-                "laminas/laminas-cache-storage-adapter-memory": "^2.0.0",
-                "laminas/laminas-coding-standard": "^2.3.0",
-                "laminas/laminas-config": "^3.7.0",
-                "laminas/laminas-filter": "^2.13.0",
-                "laminas/laminas-servicemanager": "^3.14.0",
-                "laminas/laminas-view": "^2.15.0",
-                "phpunit/phpunit": "^9.5.21",
-                "psalm/plugin-phpunit": "^0.16.1",
-                "vimeo/psalm": "^4.24.0"
+                "laminas/laminas-cache": "^3.6.0",
+                "laminas/laminas-cache-storage-adapter-memory": "^2.2.0",
+                "laminas/laminas-coding-standard": "^2.4.0",
+                "laminas/laminas-config": "^3.8.0",
+                "laminas/laminas-filter": "^2.23.0",
+                "laminas/laminas-servicemanager": "^3.19.0",
+                "laminas/laminas-view": "^2.24.0",
+                "phpunit/phpunit": "^9.5.25",
+                "psalm/plugin-phpunit": "^0.18.0",
+                "vimeo/psalm": "^5.0.0"
             },
             "suggest": {
                 "laminas/laminas-cache": "Laminas\\Cache component to support cache features",
@@ -3556,7 +3556,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2022-07-12T11:56:05+00:00"
+            "time": "2022-12-05T16:02:38+00:00"
         },
         {
             "name": "laminas/laminas-paginator-adapter-laminasdb",
@@ -4803,26 +4803,27 @@
         },
         {
             "name": "league/oauth2-server",
-            "version": "8.4.1",
+            "version": "8.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/oauth2-server.git",
-                "reference": "eed31d86d8cc8e6e9c9f58fbb2113494f8b41e24"
+                "reference": "43cd4d406906c6be5c8de2cee9bd3ad3753544ef"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/oauth2-server/zipball/eed31d86d8cc8e6e9c9f58fbb2113494f8b41e24",
-                "reference": "eed31d86d8cc8e6e9c9f58fbb2113494f8b41e24",
+                "url": "https://api.github.com/repos/thephpleague/oauth2-server/zipball/43cd4d406906c6be5c8de2cee9bd3ad3753544ef",
+                "reference": "43cd4d406906c6be5c8de2cee9bd3ad3753544ef",
                 "shasum": ""
             },
             "require": {
-                "defuse/php-encryption": "^2.2.1",
+                "defuse/php-encryption": "^2.3",
                 "ext-json": "*",
                 "ext-openssl": "*",
-                "lcobucci/jwt": "^3.4.6 || ^4.0.4",
+                "lcobucci/clock": "^2.2 || ^3.0",
+                "lcobucci/jwt": "^4.3 || ^5.0",
                 "league/event": "^2.2",
-                "league/uri": "^6.4",
-                "php": "^7.2 || ^8.0",
+                "league/uri": "^6.7",
+                "php": "^8.0",
                 "psr/http-message": "^1.0.1"
             },
             "replace": {
@@ -4830,10 +4831,10 @@
                 "lncd/oauth2": "*"
             },
             "require-dev": {
-                "laminas/laminas-diactoros": "^2.4.1",
+                "laminas/laminas-diactoros": "^2.24.0",
                 "phpstan/phpstan": "^0.12.57",
                 "phpstan/phpstan-phpunit": "^0.12.16",
-                "phpunit/phpunit": "^8.5.13",
+                "phpunit/phpunit": "^9.6.6",
                 "roave/security-advisories": "dev-master"
             },
             "type": "library",
@@ -4879,7 +4880,7 @@
             ],
             "support": {
                 "issues": "https://github.com/thephpleague/oauth2-server/issues",
-                "source": "https://github.com/thephpleague/oauth2-server/tree/8.4.1"
+                "source": "https://github.com/thephpleague/oauth2-server/tree/8.5.1"
             },
             "funding": [
                 {
@@ -4887,7 +4888,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-03-22T11:47:53+00:00"
+            "time": "2023-04-04T10:20:16+00:00"
         },
         {
             "name": "league/uri",
@@ -5061,16 +5062,16 @@
         },
         {
             "name": "lm-commons/lmc-rbac-mvc",
-            "version": "v3.3.1",
+            "version": "v3.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/LM-Commons/LmcRbacMvc.git",
-                "reference": "8d245e3baf37919d993f4a3a061c7c67775154b5"
+                "reference": "1b40c3255cda749151f212bb6a3db83d92469b8c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LM-Commons/LmcRbacMvc/zipball/8d245e3baf37919d993f4a3a061c7c67775154b5",
-                "reference": "8d245e3baf37919d993f4a3a061c7c67775154b5",
+                "url": "https://api.github.com/repos/LM-Commons/LmcRbacMvc/zipball/1b40c3255cda749151f212bb6a3db83d92469b8c",
+                "reference": "1b40c3255cda749151f212bb6a3db83d92469b8c",
                 "shasum": ""
             },
             "require": {
@@ -5139,9 +5140,9 @@
             ],
             "support": {
                 "issues": "https://github.com/LM-Commons/LmcRbacMvc/issues",
-                "source": "https://github.com/LM-Commons/LmcRbacMvc/tree/v3.3.1"
+                "source": "https://github.com/LM-Commons/LmcRbacMvc/tree/v3.3.2"
             },
-            "time": "2022-06-23T20:27:17+00:00"
+            "time": "2023-03-09T17:58:48+00:00"
         },
         {
             "name": "matthiasmullie/minify",
@@ -5474,41 +5475,36 @@
         },
         {
             "name": "ocramius/proxy-manager",
-            "version": "2.13.1",
+            "version": "2.14.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Ocramius/ProxyManager.git",
-                "reference": "e32bc1986fb6fa318ce35e573c654e3ddfb4848d"
+                "reference": "3990d60ef79001badbab4927a6a811682274a0d1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Ocramius/ProxyManager/zipball/e32bc1986fb6fa318ce35e573c654e3ddfb4848d",
-                "reference": "e32bc1986fb6fa318ce35e573c654e3ddfb4848d",
+                "url": "https://api.github.com/repos/Ocramius/ProxyManager/zipball/3990d60ef79001badbab4927a6a811682274a0d1",
+                "reference": "3990d60ef79001badbab4927a6a811682274a0d1",
                 "shasum": ""
             },
             "require": {
                 "composer-runtime-api": "^2.1.0",
-                "laminas/laminas-code": "^4.3.0",
-                "php": "~7.4.1 || ~8.0.0",
+                "laminas/laminas-code": "^4.4.2",
+                "php": "~8.0.0",
                 "webimpress/safe-writer": "^2.2.0"
             },
             "conflict": {
-                "doctrine/annotations": "<1.6.1",
-                "laminas/laminas-stdlib": "<3.2.1",
-                "thecodingmachine/safe": "<1.3.3",
-                "zendframework/zend-stdlib": "<3.2.1"
+                "thecodingmachine/safe": "<1.3.3"
             },
             "require-dev": {
                 "codelicia/xulieta": "^0.1.6",
-                "doctrine/coding-standard": "^8.2.1",
+                "doctrine/coding-standard": "^9.0.0",
                 "ext-phar": "*",
-                "infection/infection": "^0.21.5",
-                "nikic/php-parser": "^4.10.5",
-                "phpbench/phpbench": "^0.17.1 || 1.0.0-alpha2",
-                "phpunit/phpunit": "^9.5.4",
-                "slevomat/coding-standard": "^6.3.10",
+                "phpbench/phpbench": "^1.0.3",
+                "phpunit/phpunit": "^9.5.6",
+                "roave/infection-static-analysis-plugin": "^1.8",
                 "squizlabs/php_codesniffer": "^3.6.0",
-                "vimeo/psalm": "^4.4.1"
+                "vimeo/psalm": "^4.8.1"
             },
             "suggest": {
                 "laminas/laminas-json": "To have the JsonRpc adapter (Remote Object feature)",
@@ -5517,11 +5513,6 @@
                 "ocramius/generated-hydrator": "To have very fast object to array to object conversion for ghost objects"
             },
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.0.x-dev"
-                }
-            },
             "autoload": {
                 "psr-4": {
                     "ProxyManager\\": "src/ProxyManager"
@@ -5535,7 +5526,7 @@
                 {
                     "name": "Marco Pivetta",
                     "email": "ocramius@gmail.com",
-                    "homepage": "http://ocramius.github.io/"
+                    "homepage": "https://ocramius.github.io/"
                 }
             ],
             "description": "A library providing utilities to generate, instantiate and generally operate with Object Proxies",
@@ -5549,7 +5540,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Ocramius/ProxyManager/issues",
-                "source": "https://github.com/Ocramius/ProxyManager/tree/2.13.1"
+                "source": "https://github.com/Ocramius/ProxyManager/tree/2.14.1"
             },
             "funding": [
                 {
@@ -5561,7 +5552,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-03-05T18:42:03+00:00"
+            "time": "2022-03-05T18:43:14+00:00"
         },
         {
             "name": "opis/json-schema",
@@ -9420,25 +9411,25 @@
         },
         {
             "name": "firebase/php-jwt",
-            "version": "v6.4.0",
+            "version": "v6.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/firebase/php-jwt.git",
-                "reference": "4dd1e007f22a927ac77da5a3fbb067b42d3bc224"
+                "reference": "e94e7353302b0c11ec3cfff7180cd0b1743975d2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/4dd1e007f22a927ac77da5a3fbb067b42d3bc224",
-                "reference": "4dd1e007f22a927ac77da5a3fbb067b42d3bc224",
+                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/e94e7353302b0c11ec3cfff7180cd0b1743975d2",
+                "reference": "e94e7353302b0c11ec3cfff7180cd0b1743975d2",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.1||^8.0"
+                "php": "^7.4||^8.0"
             },
             "require-dev": {
                 "guzzlehttp/guzzle": "^6.5||^7.4",
-                "phpspec/prophecy-phpunit": "^1.1",
-                "phpunit/phpunit": "^7.5||^9.5",
+                "phpspec/prophecy-phpunit": "^2.0",
+                "phpunit/phpunit": "^9.5",
                 "psr/cache": "^1.0||^2.0",
                 "psr/http-client": "^1.0",
                 "psr/http-factory": "^1.0"
@@ -9477,9 +9468,9 @@
             ],
             "support": {
                 "issues": "https://github.com/firebase/php-jwt/issues",
-                "source": "https://github.com/firebase/php-jwt/tree/v6.4.0"
+                "source": "https://github.com/firebase/php-jwt/tree/v6.5.0"
             },
-            "time": "2023-02-09T21:01:23+00:00"
+            "time": "2023-05-12T15:47:07+00:00"
         },
         {
             "name": "friendsofphp/php-cs-fixer",
