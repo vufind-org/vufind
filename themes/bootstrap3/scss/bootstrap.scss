@@ -16,7 +16,7 @@ $fa-font-path: "../../bootstrap3/css/fonts";
 @import "components/alphabrowse";
 @import "components/autocomplete";
 @import "components/channels";
-@import "components/cookie-consent";
+@import "components/cookie-consent/index";
 @import "components/devtools";
 @import "components/form";
 @import "components/icons";
@@ -496,14 +496,11 @@ div.holding-notes {
 }
 
 /* --- Cookie Consent --- */
-.disable--interaction #cc-main .cm-wrapper::before,
-.show--preferences #cc-main .cc--anim.pm-wrapper::before {
+.show--preferences #cc-main .cc--anim .pm-overlay {
   opacity: $modal-backdrop-opacity;
 }
 
 #cc-main {
-  z-index: $zindex-cookie-consent !important;
-
   a {
     &:hover {
       color: $link-hover-color;
