@@ -1,4 +1,4 @@
-These files have been converted from orestbida/cookieconsent/src/scss.
+These files have been converted from orestbida/cookieconsent/src/scss with the following changes:
 
 - Underscores have been removed from file names
 - Variables in core/base.less and abstracts/light-color-scheme.less get their values from Bootstrap variables
