@@ -101,7 +101,7 @@ trait ILSMockTrait
      *
      * @param string $id     The Bib ID
      * @param array  $data   An Array of item data
-     * @param patron $patron An array of patron data
+     * @param array  $patron An array of patron data
      *
      * @return mixed An array of data on the request including
      * whether or not it is valid and a status message. Alternatively a boolean
@@ -120,7 +120,7 @@ trait ILSMockTrait
      *
      * @param string $id     The Bib ID
      * @param array  $data   An Array of item data
-     * @param patron $patron An array of patron data
+     * @param array  $patron An array of patron data
      *
      * @return mixed An array of data on the request including
      * whether or not it is valid and a status message. Alternatively a boolean
@@ -139,7 +139,7 @@ trait ILSMockTrait
      *
      * @param string $id     The Bib ID
      * @param array  $data   An Array of item data
-     * @param patron $patron An array of patron data
+     * @param array  $patron An array of patron data
      *
      * @return mixed An array of data on the request including
      * whether or not it is valid and a status message. Alternatively a boolean
