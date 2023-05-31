@@ -81,4 +81,28 @@ abstract class AbstractBase implements DriverInterface
     ): void {
         throw new ILSException($msg ?? $exception->getMessage(), 0, $exception);
     }
+
+    /**
+     * Explode a delimited setting to an array
+     *
+     * @param string $value     Setting value
+     * @param bool   $trim      Whether to trim the values
+     * @param string $separator Separator
+     *
+     * @return array
+     */
+    protected function explodeSetting(
+        string $value,
+        $trim = false,
+        string $separator = ':'
+    ): array {
+        if ('' === $value) {
+            return [];
+        }
+        $result = explode($separator, $value);
+        if ($trim) {
+            $result = array_map('trim', $result);
+        }
+        return $result;
+    }
 }
