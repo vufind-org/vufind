@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "93d47f270bef821109d2719cb69af01b",
+    "content-hash": "bc8c81b9a589f0bdd6444626ad61c759",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -8763,19 +8763,20 @@
         },
         {
             "name": "yajra/laravel-pdo-via-oci8",
-            "version": "v3.0.0",
+            "version": "v3.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/yajra/pdo-via-oci8.git",
-                "reference": "d9ece35f62fe059c7637b778c1bdc8894dedeecb"
+                "reference": "3483f14fc3b3185525a6f8861dc5cd67423693cd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yajra/pdo-via-oci8/zipball/d9ece35f62fe059c7637b778c1bdc8894dedeecb",
-                "reference": "d9ece35f62fe059c7637b778c1bdc8894dedeecb",
+                "url": "https://api.github.com/repos/yajra/pdo-via-oci8/zipball/3483f14fc3b3185525a6f8861dc5cd67423693cd",
+                "reference": "3483f14fc3b3185525a6f8861dc5cd67423693cd",
                 "shasum": ""
             },
             "require": {
+                "ext-oci8": "*",
                 "ext-pdo": "*",
                 "php": "^8.0"
             },
@@ -8806,9 +8807,23 @@
             "description": "PDO userspace driver proxying calls to PHP OCI8 driver",
             "support": {
                 "issues": "https://github.com/yajra/pdo-via-oci8/issues",
-                "source": "https://github.com/yajra/pdo-via-oci8/tree/v3.0.0"
+                "source": "https://github.com/yajra/pdo-via-oci8/tree/v3.3.1"
             },
-            "time": "2020-12-08T12:30:53+00:00"
+            "funding": [
+                {
+                    "url": "https://www.paypal.me/yajra",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/yajra",
+                    "type": "github"
+                },
+                {
+                    "url": "https://www.patreon.com/yajra",
+                    "type": "patreon"
+                }
+            ],
+            "time": "2023-03-15T02:21:45+00:00"
         },
         {
             "name": "zfr/rbac",
