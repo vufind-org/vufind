@@ -31,7 +31,7 @@
         "colinmollenhour/credis": "1.15.0",
         "composer/package-versions-deprecated": "1.11.99.5",
         "composer/semver": "3.3.2",
-        "endroid/qr-code": "4.6.1",
+        "endroid/qr-code": "4.8.2",
         "jasig/phpcas": "1.6.1",
         "laminas/laminas-cache": "3.10.1",
         "laminas/laminas-cache-storage-adapter-blackhole": "^2.0",
