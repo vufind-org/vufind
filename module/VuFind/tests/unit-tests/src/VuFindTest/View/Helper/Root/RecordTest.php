@@ -397,7 +397,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         // custom prefix in lightbox
         $record->setViewModelHelper($this->getMockViewModel('', 'layout/lightbox'));
         $this->assertEquals('success', $record->getCheckbox('bar', 'foo', 3));
-    
+
         // default prefix (from template name)
         $record->setViewModelHelper($this->getMockViewModel('baz', ''));
         $this->assertEquals('success', $record->getCheckbox('', 'foo', 4));
@@ -763,6 +763,9 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock of view model helper
      *
+     * @param string $currentTemplate Current template name
+     * @param string $rootTemplate    Root template name
+     *
      * @return \Laminas\View\Helper\ViewModel
      */
     protected function getMockViewModel(string $currentTemplate = '', string $rootTemplate = '')
@@ -775,13 +778,13 @@ class RecordTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $currentModelMock->expects($this->any())->method('getTemplate')
             ->will($this->returnValue($currentTemplate));
-        
+
         $rootModelMock = $this->getMockBuilder(\Laminas\View\Model\ViewModel::class)
             ->disableOriginalConstructor()
             ->getMock();
         $rootModelMock->expects($this->any())->method('getTemplate')
             ->will($this->returnValue($rootTemplate));
-        
+
         $helperMock->expects($this->any())->method('getCurrent')->will($this->returnValue($currentModelMock));
         $helperMock->expects($this->any())->method('getRoot')->will($this->returnValue($rootModelMock));
 
