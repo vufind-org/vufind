@@ -3,7 +3,7 @@
 /**
  * Configuration loader for Multiple IdPs
  *
- * PHP version 7
+ * PHP version 8
  *
  * @category VuFind
  * @package  Authentication

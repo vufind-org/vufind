@@ -1,4 +1,5 @@
-<?php $data = $this->recommend->getResults(); if (is_array($data)): ?>
+<?php $data = $this->recommend->getResults(); ?>
+<?php if (is_array($data)): ?>
   <div class="sidegroup rssResults">
     <div class="suggestionHeader">
     <a href="http://www.europeana.eu/portal/" title="Europeana.eu" target="_blank">
@@ -7,7 +8,8 @@
     </div>
     <div>
       <ul class="list-group">
-        <?php $i = 0; foreach ($data['worksArray'] as $workKey => $work): ?>
+        <?php $i = 0; ?>
+        <?php foreach ($data['worksArray'] as $workKey => $work): ?>
           <li class="list-group-item suggestedResult <?php (++$i % 2) ? 'alt ' : ''?>record<?=$i?>">
             <div class="resultitem clearfix">
               <?php if (isset($work['enclosure'])): ?>

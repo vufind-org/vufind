@@ -3,7 +3,7 @@
 /**
  * Console command: web crawler
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -205,7 +205,7 @@ class WebCrawlCommand extends Command
                     }
                 } catch (\Exception $e) {
                     if ($verbose) {
-                        $output->writeln(get_class($e) . ': ' . $e->getMessage());
+                        $output->writeln($e::class . ': ' . $e->getMessage());
                     }
                     $retVal = false;
                 }

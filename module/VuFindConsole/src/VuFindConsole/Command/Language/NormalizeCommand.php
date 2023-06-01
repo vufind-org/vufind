@@ -3,7 +3,7 @@
 /**
  * Language command: normalize file or directory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *

@@ -3,7 +3,7 @@
 /**
  * Mink test class for alphabetic browse.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -54,7 +54,7 @@ class AlphabrowseTest extends \VuFindTest\Integration\MinkTestCase
         $extras = $this->findCss($page, 'table.alphabrowse td.lcc ~ td');
         $text = $extras->getText();
         $this->assertTrue(
-            strpos($text, '<HTML> The Basics') !== false,
+            str_contains($text, '<HTML> The Basics'),
             "Could not find '<HTML> The Basics' in '$text'"
         );
     }

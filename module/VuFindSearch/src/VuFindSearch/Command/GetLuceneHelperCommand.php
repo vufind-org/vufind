@@ -3,7 +3,7 @@
 /**
  * Command to fetch a Lucene helper object from a search backend.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *

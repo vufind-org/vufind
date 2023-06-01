@@ -3,7 +3,7 @@
 /**
  * Blender Search Parameters
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2015-2022.
  *
@@ -493,7 +493,7 @@ class Params extends \VuFind\Search\Solr\Params
      */
     protected function proxyMethod(string $method, array $params)
     {
-        $result = call_user_func_array(['parent', $method], $params);
+        $result = call_user_func_array(parent::class . "::$method", $params);
         foreach ($this->searchParams as $searchParams) {
             $result = call_user_func_array([$searchParams, $method], $params);
         }

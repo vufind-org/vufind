@@ -3,7 +3,7 @@
 /**
  * Normalized search object.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -170,7 +170,7 @@ class NormalizedSearch
         // Deminify the other search:
         $searchToCheck = $otherSearch->deminify($this->resultsManager);
         // Check if classes and URLs match:
-        return get_class($searchToCheck) === get_class($this->raw)
+        return $searchToCheck::class === get_class($this->raw)
             && $this->url === $searchToCheck->getUrlQuery()->getParams();
     }
 }

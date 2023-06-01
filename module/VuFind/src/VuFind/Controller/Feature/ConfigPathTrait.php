@@ -3,7 +3,7 @@
 /**
  * VuFind Action Feature Trait - Configuration file path methods
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2022.
  *

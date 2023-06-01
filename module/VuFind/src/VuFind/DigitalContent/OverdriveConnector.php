@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -204,10 +204,10 @@ class OverdriveConnector implements
 
                 if ($conf->noAccessString) {
                     if (
-                        strpos(
+                        str_contains(
                             $this->getSessionContainer()->odAccessMessage,
                             (string)$conf->noAccessString
-                        ) !== false
+                        )
                     ) {
                         // this user should not have access to OD
                         $result->code = "od_account_noaccess";

@@ -67,4 +67,4 @@ function loadCovers() {
     loadCoverByElement(data, $(this));
   });
 }
-$(document).ready(loadCovers);
+$(loadCovers);

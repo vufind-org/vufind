@@ -3,7 +3,7 @@
 /**
  * SOLR backend.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -35,6 +35,7 @@ use VuFindSearch\Backend\Exception\RemoteErrorException;
 use VuFindSearch\Backend\Solr\Document\DocumentInterface;
 use VuFindSearch\Backend\Solr\Response\Json\Terms;
 use VuFindSearch\Exception\InvalidArgumentException;
+use VuFindSearch\Feature\ExtraRequestDetailsInterface;
 use VuFindSearch\Feature\GetIdsInterface;
 use VuFindSearch\Feature\RandomInterface;
 use VuFindSearch\Feature\RetrieveBatchInterface;
@@ -58,6 +59,7 @@ class Backend extends AbstractBackend implements
     SimilarInterface,
     RetrieveBatchInterface,
     RandomInterface,
+    ExtraRequestDetailsInterface,
     GetIdsInterface,
     WorkExpressionsInterface
 {
@@ -160,6 +162,28 @@ class Backend extends AbstractBackend implements
         $params->set('start', $offset);
         $params->mergeWith($this->getQueryBuilder()->build($query));
         return $this->connector->search($params);
+    }
+
+    /**
+     * Returns some extra details about the search.
+     *
+     * @return array
+     */
+    public function getExtraRequestDetails()
+    {
+        return [
+            'solrRequestUrl' => $this->connector->getLastUrl(),
+        ];
+    }
+
+    /**
+     * Clears all accumulated extra request details
+     *
+     * @return void
+     */
+    public function resetExtraRequestDetails()
+    {
+        $this->connector->resetLastUrl();
     }
 
     /**

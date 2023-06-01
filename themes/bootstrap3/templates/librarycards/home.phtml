@@ -26,7 +26,8 @@
     <?php foreach ($this->libraryCards as $record): ?>
       <tr>
         <td><?=$this->escapeHtml($record['card_name'])?></td>
-        <?php $username = $record['cat_username']; if ($this->multipleTargets): ?>
+        <?php $username = $record['cat_username']; ?>
+        <?php if ($this->multipleTargets): ?>
           <?php $target = ''; ?>
           <?php if (strstr($username, '.')): ?>
             <?php [$target, $username] = explode('.', $username, 2); ?>
@@ -73,6 +74,6 @@
   </div>
 </div>
 
-<div class="<?=$this->layoutClass('sidebar')?>">
+<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
   <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'librarycards'])?>
 </div>

@@ -3,7 +3,7 @@
 /**
  * KohaRest ILS driver test
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2023.
  *
@@ -111,7 +111,7 @@ class KohaRestTest extends \VuFindTest\Unit\ILSDriverTestCase
         if (!empty($testData['expectedParams'])) {
             $msg = "Error in step {$this->currentFixtureStep} of fixture: "
                 . $this->currentFixture;
-            $this->assertEquals($testData['expectedParams'], $request);
+            $this->assertEquals($testData['expectedParams'], $request, $msg);
         }
 
         return [
@@ -157,6 +157,7 @@ class KohaRestTest extends \VuFindTest\Unit\ILSDriverTestCase
         $this->driver->setConfig($config ?? $this->defaultDriverConfig);
         $cache = new \Laminas\Cache\Storage\Adapter\Memory();
         $cache->setOptions(['memory_limit' => -1]);
+        $this->driver->setCacheStorage($cache);
         $this->driver->expects($this->any())
             ->method('makeRequest')
             ->will($this->returnCallback([$this, 'mockMakeRequest']));

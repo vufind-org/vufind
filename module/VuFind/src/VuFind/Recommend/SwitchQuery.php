@@ -3,7 +3,7 @@
 /**
  * SwitchQuery Recommendations Module
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -211,7 +211,7 @@ class SwitchQuery implements RecommendInterface
     protected function checkFuzzy($query)
     {
         // Don't stack tildes:
-        if (strpos($query, '~') !== false) {
+        if (str_contains($query, '~')) {
             return false;
         }
         $query = trim($query, ' ?*');
@@ -272,7 +272,7 @@ class SwitchQuery implements RecommendInterface
     {
         // Remove escaped quotes as they are of no consequence:
         $query = str_replace('\"', ' ', $query);
-        return (strpos($query, '"') === false)
+        return (!str_contains($query, '"'))
             ? false : trim(str_replace('"', ' ', $query));
     }
 

@@ -3,7 +3,7 @@
 /**
  * Facebook authentication module.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -145,7 +145,7 @@ class Facebook extends AbstractBase implements
         $base = 'https://www.facebook.com/dialog/oauth';
         // Adding the auth_method setting makes it possible to handle logins when
         // using an auth method that proxies others (e.g. ChoiceAuth)
-        $target .= ((strpos($target, '?') !== false) ? '&' : '?')
+        $target .= ((str_contains($target, '?')) ? '&' : '?')
             . 'auth_method=Facebook';
         $this->session->lastUri = $target;
         return $base . '?client_id='

@@ -3,7 +3,7 @@
 /**
  * III Sierra REST API driver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2016-2023.
  *
@@ -1248,7 +1248,7 @@ class SierraRest extends AbstractBase implements
      *
      * @param string $id     The Bib ID
      * @param array  $data   An Array of item data
-     * @param patron $patron An array of patron data
+     * @param array  $patron An array of patron data
      *
      * @return bool True if request is valid, false if not
      */
@@ -2383,7 +2383,7 @@ class SierraRest extends AbstractBase implements
                     foreach ($subfields as $subfield) {
                         if (
                             $subfieldCodes
-                            && false === strpos(
+                            && !str_contains(
                                 $subfieldCodes,
                                 (string)$subfield['tag']
                             )

@@ -3,7 +3,7 @@
 /**
  * MyResearch Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2023.
@@ -1116,7 +1116,7 @@ class MyResearchController extends AbstractBase
                     $params[] = urlencode('ids[]') . '=' . urlencode($id);
                 }
                 $saveUrl = $this->url()->fromRoute('cart-save');
-                $saveUrl .= (strpos($saveUrl, '?') === false) ? '?' : '&';
+                $saveUrl .= (!str_contains($saveUrl, '?')) ? '?' : '&';
                 return $this->redirect()
                     ->toUrl($saveUrl . implode('&', $params));
             }
@@ -1696,7 +1696,7 @@ class MyResearchController extends AbstractBase
                     $this->flashMessenger()
                         ->addMessage('recovery_email_sent', 'success');
                 } catch (MailException $e) {
-                    $this->flashMessenger()->addMessage($e->getMessage(), 'error');
+                    $this->flashMessenger()->addMessage($e->getDisplayMessage(), 'error');
                 }
             }
         }
@@ -1815,7 +1815,7 @@ class MyResearchController extends AbstractBase
                         $this->sendChangeNotificationEmail($user, $to);
                     }
                 } catch (MailException $e) {
-                    $this->flashMessenger()->addMessage($e->getMessage(), 'error');
+                    $this->flashMessenger()->addMessage($e->getDisplayMessage(), 'error');
                 }
             }
         }
