@@ -757,7 +757,11 @@ class Record extends \Laminas\View\Helper\AbstractHelper
         );
     }
 
-
+    /**
+     * Get the source identifier + unique id of the record
+     *
+     * @return string
+     */
     public function getUniqueIdWithSourcePrefix()
     {
         if ($this->driver) {
