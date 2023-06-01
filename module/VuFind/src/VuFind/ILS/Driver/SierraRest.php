@@ -63,28 +63,28 @@ class SierraRest extends AbstractBase implements
     /**
      * Fixed field number for location in holdings records
      *
-     * @var int
+     * @var string
      */
     public const HOLDINGS_LOCATION_FIELD = '40';
 
     /**
      * Fixed field number for item code 2 (ICODE2) in item records
      *
-     * @var int
+     * @var string
      */
     public const ITEM_ICODE2_FIELD = '60';
 
     /**
      * Fixed field number for item type (I TYPE) in item records
      *
-     * @var int
+     * @var string
      */
     public const ITEM_ITYPE_FIELD = '61';
 
     /**
      * Fixed field number for item last checkin date (LCHKIN) in item records
      *
-     * @var int
+     * @var string
      */
     public const ITEM_CHECKIN_DATE_FIELD = '68';
 
@@ -297,7 +297,7 @@ class SierraRest extends AbstractBase implements
      *
      * @var int
      */
-    protected $bibItemsCacheTTL = 10;
+    protected $bibItemsCacheTTL = 2;
 
     /**
      * Default list of bib fields to request from Sierra. This list must include
@@ -2818,11 +2818,11 @@ class SierraRest extends AbstractBase implements
      *
      * @param string $id     Bib record id
      * @param ?array $fields Fields to request or null for defaults
-     * @param array  $patron Patron information, if available
+     * @param ?array $patron Patron information, if available
      *
-     * @return array|null
+     * @return ?array
      */
-    protected function getBibRecord(string $id, ?array $fields, ?array $patron = null): ?array
+    protected function getBibRecord(string $id, ?array $fields = null, ?array $patron = null): ?array
     {
         $fields ??= $this->defaultBibFields;
         $cacheId = "bib|$id";
@@ -2852,7 +2852,7 @@ class SierraRest extends AbstractBase implements
      *
      * @param string $id     Bib record id
      * @param ?array $fields Fields to request or null for defaults
-     * @param array  $patron Patron information, if available
+     * @param ?array $patron Patron information, if available
      *
      * @return array
      */
@@ -3238,12 +3238,13 @@ class SierraRest extends AbstractBase implements
         ) {
             return true;
         }
+
         if (
-            in_array('item', $this->titleHoldRules)
+            ($checkForItems = in_array('item', $this->titleHoldRules))
             || in_array('holdable_item', $this->titleHoldRules)
         ) {
             $items = $this->getItemsForBibRecord($bib['id'], null, $patron);
-            if ($items && in_array('item', $this->titleHoldRules)) {
+            if ($checkForItems && $items) {
                 return true;
             }
             foreach ($items as $item) {
