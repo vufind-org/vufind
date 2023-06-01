@@ -1,4 +1,5 @@
-<?php $data = $this->recommend->getResult(); if (is_array($data)): ?>
+<?php $data = $this->recommend->getResult(); ?>
+<?php if (is_array($data)): ?>
 <div class="sidegroup">
   <h4>Open Library <?php /* Intentionally not translated -- this is a site name, not a phrase */ ?></h4>
   <div><?=$this->transEsc('Results for')?> <?=$this->escapeHtmlAttr($data['subject'])?> ...</div>

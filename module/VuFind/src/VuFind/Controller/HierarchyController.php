@@ -3,7 +3,7 @@
 /**
  * Hierarchy Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010-2023.
  *
@@ -177,7 +177,7 @@ class HierarchyController extends AbstractBase
             }
         } catch (\Exception $e) {
             // Let exceptions fall through to error condition below:
-            $message = APPLICATION_ENV !== 'development'
+            $message = APPLICATION_ENV === 'development'
                 ? (string)$e : 'Unexpected exception';
         }
 

@@ -3,7 +3,7 @@
 /**
  * Autocomplete handler plugin manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -125,7 +125,7 @@ class Suggester
 
         // Get suggestions:
         if ($module) {
-            if (strpos($module, ':') === false) {
+            if (!str_contains($module, ':')) {
                 $module .= ':'; // force colon to avoid warning in explode below
             }
             [$name, $params] = explode(':', $module, 2);

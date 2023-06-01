@@ -1,5 +1,5 @@
 /*global Autocomplete, grecaptcha, isPhoneNumberValid */
-/*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
+/*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
 
 // IE 9< console polyfill
 window.console = window.console || { log: function polyfillLog() {} };
@@ -295,6 +295,17 @@ function htmlEncode(value) {
 }
 
 /**
+ * Keyboard and focus controllers
+ * Adapted from Micromodal
+ * - https://github.com/ghosh/Micromodal/blob/master/lib/src/index.js
+ */
+const FOCUSABLE_ELEMENTS = ['a[href]', 'area[href]', 'input:not([disabled]):not([type="hidden"]):not([aria-hidden])', 'select:not([disabled]):not([aria-hidden])', 'textarea:not([disabled]):not([aria-hidden])', 'button:not([disabled]):not([aria-hidden])', 'iframe', 'object', 'embed', '[contenteditable]', '[tabindex]:not([tabindex^="-"])'];
+function getFocusableNodes(container) {
+  const nodes = container.querySelectorAll(FOCUSABLE_ELEMENTS);
+  return Array.from(nodes);
+}
+
+/**
  * Adapted from Laminas.
  * Source: https://github.com/laminas/laminas-escaper/blob/2.13.x/src/Escaper.php
  *
@@ -461,7 +472,7 @@ function bulkFormHandler(event, data) {
 // Ready functions
 function setupOffcanvas() {
   if ($('.sidebar').length > 0 && $(document.body).hasClass("offcanvas")) {
-    $('[data-toggle="offcanvas"]').click(function offcanvasClick(e) {
+    $('[data-toggle="offcanvas"]').on("click", function offcanvasClick(e) {
       e.preventDefault();
       $('body.offcanvas').toggleClass('active');
     });
@@ -533,7 +544,7 @@ function setupAutocomplete() {
         ? event.detail
         : event.detail.value;
       input.value = value;
-      $("#searchForm").submit();
+      $("#searchForm").trigger("submit");
     });
   }
 }
@@ -544,7 +555,7 @@ function setupAutocomplete() {
 function keyboardShortcuts() {
   var $searchform = $('#searchForm_lookfor');
   if ($('.pager').length > 0) {
-    $(window).keydown(function shortcutKeyDown(e) {
+    $(window).on("keydown", function shortcutKeyDown(e) {
       if (!$searchform.is(':focus')) {
         var $target = null;
         switch (e.keyCode) {
@@ -595,12 +606,12 @@ function unwrapJQuery(node) {
 
 function setupJumpMenus(_container) {
   var container = _container || $('body');
-  container.find('select.jumpMenu').change(function jumpMenu(){ $(this).parent('form').submit(); });
+  container.find('select.jumpMenu').change(function jumpMenu(){ $(this).parent('form').trigger("submit"); });
 }
 
 function setupMultiILSLoginFields(loginMethods, idPrefix) {
   var searchPrefix = idPrefix ? '#' + idPrefix : '#';
-  $(searchPrefix + 'target').change(function onChangeLoginTarget() {
+  $(searchPrefix + 'target').on("change", function onChangeLoginTarget() {
     var target = $(this).val();
     var $username = $(searchPrefix + 'username');
     var $usernameGroup = $username.closest('.form-group');
@@ -622,7 +633,7 @@ function setupMultiILSLoginFields(loginMethods, idPrefix) {
         $password.val('');
       }
     }
-  }).change();
+  }).trigger("change");
 }
 
 function setupQRCodeLinks(_container) {
@@ -638,7 +649,7 @@ function setupQRCodeLinks(_container) {
   });
 }
 
-$(document).ready(function commonDocReady() {
+$(function commonDocReady() {
   // Start up all of our submodules
   VuFind.init();
   // Setup search autocomplete

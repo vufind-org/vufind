@@ -3,7 +3,7 @@
 /**
  * Class MarkdownFactory
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2020.
  *
@@ -187,7 +187,7 @@ class MarkdownFactory implements FactoryInterface
      */
     protected function getExtensionClass(string $extension): string
     {
-        $extensionClass = (strpos($extension, '\\') !== false)
+        $extensionClass = (str_contains($extension, '\\'))
             ? $extension
             : sprintf(
                 'League\CommonMark\Extension\%s\%sExtension',

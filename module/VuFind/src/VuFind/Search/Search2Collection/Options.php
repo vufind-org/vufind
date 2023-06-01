@@ -3,7 +3,7 @@
 /**
  * Search2 Collection aspect of the Search Multi-class (Options)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2019
  *

@@ -4,7 +4,7 @@
  * Default model for Search2 records -- used when a more specific model based on
  * the record_format field cannot be found.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *

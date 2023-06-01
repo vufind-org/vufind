@@ -1,4 +1,5 @@
-<?php $summonDatabases = $this->recommend->getResults(); if (!empty($summonDatabases)): ?>
+<?php $summonDatabases = $this->recommend->getResults(); ?>
+<?php if (!empty($summonDatabases)): ?>
 <div class="authorbox">
   <p><?=$this->transEsc('summon_database_recommendations')?></p>
   <?php foreach ($summonDatabases as $current): ?>

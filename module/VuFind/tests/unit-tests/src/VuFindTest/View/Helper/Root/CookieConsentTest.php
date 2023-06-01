@@ -3,7 +3,7 @@
 /**
  * Cookie Consent View Helper Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2022.
  *
@@ -190,11 +190,27 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue('http://localhost/first/vufind'));
         $serverUrl = new ServerUrl();
         $serverUrl->setHost('localhost');
-        $layout = $this->getMockBuilder(Layout::class)->getMock();
-        $layout->expects($this->any())
-            ->method('__invoke')
-            ->will($this->returnValue($layout));
-        $layout->rtl = false;
+
+        // Create an anonymous class to stub out some behavior:
+        $layout = new class () {
+            public $rtl = false;
+
+            /**
+             * Set layout template or retrieve "layout" view model
+             *
+             * If no arguments are given, grabs the "root" or "layout" view model.
+             * Otherwise, attempts to set the template for that view model.
+             *
+             * @param null|string $template Template
+             *
+             * @return Model|null|self
+             */
+            public function __invoke($template = null)
+            {
+                return $this;
+            }
+        };
+
         $plugins = [
             'escapeHtmlAttr' => new EscapeHtmlAttr(),
             'layout' => $layout,

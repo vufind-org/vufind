@@ -1,5 +1,8 @@
-<?php $isbn = $this->driver->getCleanISBN(); ?>
-<?php $authorNotes = empty($isbn) ? [] : $this->authorNotes($isbn); if (!empty($authorNotes)): ?>
+<?php
+  $isbn = $this->driver->getCleanISBN();
+  $authorNotes = empty($isbn) ? [] : $this->authorNotes($isbn);
+?>
+<?php if (!empty($authorNotes)): ?>
   <?php foreach ($authorNotes as $provider => $list): ?>
     <?php foreach ($list as $field): ?>
       <?=$field['Content']?><br>

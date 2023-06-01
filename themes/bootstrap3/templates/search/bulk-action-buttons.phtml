@@ -10,7 +10,8 @@
     <ul class="action-toolbar">
       <?php if (isset($this->showBulkOptions) && $this->showBulkOptions): ?>
         <li><button id="<?=$this->idPrefix?>ribbon-email" class="toolbar-btn" type="submit" name="email" value="1" title="<?=$this->transEscAttr('bookbag_email_selected')?>"<?php if ($this->formAttr): ?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>><?=$this->icon('send-email') ?> <?=$this->transEsc('Email')?></button></li>
-        <?php $exportOptions = $this->export()->getActiveFormats('bulk'); if (count($exportOptions) > 0): ?>
+        <?php $exportOptions = $this->export()->getActiveFormats('bulk'); ?>
+        <?php if (count($exportOptions) > 0): ?>
           <li><button id="<?=$this->idPrefix?>ribbon-export" class="toolbar-btn" type="submit" name="export" value="1" title="<?=$this->transEscAttr('bookbag_export_selected')?>"<?php if ($this->formAttr): ?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>><?=$this->icon('export') ?> <?=$this->transEsc('Export')?></button></li>
         <?php endif; ?>
         <li><button id="<?=$this->idPrefix?>ribbon-print" class="toolbar-btn" type="submit" name="print" value="1" title="<?=$this->transEscAttr('bookbag_print_selected')?>"<?php if ($this->formAttr): ?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>><?=$this->icon('print') ?> <?=$this->transEsc('Print')?></button></li>

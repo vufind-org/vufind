@@ -8,7 +8,8 @@
     . '<li class="active">' . $this->transEsc('Export Record') . '</li>';
 ?>
 <?=$this->flashmessages()?>
-<?php $exportFormats = $this->export()->getFormatsForRecord($this->driver); if (count($exportFormats) > 0): ?>
+<?php $exportFormats = $this->export()->getFormatsForRecord($this->driver); ?>
+<?php if (count($exportFormats) > 0): ?>
   <?=$this->transEsc('export_choose_format')?>
   <ul>
   <?php foreach ($exportFormats as $exportFormat): ?>

@@ -4,7 +4,7 @@
  * Default model for Solr records -- used when a more specific model based on
  * the record_format field cannot be found.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010, 2022.
  * Copyright (C) The National Library of Finland 2019.

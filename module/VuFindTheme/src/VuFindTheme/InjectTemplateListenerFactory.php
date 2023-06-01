@@ -3,7 +3,7 @@
 /**
  * Factory for InjectTemplateListener
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) 2019 Leipzig University Library
  *
@@ -84,7 +84,7 @@ class InjectTemplateListenerFactory implements FactoryInterface
             array_merge($prefixes, $modules),
             function ($prefix) use ($exclude) {
                 foreach ($exclude as $current) {
-                    if (strpos($prefix, $current) === 0) {
+                    if (str_starts_with($prefix, $current)) {
                         return false;
                     }
                 }

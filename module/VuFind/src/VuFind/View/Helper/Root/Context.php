@@ -5,7 +5,7 @@
  * performance -- this allows us to set and roll back variables in the global
  * scope instead of relying on the overhead of building a whole new scope).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *

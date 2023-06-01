@@ -3,7 +3,7 @@
 /**
  * Mix-in for detecting whether a live test environment is currently running.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *

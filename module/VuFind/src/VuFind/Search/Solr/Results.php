@@ -3,7 +3,7 @@
 /**
  * Solr aspect of the Search Multi-class (Results)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011, 2022.
  *
@@ -196,6 +196,8 @@ class Results extends \VuFind\Search\Base\Results
                 throw $e;
             }
         }
+
+        $this->extraSearchBackendDetails = $command->getExtraRequestDetails();
 
         $this->responseFacets = $collection->getFacets();
         $this->responseQueryFacets = $collection->getQueryFacets();

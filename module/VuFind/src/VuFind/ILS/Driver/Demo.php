@@ -7,7 +7,7 @@
  * the session.  You can log out and log back in to get a different set of
  * values.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007, 2022.
  * Copyright (C) The National Library of Finland 2014.
@@ -1307,7 +1307,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 '_dueDate' => $dueDate,
                 '_returnDate' => $returnDate,
                 'barcode' => sprintf("%08d", rand() % 50000),
-                'item_id' => $i,
+                'row_id' => $i,
             ];
             if ($this->idsInMyResearch) {
                 [$transList[$i]['id'], $transList[$i]['title']]
@@ -1389,6 +1389,38 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         return [
             'count' => count($session->historicLoans),
             'transactions' => $historicLoans,
+        ];
+    }
+
+    /**
+     * Purge Patron Transaction History
+     *
+     * @param array  $patron The patron array from patronLogin
+     * @param ?array $ids    IDs to purge, or null for all
+     *
+     * @throws ILSException
+     * @return array Associative array of the results
+     */
+    public function purgeTransactionHistory(array $patron, ?array $ids): array
+    {
+        $this->checkIntermittentFailure();
+        $session = $this->getSession($patron['id'] ?? null);
+        if (null === $ids) {
+            $session->historicLoans = [];
+            $status = 'loan_history_all_purged';
+        } else {
+            $session->historicLoans = array_filter(
+                $session->historicLoans ?? [],
+                function ($loan) use ($ids) {
+                    return !in_array($loan['row_id'], $ids);
+                }
+            );
+            $status = 'loan_history_selected_purged';
+        }
+        return [
+            'success' => true,
+            'status' => $status,
+            'sys_message' => '',
         ];
     }
 
@@ -1986,7 +2018,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @param string $id     The Bib ID
      * @param array  $data   An Array of item data
-     * @param patron $patron An array of patron data
+     * @param array  $patron An array of patron data
      *
      * @return mixed An array of data on the request including
      * whether or not it is valid and a status message. Alternatively a boolean
@@ -2110,7 +2142,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @param string $id     The Bib ID
      * @param array  $data   An Array of item data
-     * @param patron $patron An array of patron data
+     * @param array  $patron An array of patron data
      *
      * @return mixed An array of data on the request including
      * whether or not it is valid and a status message. Alternatively a boolean
@@ -2241,7 +2273,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @param string $id     The Bib ID
      * @param array  $data   An Array of item data
-     * @param patron $patron An array of patron data
+     * @param array  $patron An array of patron data
      *
      * @return mixed An array of data on the request including
      * whether or not it is valid and a status message. Alternatively a boolean
@@ -2613,6 +2645,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                     'due asc' => 'sort_due_date_asc',
                 ],
                 'default_sort' => 'checkout desc',
+                'purge_all' => $this->config['TransactionHistory']['purgeAll'] ?? true,
+                'purge_selected' => $this->config['TransactionHistory']['purgeSelected'] ?? true,
             ];
             if ($this->config['Loans']['paging'] ?? false) {
                 $config['max_results']

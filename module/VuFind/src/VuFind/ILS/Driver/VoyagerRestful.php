@@ -3,7 +3,7 @@
 /**
  * Voyager ILS Driver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  * Copyright (C) The National Library of Finland 2014-2016.
@@ -582,7 +582,7 @@ class VoyagerRestful extends Voyager implements
      *
      * @param string $id     The Bib ID
      * @param array  $data   An Array of item data
-     * @param patron $patron An array of patron data
+     * @param array  $patron An array of patron data
      *
      * @return bool True if request is valid, false if not
      */
@@ -616,7 +616,7 @@ class VoyagerRestful extends Voyager implements
      *
      * @param string $id     The Bib ID
      * @param array  $data   An Array of item data
-     * @param patron $patron An array of patron data
+     * @param array  $patron An array of patron data
      *
      * @return bool True if request is valid, false if not
      */
@@ -1829,7 +1829,7 @@ class VoyagerRestful extends Voyager implements
         ];
 
         $sql = $this->buildSqlFromArray($sqlArray);
-        $outersql = "select count(avail.item_id) CNT from (${sql['string']}) avail" .
+        $outersql = "select count(avail.item_id) CNT from ({$sql['string']}) avail" .
             ' where avail.STATUS=1'; // 1 = not charged
 
         try {
@@ -2698,7 +2698,7 @@ class VoyagerRestful extends Voyager implements
             return $data;
         }
 
-        if (strpos($patron['id'], '.') === false) {
+        if (!str_contains($patron['id'], '.')) {
             $this->debug(
                 "getUBRequestDetails: no prefix in patron id '{$patron['id']}'"
             );
@@ -2890,7 +2890,7 @@ class VoyagerRestful extends Voyager implements
      *
      * @param string $id     The Bib ID
      * @param array  $data   An Array of item data
-     * @param patron $patron An array of patron data
+     * @param array  $patron An array of patron data
      *
      * @return bool True if request is valid, false if not
      */

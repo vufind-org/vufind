@@ -3,7 +3,7 @@
 /**
  * VuFind Record Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -549,7 +549,7 @@ class AbstractRecord extends AbstractBase
                 $this->flashMessenger()->addMessage('email_success', 'success');
                 return $this->redirectToRecord();
             } catch (MailException $e) {
-                $this->flashMessenger()->addMessage($e->getMessage(), 'error');
+                $this->flashMessenger()->addMessage($e->getDisplayMessage(), 'error');
             }
         }
 
@@ -615,7 +615,7 @@ class AbstractRecord extends AbstractBase
                 $this->flashMessenger()->addMessage('sms_success', 'success');
                 return $this->redirectToRecord();
             } catch (MailException $e) {
-                $this->flashMessenger()->addMessage($e->getMessage(), 'error');
+                $this->flashMessenger()->addMessage($e->getDisplayMessage(), 'error');
             }
         }
 

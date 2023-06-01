@@ -3,7 +3,7 @@
 /**
  * Factory for Alma ILS driver.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) AK Bibliothek Wien für Sozialwissenschaften 2018.
  *

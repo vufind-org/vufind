@@ -27,7 +27,8 @@
         <?=$this->icon('send-email', 'icon-link__icon') ?>
         <span class="icon-link__label"><?=$this->transEsc('Email')?></span>
       </button>
-      <?php $exportOptions = $this->export()->getActiveFormats('bulk'); if (count($exportOptions) > 0): ?>
+      <?php $exportOptions = $this->export()->getActiveFormats('bulk'); ?>
+      <?php if (count($exportOptions) > 0): ?>
         <button type="submit" class="toolbar-btn" name="export" title="<?=$this->transEscAttr('bookbag_export')?>" value="1">
           <?=$this->icon('export', 'icon-link__icon') ?>
           <span class="icon-link__label"><?=$this->transEsc('Export')?></span>

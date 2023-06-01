@@ -3,7 +3,7 @@
 /**
  * VuFind XSLT importer
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -173,7 +173,7 @@ class Importer
             $truncate = $options['General']['truncate_custom_class'] ?? true;
             foreach ($classes as $class) {
                 // Add a default namespace if none was provided:
-                if (false === strpos($class, '\\')) {
+                if (!str_contains($class, '\\')) {
                     $class = 'VuFind\XSLT\Import\\' . $class;
                 }
                 // If necessary, dynamically generate the truncated version of the

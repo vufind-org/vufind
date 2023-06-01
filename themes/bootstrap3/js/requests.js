@@ -1,16 +1,15 @@
 function confirmCancelRequest(btn, action) {
   $('#cancelConfirm').val(1);
   $('#submitType').attr('name', action);
-  $(btn).parents('form').submit();
+  $(btn).parents('form').trigger("submit");
 }
 
-$(document).ready(function setupRequests() {
-  // storage retrieval request
-  $('#srr_cancel_selected .confirm__confirm').click(function cancelSelectedRequests(e) {
+$(function setupRequests() {
+  $('#srr_cancel_selected .confirm__confirm').on("click", function cancelSelectedRequests(e) {
     e.preventDefault();
     confirmCancelRequest(this, 'cancelSelected');
   });
-  $('#srr_cancel_all .confirm__confirm').click(function cancelSelectedRequests(e) {
+  $('#srr_cancel_all .confirm__confirm').on("click", function cancelAllRequests(e) {
     e.preventDefault();
     confirmCancelRequest(this, 'cancelAll');
   });
@@ -18,10 +17,10 @@ $(document).ready(function setupRequests() {
   // #todo: cover all requests
   // #todo: remove unnecessary cancels
 
-  $('.confirm_cancel_no').click(function doNotCancelRequest(e) {
+  $('.confirm_cancel_no').on("click", function doNotCancelRequest(e) {
     e.preventDefault();
   });
-  $('#update_selected').click(function updateSelected() {
+  $('#update_selected').on("click", function updateSelected() {
     // Change submitType to indicate that this is not a cancel request:
     $('#submitType').attr('name', 'updateSelected');
   });

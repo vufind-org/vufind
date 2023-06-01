@@ -3,7 +3,7 @@
 /**
  * FOLIO REST API driver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018-2023.
  *
@@ -597,7 +597,10 @@ class Folio extends AbstractAPI implements
             $format = '%s %s';
             $supStat = $supplement->statement ?? '';
             $supNote = $supplement->note ?? '';
-            $statement = trim(sprintf($format, $supStat, $supNote));
+            $statement = trim(
+                // Avoid duplicate display if note and statement are identical:
+                $supStat === $supNote ? $supStat : sprintf($format, $supStat, $supNote)
+            );
             return $statement;
         };
         $id = $holding->id;
@@ -693,7 +696,7 @@ class Folio extends AbstractAPI implements
             'holdings_notes' => $holdingDetails['hasHoldingNotes']
                 ? $holdingDetails['holdingNotes'] : null,
             'item_notes' => !empty(implode($itemNotes)) ? $itemNotes : null,
-            'issues' => $holdingDetails['holdingsStatements'],
+            'summary' => array_unique($holdingDetails['holdingsStatements']),
             'supplements' => $holdingDetails['holdingsSupplements'],
             'indexes' => $holdingDetails['holdingsIndexes'],
             'location' => $locationName,

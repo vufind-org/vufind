@@ -3,9 +3,10 @@
 /**
  * LocaleSettings Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
+ * Copyright (C) The National Library of Finland 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,6 +24,7 @@
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
@@ -38,6 +40,7 @@ use VuFind\I18n\Locale\LocaleSettings;
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
@@ -141,5 +144,76 @@ class LocaleSettingsTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($settings->isLocaleInitialized('en'));
         $settings->markLocaleInitialized('en');
         $this->assertTrue($settings->isLocaleInitialized('en'));
+    }
+
+    /**
+     * Data provider for testFallbackLocalConfigs
+     *
+     * @return array
+     */
+    public function fallbackLocalConfigsProvider(): array
+    {
+        return [
+            [
+                ['en'],
+                'en',
+                null,
+            ],
+            [
+                ['en'],
+                'en',
+                '',
+            ],
+            [
+                ['fi', 'en'],
+                'fi',
+                null,
+            ],
+            [
+                ['fi', 'en'],
+                'en',
+                'fi',
+            ],
+            [
+                ['fi', 'en'],
+                'en',
+                'fi, en',
+            ],
+            [
+                ['de', 'fi', 'en'],
+                'en',
+                'de,fi',
+            ],
+            [
+                ['de', 'fi', 'sv', 'en'],
+                'sv',
+                'de,fi',
+            ],
+        ];
+    }
+
+    /**
+     * Confirm default settings for nearly-empty configuration.
+     *
+     * @param array   $expected          Expected results
+     * @param string  $language          Default language
+     * @param ?string $fallbackLanguages Fallback languages or null for no setting
+     *
+     * @dataProvider fallbackLocalConfigsProvider
+     *
+     * @return void
+     */
+    public function testFallbackLocaleConfigs(array $expected, string $language, ?string $fallbackLanguages): void
+    {
+        $config = [
+            'Site' => ['language' => $language],
+            'Languages' => [$language => 'Test'],
+        ];
+        if (null !== $fallbackLanguages) {
+            $config['Site']['fallback_languages'] = $fallbackLanguages;
+        }
+
+        $settings = new LocaleSettings(new Config($config));
+        $this->assertEquals($expected, $settings->getFallbackLocales());
     }
 }

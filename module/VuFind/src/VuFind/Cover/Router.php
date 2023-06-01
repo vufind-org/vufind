@@ -3,7 +3,7 @@
 /**
  * Cover image router
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -174,7 +174,7 @@ class Router implements \Laminas\Log\LoggerAwareInterface
                 }
             } catch (\Exception $e) {
                 $this->debug(
-                    get_class($e) . ' during processing of '
+                    $e::class . ' during processing of '
                     . get_class($handler['handler']) . ': ' . $e->getMessage()
                 );
             }
