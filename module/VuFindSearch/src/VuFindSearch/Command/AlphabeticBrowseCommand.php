@@ -3,7 +3,7 @@
 /**
  * Fetch alphabrowse data from the backend (currently only supported by Solr)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *

@@ -3,7 +3,7 @@
 /**
  * Aleph ILS driver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) UB/FU Berlin
  *
@@ -465,7 +465,7 @@ class Aleph extends AbstractBase implements
      */
     protected function appendQueryString($url, $params)
     {
-        $sep = (strpos($url, "?") === false) ? '?' : '&';
+        $sep = (!str_contains($url, "?")) ? '?' : '&';
         if ($params != null) {
             foreach ($params as $key => $value) {
                 $url .= $sep . $key . "=" . urlencode($value);
@@ -532,7 +532,7 @@ class Aleph extends AbstractBase implements
     protected function parseId($id)
     {
         $result = null;
-        if (strpos($id, self::RECORD_ID_BASE_SEPARATOR) !== false) {
+        if (str_contains($id, self::RECORD_ID_BASE_SEPARATOR)) {
             $result = explode(self::RECORD_ID_BASE_SEPARATOR, $id);
             $base = $result[0];
             if (!in_array($base, $this->bib)) {
@@ -1269,7 +1269,7 @@ class Aleph extends AbstractBase implements
             }
         }
         $fullName = $profile['fullname'];
-        if (strpos($fullName, ",") === false) {
+        if (!str_contains($fullName, ",")) {
             $profile['lastname'] = $fullName;
             $profile['firstname'] = "";
         } else {
@@ -1315,7 +1315,7 @@ class Aleph extends AbstractBase implements
                 true
             );
         } catch (\Exception $ex) {
-            if (strpos($ex->getMessage(), 'Error in Verification') !== false) {
+            if (str_contains($ex->getMessage(), 'Error in Verification')) {
                 return null;
             }
             $this->throwAsIlsException($ex);

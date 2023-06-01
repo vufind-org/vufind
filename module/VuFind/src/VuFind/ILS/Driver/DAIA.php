@@ -6,7 +6,7 @@
  * Based on the proof-of-concept-driver by Till Kinstler, GBV.
  * Relaunch of the daia driver developed by Oliver Goldschmidt.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Jochen Lienhard 2014.
  *

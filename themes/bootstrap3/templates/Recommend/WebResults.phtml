@@ -1,4 +1,8 @@
-<?php $searchObject = $this->recommend->getResults(); $results = $searchObject->getResults(); if (!empty($results)): ?>
+<?php
+  $searchObject = $this->recommend->getResults();
+  $results = $searchObject->getResults();
+?>
+<?php if (!empty($results)): ?>
 <div class="sidegroup">
   <h4><?=$this->transEsc('Library Web Search')?></h4>
 

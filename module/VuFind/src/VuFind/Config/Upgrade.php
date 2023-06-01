@@ -3,7 +3,7 @@
 /**
  * VF Configuration Upgrade Tool
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -700,7 +700,7 @@ class Upgrade
         // Update Syndetics config:
         if (isset($newConfig['Syndetics']['url'])) {
             $newConfig['Syndetics']['use_ssl']
-                = (strpos($newConfig['Syndetics']['url'], 'https://') === false)
+                = (!str_contains($newConfig['Syndetics']['url'], 'https://'))
                 ? '' : 1;
             unset($newConfig['Syndetics']['url']);
         }
@@ -1056,7 +1056,7 @@ class Upgrade
             $specialFacets = $cfg['special_facets'] ?? null;
             if (empty($specialFacets)) {
                 $cfg['special_facets'] = 'checkboxes:Summon';
-            } elseif (false === strpos('checkboxes', (string)$specialFacets)) {
+            } elseif (!str_contains('checkboxes', (string)$specialFacets)) {
                 $cfg['special_facets'] .= ',checkboxes:Summon';
             }
         }

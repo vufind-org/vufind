@@ -3,7 +3,7 @@
 /**
  * EDS API Query Adapter: search query parameters to AbstractQuery object
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -97,14 +97,14 @@ class QueryAdapter extends \VuFind\Search\QueryAdapter
                             . call_user_func($showName, $group->getHandler()) . ':'
                             . $group->getString();
                     } else {
-                        throw new \Exception('Unexpected ' . get_class($group));
+                        throw new \Exception('Unexpected ' . $group::class);
                     }
                 }
             } else {
-                throw new \Exception('Unexpected ' . get_class($search));
+                throw new \Exception('Unexpected ' . $search::class);
             }
         }
-        $output = '(' . join(' ', $all) . ')';
+        $output = '(' . implode(' ', $all) . ')';
 
         return $output;
     }

@@ -3,7 +3,7 @@
 /**
  * API Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2015-2016.
  *
@@ -125,7 +125,7 @@ class ApiController extends \VuFind\Controller\AbstractBase
             if (null === $specs) {
                 throw new \Exception(
                     'Could not parse API spec fragment of '
-                    . get_class($controller) . ': ' . json_last_error_msg()
+                    . $controller::class . ': ' . json_last_error_msg()
                 );
             }
             foreach ($specs as $key => $spec) {

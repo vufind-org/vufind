@@ -77,6 +77,16 @@ $config = [
                             ],
                         ],
                     ],
+                    'script' => [
+                        'type' => 'Laminas\Router\Http\Segment',
+                        'options' => [
+                            'route'    => '/Script[/:name]',
+                            'defaults' => [
+                                'controller' => 'AdminMaintenance',
+                                'action'     => 'Script',
+                            ],
+                        ],
+                    ],
                     'social' => [
                         'type' => 'Laminas\Router\Http\Segment',
                         'options' => [

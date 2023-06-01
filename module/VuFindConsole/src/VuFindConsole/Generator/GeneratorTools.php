@@ -3,7 +3,7 @@
 /**
  * Generator tools.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -283,7 +283,7 @@ class GeneratorTools
             $parent = $interface;
             $interfaces = [];
         }
-        $configPath = $this->getConfigPathForClass(get_class($pm));
+        $configPath = $this->getConfigPathForClass($pm::class);
 
         // Generate the classes and configuration:
         $this->createClassInModule($class, $module, $parent, $interfaces);
@@ -390,7 +390,7 @@ class GeneratorTools
             $configPath = ['controller_plugins'];
         } elseif ($pm = $this->getPluginManagerContainingClass($container, $class)) {
             $apmFactory = new \VuFind\ServiceManager\AbstractPluginManagerFactory();
-            $pmKey = $apmFactory->getConfigKey(get_class($pm));
+            $pmKey = $apmFactory->getConfigKey($pm::class);
             $factory = $this->getFactoryFromContainer($pm, $class);
             $configPath = ['vufind', 'plugin_managers', $pmKey];
             $delegators = $this->getDelegatorsFromContainer($pm, $class);

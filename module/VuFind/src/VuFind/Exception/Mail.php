@@ -3,9 +3,9 @@
 /**
  * Mail Exception
  *
- * PHP version 7
+ * PHP version 8
  *
- * Copyright (C) Villanova University 2011.
+ * Copyright (C) Villanova University 2011-2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -40,4 +40,60 @@ namespace VuFind\Exception;
  */
 class Mail extends \Exception
 {
+    /**
+     * Default error message when the error is not known exactly.
+     * Will return $defaultDisplayMessage if APPLICATION_ENV is not development.
+     *
+     * @var int
+     */
+    public const ERROR_UNKNOWN = 0;
+
+    /**
+     * Mail recipient address is invalid.
+     *
+     * @var int
+     */
+    public const ERROR_INVALID_RECIPIENT = 1;
+
+    /**
+     * Mail sender address is invalid.
+     *
+     * @var int
+     */
+    public const ERROR_INVALID_SENDER = 2;
+
+    /**
+     * Mail reply to address is invalid.
+     *
+     * @var int
+     */
+    public const ERROR_INVALID_REPLY_TO = 3;
+
+    /**
+     * Mail too many recipients.
+     *
+     * @var int
+     */
+    public const ERROR_TOO_MANY_RECIPIENTS = 4;
+
+    /**
+     * Safe error message to return
+     *
+     * @var string
+     */
+    protected $defaultDisplayMessage = 'email_failure';
+
+    /**
+     * Returns the error message, but excludes too technical messages.
+     *
+     * @return string
+     */
+    public function getDisplayMessage(): string
+    {
+        // If application env is development, we can display too technical messages
+        if ('development' === APPLICATION_ENV || $this->getCode() !== self::ERROR_UNKNOWN) {
+            return $this->getMessage();
+        }
+        return $this->defaultDisplayMessage;
+    }
 }

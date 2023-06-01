@@ -161,7 +161,7 @@ VuFind.register('cart', function Cart() {
     var $form = typeof _form === 'undefined'
       ? $('form[name="bulkActionForm"]')
       : $(_form);
-    $("#updateCart, #bottom_updateCart").unbind('click').click(function cartUpdate() {
+    $("#updateCart, #bottom_updateCart").off("click").on("click", function cartUpdate() {
       var elId = this.id;
       var selected = [];
       var addToSelected = function processCartFormValues() {

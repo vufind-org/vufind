@@ -3,7 +3,7 @@
 /**
  * Retrieve a batch of documents command.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2021.

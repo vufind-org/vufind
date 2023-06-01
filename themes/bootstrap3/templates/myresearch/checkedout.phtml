@@ -91,7 +91,8 @@
     <?php endforeach; ?>
 
     <ul class="record-list">
-      <?php $i = 0; foreach ($this->transactions as $resource): ?>
+      <?php $i = 0; ?>
+      <?php foreach ($this->transactions as $resource): ?>
         <?php $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
         <li id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>" class="result">
           <?php if ($this->renewForm): ?>
@@ -142,7 +143,8 @@
                   echo $this->transEsc('Title not available');
                 }
               ?><br>
-              <?php $listAuthors = $resource->getPrimaryAuthors(); if (!empty($listAuthors)): ?>
+              <?php $listAuthors = $resource->getPrimaryAuthors(); ?>
+              <?php if (!empty($listAuthors)): ?>
                 <?=$this->transEsc('by')?>:
                 <a href="<?=$this->record($resource)->getLink('author', $listAuthors[0])?>"><?=$this->escapeHtml($listAuthors[0])?></a><?php if (count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?><br>
               <?php endif; ?>
@@ -227,7 +229,7 @@
   <?php endif; ?>
 </div>
 
-<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
+<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
   <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'checkedout'])?>
 </div>
 

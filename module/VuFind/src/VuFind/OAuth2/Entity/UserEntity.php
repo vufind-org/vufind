@@ -3,7 +3,7 @@
 /**
  * OAuth2 user entity implementation.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2022.
  *
@@ -163,7 +163,7 @@ class UserEntity implements UserEntityInterface, ClaimSetInterface
                     }
                     break;
                 case 'block_status':
-                    // account_blocked is a flag indicating whether the patron has
+                    // block_status is a flag indicating whether the patron has
                     // blocks:
                     $result[$claim] = $blocked;
                     break;

@@ -3,7 +3,7 @@
 /**
  * Abstract results search model.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -180,6 +180,13 @@ abstract class Results
      * @var HierarchicalFacetHelperInterface
      */
     protected $hierarchicalFacetHelper = null;
+
+    /**
+     * Extra search details.
+     *
+     * @var ?array
+     */
+    protected $extraSearchBackendDetails = null;
 
     /**
      * Constructor
@@ -614,8 +621,6 @@ abstract class Results
      * @param array $data Extra data
      *
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function setExtraData(array $data): void
     {
@@ -786,6 +791,16 @@ abstract class Results
             $page++;
         } while ($limit == -1 && !empty($facetfields));
         return $facets;
+    }
+
+    /**
+     * Get the extra search details
+     *
+     * @return ?array
+     */
+    public function getExtraSearchBackendDetails()
+    {
+        return $this->extraSearchBackendDetails;
     }
 
     /**
