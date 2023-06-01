@@ -501,6 +501,17 @@
         </copy>
       </then>
     </if>
+
+    <!-- Add a local translation for tests -->
+    <if>
+      <not>
+        <available file="${localdir}/languages" type="dir" />
+      </not>
+      <then>
+        <mkdir dir="${localdir}/languages" />
+      </then>
+    </if>
+    <append destFile="${localdir}/languages/en.ini" text="location_main = Main Library${line.separator}" />
   </target>
 
   <target name="setup_database" description="setup demo database">
@@ -702,6 +713,11 @@ ${git_status}
     <delete>
       <fileset dir="${localdir}/cache">
         <include name="**/*" />
+      </fileset>
+    </delete>
+    <delete>
+      <fileset dir="${localdir}/languages">
+        <include name="*" />
       </fileset>
     </delete>
 
