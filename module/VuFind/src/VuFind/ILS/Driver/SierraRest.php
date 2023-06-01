@@ -145,6 +145,13 @@ class SierraRest extends AbstractBase implements
     protected $itemHoldExcludedItemTypes = [];
 
     /**
+     * Bib levels for which item level hold is allowed
+     *
+     * @var array
+     */
+    protected $itemHoldBibLevels;
+
+    /**
      * Bib levels for which title level hold is allowed
      *
      * @var array
@@ -382,6 +389,9 @@ class SierraRest extends AbstractBase implements
             = $this->explodeSetting($holdCfg['item_hold_excluded_item_codes'] ?? '');
         $this->itemHoldExcludedItemTypes
             = $this->explodeSetting($holdCfg['item_hold_excluded_item_types'] ?? '');
+        $this->itemHoldBibLevels = $this->explodeSetting(
+            $holdCfg['item_hold_bib_levels'] ?? $holdCfg['title_hold_bib_levels'] ?? ''
+        );
         $this->titleHoldBibLevels = $this->explodeSetting($holdCfg['title_hold_bib_levels'] ?? '');
         $this->titleHoldRules = $this->explodeSetting($holdCfg['title_hold_rules'] ?? '');
         $this->allowCancelingAvailableRequests
@@ -2624,6 +2634,13 @@ class SierraRest extends AbstractBase implements
      */
     protected function isHoldable(array $item, array $bib): bool
     {
+        if (
+            !isset($bib['bibLevel']['code'])
+            || !in_array($bib['bibLevel']['code'], $this->itemHoldBibLevels)
+        ) {
+            return false;
+        }
+
         if (!empty($this->validHoldStatuses)) {
             [$status] = $this->getItemStatus($item);
             if (!in_array($status, $this->validHoldStatuses)) {
