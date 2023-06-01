@@ -77,8 +77,7 @@ class ReCaptchaTest extends \PHPUnit\Framework\TestCase
      */
     public function testProxying(): void
     {
-        $args = $this->getTestParams();
-        $service = new ReCaptcha(...$args);
+        $service = new ReCaptcha(...$this->getTestParams());
         $expectedOptions = [
             'theme' => 'dark', // we overrode this, the rest are defaults
             'type' => 'image',
@@ -89,5 +88,17 @@ class ReCaptchaTest extends \PHPUnit\Framework\TestCase
             'hl' => null,
         ];
         $this->assertEquals($expectedOptions, $service->getOptions());
+    }
+
+    /**
+     * Test unsupported method proxying.
+     *
+     * @return void
+     */
+    public function testUnsupportedMethodProxying(): void
+    {
+        $this->expectExceptionMessage("Unsupported method: notSupportedMethod");
+        $service = new ReCaptcha(...$this->getTestParams());
+        $service->notSupportedMethod('This does not work!');
     }
 }
