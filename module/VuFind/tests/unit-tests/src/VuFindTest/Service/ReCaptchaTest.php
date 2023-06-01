@@ -29,8 +29,8 @@
 
 namespace VuFindTest\Service;
 
-use VuFind\Service\ReCaptcha;
 use Laminas\ReCaptcha\ReCaptcha as LaminasReCaptcha;
+use VuFind\Service\ReCaptcha;
 
 /**
  * CurrencyFormatter Test Class
