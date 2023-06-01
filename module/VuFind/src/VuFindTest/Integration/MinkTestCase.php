@@ -3,7 +3,7 @@
 /**
  * Abstract base class for PHPUnit test cases using Mink.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,12 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Integration;
 
 use Behat\Mink\Driver\Selenium2Driver;
 use Behat\Mink\Element\Element;
-use Behat\Mink\Session;
 use DMore\ChromeDriver\ChromeDriver;
+use PHPUnit\Util\Test;
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
@@ -80,6 +81,16 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @var PathResolver
      */
     protected $pathResolver;
+
+    /**
+     * Get name of the current test
+     *
+     * @return string
+     */
+    protected function getTestName(): string
+    {
+        return $this::class . '::' . $this->getName(false);
+    }
 
     /**
      * Reconfigure VuFind for the current test.
@@ -257,6 +268,12 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     {
         if (empty($this->session)) {
             $this->session = new Session($this->getMinkDriver());
+            if ($coverageDir = getenv('VUFIND_REMOTE_COVERAGE_DIR')) {
+                $this->session->setRemoteCoverageConfig(
+                    $this->getTestName(),
+                    $coverageDir
+                );
+            }
             $this->session->start();
         }
         return $this->session;
@@ -294,15 +311,35 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Get query string for the current page
      *
+     * @param bool $excludeSid Whether to remove any sid from the query string
+     *
      * @return string
      */
-    protected function getCurrentQueryString(): string
+    protected function getCurrentQueryString(bool $excludeSid = false): string
     {
         return str_replace(
             ['%5B', '%5D', '%7C'],
             ['[', ']', '|'],
-            parse_url($this->getMinkSession()->getCurrentUrl(), PHP_URL_QUERY)
+            parse_url(
+                $excludeSid ? $this->getCurrentUrlWithoutSid()
+                    : $this->getMinkSession()->getCurrentUrl(),
+                PHP_URL_QUERY
+            )
         );
+    }
+
+    /**
+     * Get current URL without any sid parameter in the query string
+     *
+     * @return string
+     */
+    protected function getCurrentUrlWithoutSid(): string
+    {
+        $this->getMinkSession();
+        $url = $this->getMinkSession()->getCurrentUrl();
+        $url = preg_replace('/([&?])sid=[^&]*&?/', '$1', $url);
+        $url = rtrim($url, '?&');
+        return $url;
     }
 
     /**
@@ -315,7 +352,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     {
         $configs = [
             '.ini' => $this->modifiedConfigs,
-            '.yaml' => $this->modifiedYamlConfigs
+            '.yaml' => $this->modifiedYamlConfigs,
         ];
         foreach ($configs as $extension => $files) {
             foreach ($files as $current) {
@@ -351,7 +388,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $timeout = null,
         $index = 0
     ) {
-        $timeout = $timeout ?? $this->getDefaultTimeout();
+        $timeout ??= $this->getDefaultTimeout();
         $session = $this->getMinkSession();
         $session->wait(
             $timeout,
@@ -360,8 +397,8 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $results = $page->findAll('css', $selector);
         $this->assertIsArray($results, "Selector not found: $selector");
         $result = $results[$index] ?? null;
-        $this->assertTrue(
-            is_object($result),
+        $this->assertIsObject(
+            $result,
             "Element not found: $selector index $index"
         );
         return $result;
@@ -379,7 +416,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function waitStatement($statement, $timeout = null)
     {
-        $timeout = $timeout ?? $this->getDefaultTimeout();
+        $timeout ??= $this->getDefaultTimeout();
         $session = $this->getMinkSession();
         $this->assertTrue(
             $session->wait(
@@ -406,7 +443,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $timeout = null,
         $index = 0
     ) {
-        $timeout = $timeout ?? $this->getDefaultTimeout();
+        $timeout ??= $this->getDefaultTimeout();
         $startTime = microtime(true);
         $exception = null;
         while ((microtime(true) - $startTime) * 1000 <= $timeout) {
@@ -419,7 +456,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
                 // This may happen e.g. if the page is reloaded right in the middle
                 // due to an event. Store the exception and throw later if we don't
                 // succeed with retries:
-                $exception = $exception ?? $e;
+                $exception ??= $e;
             }
             usleep(50000);
         }
@@ -483,7 +520,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $timeout = null,
         $retries = 6
     ) {
-        $timeout = $timeout ?? $this->getDefaultTimeout();
+        $timeout ??= $this->getDefaultTimeout();
         $field = $this->findCss($page, $selector, $timeout, 0);
 
         $session = $this->getMinkSession();
@@ -505,8 +542,8 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
                 return;
             }
             $this->logWarning(
-                'RETRY setValue after failure in ' . get_class($this) . '::'
-                . $this->getName(false) . "(try $i)."
+                'RETRY setValue after failure in ' . $this->getTestName()
+                . " (try $i)."
             );
 
             $this->snooze();
@@ -526,7 +563,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     protected function findAndAssertLink(Element $page, $text)
     {
         $link = $page->findLink($text);
-        $this->assertTrue(is_object($link));
+        $this->assertIsObject($link);
         return $link;
     }
 
@@ -563,7 +600,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         callable $callback,
         int $timeout = null
     ) {
-        $timeout = $timeout ?? $this->getDefaultTimeout();
+        $timeout ??= $this->getDefaultTimeout();
         $result = null;
         $startTime = microtime(true);
         while ((microtime(true) - $startTime) * 1000 <= $timeout) {
@@ -611,7 +648,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         Element $page,
         int $timeout = null
     ) {
-        $timeout = $timeout ?? $this->getDefaultTimeout();
+        $timeout ??= $this->getDefaultTimeout();
         $session = $this->getMinkSession();
         // Wait for page load to complete:
         $session->wait($timeout, "document.readyState === 'complete'");
@@ -638,10 +675,10 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         // Finally, make sure all jQuery ready handlers are done:
         $session->evaluateScript(
             <<<EOS
-if (window.__documentIsReady !== true) {
-    $(document).ready(function() { window.__documentIsReady = true; });
-}
-EOS
+                if (window.__documentIsReady !== true) {
+                    $(document).ready(function() { window.__documentIsReady = true; });
+                }
+                EOS
         );
         $session->wait(
             $timeout,
@@ -733,6 +770,149 @@ EOS
     }
 
     /**
+     * Validate current page HTML if validation is enabled and a session exists
+     *
+     * @param ?Element $page Page to check (optional; uses the page from session by
+     * default)
+     *
+     * @return void
+     *
+     * @throws \RuntimeException
+     */
+    protected function validateHtml(?Element $page = null): void
+    {
+        if (
+            (!$this->session && !$page)
+            || !($nuAddress = getenv('VUFIND_HTML_VALIDATOR'))
+        ) {
+            return;
+        }
+        $annotations = Test::parseTestMethodAnnotations(
+            static::class,
+            $this->getName(false)
+        );
+        if (
+            ($annotations['method']['skip_html_validation'][0] ?? false)
+            || ($annotations['class']['skip_html_validation'][0] ?? false)
+        ) {
+            return;
+        }
+
+        $http = new \VuFindHttp\HttpService();
+        $client = $http->createClient(
+            $nuAddress,
+            \Laminas\Http\Request::METHOD_POST
+        );
+        $client->setEncType(\Laminas\Http\Client::ENC_FORMDATA);
+        $client->setParameterPost(
+            [
+                'out' => 'json',
+            ]
+        );
+        $page ??= $this->session->getPage();
+        $this->waitForPageLoad($page);
+        $client->setFileUpload(
+            $this->session->getCurrentUrl(),
+            'file',
+            "<!DOCTYPE html>\n" . $page->getOuterHtml(),
+            'text/html'
+        );
+        $response = $client->send();
+        if (!$response->isSuccess()) {
+            throw new \RuntimeException(
+                'Could not validate HTML: '
+                . $response->getStatusCode() . ', '
+                . $response->getBody()
+            );
+        }
+        $result = json_decode($response->getBody(), true);
+        if (!empty($result['messages'])) {
+            $errors = [];
+            $info = [];
+            foreach ($result['messages'] as $message) {
+                if ('info' === $message['type']) {
+                    $info[] = $this->htmlValidationMsgToStr($message);
+                } else {
+                    $errors[] = $this->htmlValidationMsgToStr($message);
+                }
+            }
+            $logFile = (string)getenv('VUFIND_HTML_VALIDATOR_LOG_FILE');
+            $quiet = (bool)getenv('VUFIND_HTML_VALIDATOR_QUIET');
+            if ($info) {
+                $this->outputHtmlValidationMessages($info, 'info', $logFile, $quiet);
+            }
+            if ($errors) {
+                $this->outputHtmlValidationMessages(
+                    $errors,
+                    'error',
+                    $logFile,
+                    $quiet
+                );
+                if (getenv('VUFIND_HTML_VALIDATOR_FAIL_TESTS') !== '0') {
+                    throw new \RuntimeException('HTML validation failed');
+                }
+            }
+        }
+    }
+
+    /**
+     * Convert a NU HTML Validator message to a string
+     *
+     * @param array $message Validation message
+     *
+     * @return string
+     */
+    protected function htmlValidationMsgToStr(array $message): string
+    {
+        $result = '  [' . ($message['firstLine'] ?? $message['lastLine'] ?? 0) . ':'
+            . ($message['firstColumn'] ?? 0)
+            . '] ';
+        $stampLen = strlen($result);
+        $result .= $message['message'];
+        if (!empty($message['extract'])) {
+            $result .= PHP_EOL . str_pad('', $stampLen) . 'Extract: '
+                . $message['extract'];
+        }
+        return $result;
+    }
+
+    /**
+     * Output HTML validation messages to log file and/or console
+     *
+     * @param array  $messages Messages
+     * @param string $level    Message level (info or error)
+     * @param string $logFile  Log file name
+     * @param bool   $quiet    Whether the console output should be quiet
+     *
+     * @return void
+     */
+    protected function outputHtmlValidationMessages(
+        array $messages,
+        string $level,
+        string $logFile,
+        bool $quiet
+    ): void {
+        $logMessage = $this->session->getCurrentUrl() . ': ' . PHP_EOL . PHP_EOL
+            . implode(PHP_EOL . PHP_EOL, $messages);
+
+        if ($logFile) {
+            $method = $this->getTestName();
+            file_put_contents(
+                $logFile,
+                date('Y-m-d H:i:s') . ' [' . strtoupper($level) . "] [$method] "
+                . $logMessage . PHP_EOL . PHP_EOL,
+                FILE_APPEND
+            );
+        }
+        if (!$quiet) {
+            $this->logWarning(
+                'HTML validation ' . ('info' === $level ? 'messages' : 'errors')
+                . " for $logMessage"
+            );
+        }
+    }
+
+    /**
      * Standard setup method.
      *
      * @return void
@@ -763,7 +943,8 @@ EOS
         // Take screenshot of failed test, if we have a screenshot directory set
         // and we have run out of retries ($this->retriesLeft is set by the
         // AutoRetryTrait):
-        if ($this->hasFailed()
+        if (
+            $this->hasFailed()
             && ($imageDir = getenv('VUFIND_SCREENSHOT_DIR'))
         ) {
             $filename = $this->getName() . '-' . $this->retriesLeft . '-'
@@ -790,8 +971,22 @@ EOS
             }
         }
 
+        $htmlValidationException = null;
+        if (!$this->hasFailed()) {
+            try {
+                $this->validateHtml();
+            } catch (\Exception $e) {
+                // Store the exception and throw after cleanup:
+                $htmlValidationException = $e;
+            }
+        }
+
         $this->stopMinkSession();
         $this->restoreConfigs();
+
+        if (null !== $htmlValidationException) {
+            throw $htmlValidationException;
+        }
     }
 
     /**

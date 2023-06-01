@@ -220,3 +220,38 @@ forms:
           - label: Option 1
             value: option-1
         label: checkbox
+
+  TestPrefill:
+    prefillFields:
+      - message
+      - secret_code
+    fields:
+      - name: name
+        type: text
+        label: Sender Name
+      - name: email
+        type: email
+        label: feedback_email
+      - name: message
+        type: textarea
+        label: Comments
+      - name: phone
+        type: text
+        label: Phone Number
+      - name: secret_code
+        type: hidden
+        settings:
+          - value: default_secret
+
+  TestPrefillProtectedFields:
+    reportUserAgent: true
+    fields:
+      - name: name
+        type: text
+        label: Sender Name
+      - name: email
+        type: email
+        label: feedback_email
+      - name: message
+        type: textarea
+        label: Comments

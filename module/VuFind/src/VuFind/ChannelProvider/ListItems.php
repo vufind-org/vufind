@@ -1,8 +1,9 @@
 <?php
+
 /**
  * "List items" channel provider.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\ChannelProvider;
 
 use Laminas\Mvc\Controller\Plugin\Url;
@@ -329,7 +331,7 @@ class ListItems extends AbstractChannelProvider
             'title' => $list->title,
             'providerId' => $this->providerId,
             'token' => $list->id,
-            'links' => []
+            'links' => [],
         ];
         if ($tokenOnly) {
             return $retVal;
@@ -340,7 +342,7 @@ class ListItems extends AbstractChannelProvider
         $retVal['links'][] = [
             'label' => 'channel_search',
             'icon' => 'fa-list',
-            'url' => $this->url->fromRoute('userList', ['id' => $list->id])
+            'url' => $this->url->fromRoute('userList', ['id' => $list->id]),
         ];
         return $retVal;
     }

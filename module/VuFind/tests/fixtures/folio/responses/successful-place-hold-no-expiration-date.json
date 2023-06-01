@@ -1,0 +1,10 @@
+[
+    { "comment": "Initial request for token"
+    },
+    {
+        "expectedMethod": "POST",
+        "expectedPath": "/circulation/requests",
+        "expectedParamsRegEx": "/{\"itemId\":\"record1\",\"requestType\":\"Page\",\"requesterId\":\"foo\",\"requestDate\":\".*\",\"fulfilmentPreference\":\"Hold Shelf\",\"requestExpirationDate\":null,\"pickupServicePointId\":\"desk1\"}/",
+        "body": "{ \"status\": \"success\" }"
+    }
+]

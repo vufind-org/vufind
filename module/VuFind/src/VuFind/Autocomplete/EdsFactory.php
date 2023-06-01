@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Factory for EDS-driven autocomplete plugins. Works for \VuFind\Autocomplete\Eds
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Autocomplete;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;

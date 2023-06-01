@@ -10,17 +10,17 @@
         <?php foreach ($this->extras as $extra => $value): ?>
           <?php if (is_array($value)): ?>
             <?php foreach ($value as $current): ?>
-              <input type="hidden" name="<?=$this->escapeHtmlAttr($extra) ?>[]" value="<?=$this->escapeHtmlAttr($current) ?>" />
+              <input type="hidden" name="<?=$this->escapeHtmlAttr($extra) ?>[]" value="<?=$this->escapeHtmlAttr($current) ?>">
             <?php endforeach; ?>
           <?php else: ?>
-            <input type="hidden" name="<?=$this->escapeHtmlAttr($extra) ?>" value="<?=$this->escapeHtmlAttr($value) ?>" />
+            <input type="hidden" name="<?=$this->escapeHtmlAttr($extra) ?>" value="<?=$this->escapeHtmlAttr($value) ?>">
           <?php endif; ?>
         <?php endforeach; ?>
       <?php endif;?>
-      <input class="btn btn-primary" type="submit" name="confirm" value="<?=$this->transEscAttr('confirm_dialog_yes') ?>" />
+      <input class="btn btn-primary" type="submit" name="confirm" value="<?=$this->transEscAttr('confirm_dialog_yes') ?>">
     </form>
     <form class="pull-left" action="<?=$this->escapeHtmlAttr($this->cancel) ?>" method="post">
-      <input class="btn btn-default" data-lightbox-close type="submit" name="cancel" value="<?=$this->transEscAttr('confirm_dialog_no') ?>" />
+      <input class="btn btn-default" data-lightbox-close type="submit" name="cancel" value="<?=$this->transEscAttr('confirm_dialog_no') ?>">
     </form>
     <div class="clearfix"></div>
   </div>

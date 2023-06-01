@@ -2,6 +2,8 @@
 \#*
 .\#*
 *~
+# Vim temporary files
+.*.sw[po]
 
 .php_cs_cache
 .phpstan_cache

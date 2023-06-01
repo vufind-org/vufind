@@ -1,8 +1,9 @@
 <?php
+
 /**
  * LDAP authentication test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Auth;
 
 use Laminas\Config\Config;
@@ -75,7 +77,7 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
                 'host' => 'localhost',
                 'port' => 1234,
                 'basedn' => 'basedn',
-                'username' => 'username'
+                'username' => 'username',
             ],
             true
         );
@@ -182,7 +184,7 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
     protected function getLoginRequest($overrides = [])
     {
         $post = $overrides + [
-            'username' => 'testuser', 'password' => 'testpass'
+            'username' => 'testuser', 'password' => 'testpass',
         ];
         $request = new \Laminas\Http\Request();
         $request->setPost(new \Laminas\Stdlib\Parameters($post));

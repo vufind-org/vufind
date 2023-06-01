@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Abstract base class to precompile CSS within a theme.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTheme;
 
 use Symfony\Component\Console\Output\OutputInterface;
@@ -170,7 +172,8 @@ abstract class AbstractCssPreCompiler
         $dir = opendir($baseDir);
         $list = [];
         while ($line = readdir($dir)) {
-            if (is_dir($baseDir . $line)
+            if (
+                is_dir($baseDir . $line)
                 && file_exists($baseDir . $line . '/theme.config.php')
             ) {
                 $list[] = $line;

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Module definition for the VuFind theme system.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development
  */
+
 namespace VuFindTheme;
 
 use Laminas\Mvc\View\Http\InjectTemplateListener as ParentInjectTemplateListener;
@@ -85,7 +87,7 @@ class Module
                 // module.config.php configuration.
                 'excluded_theme_prefixes' => ['Laminas'],
                 'extra_theme_prefixes' => [],
-            ]
+            ],
         ];
     }
 

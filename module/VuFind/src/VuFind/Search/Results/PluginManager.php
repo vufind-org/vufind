@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Search results plugin manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\Search\Results;
 
 /**
@@ -94,7 +96,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         \VuFind\Search\Solr\Results::class =>
             \VuFind\Search\Solr\ResultsFactory::class,
         \VuFind\Search\SolrAuth\Results::class => ResultsFactory::class,
-        \VuFind\Search\SolrAuthor\Results::class => ResultsFactory::class,
+        \VuFind\Search\SolrAuthor\Results::class =>
+            \VuFind\Search\Solr\ResultsFactory::class,
         \VuFind\Search\SolrAuthorFacets\Results::class => ResultsFactory::class,
         \VuFind\Search\SolrCollection\Results::class => ResultsFactory::class,
         \VuFind\Search\SolrReserves\Results::class => ResultsFactory::class,

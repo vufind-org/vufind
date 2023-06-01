@@ -1,5 +1,5 @@
 /*global getBibKeyString, google */
-$(document).ready(function activateGooglePreview() {
+$(function activateGooglePreview() {
   var lang = document.documentElement.getAttribute('lang');
   google.books.load({ language: lang });
   function initialize() {

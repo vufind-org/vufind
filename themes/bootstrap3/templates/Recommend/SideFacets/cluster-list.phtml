@@ -32,7 +32,7 @@
     }
   }
 ?>
-<div<?php if ($truncateSettings): ?> class="truncate-facets" data-truncate="<?=$this->escapeHtml(json_encode($truncateSettings))?>"<?php endif; ?>>
+<div<?php if ($truncateSettings): ?> class="truncate-facets" data-truncate="<?=$this->htmlSafeJsonEncode($truncateSettings)?>"<?php endif; ?>>
   <?php foreach ($this->cluster['list'] as $i => $thisFacet): ?>
     <?php if ($i == $this->facets_before_more): ?>
       <?php if ($alwaysUseLightbox): ?>

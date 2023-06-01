@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Test functionality of the home page facets.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 /**
@@ -50,15 +52,15 @@ class HomePageFacetsTest extends \VuFindTest\Integration\MinkTestCase
             [
                 'facets' => [
                     'Results' => [
-                        'hierarchical_facet_str_mv' => 'hierarchy'
+                        'hierarchical_facet_str_mv' => 'hierarchy',
                     ],
                     'SpecialFacets' => [
-                        'hierarchical[]' => 'hierarchical_facet_str_mv'
+                        'hierarchical[]' => 'hierarchical_facet_str_mv',
                     ],
                     'HomePage' => [
-                        'hierarchical_facet_str_mv' => 'Hierarchical'
-                    ]
-                ]
+                        'hierarchical_facet_str_mv' => 'Hierarchical',
+                    ],
+                ],
             ]
         );
         $session = $this->getMinkSession();

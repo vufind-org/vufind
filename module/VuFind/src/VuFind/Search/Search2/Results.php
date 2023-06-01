@@ -3,7 +3,7 @@
 /**
  * Search Results for second Solr index
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Staats- und Universitätsbibliothek Hamburg 2018.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\Search2;
 
 /**

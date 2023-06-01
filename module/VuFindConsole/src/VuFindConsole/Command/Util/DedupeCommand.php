@@ -1,11 +1,12 @@
 <?php
+
 /**
  * Console command: deduplicate lines in a sorted file.
  *
  * Needed for the Windows version of the alphabetical browse database generator,
  * since Windows sort does not support deduplication. Assumes presorted input.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -28,6 +29,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Util;
 
 use Symfony\Component\Console\Command\Command;
@@ -115,7 +117,7 @@ class DedupeCommand extends Command
      */
     protected function writeToOutputFile($handle, $text)
     {
-        fputs($handle, $text);
+        fwrite($handle, $text);
     }
 
     /**

@@ -1,4 +1,11 @@
 [
-    { "comment": "Initial request for token" },
-    { "body": "{ \"status\": \"success\" }" }
+    {
+        "comment": "Initial token check"
+    },
+    {
+        "expectedMethod": "POST",
+        "expectedPath": "/circulation/requests",
+        "expectedParamsRegEx": "/{\"itemId\":\"record1\",\"requestType\":\"Page\",\"requesterId\":\"foo\",\"requestDate\":\".*\",\"fulfilmentPreference\":\"Hold Shelf\",\"requestExpirationDate\":\"2022-01-01\",\"pickupServicePointId\":\"desk1\"}/",
+        "body": "{ \"status\": \"success\" }"
+    }
 ]

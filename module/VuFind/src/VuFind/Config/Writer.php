@@ -1,8 +1,9 @@
 <?php
+
 /**
  * VF Configuration Writer
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Config;
 
 /**
@@ -109,7 +111,8 @@ class Writer
             if (preg_match('/^\[(.+)\]$/', trim($content), $matches)) {
                 // If we just left the target section and didn't find the
                 // desired setting, we should write it to the end.
-                if ($currentSection == $section && !$settingSet
+                if (
+                    $currentSection == $section && !$settingSet
                     && $value !== null
                 ) {
                     $line = $this->buildContentLine($setting, $value, 0)

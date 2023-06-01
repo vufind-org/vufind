@@ -1,43 +1,45 @@
 <?php if ($this->pageCount): ?>
-  <ul class="pagination" aria-label="<?=$this->transEscAttr('pagination_label')?>">
-    <?php if (isset($this->previous)): ?>
-      <?php if (!isset($this->options['disableFirst']) || !$this->options['disableFirst']): ?>
-        <li role="none">
-          <a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage(1)?>" aria-label="<?=$this->transEscAttr('page_first')?>">[1]</a>
-        </li>
-      <?php endif; ?>
-      <li role="none">
-        <a class="page-prev" href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->previous)?>" aria-label="<?=$this->transEscAttr('page_prev')?>">
-          <?=$this->icon('page-prev') ?>
-          <?=$this->transEsc('Prev')?>
-        </a>
-      </li>
-    <?php endif; ?>
-
-    <?php if (count($this->pagesInRange) > 1): ?>
-      <?php foreach ($this->pagesInRange as $page): ?>
-        <?php if ($page != $this->current): ?>
+  <nav aria-label="<?=$this->transEscAttr('pagination_label')?>">
+    <ul class="pagination">
+      <?php if (isset($this->previous)): ?>
+        <?php if (!isset($this->options['disableFirst']) || !$this->options['disableFirst']): ?>
           <li role="none">
-            <a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($page)?>" aria-label="<?=$this->transEscAttr('page_no', ['%%page%%' => $page])?>"><?=$page?></a>
+            <a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage(1)?>" aria-label="<?=$this->transEscAttr('page_first')?>">[1]</a>
           </li>
-        <?php else: ?>
-          <li role="none" class="active" aria-current="page"><span><?=$page?></span></li>
         <?php endif; ?>
-      <?php endforeach; ?>
-    <?php endif; ?>
-
-    <?php if (isset($this->next)): ?>
-      <li role="none">
-        <a class="page-next" href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->next)?>" aria-label="<?=$this->transEscAttr('page_next')?>">
-          <?=$this->transEsc('Next');?>
-          <?=$this->icon('page-next') ?>
-        </a>
-      </li>
-      <?php if (!isset($this->options['disableLast']) || !$this->options['disableLast']): ?>
         <li role="none">
-          <a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->pageCount)?>" aria-label="<?=$this->transEscAttr('page_last')?>">[<?=$this->pageCount?>]</a>
+          <a class="page-prev" href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->previous)?>" aria-label="<?=$this->transEscAttr('page_prev')?>">
+            <?=$this->icon('page-prev') ?>
+            <?=$this->transEsc('Prev')?>
+          </a>
         </li>
       <?php endif; ?>
-    <?php endif; ?>
-  </ul>
+
+      <?php if (count($this->pagesInRange) > 1): ?>
+        <?php foreach ($this->pagesInRange as $page): ?>
+          <?php if ($page != $this->current): ?>
+            <li role="none">
+              <a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($page)?>" aria-label="<?=$this->transEscAttr('page_no', ['%%page%%' => $page])?>"><?=$page?></a>
+            </li>
+          <?php else: ?>
+            <li role="none" class="active" aria-current="page"><span><?=$page?></span></li>
+          <?php endif; ?>
+        <?php endforeach; ?>
+      <?php endif; ?>
+
+      <?php if (isset($this->next)): ?>
+        <li role="none">
+          <a class="page-next" href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->next)?>" aria-label="<?=$this->transEscAttr('page_next')?>">
+            <?=$this->transEsc('Next');?>
+            <?=$this->icon('page-next') ?>
+          </a>
+        </li>
+        <?php if (!isset($this->options['disableLast']) || !$this->options['disableLast']): ?>
+          <li role="none">
+            <a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->pageCount)?>" aria-label="<?=$this->transEscAttr('page_last')?>">[<?=$this->pageCount?>]</a>
+          </li>
+        <?php endif; ?>
+      <?php endif; ?>
+    </ul>
+  </nav>
 <?php endif; ?>

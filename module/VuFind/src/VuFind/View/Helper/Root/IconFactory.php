@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Icon helper factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -76,7 +78,7 @@ class IconFactory implements FactoryInterface
         // can disable these problematic checks by setting memory_limit to -1.
         $cacheConfig = [
             'adapter' => \Laminas\Cache\Storage\Adapter\Memory::class,
-            'options' => ['memory_limit' => -1]
+            'options' => ['memory_limit' => -1],
         ];
         $cache = $container->get(\Laminas\Cache\Service\StorageAdapterFactory::class)
             ->createFromArrayConfiguration($cacheConfig);

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Factory for record driver data formatting view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -26,6 +27,7 @@
  * @link     https://vufind.org/wiki/development:architecture:record_data_formatter
  * Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -122,7 +124,7 @@ class RecordDataFormatterFactory implements FactoryInterface
                             'type' => $type,
                             'schemaLabel' => $schemaLabels[$type],
                             'requiredDataFields' => [
-                                ['name' => 'role', 'prefix' => 'CreatorRoles::']
+                                ['name' => 'role', 'prefix' => 'CreatorRoles::'],
                             ],
                         ],
                     ],

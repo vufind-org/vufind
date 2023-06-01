@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Autocomplete handler plugin manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:autosuggesters Wiki
  */
+
 namespace VuFind\Autocomplete;
 
 use Laminas\Stdlib\Parameters;
@@ -123,7 +125,7 @@ class Suggester
 
         // Get suggestions:
         if ($module) {
-            if (strpos($module, ':') === false) {
+            if (!str_contains($module, ':')) {
                 $module .= ':'; // force colon to avoid warning in explode below
             }
             [$name, $params] = explode(':', $module, 2);

@@ -3,7 +3,7 @@
 /**
  * Random Recommend tests.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010, 2022.
  *
@@ -27,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Recommend;
 
 use VuFind\Recommend\RandomRecommend as Random;
@@ -162,14 +163,14 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($this->createMock(\VuFindSearch\Response\RecordCollectionInterface::class)));
 
         $checkCommand = function ($command) {
-            return get_class($command) === \VuFindSearch\Command\RandomCommand::class
+            return $command::class === \VuFindSearch\Command\RandomCommand::class
                 && $command->getTargetIdentifier() === "Solr"
                 && $command->getArguments()[0]->getAllTerms() === "john smith"
                 && $command->getArguments()[1] === 10
                 && $command->getArguments()[2]->getArrayCopy() ===
-                    ['spellcheck'=> ['true'],
-                    'fq'=> ['facet1:"value1"', 'facet2:"value2"'],
-                    'hl'=>["false"]];
+                    ['spellcheck' => ['true'],
+                    'fq' => ['facet1:"value1"', 'facet2:"value2"'],
+                    'hl' => ["false"]];
         };
         $service->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))
@@ -210,14 +211,14 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($this->createMock(\VuFindSearch\Response\RecordCollectionInterface::class)));
 
         $checkCommand = function ($command) {
-            return get_class($command) === \VuFindSearch\Command\RandomCommand::class
+            return $command::class === \VuFindSearch\Command\RandomCommand::class
                 && $command->getTargetIdentifier() === "Solr"
                 && $command->getArguments()[0]->getAllTerms() === "john smith"
                 && $command->getArguments()[1] === 10
                 && $command->getArguments()[2]->getArrayCopy() ===
-                    ['spellcheck'=> ['true'],
-                    'fq'=> ['facet1:"value1"',
-                    'facet2:"value2"'], 'hl'=>["false"]];
+                    ['spellcheck' => ['true'],
+                    'fq' => ['facet1:"value1"',
+                    'facet2:"value2"'], 'hl' => ["false"]];
         };
         $service->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))
@@ -259,14 +260,14 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($results));
 
         $checkCommand = function ($command) {
-            return get_class($command) === \VuFindSearch\Command\RandomCommand::class
+            return $command::class === \VuFindSearch\Command\RandomCommand::class
                 && $command->getTargetIdentifier() === "Solr"
                 && $command->getArguments()[0]->getAllTerms() === "john smith"
                 && $command->getArguments()[1] === 10
                 && $command->getArguments()[2]->getArrayCopy() ===
-                    ['spellcheck'=> ['true'],
-                    'fq'=> ['facet1:"value1"',
-                    'facet2:"value2"'], 'hl'=>["false"]];
+                    ['spellcheck' => ['true'],
+                    'fq' => ['facet1:"value1"',
+                    'facet2:"value2"'], 'hl' => ["false"]];
         };
         $service->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))
@@ -312,13 +313,13 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($results));
 
         $checkCommand = function ($command) {
-            return get_class($command) === \VuFindSearch\Command\RandomCommand::class
+            return $command::class === \VuFindSearch\Command\RandomCommand::class
                 && $command->getTargetIdentifier() === "Solr"
                 && $command->getArguments()[0]->getAllTerms() === "john smith"
                 && $command->getArguments()[1] === 10
-                && $command->getArguments()[2]->getArrayCopy() === ['spellcheck'=> ['true'],
-                    'fq'=> ['facet1:"value1"',
-                    'facet2:"value2"'], 'hl'=>["false"]];
+                && $command->getArguments()[2]->getArrayCopy() === ['spellcheck' => ['true'],
+                    'fq' => ['facet1:"value1"',
+                    'facet2:"value2"'], 'hl' => ["false"]];
         };
         $service->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))
@@ -344,6 +345,8 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Get a fixture object
+     *
+     * @param string $file Fixture name
      *
      * @return mixed
      */

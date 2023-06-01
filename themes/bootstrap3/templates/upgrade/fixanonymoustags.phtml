@@ -18,18 +18,18 @@ an administrator) to associate with old anonymous tags.</p>
 
 <p>See <a target="_jira" href="https://vufind.org/jira/browse/VUFIND-217">https://vufind.org/jira/browse/VUFIND-217</a> for more details.</p>
 
-<br />
+<br>
 
 <form method="post" action="<?=$this->url('upgrade-fixanonymoustags')?>">
-  <?=$this->transEsc('Username') ?>: <input type="text" name="username" /> <input type="submit" name="submit" value="<?=$this->transEscAttr('Submit') ?>" /><br /><br />
-  <input type="submit" name="skip" id="skip" value="<?=$this->transEscAttr('skip_step') ?>." />
+  <?=$this->transEsc('Username') ?>: <input type="text" name="username"> <input type="submit" name="submit" value="<?=$this->transEscAttr('Submit') ?>"><br><br>
+  <input type="submit" name="skip" id="skip" value="<?=$this->transEscAttr('skip_step') ?>.">
 </form>
 <?php
 $skipText = $this->transEsc('skip_confirm');
 $script = <<<JS
-$('#skip').click(function(e) {
-    return confirm('${skipText}');
-});
-JS;
+    $('#skip').click(function(e) {
+        return confirm('${skipText}');
+    });
+    JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');

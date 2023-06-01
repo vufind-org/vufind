@@ -1,8 +1,9 @@
 <?php
+
 /**
  * "Search tabs" view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2015-2016.
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use Laminas\Http\Request;
@@ -130,7 +132,8 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
             }
             $class = $this->helper->extractClassName($key);
             $filters = isset($allFilters[$key]) ? (array)$allFilters[$key] : [];
-            if ($class == $activeSearchClass
+            if (
+                $class == $activeSearchClass
                 && $this->helper->filtersMatch($class, $hiddenFilters, $filters)
             ) {
                 $retVal['selected'] = $this
@@ -171,16 +174,6 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
                     $filters,
                     $permissionName
                 );
-            }
-        }
-        if (!isset($retVal['selected']) && !empty($retVal['tabs'])) {
-            // Make the first tab for the given search class selected
-            foreach ($retVal['tabs'] as &$tab) {
-                if ($tab['class'] == $activeSearchClass) {
-                    $retVal['selected'] = $tab;
-                    $tab['selected'] = true;
-                    break;
-                }
             }
         }
 
@@ -270,7 +263,7 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
                 $this->cachedHiddenFilterParams[$searchClassId]
                     = UrlQueryHelper::buildQueryString(
                         [
-                            'hiddenFilters' => $hiddenFilters
+                            'hiddenFilters' => $hiddenFilters,
                         ]
                     );
             } else {
@@ -297,7 +290,7 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
             'class' => $class,
             'label' => $label,
             'permission' => $permissionName,
-            'selected' => true
+            'selected' => true,
         ];
     }
 
@@ -357,7 +350,7 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
             'label' => $label,
             'permission' => $permissionName,
             'selected' => false,
-            'url' => $newUrl
+            'url' => $newUrl,
         ];
     }
 
@@ -385,7 +378,7 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
             'label' => $label,
             'permission' => $permissionName,
             'selected' => false,
-            'url' => $url
+            'url' => $url,
         ];
     }
 
@@ -420,7 +413,7 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
             'label' => $label,
             'permission' => $permissionName,
             'selected' => false,
-            'url' => $url
+            'url' => $url,
         ];
     }
 
@@ -447,8 +440,9 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
         if ($hiddenFilters = $params->getHiddenFiltersAsQueryParams()) {
             return $prepend . UrlQueryHelper::buildQueryString(
                 [
-                    'hiddenFilters' => $hiddenFilters
-                ]
+                    'hiddenFilters' => $hiddenFilters,
+                ],
+                false
             );
         }
         return '';

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Alma Link Resolver Driver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2019
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:link_resolver_drivers Wiki
  */
+
 namespace VuFind\Resolver\Driver;
 
 /**
@@ -133,7 +135,8 @@ class Alma extends AbstractBase
                     $title = $this->getKeyWithId($service, 'package_public_name');
                 }
                 $href = (string)$service->resolution_url;
-                if ('getOpenAccessFullText' === $originalServiceType
+                if (
+                    'getOpenAccessFullText' === $originalServiceType
                     || $this->getKeyWithId($service, 'Is_free')
                 ) {
                     $access = 'open';

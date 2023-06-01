@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Controller for configurable forms (feedback etc).
  *
- * PHP version 7
+ * PHP version 8
  *
  * @category VuFind
  * @package  Controller
@@ -11,6 +12,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Controller;
 
 use Laminas\Log\LoggerAwareInterface;
@@ -65,6 +67,7 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
         $user = $this->getUser();
 
         $form = $this->serviceLocator->get($this->formClass);
+        $prefill = $this->params()->fromQuery();
         $params = [];
         if ($refererHeader = $this->getRequest()->getHeader('Referer')) {
             $params['referrer'] = $refererHeader->getFieldValue();
@@ -72,7 +75,7 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
         if ($userAgentHeader = $this->getRequest()->getHeader('User-Agent')) {
             $params['userAgent'] = $userAgentHeader->getFieldValue();
         }
-        $form->setFormId($formId, $params);
+        $form->setFormId($formId, $params, $prefill);
 
         if (!$form->isEnabled()) {
             throw new \VuFind\Exception\Forbidden("Form '$formId' is disabled");
@@ -135,7 +138,7 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
             $form->setData(
                 [
                  'name' => $user->firstname . ' ' . $user->lastname,
-                 'email' => $user['email']
+                 'email' => $user['email'],
                 ]
             );
         }
