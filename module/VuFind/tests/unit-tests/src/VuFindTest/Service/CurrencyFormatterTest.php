@@ -29,7 +29,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 
-namespace VuFindTest\View\Helper\Root;
+namespace VuFindTest\Service;
 
 /**
  * CurrencyFormatter Test Class
