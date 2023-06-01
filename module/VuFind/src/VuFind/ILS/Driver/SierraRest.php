@@ -2629,8 +2629,6 @@ class SierraRest extends AbstractBase implements
      * @param array $bib  Bib record from Sierra
      *
      * @return bool
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function isHoldable(array $item, array $bib): bool
     {
