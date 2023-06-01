@@ -3,7 +3,7 @@
 /**
  * LibGuides connector.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -27,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\LibGuides;
 
 use Laminas\Http\Client as HttpClient;
@@ -126,7 +127,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
                 $result = [
                     'recordCount' => 0,
                     'documents' => [],
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ];
             } else {
                 throw $e;
@@ -195,7 +196,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
 
         $results = [
             'recordCount' => count($items),
-            'documents' => $items
+            'documents' => $items,
         ];
 
         return $results;

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Abstract parameters search model.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -23,9 +24,11 @@
  * @package  Search_Base
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\Base;
 
 use VuFind\I18n\TranslatableString;
@@ -44,6 +47,7 @@ use VuFindSearch\Query\QueryGroup;
  * @package  Search_Base
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -195,6 +199,13 @@ class Params
      * @var array
      */
     protected $facetAliases = [];
+
+    /**
+     * Search context parameters.
+     *
+     * @var array
+     */
+    protected $searchContextParameters = [];
 
     /**
      * Config loader
@@ -359,7 +370,8 @@ class Params
             // to reduce the size of result lists without actually enabling
             // the user's ability to select a reduced list size).
             $legalOptions = $this->getOptions()->getLimitOptions();
-            if (in_array($limit, $legalOptions)
+            if (
+                in_array($limit, $legalOptions)
                 || ($limit > 0 && $limit < max($legalOptions))
             ) {
                 $this->limit = $limit;
@@ -569,7 +581,8 @@ class Params
         } elseif (!empty($view) && in_array($view, $validViews)) {
             // make sure the url parameter is a valid view
             $this->setView($view);
-        } elseif (!empty($this->lastView)
+        } elseif (
+            !empty($this->lastView)
             && in_array($this->lastView, $validViews)
         ) {
             // if there is nothing in the URL, see if we had a previous value
@@ -833,7 +846,8 @@ class Params
 
         // Check all of the relevant fields for matches:
         foreach ($this->getAliasesForFacetField($field) as $current) {
-            if (isset($this->filterList[$current])
+            if (
+                isset($this->filterList[$current])
                 && in_array($value, $this->filterList[$current])
             ) {
                 return true;
@@ -1004,7 +1018,8 @@ class Params
      */
     public function getFacetLabel($field, $value = null, $default = null)
     {
-        if (!isset($this->facetConfig[$field])
+        if (
+            !isset($this->facetConfig[$field])
             && !isset($this->extraFacetLabels[$field])
             && isset($this->facetAliases[$field])
         ) {
@@ -1080,7 +1095,8 @@ class Params
             // and each value currently used for that field
             foreach ($values as $value) {
                 // Add to the list unless it's in the list of fields to skip:
-                if (!isset($skipList[$field])
+                if (
+                    !isset($skipList[$field])
                     || !in_array($value, $skipList[$field])
                 ) {
                     $facetLabel = $this->getFacetLabel($field, $value);
@@ -1148,7 +1164,7 @@ class Params
                 $translateFormat,
                 [
                     '%%raw%%' => $text,
-                    '%%translated%%' => $translated
+                    '%%translated%%' => $translated,
                 ]
             ) : $translated;
     }
@@ -1235,7 +1251,8 @@ class Params
             foreach ($facets as $facet) {
                 // If the current filter is not on the include list, skip it (but
                 // accept everything if the include list is null).
-                if (($include !== null && !in_array($facet['filter'], $include))
+                if (
+                    ($include !== null && !in_array($facet['filter'], $include))
                     && !($includeDynamic && $facet['dynamic'])
                 ) {
                     continue;
@@ -1642,7 +1659,8 @@ class Params
         // Extract field and value from URL string:
         [$field, $value] = $this->parseFilter($filter);
 
-        if (isset($this->hiddenFilters[$field])
+        if (
+            isset($this->hiddenFilters[$field])
             && in_array($value, $this->hiddenFilters[$field])
         ) {
             return true;
@@ -1717,7 +1735,7 @@ class Params
         foreach ($this->getOptions()->getViewOptions() as $key => $value) {
             $list[$key] = [
                 'desc' => $value,
-                'selected' => ($key == $this->getView())
+                'selected' => ($key == $this->getView()),
             ];
         }
         return $list;
@@ -1737,7 +1755,7 @@ class Params
         foreach ($valid as $limit) {
             $list[$limit] = [
                 'desc' => $limit,
-                'selected' => ($limit == $this->getLimit())
+                'selected' => ($limit == $this->getLimit()),
             ];
         }
         return $list;
@@ -1757,7 +1775,7 @@ class Params
         foreach ($valid as $sort => $desc) {
             $list[$sort] = [
                 'desc' => $desc,
-                'selected' => ($sort == $this->getSort())
+                'selected' => ($sort == $this->getSort()),
             ];
         }
         return $list;
@@ -1776,6 +1794,7 @@ class Params
         $this->filterList = $minified->f;
         $this->hiddenFilters = $minified->hf;
         $this->searchType = $minified->ty;
+        $this->searchContextParameters = $minified->scp;
 
         // Deminified searches will always have defaults already applied;
         // we don't want to accidentally manipulate them further.
@@ -1786,6 +1805,19 @@ class Params
 
         // Search terms, we need to expand keys
         $this->query = QueryAdapter::deminify($minified->t);
+    }
+
+    /**
+     * Get remembered search context parameters from saved search. We track these separately since
+     * in some contexts we want to use them (e.g. linking back to a search in breadcrumbs), but in
+     * other contexts we want to ignore them (e.g. comparing two searches to see if they represent
+     * the same query -- because page 1 and page 2 still represent the same overall search).
+     *
+     * @return array
+     */
+    public function getSavedSearchContextParameters(): array
+    {
+        return $this->searchContextParameters;
     }
 
     /**

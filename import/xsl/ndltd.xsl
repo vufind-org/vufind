@@ -61,15 +61,13 @@
                         </field>
 
                         <!-- LANGUAGE -->
-                        <xsl:if test="dc:language">
-                            <xsl:for-each select="dc:language">
-                                <xsl:if test="string-length() > 0">
-                                    <field name="language">
-                                        <xsl:value-of select="php:function('VuFind::mapString', normalize-space(string(.)), 'language_map.properties')"/>
-                                    </field>
-                                </xsl:if>
-                            </xsl:for-each>
-                        </xsl:if>
+                        <xsl:for-each select="dc:language">
+                            <xsl:if test="string-length() > 0">
+                                <field name="language">
+                                    <xsl:value-of select="php:function('VuFind::mapString', normalize-space(string(.)), 'language_map.properties')"/>
+                                </field>
+                            </xsl:if>
+                        </xsl:for-each>
 
                         <!-- building -->
                         <xsl:if test="string-length($building) > 0">
@@ -112,38 +110,36 @@
                         <field name="format">Online</field>
 
                         <!-- SUBJECT -->
-                        <xsl:if test="dc:subject">
-                            <xsl:for-each select="dc:subject">
-                                <xsl:choose>
-                                    <xsl:when test="contains(., '. ')">
-                                        <xsl:for-each select="php:function('VuFind::explode', '. ', string(.))/part">
-                                            <field name="topic1"><xsl:value-of select="normalize-space(string(.))" /></field>
-                                        </xsl:for-each>
-                                    </xsl:when>
-                                    <xsl:when test="contains(., ', ')">
-                                        <xsl:for-each select="php:function('VuFind::explode', ', ', string(.))/part">
-                                            <field name="topic2"><xsl:value-of select="normalize-space(string(.))" /></field>
-                                        </xsl:for-each>
-                                    </xsl:when>
-                                    <xsl:when test="contains(., '; ')">
-                                        <xsl:for-each select="php:function('VuFind::explode', '; ', string(.))/part">
-                                            <field name="topic3"><xsl:value-of select="normalize-space(string(.))" /></field>
-                                        </xsl:for-each>
-                                    </xsl:when>
-                                    <xsl:otherwise>
-                                        <field name="topic">
-                                            <xsl:value-of select="." />
-                                        </field>
-                                    </xsl:otherwise>
-                                </xsl:choose>
-                            </xsl:for-each>
-                        </xsl:if>
+                        <xsl:for-each select="dc:subject">
+                            <xsl:choose>
+                                <xsl:when test="contains(., '. ')">
+                                    <xsl:for-each select="php:function('VuFind::explode', '. ', string(.))/part">
+                                        <field name="topic1"><xsl:value-of select="normalize-space(string(.))" /></field>
+                                    </xsl:for-each>
+                                </xsl:when>
+                                <xsl:when test="contains(., ', ')">
+                                    <xsl:for-each select="php:function('VuFind::explode', ', ', string(.))/part">
+                                        <field name="topic2"><xsl:value-of select="normalize-space(string(.))" /></field>
+                                    </xsl:for-each>
+                                </xsl:when>
+                                <xsl:when test="contains(., '; ')">
+                                    <xsl:for-each select="php:function('VuFind::explode', '; ', string(.))/part">
+                                        <field name="topic3"><xsl:value-of select="normalize-space(string(.))" /></field>
+                                    </xsl:for-each>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <field name="topic">
+                                        <xsl:value-of select="." />
+                                    </field>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </xsl:for-each>
 
                         <!-- DESCRIPTION -->
                         <xsl:if test="dc:description">
                             <field name="description">
                                 <xsl:for-each select="dc:description">
-                                <xsl:if test="position() > 1"> === </xsl:if><xsl:value-of select="."/>
+                                  <xsl:if test="position() > 1"> === </xsl:if><xsl:value-of select="."/>
                                 </xsl:for-each>
                             </field>
                         </xsl:if>
@@ -157,21 +153,19 @@
 
 
                         <!-- AUTHOR -->
-                        <xsl:if test="dc:creator">
-                            <xsl:for-each select="dc:creator">
-                                <xsl:if test="normalize-space()">
-                                    <field name="author">
+                        <xsl:for-each select="dc:creator">
+                            <xsl:if test="normalize-space()">
+                                <field name="author">
+                                    <xsl:value-of select="normalize-space()"/>
+                                </field>
+                                <!-- use first author value for sorting -->
+                                <xsl:if test="position()=1">
+                                    <field name="author_sort">
                                         <xsl:value-of select="normalize-space()"/>
                                     </field>
-                                    <!-- use first author value for sorting -->
-                                    <xsl:if test="position()=1">
-                                        <field name="author_sort">
-                                            <xsl:value-of select="normalize-space()"/>
-                                        </field>
-                                    </xsl:if>
                                 </xsl:if>
-                            </xsl:for-each>
-                        </xsl:if>
+                            </xsl:if>
+                        </xsl:for-each>
 
                         <!-- TITLE -->
                         <xsl:if test="dc:title[normalize-space()]">

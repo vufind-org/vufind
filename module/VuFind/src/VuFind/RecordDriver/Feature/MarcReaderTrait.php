@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Functions for reading MARC records.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver\Feature;
 
 /**
@@ -166,12 +168,12 @@ trait MarcReaderTrait
                 ->getSubfieldArray($currentField, [$subfield], true, $separator);
             if (!empty($currentVal)) {
                 switch ($currentField['i2']) {
-                case '1':
-                    $pubResults = array_merge($pubResults, $currentVal);
-                    break;
-                case '4':
-                    $copyResults = array_merge($copyResults, $currentVal);
-                    break;
+                    case '1':
+                        $pubResults = array_merge($pubResults, $currentVal);
+                        break;
+                    case '4':
+                        $copyResults = array_merge($copyResults, $currentVal);
+                        break;
                 }
             }
         }

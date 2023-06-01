@@ -41,7 +41,7 @@
           $ariaLabel = $this->translate('Remove filter') . ' ' . $this->escapeHtmlAttr($desc);
         ?>
         <?=$desc?>
-        <?php if($removeLink): ?>
+        <?php if ($removeLink): ?>
           <a class="search-filter-remove" aria-label="<?=$ariaLabel?>" href="<?=$removeLink?>">
             <?=$this->icon('search-filter-remove') ?>
           </a>

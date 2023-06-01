@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Factory for EDS backends.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Factory;
 
 use Psr\Container\ContainerInterface;
@@ -135,7 +137,7 @@ class EdsBackendFactory extends AbstractBackendFactory
     {
         $options = [
             'search_http_method' => $this->edsConfig->General->search_http_method
-                ?? 'POST'
+                ?? 'POST',
         ];
         if (isset($this->edsConfig->General->api_url)) {
             $options['api_url'] = $this->edsConfig->General->api_url;

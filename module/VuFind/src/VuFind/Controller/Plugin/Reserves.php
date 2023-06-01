@@ -1,8 +1,9 @@
 <?php
+
 /**
  * VuFind Action Helper - Reserves Support Methods
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010, 2022.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Controller\Plugin;
 
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
@@ -118,7 +120,7 @@ class Reserves extends AbstractPlugin
                     'BIB_ID' => $bib_id,
                     'bib_id' => $bib_id,
                     'course' => $course,
-                    'instructor' => $instructor
+                    'instructor' => $instructor,
                 ];
             }
             return $bibs;

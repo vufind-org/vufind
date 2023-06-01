@@ -1,8 +1,9 @@
 <?php
+
 /**
  * HoldingsWorldCat Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\RecordTab;
 
 use VuFind\RecordTab\HoldingsWorldCat;
@@ -68,7 +70,7 @@ class HoldingsWorldCatTest extends \PHPUnit\Framework\TestCase
     /**
      * Test if the tab is active.
      *
-     * @param string $oclcnum OCLCNum
+     * @param string $oclcnum        OCLCNum
      * @param bool   $expectedResult Expected return value from isActive
      *
      * @return void
@@ -113,7 +115,7 @@ class HoldingsWorldCatTest extends \PHPUnit\Framework\TestCase
         $commandObj->expects($this->any())->method('getResult')
             ->will($this->returnValue(true));
         $checkCommand = function ($command) {
-            return get_class($command) === \VuFindSearch\Backend\WorldCat\Command\GetHoldingsCommand::class
+            return $command::class === \VuFindSearch\Backend\WorldCat\Command\GetHoldingsCommand::class
                     && $command->getArguments()[0] === "bar"
                     && $command->getTargetIdentifier() === "WorldCat";
         };
@@ -124,7 +126,7 @@ class HoldingsWorldCatTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * get a Service object
+     * Get a Service object
      *
      * @return Service
      */

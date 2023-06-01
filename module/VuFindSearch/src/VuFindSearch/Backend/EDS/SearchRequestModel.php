@@ -1,8 +1,9 @@
 <?php
+
 /**
  * EBSCO EDS API Search Model
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Serials Solutions 2011.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\EDS;
 
 /**
@@ -174,27 +176,27 @@ class SearchRequestModel
     {
         foreach ($parameters as $key => $values) {
             switch ($key) {
-            case 'filters':
-                $cnt = 1;
-                foreach ($values as $filter) {
-                    if (substr($filter, 0, 6) == 'LIMIT|') {
-                        $this->addLimiter(substr($filter, 6));
-                    } elseif (substr($filter, 0, 7) == 'EXPAND:') {
-                        $this->addExpander(substr($filter, 7));
-                    } elseif (substr($filter, 0, 11) == 'SEARCHMODE:') {
-                        $this->searchMode = substr($filter, 11, null);
-                    } elseif (substr($filter, 0, 15) == 'PublicationDate') {
-                        $this->addLimiter($this->formatDateLimiter($filter));
-                    } else {
-                        $this->addFilter("$cnt,$filter");
-                        $cnt++;
+                case 'filters':
+                    $cnt = 1;
+                    foreach ($values as $filter) {
+                        if (substr($filter, 0, 6) == 'LIMIT|') {
+                            $this->addLimiter(substr($filter, 6));
+                        } elseif (substr($filter, 0, 7) == 'EXPAND:') {
+                            $this->addExpander(substr($filter, 7));
+                        } elseif (substr($filter, 0, 11) == 'SEARCHMODE:') {
+                            $this->searchMode = substr($filter, 11, null);
+                        } elseif (substr($filter, 0, 15) == 'PublicationDate') {
+                            $this->addLimiter($this->formatDateLimiter($filter));
+                        } else {
+                            $this->addFilter("$cnt,$filter");
+                            $cnt++;
+                        }
                     }
-                }
-                break;
-            default:
-                if (property_exists($this, $key)) {
-                    $this->$key = $values;
-                }
+                    break;
+                default:
+                    if (property_exists($this, $key)) {
+                        $this->$key = $values;
+                    }
             }
         }
     }
@@ -217,7 +219,7 @@ class SearchRequestModel
     public function convertToQueryStringParameterArray()
     {
         $qs = [];
-        if (isset($this->query) && 0 < sizeof($this->query)) {
+        if (isset($this->query) && 0 < count($this->query)) {
             $formatQuery = function ($json) {
                 $query = json_decode($json, true);
                 $queryString = empty($query['bool'])
@@ -231,7 +233,7 @@ class SearchRequestModel
             $qs['query-x'] = array_map($formatQuery, $this->query);
         }
 
-        if (isset($this->facetFilters) && 0 < sizeof($this->facetFilters)) {
+        if (isset($this->facetFilters) && 0 < count($this->facetFilters)) {
             $formatFilter = function ($raw) {
                 [$field, $value] = explode(':', $raw, 2);
                 return $field . ':' . static::escapeSpecialCharacters($value);
@@ -239,11 +241,11 @@ class SearchRequestModel
             $qs['facetfilter'] = array_map($formatFilter, $this->facetFilters);
         }
 
-        if (isset($this->limiters) && 0 < sizeof($this->limiters)) {
+        if (isset($this->limiters) && 0 < count($this->limiters)) {
             $qs['limiter'] = $this->limiters;
         }
 
-        if (isset($this->actions) && 0 < sizeof($this->actions)) {
+        if (isset($this->actions) && 0 < count($this->actions)) {
             $qs['action-x'] = $this->actions;
         }
 
@@ -259,7 +261,7 @@ class SearchRequestModel
             $qs['searchmode'] = $this->searchMode;
         }
 
-        if (isset($this->expanders) && 0 < sizeof($this->expanders)) {
+        if (isset($this->expanders) && 0 < count($this->expanders)) {
             $qs['expander'] = implode(",", $this->expanders);
         }
 
@@ -292,7 +294,7 @@ class SearchRequestModel
         $json->SearchCriteria = new \stdClass();
         $json->RetrievalCriteria = new \stdClass();
         $json->Actions = null;
-        if (isset($this->query) && 0 < sizeof($this->query)) {
+        if (isset($this->query) && 0 < count($this->query)) {
             $json->SearchCriteria->Queries = [];
             foreach ($this->query as $queryJson) {
                 $query = json_decode($queryJson, true);
@@ -308,7 +310,7 @@ class SearchRequestModel
             }
         }
 
-        if (isset($this->facetFilters) && 0 < sizeof($this->facetFilters)) {
+        if (isset($this->facetFilters) && 0 < count($this->facetFilters)) {
             $json->SearchCriteria->FacetFilters = [];
             foreach ($this->facetFilters as $currentFilter) {
                 [$id, $filter] = explode(',', $currentFilter, 2);
@@ -323,7 +325,7 @@ class SearchRequestModel
             }
         }
 
-        if (isset($this->limiters) && 0 < sizeof($this->limiters)) {
+        if (isset($this->limiters) && 0 < count($this->limiters)) {
             $json->SearchCriteria->Limiters = [];
             foreach ($this->limiters as $limiter) {
                 [$id, $values] = explode(':', $limiter, 2);
@@ -334,7 +336,7 @@ class SearchRequestModel
             }
         }
 
-        if (isset($this->actions) && 0 < sizeof($this->actions)) {
+        if (isset($this->actions) && 0 < count($this->actions)) {
             $json->Actions = $this->actions;
         }
 
@@ -348,7 +350,7 @@ class SearchRequestModel
             $json->SearchCriteria->SearchMode = $this->searchMode;
         }
 
-        if (isset($this->expanders) && 0 < sizeof($this->expanders)) {
+        if (isset($this->expanders) && 0 < count($this->expanders)) {
             $json->SearchCriteria->Expanders = $this->expanders;
         }
 

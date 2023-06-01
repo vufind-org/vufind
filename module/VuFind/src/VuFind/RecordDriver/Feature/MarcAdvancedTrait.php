@@ -1,9 +1,10 @@
 <?php
+
 /**
  * Functions to add advanced MARC-driven functionality to a record driver already
  * powered by the standard index spec. Depends upon MarcReaderTrait.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  * Copyright (C) The National Library of Finland 2020.
@@ -28,6 +29,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver\Feature;
 
 use VuFind\View\Helper\Root\RecordLinker;
@@ -61,7 +63,7 @@ trait MarcAdvancedTrait
         '651' => 'geographic',
         '653' => '',
         '655' => 'genre/form',
-        '656' => 'occupation'
+        '656' => 'occupation',
     ];
 
     /**
@@ -79,7 +81,7 @@ trait MarcAdvancedTrait
         '3' => 'nal',
         '4' => 'unknown',
         '5' => 'cash',
-        '6' => 'rvm'
+        '6' => 'rvm',
     ];
 
     /**
@@ -152,7 +154,7 @@ trait MarcAdvancedTrait
                             'heading' => $current,
                             'type' => $fieldType,
                             'source' => $source,
-                            'id' => $this->getSubfield($result, '0')
+                            'id' => $this->getSubfield($result, '0'),
                         ];
                     } else {
                         $retval[] = $current;
@@ -189,22 +191,22 @@ trait MarcAdvancedTrait
         $biblioLevel = strtoupper($leader[7]);
 
         switch ($biblioLevel) {
-        case 'M': // Monograph
-            return "Monograph";
-        case 'S': // Serial
-            return "Serial";
-        case 'A': // Monograph Part
-            return "MonographPart";
-        case 'B': // Serial Part
-            return "SerialPart";
-        case 'C': // Collection
-            return "Collection";
-        case 'D': // Collection Part
-            return "CollectionPart";
-        case 'I': // Integrating Resource
-            return "IntegratingResource";
-        default:
-            return "Unknown";
+            case 'M': // Monograph
+                return "Monograph";
+            case 'S': // Serial
+                return "Serial";
+            case 'A': // Monograph Part
+                return "MonographPart";
+            case 'B': // Serial Part
+                return "SerialPart";
+            case 'C': // Collection
+                return "Collection";
+            case 'D': // Collection Part
+                return "CollectionPart";
+            case 'I': // Integrating Resource
+                return "IntegratingResource";
+            default:
+                return "Unknown";
         }
     }
 
@@ -542,10 +544,11 @@ trait MarcAdvancedTrait
     public function getTOC()
     {
         $toc = [];
-        if ($fields = $this->getMarcReader()->getFields(
-            '505',
-            ['a', 'g', 'r', 't', 'u']
-        )
+        if (
+            $fields = $this->getMarcReader()->getFields(
+                '505',
+                ['a', 'g', 'r', 't', 'u']
+            )
         ) {
             foreach ($fields as $field) {
                 // Implode all the subfields into a single string, then explode
@@ -611,7 +614,7 @@ trait MarcAdvancedTrait
         // Which fields/subfields should we check for URLs?
         $fieldsToCheck = [
             '856' => ['y', 'z', '3'],   // Standard URL
-            '555' => ['a']              // Cumulative index/finding aids
+            '555' => ['a'],              // Cumulative index/finding aids
         ];
 
         foreach ($fieldsToCheck as $field => $subfields) {
@@ -711,16 +714,16 @@ trait MarcAdvancedTrait
         // Assign notes based on the relationship type
         $value = $field['tag'];
         switch ($value) {
-        case '780':
-            if (in_array($relationshipIndicator, range('0', '7'))) {
-                $value .= '_' . $relationshipIndicator;
-            }
-            break;
-        case '785':
-            if (in_array($relationshipIndicator, range('0', '8'))) {
-                $value .= '_' . $relationshipIndicator;
-            }
-            break;
+            case '780':
+                if (in_array($relationshipIndicator, range('0', '7'))) {
+                    $value .= '_' . $relationshipIndicator;
+                }
+                break;
+            case '785':
+                if (in_array($relationshipIndicator, range('0', '8'))) {
+                    $value .= '_' . $relationshipIndicator;
+                }
+                break;
         }
 
         return 'note_' . $value;
@@ -752,46 +755,48 @@ trait MarcAdvancedTrait
         // If no reference found, check the next link type instead
         foreach ($linkTypes as $linkType) {
             switch (trim($linkType)) {
-            case 'oclc':
-                foreach ($linkFields as $current) {
-                    if ($oclc = $this->getIdFromLinkingField($current, 'OCoLC')) {
-                        $link = ['type' => 'oclc', 'value' => $oclc];
+                case 'oclc':
+                    foreach ($linkFields as $current) {
+                        $oclc = $this->getIdFromLinkingField($current, 'OCoLC');
+                        if ($oclc) {
+                            $link = ['type' => 'oclc', 'value' => $oclc];
+                        }
                     }
-                }
-                break;
-            case 'dlc':
-                foreach ($linkFields as $current) {
-                    if ($dlc = $this->getIdFromLinkingField($current, 'DLC', true)) {
-                        $link = ['type' => 'dlc', 'value' => $dlc];
+                    break;
+                case 'dlc':
+                    foreach ($linkFields as $current) {
+                        $dlc = $this->getIdFromLinkingField($current, 'DLC', true);
+                        if ($dlc) {
+                            $link = ['type' => 'dlc', 'value' => $dlc];
+                        }
                     }
-                }
-                break;
-            case 'id':
-                foreach ($linkFields as $current) {
-                    if ($bibLink = $this->getIdFromLinkingField($current)) {
-                        $link = ['type' => 'bib', 'value' => $bibLink];
+                    break;
+                case 'id':
+                    foreach ($linkFields as $current) {
+                        if ($bibLink = $this->getIdFromLinkingField($current)) {
+                            $link = ['type' => 'bib', 'value' => $bibLink];
+                        }
                     }
-                }
-                break;
-            case 'isbn':
-                if ($isbn = $this->getSubfield($field, 'z')) {
-                    $link = [
-                        'type' => 'isn', 'value' => $isbn,
-                        'exclude' => $this->getUniqueId()
-                    ];
-                }
-                break;
-            case 'issn':
-                if ($issn = $this->getSubfield($field, 'x')) {
-                    $link = [
-                        'type' => 'isn', 'value' => $issn,
-                        'exclude' => $this->getUniqueId()
-                    ];
-                }
-                break;
-            case 'title':
-                $link = ['type' => 'title', 'value' => $title];
-                break;
+                    break;
+                case 'isbn':
+                    if ($isbn = $this->getSubfield($field, 'z')) {
+                        $link = [
+                            'type' => 'isn', 'value' => $isbn,
+                            'exclude' => $this->getUniqueId(),
+                        ];
+                    }
+                    break;
+                case 'issn':
+                    if ($issn = $this->getSubfield($field, 'x')) {
+                        $link = [
+                            'type' => 'isn', 'value' => $issn,
+                            'exclude' => $this->getUniqueId(),
+                        ];
+                    }
+                    break;
+                case 'title':
+                    $link = ['type' => 'title', 'value' => $title];
+                    break;
             }
             // Exit loop if we have a link
             if (isset($link)) {
@@ -802,7 +807,7 @@ trait MarcAdvancedTrait
         return !isset($link) ? false : [
             'title' => $this->getRecordLinkNote($field),
             'value' => $title,
-            'link'  => $link
+            'link'  => $link,
         ];
     }
 
@@ -884,7 +889,7 @@ trait MarcAdvancedTrait
             $instructions[$key] = [
                 'mode' => $instructionParts[0],
                 'params' => $instructionParts[1] ?? null,
-                'field' => $instructionParts[2] ?? $defaultField
+                'field' => $instructionParts[2] ?? $defaultField,
             ];
         }
 
@@ -1001,7 +1006,8 @@ trait MarcAdvancedTrait
     {
         $fields024 = $this->getMarcReader()->getFields('024');
         foreach ($fields024 as $field) {
-            if ($field['i1'] == 2
+            if (
+                $field['i1'] == 2
                 && $subfield = $this->getSubfield($field, 'a')
             ) {
                 return $subfield;

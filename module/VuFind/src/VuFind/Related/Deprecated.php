@@ -1,9 +1,10 @@
 <?php
+
 /**
  * Deprecated Related Records Module - used to replace legacy modules that no
  * longer function due to, for example, external APIs that have been shut down.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2015.
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:related_records_modules Wiki
  */
+
 namespace VuFind\Related;
 
 /**

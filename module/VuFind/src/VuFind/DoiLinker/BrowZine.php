@@ -1,8 +1,9 @@
 <?php
+
 /**
  * BrowZine DOI linker
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\DoiLinker;
 
 use VuFind\I18n\Translator\TranslatorAwareInterface;
@@ -96,11 +98,11 @@ class BrowZine implements DoiLinkerInterface, TranslatorAwareInterface
             return false;
         }
         switch (strtolower(trim($this->config['filterType'] ?? 'none'))) {
-        case 'include':
-            return in_array($key, (array)($this->config['filter'] ?? []));
-        case 'exclude':
-            return !in_array($key, (array)($this->config['filter'] ?? []));
-        default:
+            case 'include':
+                return in_array($key, (array)($this->config['filter'] ?? []));
+            case 'exclude':
+                return !in_array($key, (array)($this->config['filter'] ?? []));
+            default:
         }
         // If we got this far, no filter setting is applied, so the option is legal:
         return true;
@@ -110,7 +112,8 @@ class BrowZine implements DoiLinkerInterface, TranslatorAwareInterface
      * Given an array of DOIs, perform a lookup and return an associative array
      * of arrays, keyed by DOI. Each array contains one or more associative arrays
      * with required 'link' (URL to related resource) and 'label' (display text)
-     * keys and an optional 'icon' (URL to icon graphic) key.
+     * keys and an optional 'icon' (URL to icon graphic) or localIcon (name of
+     * configured icon in theme) key.
      *
      * @param array $doiArray DOIs to look up
      *

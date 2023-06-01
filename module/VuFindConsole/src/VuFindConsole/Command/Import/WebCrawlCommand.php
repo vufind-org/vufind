@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Console command: web crawler
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Import;
 
 use Laminas\Config\Config;
@@ -203,7 +205,7 @@ class WebCrawlCommand extends Command
                     }
                 } catch (\Exception $e) {
                     if ($verbose) {
-                        $output->writeln(get_class($e) . ': ' . $e->getMessage());
+                        $output->writeln($e::class . ': ' . $e->getMessage());
                     }
                     $retVal = false;
                 }

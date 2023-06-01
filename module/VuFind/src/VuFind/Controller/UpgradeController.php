@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Upgrade Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2016.
@@ -27,11 +28,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Controller;
 
 use ArrayObject;
 use Composer\Semver\Comparator;
 use Exception;
+use Laminas\Crypt\BlockCipher;
+use Laminas\Crypt\Symmetric\Openssl;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Mvc\MvcEvent;
 use Laminas\ServiceManager\ServiceLocatorInterface;
@@ -61,6 +65,7 @@ use VuFind\Search\Results\PluginManager as ResultsManager;
 class UpgradeController extends AbstractBase
 {
     use Feature\ConfigPathTrait;
+    use Feature\SecureDatabaseTrait;
 
     /**
      * Cookie container
@@ -128,7 +133,8 @@ class UpgradeController extends AbstractBase
         // If auto-configuration is disabled, prevent any other action from being
         // accessed:
         $config = $this->getConfig();
-        if (!isset($config->System->autoConfigure)
+        if (
+            !isset($config->System->autoConfigure)
             || !$config->System->autoConfigure
         ) {
             $routeMatch = $e->getRouteMatch();
@@ -359,6 +365,31 @@ class UpgradeController extends AbstractBase
         $this->dbUpgrade()
             ->setAdapter($adapter)
             ->loadSql(APPLICATION_PATH . '/module/VuFind/sql/mysql.sql');
+
+        // Check for deprecated columns. We prompt the user for action on this, so
+        // let's get that settled before doing further work.
+        $deprecatedColumns = $this->dbUpgrade()->getDeprecatedColumns();
+        if (!empty($deprecatedColumns)) {
+            if (!empty($this->session->deprecatedColumnsAction)) {
+                if ($this->session->deprecatedColumnsAction === 'delete') {
+                    // Only manipulate DB if we're not in logging mode:
+                    if (!$this->logsql) {
+                        if (!$this->hasDatabaseRootCredentials()) {
+                            return $this->forwardTo('Upgrade', 'GetDbCredentials');
+                        }
+                        $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
+                        $this->session->warnings->append(
+                            "Removed deprecated column(s) from table(s): "
+                            . implode(', ', array_keys($deprecatedColumns))
+                        );
+                    }
+                    $sql .= $this->dbUpgrade()
+                        ->removeDeprecatedColumns($deprecatedColumns, $this->logsql);
+                }
+            } else {
+                return $this->forwardTo('Upgrade', 'ConfirmDeprecatedColumns');
+            }
+        }
 
         // Check for missing tables.  Note that we need to finish dealing with
         // missing tables before we proceed to the missing columns check, or else
@@ -593,6 +624,23 @@ class UpgradeController extends AbstractBase
     }
 
     /**
+     * Prompt the user to confirm removal of deprecated columns.
+     *
+     * @return mixed
+     */
+    public function confirmdeprecatedcolumnsAction()
+    {
+        if ($action = $this->params()->fromQuery('action')) {
+            if ($action === 'keep' || $action === 'delete') {
+                $this->session->deprecatedColumnsAction = $action;
+                return $this->redirect()->toRoute('upgrade-fixdatabase');
+            }
+        }
+        $deprecated = $this->dbUpgrade()->getDeprecatedColumns();
+        return $this->createViewModel(compact('deprecated'));
+    }
+
+    /**
      * Prompt the user for database credentials.
      *
      * @return mixed
@@ -670,7 +718,7 @@ class UpgradeController extends AbstractBase
 
         return $this->createViewModel(
             [
-                'anonymousTags' => $this->params()->fromQuery('anonymousCnt')
+                'anonymousTags' => $this->params()->fromQuery('anonymousCnt'),
             ]
         );
     }
@@ -822,6 +870,19 @@ class UpgradeController extends AbstractBase
     }
 
     /**
+     * Organize and run critical, blocking checks
+     *
+     * @return string|null
+     */
+    protected function performCriticalChecks()
+    {
+        // Run through a series of checks to be sure there are no critical issues.
+        return $this->criticalCheckForInsecureDatabase()
+            ?? $this->criticalCheckForBlowfishEncryption()
+            ?? null;
+    }
+
+    /**
      * Display summary of installation status
      *
      * @return mixed
@@ -836,17 +897,25 @@ class UpgradeController extends AbstractBase
         }
 
         // First find out which version we are upgrading:
-        if (!isset($this->cookie->sourceDir)
+        if (
+            !isset($this->cookie->sourceDir)
             || !is_dir($this->cookie->sourceDir)
         ) {
             return $this->forwardTo('Upgrade', 'GetSourceDir');
         }
 
         // Next figure out which version(s) are involved:
-        if (!isset($this->cookie->oldVersion)
+        if (
+            !isset($this->cookie->oldVersion)
             || !isset($this->cookie->newVersion)
         ) {
             return $this->forwardTo('Upgrade', 'EstablishVersions');
+        }
+
+        // Check for critical upgrades
+        $criticalFixForward = $this->performCriticalChecks() ?? null;
+        if ($criticalFixForward !== null) {
+            return $this->forwardTo('Upgrade', $criticalFixForward);
         }
 
         // Now make sure we have a configuration file ready:
@@ -881,7 +950,7 @@ class UpgradeController extends AbstractBase
                 'configDir'
                     => dirname($this->getForcedLocalConfigPath('config.ini')),
                 'importDir' => LOCAL_OVERRIDE_DIR . '/import',
-                'oldVersion' => $this->cookie->oldVersion
+                'oldVersion' => $this->cookie->oldVersion,
             ]
         );
     }
@@ -937,5 +1006,70 @@ class UpgradeController extends AbstractBase
                 'message: ' . $e->getMessage()
             );
         }
+    }
+
+    /**
+     * Check for insecure database settings
+     *
+     * @return string|null
+     */
+    protected function criticalCheckForInsecureDatabase()
+    {
+        if (!empty($this->cookie->ignoreInsecureDb)) {
+            return null;
+        }
+        return $this->hasSecureDatabase() ? null : 'CriticalFixInsecureDatabase';
+    }
+
+    /**
+     * Check for deprecated and insecure use of blowfish encryption
+     *
+     * @return string|null
+     */
+    protected function criticalCheckForBlowfishEncryption()
+    {
+        $config = $this->getConfig();
+        $encryptionEnabled = $config->Authentication->encrypt_ils_password ?? false;
+        $algo = $config->Authentication->ils_encryption_algo ?? 'blowfish';
+        return ($encryptionEnabled && $algo === 'blowfish')
+            ? 'CriticalFixBlowfish' : null;
+    }
+
+    /**
+     * Lead users through the steps required to fix an insecure database
+     *
+     * @return mixed
+     */
+    public function criticalFixInsecureDatabaseAction()
+    {
+        if ($this->params()->fromQuery('ignore')) {
+            $this->cookie->ignoreInsecureDb = 1;
+            return $this->redirect()->toRoute('upgrade-home');
+        }
+        return $this->createViewModel();
+    }
+
+    /**
+     * Lead users through the steps required to replace blowfish quickly and easily
+     *
+     * @return mixed
+     */
+    public function criticalFixBlowfishAction()
+    {
+        // Test that blowfish is still working
+        $blowfishIsWorking = true;
+        try {
+            $newcipher = new BlockCipher(new Openssl(['algorithm' => 'blowfish']));
+            $newcipher->setKey('akeyforatest');
+            $newcipher->encrypt('youfoundtheeasteregg!');
+        } catch (Exception $e) {
+            $blowfishIsWorking = false;
+        }
+
+        // Get new settings
+        [$newAlgorithm, $exampleKey] = $this->getSecureAlgorithmAndKey();
+        return $this->createViewModel(
+            compact('newAlgorithm', 'exampleKey', 'blowfishIsWorking')
+        );
     }
 }

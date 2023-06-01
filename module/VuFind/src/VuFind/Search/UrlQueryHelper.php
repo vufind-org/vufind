@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Class to help build URLs and forms in the view based on search settings.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search;
 
 use VuFindSearch\Query\AbstractQuery;
@@ -375,7 +377,8 @@ class UrlQueryHelper
     protected function parseFilter($filter)
     {
         // Simplistic explode/trim behavior if no callback is provided:
-        if (!isset($this->config['parseFilterCallback'])
+        if (
+            !isset($this->config['parseFilterCallback'])
             || !is_callable($this->config['parseFilterCallback'])
         ) {
             $parts = explode(':', $filter, 2);
@@ -396,7 +399,8 @@ class UrlQueryHelper
     protected function getAliasesForFacetField($field)
     {
         // If no callback is provided, aliases are unsupported:
-        if (!isset($this->config['getAliasesForFacetFieldCallback'])
+        if (
+            !isset($this->config['getAliasesForFacetFieldCallback'])
             || !is_callable($this->config['getAliasesForFacetFieldCallback'])
         ) {
             return [$field];
@@ -435,7 +439,8 @@ class UrlQueryHelper
             foreach ($params['filter'] as $current) {
                 [$currentField, $currentValue]
                     = $this->parseFilter($current);
-                if (!in_array($currentField, $fieldAliases)
+                if (
+                    !in_array($currentField, $fieldAliases)
                     || $currentValue != $value
                 ) {
                     $newFilter[] = $current;
@@ -584,14 +589,14 @@ class UrlQueryHelper
                     if (!$this->filtered($paramName, $paramValue2, $filter)) {
                         $retVal .= '<input type="hidden" name="' .
                             htmlspecialchars($paramName) . '[]" value="' .
-                            htmlspecialchars($paramValue2) . '" />';
+                            htmlspecialchars($paramValue2) . '">';
                     }
                 }
             } else {
                 if (!$this->filtered($paramName, $paramValue, $filter)) {
                     $retVal .= '<input type="hidden" name="' .
                         htmlspecialchars($paramName) . '" value="' .
-                        htmlspecialchars($paramValue) . '" />';
+                        htmlspecialchars($paramValue) . '">';
                 }
             }
         }

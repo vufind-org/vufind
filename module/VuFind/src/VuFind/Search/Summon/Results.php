@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Summon Search Results
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011, 2022.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\Summon;
 
 use VuFindSearch\Command\SearchCommand;
@@ -120,7 +122,7 @@ class Results extends \VuFind\Search\Base\Results
                 $this->responseFacets[] = [
                     'fieldName' => $dateFacet,
                     'displayName' => $dateFacet,
-                    'counts' => []
+                    'counts' => [],
                 ];
             }
         }
@@ -285,7 +287,7 @@ class Results extends \VuFind\Search\Base\Results
             $current = $current['suggestion'];
             if (!isset($this->suggestions[$current['originalQuery']])) {
                 $this->suggestions[$current['originalQuery']] = [
-                    'suggestions' => []
+                    'suggestions' => [],
                 ];
             }
             $this->suggestions[$current['originalQuery']]['suggestions'][]
@@ -407,7 +409,7 @@ class Results extends \VuFind\Search\Base\Results
                         'label' => $data['displayName'],
                         'list' => $list,
                     ],
-                    'more' => null
+                    'more' => null,
                 ];
             }
         }

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * MapSelection recommendation module Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Recommend;
 
 use VuFind\Recommend\MapSelection;
@@ -69,7 +71,7 @@ class MapSelectionTest extends \PHPUnit\Framework\TestCase
         ];
         $defaultMapSelectionOptions = [
             'default_coordinates' => '-95, 30, 72, 15',
-            'height' => '320'
+            'height' => '320',
         ];
         return new MapSelection(
             $ss ?? $this->getMockSearchService(),
@@ -123,7 +125,7 @@ class MapSelectionTest extends \PHPUnit\Framework\TestCase
                 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png',
                 '<a href="https://wikimediafoundation.org/'
                 . 'wiki/Maps_Terms_of_Use">Wikimedia</a> | &copy; <a '
-                . 'href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                . 'href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
             ],
             $this->getMapSelection()->getBasemap()
         );
