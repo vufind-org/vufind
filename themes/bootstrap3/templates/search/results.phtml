@@ -4,6 +4,7 @@
   $headTitle = $this->slot('head-title')
         ->get($this->translate('Search Results') . (empty($lookfor) ? '' : " - {$lookfor}"));
   $this->headTitle($headTitle);
+  $this->context = 'search-result';
 
   // Set up search box:
   $this->layout()->searchbox = $this->context($this)->renderInContext(
