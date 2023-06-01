@@ -3,7 +3,7 @@
 /**
  * Abstract base class for PHPUnit test cases using Mink.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,11 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Integration;
 
 use Behat\Mink\Driver\Selenium2Driver;
 use Behat\Mink\Element\Element;
-use Behat\Mink\Session;
 use DMore\ChromeDriver\ChromeDriver;
 use PHPUnit\Util\Test;
 use Symfony\Component\Yaml\Yaml;
@@ -81,6 +81,16 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @var PathResolver
      */
     protected $pathResolver;
+
+    /**
+     * Get name of the current test
+     *
+     * @return string
+     */
+    protected function getTestName(): string
+    {
+        return $this::class . '::' . $this->getName(false);
+    }
 
     /**
      * Reconfigure VuFind for the current test.
@@ -258,6 +268,12 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     {
         if (empty($this->session)) {
             $this->session = new Session($this->getMinkDriver());
+            if ($coverageDir = getenv('VUFIND_REMOTE_COVERAGE_DIR')) {
+                $this->session->setRemoteCoverageConfig(
+                    $this->getTestName(),
+                    $coverageDir
+                );
+            }
             $this->session->start();
         }
         return $this->session;
@@ -336,7 +352,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     {
         $configs = [
             '.ini' => $this->modifiedConfigs,
-            '.yaml' => $this->modifiedYamlConfigs
+            '.yaml' => $this->modifiedYamlConfigs,
         ];
         foreach ($configs as $extension => $files) {
             foreach ($files as $current) {
@@ -372,7 +388,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $timeout = null,
         $index = 0
     ) {
-        $timeout = $timeout ?? $this->getDefaultTimeout();
+        $timeout ??= $this->getDefaultTimeout();
         $session = $this->getMinkSession();
         $session->wait(
             $timeout,
@@ -381,8 +397,8 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $results = $page->findAll('css', $selector);
         $this->assertIsArray($results, "Selector not found: $selector");
         $result = $results[$index] ?? null;
-        $this->assertTrue(
-            is_object($result),
+        $this->assertIsObject(
+            $result,
             "Element not found: $selector index $index"
         );
         return $result;
@@ -400,7 +416,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function waitStatement($statement, $timeout = null)
     {
-        $timeout = $timeout ?? $this->getDefaultTimeout();
+        $timeout ??= $this->getDefaultTimeout();
         $session = $this->getMinkSession();
         $this->assertTrue(
             $session->wait(
@@ -427,7 +443,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $timeout = null,
         $index = 0
     ) {
-        $timeout = $timeout ?? $this->getDefaultTimeout();
+        $timeout ??= $this->getDefaultTimeout();
         $startTime = microtime(true);
         $exception = null;
         while ((microtime(true) - $startTime) * 1000 <= $timeout) {
@@ -440,7 +456,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
                 // This may happen e.g. if the page is reloaded right in the middle
                 // due to an event. Store the exception and throw later if we don't
                 // succeed with retries:
-                $exception = $exception ?? $e;
+                $exception ??= $e;
             }
             usleep(50000);
         }
@@ -504,7 +520,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $timeout = null,
         $retries = 6
     ) {
-        $timeout = $timeout ?? $this->getDefaultTimeout();
+        $timeout ??= $this->getDefaultTimeout();
         $field = $this->findCss($page, $selector, $timeout, 0);
 
         $session = $this->getMinkSession();
@@ -526,8 +542,8 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
                 return;
             }
             $this->logWarning(
-                'RETRY setValue after failure in ' . get_class($this) . '::'
-                . $this->getName(false) . "(try $i)."
+                'RETRY setValue after failure in ' . $this->getTestName()
+                . " (try $i)."
             );
 
             $this->snooze();
@@ -547,7 +563,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     protected function findAndAssertLink(Element $page, $text)
     {
         $link = $page->findLink($text);
-        $this->assertTrue(is_object($link));
+        $this->assertIsObject($link);
         return $link;
     }
 
@@ -584,7 +600,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         callable $callback,
         int $timeout = null
     ) {
-        $timeout = $timeout ?? $this->getDefaultTimeout();
+        $timeout ??= $this->getDefaultTimeout();
         $result = null;
         $startTime = microtime(true);
         while ((microtime(true) - $startTime) * 1000 <= $timeout) {
@@ -632,7 +648,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         Element $page,
         int $timeout = null
     ) {
-        $timeout = $timeout ?? $this->getDefaultTimeout();
+        $timeout ??= $this->getDefaultTimeout();
         $session = $this->getMinkSession();
         // Wait for page load to complete:
         $session->wait($timeout, "document.readyState === 'complete'");
@@ -659,10 +675,10 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         // Finally, make sure all jQuery ready handlers are done:
         $session->evaluateScript(
             <<<EOS
-if (window.__documentIsReady !== true) {
-    $(document).ready(function() { window.__documentIsReady = true; });
-}
-EOS
+                if (window.__documentIsReady !== true) {
+                    $(document).ready(function() { window.__documentIsReady = true; });
+                }
+                EOS
         );
         $session->wait(
             $timeout,
@@ -765,7 +781,8 @@ EOS
      */
     protected function validateHtml(?Element $page = null): void
     {
-        if ((!$this->session && !$page)
+        if (
+            (!$this->session && !$page)
             || !($nuAddress = getenv('VUFIND_HTML_VALIDATOR'))
         ) {
             return;
@@ -774,7 +791,8 @@ EOS
             static::class,
             $this->getName(false)
         );
-        if (($annotations['method']['skip_html_validation'][0] ?? false)
+        if (
+            ($annotations['method']['skip_html_validation'][0] ?? false)
             || ($annotations['class']['skip_html_validation'][0] ?? false)
         ) {
             return;
@@ -788,10 +806,10 @@ EOS
         $client->setEncType(\Laminas\Http\Client::ENC_FORMDATA);
         $client->setParameterPost(
             [
-                'out' => 'json'
+                'out' => 'json',
             ]
         );
-        $page = $page ?? $this->session->getPage();
+        $page ??= $this->session->getPage();
         $this->waitForPageLoad($page);
         $client->setFileUpload(
             $this->session->getCurrentUrl(),
@@ -878,7 +896,7 @@ EOS
             . implode(PHP_EOL . PHP_EOL, $messages);
 
         if ($logFile) {
-            $method = get_class($this) . '::' . $this->getName(false);
+            $method = $this->getTestName();
             file_put_contents(
                 $logFile,
                 date('Y-m-d H:i:s') . ' [' . strtoupper($level) . "] [$method] "
@@ -925,7 +943,8 @@ EOS
         // Take screenshot of failed test, if we have a screenshot directory set
         // and we have run out of retries ($this->retriesLeft is set by the
         // AutoRetryTrait):
-        if ($this->hasFailed()
+        if (
+            $this->hasFailed()
             && ($imageDir = getenv('VUFIND_SCREENSHOT_DIR'))
         ) {
             $filename = $this->getName() . '-' . $this->retriesLeft . '-'
@@ -952,12 +971,22 @@ EOS
             }
         }
 
+        $htmlValidationException = null;
         if (!$this->hasFailed()) {
-            $this->validateHtml();
+            try {
+                $this->validateHtml();
+            } catch (\Exception $e) {
+                // Store the exception and throw after cleanup:
+                $htmlValidationException = $e;
+            }
         }
 
         $this->stopMinkSession();
         $this->restoreConfigs();
+
+        if (null !== $htmlValidationException) {
+            throw $htmlValidationException;
+        }
     }
 
     /**

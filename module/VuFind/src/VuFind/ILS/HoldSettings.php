@@ -1,11 +1,12 @@
 <?php
+
 /**
  * ILS Hold Settings Class
  *
  * This class is responsible for determining hold settings for VuFind based
  * on configuration and defaults.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -29,6 +30,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS;
 
 /**

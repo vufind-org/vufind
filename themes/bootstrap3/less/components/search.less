@@ -88,9 +88,19 @@ header .container.navbar { margin-bottom: 0; }
   margin: 0;
   padding: 0;
   list-style: none;
+
+  .popover ul {
+    list-style: disc;
+    padding-left: 1em;
+  }
 }
 .action-toolbar li {
   display: inline-block;
+
+  .popover li {
+    display: list-item;
+    padding-left: 0.5em;
+  }
 }
 
 @media (max-width: 767px) {
@@ -121,6 +131,10 @@ header .container.navbar { margin-bottom: 0; }
   }
 
   .checkbox-select-item { float: left; }
+
+  .dropdown-menu.qrcode {
+    min-width: inherit;
+  }
 
   @media (max-width: 767px) {
     a {
@@ -529,6 +543,9 @@ table.search-history-table {
   table-layout: auto;
 
   tbody > tr > td { vertical-align: middle; }
+  th:first-child {
+    width: 20%;
+  }
 }
 
 /* Break early to prevent table overflow */

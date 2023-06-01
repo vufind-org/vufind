@@ -9,7 +9,7 @@
     $arrTemplate = '<tr><th>%%LABEL%%:</th><td> %%VALUE%%</td></tr>';
 ?>
 
-<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="Expand Sidebar">
+<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="<?=$this->transEsc('sidebar_expand')?>">
   <?=$this->transEsc('Your Account') ?>
 </a>
 
@@ -48,10 +48,10 @@
                   <?=$this->transEsc('Always ask me')?>
                 </option>
                 <?php foreach ($this->pickup as $lib): ?>
-                  <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID'])?' selected="selected"':''?>><?=$this->transEscWithPrefix('location_', $lib['locationDisplay'])?></option>
+                  <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID']) ? ' selected="selected"' : ''?>><?=$this->transEscWithPrefix('location_', $lib['locationDisplay'])?></option>
                 <?php endforeach; ?>
               </select>
-              <input class="btn btn-default" type="submit" value="<?=$this->transEscAttr('Save')?>" />
+              <input class="btn btn-default" type="submit" value="<?=$this->transEscAttr('Save')?>">
             </form>
           <?php else: // case 2: set home library disallowed, but default provided by ILS ?>
             <?=$this->transEscWithPrefix('location_', $this->preferredLibraryDisplay)?>
@@ -105,7 +105,7 @@
               $this->transEsc('Phone Number') => 'phone',
               $this->transEsc('Mobile Number') => 'mobile_phone',
               $this->transEsc('Group') => 'group',
-              $this->transEsc('patron_account_expires') => 'expiration_date'
+              $this->transEsc('patron_account_expires') => 'expiration_date',
             ]
         );
       ?>
@@ -115,6 +115,6 @@
   <?php endif; ?>
 </div>
 
-<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
+<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
   <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'profile'])?>
 </div>

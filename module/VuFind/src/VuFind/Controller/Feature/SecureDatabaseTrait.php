@@ -1,8 +1,9 @@
 <?php
+
 /**
  * VuFind Action Feature Trait - Secure database detection trait
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2023.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Controller\Feature;
 
 /**
@@ -48,7 +50,7 @@ trait SecureDatabaseTrait
     {
         // Make example hash for AES
         $alpha = 'abcdefghijklmnopqrstuvwxyz';
-        $chars = str_repeat($alpha . strtoupper($alpha) . '0123456789,.@#$%^&*', 4);
+        $chars = str_repeat($alpha . strtoupper($alpha) . '0123456789,.@#%^&*', 4);
         return ['aes', substr(str_shuffle($chars), 0, 32)];
     }
 

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * ILS driver test
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -26,13 +27,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\ILS\Driver;
 
 use InvalidArgumentException;
-
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
 use Laminas\Http\Response as HttpResponse;
-
 use VuFind\ILS\Driver\PAIA;
 
 /**
@@ -57,7 +57,11 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
             [
                 'baseUrl'            => 'http://paia.gbv.de/',
                 'grantType'          => 'password',
-            ]
+                'accountBlockNotificationsForMissingScopes' => [
+                    'update_patron' => 'ILSMessages::no_update_patron_scope',
+                    'read_notifications' => 'ILSMessages::no_read_notifications_scope',
+                ],
+            ],
     ];
 
     protected $patron = [
@@ -72,10 +76,10 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
         'status' => 0,
         'address' => 'No street at all 8, D-21073 Hamburg',
         'type' => [
-            0 => 'de-830:user-type:2'
+            0 => 'de-830:user-type:2',
         ],
         'cat_username' => '08301001001',
-        'cat_password' => 'NOPASSWORD'
+        'cat_password' => 'NOPASSWORD',
     ];
 
     protected $patron_bad = [
@@ -90,10 +94,10 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
         'status' => 9,
         'address' => 'No street at all 8, D-21073 Hamburg',
         'type' => [
-            0 => 'de-830:user-type:2'
+            0 => 'de-830:user-type:2',
         ],
         'cat_username' => '08301001011',
-        'cat_password' => 'NOPASSWORD'
+        'cat_password' => 'NOPASSWORD',
     ];
 
     protected $patron_expired = [
@@ -108,10 +112,10 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
         'status' => 0,
         'address' => 'No street at all 8, D-21073 Hamburg',
         'type' => [
-            0 => 'de-830:user-type:2'
+            0 => 'de-830:user-type:2',
         ],
         'cat_username' => '08301001111',
-        'cat_password' => 'NOPASSWORD'
+        'cat_password' => 'NOPASSWORD',
     ];
 
     protected $feeTestResult = [
@@ -133,7 +137,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                     . '[open source licensees are free to: use open source software for any purpose, make and'
                     . ' distribute copies, create and distribute derivative works, access and use the source code, '
                     . 'com / Rosen, Lawrence (c 2005)',
-                'item' => 'http://uri.gbv.de/document/opac-de-830:bar:830$28295402'
+                'item' => 'http://uri.gbv.de/document/opac-de-830:bar:830$28295402',
             ],
         1 =>
             [
@@ -147,7 +151,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'title' => 'Test framework in action / Allen, Rob (2009)',
                 'feeid' => null,
                 'about' => 'Test framework in action / Allen, Rob (2009)',
-                'item' => 'http://uri.gbv.de/document/opac-de-830:bar:830$28323471'
+                'item' => 'http://uri.gbv.de/document/opac-de-830:bar:830$28323471',
             ],
         2 =>
             [
@@ -161,7 +165,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'title' => 'Unsere historischen Gärten / Lutze, Margot (1986)',
                 'feeid' => null,
                 'about' => 'Unsere historischen Gärten / Lutze, Margot (1986)',
-                'item' => 'http://uri.gbv.de/document/opac-de-830:bar:830$24476416'
+                'item' => 'http://uri.gbv.de/document/opac-de-830:bar:830$24476416',
             ],
         3 =>
             [
@@ -175,7 +179,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'title' => 'Triumphe des Backsteins = Triumphs of brick / (1992)',
                 'feeid' => null,
                 'about' => 'Triumphe des Backsteins = Triumphs of brick / (1992)',
-                'item' => 'http://uri.gbv.de/document/opac-de-830:bar:830$33204941'
+                'item' => 'http://uri.gbv.de/document/opac-de-830:bar:830$33204941',
             ],
         4 =>
             [
@@ -189,7 +193,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'title' => 'Lehrbuch der Botanik / Strasburger, Eduard (2008)',
                 'feeid' => null,
                 'about' => 'Lehrbuch der Botanik / Strasburger, Eduard (2008)',
-                'item' => 'http://uri.gbv.de/document/opac-de-830:bar:830$26461872'
+                'item' => 'http://uri.gbv.de/document/opac-de-830:bar:830$26461872',
             ],
     ];
 
@@ -291,7 +295,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'available' => false,
                 'create' => '12-22-2011',
                 'cancel_details' => '',
-            ]
+            ],
     ];
 
     protected $renewTestResult = [
@@ -301,19 +305,19 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 'success' => true,
                 'new_date' => "07-18-2016",
                 'item_id' => 0,
-                'sysMessage' => "Successfully renewed"
-            ]
-        ]
+                'sysMessage' => "Successfully renewed",
+            ],
+        ],
     ];
 
     protected $storageRetrievalTestResult = [
         'success' => true,
-        'sysMessage' => 'Successfully requested'
+        'sysMessage' => 'Successfully requested',
     ];
 
     protected $pwchangeTestResult = [
         'success' => true,
-        'status' => "Successfully changed"
+        'status' => "Successfully changed",
     ];
 
     protected $profileTestResult = [
@@ -329,7 +333,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
         'mobile_phone' => null,
         'expires' => "12-31-9999",
         'statuscode' => 0,
-        'canWrite' => true
+        'canWrite' => true,
     ];
 
     /*******************
@@ -369,10 +373,10 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     {
         $changePasswordTestdata = [
             "patron" => [
-                "cat_username" => "08301001001"
+                "cat_username" => "08301001001",
              ],
              "oldPassword" => "oldsecret",
-             "newPassword" => "newsecret"
+             "newPassword" => "newsecret",
         ];
 
         $conn = $this->createMockConnector('changePassword.json');
@@ -516,8 +520,8 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
         $sr_request = [
             "item_id"     => "http://uri.gbv.de/document/opac-de-830:bar:830$24014292",
             "patron" => [
-                "cat_username" => "08301001001"
-            ]
+                "cat_username" => "08301001001",
+            ],
         ];
 
         $conn = $this->createMockConnector('storageretrieval.json');
@@ -535,8 +539,8 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
         $sr_request = [
             "item_id"     => "http://uri.gbv.de/document/opac-de-830:bar:830$24014292",
             "patron" => [
-                "cat_username" => "08301001001"
-            ]
+                "cat_username" => "08301001001",
+            ],
         ];
 
         $conn = $this->createMockConnector('storageretrieval.json');
@@ -553,11 +557,11 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     {
         $renew_request = [
             "details" => [
-                "item"     => "http://uri.gbv.de/document/opac-de-830:bar:830$22061137"
+                "item"     => "http://uri.gbv.de/document/opac-de-830:bar:830$22061137",
             ],
             "patron" => [
-                "cat_username" => "08301001001"
-            ]
+                "cat_username" => "08301001001",
+            ],
         ];
 
         $conn = $this->createMockConnector('renew_ok.json');
@@ -573,6 +577,22 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
 
             $this->assertEquals($this->failedRenewTestResult, $result_fail);
         */
+    }
+
+    /**
+     * Test getAccountBlocks
+     *
+     * @return void
+     */
+    public function testGetAccountBlocks()
+    {
+        $patron = [];
+        $paia = $this->createMockConnector();
+        $blocks = $paia->getAccountBlocks($patron);
+        $this->assertEquals([
+            'ILSMessages::no_update_patron_scope',
+            'ILSMessages::no_read_notifications_scope',
+        ], $blocks);
     }
 
     /**
@@ -644,7 +664,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                     'change_password',
                     'read_fees',
                     'read_items',
-                    'read_patron'
+                    'read_patron',
                     ]
                 )
             );

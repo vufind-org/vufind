@@ -1,5 +1,6 @@
-<?php $records = $this->cart()->getRecordDetails(); if (!empty($records)): ?>
-  <hr/>
+<?php $records = $this->cart()->getRecordDetails(); ?>
+<?php if (!empty($records)): ?>
+  <hr>
   <ul class="list-unstyled">
   <?php foreach ($records as $i => $record): ?>
     <li>

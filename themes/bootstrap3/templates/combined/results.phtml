@@ -17,7 +17,7 @@
         'checkboxFilters' => $this->params->getCheckboxFacets(),
         'filterList' => $this->params->getFilterList(true),
         'hasDefaultsApplied' => $this->params->hasDefaultsApplied(),
-        'selectedShards' => $this->params->getSelectedShards()
+        'selectedShards' => $this->params->getSelectedShards(),
       ]
   );
 
@@ -52,7 +52,8 @@
 ?>
 <?=$this->flashmessages()?>
 <form id="search-cart-form" class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
-  <?php $recs = $combinedResults->getRecommendations('top'); if (!empty($recs)): ?>
+  <?php $recs = $combinedResults->getRecommendations('top'); ?>
+  <?php if (!empty($recs)): ?>
     <div>
       <?php foreach ($recs as $current): ?>
         <?=$this->recommend($current)?>
@@ -66,7 +67,7 @@
       'combinedResults' => $this->combinedResults,
       'supportsCartOptions' => $this->supportsCartOptions,
       'showCartControls' => $this->showCartControls,
-      'showBulkOptions' => $this->showBulkOptions
+      'showBulkOptions' => $this->showBulkOptions,
     ];
   ?>
   <?=$this->context($this)->renderInContext('combined/stack-' . $placement . '.phtml', $viewParams); ?>

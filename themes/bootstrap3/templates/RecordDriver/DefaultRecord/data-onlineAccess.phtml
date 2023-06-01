@@ -7,9 +7,9 @@
   $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
 ?>
 <?php foreach ($urls as $current): ?>
-  <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a><br/>
+  <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a><br>
 <?php endforeach; ?>
 <?php if ($openUrlActive): ?>
-  <?=$openUrl->renderTemplate()?><br/>
+  <?=$openUrl->renderTemplate()?><br>
 <?php endif; ?>
 <?php if ($doiActive): ?><?=$doi->renderTemplate()?><?php endif; ?>

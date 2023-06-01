@@ -1,12 +1,13 @@
-/* #LESS>
-@import "vendor/bootstrap/bootstrap";
-@import "vendor/font-awesome/font-awesome";
-<#LESS */
 /* #SCSS> */
 $fa-font-path: "../../bootstrap3/css/fonts";
 @import "vendor/bootstrap";
-@import "vendor/font-awesome/font-awesome";
 /* <#SCSS */
+/* #LESS>
+@import "vendor/bootstrap/bootstrap";
+
+<#LESS */
+@import "variables";
+@import "vendor/font-awesome/font-awesome";
 
 @import "components/accessibility";
 @import "components/variables";
@@ -15,7 +16,7 @@ $fa-font-path: "../../bootstrap3/css/fonts";
 @import "components/alphabrowse";
 @import "components/autocomplete";
 @import "components/channels";
-@import "components/cookie-consent";
+@import "components/cookie-consent/index";
 @import "components/devtools";
 @import "components/form";
 @import "components/icons";
@@ -58,6 +59,9 @@ label { cursor: pointer; }
 .icon-bar { background-color: #888; }
 
 // Icons vs. Underline fix
+.btn {
+  text-decoration: none;
+}
 .btn-link {
   @extend .icon-link;
 
@@ -369,6 +373,13 @@ footer {
   }
 }
 
+.dropdown-menu > li > .prompt-text {
+  @extend .dropdown-menu > li > a;
+
+  white-space: inherit;
+  min-width: 200px;
+}
+
 .logoutOptions.with-dropdown a { padding-right: .5rem; }
 #login-dropdown a {
   margin-right: .5rem;
@@ -485,8 +496,7 @@ div.holding-notes {
 }
 
 /* --- Cookie Consent --- */
-.disable--interaction #cc-main .cm-wrapper::before,
-.show--preferences #cc-main .cc--anim.pm-wrapper::before {
+.show--preferences #cc-main .cc--anim .pm-overlay {
   opacity: $modal-backdrop-opacity;
 }
 

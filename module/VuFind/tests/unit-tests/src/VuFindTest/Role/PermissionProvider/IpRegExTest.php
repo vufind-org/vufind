@@ -1,8 +1,9 @@
 <?php
+
 /**
  * IpRegEx ServerParam Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Role\PermissionProvider;
 
 use VuFind\Role\PermissionProvider\IpRegEx;
@@ -57,7 +59,7 @@ class IpRegExTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $mockIpReader->expects($this->once())->method('getUserIp')
             ->will($this->returnValue($ipAddr));
-        return new IpRegEx(new $mockRequest, $mockIpReader);
+        return new IpRegEx($mockRequest, $mockIpReader);
     }
 
     /**

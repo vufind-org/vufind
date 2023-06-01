@@ -1,4 +1,5 @@
 <?php
+
 return [
     'js' => ['mixin.js'],
     'helpers' => [

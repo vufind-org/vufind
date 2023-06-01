@@ -1,9 +1,10 @@
 <?php
+
 /**
  * VuFind controller base class (defines some methods that can be shared by other
  * controllers).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
+
 namespace VuFind\Controller;
 
 use Laminas\Mvc\Controller\AbstractActionController;
@@ -67,8 +69,7 @@ use VuFind\I18n\Translator\TranslatorAwareTrait;
  *
  * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
-class AbstractBase extends AbstractActionController
-implements TranslatorAwareInterface
+class AbstractBase extends AbstractActionController implements TranslatorAwareInterface
 {
     use TranslatorAwareTrait;
 
@@ -238,19 +239,22 @@ implements TranslatorAwareInterface
         }
 
         // Set default values if applicable:
-        if ((!isset($view->to) || empty($view->to)) && $user
+        if (
+            (!isset($view->to) || empty($view->to)) && $user
             && isset($config->Mail->user_email_in_to)
             && $config->Mail->user_email_in_to
         ) {
             $view->to = $user->email;
         }
         if (!isset($view->from) || empty($view->from)) {
-            if ($user && isset($config->Mail->user_email_in_from)
+            if (
+                $user && isset($config->Mail->user_email_in_from)
                 && $config->Mail->user_email_in_from
             ) {
                 $view->userEmailInFrom = true;
                 $view->from = $user->email;
-            } elseif (isset($config->Mail->default_from)
+            } elseif (
+                isset($config->Mail->default_from)
                 && $config->Mail->default_from
             ) {
                 $view->from = $config->Mail->default_from;
@@ -384,7 +388,8 @@ implements TranslatorAwareInterface
         // Now check if the user has provided credentials with which to log in:
         $ilsAuth = $this->getILSAuthenticator();
         $patron = null;
-        if (($username = $this->params()->fromPost('cat_username', false))
+        if (
+            ($username = $this->params()->fromPost('cat_username', false))
             && ($password = $this->params()->fromPost('cat_password', false))
         ) {
             // If somebody is POSTing credentials but that logic is disabled, we
@@ -417,7 +422,8 @@ implements TranslatorAwareInterface
             } catch (ILSException $e) {
                 $this->flashMessenger()->addErrorMessage('ils_connection_failed');
             }
-        } elseif ('ILS' === $this->params()->fromQuery('auth_method', false)
+        } elseif (
+            'ILS' === $this->params()->fromQuery('auth_method', false)
             && ($hash = $this->params()->fromQuery('hash', false))
         ) {
             try {
@@ -591,8 +597,8 @@ implements TranslatorAwareInterface
                     'confirm' => $yesTarget,
                     'cancel' => $noTarget,
                     'messages' => (array)$messages,
-                    'extras' => $extras
-                ]
+                    'extras' => $extras,
+                ],
             ]
         );
     }
@@ -663,9 +669,11 @@ implements TranslatorAwareInterface
      * separate logic is used for storing followup information when VuFind
      * forces the user to log in from another context.
      *
+     * @param bool $allowCurrentUrl Whether the current URL is valid for followup
+     *
      * @return void
      */
-    protected function setFollowupUrlToReferer()
+    protected function setFollowupUrlToReferer(bool $allowCurrentUrl = true)
     {
         // lbreferer is the stored current url of the lightbox
         // which overrides the url from the server request when present
@@ -683,7 +691,7 @@ implements TranslatorAwareInterface
         // want internal post-login redirects.
         $baseUrl = $this->getServerUrl('home');
         $baseUrlNorm = $this->normalizeUrlForComparison($baseUrl);
-        if (0 !== strpos($refererNorm, $baseUrlNorm)) {
+        if (!str_starts_with($refererNorm, $baseUrlNorm)) {
             return;
         }
 
@@ -701,7 +709,12 @@ implements TranslatorAwareInterface
         // ignore this and instead rely on any previously stored referer.
         $myUserLogin = $this->getServerUrl('myresearch-userlogin');
         $mulNorm = $this->normalizeUrlForComparison($myUserLogin);
-        if (0 === strpos($refererNorm, $mulNorm)) {
+        if (str_starts_with($refererNorm, $mulNorm)) {
+            return;
+        }
+
+        // Check that the referer is not current URL if not allowed:
+        if (!$allowCurrentUrl && $this->getRequest()->getUriString() === $referer) {
             return;
         }
 

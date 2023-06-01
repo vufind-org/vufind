@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Hierarchy Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010-2023.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
+
 namespace VuFind\Controller;
 
 /**
@@ -106,7 +108,7 @@ class HierarchyController extends AbstractBase
 
         $returnArray = [
             "limitReached" => $limitReached,
-            "results" => array_slice($resultIDs, 0, $limit)
+            "results" => array_slice($resultIDs, 0, $limit),
         ];
         return $this->outputJSON(json_encode($returnArray));
     }
@@ -175,7 +177,7 @@ class HierarchyController extends AbstractBase
             }
         } catch (\Exception $e) {
             // Let exceptions fall through to error condition below:
-            $message = APPLICATION_ENV !== 'development'
+            $message = APPLICATION_ENV === 'development'
                 ? (string)$e : 'Unexpected exception';
         }
 

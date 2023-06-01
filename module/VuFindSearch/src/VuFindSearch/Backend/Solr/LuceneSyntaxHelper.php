@@ -3,7 +3,7 @@
 /**
  * Lucene query syntax helper class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2016.
@@ -30,6 +30,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Solr;
 
 /**
@@ -162,7 +163,8 @@ class LuceneSyntaxHelper
         }
 
         // Check for ranges, booleans, wildcards and fuzzy matches:
-        if ($this->containsRanges($searchString)
+        if (
+            $this->containsRanges($searchString)
             || $this->containsBooleans($searchString)
             || strstr($searchString, '*') || strstr($searchString, '?')
             || strstr($searchString, '~')
@@ -295,7 +297,11 @@ class LuceneSyntaxHelper
                 string $ch,
                 bool $quoted,
                 bool $esc
-            ) use (&$result, &$collected, &$discardParens) {
+            ) use (
+                &$result,
+                &$collected,
+                &$discardParens
+            ) {
                 if (!$quoted) {
                     // Discard closing parenthesis for previously discarded opening
                     // ones to keep balance
@@ -564,7 +570,7 @@ class LuceneSyntaxHelper
 
         // If the string consists only of control characters and/or BOOLEANs with no
         // other input, wipe it out entirely to prevent weird errors:
-        $operators = ['AND', 'OR', 'NOT', '+', '-', '"', '&', '|'];
+        $operators = ['AND', 'OR', 'NOT', '+', '-', '"', '&&', '||'];
         if (trim(str_replace($operators, '', $input)) == '') {
             return '';
         }
@@ -597,12 +603,14 @@ class LuceneSyntaxHelper
      */
     protected function getBoolsToCap()
     {
-        if ($this->caseSensitiveBooleans === false
+        if (
+            $this->caseSensitiveBooleans === false
             || $this->caseSensitiveBooleans === 0
             || $this->caseSensitiveBooleans === "0"
         ) {
             return $this->allBools;
-        } elseif ($this->caseSensitiveBooleans === true
+        } elseif (
+            $this->caseSensitiveBooleans === true
             || $this->caseSensitiveBooleans === 1
             || $this->caseSensitiveBooleans === "1"
         ) {
@@ -643,7 +651,8 @@ class LuceneSyntaxHelper
         $end = $match[3];          // end of range
 
         // Is this a case-sensitive range?
-        if (strtoupper($start) != strtolower($start)
+        if (
+            strtoupper($start) != strtolower($start)
             || strtoupper($end) != strtolower($end)
         ) {
             // Build a lowercase version of the range:

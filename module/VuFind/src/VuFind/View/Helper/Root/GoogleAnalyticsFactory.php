@@ -1,8 +1,9 @@
 <?php
+
 /**
  * GoogleAnalytics helper factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -72,7 +74,6 @@ class GoogleAnalyticsFactory implements FactoryInterface
         $options = [
             'create_options_js' =>
                 $config->GoogleAnalytics->create_options_js ?? null,
-            'universal' => $config->GoogleAnalytics->universal ?? false,
         ];
         return new $requestedName($key, $options);
     }

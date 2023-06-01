@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Citation view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use VuFind\Date\DateException;
@@ -41,8 +43,7 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Citation extends \Laminas\View\Helper\AbstractHelper
-implements TranslatorAwareInterface
+class Citation extends \Laminas\View\Helper\AbstractHelper implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
@@ -93,7 +94,7 @@ implements TranslatorAwareInterface
      * @var string[]
      */
     protected $uncappedPhrases = [
-        'even if', 'if only', 'now that', 'on top of'
+        'even if', 'if only', 'now that', 'on top of',
     ];
 
     /**
@@ -177,7 +178,7 @@ implements TranslatorAwareInterface
             'pubName' => $publishers[0] ?? null,
             'pubDate' => $pubDates[0] ?? null,
             'edition' => empty($edition) ? [] : [$edition],
-            'journal' => $driver->tryMethod('getContainerTitle')
+            'journal' => $driver->tryMethod('getContainerTitle'),
         ];
 
         return $this;
@@ -202,7 +203,8 @@ implements TranslatorAwareInterface
         // also know if we have a valid corporate author name that it should be
         // left alone... otherwise, it's worth trying to reverse names (for example,
         // this may be dirty data from Summon):
-        if (!($this->driver instanceof \VuFind\RecordDriver\SolrMarc)
+        if (
+            !($this->driver instanceof \VuFind\RecordDriver\SolrMarc)
             && !$isCorporate
         ) {
             $callables[] = function (string $name): string {
@@ -288,7 +290,7 @@ implements TranslatorAwareInterface
         $apa = [
             'title' => $this->getAPATitle(),
             'authors' => $this->getAPAAuthors(),
-            'edition' => $this->getEdition()
+            'edition' => $this->getEdition(),
         ];
 
         // Show a period after the title if it does not already have punctuation
@@ -603,7 +605,8 @@ implements TranslatorAwareInterface
     protected function fixAbbreviatedNameLetters($str)
     {
         // Fix abbreviated letters.
-        if (strlen($str) == 1
+        if (
+            strlen($str) == 1
             || preg_match('/\s[a-zA-Z]/', substr($str, -2))
         ) {
             return $str . '.';
@@ -722,7 +725,7 @@ implements TranslatorAwareInterface
 
         // We've dealt with capitalization of words; now we need to deal with
         // multi-word phrases:
-        $adjustedTitle = ucfirst(join(' ', $newwords));
+        $adjustedTitle = ucfirst(implode(' ', $newwords));
         foreach ($this->uncappedPhrases as $phrase) {
             // We need to cover two cases: the phrase at the start of a title,
             // and the phrase in the middle of a title:
@@ -770,7 +773,8 @@ implements TranslatorAwareInterface
     protected function getAPAAuthors()
     {
         $authorStr = '';
-        if (isset($this->details['authors'])
+        if (
+            isset($this->details['authors'])
             && is_array($this->details['authors'])
         ) {
             $i = 0;
@@ -797,7 +801,7 @@ implements TranslatorAwareInterface
                     // the list. Useful for two-item lists including corporate
                     // authors as the first entry.
                     $skipComma = ($i + 2 == $authorCount)
-                        && (strpos($authorStr . $author, ',') === false);
+                        && (!str_contains($authorStr . $author, ','));
                     $authorStr .= $author . ($skipComma ? ' ' : ', ');
                 } else { // First and only
                     $authorStr .= $this->stripPunctuation($author) . '.';
@@ -817,7 +821,8 @@ implements TranslatorAwareInterface
     protected function getEdition()
     {
         // Find the first edition statement that isn't "1st ed."
-        if (isset($this->details['edition'])
+        if (
+            isset($this->details['edition'])
             && is_array($this->details['edition'])
         ) {
             foreach ($this->details['edition'] as $edition) {
@@ -878,7 +883,7 @@ implements TranslatorAwareInterface
     {
         // If there is no comma in the name, we don't need to reverse it and
         // should leave its punctuation alone (since it was adjusted earlier).
-        return strpos($author, ',') === false
+        return !str_contains($author, ',')
             ? $author : $this->reverseName($this->stripPunctuation($author));
     }
 
@@ -893,7 +898,8 @@ implements TranslatorAwareInterface
     protected function getMLAAuthors($etAlThreshold = 2)
     {
         $authorStr = '';
-        if (isset($this->details['authors'])
+        if (
+            isset($this->details['authors'])
             && is_array($this->details['authors'])
         ) {
             $i = 0;
@@ -908,7 +914,7 @@ implements TranslatorAwareInterface
                         // Only add a comma if there are commas already in the
                         // preceding text. This helps, for example, with cases where
                         // the first author is a corporate author.
-                        $finalJoin = strpos($authorStr, ',') !== false ? ', ' : ' ';
+                        $finalJoin = str_contains($authorStr, ',') ? ', ' : ' ';
                         $authorStr .= $finalJoin . $this->translate('and') . ' '
                             . $this->formatSecondaryMLAAuthor($author);
                     } elseif ($i > 0) {
@@ -936,11 +942,13 @@ implements TranslatorAwareInterface
     protected function getPublisher($includePubPlace = true)
     {
         $parts = [];
-        if ($includePubPlace && !empty($this->details['pubPlace'])
+        if (
+            $includePubPlace && !empty($this->details['pubPlace'])
         ) {
             $parts[] = $this->stripPunctuation($this->details['pubPlace']);
         }
-        if (!empty($this->details['pubName'])
+        if (
+            !empty($this->details['pubName'])
         ) {
             $parts[] = $this->details['pubName'];
         }

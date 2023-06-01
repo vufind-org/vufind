@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Helper class for displaying search-related HTML chunks.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper;
 
 use Laminas\View\Helper\AbstractHelper;
@@ -78,7 +80,7 @@ abstract class AbstractSearch extends AbstractHelper
         $html .= $msg;
         $normalizer = $results->getOptions()->getSpellingNormalizer();
         foreach ($spellingSuggestions as $term => $details) {
-            $html .= '<br/>' . $view->escapeHtml($term) . ' &raquo; ';
+            $html .= '<br>' . $view->escapeHtml($term) . ' &raquo; ';
             $i = 0;
             foreach ($details['suggestions'] as $word => $data) {
                 if ($i++ > 0) {

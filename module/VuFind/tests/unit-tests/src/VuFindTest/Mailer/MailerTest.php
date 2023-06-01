@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Mailer Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Mailer;
 
 use Laminas\Mail\Address;
@@ -61,7 +63,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
                 'name' => 'foo',
                 'username' => 'vufinduser',
                 'password' => 'vufindpass',
-            ]
+            ],
         ];
         $cm = $this->getMockConfigPluginManager(compact('config'));
         $sm = new MockContainer($this);
@@ -241,6 +243,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     {
         $this->expectException(\VuFind\Exception\Mail::class);
         $this->expectExceptionMessage('Invalid Recipient Email Address');
+        $this->expectExceptionCode(\VuFind\Exception\Mail::ERROR_INVALID_RECIPIENT);
 
         $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
@@ -256,6 +259,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     {
         $this->expectException(\VuFind\Exception\Mail::class);
         $this->expectExceptionMessage('Invalid Reply-To Email Address');
+        $this->expectExceptionCode(\VuFind\Exception\Mail::ERROR_INVALID_REPLY_TO);
 
         $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
@@ -278,6 +282,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     {
         $this->expectException(\VuFind\Exception\Mail::class);
         $this->expectExceptionMessage('Invalid Recipient Email Address');
+        $this->expectExceptionCode(\VuFind\Exception\Mail::ERROR_INVALID_RECIPIENT);
 
         $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
@@ -293,6 +298,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     {
         $this->expectException(\VuFind\Exception\Mail::class);
         $this->expectExceptionMessage('Too Many Email Recipients');
+        $this->expectExceptionCode(\VuFind\Exception\Mail::ERROR_TOO_MANY_RECIPIENTS);
 
         $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
@@ -308,6 +314,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     {
         $this->expectException(\VuFind\Exception\Mail::class);
         $this->expectExceptionMessage('Invalid Sender Email Address');
+        $this->expectExceptionCode(\VuFind\Exception\Mail::ERROR_INVALID_SENDER);
 
         $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
@@ -323,6 +330,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     {
         $this->expectException(\VuFind\Exception\Mail::class);
         $this->expectExceptionMessage('Invalid Sender Email Address');
+        $this->expectExceptionCode(\VuFind\Exception\Mail::ERROR_INVALID_SENDER);
 
         $transport = $this->createMock(\Laminas\Mail\Transport\TransportInterface::class);
         $mailer = new Mailer($transport);
@@ -343,6 +351,29 @@ class MailerTest extends \PHPUnit\Framework\TestCase
         $transport->expects($this->once())->method('send')->will($this->throwException(new \Exception('Boom')));
         $mailer = new Mailer($transport);
         $mailer->send('to@example.com', 'from@example.com', 'subject', 'body');
+    }
+
+    /**
+     * Test unknown exception.
+     *
+     * @return void
+     */
+    public function testUnknownException()
+    {
+        $mailer = $this->createMock(Mailer::class);
+        $mailer->expects($this->once())->method('send')->will(
+            $this->throwException(
+                new \VuFind\Exception\Mail(
+                    'Technical message',
+                    \VuFind\Exception\Mail::ERROR_UNKNOWN
+                )
+            )
+        );
+        try {
+            $mailer->send('to@example.com', 'from@example.com', 'subject', 'body');
+        } catch (\VuFind\Exception\Mail $e) {
+            $this->assertEquals('email_failure', $e->getDisplayMessage());
+        }
     }
 
     /**

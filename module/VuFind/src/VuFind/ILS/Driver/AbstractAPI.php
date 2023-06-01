@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Abstract Driver for API-based ILS drivers
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use Laminas\Log\LoggerAwareInterface;
@@ -41,7 +43,8 @@ use VuFindHttp\HttpServiceAwareInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInterface,
+abstract class AbstractAPI extends AbstractBase implements
+    HttpServiceAwareInterface,
     LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait {
@@ -158,11 +161,12 @@ abstract class AbstractAPI extends AbstractBase implements HttpServiceAwareInter
         try {
             $response = $client->send();
         } catch (\Exception $e) {
-            $this->logError("Unexpected " . get_class($e) . ": " . (string)$e);
+            $this->logError("Unexpected " . $e::class . ": " . (string)$e);
             throw new ILSException("Error during send operation.");
         }
         $code = $response->getStatusCode();
-        if (!$response->isSuccess()
+        if (
+            !$response->isSuccess()
             && !$this->failureCodeIsAllowed($code, $allowedFailureCodes)
         ) {
             $this->logError(

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Oracle support code for VTLS Virtua Driver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) University of Southern Queensland 2008.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Connection;
 
 /**
@@ -375,7 +377,7 @@ class Oracle
 
         // Prepare the SQL for child table - turn the columns in placeholders for
         // the bind
-        $sql  = "DELETE FROM $table WHERE " . join(" AND ", $clauses);
+        $sql  = "DELETE FROM $table WHERE " . implode(" AND ", $clauses);
         $delete = $this->prepare($sql);
 
         // Bind Variables
@@ -428,14 +430,14 @@ class Oracle
             $columns[]      = $column;
             // Dates are special
             if (count($tmp) > 0 && null !== $datum) {
-                $values[] = "TO_DATE(:$column, '" . join(":", $tmp) . "')";
+                $values[] = "TO_DATE(:$column, '" . implode(":", $tmp) . "')";
             } else {
                 $values[] = ":$column";
             }
         }
 
-        $sql  = "INSERT INTO $table (" . join(", ", $columns) . ") VALUES (" .
-            join(", ", $values) . ")";
+        $sql  = "INSERT INTO $table (" . implode(", ", $columns) . ") VALUES (" .
+            implode(", ", $values) . ")";
         $insert = $this->prepare($sql);
 
         // Bind Variables
@@ -585,7 +587,7 @@ class Oracle
                     $output .= "Bind Variables:<br />\n";
                     foreach ($this->lastErrorFields as $k => $l) {
                         if (is_array($l)) {
-                            $output .= "$k => (" . join(", ", $l) . ")<br />\n";
+                            $output .= "$k => (" . implode(", ", $l) . ")<br />\n";
                         } else {
                             $output .= "$k => $l<br />\n";
                         }

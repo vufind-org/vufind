@@ -3,7 +3,7 @@
 /**
  * Unit tests for SOLR backend.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,10 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Backend\Solr;
 
 use InvalidArgumentException;
 use Laminas\Http\Response;
+use Laminas\Uri\Http;
 use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Exception\RemoteErrorException;
 use VuFindSearch\Backend\Solr\Backend;
@@ -203,7 +205,7 @@ class BackendTest extends TestCase
                     'Adult children of aging parents' => 7,
                     'Automobile drivers\' tests' => 7,
                     'Fathers and daughters' => 7,
-                ]
+                ],
             ],
             $facets
         );
@@ -501,8 +503,8 @@ class BackendTest extends TestCase
         $back = new Backend($conn);
         $query = new Query('foo');
         $result = $back->getIds($query, 0, 10);
-        $this->assertTrue($result instanceof RecordCollection);
-        $this->assertEquals(0, count($result));
+        $this->assertInstanceOf(RecordCollection::class, $result);
+        $this->assertCount(0, $result);
     }
 
     /**
@@ -608,6 +610,51 @@ class BackendTest extends TestCase
         );
     }
 
+    /**
+     * Test extra request details
+     *
+     * @return void
+     */
+    public function testExtraRequestDetails()
+    {
+        $solrUri = new Http("https://www.someExampleSolr.com");
+        $connector = $this->getConnectorMock(['getLastUrl']);
+        $connector->expects($this->once())->method('getLastUrl')
+            ->will($this->returnValue($solrUri));
+        $backend = new Backend($connector);
+        $this->assertEquals(
+            ['solrRequestUrl' => $solrUri],
+            $backend->getExtraRequestDetails()
+        );
+    }
+
+    /**
+     * Test reset extra request details
+     *
+     * @return void
+     */
+    public function testResetExtraRequestDetails()
+    {
+        $solrUri = new Http("https://www.someExampleSolr.com");
+        $connector = $this->getConnectorMock(['getLastUrl', 'resetLastUrl']);
+        $connector->expects($this->once())->method('resetLastUrl');
+        $connector->expects($this->exactly(2))->method('getLastUrl')
+            ->willReturnOnConsecutiveCalls(
+                $this->returnValue($solrUri),
+                $this->returnValue(null)
+            );
+        $backend = new Backend($connector);
+        $this->assertEquals(
+            ['solrRequestUrl' => $solrUri],
+            $backend->getExtraRequestDetails()
+        );
+        $backend->resetExtraRequestDetails();
+        $this->assertEquals(
+            ['solrRequestUrl' => null],
+            $backend->getExtraRequestDetails()
+        );
+    }
+
     /// Internal API
 
     /**
@@ -665,7 +712,7 @@ class BackendTest extends TestCase
                         // If client is provided, return it since it may have test
                         // expectations:
                         return $client ?? new \Laminas\Http\Client();
-                    }
+                    },
                 ]
             )
             ->getMock();

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * VuFind XSLT importer
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/ Wiki
  */
+
 namespace VuFind\XSLT;
 
 use DOMDocument;
@@ -119,14 +121,14 @@ class Importer
         $xsl = $this->initProcessor($options);
 
         // Load up the style sheet
-        $style = new DOMDocument;
+        $style = new DOMDocument();
         if (!$style->load($xslFile)) {
             throw new \Exception("Problem loading XSL file: {$xslFile}.");
         }
         $xsl->importStyleSheet($style);
 
         // Load up the XML document
-        $xml = new DOMDocument;
+        $xml = new DOMDocument();
         if (!$xml->load($xmlFile)) {
             throw new \Exception("Problem loading XML file: {$xmlFile}.");
         }
@@ -171,7 +173,7 @@ class Importer
             $truncate = $options['General']['truncate_custom_class'] ?? true;
             foreach ($classes as $class) {
                 // Add a default namespace if none was provided:
-                if (false === strpos($class, '\\')) {
+                if (!str_contains($class, '\\')) {
                     $class = 'VuFind\XSLT\Import\\' . $class;
                 }
                 // If necessary, dynamically generate the truncated version of the

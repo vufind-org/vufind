@@ -1,8 +1,9 @@
 <?php
+
 /**
  * JsTranslations view helper Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2021.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper\Root;
 
 use VuFind\View\Helper\Root\JsTranslations;
@@ -83,16 +85,20 @@ class JsTranslationsTest extends \PHPUnit\Framework\TestCase
 
         // Stateless:
         $this->assertJsonStringEqualsJsonString(
-            json_encode([
-                '1key' => 'Translation 1&lt;p&gt;',
-                '2key' => '&lt;span&gt;translation&lt;/span&gt;',
-                '2key_html' => '<span>translation</span>'
-            ]),
-            $helper->getJSONFromArray([
-                '1key' => 'key1',
-                '2key' => 'key_html',
-                '2key_html' => 'key_html',
-            ])
+            json_encode(
+                [
+                    '1key' => 'Translation 1&lt;p&gt;',
+                    '2key' => '&lt;span&gt;translation&lt;/span&gt;',
+                    '2key_html' => '<span>translation</span>',
+                ]
+            ),
+            $helper->getJSONFromArray(
+                [
+                    '1key' => 'key1',
+                    '2key' => 'key_html',
+                    '2key_html' => 'key_html',
+                ]
+            )
         );
 
         // Verify that state hasn't changed:
@@ -111,8 +117,8 @@ class JsTranslationsTest extends \PHPUnit\Framework\TestCase
                 'default' => [
                     'key1' => 'Translation 1<p>',
                     'key_html' => '<span>translation</span>',
-                    'key2' => 'Translation 2'
-                ]
+                    'key2' => 'Translation 2',
+                ],
             ]
         );
         $translate = new Translate();

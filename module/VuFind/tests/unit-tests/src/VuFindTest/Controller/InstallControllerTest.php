@@ -3,7 +3,7 @@
 /**
  * Class InstallControllerTest
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2022.
  *
@@ -56,7 +56,7 @@ class InstallControllerTest extends \PHPUnit\Framework\TestCase
         );
         $method = $this->getMinimalPhpVersionMethod();
         $this->assertEquals(
-            '7.4.1',
+            '8.0.0',
             $method->invokeArgs($controller, [])
         );
     }
@@ -90,7 +90,7 @@ class InstallControllerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * getMinimalPhpVersion test data
+     * Test data for getMinimalPhpVersion
      *
      * @return array[]
      */
@@ -183,6 +183,9 @@ class InstallControllerTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test getMinimalPhpVersion with actual composer.json file
+     *
+     * @param array  $json     JSON data
+     * @param string $expected Expected version number
      *
      * @dataProvider getMinimalPhpVersionProvider
      *

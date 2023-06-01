@@ -4,7 +4,7 @@
  * Support class (limited functionality mock Voyager driver) for MultiBackend ILS
  * driver test
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  * Copyright (C) The National Library of Finland 2014-2021.
@@ -46,6 +46,13 @@ class VoyagerNoSupportMock extends \VuFind\ILS\Driver\Voyager
 {
     use ILSMockTrait;
 
+    /**
+     * Ensure that ALL methods are marked as unsupported
+     *
+     * @param array ...$args Arguments
+     *
+     * @return bool
+     */
     public function supportsMethod(...$args)
     {
         return false;

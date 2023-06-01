@@ -3,7 +3,7 @@
 /**
  * Plugin for Bokinfo coverimages
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) imCode Partner AB 2022.
  * Copyright (C) Moravian Library 2019.
@@ -27,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Content\Covers;
 
 use SimpleXMLElement;

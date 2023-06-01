@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Advanced Dummy ILS Driver -- Returns sample values based on Solr index.
  *
@@ -6,7 +7,7 @@
  * the session.  You can log out and log back in to get a different set of
  * values.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007, 2022.
  * Copyright (C) The National Library of Finland 2014.
@@ -31,6 +32,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use ArrayObject;
@@ -163,16 +165,16 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     protected $locations = [
         [
             'locationID' => 'A',
-            'locationDisplay' => 'Campus A'
+            'locationDisplay' => 'Campus A',
         ],
         [
             'locationID' => 'B',
-            'locationDisplay' => 'Campus B'
+            'locationDisplay' => 'Campus B',
         ],
         [
             'locationID' => 'C',
-            'locationDisplay' => 'Campus C'
-        ]
+            'locationDisplay' => 'Campus C',
+        ],
     ];
 
     /**
@@ -316,9 +318,9 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         switch ($loc) {
             case 10:
                 return "Missing";
-            case  9:
+            case 9:
                 return "On Order";
-            case  8:
+            case 8:
                 return "Invoiced";
             default:
                 return "Available";
@@ -556,7 +558,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                     strtotime("now + 30 days")
                 ),
                 "item_id" => $i,
-                "reqnum" => $i
+                "reqnum" => $i,
             ];
             // Inject a random identifier of some sort:
             $currentItem += $this->getRandomItemIdentifier();
@@ -609,7 +611,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                     : '';
                 if ($requestType == 'ILLRequests') {
                     $transit = rand() % 2;
-                    if (!$currentItem['available']
+                    if (
+                        !$currentItem['available']
                         && !$currentItem['canceled']
                         && $transit == 1
                     ) {
@@ -849,7 +852,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         return [
             'total' => count($status),
             'holdings' => $slice ?: $status,
-            'electronic_holdings' => $electronic
+            'electronic_holdings' => $electronic,
         ];
     }
 
@@ -898,7 +901,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             'cat_password' => trim($password),
             'email'        => 'Lib.Rarian@library.not',
             'major'        => null,
-            'college'      => null
+            'college'      => null,
         ];
 
         $loginMethod = $this->config['Catalog']['loginMethod'] ?? 'password';
@@ -909,7 +912,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         }
 
         if (isset($this->config['Users'])) {
-            if (!isset($this->config['Users'][$username])
+            if (
+                !isset($this->config['Users'][$username])
                 || $password !== $this->config['Users'][$username]
             ) {
                 return null;
@@ -946,7 +950,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             'mobile_phone'    => '1234567890',
             'group'           => 'Library Staff',
             'expiration_date' => 'Someday',
-            'birthdate'       => $birthDate->format('Y-m-d')
+            'birthdate'       => $birthDate->format('Y-m-d'),
         ];
         return $patron;
     }
@@ -993,7 +997,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                     "duedate"  => $this->dateConverter->convertToDisplayDate(
                         'U',
                         strtotime("now - $day_overdue days")
-                    )
+                    ),
                 ];
                 // Some fines will have no id or title:
                 if (rand() % 3 != 1) {
@@ -1170,7 +1174,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                     'institution_id' => 'ill_institution',
                     'institution_name' => 'ILL Library',
                     'institution_dbkey' => 'ill_institution',
-                    'borrowingLocation' => 'ILL Service Desk'
+                    'borrowingLocation' => 'ILL Service Desk',
                 ];
             } else {
                 $transList[$i]['borrowingLocation'] = $this->getFakeLoc();
@@ -1241,7 +1245,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
 
         return [
             'count' => count($session->transactions),
-            'records' => $transactions
+            'records' => $transactions,
         ];
     }
 
@@ -1303,7 +1307,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 '_dueDate' => $dueDate,
                 '_returnDate' => $returnDate,
                 'barcode' => sprintf("%08d", rand() % 50000),
-                'item_id' => $i,
+                'row_id' => $i,
             ];
             if ($this->idsInMyResearch) {
                 [$transList[$i]['id'], $transList[$i]['title']]
@@ -1384,7 +1388,39 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
 
         return [
             'count' => count($session->historicLoans),
-            'transactions' => $historicLoans
+            'transactions' => $historicLoans,
+        ];
+    }
+
+    /**
+     * Purge Patron Transaction History
+     *
+     * @param array  $patron The patron array from patronLogin
+     * @param ?array $ids    IDs to purge, or null for all
+     *
+     * @throws ILSException
+     * @return array Associative array of the results
+     */
+    public function purgeTransactionHistory(array $patron, ?array $ids): array
+    {
+        $this->checkIntermittentFailure();
+        $session = $this->getSession($patron['id'] ?? null);
+        if (null === $ids) {
+            $session->historicLoans = [];
+            $status = 'loan_history_all_purged';
+        } else {
+            $session->historicLoans = array_filter(
+                $session->historicLoans ?? [],
+                function ($loan) use ($ids) {
+                    return !in_array($loan['row_id'], $ids);
+                }
+            );
+            $status = 'loan_history_selected_purged';
+        }
+        return [
+            'success' => true,
+            'status' => $status,
+            'sys_message' => '',
         ];
     }
 
@@ -1416,7 +1452,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         if (($holdDetails['reqnum'] ?? '') == 1) {
             $result[] = [
                 'locationID' => 'D',
-                'locationDisplay' => 'Campus D'
+                'locationDisplay' => 'Campus D',
             ];
         }
 
@@ -1527,12 +1563,12 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         return [
             [
                 'id' => 1,
-                'name' => 'Main Library'
+                'name' => 'Main Library',
             ],
             [
                 'id' => 2,
-                'name' => 'Branch Library'
-            ]
+                'name' => 'Branch Library',
+            ],
         ];
     }
 
@@ -1745,7 +1781,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                     $retVal['count']++;
                     $retVal['items'][$current['item_id']] = [
                         'success' => true,
-                        'status' => 'hold_cancel_success'
+                        'status' => 'hold_cancel_success',
                     ];
                 } else {
                     $newHolds->append($current);
@@ -1754,7 +1790,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                         'status' => 'hold_cancel_fail',
                         'sysMessage' =>
                             'Demonstrating failure; keep trying and ' .
-                            'it will work eventually.'
+                            'it will work eventually.',
                     ];
                 }
             }
@@ -1783,7 +1819,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         $results = [];
         $session = $this->getSession($patron['id']);
         foreach ($session->holds as &$currentHold) {
-            if (!isset($currentHold['updateDetails'])
+            if (
+                !isset($currentHold['updateDetails'])
                 || !in_array($currentHold['updateDetails'], $holdsDetails)
             ) {
                 continue;
@@ -1845,7 +1882,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                     $retVal['count']++;
                     $retVal['items'][$current['item_id']] = [
                         'success' => true,
-                        'status' => 'storage_retrieval_request_cancel_success'
+                        'status' => 'storage_retrieval_request_cancel_success',
                     ];
                 } else {
                     $newRequests->append($current);
@@ -1854,7 +1891,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                         'status' => 'storage_retrieval_request_cancel_fail',
                         'sysMessage' =>
                             'Demonstrating failure; keep trying and ' .
-                            'it will work eventually.'
+                            'it will work eventually.',
                     ];
                 }
             }
@@ -1902,9 +1939,9 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         if ($this->checkRenewBlock()) {
             return [
                 'blocks' => [
-                    'Simulated account block; try again and it will work eventually.'
+                    'Simulated account block; try again and it will work eventually.',
                 ],
-                'details' => []
+                'details' => [],
             ];
         }
 
@@ -1944,7 +1981,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                         "item_id" => $current['item_id'],
                         "sysMessage" =>
                             'Demonstrating failure; keep trying and ' .
-                            'it will work eventually.'
+                            'it will work eventually.',
                     ];
                 }
             }
@@ -1981,7 +2018,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @param string $id     The Bib ID
      * @param array  $data   An Array of item data
-     * @param patron $patron An array of patron data
+     * @param array  $patron An array of patron data
      *
      * @return mixed An array of data on the request including
      * whether or not it is valid and a status message. Alternatively a boolean
@@ -1996,12 +2033,12 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             return [
                 'valid' => false,
                 'status' => rand() % 3 != 0
-                    ? 'hold_error_blocked' : 'Demonstrating a custom failure'
+                    ? 'hold_error_blocked' : 'Demonstrating a custom failure',
             ];
         }
         return [
             'valid' => true,
-            'status' => 'request_place_text'
+            'status' => 'request_place_text',
         ];
     }
 
@@ -2025,7 +2062,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 "success" => false,
                 "sysMessage" =>
                     'Demonstrating failure; keep trying and ' .
-                    'it will work eventually.'
+                    'it will work eventually.',
             ];
         }
 
@@ -2046,7 +2083,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
 
         $requestGroup = '';
         foreach ($this->getRequestGroups(null, null) as $group) {
-            if (isset($holdDetails['requestGroupId'])
+            if (
+                isset($holdDetails['requestGroupId'])
                 && $group['id'] == $holdDetails['requestGroupId']
             ) {
                 $requestGroup = $group['name'];
@@ -2104,7 +2142,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @param string $id     The Bib ID
      * @param array  $data   An Array of item data
-     * @param patron $patron An array of patron data
+     * @param array  $patron An array of patron data
      *
      * @return mixed An array of data on the request including
      * whether or not it is valid and a status message. Alternatively a boolean
@@ -2120,12 +2158,12 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 'valid' => false,
                 'status' => rand() % 3 != 0
                     ? 'storage_retrieval_request_error_blocked'
-                    : 'Demonstrating a custom failure'
+                    : 'Demonstrating a custom failure',
             ];
         }
         return [
             'valid' => true,
-            'status' => 'storage_retrieval_request_place_text'
+            'status' => 'storage_retrieval_request_place_text',
         ];
     }
 
@@ -2146,19 +2184,20 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         if (!$this->storageRetrievalRequests) {
             return [
                 "success" => false,
-                "sysMessage" => 'Storage Retrieval Requests are disabled.'
+                "sysMessage" => 'Storage Retrieval Requests are disabled.',
             ];
         }
 
         // Make sure pickup location is valid
         $pickUpLocation = $details['pickUpLocation'] ?? null;
         $validLocations = array_column($this->getPickUpLocations(), 'locationID');
-        if (null !== $pickUpLocation
+        if (
+            null !== $pickUpLocation
             && !in_array($pickUpLocation, $validLocations)
         ) {
             return [
                 'success' => false,
-                'sysMessage' => 'storage_retrieval_request_invalid_pickup'
+                'sysMessage' => 'storage_retrieval_request_invalid_pickup',
             ];
         }
 
@@ -2168,7 +2207,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 "success" => false,
                 "sysMessage" =>
                     'Demonstrating failure; keep trying and ' .
-                    'it will work eventually.'
+                    'it will work eventually.',
             ];
         }
 
@@ -2182,7 +2221,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             : 0;
 
         // Figure out appropriate expiration date:
-        if (!isset($details['requiredBy'])
+        if (
+            !isset($details['requiredBy'])
             || empty($details['requiredBy'])
         ) {
             $expire = strtotime("now + 30 days");
@@ -2196,14 +2236,14 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 // Expiration date is invalid
                 return [
                     'success' => false,
-                    'sysMessage' => 'storage_retrieval_request_date_invalid'
+                    'sysMessage' => 'storage_retrieval_request_date_invalid',
                 ];
             }
         }
         if ($expire <= time()) {
             return [
                 'success' => false,
-                'sysMessage' => 'storage_retrieval_request_date_past'
+                'sysMessage' => 'storage_retrieval_request_date_past',
             ];
         }
 
@@ -2219,7 +2259,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 'processed' => rand() % 3 == 0
                     ? $this->dateConverter->convertToDisplayDate('U', $expire) : '',
                 'reqnum'   => sprintf('%06d', $nextId),
-                'item_id'  => $nextId
+                'item_id'  => $nextId,
             ]
         );
 
@@ -2233,7 +2273,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @param string $id     The Bib ID
      * @param array  $data   An Array of item data
-     * @param patron $patron An array of patron data
+     * @param array  $patron An array of patron data
      *
      * @return mixed An array of data on the request including
      * whether or not it is valid and a status message. Alternatively a boolean
@@ -2248,12 +2288,12 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             return [
                 'valid' => false,
                 'status' => rand() % 3 != 0
-                    ? 'ill_request_error_blocked' : 'Demonstrating a custom failure'
+                    ? 'ill_request_error_blocked' : 'Demonstrating a custom failure',
             ];
         }
         return [
             'valid' => true,
-            'status' => 'ill_request_place_text'
+            'status' => 'ill_request_place_text',
         ];
     }
 
@@ -2274,7 +2314,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         if (!$this->ILLRequests) {
             return [
                 'success' => false,
-                'sysMessage' => 'ILL requests are disabled.'
+                'sysMessage' => 'ILL requests are disabled.',
             ];
         }
         // Simulate failure:
@@ -2283,7 +2323,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 'success' => false,
                 'sysMessage' =>
                     'Demonstrating failure; keep trying and ' .
-                    'it will work eventually.'
+                    'it will work eventually.',
             ];
         }
 
@@ -2297,7 +2337,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             : 0;
 
         // Figure out appropriate expiration date:
-        if (!isset($details['requiredBy'])
+        if (
+            !isset($details['requiredBy'])
             || empty($details['requiredBy'])
         ) {
             $expire = strtotime('now + 30 days');
@@ -2311,14 +2352,14 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 // Expiration Date is invalid
                 return [
                     'success' => false,
-                    'sysMessage' => 'ill_request_date_invalid'
+                    'sysMessage' => 'ill_request_date_invalid',
                 ];
             }
         }
         if ($expire <= time()) {
             return [
                 'success' => false,
-                'sysMessage' => 'ill_request_date_past'
+                'sysMessage' => 'ill_request_date_past',
             ];
         }
 
@@ -2338,7 +2379,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         if (!$pickupLocation) {
             return [
                 'success' => false,
-                'sysMessage' => 'ill_request_place_fail_missing'
+                'sysMessage' => 'ill_request_place_fail_missing',
             ];
         }
 
@@ -2354,7 +2395,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 'processed' => rand() % 3 == 0
                     ? $this->dateConverter->convertToDisplayDate('U', $expire) : '',
                 'reqnum'   => sprintf('%06d', $nextId),
-                'item_id'  => $nextId
+                'item_id'  => $nextId,
             ]
         );
 
@@ -2385,13 +2426,13 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             [
                 'id' => 1,
                 'name' => 'Main Library',
-                'isDefault' => true
+                'isDefault' => true,
             ],
             [
                 'id' => 2,
                 'name' => 'Branch Library',
-                'isDefault' => false
-            ]
+                'isDefault' => false,
+            ],
         ];
 
         return $details;
@@ -2420,26 +2461,26 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                     [
                         'id' => 1,
                         'name' => 'Circulation Desk',
-                        'isDefault' => true
+                        'isDefault' => true,
                     ],
                     [
                         'id' => 2,
                         'name' => 'Reference Desk',
-                        'isDefault' => false
-                    ]
+                        'isDefault' => false,
+                    ],
                 ];
             case 2:
                 return [
                     [
                         'id' => 3,
                         'name' => 'Main Desk',
-                        'isDefault' => false
+                        'isDefault' => false,
                     ],
                     [
                         'id' => 4,
                         'name' => 'Library Bus',
-                        'isDefault' => true
-                    ]
+                        'isDefault' => true,
+                    ],
                 ];
         }
         return [];
@@ -2473,7 +2514,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                     $retVal['count']++;
                     $retVal['items'][$current['item_id']] = [
                         'success' => true,
-                        'status' => 'ill_request_cancel_success'
+                        'status' => 'ill_request_cancel_success',
                     ];
                 } else {
                     $newRequests->append($current);
@@ -2482,7 +2523,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                         'status' => 'ill_request_cancel_fail',
                         'sysMessage' =>
                             'Demonstrating failure; keep trying and ' .
-                            'it will work eventually.'
+                            'it will work eventually.',
                     ];
                 }
             }
@@ -2533,7 +2574,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             'success' => false,
             'status' => 'An error has occurred',
             'sysMessage' =>
-                'Demonstrating failure; keep trying and it will work eventually.'
+                'Demonstrating failure; keep trying and it will work eventually.',
         ];
     }
 
@@ -2564,14 +2605,15 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 'itemLimit' => $this->config['Holdings']['itemLimit'] ?? null,
             ];
         }
-        if ($function == 'StorageRetrievalRequests'
+        if (
+            $function == 'StorageRetrievalRequests'
             && $this->storageRetrievalRequests
         ) {
             return [
                 'HMACKeys' => 'id',
                 'extraFields' => 'comments:pickUpLocation:requiredByDate:item-issue',
                 'helpText' => 'This is a storage retrieval request help text'
-                    . ' with some <span style="color: red">styling</span>.'
+                    . ' with some <span style="color: red">styling</span>.',
             ];
         }
         if ($function == 'ILLRequests' && $this->ILLRequests) {
@@ -2582,7 +2624,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                     'comments:pickUpLibrary:pickUpLibraryLocation:requiredByDate',
                 'defaultRequiredDate' => '0:1:0',
                 'helpText' => 'This is an ILL request help text'
-                    . ' with some <span style="color: red">styling</span>.'
+                    . ' with some <span style="color: red">styling</span>.',
             ];
         }
         if ($function == 'changePassword') {
@@ -2600,9 +2642,11 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                     'return desc' => 'sort_return_date_desc',
                     'return asc' => 'sort_return_date_asc',
                     'due desc' => 'sort_due_date_desc',
-                    'due asc' => 'sort_due_date_asc'
+                    'due asc' => 'sort_due_date_asc',
                 ],
-                'default_sort' => 'checkout desc'
+                'default_sort' => 'checkout desc',
+                'purge_all' => $this->config['TransactionHistory']['purgeAll'] ?? true,
+                'purge_selected' => $this->config['TransactionHistory']['purgeSelected'] ?? true,
             ];
             if ($this->config['Loans']['paging'] ?? false) {
                 $config['max_results']
@@ -2619,15 +2663,15 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 'sort' => [
                     'due desc' => 'sort_due_date_desc',
                     'due asc' => 'sort_due_date_asc',
-                    'title asc' => 'sort_title'
+                    'title asc' => 'sort_title',
                 ],
-                'default_sort' => 'due asc'
+                'default_sort' => 'due asc',
             ];
         }
         if ($function == 'patronLogin') {
             return [
                 'loginMethod'
-                    => $this->config['Catalog']['loginMethod'] ?? 'password'
+                    => $this->config['Catalog']['loginMethod'] ?? 'password',
             ];
         }
 
@@ -2689,5 +2733,25 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     public function getProxiedUsers(array $patron): array
     {
         return $this->config['ProxiedUsers'] ?? [];
+    }
+
+    /**
+     * Provide an array of URL data (in the same format returned by the record
+     * driver's getURLs method) for the specified bibliographic record.
+     *
+     * @param string $id Bibliographic record ID
+     *
+     * @return array
+     */
+    public function getUrlsForRecord(string $id): array
+    {
+        $links = [];
+        if ($this->config['RecordLinks']['fakeOpacLink'] ?? false) {
+            $links[] = [
+                'url' => 'http://localhost/my-fake-ils?id=' . urlencode($id),
+                'desc' => 'View in OPAC (fake demo link)',
+            ];
+        }
+        return $links;
     }
 }

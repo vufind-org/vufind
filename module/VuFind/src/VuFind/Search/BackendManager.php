@@ -3,7 +3,7 @@
 /**
  * Manager for search backends.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -26,15 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search;
 
 use Laminas\EventManager\EventInterface;
-
 use Laminas\EventManager\SharedEventManagerInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
-
 use SplObjectStorage;
-
 use UnexpectedValueException;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Service;
@@ -113,7 +111,7 @@ class BackendManager
             throw new UnexpectedValueException(
                 sprintf(
                     'Object of class %s does not implement the expected interface',
-                    get_class($backend)
+                    $backend::class
                 )
             );
         }

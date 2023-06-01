@@ -3,7 +3,7 @@
 /**
  * Service class for ObalkyKnih
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2019.
  *
@@ -26,6 +26,7 @@
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Content;
 
 /**
@@ -37,7 +38,8 @@ namespace VuFind\Content;
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
+class ObalkyKnihService implements
+    \VuFindHttp\HttpServiceAwareInterface,
     \Laminas\Log\LoggerAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
@@ -87,7 +89,8 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
      */
     public function __construct(\Laminas\Config\Config $config)
     {
-        if (!isset($config->base_url) || count($config->base_url) < 1
+        if (
+            !isset($config->base_url) || count($config->base_url) < 1
             || !isset($config->books_endpoint)
         ) {
             throw new \Exception(
@@ -187,7 +190,7 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
         } elseif (!empty($ids['isbn'])) {
             $isbn = $ids['isbn']->get13();
         }
-        $isbn = $isbn ?? $ids['upc'] ?? $ids['issn'] ?? null;
+        $isbn ??= $ids['upc'] ?? $ids['issn'] ?? null;
         $oclc = $ids['oclc'] ?? null;
         $isbn = $isbn ?? (isset($ids['ismn']) ? $ids['ismn']->get13() : null);
         $ismn = isset($ids['ismn']) ? $ids['ismn']->get10() : null;
@@ -215,7 +218,7 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
         try {
             $response = $client->send();
         } catch (\Exception $e) {
-            $this->logError('Unexpected ' . get_class($e) . ': ' . $e->getMessage());
+            $this->logError('Unexpected ' . $e::class . ': ' . $e->getMessage());
             return null;
         }
         if ($response->isSuccess()) {
@@ -234,7 +237,7 @@ class ObalkyKnihService implements \VuFindHttp\HttpServiceAwareInterface,
      */
     protected function createLocalIdentifier(string $recordid): ?string
     {
-        if (strpos($recordid, '.') !== false) {
+        if (str_contains($recordid, '.')) {
             [, $recordid] = explode('.', $recordid, 2);
         }
         return (empty($this->sigla) || empty($recordid)) ? null :

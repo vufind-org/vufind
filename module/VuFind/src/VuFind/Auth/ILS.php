@@ -1,8 +1,9 @@
 <?php
+
 /**
  * ILS authentication module.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:authentication_handlers Wiki
  */
+
 namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\Request;
@@ -188,7 +190,7 @@ class ILS extends AbstractBase
             [
                 'patron' => $patron,
                 'oldPassword' => $params['oldpwd'],
-                'newPassword' => $params['password']
+                'newPassword' => $params['password'],
             ]
         );
         if (!$result['success']) {

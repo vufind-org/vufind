@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Redi resolver driver test
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Leipzig University Library 2015.
  *
@@ -26,13 +27,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Resolver\Driver;
 
 use InvalidArgumentException;
-
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
 use Laminas\Http\Response as HttpResponse;
-
 use VuFind\Resolver\Driver\Redi;
 
 /**

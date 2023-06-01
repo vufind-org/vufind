@@ -1,8 +1,9 @@
 <?php
+
 /**
  * III ILS Driver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use VuFind\Exception\ILS as ILSException;
@@ -98,7 +100,8 @@ class Innovative extends AbstractBase implements
     protected function prepID($id)
     {
         // Get the ID format from config (default to use_full_id if unset):
-        if (!isset($this->config['RecordID']['use_full_id'])
+        if (
+            !isset($this->config['RecordID']['use_full_id'])
             || $this->config['RecordID']['use_full_id']
         ) {
             // Strip ID leading period and trailing check digit.
@@ -172,7 +175,7 @@ class Innovative extends AbstractBase implements
             $cols = preg_split("/<t(h|d)([^>]*)>/", $row);
 
             // for each th or td section, do the following.
-            for ($i = 0; $i < sizeof($cols); $i++) {
+            for ($i = 0; $i < count($cols); $i++) {
                 // replace non blocking space encodings with a space.
                 $cols[$i] = str_replace("&nbsp;", " ", $cols[$i]);
                 // remove html comment tags

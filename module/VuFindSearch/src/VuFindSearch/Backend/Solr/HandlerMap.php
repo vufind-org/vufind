@@ -3,7 +3,7 @@
 /**
  * SOLR backend handler map.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,11 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Solr;
 
 use InvalidArgumentException;
 use RuntimeException;
-
 use VuFindSearch\Backend\AbstractHandlerMap;
 use VuFindSearch\ParamBag;
 

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Wikipedia connection class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Connection;
 
 use VuFind\I18n\Translator\TranslatorAwareInterface;
@@ -151,7 +153,7 @@ class Wikipedia implements TranslatorAwareInterface
         foreach ($infobox as $row) {
             $data  = explode("=", $row);
             $key   = trim(array_shift($data));
-            $value = trim(join("=", $data));
+            $value = trim(implode("=", $data));
 
             // At the moment we only want stuff related to the image.
             switch (strtolower($key)) {
@@ -196,7 +198,7 @@ class Wikipedia implements TranslatorAwareInterface
         foreach ($matches[1] as $m) {
             // Check if this is the Infobox; name may vary by language
             $infoboxTags = [
-                'Bio', 'Ficha de escritor', 'Infobox', 'Info/Biografia'
+                'Bio', 'Ficha de escritor', 'Infobox', 'Info/Biografia',
             ];
             foreach ($infoboxTags as $tag) {
                 if (substr($m, 0, strlen($tag) + 1) == '{' . $tag) {
@@ -221,7 +223,7 @@ class Wikipedia implements TranslatorAwareInterface
         $imageName = $imageCaption = null;
         // The tag marking image files will vary depending on API language:
         $tags = [
-            'Archivo', 'Bestand', 'Datei', 'Ficheiro', 'Fichier', 'File', 'Image'
+            'Archivo', 'Bestand', 'Datei', 'Ficheiro', 'Fichier', 'File', 'Image',
         ];
         $pattern = '/(\x5b\x5b)('
             . implode('|', $tags)
@@ -267,7 +269,8 @@ class Wikipedia implements TranslatorAwareInterface
             foreach ($new_matches as $nm) {
                 foreach ((array)$nm as $n) {
                     // If it's a file link get rid of it
-                    if (strtolower(substr($n, 0, 7)) == "[[file:"
+                    if (
+                        strtolower(substr($n, 0, 7)) == "[[file:"
                         || strtolower(substr($n, 0, 8)) == "[[image:"
                     ) {
                         $body = str_replace($n, "", $body);
@@ -339,7 +342,7 @@ class Wikipedia implements TranslatorAwareInterface
         // Convert multiple newlines into two breaks
         // We DO want this to be greedy
         $pattern[] = "/\n{2,}/s";
-        $replacement[] = '<br/><br/>';
+        $replacement[] = '<br><br>';
 
         return preg_replace($pattern, $replacement, $body);
     }
@@ -490,7 +493,8 @@ class Wikipedia implements TranslatorAwareInterface
 
         if ($response = $result->getBody()) {
             if ($imageinfo = unserialize($response)) {
-                if (isset($imageinfo['query']['pages']['-1']['imageinfo'][0]['url'])
+                if (
+                    isset($imageinfo['query']['pages']['-1']['imageinfo'][0]['url'])
                 ) {
                     $imageUrl
                         = $imageinfo['query']['pages']['-1']['imageinfo'][0]['url'];

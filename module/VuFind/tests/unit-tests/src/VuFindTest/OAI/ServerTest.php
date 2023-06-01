@@ -3,7 +3,7 @@
 /**
  * OAI-PMH server unit test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development
  */
+
 namespace VuFindTest\OAI;
 
 use VuFind\OAI\Server;
@@ -50,7 +51,7 @@ class ServerTest extends \PHPUnit\Framework\TestCase
     {
         $server = $this->getServer();
         $this->assertTrue(
-            false !== strpos($server->getResponse(), '<error code="badVerb">Missing Verb Argument</error>')
+            str_contains($server->getResponse(), '<error code="badVerb">Missing Verb Argument</error>')
         );
     }
 

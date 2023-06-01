@@ -1,8 +1,9 @@
 <?php
+
 /**
  * SMS test
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\SMS;
 
 use VuFind\SMS\Clickatell;
@@ -68,10 +70,45 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
     public function testCarriers()
     {
         $expected = [
-            'Clickatell' => ['name' => 'Clickatell', 'domain' => null]
+            'Clickatell' => ['name' => 'Clickatell', 'domain' => null],
         ];
         $obj = $this->getClickatell();
         $this->assertEquals($expected, $obj->getCarriers());
+    }
+
+    /**
+     * Test unknown exception message error
+     *
+     * @return void
+     */
+    public function testUnknownException()
+    {
+        $client = $this->getMockClient();
+        $expectedUri = $this->expectedBaseUri . '&to=1234567890&text=hello';
+        $client->expects($this->once())
+            ->method('setMethod')
+            ->with($this->equalTo('GET'))
+            ->will($this->returnValue($client));
+        $client->expects($this->once())
+            ->method('setUri')
+            ->with($this->equalTo($expectedUri))
+            ->will($this->returnValue($client));
+        $client->expects($this->once())
+            ->method('send')
+            ->will(
+                $this->throwException(
+                    new \VuFind\Exception\SMS(
+                        'Technical message',
+                        \VuFind\Exception\SMS::ERROR_UNKNOWN
+                    )
+                )
+            );
+        $obj = $this->getClickatell($client);
+        try {
+            $obj->text('Clickatell', '1234567890', 'test@example.com', 'hello');
+        } catch (\VuFind\Exception\SMS $e) {
+            $this->assertEquals('sms_failure', $e->getDisplayMessage());
+        }
     }
 
     /**
@@ -108,7 +145,7 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
      */
     public function testUnexpectedResponse()
     {
-        $this->expectException(\VuFind\Exception\Mail::class);
+        $this->expectException(\VuFind\Exception\SMS::class);
         $this->expectExceptionMessage('badbadbad');
 
         $client = $this->getMockClient();
@@ -138,7 +175,7 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
      */
     public function testFailureResponse()
     {
-        $this->expectException(\VuFind\Exception\Mail::class);
+        $this->expectException(\VuFind\Exception\SMS::class);
         $this->expectExceptionMessage('Problem sending text.');
 
         $client = $this->getMockClient();
@@ -167,7 +204,7 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
      */
     public function testClientException()
     {
-        $this->expectException(\VuFind\Exception\Mail::class);
+        $this->expectException(\VuFind\Exception\SMS::class);
         $this->expectExceptionMessage('Foo');
 
         $client = $this->getMockClient();
@@ -191,7 +228,7 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
      * Build a test object
      *
      * @param \Laminas\Http\Client $client HTTP client (null for default)
-     * @param array             $config Configuration (null for default)
+     * @param array                $config Configuration (null for default)
      *
      * @return Clickatell
      */

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * WorldCat Similar Related Items Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010, 2022.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Related;
 
 use VuFind\Related\WorldCatSimilar;
@@ -55,7 +57,7 @@ class WorldCatSimilarTest extends \PHPUnit\Framework\TestCase
                     'getAllSubjectHeadings',
                     'getTitle',
                     'getUniqueId',
-                    'getSourceIdentifier'
+                    'getSourceIdentifier',
                 ]
             )->getMock();
         $driver->expects($this->once())
@@ -98,7 +100,7 @@ class WorldCatSimilarTest extends \PHPUnit\Framework\TestCase
             $expectedTerms = '(srw.dd any "fakedc" or srw.au all "fakepa" or '
                 . 'srw.su all "fakesh1a fakesh1b" or srw.su all "fakesh2" or '
                 . 'srw.ti any "faketitle") not srw.no all "fakeid"';
-            return get_class($command) === \VuFindSearch\Command\SearchCommand::class
+            return $command::class === \VuFindSearch\Command\SearchCommand::class
                 && $command->getTargetIdentifier() === "WorldCat"
                 && $command->getArguments()[0]->getAllTerms() === $expectedTerms
                 && $command->getArguments()[1] === 0

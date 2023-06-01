@@ -1,8 +1,9 @@
 <?php
+
 /**
  * OAuth2 refresh token entity implementation.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2022.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\OAuth2\Entity;
 
 use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
@@ -42,13 +44,15 @@ use League\OAuth2\Server\Entities\Traits\RefreshTokenTrait;
  */
 class RefreshTokenEntity implements RefreshTokenEntityInterface, \JsonSerializable
 {
-    use RefreshTokenTrait, EntityTrait;
+    use RefreshTokenTrait;
+    use EntityTrait;
 
     /**
      * Serialize to a JSON string
      *
      * @return string
      */
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         $properties = [

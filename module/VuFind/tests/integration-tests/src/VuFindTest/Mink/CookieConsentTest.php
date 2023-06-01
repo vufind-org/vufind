@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Mink cookie consent test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2022.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
@@ -40,6 +42,9 @@ use Behat\Mink\Element\Element;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  * @retry    4
+ *
+ * @skip_html_validation true
+ * @todo                 Enable HTML validation when vanilla-cookieconsent is upgraded
  */
 final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -56,8 +61,8 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
                 'config' => [
                     'Matomo' => [
                         'url' => $this->getVuFindUrl() . '/Content/faq',
-                    ]
-                ]
+                    ],
+                ],
             ]
         );
         $page = $this->getStartPage();
@@ -86,8 +91,8 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
                     ],
                     'Matomo' => [
                         'url' => $this->getVuFindUrl() . '/Content/faq',
-                    ]
-                ]
+                    ],
+                ],
             ]
         );
         // Make sure the cookie dialog is not hidden from a headless client:
@@ -95,9 +100,9 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
             [
                 'CookieConsent' => [
                     'CookieConsent' => [
-                        'HideFromBots' => false
-                    ]
-                ]
+                        'HideFromBots' => false,
+                    ],
+                ],
             ]
         );
 
@@ -134,7 +139,7 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
         // Open settings again and accept only essential cookies:
         $this->clickCss($page, '#cm__desc a');
         $this->waitStatement('$(".pm .pm__title").text() === "Cookie Settings"');
-        $this->clickCss($page, '.pm__btn', null, 1);
+        $this->clickCss($page, '.pm__btn.pm__btn--secondary');
         // Verify that there's no Matomo consent:
         $this->waitStatement(
             "window._paq[window._paq.length-1][0] !== 'setCookieConsentGiven'"
@@ -145,7 +150,7 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#cm__desc a');
         $this->waitStatement('$(".pm .pm__title").text() === "Cookie Settings"');
         $this->clickCss($page, '.section__toggle', null, 1);
-        $this->clickCss($page, '.pm__btn');
+        $this->clickCss($page, '.pm__btn.pm__btn--secondary');
         // Verify that there's Matomo consent:
         $this->waitStatement(
             "window._paq[window._paq.length-1][0] === 'setCookieConsentGiven'"
@@ -156,7 +161,7 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
         // Open settings again and accept only essential cookies:
         $this->clickCss($page, '#cm__desc a');
         $this->waitStatement('$(".pm .pm__title").text() === "Cookie Settings"');
-        $this->clickCss($page, '.pm__btn', null, 1);
+        $this->clickCss($page, '.pm__btn');
         $this->waitStatement(
             "window._paq[window._paq.length-1][0] !== 'setCookieConsentGiven'"
         );
@@ -166,7 +171,7 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
         // Open settings again and accept all cookies:
         $this->clickCss($page, '#cm__desc a');
         $this->waitStatement('$(".pm .pm__title").text() === "Cookie Settings"');
-        $this->clickCss($page, '.pm__btn', null, 2);
+        $this->clickCss($page, '.pm__btn', null, 1);
         $this->waitStatement(
             "window._paq[window._paq.length-1][0] === 'setCookieConsentGiven'"
         );
@@ -176,7 +181,7 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Get start page
      *
-     * @return
+     * @return Element
      */
     protected function getStartPage(): Element
     {

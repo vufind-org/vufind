@@ -1,8 +1,9 @@
 <?php
+
 /**
  * MyResearch Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2023.
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Controller;
 
 use Laminas\View\Model\ViewModel;
@@ -109,7 +111,8 @@ class MyResearchController extends AbstractBase
         // If a Shibboleth-style login has failed and the user just logged
         // out, we need to override the error message with a more relevant
         // one:
-        if ($msg == 'authentication_error_admin'
+        if (
+            $msg == 'authentication_error_admin'
             && $this->getAuthManager()->userHasLoggedOut()
             && $this->getSessionInitiator()
         ) {
@@ -138,7 +141,8 @@ class MyResearchController extends AbstractBase
     {
         // Process login request, if necessary (either because a form has been
         // submitted or because we're using an external login provider):
-        if ($this->params()->fromPost('processLogin')
+        if (
+            $this->params()->fromPost('processLogin')
             || $this->getSessionInitiator()
             || $this->params()->fromPost('auth_method')
             || $this->params()->fromQuery('auth_method')
@@ -148,7 +152,8 @@ class MyResearchController extends AbstractBase
                     $this->getAuthManager()->login($this->getRequest());
                     // Return early to avoid unnecessary processing if we are being
                     // called from login lightbox and don't have a followup action.
-                    if ($this->params()->fromPost('processLogin')
+                    if (
+                        $this->params()->fromPost('processLogin')
                         && $this->inLightbox()
                         && empty($this->getFollowupUrl())
                     ) {
@@ -261,7 +266,8 @@ class MyResearchController extends AbstractBase
             // Also don't attempt to process a login that hasn't happened yet;
             // if we've just been forced here from another page, we need the user
             // to click the session initiator link before anything can happen.
-            if (!$this->params()->fromPost('processLogin', false)
+            if (
+                !$this->params()->fromPost('processLogin', false)
                 && !$this->params()->fromPost('forcingLogin', false)
             ) {
                 $this->getRequest()->getPost()->set('processLogin', true);
@@ -707,7 +713,8 @@ class MyResearchController extends AbstractBase
      */
     public function addAccountBlocksToFlashMessenger($catalog, $patron)
     {
-        if ($catalog->checkCapability('getAccountBlocks', compact('patron'))
+        if (
+            $catalog->checkCapability('getAccountBlocks', compact('patron'))
             && $blocks = $catalog->getAccountBlocks($patron)
         ) {
             foreach ($blocks as $block) {
@@ -793,7 +800,7 @@ class MyResearchController extends AbstractBase
         return $this->createViewModel(
             [
                 'list' => $list, 'deleteIDS' => $ids,
-                'records' => $this->getRecordLoader()->loadBatch($ids)
+                'records' => $this->getRecordLoader()->loadBatch($ids),
             ]
         );
     }
@@ -863,7 +870,7 @@ class MyResearchController extends AbstractBase
                 [
                     'list'  => $list,
                     'mytags'  => $tagParser->parse($tags),
-                    'notes' => $this->params()->fromPost('notes' . $list)
+                    'notes' => $this->params()->fromPost('notes' . $list),
                 ],
                 $user,
                 $driver
@@ -924,7 +931,7 @@ class MyResearchController extends AbstractBase
                 'listId' => $current->list_id,
                 'listTitle' => $current->list_title,
                 'notes' => $current->notes,
-                'tags' => $user->getTagString($id, $current->list_id, $source)
+                'tags' => $user->getTagString($id, $current->list_id, $source),
             ];
         }
 
@@ -1053,7 +1060,7 @@ class MyResearchController extends AbstractBase
             return $this->createViewModel(
                 [
                     'params' => $results->getParams(), 'results' => $results,
-                    'listTags' => $listTags
+                    'listTags' => $listTags,
                 ]
             );
         } catch (ListPermissionException $e) {
@@ -1109,7 +1116,7 @@ class MyResearchController extends AbstractBase
                     $params[] = urlencode('ids[]') . '=' . urlencode($id);
                 }
                 $saveUrl = $this->url()->fromRoute('cart-save');
-                $saveUrl .= (strpos($saveUrl, '?') === false) ? '?' : '&';
+                $saveUrl .= (!str_contains($saveUrl, '?')) ? '?' : '&';
                 return $this->redirect()
                     ->toUrl($saveUrl . implode('&', $params));
             }
@@ -1169,7 +1176,7 @@ class MyResearchController extends AbstractBase
             [
                 'list' => $list,
                 'newList' => $newList,
-                'listTags' => $listTags
+                'listTags' => $listTags,
             ]
         );
     }
@@ -1312,7 +1319,8 @@ class MyResearchController extends AbstractBase
                 $cancelSRR,
                 $patron
             );
-            if ($cancelSRR
+            if (
+                $cancelSRR
                 && $cancelSRR['function'] != "getCancelStorageRetrievalRequestLink"
                 && isset($current['cancel_details'])
             ) {
@@ -1384,7 +1392,8 @@ class MyResearchController extends AbstractBase
                 $cancelStatus,
                 $patron
             );
-            if ($cancelStatus
+            if (
+                $cancelStatus
                 && $cancelStatus['function'] != "getCancelILLRequestLink"
                 && isset($current['cancel_details'])
             ) {
@@ -1462,7 +1471,8 @@ class MyResearchController extends AbstractBase
 
         // If the results are not paged in the ILS, collect up to date stats for ajax
         // account notifications:
-        if (!empty($config->Authentication->enableAjax)
+        if (
+            !empty($config->Authentication->enableAjax)
             && (!$pageOptions['ilsPaging'] || !$paginator
             || $result['count'] <= $pageSize)
         ) {
@@ -1479,7 +1489,8 @@ class MyResearchController extends AbstractBase
                 $current,
                 $renewStatus
             );
-            if ($renewStatus && !isset($current['renew_link'])
+            if (
+                $renewStatus && !isset($current['renew_link'])
                 && $current['renewable']
             ) {
                 // Enable renewal form if necessary:
@@ -1525,78 +1536,7 @@ class MyResearchController extends AbstractBase
      */
     public function historicloansAction()
     {
-        // Stop now if the user does not have valid catalog credentials available:
-        if (!is_array($patron = $this->catalogLogin())) {
-            return $patron;
-        }
-
-        // Connect to the ILS:
-        $catalog = $this->getILS();
-
-        // Check function config
-        $functionConfig = $catalog->checkFunction(
-            'getMyTransactionHistory',
-            $patron
-        );
-        if (false === $functionConfig) {
-            $this->flashMessenger()->addErrorMessage('ils_action_unavailable');
-            return $this->createViewModel();
-        }
-
-        // Get paging setup:
-        $config = $this->getConfig();
-        $pageOptions = $this->getPaginationHelper()->getOptions(
-            (int)$this->params()->fromQuery('page', 1),
-            $this->params()->fromQuery('sort'),
-            $config->Catalog->historic_loan_page_size ?? 50,
-            $functionConfig
-        );
-
-        // Get checked out item details:
-        $result
-            = $catalog->getMyTransactionHistory($patron, $pageOptions['ilsParams']);
-
-        if (isset($result['success']) && !$result['success']) {
-            $this->flashMessenger()->addErrorMessage($result['status']);
-            return $this->createViewModel();
-        }
-
-        $paginator = $this->getPaginationHelper()->getPaginator(
-            $pageOptions,
-            $result['count'],
-            $result['transactions']
-        );
-        if ($paginator) {
-            $pageStart = $paginator->getAbsoluteItemNumber(1) - 1;
-            $pageEnd = $paginator->getAbsoluteItemNumber($pageOptions['limit']) - 1;
-        } else {
-            $pageStart = 0;
-            $pageEnd = $result['count'];
-        }
-
-        $driversNeeded = $hiddenTransactions = [];
-        foreach ($result['transactions'] as $i => $current) {
-            // Build record drivers (only for the current visible page):
-            if ($pageOptions['ilsPaging'] || ($i >= $pageStart && $i <= $pageEnd)) {
-                $driversNeeded[] = $current;
-            } else {
-                $hiddenTransactions[] = $current;
-            }
-        }
-
-        $transactions = $this->ilsRecords()->getDrivers($driversNeeded);
-        $sortList = $pageOptions['sortList'];
-        $params = $pageOptions['ilsParams'];
-        return $this->createViewModel(
-            compact(
-                'transactions',
-                'paginator',
-                'params',
-                'hiddenTransactions',
-                'sortList',
-                'functionConfig'
-            )
-        );
+        return $this->redirect()->toRoute('checkouts-history');
     }
 
     /**
@@ -1623,7 +1563,7 @@ class MyResearchController extends AbstractBase
             if ($row['id'] ?? false) {
                 $driversNeeded[$i] = [
                     'id' => $row['id'],
-                    'source' => $row['source'] ?? DEFAULT_SEARCH_BACKEND
+                    'source' => $row['source'] ?? DEFAULT_SEARCH_BACKEND,
                 ];
             }
             // Store by original index so that we can access it when loading record
@@ -1744,7 +1684,7 @@ class MyResearchController extends AbstractBase
                             'library' => $config->Site->title,
                             'url' => $this->getServerUrl('myresearch-verify')
                                 . '?hash='
-                                . $user->verify_hash . '&auth_method=' . $method
+                                . $user->verify_hash . '&auth_method=' . $method,
                         ]
                     );
                     $this->serviceLocator->get(Mailer::class)->send(
@@ -1756,7 +1696,7 @@ class MyResearchController extends AbstractBase
                     $this->flashMessenger()
                         ->addMessage('recovery_email_sent', 'success');
                 } catch (MailException $e) {
-                    $this->flashMessenger()->addMessage($e->getMessage(), 'error');
+                    $this->flashMessenger()->addMessage($e->getDisplayMessage(), 'error');
                 }
             }
         }
@@ -1803,7 +1743,7 @@ class MyResearchController extends AbstractBase
                 'library' => $config->Site->title,
                 'url' => $this->getServerUrl('home'),
                 'email' => $config->Site->email,
-                'newEmail' => $newEmail
+                'newEmail' => $newEmail,
             ]
         );
         // If the user is setting up a new account, use the main email
@@ -1852,7 +1792,7 @@ class MyResearchController extends AbstractBase
                         [
                             'library' => $config->Site->title,
                             'url' => $this->getServerUrl('myresearch-verifyemail')
-                                . '?hash=' . urlencode($user->verify_hash)
+                                . '?hash=' . urlencode($user->verify_hash),
                         ]
                     );
                     // If the user is setting up a new account, use the main email
@@ -1875,7 +1815,7 @@ class MyResearchController extends AbstractBase
                         $this->sendChangeNotificationEmail($user, $to);
                     }
                 } catch (MailException $e) {
-                    $this->flashMessenger()->addMessage($e->getMessage(), 'error');
+                    $this->flashMessenger()->addMessage($e->getDisplayMessage(), 'error');
                 }
             }
         }

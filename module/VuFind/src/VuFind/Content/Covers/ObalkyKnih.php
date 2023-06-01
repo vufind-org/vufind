@@ -3,7 +3,7 @@
 /**
  * Class ObalkyKnih
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2019.
  *
@@ -128,7 +128,7 @@ class ObalkyKnih extends \VuFind\Content\AbstractCover
             return [
                 'url' => $url,
                 'backlink_url' => $data->backlink_url ?? '',
-                'backlink_text' => 'ObálkyKnih.cz'
+                'backlink_text' => 'ObálkyKnih.cz',
             ];
         }
         return [];

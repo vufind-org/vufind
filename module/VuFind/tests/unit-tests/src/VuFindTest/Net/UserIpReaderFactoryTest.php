@@ -1,8 +1,9 @@
 <?php
+
 /**
  * UserIpReaderFactory Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Net;
 
 use Laminas\Stdlib\Parameters;
@@ -94,7 +96,7 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
                 );
             }
         };
-        return get_class($readerClass);
+        return $readerClass::class;
     }
 
     /**
@@ -126,7 +128,7 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
                 'Proxy' => [
                     'allow_forwarded_ips' => true,
                     'forwarded_ip_filter' => '1.2.3.4',
-                ]
+                ],
             ]
         );
         $reader = $factory($container, $this->getReaderClass());
@@ -149,7 +151,7 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
                 'Proxy' => [
                     'allow_forwarded_ips' => true,
                     'forwarded_ip_filter' => ['1.2.3.4', '5.6.7.8'],
-                ]
+                ],
             ]
         );
         $reader = $factory($container, $this->getReaderClass());

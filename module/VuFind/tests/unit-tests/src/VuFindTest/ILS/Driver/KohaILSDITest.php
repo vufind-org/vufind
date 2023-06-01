@@ -3,7 +3,7 @@
 /**
  * Class KohaILSDITest
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -57,6 +57,7 @@ class KohaILSDITest extends \VuFindTest\Unit\ILSDriverTestCase
     /**
      * Test toKohaDate method
      *
+     * @return void
      * @throws \ReflectionException
      */
     public function testToKohaDate(): void
