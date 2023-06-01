@@ -58,8 +58,42 @@ class SierraRest extends AbstractBase implements
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\I18n\HasSorterTrait;
     use \VuFind\Service\Feature\RetryTrait;
+    use \VuFind\Config\ExplodeSettingTrait;
 
-    public const HOLDINGS_LINE_NUMBER = 40;
+    /**
+     * Fixed field number for location in holdings records
+     *
+     * @var int
+     */
+    public const HOLDINGS_LOCATION_FIELD = '40';
+
+    /**
+     * Fixed field number for item code 2 (ICODE2) in item records
+     *
+     * @var int
+     */
+    public const ITEM_ICODE2_FIELD = '60';
+
+    /**
+     * Fixed field number for item type (I TYPE) in item records
+     *
+     * @var int
+     */
+    public const ITEM_ITYPE_FIELD = '61';
+
+    /**
+     * Fixed field number for item last checkin date (LCHKIN) in item records
+     *
+     * @var int
+     */
+    public const ITEM_CHECKIN_DATE_FIELD = '68';
+
+    /**
+     * Fixed field number for OPAC message (OPACMSG) in item records
+     *
+     * @var int
+     */
+    public const ITEM_OPAC_MESSAGE_FIELD = '108';
 
     /**
      * Driver configuration
@@ -123,13 +157,6 @@ class SierraRest extends AbstractBase implements
      * @var string
      */
     protected $defaultPickUpLocation;
-
-    /**
-     * Whether to check that items exist when placing a hold
-     *
-     * @var bool
-     */
-    protected $checkItemsExist;
 
     /**
      * Item statuses that allow placing a hold
@@ -273,6 +300,32 @@ class SierraRest extends AbstractBase implements
     protected $bibItemsCacheTTL = 10;
 
     /**
+     * Default list of bib fields to request from Sierra. This list must include
+     * at least 'title' and 'publishYear' needed to compose holds list and fines
+     * list. The cached entry will be augmented with any additional fields as needed,
+     * within the cache life time (see $bibCacheTTL).
+     *
+     * @var array
+     */
+    protected $defaultBibFields = ['title', 'publishYear', 'bibLevel'];
+
+    /**
+     * Default list of item fields to request from Sierra. This list must include at
+     * least the fields needed to compose holdings and determine holdability.
+     *
+     * @var array
+     */
+    protected $defaultItemFields = [
+        'location',
+        'status',
+        'barcode',
+        'callNumber',
+        'fixedFields',
+        'varFields',
+        'itemType',
+    ];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
@@ -337,7 +390,7 @@ class SierraRest extends AbstractBase implements
         if ($this->defaultPickUpLocation === 'user-selected') {
             $this->defaultPickUpLocation = false;
         }
-        $this->checkFreezability = $holdCfg['checkFreezability'] ?? false;
+        $this->checkFreezability = (bool)($holdCfg['checkFreezability'] ?? false);
 
         if (!empty($this->config['ItemStatusMappings'])) {
             $this->itemStatusMappings = array_merge(
@@ -964,7 +1017,7 @@ class SierraRest extends AbstractBase implements
             }
             if (!empty($bibId)) {
                 // Fetch bib information
-                $bib = $this->getBibRecord($bibId, ['title', 'publishYear'], $patron);
+                $bib = $this->getBibRecord($bibId, null, $patron);
                 $title = $bib['title'] ?? '';
                 $publicationYear = $bib['publishYear'] ?? '';
             }
@@ -2133,7 +2186,7 @@ class SierraRest extends AbstractBase implements
                 $location = '';
                 foreach ($entry['fixedFields'] as $code => $field) {
                     if (
-                        $code === static::HOLDINGS_LINE_NUMBER
+                        $code === static::HOLDINGS_LOCATION_FIELD
                         || $field['label'] === 'LOCATION'
                     ) {
                         $location = $field['value'];
@@ -2155,8 +2208,8 @@ class SierraRest extends AbstractBase implements
             [$status, $duedate, $notes] = $this->getItemStatus($item);
             $available = $status == $this->mapStatusCode('-');
             // OPAC message
-            if (isset($item['fixedFields']['108'])) {
-                $opacMsg = $item['fixedFields']['108'];
+            if (isset($item['fixedFields'][static::ITEM_OPAC_MESSAGE_FIELD])) {
+                $opacMsg = $item['fixedFields'][static::ITEM_OPAC_MESSAGE_FIELD];
                 $trimmedMsg = trim($opacMsg['value']);
                 if (strlen($trimmedMsg) && $trimmedMsg != '-') {
                     $notes[] = $this->translateOpacMessage(
@@ -2546,10 +2599,10 @@ class SierraRest extends AbstractBase implements
         if ($status == $this->mapStatusCode('-')) {
             // Check for checkin date
             $today = $this->dateConverter->convertToDisplayDate('U', time());
-            if (isset($item['fixedFields']['68'])) {
+            if (isset($item['fixedFields'][static::ITEM_CHECKIN_DATE_FIELD])) {
                 $checkedIn = $this->dateConverter->convertToDisplayDate(
                     \DateTime::ATOM,
-                    $item['fixedFields']['68']['value']
+                    $item['fixedFields'][static::ITEM_CHECKIN_DATE_FIELD]['value']
                 );
                 if ($checkedIn == $today) {
                     $notes[] = $this->translate('Returned today');
@@ -2566,6 +2619,8 @@ class SierraRest extends AbstractBase implements
      * @param array $bib  Bib record from Sierra
      *
      * @return bool
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function isHoldable(array $item, array $bib): bool
     {
@@ -2576,16 +2631,20 @@ class SierraRest extends AbstractBase implements
             }
         }
         if (
-            !empty($this->itemHoldExcludedItemCodes)
-            && isset($item['fixedFields']['60'])
+            $this->itemHoldExcludedItemCodes
+            && isset($item['fixedFields'][static::ITEM_ICODE2_FIELD])
         ) {
-            $code = $item['fixedFields']['60']['value'];
+            $code = $item['fixedFields'][static::ITEM_ICODE2_FIELD]['value'];
             if (in_array($code, $this->itemHoldExcludedItemCodes)) {
                 return false;
             }
         }
-        if (!empty($this->titleHoldBibLevels)) {
-            if (in_array($bib['bibLevel']['code'], $this->titleHoldBibLevels)) {
+        if (
+            $this->itemHoldExcludedItemTypes
+            && isset($item['fixedFields'][static::ITEM_ITYPE_FIELD])
+        ) {
+            $code = $item['fixedFields'][static::ITEM_ITYPE_FIELD]['value'];
+            if (in_array($code, $this->itemHoldExcludedItemTypes)) {
                 return false;
             }
         }
@@ -2713,10 +2772,10 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Get a cached record and check that it has the requested fields
+     * Get record data from cache and check that it has the requested fields
      *
      * @param string $cacheId Cache entry ID
-     * @param array  $fields  Fields
+     * @param array  $fields  Requested fields
      *
      * @return array Array with cached data if available, and fields (existing or
      * required)
@@ -2738,10 +2797,10 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
-     * Insert a record and its fields into the cache
+     * Insert record data and its field list into the cache
      *
      * @param string $cacheId Cache entry ID
-     * @param array  $fields  Fields
+     * @param array  $fields  Fields contained in the data
      * @param array  $data    Data
      * @param int    $ttl     Cache entry life time
      *
@@ -2765,7 +2824,7 @@ class SierraRest extends AbstractBase implements
      */
     protected function getBibRecord(string $id, ?array $fields, ?array $patron = null): ?array
     {
-        $fields ??= ['title', 'publishYear', 'bibLevel'];
+        $fields ??= $this->defaultBibFields;
         $cacheId = "bib|$id";
         $cached = $this->getCachedRecordData($cacheId, $fields);
         if ($cached['data']) {
@@ -2802,15 +2861,7 @@ class SierraRest extends AbstractBase implements
         ?array $fields = null,
         ?array $patron = null
     ): array {
-        $fields ??= [
-            'location',
-            'status',
-            'barcode',
-            'callNumber',
-            'fixedFields',
-            'varFields',
-            'itemType',
-        ];
+        $fields ??= $this->defaultItemFields;
 
         $cacheId = "items|$id";
         $cached = $this->getCachedRecordData($cacheId, $fields);
