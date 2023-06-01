@@ -87,24 +87,10 @@ class ReCaptcha
         // Get standard HTML
         $html = $this->recaptcha->getHtml();
 
-        // Override placeholder div with richer version:
-        $div = '<div class="g-recaptcha" data-sitekey="' . $this->recaptcha->getSiteKey() . '"';
-        foreach ($this->recaptcha->getOptions() as $key => $option) {
-            if ($key == 'lang') {
-                continue;
-            }
-            $div .= ' data-' . $key . '="' . $option . '"';
-        }
-        $div .= '>';
-        $divregex = '/<div[^>]*id=[\'"]recaptcha_widget[\'"][^>]*>/';
-
+        // Disable script tag (it is handled by \VuFind\Captcha\ReCaptcha, and
+        // we don't want to load duplicate Javascript).
         $scriptRegex = '|<script[^>]*></script>|';
         $scriptReplacement = ''; // remove
-
-        return preg_replace(
-            [$divregex, $scriptRegex],
-            [$div, $scriptReplacement],
-            $html
-        );
+        return preg_replace($scriptRegex, $scriptReplacement, $html);
     }
 }
