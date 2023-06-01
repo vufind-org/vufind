@@ -391,7 +391,7 @@ class Alma extends AbstractBase implements
      *
      * @param string $id     The record id
      * @param array  $data   An array of item data
-     * @param patron $patron An array of patron data
+     * @param array  $patron An array of patron data
      *
      * @return bool True if request is valid, false if not
      */
