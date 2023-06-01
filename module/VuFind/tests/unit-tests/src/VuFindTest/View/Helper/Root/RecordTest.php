@@ -361,7 +361,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     public function testGetCheckbox()
     {
         $context = $this->getMockContext();
-        $context->expects($this->exactly(2))->method('renderInContext')
+        $context->expects($this->exactly(5))->method('renderInContext')
             ->withConsecutive(
                 [
                     'record/checkbox.phtml',
@@ -370,17 +370,41 @@ class RecordTest extends \PHPUnit\Framework\TestCase
                 [
                     'record/checkbox.phtml',
                     ['id' => 'bar-Solr|000105196', 'number' => 2, 'prefix' => 'bar', 'formAttr' => 'foo'],
+                ],
+                [
+                    'record/checkbox.phtml',
+                    ['id' => 'modal-bar-Solr|000105196', 'number' => 3, 'prefix' => 'bar', 'formAttr' => 'foo'],
+                ],
+                [
+                    'record/checkbox.phtml',
+                    ['id' => 'baz-Solr|000105196', 'number' => 4, 'prefix' => '', 'formAttr' => 'foo'],
+                ],
+                [
+                    'record/checkbox.phtml',
+                    ['id' => 'modal-baz-Solr|000105196', 'number' => 5, 'prefix' => '', 'formAttr' => 'foo'],
                 ]
             )
-            ->willReturnOnConsecutiveCalls('success', 'success');
+            ->willReturnOnConsecutiveCalls('success', 'success', 'success', 'success', 'success');
         $record = $this->getRecord(
             $this->loadRecordFixture('testbug1.json'),
             [],
             $context
         );
-        // We run the test twice to ensure that checkbox incrementing works properly:
+        // We run the test with custom prefix twice to ensure that checkbox incrementing works properly:
         $this->assertEquals('success', $record->getCheckbox('bar', 'foo', 1));
         $this->assertEquals('success', $record->getCheckbox('bar', 'foo', 2));
+
+        // custom prefix in lightbox
+        $record->setViewModelHelper($this->getMockViewModel('', 'layout/lightbox'));
+        $this->assertEquals('success', $record->getCheckbox('bar', 'foo', 3));
+    
+        // default prefix (from template name)
+        $record->setViewModelHelper($this->getMockViewModel('baz', ''));
+        $this->assertEquals('success', $record->getCheckbox('', 'foo', 4));
+
+        // default prefix in lightbox
+        $record->setViewModelHelper($this->getMockViewModel('baz', 'layout/lightbox'));
+        $this->assertEquals('success', $record->getCheckbox('', 'foo', 5));
     }
 
     /**
@@ -661,6 +685,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $config = is_array($config) ? new \Laminas\Config\Config($config) : $config;
         $record = new Record($config);
         $record->setCoverRouter(new \VuFind\Cover\Router('http://foo/bar', $this->getCoverLoader()));
+        $record->setViewModelHelper($this->getMockViewModel());
         $record->setView($view);
         return $record($driver);
     }
@@ -733,6 +758,34 @@ class RecordTest extends \PHPUnit\Framework\TestCase
                 ->will($this->returnValue(''));
         }
         return $searchTabs;
+    }
+
+    /**
+     * Get a mock of view model helper
+     *
+     * @return \Laminas\View\Helper\ViewModel
+     */
+    protected function getMockViewModel(string $currentTemplate = '', string $rootTemplate = '')
+    {
+        $helperMock = $this->getMockBuilder(\Laminas\View\Helper\ViewModel::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $currentModelMock = $this->getMockBuilder(\Laminas\View\Model\ViewModel::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $currentModelMock->expects($this->any())->method('getTemplate')
+            ->will($this->returnValue($currentTemplate));
+        
+        $rootModelMock = $this->getMockBuilder(\Laminas\View\Model\ViewModel::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $rootModelMock->expects($this->any())->method('getTemplate')
+            ->will($this->returnValue($rootTemplate));
+        
+        $helperMock->expects($this->any())->method('getCurrent')->will($this->returnValue($currentModelMock));
+        $helperMock->expects($this->any())->method('getRoot')->will($this->returnValue($rootModelMock));
+
+        return $helperMock;
     }
 
     /**
