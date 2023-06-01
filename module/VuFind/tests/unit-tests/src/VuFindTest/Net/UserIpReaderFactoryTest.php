@@ -3,7 +3,7 @@
 /**
  * UserIpReaderFactory Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -96,7 +96,7 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
                 );
             }
         };
-        return get_class($readerClass);
+        return $readerClass::class;
     }
 
     /**

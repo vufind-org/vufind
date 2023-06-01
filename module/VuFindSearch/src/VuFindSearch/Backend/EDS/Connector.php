@@ -3,7 +3,7 @@
 /**
  * EBSCO EDS API Connector
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) EBSCO Industries 2013
  *

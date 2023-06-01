@@ -11,7 +11,7 @@
   $renewAll = !$this->ilsPaging || !$paginator;
 ?>
 
-<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="Expand Sidebar">
+<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="<?=$this->transEsc('sidebar_expand')?>">
   <?=$this->transEsc('Your Account') ?>
 </a>
 
@@ -43,12 +43,12 @@
     </nav>
     <?php if ($this->renewForm): ?>
     <form name="renewals" method="post" id="renewals" data-clear-account-cache="checkedOut" data-disable-on-submit>
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>" name="csrf"/>
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>" name="csrf">
       <input type="hidden" id="submitType" name="renewSelected" value="1">
       <div class="toolbar">
         <div class="checkbox">
           <label>
-            <input type="checkbox" name="selectAll" class="checkbox-select-all"/>
+            <input type="checkbox" name="selectAll" class="checkbox-select-all">
             <?=$this->transEsc('select_page')?>
           </label>
           <div class="btn-group">
@@ -86,12 +86,13 @@
       <?php endif; ?>
       <?php if (isset($ilsDetails['renewable']) && $ilsDetails['renewable'] && isset($ilsDetails['renew_details'])): ?>
         <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['renew_details']); ?>
-        <input class="pull-left flip" type="hidden" name="renewAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" />
+        <input class="pull-left flip" type="hidden" name="renewAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>">
       <?php endif; ?>
     <?php endforeach; ?>
 
     <ul class="record-list">
-      <?php $i = 0; foreach ($this->transactions as $resource): ?>
+      <?php $i = 0; ?>
+      <?php foreach ($this->transactions as $resource): ?>
         <?php $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
         <li id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>" class="result">
           <?php if ($this->renewForm): ?>
@@ -99,10 +100,10 @@
               <?php if (isset($ilsDetails['renewable']) && $ilsDetails['renewable'] && isset($ilsDetails['renew_details'])): ?>
                 <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['renew_details']); ?>
                 <label>
-                  <input class="checkbox-select-item" type="checkbox" name="renewSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" id="checkbox_<?=$safeId?>" />
+                  <input class="checkbox-select-item" type="checkbox" name="renewSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" id="checkbox_<?=$safeId?>">
                 </label>
-                <input type="hidden" name="selectAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" />
-                <input type="hidden" name="renewAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" />
+                <input type="hidden" name="selectAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>">
+                <input type="hidden" name="renewAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>">
               <?php else: ?>
                 <label> </label>
               <?php endif; ?>
@@ -141,37 +142,38 @@
                   // Last resort -- indicate that no title could be found.
                   echo $this->transEsc('Title not available');
                 }
-              ?><br/>
-              <?php $listAuthors = $resource->getPrimaryAuthors(); if (!empty($listAuthors)): ?>
+              ?><br>
+              <?php $listAuthors = $resource->getPrimaryAuthors(); ?>
+              <?php if (!empty($listAuthors)): ?>
                 <?=$this->transEsc('by')?>:
-                <a href="<?=$this->record($resource)->getLink('author', $listAuthors[0])?>"><?=$this->escapeHtml($listAuthors[0])?></a><?php if (count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?><br/>
+                <a href="<?=$this->record($resource)->getLink('author', $listAuthors[0])?>"><?=$this->escapeHtml($listAuthors[0])?></a><?php if (count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?><br>
               <?php endif; ?>
               <?php if (count($resource->getFormats()) > 0): ?>
                 <?=$this->record($resource)->getFormatList() ?>
-                <br/>
+                <br>
               <?php endif; ?>
               <?php if (!empty($ilsDetails['volume'])): ?>
                 <strong><?=$this->transEsc('Volume')?>:</strong> <?=$this->escapeHtml($ilsDetails['volume'])?>
-                <br />
+                <br>
               <?php endif; ?>
 
               <?php if (!empty($ilsDetails['publication_year'])): ?>
                 <strong><?=$this->transEsc('Year of Publication')?>:</strong> <?=$this->escapeHtml($ilsDetails['publication_year'])?>
-                <br />
+                <br>
               <?php endif; ?>
               <?php if ($this->displayItemBarcode && !empty($ilsDetails['barcode'])): ?>
                 <strong><?=$this->transEsc('Barcode')?>:</strong> <?=$this->escapeHtml($ilsDetails['barcode'])?>
-                <br />
+                <br>
               <?php endif; ?>
 
               <?php if (!empty($ilsDetails['institution_name']) && (empty($ilsDetails['borrowingLocation']) || $ilsDetails['institution_name'] != $ilsDetails['borrowingLocation'])): ?>
                 <strong><?=$this->transEscWithPrefix('location_', $ilsDetails['institution_name'])?></strong>
-                <br />
+                <br>
               <?php endif; ?>
 
               <?php if (!empty($ilsDetails['borrowingLocation'])): ?>
                 <strong><?=$this->transEsc('Borrowing Location')?>:</strong> <?=$this->transEscWithPrefix('location_', $ilsDetails['borrowingLocation'])?>
-                <br />
+                <br>
               <?php endif; ?>
 
               <?php if (isset($ilsDetails['renew'])): ?>
@@ -179,7 +181,7 @@
                 <?php if (isset($ilsDetails['renewLimit'])): ?>
                   / <?=$this->transEsc($ilsDetails['renewLimit'])?>
                 <?php endif; ?>
-                <br />
+                <br>
               <?php endif; ?>
 
               <?php $showStatus = true; ?>
@@ -227,7 +229,7 @@
   <?php endif; ?>
 </div>
 
-<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
+<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
   <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'checkedout'])?>
 </div>
 

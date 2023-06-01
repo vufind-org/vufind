@@ -42,8 +42,12 @@
           $tab_classes[] = 'active';
         }
       }
-      if (!$obj->isVisible()) { $tab_classes[] = 'hidden'; }
-      if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
+      if (!$obj->isVisible()) {
+        $tab_classes[] = 'hidden';
+      }
+      if (!$obj->supportsAjax()) {
+        $tab_classes[] = 'noajax';
+      }
     ?>
     <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
       <a id="<?=$this->escapeHtmlAttr(strtolower($tab))?>_<?=$idSuffixEsc?>" class="list-tab-toggle" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, $tab))?>#tabnav" data-toggle="tab" data-target="#<?=strtolower($tab)?>_<?=$idSuffixEsc?>-content"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>><?=$this->transEsc($desc)?></a>
@@ -53,8 +57,8 @@
 <div class="tab-content">
   <?php if (!empty($coreMetadata)): ?>
     <div class="list-tab-content record tab-pane<?php if ($this->defaultTab === 'information'): ?> active<?php endif; ?>" id="information_<?=$idSuffixEsc?>-content">
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id_<?=$idSuffixEsc?>" />
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier()) ?>" class="hiddenSource" />
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id_<?=$idSuffixEsc?>">
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier()) ?>" class="hiddenSource">
       <?=$coreMetadata ?>
     </div>
   <?php endif; ?>

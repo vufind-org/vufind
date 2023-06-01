@@ -3,7 +3,7 @@
 /**
  * Console command plugin manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -83,6 +83,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'util/index_reserves' => Util\IndexReservesCommand::class,
         'util/lint_marc' => Util\LintMarcCommand::class,
         'util/optimize' => Util\OptimizeCommand::class,
+        'util/purge_cached_record' => Util\PurgeCachedRecordCommand::class,
         'util/scssBuilder' => Util\ScssBuilderCommand::class,
         'util/sitemap' => Util\SitemapCommand::class,
         'util/suppressed' => Util\SuppressedCommand::class,
@@ -148,6 +149,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             Util\AbstractSolrAndIlsCommandFactory::class,
         Util\LintMarcCommand::class => InvokableFactory::class,
         Util\OptimizeCommand::class => Util\AbstractSolrCommandFactory::class,
+        Util\PurgeCachedRecordCommand::class => Util\PurgeCachedRecordCommandFactory::class,
         Util\ScssBuilderCommand::class => Util\ScssBuilderCommandFactory::class,
         Util\SitemapCommand::class => Util\SitemapCommandFactory::class,
         Util\SuppressedCommand::class =>

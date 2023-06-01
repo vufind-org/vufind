@@ -3,7 +3,7 @@
 /**
  * Abstract base class for handlers depending on the ILS and a logged-in user.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *

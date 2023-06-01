@@ -13,7 +13,7 @@ $recordLinker = $this->recordLinker($this->results);
 ?>
 
 <div class="grid-result<?=$this->driver->supportsAjaxStatus() ? ' ajaxItem' : ''?>">
-  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
+  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId">
   <?php if (isset($this->showCheckboxes) && $this->showCheckboxes): ?>
     <label class="grid-checkbox">
       <?=$this->record($this->driver)->getCheckbox('', 'search-cart-form') ?>
@@ -33,18 +33,18 @@ $recordLinker = $this->recordLinker($this->results);
         <?=$this->record($this->driver)->getTitleHtml(80)?>
       </a>
       <?php if ($openUrlActive || $doiActive || !empty($urls)): ?>
-        <br/><br/>
+        <br><br>
         <?php if ($openUrlActive): ?>
-          <?=$openUrl->renderTemplate()?><br />
+          <?=$openUrl->renderTemplate()?><br>
         <?php endif; ?>
         <?php if ($doiActive): ?>
-          <?=$doi->renderTemplate()?><br />
+          <?=$doi->renderTemplate()?><br>
         <?php endif; ?>
-        <?php if (!is_array($urls)) $urls = []; foreach ($urls as $current): ?>
+        <?php foreach (is_array($urls) ? $urls : [] as $current): ?>
           <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new">
             <?=$this->icon('external-link') ?>
             <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a>
-          <br/>
+          <br>
         <?php endforeach; ?>
       <?php endif; ?>
     </div>

@@ -3,7 +3,7 @@
 /**
  * UrlQueryHelper unit tests.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -75,7 +75,7 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
             $helper->getParamArray()
         );
         $this->assertEquals(
-            '<input type="hidden" name="foo" value="bar" />',
+            '<input type="hidden" name="foo" value="bar">',
             $helper->asHiddenFields(['lookfor' => '/.*/'])
         );
     }

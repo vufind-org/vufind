@@ -3,7 +3,7 @@
 /**
  * Class Search2RecordFormatterFactory
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2020.
  *

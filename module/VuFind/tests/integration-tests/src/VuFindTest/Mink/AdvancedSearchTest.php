@@ -3,7 +3,7 @@
 /**
  * Mink test class to test advanced search.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2014.
  *
@@ -272,7 +272,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->goToAdvancedSearch($session);
         // By default, everything is sorted alphabetically:
         $this->assertEquals(
-            'Book Book Chapter Conference Proceeding eBook Electronic Journal Microfilm',
+            'Article Book Book Chapter Conference Proceeding eBook Electronic Journal Microfilm Serial',
             $this->findCss($page, "#limit_format")->getText()
         );
         // Change the language:
@@ -281,7 +281,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         // Still sorted alphabetically, even though in a different language:
         $this->assertEquals(
-            'Buch Buchkapitel E-Book Elektronisch Mikrofilm Tagungsbericht Zeitschrift',
+            'Artikel Buch Buchkapitel E-Book Elektronisch Mikrofilm Schriftenreihe Tagungsbericht Zeitschrift',
             $this->findCss($page, "#limit_format")->getText()
         );
     }
@@ -308,7 +308,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->goToAdvancedSearch($session);
         // By default, everything is sorted alphabetically:
         $this->assertEquals(
-            'Book eBook Book Chapter Conference Proceeding Electronic Journal Microfilm',
+            'Book eBook Article Book Chapter Conference Proceeding Electronic Journal Microfilm Serial',
             $this->findCss($page, "#limit_format")->getText()
         );
         // Change the language:
@@ -317,7 +317,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         // Still sorted alphabetically, even though in a different language:
         $this->assertEquals(
-            'Buch E-Book Buchkapitel Elektronisch Mikrofilm Tagungsbericht Zeitschrift',
+            'Buch E-Book Artikel Buchkapitel Elektronisch Mikrofilm Schriftenreihe Tagungsbericht Zeitschrift',
             $this->findCss($page, "#limit_format")->getText()
         );
     }

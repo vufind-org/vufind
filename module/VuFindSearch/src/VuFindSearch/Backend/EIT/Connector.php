@@ -3,7 +3,7 @@
 /**
  * Central class for connecting to EIT resources used by VuFind.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Julia Bauder 2013.
  *

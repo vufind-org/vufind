@@ -3,7 +3,7 @@
 /**
  * XC NCIP Toolkit (v2) ILS Driver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -1676,7 +1676,7 @@ class XCNCIP2 extends AbstractBase implements
         $blocks = array_filter(
             $blocks,
             function ($item) {
-                return strpos($item, 'Block') === 0;
+                return str_starts_with($item, 'Block');
             }
         );
         return !empty($blocks);
@@ -1732,7 +1732,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * @param string $id     The Bib ID
      * @param array  $data   An Array of item data
-     * @param patron $patron An array of patron data
+     * @param array  $patron An array of patron data
      *
      * @return bool True if request is valid, false if not
      *

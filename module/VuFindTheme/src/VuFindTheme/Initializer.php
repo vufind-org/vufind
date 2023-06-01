@@ -3,7 +3,7 @@
 /**
  * VuFind Theme Initializer
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -131,7 +131,7 @@ class Initializer
             $this->serviceManager = $eventOrContainer;
         } else {
             throw new \Exception(
-                'Illegal type for $eventOrContainer: ' . get_class($eventOrContainer)
+                'Illegal type for $eventOrContainer: ' . $eventOrContainer::class
             );
         }
 
@@ -435,7 +435,7 @@ class Initializer
                 // note of it:
                 $logger = $this->serviceManager->get(\VuFind\Log\Logger::class);
                 $logger->debug(
-                    'Problem loading cache: ' . get_class($e) . ' exception: '
+                    'Problem loading cache: ' . $e::class . ' exception: '
                     . $e->getMessage()
                 );
             }

@@ -4,9 +4,11 @@
 
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Loan History') . '</li>';
+
+  $this->headScript()->appendFile('checkouts.js');
 ?>
 
-<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="Expand Sidebar">
+<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="<?=$this->transEsc('sidebar_expand')?>">
   <?=$this->transEsc('Your Account') ?>
 </a>
 
@@ -36,11 +38,57 @@
         <?=$this->context($this)->renderInContext('myresearch/controls/sort.phtml', ['sortList' => $this->sortList]); ?>
       <?php endif; ?>
     </nav>
+    <?php if ($purgeAllAllowed || $purgeSelectedAllowed): ?>
+      <form name="purge_history" method="post" action="<?=$this->url('checkouts-purgehistory')?>" id="purge_history" data-disable-on-submit>
+      <input type="hidden" id="submitType" name="purgeSelected" value="1">
+      <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>">
+      <div class="toolbar">
+        <div class="checkbox">
+          <?php if ($purgeSelectedAllowed): ?>
+            <label>
+              <input type="checkbox" name="selectAll" class="checkbox-select-all"/>
+              <?=$this->transEsc('select_page')?>
+            </label>
+            <div class="btn-group">
+              <input type="submit" id="purgeSelected" name="purgeSelected" value="<?=$this->transEscAttr('loan_history_purge_selected')?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-lightbox-ignore>
+              <ul class="dropdown-menu">
+                <li class="disabled"><span class="prompt-text"><?=$this->transEsc('loan_history_confirm_purge_selected')?></span></li>
+                <li><a href="#" id="confirm_purge_selected_yes"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+                <li><a href="#" class="confirm_purge_no"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+              </ul>
+            </div>
+          <?php endif; ?>
+          <?php if ($purgeAllAllowed): ?>
+            <div class="btn-group">
+              <input type="submit" id="purgeAll" name="purgeAll" value="<?=$this->transEscAttr('loan_history_purge_all')?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-lightbox-ignore>
+              <ul class="dropdown-menu">
+                <li class="disabled"><span class="prompt-text"><?=$this->transEsc('loan_history_confirm_purge_all')?></span></li>
+                <li><a href="#" id="confirm_purge_all_yes"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+                <li><a href="#" class="confirm_purge_no"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+              </ul>
+            </div>
+          <?php endif; ?>
+        </div>
+      </div>
+    <?php endif; ?>
 
     <ul class="record-list">
-      <?php $i = 0; foreach ($this->transactions as $resource): ?>
+      <?php $i = 0; ?>
+      <?php foreach ($this->transactions as $resource): ?>
         <?php $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
         <li id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>" class="result">
+          <?php if ($this->purgeSelectedAllowed): ?>
+            <div class="checkbox">
+              <?php if (isset($ilsDetails['row_id'])): ?>
+                <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['row_id']); ?>
+                <label>
+                  <input class="checkbox-select-item" type="checkbox" name="purgeSelectedIDs[]" value="<?=$this->escapeHtmlAttr($ilsDetails['row_id'])?>" id="checkbox_<?=$safeId?>" />
+                </label>
+              <?php else: ?>
+                <label> </label>
+              <?php endif; ?>
+            </div>
+          <?php endif; ?>
           <?php
             $coverDetails = $this->record($resource)->getCoverDetails('checkedout', 'small', $this->recordLinker()->getUrl($resource));
             $cover = $coverDetails['html'];
@@ -73,40 +121,41 @@
                   // Last resort -- indicate that no title could be found.
                   echo $this->transEsc('Title not available');
                 }
-              ?><br/>
-              <?php $listAuthors = $resource->getPrimaryAuthors(); if (!empty($listAuthors)): ?>
+              ?><br>
+              <?php $listAuthors = $resource->getPrimaryAuthors(); ?>
+              <?php if (!empty($listAuthors)): ?>
                 <?=$this->transEsc('by')?>:
-                <a href="<?=$this->record($resource)->getLink('author', $listAuthors[0])?>"><?=$this->escapeHtml($listAuthors[0])?></a><?php if (count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?><br/>
+                <a href="<?=$this->record($resource)->getLink('author', $listAuthors[0])?>"><?=$this->escapeHtml($listAuthors[0])?></a><?php if (count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?><br>
               <?php endif; ?>
               <?php if (count($resource->getFormats()) > 0): ?>
                 <?=$this->record($resource)->getFormatList() ?>
-                <br/>
+                <br>
               <?php endif; ?>
               <?php if (!empty($ilsDetails['volume'])): ?>
                 <strong><?=$this->transEsc('Volume')?>:</strong> <?=$this->escapeHtml($ilsDetails['volume'])?>
-                <br />
+                <br>
               <?php endif; ?>
 
               <?php if (!empty($ilsDetails['publication_year'])): ?>
                 <strong><?=$this->transEsc('Year of Publication')?>:</strong> <?=$this->escapeHtml($ilsDetails['publication_year'])?>
-                <br />
+                <br>
               <?php endif; ?>
 
               <?php if (!empty($ilsDetails['institution_name']) && (empty($ilsDetails['borrowingLocation']) || $ilsDetails['institution_name'] != $ilsDetails['borrowingLocation'])): ?>
                 <strong><?=$this->transEscWithPrefix('location_', $ilsDetails['institution_name'])?></strong>
-                <br />
+                <br>
               <?php endif; ?>
 
               <?php if (!empty($ilsDetails['borrowingLocation'])): ?>
                 <strong><?=$this->transEsc('Borrowing Location')?>:</strong> <?=$this->transEscWithPrefix('location_', $ilsDetails['borrowingLocation'])?>
-                <br />
+                <br>
               <?php endif; ?>
 
               <?php if (!empty($ilsDetails['checkoutDate'])): ?>
-                <strong><?=$this->transEsc('Checkout Date')?>:</strong> <?=$this->escapeHtml($ilsDetails['checkoutDate'])?><?php if (isset($ilsDetails['checkoutTime'])): ?> <span class="checkout-time"><?=$this->escapeHtml($ilsDetails['checkoutTime'])?><?php endif; ?></span><br/>
+                <strong><?=$this->transEsc('Checkout Date')?>:</strong> <?=$this->escapeHtml($ilsDetails['checkoutDate'])?><?php if (isset($ilsDetails['checkoutTime'])): ?> <span class="checkout-time"><?=$this->escapeHtml($ilsDetails['checkoutTime'])?><?php endif; ?></span><br>
               <?php endif; ?>
               <?php if (!empty($ilsDetails['returnDate'])): ?>
-                <strong><?=$this->transEsc('Return Date')?>:</strong> <?=$this->escapeHtml($ilsDetails['returnDate'])?><?php if (isset($ilsDetails['returnTime'])): ?> <span class="return-time"><?=$this->escapeHtml($ilsDetails['returnTime'])?><?php endif; ?></span><br/>
+                <strong><?=$this->transEsc('Return Date')?>:</strong> <?=$this->escapeHtml($ilsDetails['returnDate'])?><?php if (isset($ilsDetails['returnTime'])): ?> <span class="return-time"><?=$this->escapeHtml($ilsDetails['returnTime'])?><?php endif; ?></span><br>
               <?php endif; ?>
               <?php if (!empty($ilsDetails['dueDate'])): ?>
                 <strong><?=$this->transEsc('Due Date')?>:</strong> <?=$this->escapeHtml($ilsDetails['dueDate'])?><?php if (isset($ilsDetails['dueTime'])): ?> <span class="due-time"><?=$this->escapeHtml($ilsDetails['dueTime'])?></span><?php endif; ?>
@@ -124,12 +173,17 @@
         </li>
       <?php endforeach; ?>
     </ul>
+
+    <?php if ($purgeAllAllowed || $purgeSelectedAllowed): ?>
+      </form>
+    <?php endif; ?>
+
     <?=$this->paginator ? $this->paginationControl($this->paginator, 'Sliding', 'Helpers/pagination.phtml', ['params' => $this->params]) : ''?>
   <?php else: ?>
     <?=$this->transEsc('loan_history_empty')?>
   <?php endif; ?>
 </div>
 
-<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
+<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
   <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'historicloans'])?>
 </div>

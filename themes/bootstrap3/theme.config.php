@@ -39,7 +39,7 @@ return [
         ['file' => 'vendor/bootstrap.min.js', 'priority' => 120],
         ['file' => 'vendor/bootstrap-accessibility.min.js', 'priority' => 130],
         ['file' => 'vendor/validator.min.js', 'priority' => 140],
-        ['file' => 'lib/autocomplete.js', 'priority' => 220],
+        ['file' => 'vendor/autocomplete.js', 'priority' => 220],
         ['file' => 'lib/ajax_request_queue.js', 'priority' => 230],
         ['file' => 'common.js', 'priority' => 310],
         ['file' => 'lightbox.js', 'priority' => 320],
@@ -47,6 +47,30 @@ return [
         ['file' => 'trigger_print.js', 'priority' => 340],
         ['file' => 'observer_manager.js', 'priority' => 350],
     ],
+    /**
+     * Configuration for a single or multiple favicons.
+     *
+     * Can be a single string that is a path to an .ico icon relative to the theme image folder.
+     * 
+     * For multiple favicons the value must be an array of arrays of attributes
+     * that will be rendered as link elements.
+     * 
+     * Example:
+     *  [
+     *      [
+     *          'href' => 'favicon-32x32.png',
+     *          'rel' => 'icon',
+     *          'type' => 'image/png',
+     *          'sizes' => '32x32',
+     *      ],
+     *       [
+     *          'href' => 'favicon-180x180.png',
+     *          'rel' => 'apple-touch-icon',
+     *          'type' => 'image/png',
+     *          'sizes' => '180x180',
+     *      ],
+     *  ]
+     */
     'favicon' => 'vufind-favicon.ico',
     'helpers' => [
         'factories' => [

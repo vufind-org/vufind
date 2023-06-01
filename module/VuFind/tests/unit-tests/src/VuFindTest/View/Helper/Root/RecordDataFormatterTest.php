@@ -3,7 +3,7 @@
 /**
  * RecordDataFormatter Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -388,7 +388,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         }
         // Check for exact markup in representative example:
         $this->assertEquals(
-            '<span property="availableLanguage" typeof="Language"><span property="name">Italian</span></span><br />'
+            '<span property="availableLanguage" typeof="Language"><span property="name">Italian</span></span><br>'
             . '<span property="availableLanguage" typeof="Language"><span property="name">Latin</span></span>',
             $this->findResult('Language', $results)['value']
         );

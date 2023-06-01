@@ -3,7 +3,7 @@
 /**
  * Class to help build URLs and forms in the view based on search settings.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -589,14 +589,14 @@ class UrlQueryHelper
                     if (!$this->filtered($paramName, $paramValue2, $filter)) {
                         $retVal .= '<input type="hidden" name="' .
                             htmlspecialchars($paramName) . '[]" value="' .
-                            htmlspecialchars($paramValue2) . '" />';
+                            htmlspecialchars($paramValue2) . '">';
                     }
                 }
             } else {
                 if (!$this->filtered($paramName, $paramValue, $filter)) {
                     $retVal .= '<input type="hidden" name="' .
                         htmlspecialchars($paramName) . '" value="' .
-                        htmlspecialchars($paramValue) . '" />';
+                        htmlspecialchars($paramValue) . '">';
                 }
             }
         }

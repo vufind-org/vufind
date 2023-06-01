@@ -3,7 +3,7 @@
 /**
  * "Search tabs" view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2015-2016.
@@ -174,16 +174,6 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
                     $filters,
                     $permissionName
                 );
-            }
-        }
-        if (!isset($retVal['selected']) && !empty($retVal['tabs'])) {
-            // Make the first tab for the given search class selected
-            foreach ($retVal['tabs'] as &$tab) {
-                if ($tab['class'] == $activeSearchClass) {
-                    $retVal['selected'] = $tab;
-                    $tab['selected'] = true;
-                    break;
-                }
             }
         }
 

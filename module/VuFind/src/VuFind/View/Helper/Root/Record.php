@@ -3,7 +3,7 @@
 /**
  * Record driver view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -352,9 +352,14 @@ class Record extends \Laminas\View\Helper\AbstractHelper
             'link-' . $type . '.phtml',
             ['driver' => $this->driver, 'lookfor' => $lookfor]
         );
+
+        $prepend = (!str_contains($link, '?')) ? '?' : '&amp;';
+
         $link .= $this->getView()->plugin('searchTabs')
             ->getCurrentHiddenFilterParams(
-                $this->driver->getSearchBackendIdentifier()
+                $this->driver->getSearchBackendIdentifier(),
+                false,
+                $prepend
             );
         return $link;
     }
@@ -369,7 +374,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     public function getTab(\VuFind\RecordTab\TabInterface $tab)
     {
         $context = ['driver' => $this->driver, 'tab' => $tab];
-        $classParts = explode('\\', get_class($tab));
+        $classParts = explode('\\', $tab::class);
         $template = 'RecordTab/' . strtolower(array_pop($classParts)) . '.phtml';
         $oldContext = $this->contextHelper->apply($context);
         $html = $this->view->render($template);

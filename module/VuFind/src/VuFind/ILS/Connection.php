@@ -6,7 +6,7 @@
  * This wrapper works with a driver class to pass information from the ILS to
  * VuFind.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -229,7 +229,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         // done so!
         if ($this->hasNoILSFailover()) {
             $noILS = $this->driverManager->get('NoILS');
-            if (get_class($noILS) != $this->getDriverClass()) {
+            if ($noILS::class != $this->getDriverClass()) {
                 $this->setDriver($noILS);
                 $this->initializeDriver();
                 return true;
@@ -704,6 +704,29 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     protected function checkMethodgetMyTransactionHistory($functionConfig, $params)
     {
         if ($this->checkCapability('getMyTransactionHistory', [$params ?: []])) {
+            return $functionConfig;
+        }
+        return false;
+    }
+
+    /**
+     * Check Purge Historic Loans
+     *
+     * A support method for checkFunction(). This is responsible for checking
+     * the driver configuration to determine if the system supports purging of
+     * historic loans.
+     *
+     * @param array $functionConfig Function configuration
+     * @param array $params         Patron data
+     *
+     * @return mixed On success, an associative array with specific function keys
+     * and values; on failure, false.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function checkMethodpurgeTransactionHistory($functionConfig, $params)
+    {
+        if ($this->checkCapability('purgeTransactionHistory', [$params ?: []])) {
             return $functionConfig;
         }
         return false;

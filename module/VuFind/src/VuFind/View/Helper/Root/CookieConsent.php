@@ -3,7 +3,7 @@
 /**
  * CookieConsent view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2022.
  *
@@ -288,6 +288,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
         if ($domain = $this->cookieManager->getDomain()) {
             $cookieSettings['domain'] = $domain;
         }
+        $rtl = ($this->getView()->plugin('layout'))()->rtl;
         $consentDialogConfig = [
             'autoClearCookies' => $this->consentConfig['AutoClear'] ?? true,
             'manageScriptTags' => $this->consentConfig['ManageScripts'] ?? true,
@@ -308,6 +309,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
             'language' => [
                 'default' => $lang,
                 'autoDetect' => false,
+                'rtl' => $rtl,
                 'translations' => [
                     $lang => [
                         'consentModal' => [
@@ -342,8 +344,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
                                 'CookieConsent::Accept Only Essential Cookies'
                             ),
                             'closeIconLabel' => $this->translate('close'),
-                            'flipButtons'
-                                => ($this->getView()->plugin('layout'))()->rtl,
+                            'flipButtons' => $rtl,
                             'sections' => [
                                 [
                                     'description' => $this->translate(

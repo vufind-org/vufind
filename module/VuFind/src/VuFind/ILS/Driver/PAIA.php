@@ -3,7 +3,7 @@
 /**
  * PAIA ILS Driver for VuFind to get patron information
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Oliver Goldschmidt, Magda Roos, Till Kinstler, André Lahmann 2013,
  * 2014, 2015.
@@ -109,6 +109,14 @@ class PAIA extends DAIA
         '4' => 'provided',
         '5' => 'rejected',
     ];
+
+    /**
+     * Account blocks that should be reported to the user.
+     *
+     * @see method `getAccountBlocks`
+     * @var array
+     */
+    protected $accountBlockNotificationsForMissingScopes;
 
     /**
      * PAIA scopes as defined in
@@ -224,6 +232,9 @@ class PAIA extends DAIA
         } else {
             $this->debug('Caching not enabled, disabling it by default.');
         }
+
+        $this->accountBlockNotificationsForMissingScopes =
+            $this->config['PAIA']['accountBlockNotificationsForMissingScopes'] ?? [];
     }
 
     // public functions implemented to satisfy Driver Interface
@@ -532,7 +543,7 @@ class PAIA extends DAIA
      *
      * @param string $id     The Bib ID
      * @param array  $data   An Array of item data
-     * @param patron $patron An array of patron data
+     * @param array  $patron An array of patron data
      *
      * @return bool True if request is valid, false if not
      *
@@ -1944,7 +1955,7 @@ class PAIA extends DAIA
      *
      * @param string $id     The Bib ID
      * @param array  $data   An Array of item data
-     * @param patron $patron An array of patron data
+     * @param array  $patron An array of patron data
      *
      * @return bool True if request is valid, false if not
      *
@@ -1962,7 +1973,7 @@ class PAIA extends DAIA
      *
      * @param string $id     The Bib ID
      * @param array  $data   An Array of item data
-     * @param patron $patron An array of patron data
+     * @param array  $patron An array of patron data
      *
      * @return bool True if request is valid, false if not
      *
@@ -2170,5 +2181,36 @@ class PAIA extends DAIA
         }
         // return TRUE on success
         return true;
+    }
+
+    /**
+     * Check whether the patron has any blocks on their account.
+     *
+     * @param array $patron Patron data from patronLogin().
+     *
+     * @return mixed A boolean false if no blocks are in place and an array
+     * of block reasons if blocks are in place
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getAccountBlocks($patron)
+    {
+        $blocks = [];
+
+        foreach ($this->accountBlockNotificationsForMissingScopes as $scope => $message) {
+            if (!$this->paiaCheckScope($scope)) {
+                $blocks[$scope] = $message;
+            }
+        }
+
+        // Special case: if update patron is missing, we don't need to also add
+        // more specific messages.
+        if (isset($blocks[self::SCOPE_UPDATE_PATRON])) {
+            unset($blocks[self::SCOPE_UPDATE_PATRON_NAME]);
+            unset($blocks[self::SCOPE_UPDATE_PATRON_EMAIL]);
+            unset($blocks[self::SCOPE_UPDATE_PATRON_ADDRESS]);
+        }
+
+        return count($blocks) ? array_values($blocks) : false;
     }
 }

@@ -3,7 +3,7 @@
 /**
  * MakeTag view helper Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -133,7 +133,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
     {
         return [
             'self closing tag' => [
-                '<img src="book.gif" />',
+                '<img src="book.gif">',
                 [
                     'img',
                     '',
@@ -142,7 +142,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
             ],
 
             'class only' => [
-                '<br class="sm&#x3A;hidden" />',
+                '<br class="sm&#x3A;hidden">',
                 [
                     'br',
                     '',

@@ -3,7 +3,7 @@
 /**
  * Abstract base class for OAuth2 token repository tests.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2022.
  *

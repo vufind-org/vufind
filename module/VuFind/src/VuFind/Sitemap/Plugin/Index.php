@@ -3,7 +3,7 @@
 /**
  * Index-based generator plugin
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -137,7 +137,7 @@ class Index extends AbstractGeneratorPlugin
                 );
                 foreach ($result['ids'] as $item) {
                     $loc = htmlspecialchars($recordUrl . urlencode($item));
-                    if (strpos($loc, 'http') === false) {
+                    if (!str_contains($loc, 'http')) {
                         $loc = 'http://' . $loc;
                     }
                     $recordCount++;

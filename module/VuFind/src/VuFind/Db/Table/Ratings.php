@@ -3,7 +3,7 @@
 /**
  * Table Definition for ratings
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2022.
  *
@@ -188,32 +188,6 @@ class Ratings extends Gateway
         }
         $result['rating'] = $groupCount ? floor($ratingTotal / $groupCount) : 0;
         return $result;
-    }
-
-    /**
-     * Delete a rating if the owner is logged in.  Returns true on success.
-     *
-     * @param int                 $id   ID of row to delete
-     * @param \VuFind\Db\Row\User $user Logged in user object
-     *
-     * @return bool
-     */
-    public function deleteIfOwnedByUser(int $id, \VuFind\Db\Row\User $user)
-    {
-        // User must have an ID:
-        if (!isset($user->id)) {
-            return false;
-        }
-
-        // Rating row must exist and be owned by the user:
-        $matches = $this->select(['id' => $id, 'user_id' => $user->id]);
-        if (!($row = $matches->current())) {
-            return false;
-        }
-
-        // If we got this far, everything is okay:
-        $row->delete();
-        return true;
     }
 
     /**

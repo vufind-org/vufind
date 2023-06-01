@@ -3,7 +3,7 @@
 /**
  * ReDi Link Resolver Driver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Leipzig University Library 2015
  *
