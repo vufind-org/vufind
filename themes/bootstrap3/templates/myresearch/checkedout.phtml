@@ -93,7 +93,7 @@
     <ul class="record-list">
       <?php $i = 0; foreach ($this->transactions as $resource): ?>
         <?php $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
-        <?php $describedById = ($this->inLightbox ? 'modal-' : '') . ($this->context ? $this->context . '-' : '') . $this->record($record)->getUniqueHtmlElementId(); ?>
+        <?php $describedById = $this->record($record)->getUniqueHtmlElementId(); ?>
         <li id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>" class="result">
           <?php if ($this->renewForm): ?>
             <div class="checkbox">

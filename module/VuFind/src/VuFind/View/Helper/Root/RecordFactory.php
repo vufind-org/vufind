@@ -72,6 +72,9 @@ class RecordFactory implements FactoryInterface
             ->get('config');
         $helper = new $requestedName($config);
         $helper->setCoverRouter($container->get(\VuFind\Cover\Router::class));
+        $helper->setViewModelHelper(
+            $container->get('ViewHelperManager')->get('ViewModel')
+        );
         return $helper;
     }
 }

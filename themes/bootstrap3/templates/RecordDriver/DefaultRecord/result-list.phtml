@@ -4,7 +4,7 @@
   $cover = $coverDetails['html'];
   $thumbnail = false;
   $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
-  $describedById = ($this->inLightbox ? 'modal-' : '') . ($this->context ? $this->context . '-' : '') . $this->record($this->driver)->getUniqueHtmlElementId();
+  $describedById = $this->record($this->driver)->getUniqueHtmlElementId();
   if ($cover):
     ob_start(); ?>
     <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
