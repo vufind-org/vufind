@@ -6,6 +6,7 @@
   $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('My Holds') . '</li>';
 
   $this->headScript()->appendFile('requests.js');
+  $this->context = 'holds';
 ?>
 
 <a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="<?=$this->transEsc('sidebar_expand')?>">
@@ -62,7 +63,7 @@
       <?php foreach ($this->recordList as $resource): ?>
         <?php $iteration++; ?>
         <?php $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
-        <?php $describedById = ($this->inLightbox ? 'modal-' : '') . $this->record($record)->getUniqueHtmlElementId(); ?>
+        <?php $describedById = ($this->inLightbox ? 'modal-' : '') . ($this->context ? $this->context . '-' : '') . $this->record($resource)->getUniqueHtmlElementId(); ?>
         <li class="result">
           <?php if (($this->cancelForm && isset($ilsDetails['cancel_details'])) || ($this->updateForm && isset($ilsDetails['updateDetails']))): ?>
             <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['cancel_details'] ?? $ilsDetails['updateDetails']); ?>

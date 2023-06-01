@@ -7,6 +7,7 @@
         . '<li class="active">' . $this->transEsc('Interlibrary Loan Requests') . '</li>';
 
     $this->headScript()->appendFile('requests.js');
+    $this->context = 'illrequests';
 ?>
 
 <a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="<?=$this->transEsc('sidebar_expand')?>">
@@ -48,7 +49,7 @@
       <?php foreach ($this->recordList as $resource): ?>
         <?php $iteration++; ?>
         <?php $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
-        <?php $describedById = ($this->inLightbox ? 'modal-' : '') . $this->record($record)->getUniqueHtmlElementId(); ?>
+        <?php $describedById = ($this->inLightbox ? 'modal-' : '') . ($this->context ? $this->context . '-' : '') . $this->record($record)->getUniqueHtmlElementId(); ?>
         <li id="record<?=$this->escapeHtmlAttr($resource->getUniqueId()) ?>" class="result">
           <?php if ($this->cancelForm && isset($ilsDetails['cancel_details'])): ?>
             <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $resource->getUniqueId()); ?>
