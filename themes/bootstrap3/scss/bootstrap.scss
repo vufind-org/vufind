@@ -378,6 +378,10 @@ footer {
   }
 }
 
+ul.list-group {
+  list-style: none;
+}
+
 .dropdown-menu > li > .prompt-text {
   @extend .dropdown-menu > li > a;
 
