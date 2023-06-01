@@ -3,7 +3,7 @@
 /**
  * AuthorFacets aspect of the Search Multi-class (Results)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010, 2022.
  *

@@ -3,7 +3,7 @@
 /**
  * VuFind Record Driver for SolrOverdrive Records
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -125,8 +125,8 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
                     $formatType = $format->formatType;
                     $formats[$formatType] = $formatNames[$formatType];
                 }
-            // If we aren't locked in, we can show all formats
             } else {
+                // Not locked in, we can show all formats
                 foreach ($this->getDigitalFormats() as $format) {
                     $formats[$format->id] = $formatNames[$format->id];
                 }

@@ -3,7 +3,7 @@
 /**
  * ExternalSearch Recommendation Module
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -125,7 +125,7 @@ class ExternalSearch implements RecommendInterface
      */
     public function getUrl()
     {
-        return (false === strpos($this->template, '%%lookfor%%'))
+        return (!str_contains($this->template, '%%lookfor%%'))
             ? $this->template . urlencode($this->lookfor)
             : str_replace('%%lookfor%%', urlencode($this->lookfor), $this->template);
     }

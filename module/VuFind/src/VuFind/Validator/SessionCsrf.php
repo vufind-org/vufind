@@ -3,7 +3,7 @@
 /**
  * Extension of Laminas\Validator\Csrf with token counting/clearing functions added.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *

@@ -1,6 +1,6 @@
 {
   "name": "vufind",
-  "version": "9.0.0",
+  "version": "9.0.1",
   "description": "Dev tools to handle css preprocessing, js magic, and compression",
   "repository": {
     "type": "git",
@@ -11,14 +11,19 @@
   },
   "scripts": {
     "build": "npm run build:css",
+    "watch": "npm run watch:css",
+    "build-dev": "npm run build-dev:css",
+    "watch-dev": "npm run watch-dev:css",
 
     "build:css": "npm run build:less",
     "watch:css": "npm run watch:less",
+    "build-dev:css": "npm run build-dev:less",
+    "watch-dev:css": "npm run watch-dev:less",
 
-    "build:less": "grunt less",
-    "lessdev": "grunt lessdev",
+    "build:less": "grunt less && npm run lessToSass",
     "watch:less": "grunt watch:less",
-    "watch:lessdev": "grunt watch:lessdev",
+    "build-dev:less": "grunt lessdev && npm run lessToSass",
+    "watch-dev:less": "grunt watch:lessdev",
 
     "build:scss": "grunt scss",
     "watch:scss": "grunt watch:scss",
@@ -37,9 +42,10 @@
   },
   "devDependencies": {
     "eslint": "^8.15.0",
+    "eslint-plugin-no-jquery": "^2.7.0",
     "grunt-contrib-watch": "^1.1.0",
     "jshint": "^2.13.4",
     "jstree": "3.3.15",
-    "vanilla-cookieconsent": "3.0.0-rc.13"
+    "vanilla-cookieconsent": "3.0.0-rc.14"
   }
 }

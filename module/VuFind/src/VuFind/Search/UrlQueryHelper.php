@@ -3,7 +3,7 @@
 /**
  * Class to help build URLs and forms in the view based on search settings.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *

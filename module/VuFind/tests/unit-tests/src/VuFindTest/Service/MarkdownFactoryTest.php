@@ -3,7 +3,7 @@
 /**
  * MarkdownFactory Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2020.
  *
@@ -288,7 +288,7 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
             $result = $this->getMarkdownEnvironmentExtensions($test['config']);
             $result = array_map(
                 function ($extension) {
-                    return get_class($extension);
+                    return $extension::class;
                 },
                 $result
             );

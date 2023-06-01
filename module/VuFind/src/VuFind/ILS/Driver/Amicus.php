@@ -3,7 +3,7 @@
 /**
  * Amicus ILS Driver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Scanbit 2011.
  *

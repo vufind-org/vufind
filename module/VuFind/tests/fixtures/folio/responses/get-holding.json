@@ -108,7 +108,10 @@
                     "callNumber": "PS2394 .M643 1883",
                     "administrativeNotes": [],
                     "notes": [],
-                    "holdingsStatements": [],
+                    "holdingsStatements": [
+                        { "statement": "foo", "note": "foo" },
+                        { "statement": "bar", "note": "baz" }
+                    ],
                     "holdingsStatementsForIndexes": [],
                     "holdingsStatementsForSupplements": [],
                     "discoverySuppress": false,

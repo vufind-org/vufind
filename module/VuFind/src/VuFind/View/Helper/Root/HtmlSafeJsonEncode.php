@@ -6,7 +6,7 @@
  * This helper is used to ensure that we consistently escape JSON data when
  * embedding it directly into HTML (typically via data attributes).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2023.
  *

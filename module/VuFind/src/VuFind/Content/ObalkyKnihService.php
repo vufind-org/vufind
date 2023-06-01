@@ -3,7 +3,7 @@
 /**
  * Service class for ObalkyKnih
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2019.
  *
@@ -218,7 +218,7 @@ class ObalkyKnihService implements
         try {
             $response = $client->send();
         } catch (\Exception $e) {
-            $this->logError('Unexpected ' . get_class($e) . ': ' . $e->getMessage());
+            $this->logError('Unexpected ' . $e::class . ': ' . $e->getMessage());
             return null;
         }
         if ($response->isSuccess()) {
@@ -237,7 +237,7 @@ class ObalkyKnihService implements
      */
     protected function createLocalIdentifier(string $recordid): ?string
     {
-        if (strpos($recordid, '.') !== false) {
+        if (str_contains($recordid, '.')) {
             [, $recordid] = explode('.', $recordid, 2);
         }
         return (empty($this->sigla) || empty($recordid)) ? null :

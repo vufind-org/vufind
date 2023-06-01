@@ -3,7 +3,7 @@
 /**
  * Solr Utility Functions
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Andrew Nagy 2009.
  *

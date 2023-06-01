@@ -8,7 +8,7 @@ function setUpHoldRequestForm(recordId) {
   $select.parent().append($noResults);
   $noResults.hide();
 
-  $('#requestGroupId').change(function requestGroupChange() {
+  $('#requestGroupId').on("change", function requestGroupChange() {
     var $self = $(this);
     $select.find("option[value!='']").remove();
     if ($self.val() === '') {

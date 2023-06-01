@@ -3,7 +3,7 @@
 /**
  * Unit tests for SearchCommand.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  * Copyright (C) The National Library of Finland 2022.
@@ -170,6 +170,25 @@ class SearchCommandTest extends TestCase
         $command = $this->getCommand();
         $this->expectExceptionMessage('Command was not yet executed');
         $command->getResult();
+    }
+
+    /**
+     * Test extra request details
+     *
+     * @return void
+     */
+    public function testExtraRequestDetails(): void
+    {
+        $backendId = 'bar';
+        $backend = $this
+            ->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
+            ->disableOriginalConstructor()->getMock();
+        $backend->expects($this->once())->method('getIdentifier')
+            ->will($this->returnValue($backendId));
+        $backend->expects($this->once())->method('getExtraRequestDetails')
+            ->will($this->returnValue(['foo' => 'bar']));
+        $command = $this->getCommand();
+        $this->assertEqualsCanonicalizing(['foo' => 'bar'], $command->execute($backend)->getExtraRequestDetails());
     }
 
     /**

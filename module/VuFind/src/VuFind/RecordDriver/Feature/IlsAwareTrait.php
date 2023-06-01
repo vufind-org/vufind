@@ -3,7 +3,7 @@
 /**
  * ILS support for MARC and other types of records.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2015.
@@ -171,7 +171,8 @@ trait IlsAwareTrait
      */
     public function getURLs()
     {
-        return $this->hasILS() && $this->ils->checkCapability('getUrlsForRecord')
+        $params = [$this->getUniqueId()];
+        return $this->hasILS() && $this->ils->checkCapability('getUrlsForRecord', $params)
             ? $this->ils->getUrlsForRecord($this->getUniqueId())
             : [];
     }

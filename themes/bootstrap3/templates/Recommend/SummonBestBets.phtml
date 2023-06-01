@@ -1,4 +1,5 @@
-<?php $summonBestBets = $this->recommend->getResults(); if (!empty($summonBestBets)): ?>
+<?php $summonBestBets = $this->recommend->getResults(); ?>
+<?php if (!empty($summonBestBets)): ?>
 <div class="authorbox">
   <?php foreach ($summonBestBets as $current): ?>
     <p>

@@ -3,7 +3,7 @@
 /**
  * View helper for remembering recent user searches/parameters.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -38,6 +39,7 @@ use VuFind\Search\Memory;
  * @category VuFind
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -86,8 +88,18 @@ class SearchMemory extends AbstractHelper
             }
 
             $urlHelper = $this->getView()->plugin('url');
-            $url = $urlHelper($lastSearch->getOptions()->getSearchAction())
-                . $lastSearch->getUrlQuery()->getParams(false);
+            $url = $urlHelper($lastSearch->getOptions()->getSearchAction());
+            $queryHelper = $lastSearch->getUrlQuery();
+            // Try to append page number and page size from search context parameters saved in params object
+            $searchContext = $params->getSavedSearchContextParameters();
+            if (!empty($searchContext['limit'])) {
+                $queryHelper = $queryHelper->setLimit($searchContext['limit']);
+            }
+            if (!empty($searchContext['page'])) {
+                $queryHelper = $queryHelper->setPage($searchContext['page']);
+            }
+
+            $url .= $queryHelper->getParams(false);
 
             $escaper = $this->getView()->plugin('escapeHtml');
             return $prefix . '<a href="' . $escaper($url) . '">' . $link . '</a>'

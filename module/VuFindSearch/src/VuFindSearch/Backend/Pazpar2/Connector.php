@@ -3,7 +3,7 @@
 /**
  * Central class for connecting to Pazpar2 resources used by VuFind.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *

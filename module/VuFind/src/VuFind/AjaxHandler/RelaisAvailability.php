@@ -3,7 +3,7 @@
 /**
  * Relais: Check item availability using a generic patron ID
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -66,9 +66,9 @@ class RelaisAvailability extends AbstractRelaisAction
         // Search
         $responseText = $this->relais->search($oclcNumber, $authorizationId);
         if (
-            strpos($responseText, 'error') !== false
-            || strpos($responseText, 'ErrorMessage') !== false
-            || strpos($responseText, 'false') !== false
+            str_contains($responseText, 'error')
+            || str_contains($responseText, 'ErrorMessage')
+            || str_contains($responseText, 'false')
         ) {
             $result = 'no';
         } else {

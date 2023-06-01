@@ -3,7 +3,7 @@
 /**
  * Record loader
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010, 2022.
  * Copyright (C) The National Library of Finland 2015.
@@ -144,6 +144,9 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
                 && $this->recordCache->isFallback($source)
             ) {
                 $results = $this->recordCache->lookup($id, $source);
+                if (!empty($results)) {
+                    $results[0]->setExtraDetail('cached_record', true);
+                }
             }
 
             if (!empty($results)) {
