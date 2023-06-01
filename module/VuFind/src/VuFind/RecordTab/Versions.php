@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Versions tab
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2019-2020.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
+
 namespace VuFind\RecordTab;
 
 use VuFind\I18n\Translator\TranslatorAwareInterface;
@@ -39,8 +41,7 @@ use VuFind\I18n\Translator\TranslatorAwareTrait;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
-class Versions extends \VuFind\RecordTab\AbstractBase
-    implements TranslatorAwareInterface
+class Versions extends \VuFind\RecordTab\AbstractBase implements TranslatorAwareInterface
 {
     use TranslatorAwareTrait;
 

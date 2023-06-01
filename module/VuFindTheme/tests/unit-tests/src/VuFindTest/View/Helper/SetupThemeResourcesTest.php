@@ -1,8 +1,9 @@
 <?php
+
 /**
  * SetupThemeResources view helper Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper;
 
 use VuFindTheme\ResourceContainer;
@@ -64,7 +66,7 @@ class SetupThemeResourcesTest extends \PHPUnit\Framework\TestCase
     {
         $tests = [
             'foo:bar:baz' => ['foo', 'bar', 'baz'],
-            'http://foo/bar:baz:xyzzy' => ['http://foo/bar', 'baz', 'xyzzy']
+            'http://foo/bar:baz:xyzzy' => ['http://foo/bar', 'baz', 'xyzzy'],
         ];
         foreach ($tests as $test => $expected) {
             $this->assertEquals(

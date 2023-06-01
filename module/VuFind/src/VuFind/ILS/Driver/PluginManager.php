@@ -1,8 +1,9 @@
 <?php
+
 /**
  * ILS driver plugin manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use Laminas\ServiceManager\Factory\InvokableFactory;
@@ -66,7 +68,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'paia' => PAIA::class,
         'polaris' => Polaris::class,
         'sample' => Sample::class,
-        'sierra' => Sierra::class,
         'sierrarest' => SierraRest::class,
         'symphony' => Symphony::class,
         'unicorn' => Unicorn::class,
@@ -102,7 +103,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         PAIA::class => PAIAFactory::class,
         Polaris::class => InvokableFactory::class,
         Sample::class => InvokableFactory::class,
-        Sierra::class => InvokableFactory::class,
         SierraRest::class => SierraRestFactory::class,
         Symphony::class => SymphonyFactory::class,
         Unicorn::class => UnicornFactory::class,

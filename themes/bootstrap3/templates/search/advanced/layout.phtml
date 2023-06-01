@@ -70,13 +70,13 @@
   <form name="searchForm" id="advSearchForm" method="get" action="<?=$this->url($this->options->getSearchAction())?>">
     <?php foreach ($hiddenFilters as $key => $filter): ?>
       <?php foreach ($filter as $value): ?>
-        <input type="hidden" name="hiddenFilters[]" value="<?=$this->escapeHtmlAttr($key) . ':' . $this->escapeHtmlAttr($value)?>" />
+        <input type="hidden" name="hiddenFilters[]" value="<?=$this->escapeHtmlAttr($key) . ':' . $this->escapeHtmlAttr($value)?>">
       <?php endforeach; ?>
     <?php endforeach; ?>
     <div class="<?=$this->layoutClass('mainbody')?>">
       <?php $lastSort = $this->searchMemory()->getLastSort($this->searchClassId); ?>
       <?php if (!empty($lastSort)): ?>
-        <input type="hidden" name="sort" value="<?=$this->escapeHtmlAttr($lastSort)?>" />
+        <input type="hidden" name="sort" value="<?=$this->escapeHtmlAttr($lastSort)?>">
       <?php endif; ?>
       <div class="clearfix">
         <h2 class="pull-left flip"><?=$this->transEsc('Advanced Search')?></h2>
@@ -168,13 +168,13 @@
 
     <div class="<?=$this->layoutClass('sidebar')?>">
       <?php if ($hasDefaultsApplied): ?>
-        <input type="hidden" name="dfApplied" value="1" />
+        <input type="hidden" name="dfApplied" value="1">
       <?php endif ?>
       <?php if ($checkboxFilters || $searchFilters): ?>
         <h2><?=$this->transEsc("adv_search_filters")?></h2>
         <div class="facet-group">
           <label class="checkbox">
-            <input type="checkbox" checked="checked" class="checkbox-select-all"/>
+            <input type="checkbox" checked="checked" class="checkbox-select-all">
             <?=$this->transEsc("adv_search_select_all")?>
           </label>
         </div>
@@ -183,7 +183,7 @@
           <div class="checkboxFilter">
             <?php foreach ($checkboxFilters as $data): ?>
               <div class="checkbox-filter">
-                <label class="facet checkbox"><input class="checkbox-select-item" type="checkbox" checked="checked" name="filter[]" value="<?=$this->escapeHtmlAttr($data['filter'])?>" /> <?=$this->transEsc($data['desc'])?></label>
+                <label class="facet checkbox"><input class="checkbox-select-item" type="checkbox" checked="checked" name="filter[]" value="<?=$this->escapeHtmlAttr($data['filter'])?>"> <?=$this->transEsc($data['desc'])?></label>
               </div>
             <?php endforeach; ?>
           </div>
@@ -193,7 +193,7 @@
           <div class="facet-group">
             <div class="title"><?=$this->transEsc($field)?></div>
             <?php foreach ($data as $value): ?>
-              <label class="facet checkbox"><input class="checkbox-select-item" type="checkbox" checked="checked" name="filter[]" value='<?=$this->escapeHtmlAttr($value['field'])?>:"<?=$this->escapeHtmlAttr($value['value'])?>"' /> <?=$this->escapeHtml($value['displayText'])?></label>
+              <label class="facet checkbox"><input class="checkbox-select-item" type="checkbox" checked="checked" name="filter[]" value='<?=$this->escapeHtmlAttr($value['field'])?>:"<?=$this->escapeHtmlAttr($value['value'])?>"'> <?=$this->escapeHtml($value['displayText'])?></label>
             <?php endforeach; ?>
           </div>
         <?php endforeach; ?>
@@ -209,10 +209,10 @@
 </div>
 <?php
 $script = <<<JS
-$('#groupPlaceHolder').click(function(e) {
-  addGroup(null, null, null, true);
-  return false;
-})
-JS;
+    $('#groupPlaceHolder').click(function(e) {
+      addGroup(null, null, null, true);
+      return false;
+    })
+    JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');

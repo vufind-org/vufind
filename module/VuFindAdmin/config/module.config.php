@@ -1,4 +1,5 @@
 <?php
+
 namespace VuFindAdmin\Module\Configuration;
 
 $config = [
@@ -32,7 +33,7 @@ $config = [
                     'defaults' => [
                         'controller' => 'Admin',
                         'action'     => 'Home',
-                    ]
+                    ],
                 ],
                 'may_terminate' => true,
                 'child_routes' => [
@@ -43,8 +44,8 @@ $config = [
                             'defaults' => [
                                 'controller' => 'Admin',
                                 'action'     => 'Disabled',
-                            ]
-                        ]
+                            ],
+                        ],
                     ],
                     'config' => [
                         'type' => 'Laminas\Router\Http\Segment',
@@ -53,8 +54,8 @@ $config = [
                             'defaults' => [
                                 'controller' => 'AdminConfig',
                                 'action'     => 'Home',
-                            ]
-                        ]
+                            ],
+                        ],
                     ],
                     'feedback' => [
                         'type' => 'Laminas\Router\Http\Segment',
@@ -63,8 +64,8 @@ $config = [
                             'defaults' => [
                                 'controller' => 'AdminFeedback',
                                 'action'     => 'Home',
-                            ]
-                        ]
+                            ],
+                        ],
                     ],
                     'maintenance' => [
                         'type' => 'Laminas\Router\Http\Segment',
@@ -73,8 +74,18 @@ $config = [
                             'defaults' => [
                                 'controller' => 'AdminMaintenance',
                                 'action'     => 'Home',
-                            ]
-                        ]
+                            ],
+                        ],
+                    ],
+                    'script' => [
+                        'type' => 'Laminas\Router\Http\Segment',
+                        'options' => [
+                            'route'    => '/Script[/:name]',
+                            'defaults' => [
+                                'controller' => 'AdminMaintenance',
+                                'action'     => 'Script',
+                            ],
+                        ],
                     ],
                     'social' => [
                         'type' => 'Laminas\Router\Http\Segment',
@@ -83,8 +94,8 @@ $config = [
                             'defaults' => [
                                 'controller' => 'AdminSocial',
                                 'action'     => 'Home',
-                            ]
-                        ]
+                            ],
+                        ],
                     ],
                     'tags' => [
                         'type' => 'Laminas\Router\Http\Segment',
@@ -93,8 +104,8 @@ $config = [
                             'defaults' => [
                                 'controller' => 'AdminTags',
                                 'action'     => 'Home',
-                            ]
-                        ]
+                            ],
+                        ],
                     ],
                     'overdrive' => [
                         'type' => 'Laminas\Router\Http\Segment',
@@ -103,8 +114,8 @@ $config = [
                             'defaults' => [
                                 'controller' => 'AdminOverdrive',
                                 'action'     => 'Home',
-                            ]
-                        ]
+                            ],
+                        ],
                     ],
                 ],
             ],

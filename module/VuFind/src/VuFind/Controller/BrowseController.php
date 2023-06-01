@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Browse Module Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
+
 namespace VuFind\Controller;
 
 use Laminas\Config\Config;
@@ -124,7 +126,7 @@ class BrowseController extends AbstractBase implements
 
         // This is a list of all available browse options:
         $allOptions = [
-            'tag', 'dewey', 'lcc', 'author', 'topic', 'genre', 'region', 'era'
+            'tag', 'dewey', 'lcc', 'author', 'topic', 'genre', 'region', 'era',
         ];
 
         // By default, all options except dewey are turned on if omitted from config:
@@ -158,25 +160,26 @@ class BrowseController extends AbstractBase implements
         $activeOptions = $this->getActiveBrowseOptions();
         foreach ($activeOptions as $option) {
             switch ($option) {
-            case 'dewey':
-                $deweyLabel = in_array('lcc', $activeOptions)
-                    ? 'browse_dewey' : 'Call Number';
-                $browseOptions[] = $this->buildBrowseOption('Dewey', $deweyLabel);
-                break;
-            case 'lcc':
-                $lccLabel = in_array('dewey', $activeOptions)
-                    ? 'browse_lcc' : 'Call Number';
-                $browseOptions[] = $this->buildBrowseOption('LCC', $lccLabel);
-                break;
-            case 'tag':
-                if ($this->tagsEnabled()) {
-                    $browseOptions[] = $this->buildBrowseOption('Tag', 'Tag');
-                }
-                break;
-            default:
-                $current = ucwords($option);
-                $browseOptions[] = $this->buildBrowseOption($current, $current);
-                break;
+                case 'dewey':
+                    $deweyLabel = in_array('lcc', $activeOptions)
+                        ? 'browse_dewey' : 'Call Number';
+                    $browseOptions[] = $this
+                        ->buildBrowseOption('Dewey', $deweyLabel);
+                    break;
+                case 'lcc':
+                    $lccLabel = in_array('dewey', $activeOptions)
+                        ? 'browse_lcc' : 'Call Number';
+                    $browseOptions[] = $this->buildBrowseOption('LCC', $lccLabel);
+                    break;
+                case 'tag':
+                    if ($this->tagsEnabled()) {
+                        $browseOptions[] = $this->buildBrowseOption('Tag', 'Tag');
+                    }
+                    break;
+                default:
+                    $current = ucwords($option);
+                    $browseOptions[] = $this->buildBrowseOption($current, $current);
+                    break;
             }
         }
 
@@ -256,7 +259,8 @@ class BrowseController extends AbstractBase implements
         $view->categoryList = $facets;
 
         // SEARCH (Tag does its own search)
-        if ($this->params()->fromQuery('query')
+        if (
+            $this->params()->fromQuery('query')
             && $this->getCurrentAction() != 'Tag'
         ) {
             $results = $this->getFacetList(
@@ -270,7 +274,7 @@ class BrowseController extends AbstractBase implements
                 $resultList[] = [
                     'displayText' => $result['displayText'],
                     'value' => $result['value'],
-                    'count' => $result['count']
+                    'count' => $result['count'],
                 ];
             }
             // Don't make a second filter if it would be the same facet
@@ -280,14 +284,14 @@ class BrowseController extends AbstractBase implements
                     . urlencode($this->params()->fromQuery('query')) . '&'
                 : '';
             switch ($this->getCurrentAction()) {
-            case 'LCC':
-                $view->paramTitle .= 'filter[]=callnumber-subject:';
-                break;
-            case 'Dewey':
-                $view->paramTitle .= 'filter[]=dewey-ones:';
-                break;
-            default:
-                $view->paramTitle .= 'filter[]=' . $this->getCategory() . ':';
+                case 'LCC':
+                    $view->paramTitle .= 'filter[]=callnumber-subject:';
+                    break;
+                case 'Dewey':
+                    $view->paramTitle .= 'filter[]=dewey-ones:';
+                    break;
+                default:
+                    $view->paramTitle .= 'filter[]=' . $this->getCategory() . ':';
             }
             $view->paramTitle = str_replace(
                 '+AND+',
@@ -318,7 +322,7 @@ class BrowseController extends AbstractBase implements
         $view->categoryList = [
             'alphabetical' => 'By Alphabetical',
             'popularity'   => 'By Popularity',
-            'recent'       => 'By Recent'
+            'recent'       => 'By Recent',
         ];
 
         if ($this->params()->fromQuery('findby')) {
@@ -340,7 +344,7 @@ class BrowseController extends AbstractBase implements
                             $tagList[] = [
                                 'displayText' => $tag['tag'],
                                 'value' => $tag['tag'],
-                                'count' => $tag['cnt']
+                                'count' => $tag['cnt'],
                             ];
                         }
                     }
@@ -367,7 +371,7 @@ class BrowseController extends AbstractBase implements
                     $resultList[$i] = [
                         'displayText' => $tag['tag'],
                         'value' => $tag['tag'],
-                        'count'    => $tag['cnt']
+                        'count'    => $tag['cnt'],
                     ];
                 }
                 $view->resultList = $resultList;
@@ -391,7 +395,7 @@ class BrowseController extends AbstractBase implements
         [$view->filter, $view->secondaryList] = $this->getSecondaryList('lcc');
         $view->secondaryParams = [
             'query_field' => 'callnumber-first',
-            'facet_field' => 'callnumber-subject'
+            'facet_field' => 'callnumber-subject',
         ];
         $view->searchParams = ['sort' => 'callnumber-sort'];
         return $this->performSearch($view);
@@ -411,7 +415,7 @@ class BrowseController extends AbstractBase implements
         foreach ($hundredsList as $dewey) {
             $categoryList[$dewey['value']] = [
                 'text' => $dewey['displayText'],
-                'count' => $dewey['count']
+                'count' => $dewey['count'],
             ];
         }
         $view->categoryList = $categoryList;
@@ -433,7 +437,7 @@ class BrowseController extends AbstractBase implements
             $view->secondaryList = $secondaryList;
             $view->secondaryParams = [
                 'query_field' => 'dewey-tens',
-                'facet_field' => 'dewey-ones'
+                'facet_field' => 'dewey-ones',
             ];
             $view->searchParams = ['sort' => 'dewey-sort'];
         }
@@ -460,7 +464,7 @@ class BrowseController extends AbstractBase implements
         if ($findby) {
             $view->secondaryParams = [
                 'query_field' => $this->getCategory($findby),
-                'facet_field' => $this->getCategory($currentAction)
+                'facet_field' => $this->getCategory($currentAction),
             ];
             $view->facetPrefix = $facetPrefix && $findby == 'alphabetical';
             [$view->filter, $view->secondaryList]
@@ -483,7 +487,7 @@ class BrowseController extends AbstractBase implements
             'topic'        => 'By Topic',
             'genre'        => 'By Genre',
             'region'       => 'By Region',
-            'era'          => 'By Era'
+            'era'          => 'By Era',
         ];
 
         return $this->performBrowse('Author', $categoryList, true);
@@ -500,7 +504,7 @@ class BrowseController extends AbstractBase implements
             'alphabetical' => 'By Alphabetical',
             'genre'        => 'By Genre',
             'region'       => 'By Region',
-            'era'          => 'By Era'
+            'era'          => 'By Era',
         ];
 
         return $this->performBrowse('Topic', $categoryList, true);
@@ -517,7 +521,7 @@ class BrowseController extends AbstractBase implements
             'alphabetical' => 'By Alphabetical',
             'topic'        => 'By Topic',
             'region'       => 'By Region',
-            'era'          => 'By Era'
+            'era'          => 'By Era',
         ];
 
         return $this->performBrowse('Genre', $categoryList, true);
@@ -534,7 +538,7 @@ class BrowseController extends AbstractBase implements
             'alphabetical' => 'By Alphabetical',
             'topic'        => 'By Topic',
             'genre'        => 'By Genre',
-            'era'          => 'By Era'
+            'era'          => 'By Era',
         ];
 
         return $this->performBrowse('Region', $categoryList, true);
@@ -551,7 +555,7 @@ class BrowseController extends AbstractBase implements
             'alphabetical' => 'By Alphabetical',
             'topic'        => 'By Topic',
             'genre'        => 'By Genre',
-            'region'       => 'By Region'
+            'region'       => 'By Region',
         ];
 
         return $this->performBrowse('Era', $categoryList, true);
@@ -568,44 +572,48 @@ class BrowseController extends AbstractBase implements
     {
         $category = $this->getCategory();
         switch ($facet) {
-        case 'alphabetical':
-            return ['', $this->getAlphabetList()];
-        case 'dewey':
-            return [
-                    'dewey-tens', $this->quoteValues(
-                        $this->getFacetList('dewey-hundreds', $category, 'index')
-                    )
-                ];
-        case 'lcc':
-            return [
-                    'callnumber-first', $this->quoteValues(
-                        $this->getFacetList('callnumber-first', $category, 'index')
-                    )
-                ];
-        case 'topic':
-            return [
-                    'topic_facet', $this->quoteValues(
-                        $this->getFacetList('topic_facet', $category)
-                    )
-                ];
-        case 'genre':
-            return [
-                    'genre_facet', $this->quoteValues(
-                        $this->getFacetList('genre_facet', $category)
-                    )
-                ];
-        case 'region':
-            return [
-                    'geographic_facet', $this->quoteValues(
-                        $this->getFacetList('geographic_facet', $category)
-                    )
-                ];
-        case 'era':
-            return [
-                    'era_facet', $this->quoteValues(
-                        $this->getFacetList('era_facet', $category)
-                    )
-                ];
+            case 'alphabetical':
+                return ['', $this->getAlphabetList()];
+            case 'dewey':
+                return [
+                        'dewey-tens', $this->quoteValues(
+                            $this->getFacetList('dewey-hundreds', $category, 'index')
+                        ),
+                    ];
+            case 'lcc':
+                return [
+                        'callnumber-first', $this->quoteValues(
+                            $this->getFacetList(
+                                'callnumber-first',
+                                $category,
+                                'index'
+                            )
+                        ),
+                    ];
+            case 'topic':
+                return [
+                        'topic_facet', $this->quoteValues(
+                            $this->getFacetList('topic_facet', $category)
+                        ),
+                    ];
+            case 'genre':
+                return [
+                        'genre_facet', $this->quoteValues(
+                            $this->getFacetList('genre_facet', $category)
+                        ),
+                    ];
+            case 'region':
+                return [
+                        'geographic_facet', $this->quoteValues(
+                            $this->getFacetList('geographic_facet', $category)
+                        ),
+                    ];
+            case 'era':
+                return [
+                        'era_facet', $this->quoteValues(
+                            $this->getFacetList('era_facet', $category)
+                        ),
+                    ];
         }
         throw new \Exception('Unexpected value: ' . $facet);
     }
@@ -650,7 +658,8 @@ class BrowseController extends AbstractBase implements
         $result = $results->getFacetList();
         if (isset($result[$facet])) {
             // Sort facets alphabetically if configured to do so:
-            if (isset($this->config->Browse->alphabetical_order)
+            if (
+                isset($this->config->Browse->alphabetical_order)
                 && $this->config->Browse->alphabetical_order
             ) {
                 $callback = function ($a, $b) {
@@ -696,22 +705,22 @@ class BrowseController extends AbstractBase implements
             $action = $this->getCurrentAction();
         }
         switch (strtolower($action)) {
-        case 'alphabetical':
-            return $this->getCategory();
-        case 'dewey':
-            return 'dewey-hundreds';
-        case 'lcc':
-            return 'callnumber-first';
-        case 'author':
-            return 'author_facet';
-        case 'topic':
-            return 'topic_facet';
-        case 'genre':
-            return 'genre_facet';
-        case 'region':
-            return 'geographic_facet';
-        case 'era':
-            return 'era_facet';
+            case 'alphabetical':
+                return $this->getCategory();
+            case 'dewey':
+                return 'dewey-hundreds';
+            case 'lcc':
+                return 'callnumber-first';
+            case 'author':
+                return 'author_facet';
+            case 'topic':
+                return 'topic_facet';
+            case 'genre':
+                return 'genre_facet';
+            case 'region':
+                return 'geographic_facet';
+            case 'era':
+                return 'era_facet';
         }
         return $action;
     }

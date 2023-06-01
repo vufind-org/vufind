@@ -12,11 +12,11 @@
         <?php endif; ?>
         <a href="<?=$this->url('author-home') . '?author=' . urlencode($author['value'])?>"><?=$this->escapeHtml($author['value']) ?><?php /* count disabled -- uncomment to add: echo ' - ' . $this->escapeHtml($author['count']); */ ?></a>
         <?php if ($i + 1 < count($similarAuthors['list'])): ?>
-          <br/>
+          <br>
         <?php endif; ?>
       <?php endforeach; ?>
       </div>
     </div>
-    <br/>
+    <br>
   <?php endif; ?>
 <?php endif; ?>

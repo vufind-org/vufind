@@ -17,7 +17,7 @@ foreach ($ids as $id) {
     $current = [];
     $current['status'] = "OK";
     $current['id'] = $id;
-    $avail = $this->result->data[$id] ?? new \stdClass;
+    $avail = $this->result->data[$id] ?? new \stdClass();
 
     if ($noshow) {
         $current['full_status'] = "";
@@ -42,4 +42,3 @@ foreach ($ids as $id) {
 }
 // JSON response. Array of HTML strings.
 echo json_encode(['data' => ['statuses' => $data]]);
-?>

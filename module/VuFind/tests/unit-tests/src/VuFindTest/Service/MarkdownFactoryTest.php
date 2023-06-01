@@ -3,7 +3,7 @@
 /**
  * MarkdownFactory Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2020.
  *
@@ -26,6 +26,7 @@
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Service;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -285,9 +286,12 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
                 $this->expectException($test['exception']);
             }
             $result = $this->getMarkdownEnvironmentExtensions($test['config']);
-            $result = array_map(function ($extension) {
-                return get_class($extension);
-            }, $result);
+            $result = array_map(
+                function ($extension) {
+                    return $extension::class;
+                },
+                $result
+            );
             $this->assertEquals($test['expected'], $result);
         }
     }
@@ -321,7 +325,7 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
     /**
      * Create markdown converter
      *
-     * @param array $config
+     * @param array $config Configuration
      *
      * @return ConverterInterface
      * @throws \Psr\Container\ContainerExceptionInterface

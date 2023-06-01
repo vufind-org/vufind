@@ -3,7 +3,7 @@
 /**
  * Class MarkdownFactory
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2020.
  *
@@ -27,6 +27,7 @@
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://knihovny.cz Main Page
  */
+
 namespace VuFind\Service;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -75,7 +76,7 @@ class MarkdownFactory implements FactoryInterface
      * @var string[]
      */
     protected static $defaultExtensions = [
-        'Autolink', 'DisallowedRawHtml', 'Strikethrough', 'Table', 'TaskList'
+        'Autolink', 'DisallowedRawHtml', 'Strikethrough', 'Table', 'TaskList',
     ];
 
     /**
@@ -186,7 +187,7 @@ class MarkdownFactory implements FactoryInterface
      */
     protected function getExtensionClass(string $extension): string
     {
-        $extensionClass = (strpos($extension, '\\') !== false)
+        $extensionClass = (str_contains($extension, '\\'))
             ? $extension
             : sprintf(
                 'League\CommonMark\Extension\%s\%sExtension',
@@ -237,7 +238,7 @@ class MarkdownFactory implements FactoryInterface
             'enable_em',
             'enable_strong',
             'use_asterisk',
-            'use_underscore'
+            'use_underscore',
         ];
         foreach ($configOptions as $option) {
             $config['commonmark'][$option]
@@ -248,9 +249,8 @@ class MarkdownFactory implements FactoryInterface
         }
         $markdown = $this->config['Markdown'] ?? [];
         $config['commonmark']['unordered_list_markers']
-            = $config['commonmark']['unordered_list_markers']
-                ?? $markdown['unordered_list_markers']
-                ?? ['-', '*', '+'];
+            ??= $markdown['unordered_list_markers']
+            ?? ['-', '*', '+'];
         unset($this->config['Markdown']['unordered_list_markers']);
 
         return $config;

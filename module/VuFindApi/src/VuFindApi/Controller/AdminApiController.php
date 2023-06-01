@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Admin Api Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2021.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindApi\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
@@ -39,8 +41,7 @@ use VuFind\Cache\Manager as CacheManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class AdminApiController extends \VuFind\Controller\AbstractBase
-    implements ApiInterface
+class AdminApiController extends \VuFind\Controller\AbstractBase implements ApiInterface
 {
     use ApiTrait;
 
@@ -130,10 +131,10 @@ class AdminApiController extends \VuFind\Controller\AbstractBase
                         'schema' => [
                             'type' => 'array',
                             'items' => [
-                                'type' => 'string'
-                            ]
+                                'type' => 'string',
+                            ],
                         ],
-                    ]
+                    ],
                 ],
                 'tags' => ['admin'],
                 'responses' => [
@@ -142,22 +143,22 @@ class AdminApiController extends \VuFind\Controller\AbstractBase
                         'content' => [
                             'application/json' => [
                                 'schema' => [
-                                    '$ref' => '#/components/schemas/Success'
-                                ]
-                            ]
-                        ]
+                                    '$ref' => '#/components/schemas/Success',
+                                ],
+                            ],
+                        ],
                     ],
                     'default' => [
                         'description' => 'Error',
                         'content' => [
                             'application/json' => [
                                 'schema' => [
-                                    '$ref' => '#/components/schemas/Error'
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
+                                    '$ref' => '#/components/schemas/Error',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
             ];
         }
 

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * TemplateBased ContentBlack Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\ContentBlock;
 
 /**
@@ -152,7 +154,7 @@ class TemplateBasedTest extends \PHPUnit\Framework\TestCase
             [
                 'template' => 'ContentBlock/TemplateBased/markdown',
                 'data' => file_get_contents($file),
-                'pageLocatorDetails' => $details
+                'pageLocatorDetails' => $details,
             ],
             $block->getContext()
         );

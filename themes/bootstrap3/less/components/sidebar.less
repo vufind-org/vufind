@@ -30,15 +30,11 @@
   display: flex;
   align-items: center;
 
-  .text {
+  .text, .hierarchical-facet-anchor {
     display: flex;
     gap: 0.25rem;
     align-items: center;
     flex-grow: 1;
-
-    i {
-      margin-right: 0.3rem;
-    }
   }
 
   .badge {
@@ -159,7 +155,7 @@
 body.rtl .full-facet-list .active .fa.fa-times { float: left; }
 
 .truncate-done {
-  overflow: hidden;
+  overflow: clip;
 }
 .more-less-btn-wrapper .fa {
   line-height: inherit;
@@ -178,6 +174,10 @@ body.rtl .full-facet-list .active .fa.fa-times { float: left; }
   .date-from, .date-to { flex: 0 1 100%; }
   .date-from { padding-right: .25rem; }
   .date-to   { padding-left:  .25rem; }
+}
+h3.facet-title {
+  font-size: @font-size-base;
+  margin: 0;
 }
 @media (min-width: 768px) {
   .author-facets { display: flex; }

@@ -6,7 +6,7 @@
         <a href="<?=$this->url('tag-home')?>?lookfor=<?=urlencode($tag['tag'])?>"><?=$this->escapeHtml($tag['tag'])?></a>
         <?php if ($loggedin): ?>
           <form method="POST" action="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, $is_me ? 'DeleteTag' : 'AddTag')) ?>" class="tag-form">
-            <input type="hidden" name="tag" value="<?=$this->escapeHtmlAttr($tag['tag'])?>"/>
+            <input type="hidden" name="tag" value="<?=$this->escapeHtmlAttr($tag['tag'])?>">
             <button type="submit" class="badge tag-submit" data-tag="<?=$this->escapeHtmlAttr($tag['tag'])?>" data-selected="<?=$is_me ? 'true' : 'false' ?>"><?=$this->escapeHtml($tag['cnt']) ?>
             <?php if ($is_me): ?>
               <?=$this->icon('tag-remove', ['title' => $this->translate('delete_tag')]) ?>
@@ -26,10 +26,10 @@
 </div>
 <?php
 $script = <<<JS
-$('.tag-submit').click(function(e) {
-    ajaxTagUpdate(this, $(this).data('tag'), $(this).data('selected'));
-    return false;
-});
-JS;
+    $('.tag-submit').click(function(e) {
+        ajaxTagUpdate(this, $(this).data('tag'), $(this).data('selected'));
+        return false;
+    });
+    JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET');

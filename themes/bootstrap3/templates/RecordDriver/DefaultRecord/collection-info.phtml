@@ -16,7 +16,7 @@
       <?php /* Display qrcode if appropriate: */ ?>
       <?php if ($QRCode): ?>
         <span class="hidden-xs">
-          <br/><img alt="<?=$this->transEscAttr('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
+          <br><img alt="<?=$this->transEscAttr('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>">
         </span>
       <?php endif; ?>
 
@@ -27,8 +27,8 @@
 
     <h2><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h2>
 
-    <?php $summary = $this->driver->getSummary(); $summary = $summary[0] ?? false; ?>
-    <?php if ($summary): ?>
+    <?php $summary = $this->driver->getSummary(); ?>
+    <?php if ($summary = $summary[0] ?? false): ?>
       <p><?=$this->escapeHtml($summary)?></p>
     <?php endif; ?>
 
@@ -45,7 +45,7 @@
           [
             'driver' => $this->driver,
             'defaults' => 'collection-info',
-            'tableId' => 'collectionInfo'
+            'tableId' => 'collectionInfo',
           ]
       );
     ?>

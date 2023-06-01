@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Class for managing ILS-specific authentication.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Auth;
 
 use VuFind\Exception\ILS as ILSException;
@@ -102,7 +104,7 @@ class ILSAuthenticator
         if (($user = $this->auth->isLoggedIn()) && !empty($user->cat_username)) {
             return [
                 'cat_username' => $user->cat_username,
-                'cat_password' => $user->cat_password
+                'cat_password' => $user->cat_password,
             ];
         }
         return false;

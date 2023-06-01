@@ -1,8 +1,9 @@
 <?php
+
 /**
  * "Keep Alive" AJAX handler
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\AjaxHandler;
 
 use Laminas\Config\Config;
@@ -107,7 +109,8 @@ class SystemStatus extends AbstractBase
     public function handleRequest(Params $params)
     {
         // Check system status
-        if (!empty($this->config->System->healthCheckFile)
+        if (
+            !empty($this->config->System->healthCheckFile)
             && file_exists($this->config->System->healthCheckFile)
         ) {
             return $this->formatResponse(

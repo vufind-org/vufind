@@ -2,4 +2,4 @@
     $folder = $this->src ?? '';
     $className = trim('icon icon--img ' . ($this->extra['class'] ?? ''));
 ?>
-<img class="<?=$className ?>" src="<?=$this->imageLink($folder . '/' . $this->icon) ?>" aria-hidden="true"<?=$this->attrs ?>/>
+<img class="<?=$className ?>" src="<?=$this->imageLink($folder . '/' . $this->icon) ?>" aria-hidden="true"<?=$this->attrs ?> alt="">

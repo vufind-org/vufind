@@ -36,6 +36,7 @@ return [
             'VuFind\View\Helper\Root\Highlight' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\HistoryLabel' => 'VuFind\View\Helper\Root\HistoryLabelFactory',
             'VuFind\View\Helper\Root\Holdings' => 'VuFind\View\Helper\Root\HoldingsFactory',
+            'VuFind\View\Helper\Root\HtmlSafeJsonEncode' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\Icon' => 'VuFind\View\Helper\Root\IconFactory',
             'VuFind\View\Helper\Root\Ils' => 'VuFind\View\Helper\Root\IlsFactory',
             'VuFind\View\Helper\Root\JsIcons' => 'VuFind\View\Helper\Root\JsIconsFactory',
@@ -121,6 +122,7 @@ return [
             'highlight' => 'VuFind\View\Helper\Root\Highlight',
             'historylabel' => 'VuFind\View\Helper\Root\HistoryLabel',
             'holdings' => 'VuFind\View\Helper\Root\Holdings',
+            'htmlSafeJsonEncode' => 'VuFind\View\Helper\Root\HtmlSafeJsonEncode',
             'ils' => 'VuFind\View\Helper\Root\Ils',
             'icon' => 'VuFind\View\Helper\Root\Icon',
             'jsIcons' => 'VuFind\View\Helper\Root\JsIcons',
@@ -171,6 +173,6 @@ return [
             'userlist' => 'VuFind\View\Helper\Root\UserList',
             'usertags' => 'VuFind\View\Helper\Root\UserTags',
             'Laminas\View\Helper\Url' => 'VuFind\View\Helper\Root\Url',
-        ]
+        ],
     ],
 ];

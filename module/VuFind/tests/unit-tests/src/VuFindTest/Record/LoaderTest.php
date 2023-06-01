@@ -3,7 +3,7 @@
 /**
  * Record loader tests.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010, 2022.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Record;
 
 use VuFind\Record\Cache;
@@ -240,7 +241,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $loader = $this->getLoader($service, $factory);
         $input = [
             ['source' => 'Solr', 'id' => 'test1'],
-            'Solr|test2', 'Summon|test3', 'WorldCat|test4'
+            'Solr|test2', 'Summon|test3', 'WorldCat|test4',
         ];
         $this->assertEquals(
             [$driver1, $driver2, $driver3, $missing],
@@ -292,7 +293,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $loader = $this->getLoader($service, null, null, $fallbackLoader);
         $input = [
             ['source' => 'Solr', 'id' => 'test1'],
-            'Solr|test2', 'Summon|test3'
+            'Solr|test2', 'Summon|test3',
         ];
         $this->assertEquals(
             [$driver1, $driver2, $driver3],
@@ -307,7 +308,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
     /**
      * Support method to test callbacks.
      *
-     * @param array $args    Command arguments
+     * @param array  $args   Command arguments
      * @param string $class  Command class
      * @param string $target Target identifier
      *
@@ -319,7 +320,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $target = 'Solr'
     ) {
         return function ($command) use ($class, $args, $target) {
-            return get_class($command) === $class
+            return $command::class === $class
                 && $command->getArguments() == $args
                 && $command->getTargetIdentifier() === $target;
         };
@@ -362,7 +363,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
     ) {
         if (null === $factory) {
             $factory = $this->getMockBuilder(\VuFind\RecordDriver\PluginManager::class)
-            ->disableOriginalConstructor()->getMock();
+                ->disableOriginalConstructor()->getMock();
         }
         return new Loader($service, $factory, $recordCache, $fallbackLoader);
     }

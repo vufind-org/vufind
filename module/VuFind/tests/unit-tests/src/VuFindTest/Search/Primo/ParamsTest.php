@@ -3,7 +3,7 @@
 /**
  * Unit tests for Primo Params.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2021-2022.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTest\Search\Primo;
 
 use VuFind\Search\Primo\Options;
@@ -101,13 +102,13 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     'values' => [
                         'foo',
                         'bar',
-                    ]
+                    ],
                 ],
                 'building' => [
                     'facetOp' => 'AND',
                     'values' => [
                         'main',
-                    ]
+                    ],
                 ],
             ],
             $params->getBackendParameters()->get('filterList')
@@ -122,7 +123,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     'values' => [
                         'foo',
                         'bar',
-                    ]
+                    ],
                 ],
             ],
             $params->getBackendParameters()->get('filterList')
@@ -138,14 +139,14 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     'values' => [
                         'foo',
                         'bar',
-                    ]
+                    ],
                 ],
                 'building' => [
                     'facetOp' => 'AND',
                     'values' => [
                         'sub',
                         'main',
-                    ]
+                    ],
                 ],
             ],
             $params->getBackendParameters()->get('filterList')
@@ -160,7 +161,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     'values' => [
                         'sub',
                         'main',
-                    ]
+                    ],
                 ],
             ],
             $params->getBackendParameters()->get('filterList')
@@ -174,7 +175,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     'facetOp' => 'AND',
                     'values' => [
                         'sub',
-                    ]
+                    ],
                 ],
             ],
             $params->getBackendParameters()->get('filterList')

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Record linker view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2023.
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use VuFind\RecordDriver\AbstractBase as AbstractRecord;
@@ -102,29 +104,29 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
         $urlHelper = $this->getView()->plugin('url');
         $baseUrl = $urlHelper($this->getSearchActionForSource($source));
         switch ($link['type']) {
-        case 'bib':
-            return $baseUrl
-                . '?lookfor=' . urlencode($link['value'])
-                . '&type=id&jumpto=1';
-        case 'dlc':
-            return $baseUrl
-                . '?lookfor=' . urlencode('"' . $link['value'] . '"')
-                . '&type=lccn&jumpto=1';
-        case 'isn':
-            return $baseUrl
-                . '?join=AND&bool0[]=AND&lookfor0[]=%22'
-                . urlencode($link['value'])
-                . '%22&type0[]=isn&bool1[]=NOT&lookfor1[]=%22'
-                . urlencode($link['exclude'])
-                . '%22&type1[]=id&sort=title&view=list';
-        case 'oclc':
-            return $baseUrl
-                . '?lookfor=' . urlencode($link['value'])
-                . '&type=oclc_num&jumpto=1';
-        case 'title':
-            return $baseUrl
-                . '?lookfor=' . urlencode($link['value'])
-                . '&type=title';
+            case 'bib':
+                return $baseUrl
+                    . '?lookfor=' . urlencode($link['value'])
+                    . '&type=id&jumpto=1';
+            case 'dlc':
+                return $baseUrl
+                    . '?lookfor=' . urlencode('"' . $link['value'] . '"')
+                    . '&type=lccn&jumpto=1';
+            case 'isn':
+                return $baseUrl
+                    . '?join=AND&bool0[]=AND&lookfor0[]=%22'
+                    . urlencode($link['value'])
+                    . '%22&type0[]=isn&bool1[]=NOT&lookfor1[]=%22'
+                    . urlencode($link['exclude'])
+                    . '%22&type1[]=id&sort=title&view=list';
+            case 'oclc':
+                return $baseUrl
+                    . '?lookfor=' . urlencode($link['value'])
+                    . '&type=oclc_num&jumpto=1';
+            case 'title':
+                return $baseUrl
+                    . '?lookfor=' . urlencode($link['value'])
+                    . '&type=title';
         }
         throw new \Exception('Unexpected link type: ' . $link['type']);
     }
@@ -132,16 +134,22 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
     /**
      * Given a record driver, get a URL for that record.
      *
-     * @param AbstractRecord|string $driver Record driver representing record to link
-     * to, or source|id pipe-delimited string
-     * @param string                $action Record action to access
-     * @param array                 $query  Optional query parameters
-     * @param string                $anchor Optional anchor
+     * @param AbstractRecord|string $driver  Record driver representing record
+     * to link to, or source|id pipe-delimited string
+     * @param string                $action  Record action to access
+     * @param array                 $query   Optional query parameters
+     * @param string                $anchor  Optional anchor
+     * @param array                 $options Record URL parameter options (optional)
      *
      * @return string
      */
-    public function getActionUrl($driver, $action, $query = [], $anchor = '')
-    {
+    public function getActionUrl(
+        $driver,
+        $action,
+        $query = [],
+        $anchor = '',
+        $options = []
+    ) {
         // Build the URL:
         $urlHelper = $this->getView()->plugin('url');
         $details = $this->router->getActionRouteDetails($driver, $action);
@@ -149,8 +157,8 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
             $details['route'],
             $details['params'] ?: [],
             [
-                'query' => $this->getRecordUrlParams() + $query,
-                'fragment' => ltrim('#', $anchor),
+                'query' => $this->getRecordUrlParams($options) + $query,
+                'fragment' => $anchor ? ltrim($anchor, '#') : '',
                 'normalize_path' => false, // required to keep slashes encoded
             ]
         );
@@ -289,7 +297,7 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
 
         $urlParams = [
             'id' => $driver->getUniqueID(),
-            'keys' => $driver->tryMethod('getWorkKeys', [], [])
+            'keys' => $driver->tryMethod('getWorkKeys', [], []),
         ];
 
         $urlHelper = $this->getView()->plugin('url');

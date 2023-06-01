@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Mink ChoiceAuth test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 /**
@@ -154,7 +156,7 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
 
         // Confirm that demo driver expected values are present:
         $texts = [
-            'Lib-catuser', 'Somewhere...', 'Over the Rainbow'
+            'Lib-catuser', 'Somewhere...', 'Over the Rainbow',
         ];
         foreach ($texts as $text) {
             $this->assertTrue($this->hasElementsMatchingText($page, 'td', $text));

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Caching downloader.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Http;
 
 use Laminas\Cache\Storage\StorageInterface;
@@ -91,7 +93,10 @@ class CachingDownloader implements \VuFindHttp\HttpServiceAwareInterface
     protected function getDownloaderCache()
     {
         if ($this->cache == null) {
-            $cacheName = $this->cacheManager->addDownloaderCache($this->cacheId);
+            $cacheName = $this->cacheManager->addDownloaderCache(
+                $this->cacheId,
+                $this->cacheOptions
+            );
             $this->cache = $this->cacheManager->getCache($cacheName);
         }
         return $this->cache;
@@ -105,7 +110,7 @@ class CachingDownloader implements \VuFindHttp\HttpServiceAwareInterface
      *
      * @return void
      */
-    public function setUpCache(string $cacheId, array $cacheOptions=[])
+    public function setUpCache(string $cacheId, array $cacheOptions = [])
     {
         $this->cache = null;
         $this->cacheId = $cacheId;
@@ -124,8 +129,8 @@ class CachingDownloader implements \VuFindHttp\HttpServiceAwareInterface
      */
     public function download(
         $url,
-        $params=[],
-        callable $decodeCallback=null
+        $params = [],
+        callable $decodeCallback = null
     ) {
         $cache = $this->getDownloaderCache();
         $cacheItemKey = md5($url . http_build_query($params));
@@ -173,7 +178,7 @@ class CachingDownloader implements \VuFindHttp\HttpServiceAwareInterface
      *
      * @return stdClass
      */
-    public function downloadJson($url, $params=[])
+    public function downloadJson($url, $params = [])
     {
         $decodeJson = function (\Laminas\Http\Response $response, $url) {
             $decodedJson = json_decode($response->getBody());

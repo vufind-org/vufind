@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Base class for session handling
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010,
  *               Leipzig University Library <info@ub.uni-leipzig.de> 2018.
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
+
 namespace VuFind\Session;
 
 use Laminas\Config\Config;

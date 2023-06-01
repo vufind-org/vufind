@@ -3,7 +3,7 @@
 /**
  * Unit tests for search service.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010, 2022.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest;
 
 use PHPUnit\Framework\TestCase;
@@ -119,6 +120,11 @@ class SearchServiceTest extends TestCase
 
     /**
      * Create a mock backend.
+     *
+     * @param string $class      Class to build
+     * @param string $identifier Backend ID to use
+     *
+     * @return object
      */
     protected function createMockBackend(
         $class = \VuFindSearch\Backend\BackendInterface::class,

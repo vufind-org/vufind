@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Record Cache
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) University of Freiburg 2014.
  * Copyright (C) The National Library of Finland 2015.
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Record;
 
 use Laminas\Config\Config as Config;
@@ -204,7 +206,8 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
         }
         $this->cachableSources = isset($this->cacheConfig->$context)
             ? $this->cacheConfig->$context->toArray() : [];
-        if ($context != Cache::CONTEXT_DEFAULT
+        if (
+            $context != Cache::CONTEXT_DEFAULT
             && isset($this->cacheConfig->{Cache::CONTEXT_DEFAULT})
         ) {
             // Inherit settings from Default section

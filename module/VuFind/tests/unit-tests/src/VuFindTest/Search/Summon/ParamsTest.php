@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Summon Search Object Parameters Test
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Search\Summon;
 
 use Laminas\Config\Config;
@@ -59,7 +61,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                     'holdingsOnly:false' => 'add_other_libraries',
                     'queryExpansion:true' => 'include_synonyms',
                 ],
-            ]
+            ],
         ];
         $configManager = $this->getMockConfigPluginManager($config);
         $params = $this->getParams(null, $configManager);
@@ -105,7 +107,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         Options $options = null,
         PluginManager $mockConfig = null
     ): Params {
-        $mockConfig = $mockConfig ?? $this->createMock(PluginManager::class);
+        $mockConfig ??= $this->createMock(PluginManager::class);
         return new Params(
             $options ?? new Options($mockConfig),
             $mockConfig

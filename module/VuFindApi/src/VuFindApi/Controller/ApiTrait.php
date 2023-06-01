@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Additional functionality for API controllers.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library 2015-2016.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
+
 namespace VuFindApi\Controller;
 
 /**

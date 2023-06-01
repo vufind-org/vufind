@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Random Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\ChannelProvider;
 
 use VuFind\ChannelProvider\Random;
@@ -117,7 +119,7 @@ class RandomTest extends \PHPUnit\Framework\TestCase
                 'thumbnail' => 'foo_Thumbnail',
                 'routeDetails' => 'foo_Route',
                 'id' => 'foo_Id',
-            ]]
+            ]],
         ]];
         $random->setProviderId('foo_ProviderID');
         $coverRouter = $this->getConfiguredCoverRouterMock($recordDriver);
@@ -167,7 +169,7 @@ class RandomTest extends \PHPUnit\Framework\TestCase
     /**
      * Support method to test callbacks.
      *
-     * @param array $args    Command arguments
+     * @param array  $args   Command arguments
      * @param string $class  Command class
      * @param string $target Target identifier
      *
@@ -179,7 +181,7 @@ class RandomTest extends \PHPUnit\Framework\TestCase
         $target = 'Solr'
     ) {
         return function ($command) use ($class, $args, $target) {
-            return get_class($command) === $class
+            return $command::class === $class
                 && $command->getArguments() == $args
                 && $command->getTargetIdentifier() === $target;
         };
@@ -188,9 +190,9 @@ class RandomTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a configured parameters object mock.
      *
-     * @param \VuFindSearch\Query\Query $query Search query object to be
+     * @param \VuFindSearch\Query\Query $query    Search query object to be
      * returned by getQuery method.
-     * @param \VuFindSearch\ParamBag $paramBag Request parameters to be returned by
+     * @param \VuFindSearch\ParamBag    $paramBag Request parameters to be returned by
      * getBackendParameters method.
      *
      * @return MockObject
@@ -223,7 +225,7 @@ class RandomTest extends \PHPUnit\Framework\TestCase
             'Title' => 'foo_Title',
             'SourceIdentifier' => 'foo_Identifier',
             'Thumbnail' => 'foo_Thumbnail',
-            'UniqueID' => 'foo_Id'
+            'UniqueID' => 'foo_Id',
         ];
         $driver->setRawData($data);
         return $driver;

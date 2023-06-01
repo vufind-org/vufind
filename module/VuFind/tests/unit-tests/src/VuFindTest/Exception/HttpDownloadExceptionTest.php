@@ -1,8 +1,9 @@
 <?php
+
 /**
  * HttpDownloadException Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Exception;
 
 use Laminas\Http\Headers;
@@ -41,6 +43,11 @@ use VuFind\Exception\HttpDownloadException;
  */
 class HttpDownloadExceptionTest extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * Test the exception
+     *
+     * @return void
+     */
     public function testException()
     {
         $message = 'Not Found';

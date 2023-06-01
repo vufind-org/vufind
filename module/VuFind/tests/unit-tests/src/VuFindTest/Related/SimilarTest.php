@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Similar Related Items Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010, 2022.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Related;
 
 use VuFind\Related\Similar;
@@ -62,7 +64,7 @@ class SimilarTest extends \PHPUnit\Framework\TestCase
         $commandObj->expects($this->once())->method('getResult')
             ->will($this->returnValue(['fakeresponse']));
         $checkCommand = function ($command) {
-            return get_class($command) === \VuFindSearch\Command\SimilarCommand::class
+            return $command::class === \VuFindSearch\Command\SimilarCommand::class
                     && $command->getTargetIdentifier() === "Solr"
                     && $command->getArguments()[0] === "fakeid";
         };

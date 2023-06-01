@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Factory for EBSCO Integration Toolkit (EIT) backends.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Julia Bauder 2013.
  *
@@ -26,14 +27,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Factory;
 
 use Psr\Container\ContainerInterface;
-
 use VuFindSearch\Backend\EIT\Backend;
 use VuFindSearch\Backend\EIT\Connector;
 use VuFindSearch\Backend\EIT\QueryBuilder;
-
 use VuFindSearch\Backend\EIT\Response\XML\RecordCollectionFactory;
 
 /**

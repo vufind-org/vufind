@@ -1,5 +1,25 @@
 [
-  { "status": 400 },
-  { "headers": { "X-Okapi-Token": "x-okapi-token-after-invalid" } },
-  { "body": "{ \"servicepoints\": [] }" }
+  {
+    "comment": "simulate bad token",
+    "expectedPath": "/users",
+    "status": 400
+  },
+  {
+    "comment": "send new token",
+    "expectedMethod": "POST",
+    "expectedPath": "/authn/login",
+    "expectedParams": "{\"username\":\"config_username\",\"password\":\"config_password\"}",
+    "headers": { "X-Okapi-Token": "x-okapi-token-after-invalid" }
+  },
+  {
+    "comment": "confirm that new token is used",
+    "expectedPath": "/service-points",
+    "expectedHeaders": { "X-Okapi-Token": "x-okapi-token-after-invalid" },
+    "expectedParams": {
+      "query": "pickupLocation=true",
+      "offset": 0,
+      "limit": 1000
+    },
+    "body": "{ \"servicepoints\": [] }"
+  }
 ]

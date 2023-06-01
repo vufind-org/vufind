@@ -140,13 +140,13 @@ VuFind.register('account', function Account() {
 
   var init = function init() {
     // Update information when certain actions are performed
-    $("form[data-clear-account-cache]").submit(function dataClearCacheForm() {
+    $("form[data-clear-account-cache]").on("submit", function dataClearCacheForm() {
       clearCache($(this).attr("data-clear-account-cache"));
     });
-    $("a[data-clear-account-cache]").click(function dataClearCacheLink() {
+    $("a[data-clear-account-cache]").on("click", function dataClearCacheLink() {
       clearCache($(this).attr("data-clear-account-cache"));
     });
-    $("select[data-clear-account-cache]").change(function dataClearCacheSelect() {
+    $("select[data-clear-account-cache]").on("change", function dataClearCacheSelect() {
       clearCache($(this).attr("data-clear-account-cache"));
     });
   };
@@ -179,13 +179,13 @@ VuFind.register('account', function Account() {
   };
 });
 
-$(document).ready(function registerAccountAjax() {
+$(function registerAccountAjax() {
 
   VuFind.account.register("fines", {
     selector: ".fines-status",
     ajaxMethod: "getUserFines",
     render: function render($element, status, ICON_LEVELS) {
-      if (status.value === 0) {
+      if (status.total === 0) {
         $element.addClass("hidden");
         return ICON_LEVELS.NONE;
       }
@@ -193,7 +193,7 @@ $(document).ready(function registerAccountAjax() {
       return ICON_LEVELS.DANGER;
     },
     updateNeeded: function updateNeeded(currentStatus, status) {
-      return status.total !== currentStatus.value;
+      return status.total !== currentStatus.total;
     }
   });
 

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * ThemeInfo factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTheme;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -77,7 +79,7 @@ class ThemeInfoFactory implements FactoryInterface
         // can disable these problematic checks by setting memory_limit to -1.
         $cacheConfig = [
             'adapter' => \Laminas\Cache\Storage\Adapter\Memory::class,
-            'options' => ['memory_limit' => -1]
+            'options' => ['memory_limit' => -1],
         ];
         $cache = $container->get(\Laminas\Cache\Service\StorageAdapterFactory::class)
             ->createFromArrayConfiguration($cacheConfig);
