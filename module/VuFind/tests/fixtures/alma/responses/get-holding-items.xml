@@ -1,0 +1,631 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<items total_record_count="1">
+	<item link="http://localhost/v1/v1/bibs/1111/holdings/2221/items/3331">
+		<bib_data link="http://localhost/v1/v1/bibs/1111">
+			<mms_id>1111</mms_id>
+			<bib_suppress_from_publishing>false</bib_suppress_from_publishing>
+			<title>Mattila : kyläkunta väylien varrella /</title>
+			<author>Mäkinen, Riitta.</author>
+			<isbn>952-91-0264-X</isbn>
+			<complete_edition></complete_edition>
+			<network_numbers>
+				<network_number>(FI-MELINDA)000185597</network_number>
+			</network_numbers>
+			<place_of_publication>Lempäälä :</place_of_publication>
+			<date_of_publication>1998</date_of_publication>
+			<publisher_const>Mattilan kyläyhdistys</publisher_const>
+		</bib_data>
+		<holding_data link="http://localhost/v1/v1/bibs/1111/holdings/2221">
+			<holding_id>2221</holding_id>
+			<holding_suppress_from_publishing>false</holding_suppress_from_publishing>
+			<permanent_call_number_type desc="Other scheme">8</permanent_call_number_type>
+			<permanent_call_number>HB Ab</permanent_call_number>
+			<call_number_type desc="Other scheme">8</call_number_type>
+			<call_number>HB Ab</call_number>
+			<accession_number></accession_number>
+			<copy_id>1</copy_id>
+			<in_temp_location>false</in_temp_location>
+			<temp_library/>
+			<temp_location/>
+			<temp_call_number_type></temp_call_number_type>
+			<temp_call_number></temp_call_number>
+			<temp_call_number_source></temp_call_number_source>
+			<temp_policy></temp_policy>
+		</holding_data>
+		<item_data>
+			<pid>3331</pid>
+			<barcode>3331</barcode>
+			<creation_date>2001-06-11Z</creation_date>
+			<modification_date>2019-12-08Z</modification_date>
+			<base_status desc="Item in place">1</base_status>
+			<awaiting_reshelving>false</awaiting_reshelving>
+			<physical_material_type desc="Book">BOOK</physical_material_type>
+			<policy desc="Monographies, 180 days">mono-180</policy>
+			<provenance></provenance>
+			<po_line></po_line>
+			<is_magnetic>false</is_magnetic>
+			<arrival_date>2001-06-11Z</arrival_date>
+			<year_of_issue></year_of_issue>
+			<enumeration_a></enumeration_a>
+			<enumeration_b></enumeration_b>
+			<enumeration_c></enumeration_c>
+			<enumeration_d></enumeration_d>
+			<enumeration_e></enumeration_e>
+			<enumeration_f></enumeration_f>
+			<enumeration_g></enumeration_g>
+			<enumeration_h></enumeration_h>
+			<chronology_i></chronology_i>
+			<chronology_j></chronology_j>
+			<chronology_k></chronology_k>
+			<chronology_l></chronology_l>
+			<chronology_m></chronology_m>
+			<break_indicator></break_indicator>
+			<pattern_type></pattern_type>
+			<linking_number></linking_number>
+			<type_of_unit></type_of_unit>
+			<description></description>
+			<receiving_operator>import</receiving_operator>
+			<process_type></process_type>
+			<inventory_number></inventory_number>
+			<inventory_price></inventory_price>
+			<library desc="Central">Central</library>
+			<location desc="General">general</location>
+			<alternative_call_number></alternative_call_number>
+			<alternative_call_number_type></alternative_call_number_type>
+			<storage_location_id></storage_location_id>
+			<pages></pages>
+			<pieces>1</pieces>
+			<public_note></public_note>
+			<fulfillment_note></fulfillment_note>
+			<internal_note_1></internal_note_1>
+			<internal_note_2></internal_note_2>
+			<internal_note_3>ON_RESERVE: N | RESERVE_CHARGES: 0 | RECALLS_PLACED: 0 | HOLDS_PLACED: 0 | HISTORICAL_BOOKINGS: 0 | SHORT_LOAN_CHARGES: 0 | </internal_note_3>
+			<statistics_note_1></statistics_note_1>
+			<statistics_note_2></statistics_note_2>
+			<statistics_note_3></statistics_note_3>
+			<requested>false</requested>
+			<physical_condition/>
+			<committed_to_retain/>
+			<retention_reason></retention_reason>
+			<retention_note></retention_note>
+		</item_data>
+	</item>
+	<item link="http://localhost/v1/v1/bibs/1111/holdings/2221/items/3332">
+		<bib_data link="http://localhost/v1/v1/bibs/1111">
+			<mms_id>1111</mms_id>
+			<bib_suppress_from_publishing>false</bib_suppress_from_publishing>
+			<title>Mattila : kyläkunta väylien varrella /</title>
+			<author>Mäkinen, Riitta.</author>
+			<isbn>952-91-0264-X</isbn>
+			<complete_edition></complete_edition>
+			<network_numbers>
+				<network_number>(FI-MELINDA)000185597</network_number>
+			</network_numbers>
+			<place_of_publication>Lempäälä :</place_of_publication>
+			<date_of_publication>1998</date_of_publication>
+			<publisher_const>Mattilan kyläyhdistys</publisher_const>
+		</bib_data>
+		<holding_data link="http://localhost/v1/v1/bibs/1111/holdings/2221">
+			<holding_id>2221</holding_id>
+			<holding_suppress_from_publishing>false</holding_suppress_from_publishing>
+			<permanent_call_number_type desc="Other scheme">8</permanent_call_number_type>
+			<permanent_call_number>HB Ab</permanent_call_number>
+			<call_number_type desc="Other scheme">8</call_number_type>
+			<call_number>HB Ab</call_number>
+			<accession_number></accession_number>
+			<copy_id>1</copy_id>
+			<in_temp_location>false</in_temp_location>
+			<temp_library/>
+			<temp_location/>
+			<temp_call_number_type></temp_call_number_type>
+			<temp_call_number></temp_call_number>
+			<temp_call_number_source></temp_call_number_source>
+			<temp_policy></temp_policy>
+		</holding_data>
+		<item_data>
+			<pid>3332</pid>
+			<barcode>3332</barcode>
+			<creation_date>2001-06-12Z</creation_date>
+			<modification_date>2019-12-08Z</modification_date>
+			<base_status desc="Item in place">1</base_status>
+			<awaiting_reshelving>false</awaiting_reshelving>
+			<physical_material_type desc="Book">BOOK</physical_material_type>
+			<policy desc="Monographies, 180 days">mono-180</policy>
+			<provenance></provenance>
+			<po_line></po_line>
+			<is_magnetic>false</is_magnetic>
+			<arrival_date>2001-06-11Z</arrival_date>
+			<year_of_issue></year_of_issue>
+			<enumeration_a></enumeration_a>
+			<enumeration_b></enumeration_b>
+			<enumeration_c></enumeration_c>
+			<enumeration_d></enumeration_d>
+			<enumeration_e></enumeration_e>
+			<enumeration_f></enumeration_f>
+			<enumeration_g></enumeration_g>
+			<enumeration_h></enumeration_h>
+			<chronology_i></chronology_i>
+			<chronology_j></chronology_j>
+			<chronology_k></chronology_k>
+			<chronology_l></chronology_l>
+			<chronology_m></chronology_m>
+			<break_indicator></break_indicator>
+			<pattern_type></pattern_type>
+			<linking_number></linking_number>
+			<type_of_unit></type_of_unit>
+			<description></description>
+			<receiving_operator>import</receiving_operator>
+			<process_type></process_type>
+			<inventory_number></inventory_number>
+			<inventory_price></inventory_price>
+			<library desc="Central">Central</library>
+			<location desc="Staff">staff</location>
+			<alternative_call_number></alternative_call_number>
+			<alternative_call_number_type></alternative_call_number_type>
+			<storage_location_id></storage_location_id>
+			<pages></pages>
+			<pieces>1</pieces>
+			<public_note></public_note>
+			<fulfillment_note></fulfillment_note>
+			<internal_note_1></internal_note_1>
+			<internal_note_2></internal_note_2>
+			<internal_note_3>ON_RESERVE: N | RESERVE_CHARGES: 0 | RECALLS_PLACED: 0 | HOLDS_PLACED: 0 | HISTORICAL_BOOKINGS: 0 | SHORT_LOAN_CHARGES: 0 | </internal_note_3>
+			<statistics_note_1></statistics_note_1>
+			<statistics_note_2></statistics_note_2>
+			<statistics_note_3></statistics_note_3>
+			<requested>false</requested>
+			<physical_condition/>
+			<committed_to_retain/>
+			<retention_reason></retention_reason>
+			<retention_note></retention_note>
+		</item_data>
+	</item>
+	<item link="http://localhost/v1/v1/bibs/1111/holdings/2221/items/3333">
+		<bib_data link="http://localhost/v1/v1/bibs/1111">
+			<mms_id>1111</mms_id>
+			<bib_suppress_from_publishing>false</bib_suppress_from_publishing>
+			<title>Mattila : kyläkunta väylien varrella /</title>
+			<author>Mäkinen, Riitta.</author>
+			<isbn>952-91-0264-X</isbn>
+			<complete_edition></complete_edition>
+			<network_numbers>
+				<network_number>(FI-MELINDA)000185597</network_number>
+			</network_numbers>
+			<place_of_publication>Lempäälä :</place_of_publication>
+			<date_of_publication>1998</date_of_publication>
+			<publisher_const>Mattilan kyläyhdistys</publisher_const>
+		</bib_data>
+		<holding_data link="http://localhost/v1/v1/bibs/1111/holdings/2221">
+			<holding_id>2221</holding_id>
+			<holding_suppress_from_publishing>false</holding_suppress_from_publishing>
+			<permanent_call_number_type desc="Other scheme">8</permanent_call_number_type>
+			<permanent_call_number>HB Ab</permanent_call_number>
+			<call_number_type desc="Other scheme">8</call_number_type>
+			<call_number>HB Ab</call_number>
+			<accession_number></accession_number>
+			<copy_id>1</copy_id>
+			<in_temp_location>false</in_temp_location>
+			<temp_library/>
+			<temp_location/>
+			<temp_call_number_type></temp_call_number_type>
+			<temp_call_number></temp_call_number>
+			<temp_call_number_source></temp_call_number_source>
+			<temp_policy></temp_policy>
+		</holding_data>
+		<item_data>
+			<pid>3333</pid>
+			<barcode>3333</barcode>
+			<creation_date>2001-06-12Z</creation_date>
+			<modification_date>2019-12-08Z</modification_date>
+			<base_status desc="Item not in place">0</base_status>
+			<awaiting_reshelving>false</awaiting_reshelving>
+			<physical_material_type desc="Book">BOOK</physical_material_type>
+			<policy desc="Monographies, 180 days">mono-180</policy>
+			<provenance></provenance>
+			<po_line></po_line>
+			<is_magnetic>false</is_magnetic>
+			<arrival_date>2001-06-11Z</arrival_date>
+			<year_of_issue></year_of_issue>
+			<enumeration_a></enumeration_a>
+			<enumeration_b></enumeration_b>
+			<enumeration_c></enumeration_c>
+			<enumeration_d></enumeration_d>
+			<enumeration_e></enumeration_e>
+			<enumeration_f></enumeration_f>
+			<enumeration_g></enumeration_g>
+			<enumeration_h></enumeration_h>
+			<chronology_i></chronology_i>
+			<chronology_j></chronology_j>
+			<chronology_k></chronology_k>
+			<chronology_l></chronology_l>
+			<chronology_m></chronology_m>
+			<break_indicator></break_indicator>
+			<pattern_type></pattern_type>
+			<linking_number></linking_number>
+			<type_of_unit></type_of_unit>
+			<description></description>
+			<receiving_operator>import</receiving_operator>
+			<process_type></process_type>
+			<inventory_number></inventory_number>
+			<inventory_price></inventory_price>
+			<library desc="Central">Central</library>
+			<location desc="General">general</location>
+			<alternative_call_number></alternative_call_number>
+			<alternative_call_number_type></alternative_call_number_type>
+			<storage_location_id></storage_location_id>
+			<pages></pages>
+			<pieces>1</pieces>
+			<public_note></public_note>
+			<fulfillment_note></fulfillment_note>
+			<due_date>2023-05-10T20:29:00Z</due_date>
+			<internal_note_1></internal_note_1>
+			<internal_note_2></internal_note_2>
+			<internal_note_3>ON_RESERVE: N | RESERVE_CHARGES: 0 | RECALLS_PLACED: 0 | HOLDS_PLACED: 0 | HISTORICAL_BOOKINGS: 0 | SHORT_LOAN_CHARGES: 0 | </internal_note_3>
+			<statistics_note_1></statistics_note_1>
+			<statistics_note_2></statistics_note_2>
+			<statistics_note_3></statistics_note_3>
+			<requested>false</requested>
+			<physical_condition/>
+			<committed_to_retain/>
+			<retention_reason></retention_reason>
+			<retention_note></retention_note>
+		</item_data>
+	</item>
+	<item link="http://localhost/v1/v1/bibs/1111/holdings/2221/items/3333">
+		<bib_data link="http://localhost/v1/v1/bibs/1111">
+			<mms_id>1111</mms_id>
+			<bib_suppress_from_publishing>false</bib_suppress_from_publishing>
+			<title>Mattila : kyläkunta väylien varrella /</title>
+			<author>Mäkinen, Riitta.</author>
+			<isbn>952-91-0264-X</isbn>
+			<complete_edition></complete_edition>
+			<network_numbers>
+				<network_number>(FI-MELINDA)000185597</network_number>
+			</network_numbers>
+			<place_of_publication>Lempäälä :</place_of_publication>
+			<date_of_publication>1998</date_of_publication>
+			<publisher_const>Mattilan kyläyhdistys</publisher_const>
+		</bib_data>
+		<holding_data link="http://localhost/v1/v1/bibs/1111/holdings/2221">
+			<holding_id>2221</holding_id>
+			<holding_suppress_from_publishing>false</holding_suppress_from_publishing>
+			<permanent_call_number_type desc="Other scheme">8</permanent_call_number_type>
+			<permanent_call_number>HB Ab</permanent_call_number>
+			<call_number_type desc="Other scheme">8</call_number_type>
+			<call_number>HB Ab</call_number>
+			<accession_number></accession_number>
+			<copy_id>1</copy_id>
+			<in_temp_location>false</in_temp_location>
+			<temp_library/>
+			<temp_location/>
+			<temp_call_number_type></temp_call_number_type>
+			<temp_call_number></temp_call_number>
+			<temp_call_number_source></temp_call_number_source>
+			<temp_policy></temp_policy>
+		</holding_data>
+		<item_data>
+			<pid>3334</pid>
+			<barcode>3334</barcode>
+			<creation_date>2001-06-12Z</creation_date>
+			<modification_date>2019-12-08Z</modification_date>
+			<base_status desc="Item not in place">0</base_status>
+			<awaiting_reshelving>false</awaiting_reshelving>
+			<physical_material_type desc="Book">BOOK</physical_material_type>
+			<policy desc="Monographies, 180 days">mono-180</policy>
+			<provenance></provenance>
+			<po_line></po_line>
+			<is_magnetic>false</is_magnetic>
+			<arrival_date>2001-06-11Z</arrival_date>
+			<year_of_issue></year_of_issue>
+			<enumeration_a></enumeration_a>
+			<enumeration_b></enumeration_b>
+			<enumeration_c></enumeration_c>
+			<enumeration_d></enumeration_d>
+			<enumeration_e></enumeration_e>
+			<enumeration_f></enumeration_f>
+			<enumeration_g></enumeration_g>
+			<enumeration_h></enumeration_h>
+			<chronology_i></chronology_i>
+			<chronology_j></chronology_j>
+			<chronology_k></chronology_k>
+			<chronology_l></chronology_l>
+			<chronology_m></chronology_m>
+			<break_indicator></break_indicator>
+			<pattern_type></pattern_type>
+			<linking_number></linking_number>
+			<type_of_unit></type_of_unit>
+			<description></description>
+			<receiving_operator>import</receiving_operator>
+			<process_type desc="Technical - Migration">TECHNICAL</process_type>
+			<inventory_number></inventory_number>
+			<inventory_price></inventory_price>
+			<library desc="Central">Central</library>
+			<location desc="General">general</location>
+			<alternative_call_number></alternative_call_number>
+			<alternative_call_number_type></alternative_call_number_type>
+			<storage_location_id></storage_location_id>
+			<pages></pages>
+			<pieces>1</pieces>
+			<public_note></public_note>
+			<fulfillment_note></fulfillment_note>
+			<internal_note_1></internal_note_1>
+			<internal_note_2></internal_note_2>
+			<internal_note_3>ON_RESERVE: N | RESERVE_CHARGES: 0 | RECALLS_PLACED: 0 | HOLDS_PLACED: 0 | HISTORICAL_BOOKINGS: 0 | SHORT_LOAN_CHARGES: 0 | </internal_note_3>
+			<statistics_note_1></statistics_note_1>
+			<statistics_note_2></statistics_note_2>
+			<statistics_note_3></statistics_note_3>
+			<requested>false</requested>
+			<physical_condition/>
+			<committed_to_retain/>
+			<retention_reason></retention_reason>
+			<retention_note></retention_note>
+		</item_data>
+	</item>
+	<item link="http://localhost/v1/v1/bibs/1111/holdings/2221/items/3333">
+		<bib_data link="http://localhost/v1/v1/bibs/1111">
+			<mms_id>1111</mms_id>
+			<bib_suppress_from_publishing>false</bib_suppress_from_publishing>
+			<title>Mattila : kyläkunta väylien varrella /</title>
+			<author>Mäkinen, Riitta.</author>
+			<isbn>952-91-0264-X</isbn>
+			<complete_edition></complete_edition>
+			<network_numbers>
+				<network_number>(FI-MELINDA)000185597</network_number>
+			</network_numbers>
+			<place_of_publication>Lempäälä :</place_of_publication>
+			<date_of_publication>1998</date_of_publication>
+			<publisher_const>Mattilan kyläyhdistys</publisher_const>
+		</bib_data>
+		<holding_data link="http://localhost/v1/v1/bibs/1111/holdings/2221">
+			<holding_id>2221</holding_id>
+			<holding_suppress_from_publishing>false</holding_suppress_from_publishing>
+			<permanent_call_number_type desc="Other scheme">8</permanent_call_number_type>
+			<permanent_call_number>HB Ab</permanent_call_number>
+			<call_number_type desc="Other scheme">8</call_number_type>
+			<call_number>HB Ab</call_number>
+			<accession_number></accession_number>
+			<copy_id>1</copy_id>
+			<in_temp_location>false</in_temp_location>
+			<temp_library/>
+			<temp_location/>
+			<temp_call_number_type></temp_call_number_type>
+			<temp_call_number></temp_call_number>
+			<temp_call_number_source></temp_call_number_source>
+			<temp_policy></temp_policy>
+		</holding_data>
+		<item_data>
+			<pid>3335</pid>
+			<barcode>3335</barcode>
+			<creation_date>2001-06-12Z</creation_date>
+			<modification_date>2019-12-08Z</modification_date>
+			<base_status desc="Item in place">1</base_status>
+			<awaiting_reshelving>false</awaiting_reshelving>
+			<physical_material_type desc="Book">BOOK</physical_material_type>
+			<policy desc="Monographies, 30 days">mono-30</policy>
+			<provenance></provenance>
+			<po_line></po_line>
+			<is_magnetic>false</is_magnetic>
+			<arrival_date>2001-06-11Z</arrival_date>
+			<year_of_issue></year_of_issue>
+			<enumeration_a></enumeration_a>
+			<enumeration_b></enumeration_b>
+			<enumeration_c></enumeration_c>
+			<enumeration_d></enumeration_d>
+			<enumeration_e></enumeration_e>
+			<enumeration_f></enumeration_f>
+			<enumeration_g></enumeration_g>
+			<enumeration_h></enumeration_h>
+			<chronology_i></chronology_i>
+			<chronology_j></chronology_j>
+			<chronology_k></chronology_k>
+			<chronology_l></chronology_l>
+			<chronology_m></chronology_m>
+			<break_indicator></break_indicator>
+			<pattern_type></pattern_type>
+			<linking_number></linking_number>
+			<type_of_unit></type_of_unit>
+			<description></description>
+			<receiving_operator>import</receiving_operator>
+			<inventory_number></inventory_number>
+			<inventory_price></inventory_price>
+			<library desc="Central">Central</library>
+			<location desc="Stacks">stacks</location>
+			<alternative_call_number></alternative_call_number>
+			<alternative_call_number_type></alternative_call_number_type>
+			<storage_location_id></storage_location_id>
+			<pages></pages>
+			<pieces>1</pieces>
+			<public_note>Note!</public_note>
+			<fulfillment_note></fulfillment_note>
+			<internal_note_1></internal_note_1>
+			<internal_note_2></internal_note_2>
+			<internal_note_3>ON_RESERVE: N | RESERVE_CHARGES: 0 | RECALLS_PLACED: 0 | HOLDS_PLACED: 0 | HISTORICAL_BOOKINGS: 0 | SHORT_LOAN_CHARGES: 0 | </internal_note_3>
+			<statistics_note_1></statistics_note_1>
+			<statistics_note_2></statistics_note_2>
+			<statistics_note_3></statistics_note_3>
+			<requested>false</requested>
+			<physical_condition/>
+			<committed_to_retain/>
+			<retention_reason></retention_reason>
+			<retention_note></retention_note>
+		</item_data>
+	</item>
+	<item link="http://localhost/v1/v1/bibs/1111/holdings/2221/items/3333">
+		<bib_data link="http://localhost/v1/v1/bibs/1111">
+			<mms_id>1111</mms_id>
+			<bib_suppress_from_publishing>false</bib_suppress_from_publishing>
+			<title>Mattila : kyläkunta väylien varrella /</title>
+			<author>Mäkinen, Riitta.</author>
+			<isbn>952-91-0264-X</isbn>
+			<complete_edition></complete_edition>
+			<network_numbers>
+				<network_number>(FI-MELINDA)000185597</network_number>
+			</network_numbers>
+			<place_of_publication>Lempäälä :</place_of_publication>
+			<date_of_publication>1998</date_of_publication>
+			<publisher_const>Mattilan kyläyhdistys</publisher_const>
+		</bib_data>
+		<holding_data link="http://localhost/v1/v1/bibs/1111/holdings/2221">
+			<holding_id>2221</holding_id>
+			<holding_suppress_from_publishing>false</holding_suppress_from_publishing>
+			<permanent_call_number_type desc="Other scheme">8</permanent_call_number_type>
+			<permanent_call_number>HB Ab</permanent_call_number>
+			<call_number_type desc="Other scheme">8</call_number_type>
+			<call_number>HB Ab</call_number>
+			<accession_number></accession_number>
+			<copy_id>1</copy_id>
+			<in_temp_location>false</in_temp_location>
+			<temp_library/>
+			<temp_location/>
+			<temp_call_number_type></temp_call_number_type>
+			<temp_call_number></temp_call_number>
+			<temp_call_number_source></temp_call_number_source>
+			<temp_policy></temp_policy>
+		</holding_data>
+		<item_data>
+			<pid>3336</pid>
+			<barcode>3336</barcode>
+			<creation_date>2001-06-12Z</creation_date>
+			<modification_date>2019-12-08Z</modification_date>
+			<base_status desc="Item in place">1</base_status>
+			<awaiting_reshelving>false</awaiting_reshelving>
+			<physical_material_type desc="Book">BOOK</physical_material_type>
+			<policy desc="Monographies, 30 days">mono-30</policy>
+			<provenance></provenance>
+			<po_line></po_line>
+			<is_magnetic>false</is_magnetic>
+			<arrival_date>2001-06-11Z</arrival_date>
+			<year_of_issue></year_of_issue>
+			<enumeration_a></enumeration_a>
+			<enumeration_b></enumeration_b>
+			<enumeration_c></enumeration_c>
+			<enumeration_d></enumeration_d>
+			<enumeration_e></enumeration_e>
+			<enumeration_f></enumeration_f>
+			<enumeration_g></enumeration_g>
+			<enumeration_h></enumeration_h>
+			<chronology_i></chronology_i>
+			<chronology_j></chronology_j>
+			<chronology_k></chronology_k>
+			<chronology_l></chronology_l>
+			<chronology_m></chronology_m>
+			<break_indicator></break_indicator>
+			<pattern_type></pattern_type>
+			<linking_number></linking_number>
+			<type_of_unit></type_of_unit>
+			<description></description>
+			<receiving_operator>import</receiving_operator>
+			<inventory_number></inventory_number>
+			<inventory_price></inventory_price>
+			<library desc="Central">Central</library>
+			<location desc="Lost">lost</location>
+			<alternative_call_number></alternative_call_number>
+			<alternative_call_number_type></alternative_call_number_type>
+			<storage_location_id></storage_location_id>
+			<pages></pages>
+			<pieces>1</pieces>
+			<public_note>Note!</public_note>
+			<fulfillment_note></fulfillment_note>
+			<internal_note_1></internal_note_1>
+			<internal_note_2></internal_note_2>
+			<internal_note_3>ON_RESERVE: N | RESERVE_CHARGES: 0 | RECALLS_PLACED: 0 | HOLDS_PLACED: 0 | HISTORICAL_BOOKINGS: 0 | SHORT_LOAN_CHARGES: 0 | </internal_note_3>
+			<statistics_note_1></statistics_note_1>
+			<statistics_note_2></statistics_note_2>
+			<statistics_note_3></statistics_note_3>
+			<requested>false</requested>
+			<physical_condition/>
+			<committed_to_retain/>
+			<retention_reason></retention_reason>
+			<retention_note></retention_note>
+		</item_data>
+	</item>
+	<item link="http://localhost/v1/v1/bibs/1111/holdings/2221/items/3333">
+		<bib_data link="http://localhost/v1/v1/bibs/1111">
+			<mms_id>1111</mms_id>
+			<bib_suppress_from_publishing>false</bib_suppress_from_publishing>
+			<title>Mattila : kyläkunta väylien varrella /</title>
+			<author>Mäkinen, Riitta.</author>
+			<isbn>952-91-0264-X</isbn>
+			<complete_edition></complete_edition>
+			<network_numbers>
+				<network_number>(FI-MELINDA)000185597</network_number>
+			</network_numbers>
+			<place_of_publication>Lempäälä :</place_of_publication>
+			<date_of_publication>1998</date_of_publication>
+			<publisher_const>Mattilan kyläyhdistys</publisher_const>
+		</bib_data>
+		<holding_data link="http://localhost/v1/v1/bibs/1111/holdings/2221">
+			<holding_id>2221</holding_id>
+			<holding_suppress_from_publishing>false</holding_suppress_from_publishing>
+			<permanent_call_number_type desc="Other scheme">8</permanent_call_number_type>
+			<permanent_call_number>HB Ab</permanent_call_number>
+			<call_number_type desc="Other scheme">8</call_number_type>
+			<call_number>HB Ab</call_number>
+			<accession_number></accession_number>
+			<copy_id>1</copy_id>
+			<in_temp_location>false</in_temp_location>
+			<temp_library/>
+			<temp_location/>
+			<temp_call_number_type></temp_call_number_type>
+			<temp_call_number></temp_call_number>
+			<temp_call_number_source></temp_call_number_source>
+			<temp_policy></temp_policy>
+		</holding_data>
+		<item_data>
+			<pid>3337</pid>
+			<barcode>3337</barcode>
+			<creation_date>2001-06-12Z</creation_date>
+			<modification_date>2019-12-08Z</modification_date>
+			<base_status desc="Item not in place">0</base_status>
+			<awaiting_reshelving>false</awaiting_reshelving>
+			<physical_material_type desc="Book">BOOK</physical_material_type>
+			<policy desc="Monographies, 30 days">mono-30</policy>
+			<provenance></provenance>
+			<po_line></po_line>
+			<is_magnetic>false</is_magnetic>
+			<arrival_date>2001-06-11Z</arrival_date>
+			<year_of_issue></year_of_issue>
+			<enumeration_a></enumeration_a>
+			<enumeration_b></enumeration_b>
+			<enumeration_c></enumeration_c>
+			<enumeration_d></enumeration_d>
+			<enumeration_e></enumeration_e>
+			<enumeration_f></enumeration_f>
+			<enumeration_g></enumeration_g>
+			<enumeration_h></enumeration_h>
+			<chronology_i></chronology_i>
+			<chronology_j></chronology_j>
+			<chronology_k></chronology_k>
+			<chronology_l></chronology_l>
+			<chronology_m></chronology_m>
+			<break_indicator></break_indicator>
+			<pattern_type></pattern_type>
+			<linking_number></linking_number>
+			<type_of_unit></type_of_unit>
+			<description>On the wall!</description>
+			<receiving_operator>import</receiving_operator>
+			<inventory_number></inventory_number>
+			<inventory_price></inventory_price>
+			<library desc="Central">Central</library>
+			<location desc="Reading Room">readingroom</location>
+			<alternative_call_number></alternative_call_number>
+			<alternative_call_number_type></alternative_call_number_type>
+			<storage_location_id></storage_location_id>
+			<pages></pages>
+			<pieces>1</pieces>
+			<public_note>Note!</public_note>
+			<fulfillment_note></fulfillment_note>
+			<internal_note_1></internal_note_1>
+			<internal_note_2></internal_note_2>
+			<internal_note_3>ON_RESERVE: N | RESERVE_CHARGES: 0 | RECALLS_PLACED: 0 | HOLDS_PLACED: 0 | HISTORICAL_BOOKINGS: 0 | SHORT_LOAN_CHARGES: 0 | </internal_note_3>
+			<statistics_note_1></statistics_note_1>
+			<statistics_note_2></statistics_note_2>
+			<statistics_note_3></statistics_note_3>
+			<requested>false</requested>
+			<physical_condition/>
+			<committed_to_retain/>
+			<retention_reason></retention_reason>
+			<retention_note></retention_note>
+		</item_data>
+	</item>
+</items>
