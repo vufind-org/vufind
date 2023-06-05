@@ -22,6 +22,7 @@ VuFind.register('account', function Account() {
   _accountIcons[ICON_LEVELS.DANGER] = ["my-account-warning", "account-status-danger text-danger"];
 
   var _submodules = [];
+  var _clearCaches = false;
 
   var _sessionDataPrefix = "vf-account-status-";
   var _save = function _save(module) {
@@ -106,6 +107,9 @@ VuFind.register('account', function Account() {
   };
 
   var _load = function _load(module) {
+    if (_clearCaches) {
+      sessionStorage.removeItem(_sessionDataPrefix + module);
+    }
     var $element = $(_submodules[module].selector);
     if (!$element) {
       _statuses[module] = INACTIVE;
@@ -170,9 +174,20 @@ VuFind.register('account', function Account() {
     }
   };
 
+  var clearAllCaches = function clearAllCaches() {
+    // Set a flag so that any modules yet to be loaded are cleared as well
+    _clearCaches = true;
+    for (var sub in _submodules) {
+      if (Object.prototype.hasOwnProperty.call(_submodules, sub)) {
+        _load(sub);
+      }
+    }
+  };
+
   return {
     init: init,
     clearCache: clearCache,
+    clearAllCaches: clearAllCaches,
     notify: notify,
     // if user is logged out, clear cache instead of register
     register: userIsLoggedIn ? register : clearCache
