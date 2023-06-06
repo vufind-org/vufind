@@ -129,12 +129,14 @@ class InjectHighlightingListener
                 $hl = $params->get('hl');
                 if (($hl[0] ?? 'true') != 'false') {
                     $this->active = true;
-                    $params->set('hl', 'true');
-                    $params->set('hl.simple.pre', '{{{{START_HILITE}}}}');
-                    $params->set('hl.simple.post', '{{{{END_HILITE}}}}');
+                    // Set extra parameters first so they don't override necessary
+                    // core parameters:
                     foreach ($this->extraHighlightingParameters as $key => $val) {
                         $params->set($key, $val);
                     }
+                    $params->set('hl', 'true');
+                    $params->set('hl.simple.pre', '{{{{START_HILITE}}}}');
+                    $params->set('hl.simple.post', '{{{{END_HILITE}}}}');
 
                     // Turn on hl.q generation in query builder:
                     $this->backend->getQueryBuilder()
