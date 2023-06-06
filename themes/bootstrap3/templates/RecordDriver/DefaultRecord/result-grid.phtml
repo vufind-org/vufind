@@ -40,7 +40,7 @@ $recordLinker = $this->recordLinker($this->results);
         <?php if ($doiActive): ?>
           <?=$doi->renderTemplate()?><br>
         <?php endif; ?>
-        <?php if (!is_array($urls)) $urls = []; foreach ($urls as $current): ?>
+        <?php foreach (is_array($urls) ? $urls : [] as $current): ?>
           <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new">
             <?=$this->icon('external-link') ?>
             <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a>

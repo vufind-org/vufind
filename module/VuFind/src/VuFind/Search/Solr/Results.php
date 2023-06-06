@@ -197,6 +197,8 @@ class Results extends \VuFind\Search\Base\Results
             }
         }
 
+        $this->extraSearchBackendDetails = $command->getExtraRequestDetails();
+
         $this->responseFacets = $collection->getFacets();
         $this->responseQueryFacets = $collection->getQueryFacets();
         $this->responsePivotFacets = $collection->getPivotFacets();

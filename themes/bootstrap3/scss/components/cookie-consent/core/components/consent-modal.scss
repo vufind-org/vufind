@@ -1,7 +1,7 @@
-@cc-btn-vertical-padding: .3em;
-@cc-btn-height: 42px;
-@cc-sections-padding: 1em 1.3em;
+@import "../global";
 
+$cc-sections-padding: 1em 1.3em;
+$cc-footer-links-gap: 1.3em;
 
 #cc-main{
 
@@ -11,17 +11,17 @@
         max-width: 24em;
         display: flex;
         flex-direction: column;
-        background: @cc-bg;
-        border-radius: @cc-modal-border-radius;
+        background: var(--cc-bg);
+        border-radius: var(--cc-modal-border-radius);
         z-index: 1;
         overflow: hidden;
-        box-shadow: @cc-modal-box-shadow;
+        box-shadow: $cc-modal-box-shadow;
         visibility: hidden;
         opacity: 0;
 
         /* START: Vertical align modal */
         &--top{
-            top: @cc-modal-margin;
+            top: var(--cc-modal-margin);
         }
 
         &--middle{
@@ -29,26 +29,26 @@
         }
 
         &--bottom{
-            bottom: @cc-modal-margin;
+            bottom: var(--cc-modal-margin);
         }
         /* END: Vertical align modal */
 
         /* START: Horizontal align modal */
         &--center{
-            left: @cc-modal-margin;
-            right: @cc-modal-margin;
+            left: var(--cc-modal-margin);
+            right: var(--cc-modal-margin);
             margin: 0 auto;
             width: unset;
         }
 
         &--left{
-            left: @cc-modal-margin;
-            margin-right: @cc-modal-margin;
+            left: var(--cc-modal-margin);
+            margin-right: var(--cc-modal-margin);
         }
 
         &--right{
-            right: @cc-modal-margin;
-            margin-left: @cc-modal-margin;
+            right: var(--cc-modal-margin);
+            margin-left: var(--cc-modal-margin);
         }
         /* END: Horizontal align modal */
     }
@@ -64,41 +64,8 @@
     .cm__btns,
     .cm__links{
         width: unset;
-        padding: @cc-sections-padding;
+        padding: $cc-sections-padding;
     }
-
-    /* START: Close (x) icon */
-    .cm__close{
-        display: none;
-        position: absolute;
-        right: 0;
-        top: 0;
-        width: 2.7em;
-        height: 2.7em;
-        border-bottom-left-radius: 0.5em;
-        border-left: 1px solid @cc-btn-secondary-border-color;
-        border-bottom: 1px solid @cc-btn-secondary-border-color;
-        background: @cc-btn-secondary-bg;
-
-        &-icon{
-            width: auto;
-            height: 38%;
-            display: block;
-            position: absolute;
-            left: 0;
-            right: 0;
-            margin: 0 auto;
-            top: 50%;
-            border-radius: 100%;
-            transform: translateY(-50%);
-        }
-
-        &:hover{
-            background: @cc-btn-secondary-hover-bg;
-            border-color: @cc-btn-secondary-hover-border-color;
-        }
-    }
-    /* END: Close (x) icon */
 
     .cm__texts{
         display: flex;
@@ -117,7 +84,7 @@
     }
 
     .cm__desc{
-        color: @cc-secondary-color;
+        color: var(--cc-secondary-color);
         line-height: 1.5;
         font-size: .9em;
         max-height: 40vh;
@@ -131,44 +98,113 @@
         display: flex;
         flex-direction: column;
         justify-content: center;
-        gap: @cc-btn-gap;
-        border-top: 1px solid @cc-separator-border-color;
+        border-top: 1px solid var(--cc-separator-border-color);
     }
 
-    .cm__btn-group{
+    .cm__btn-group {
         display: grid;
         grid-auto-columns: minmax(0, 1fr);
-        gap: @cc-btn-gap;
     }
 
+    .cm__btn + .cm__btn,
+    .cm__btn-group + .cm__btn-group {
+        margin-top: $cc-btn-gap;
+    }
+
+    .cm--flip {
+        .cm__btn + .cm__btn,
+        .cm__btn-group + .cm__btn-group {
+            margin-top: 0;
+            margin-bottom: $cc-btn-gap;
+        }
+    }
+
+    .cm--inline {
+
+        .cm__btn + .cm__btn {
+            margin-top: 0;
+            margin-left: $cc-btn-gap;
+        }
+
+        &.cm--flip {
+
+            .cm__btn + .cm__btn {
+                margin-bottom: 0;
+                margin-left: 0;
+                margin-right: $cc-btn-gap;
+            }
+
+            .cm__btn-group + .cm__btn-group {
+                margin-right: 0;
+
+                margin-bottom: $cc-btn-gap;
+            }
+        }
+    }
+
+    .cm--wide {
+        .cm__btn + .cm__btn,
+        .cm__btn-group + .cm__btn-group {
+            margin-top: 0;
+            margin-left: $cc-btn-gap;
+        }
+
+        &.cm--flip {
+            .cm__btn + .cm__btn,
+            .cm__btn-group + .cm__btn-group {
+                margin-bottom: 0;
+                margin-right: $cc-btn-gap;
+            }
+        }
+    }
+
+    /** Start: Layout with 2 buttons, one of
+    which is the show preferences btn **/
+    .cm--wide,
+    .cm--bar:not(.cm--inline) {
+
+        .cm__btn-group--uneven{
+            display: flex;
+            flex: 1;
+            justify-content: space-between;
+        }
+
+        &.cm--flip{
+            .cm__btn-group--uneven{
+                flex-direction: row-reverse;
+            }
+        }
+    }
+    /** End **/
+
     .cm__btn{
-        color: @cc-btn-primary-color;
-        background: @cc-btn-primary-bg;
-        border: 1px solid @cc-btn-primary-border-color;
+        color: var(--cc-btn-primary-color);
+        background: var(--cc-btn-primary-bg);
+        border: 1px solid var(--cc-btn-primary-border-color);
         text-align: center;
 
-        font-weight: @cc-font-weight-bold;
+        font-weight: $cc-font-weight-bold;
         font-size: .82em;
-        min-height: @cc-btn-height;
-        padding: @cc-btn-vertical-padding 1em;
-        border-radius: @cc-btn-border-radius;
+        min-height: $cc-btn-height;
+        padding: $cc-btn-vertical-padding 1em;
+        border-radius: var(--cc-btn-border-radius);
 
         &:hover{
-            color: @cc-btn-primary-hover-color;
-            background: @cc-btn-primary-hover-bg;
-            border-color: @cc-btn-primary-hover-border-color;
+            color: var(--cc-btn-primary-hover-color);
+            background: var(--cc-btn-primary-hover-bg);
+            border-color: var(--cc-btn-primary-hover-border-color);
         }
 
         /* Secondary btn colors */
         &--secondary{
-            color: @cc-btn-secondary-color;
-            background: @cc-btn-secondary-bg;
-            border-color: @cc-btn-secondary-border-color;
+            color: var(--cc-btn-secondary-color);
+            background: var(--cc-btn-secondary-bg);
+            border-color: var(--cc-btn-secondary-border-color);
 
             &:hover{
-                color: @cc-btn-secondary-hover-color;
-                background: @cc-btn-secondary-hover-bg;
-                border-color: @cc-btn-secondary-hover-border-color;
+                color: var(--cc-btn-secondary-hover-color);
+                background: var(--cc-btn-secondary-hover-bg);
+                border-color: var(--cc-btn-secondary-hover-border-color);
             }
         }
 
@@ -177,10 +213,10 @@
             position: absolute;
             right: 0;
             top: 0;
-            width: @cc-btn-height;
-            height: @cc-btn-height;
+            width: $cc-btn-height;
+            height: $cc-btn-height;
             border-radius: 0;
-            border-bottom-left-radius: @cc-btn-border-radius;
+            border-bottom-left-radius: var(--cc-btn-border-radius);
             border-top: none;
             border-right: none;
             padding: 0!important;
@@ -188,44 +224,26 @@
             font-size: 1em;
             overflow: hidden;
 
-            &::after,
-            &::before {
-                content: "";
-                position: absolute;
-                top: 50%;
-                left: 0;
-                right: 0;
-                margin: auto;
-                background: @cc-btn-primary-color;
-                height: .9em;
-                width: 1.5px;
-                margin-top: 1px;
-                transform: translateY(-50%) rotate(45deg);
-                transition: all 0.15s ease;
+            svg {
+                stroke: var(--cc-btn-primary-color);
+                transform: scale(.5);
+                transition: stroke .15s ease;
             }
 
-            &::after {
-                transform: translateY(-50%) rotate(-45deg);
-            }
-
-            &:hover{
-
-                &::after,
-                &::before{
-                    background: @cc-btn-primary-hover-color;
+            &:hover {
+                svg {
+                    stroke: var(--cc-btn-primary-hover-color);
                 }
             }
 
             &.cm__btn--secondary{
-                &::after,
-                &::before{
-                    background: @cc-btn-secondary-color;
+                svg {
+                    stroke: var(--cc-btn-secondary-color);
                 }
 
-                &:hover{
-                    &::after,
-                    &::before{
-                        background: @cc-btn-secondary-hover-color;
+                &:hover {
+                    svg {
+                        stroke: var(--cc-btn-secondary-hover-color);
                     }
                 }
             }
@@ -246,9 +264,9 @@
 
 
     .cm__footer{
-        color: @cc-footer-color;
-        background: @cc-footer-bg;
-        border-top: 1px solid @cc-footer-border-color;
+        color: var(--cc-footer-color);
+        background: var(--cc-footer-bg);
+        border-top: 1px solid var(--cc-footer-border-color);
         padding: .4em 0 .5em 0;
     }
 
@@ -259,21 +277,24 @@
         flex-direction: row;
     }
 
-    .cm__link-group{
+    .cm__link-group {
         font-size: .8em;
         display: flex;
         flex-direction: row;
         width: 100%;
-        gap: 1.3em;
-        .cm--flip{
-            .cm__btn:last-child{
-                grid-row: 1;
-            }
+
+        & > * + * {
+            margin-left: $cc-footer-links-gap;
+        }
+    }
+
+    .cm--flip{
+        .cm__btn:last-child{
+            grid-row: 1;
         }
     }
 
     .cm--inline{
-
         .cm__btn-group{
             grid-auto-flow: column;
         }
@@ -351,7 +372,7 @@
 
         .cm__btns{
             border-top: none;
-            border-left: 1px solid @cc-separator-border-color;
+            border-left: 1px solid var(--cc-separator-border-color);
             // min-width: 280px;
         }
 
@@ -403,6 +424,8 @@
         border-radius: 0;
         opacity: 1;
 
+        --cc-modal-transition-duration: .35s;
+
         &.cm--top{
             top: 0;
         }
@@ -432,6 +455,14 @@
             grid-auto-flow: column;
         }
 
+        &:not(.cm--inline) {
+            .cm__btn + .cm__btn,
+            .cm__btn-group + .cm__btn-group {
+                margin-top: 0;
+                margin-left: $cc-btn-gap;
+            }
+        }
+
         .cm__btn{
             min-width: 120px;
             padding-right: 2em;
@@ -439,6 +470,15 @@
         }
 
         &.cm--flip{
+
+            &:not(.cm--inline){
+                .cm__btn + .cm__btn,
+                .cm__btn-group + .cm__btn-group {
+                    margin-bottom: 0;
+                    margin-left: 0;
+                    margin-right: $cc-btn-gap;
+                }
+            }
 
             .cm__btns{
                 flex-direction: row-reverse;
@@ -465,6 +505,7 @@
             .cm__btns{
                 flex-direction: column;
                 justify-content: center;
+                max-width: 23em;
             }
 
             &.cm--flip{
@@ -472,7 +513,6 @@
                     flex-direction: column-reverse;
                 }
             }
-
         }
     }
     /* END: Bar layout */
@@ -480,9 +520,9 @@
     .cc--anim{
         .cm,
         &.cm-wrapper::before{
-            transition: opacity @cc-modal-transition-duration ease,
-                    visibility @cc-modal-transition-duration ease,
-                    transform @cc-modal-transition-duration ease;
+            transition: opacity var(--cc-modal-transition-duration) ease,
+                    visibility var(--cc-modal-transition-duration) ease,
+                    transform var(--cc-modal-transition-duration) ease;
         }
 
         .cm__close,
@@ -505,17 +545,17 @@
     top: 0;
     bottom: 0;
     z-index: 0;
-    background: @cc-overlay-bg;
+    background: var(--cc-overlay-bg);
 }
 /* END: Dark overlay */
 
 #cc-main{
 
     .cm{
-        transform: translateY(@cc-translate-y);
+        transform: translateY($cc-translate-y);
 
         &--middle{
-            transform: translateY(calc(-50% + @cc-translate-y));
+            transform: translateY(calc(-50% + #{$cc-translate-y}));
         }
 
         &--bar{
@@ -554,6 +594,60 @@
     }
 }
 
+/* Start: fix RTL layout */
+#cc-main.cc--rtl {
+    .cm__btn--close {
+        right: unset;
+        left: 0;
+        border-bottom-left-radius: unset;
+        border-bottom-right-radius: var(--cc-btn-border-radius);
+
+        & + .cm__texts .cm__title {
+            padding-right: unset;
+            padding-left: 2em;
+        }
+    }
+
+    .cm--inline {
+        .cm__btn + .cm__btn {
+            margin-left: 0;
+            margin-right: $cc-btn-gap;
+        }
+
+        &.cm--flip {
+            .cm__btn + .cm__btn {
+                margin-left: $cc-btn-gap;
+                margin-right: 0;
+            }
+        }
+    }
+
+    .cm:not(.cm--inline) {
+        &.cm--bar,
+        &.cm--wide {
+
+            .cm__btn + .cm__btn,
+            .cm__btn-group + .cm__btn-group {
+                margin-left: 0;
+                margin-right: $cc-btn-gap;
+            }
+
+            &.cm--flip {
+                .cm__btn + .cm__btn {
+                    margin-left: $cc-btn-gap;
+                    margin-right: 0;
+                }
+            }
+        }
+    }
+
+    .cm__link-group > * + * {
+        margin-left: 0;
+        margin-right: $cc-footer-links-gap;
+    }
+
+}
+/* End: Fix RTL alyout */
 
 @media screen and (max-width: 640px){
 	#cc-main   {
@@ -582,7 +676,21 @@
             max-width: none!important;
             min-width: auto!important;
             border-left: none!important;
-            border-top: 1px solid @cc-separator-border-color!important;
+            border-top: 1px solid var(--cc-separator-border-color !important);
+        }
+
+        .cm__btn + .cm__btn,
+        .cm__btn-group + .cm__btn-group {
+            margin: 0!important;
+            margin-top: $cc-btn-gap!important;
+        }
+
+        .cm--flip {
+            .cm__btn + .cm__btn,
+            .cm__btn-group + .cm__btn-group {
+                margin-top: 0!important;
+                margin-bottom: $cc-btn-gap!important;
+            }
         }
 
         .cm__btn-group{

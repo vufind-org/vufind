@@ -18,7 +18,8 @@
               </a>
             </li>
           <?php endif; ?>
-          <?php $cart = $this->cart(); if ($cart->isActive()): ?>
+          <?php $cart = $this->cart(); ?>
+          <?php if ($cart->isActive()): ?>
             <li id="cartSummary">
               <a id="cartItems" class="icon-link" data-lightbox title="<?=$this->transEscAttr('View Book Bag')?>" href="<?=$this->url('cart-home')?>">
                 <?=$this->icon('cart', 'icon-link__icon') ?>

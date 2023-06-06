@@ -14,7 +14,8 @@
     <?php if ((null !== $this->list && $this->list->editAllowed($user)) || null === $this->list && $user): ?>
       <li><button class="toolbar-btn" id="<?=$this->idPrefix?>delete_list_items_<?=null !== $this->list ? $this->escapeHtmlAttr($this->list->id) : ''?>" type="submit" name="delete" value="1" title="<?=$this->transEscAttr('delete_selected')?>"><?=$this->icon('ui-delete') ?> <?=$this->transEsc('Delete') ?></button></li>
     <?php endif; ?>
-    <?php $exportOptions = $this->export()->getActiveFormats('bulk'); if (count($exportOptions) > 0): ?>
+    <?php $exportOptions = $this->export()->getActiveFormats('bulk'); ?>
+    <?php if (count($exportOptions) > 0): ?>
       <li><button class="toolbar-btn" type="submit" name="export" value="1" title="<?=$this->transEscAttr('export_selected')?>"><?=$this->icon('export') ?> <?=$this->transEsc('Export')?></button></li>
     <?php endif; ?>
     <li><button class="toolbar-btn" type="submit" name="print" value="1" title="<?=$this->transEscAttr('print_selected')?>" data-lightbox-ignore><?=$this->icon('print') ?> <?=$this->transEsc('Print')?></button></li>

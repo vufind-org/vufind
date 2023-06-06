@@ -27,8 +27,8 @@
 
     <h2><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h2>
 
-    <?php $summary = $this->driver->getSummary(); $summary = $summary[0] ?? false; ?>
-    <?php if ($summary): ?>
+    <?php $summary = $this->driver->getSummary(); ?>
+    <?php if ($summary = $summary[0] ?? false): ?>
       <p><?=$this->escapeHtml($summary)?></p>
     <?php endif; ?>
 

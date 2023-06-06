@@ -50,6 +50,7 @@ $rules = [
     'pow_to_exponentiation' => true,
     'single_line_after_imports' => true,
     'standardize_not_equals' => true,
+    'statement_indentation' => false, // disabled because it messes up indentation of php tags
     'ternary_operator_spaces' => true,
 ];
 
