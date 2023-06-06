@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -29,7 +29,7 @@ namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
 use VuFind\Db\Row\User;
-use VuFind\Db\Table\Comments;
+use VuFind\Db\Service\CommentsService;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
@@ -46,11 +46,11 @@ class DeleteRecordComment extends AbstractBase implements TranslatorAwareInterfa
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
-     * Comments database table
+     * Comments database service
      *
-     * @var Comments
+     * @var \VuFind\Db\Service\CommentsService
      */
-    protected $table;
+    protected $commentsService;
 
     /**
      * Logged in user (or false)
@@ -69,13 +69,16 @@ class DeleteRecordComment extends AbstractBase implements TranslatorAwareInterfa
     /**
      * Constructor
      *
-     * @param Comments  $table   Comments database table
-     * @param User|bool $user    Logged in user (or false)
-     * @param bool      $enabled Are comments enabled?
+     * @param CommentsService $commentsService Comments database service
+     * @param User|bool       $user            Logged in user (or false)
+     * @param bool            $enabled         Are comments enabled?
      */
-    public function __construct(Comments $table, $user, $enabled = true)
-    {
-        $this->table = $table;
+    public function __construct(
+        CommentsService $commentsService,
+        $user,
+        $enabled = true
+    ) {
+        $this->commentsService = $commentsService;
         $this->user = $user;
         $this->enabled = $enabled;
     }
@@ -111,7 +114,8 @@ class DeleteRecordComment extends AbstractBase implements TranslatorAwareInterfa
                 self::STATUS_HTTP_BAD_REQUEST
             );
         }
-        if (!$this->table->deleteIfOwnedByUser($id, $this->user)) {
+
+        if (!$this->commentsService->deleteIfOwnedByUser($id, $this->user->id)) {
             return $this->formatResponse(
                 $this->translate('edit_list_fail'),
                 self::STATUS_HTTP_FORBIDDEN

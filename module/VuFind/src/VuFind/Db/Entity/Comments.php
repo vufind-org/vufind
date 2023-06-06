@@ -27,6 +27,7 @@
  */
 namespace VuFind\Db\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -104,4 +105,96 @@ class Comments implements EntityInterface
      * })
      */
     protected $resource;
+
+    /**
+     * Id getter
+     *
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * Comment setter
+     *
+     * @param string $comment Comment
+     *
+     * @return Comments
+     */
+    public function setComment(string $comment): Comments
+    {
+        $this->comment = $comment;
+        return $this;
+    }
+
+    /**
+     * Comment getter
+     *
+     * @return string
+     */
+    public function getComment(): string
+    {
+        return $this->comment;
+    }
+
+    /**
+     * Created setter.
+     *
+     * @param Datetime $dateTime Created date
+     *
+     * @return Comments
+     */
+    public function setCreated(DateTime $dateTime): Comments
+    {
+        $this->created = $dateTime;
+        return $this;
+    }
+
+    /**
+     * Created getter
+     *
+     * @return Datetime
+     */
+    public function getCreated(): Datetime
+    {
+        return $this->created;
+    }
+
+    /**
+     * User setter.
+     *
+     * @param ?User $user User that created comment
+     *
+     * @return Comments
+     */
+    public function setUser(?User $user): Comments
+    {
+        $this->user = $user;
+        return $this;
+    }
+
+    /**
+     * User getter
+     *
+     * @return User
+     */
+    public function getUser(): User
+    {
+        return $this->user;
+    }
+
+    /**
+     * Resource setter.
+     *
+     * @param Resource $resource Resource id.
+     *
+     * @return Comments
+     */
+    public function setResource(?Resource $resource): Comments
+    {
+        $this->resource = $resource;
+        return $this;
+    }
 }

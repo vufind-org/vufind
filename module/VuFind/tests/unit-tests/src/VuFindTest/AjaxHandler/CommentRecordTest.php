@@ -32,6 +32,7 @@ use VuFind\AjaxHandler\CommentRecordFactory;
 use VuFind\Config\AccountCapabilities;
 use VuFind\Db\Row\Resource;
 use VuFind\Db\Row\User;
+use VuFind\Db\Service\ResourceService;
 use VuFind\Db\Table\Resource as ResourceTable;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\RecordDriver\DefaultRecord;
@@ -61,6 +62,8 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTest
         // managers:
         $this->container
             ->set(\VuFind\Db\Table\PluginManager::class, $this->container);
+        $this->container
+            ->set(\VuFind\Db\Service\PluginManager::class, $this->container);
         $this->container->set('ControllerPluginManager', $this->container);
 
         // Set up auth manager with user:
@@ -83,16 +86,18 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTest
      * Return a mock resource row that expects a specific user and comment.
      *
      * @param string $comment Comment to expect
-     * @param User   $user    User to expect
+     * @param int    $user    User to expect
      *
      * @return Resource
      */
     protected function getMockResource($comment, $user)
     {
-        $row = $this->container->createMock(Resource::class, ['addComment']);
-        $row->expects($this->once())->method('addComment')
-            ->with($this->equalTo($comment), $this->equalTo($user))
+        $row = $this->container->createMock(Resource::class);
+        $resourceService = $this->container->createMock(ResourceService::class);
+        $resourceService ->expects($this->once())->method('addComment')
+            ->with($this->equalTo($comment), $this->equalTo($user), $this->anything())
             ->will($this->returnValue(true));
+        $this->container->set(ResourceService::class, $resourceService);
         return $row;
     }
 
@@ -154,7 +159,7 @@ class CommentRecordTest extends \VuFindTest\Unit\AjaxHandlerTest
             ->createMock(ResourceTable::class, ['findResource']);
         $table->expects($this->once())->method('findResource')
             ->with($this->equalTo('foo'), $this->equalTo('Solr'))
-            ->will($this->returnValue($this->getMockResource('bar', $user)));
+            ->will($this->returnValue($this->getMockResource('bar', $user->id)));
         $this->container->set(ResourceTable::class, $table);
 
         $driver = $this->getMockBuilder(DefaultRecord::class)->getMock();

@@ -2,23 +2,24 @@
 <?php if (empty($comments) || count($comments) == 0): ?>
   <div class="alert alert-info"><?=$this->transEsc('Be the first to leave a comment')?>!</div>
 <?php else: ?>
-  <?php foreach ($comments as $comment): ?>
+  <?php foreach ($comments as $commentRow): ?>
+    <?php [0 => $comment, 'firstname' => $firstname, 'lastname' => $lastname] = $commentRow; ?>
     <div class="comment">
       <div class="comment-name">
-        <strong><?=null === $comment->user_id ? $this->transEsc('comment_anonymous_user') : $this->escapeHtml(trim($comment->firstname . ' ' . $comment->lastname))?></strong><br/>
+        <strong><?=null === $comment->getUser()->getId() ? $this->transEsc('comment_anonymous_user') : $this->escapeHtml(trim($firstname . ' ' . $lastname))?></strong><br/>
         <small>
-          <?=$this->escapeHtml($comment->created)?>
-          <?php if (($user = $this->auth()->isLoggedIn()) && $comment->user_id == $user->id): ?>
-            <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'DeleteComment', ['delete' => $comment->id]))?>" id="recordComment<?=$this->escapeHtml($comment->id)?>" class="delete"><?=$this->transEsc('Delete')?></a>
+          <?=$this->escapeHtml($comment->getCreated()->format('Y-m-d H:i:s'))?>
+          <?php if (($user = $this->auth()->isLoggedIn()) && $comment->getUser()->getId() == $user->id): ?>
+            <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'DeleteComment', ['delete' => $comment->getId()]))?>" id="recordComment<?=$this->escapeHtml($comment->getId())?>" class="delete"><?=$this->transEsc('Delete')?></a>
           <?php endif; ?>
         </small>
       </div>
       <div class="comment-text">
-        <?=$this->escapeHtml($comment->comment)?>
+        <?=$this->escapeHtml($comment->getComment())?>
       </div>
       <?php if ($this->driver->isRatingAllowed()): ?>
         <div class="comment-rating">
-          <?php $ratingData = $this->driver->getRatingData($comment->user_id); ?>
+          <?php $ratingData = $this->driver->getRatingData($comment->getUser()->getId()); ?>
           <?php if ($ratingData['count']): ?>
             <?=$this->render('Helpers/star-rating.phtml', ['readonly' => true, 'ratingData' => $ratingData]);?>
           <?php endif; ?>

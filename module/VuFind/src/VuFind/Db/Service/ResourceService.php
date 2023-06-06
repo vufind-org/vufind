@@ -27,7 +27,10 @@
  */
 namespace VuFind\Db\Service;
 
+use Laminas\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\Resource;
+use VuFind\Exception\LoginRequired as LoginRequiredException;
+use VuFind\Log\LoggerAwareTrait;
 
 /**
  * Database service for resource.
@@ -39,7 +42,11 @@ use VuFind\Db\Entity\Resource;
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 class ResourceService extends AbstractService
+    implements \VuFind\Db\Service\ServiceAwareInterface, LoggerAwareInterface
 {
+    use \VuFind\Db\Service\ServiceAwareTrait;
+    use LoggerAwareTrait;
+
     /**
      * Look up a row for the specified resource.
      *
@@ -69,5 +76,66 @@ class ResourceService extends AbstractService
         $result = $query->getResult();
 
         return current($result);
+    }
+
+    /**
+     * Add a comment to the current resource.
+     *
+     * @param string                         $comment  The comment to save.
+     * @param int|\VuFind\Db\Entity\User     $user     User object or identifier
+     * @param int|\VuFind\Db\Entity\Resource $resource Resource object or identifier
+     *
+     * @throws LoginRequiredException
+     * @return int
+     */
+    public function addComment($comment, $user, $resource)
+    {
+        if (null === $user) {
+            throw new LoginRequiredException(
+                "Can't add comments without logging in."
+            );
+        }
+        if (is_int($user)) {
+            $userVal = $this->getDbService(\VuFind\Db\Service\UserService::class)
+                ->getUserById($user);
+        } else {
+            $userVal = $user;
+        }
+        $commentsService = $this->getDbService(
+            \VuFind\Db\Service\CommentsService::class
+        );
+        $resourceVal = is_int($resource) ? $this->getResourceById($resource)
+            : $resource;
+        $now = new \DateTime();
+        $data = $commentsService->createEntity()
+            ->setUser($userVal)
+            ->setComment($comment)
+            ->setCreated($now)
+            ->setResource($resourceVal);
+
+        try {
+            $commentsService->persistEntity($data);
+        } catch (\Exception $e) {
+            $this->logError('Could not save comment: ' . $e->getMessage());
+            return false;
+        }
+
+        return $data->getId();
+    }
+
+    /**
+     * Lookup and return a resource.
+     *
+     * @param int $id id value
+     *
+     * @return Resource
+     */
+    public function getResourceById($id)
+    {
+        $resource = $this->entityManager->find(
+            $this->getEntityClass(\VuFind\Db\Entity\Resource::class),
+            $id
+        );
+        return $resource;
     }
 }

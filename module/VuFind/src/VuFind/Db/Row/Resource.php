@@ -135,33 +135,6 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
     }
 
     /**
-     * Add a comment to the current resource.
-     *
-     * @param string              $comment The comment to save.
-     * @param \VuFind\Db\Row\User $user    The user posting the comment.
-     *
-     * @throws LoginRequiredException
-     * @return int                         ID of newly-created comment.
-     */
-    public function addComment($comment, $user)
-    {
-        if (!isset($user->id)) {
-            throw new LoginRequiredException(
-                "Can't add comments without logging in."
-            );
-        }
-
-        $table = $this->getDbTable('Comments');
-        $row = $table->createRow();
-        $row->user_id = $user->id;
-        $row->resource_id = $this->id;
-        $row->comment = $comment;
-        $row->created = date('Y-m-d H:i:s');
-        $row->save();
-        return $row->id;
-    }
-
-    /**
      * Add or update user's rating for the current resource.
      *
      * @param int  $userId User ID

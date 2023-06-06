@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -31,6 +31,7 @@ use Laminas\Mvc\Controller\Plugin\Params;
 use VuFind\Config\AccountCapabilities;
 use VuFind\Controller\Plugin\Captcha;
 use VuFind\Db\Row\User;
+use VuFind\Db\Service\ResourceService;
 use VuFind\Db\Table\Resource;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Loader as RecordLoader;
@@ -54,6 +55,13 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
      * @var Resource
      */
     protected $table;
+
+    /**
+     * Resource database service
+     *
+     * @var \VuFind\Db\Service\ResourceService
+     */
+    protected $resourceService;
 
     /**
      * Captcha controller plugin
@@ -93,15 +101,17 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
     /**
      * Constructor
      *
-     * @param Resource            $table   Resource database table
-     * @param Captcha             $captcha Captcha controller plugin
-     * @param User|bool           $user    Logged in user (or false)
-     * @param bool                $enabled Are comments enabled?
-     * @param RecordLoader        $loader  Record loader
-     * @param AccountCapabilities $ac      Account capabilities helper
+     * @param Resource            $table           Resource database table
+     * @param ResourceService     $resourceService Resource database service
+     * @param Captcha             $captcha         Captcha controller plugin
+     * @param User|bool           $user            Logged in user (or false)
+     * @param bool                $enabled         Are comments enabled?
+     * @param RecordLoader        $loader          Record loader
+     * @param AccountCapabilities $ac              Account capabilities helper
      */
     public function __construct(
         Resource $table,
+        ResourceService $resourceService,
         Captcha $captcha,
         $user,
         $enabled,
@@ -109,6 +119,7 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
         AccountCapabilities $ac
     ) {
         $this->table = $table;
+        $this->resourceService = $resourceService;
         $this->captcha = $captcha;
         $this->user = $user;
         $this->enabled = $enabled;
@@ -174,7 +185,11 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
         }
 
         $resource = $this->table->findResource($id, $source);
-        $commentId = $resource->addComment($comment, $this->user);
+        $commentId = $this->resourceService->addComment(
+            $comment,
+            $this->user->id,
+            $resource->id
+        );
 
         $rating = $params->fromPost('rating', '');
         if ($driver->isRatingAllowed()

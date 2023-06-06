@@ -4,7 +4,7 @@
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -162,7 +162,10 @@ class AbstractRecord extends AbstractBase
                 true,
                 $driver
             );
-            $resource->addComment($comment, $user);
+            $resourceService = $this->getDbService(
+                \VuFind\Db\Service\ResourceService::class
+            );
+            $resourceService->addComment($comment, $user->id, $resource->id);
 
             // Save rating if allowed:
             if ($driver->isRatingAllowed()
@@ -196,8 +199,11 @@ class AbstractRecord extends AbstractBase
             return $this->forceLogin();
         }
         $id = $this->params()->fromQuery('delete');
-        $table = $this->getTable('Comments');
-        if (null !== $id && $table->deleteIfOwnedByUser($id, $user)) {
+
+        $commentsService = $this->getDbService(
+            \VuFind\Db\Service\CommentsService::class
+        );
+        if (null !== $id && $commentsService->deleteIfOwnedByUser($id, $user->id)) {
             $this->flashMessenger()->addMessage('delete_comment_success', 'success');
         } else {
             $this->flashMessenger()->addMessage('delete_comment_failure', 'error');
