@@ -33,7 +33,6 @@ use Laminas\EventManager\Event;
 use VuFind\Search\Solr\InjectHighlightingListener;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\Connector;
-use VuFindSearch\Backend\Solr\HandlerMap;
 use VuFindSearch\Backend\Solr\QueryBuilder;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Service;
