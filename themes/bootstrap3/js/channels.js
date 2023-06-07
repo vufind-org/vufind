@@ -1,4 +1,4 @@
-/*global getUrlRoot, VuFind */
+/*global getUrlRoot, Splide, VuFind */
 VuFind.register('channels', function Channels() {
   function addLinkButtons(elem) {
     var links;
