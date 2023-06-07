@@ -1,7 +1,6 @@
 <?php
-  $this->headLink()->appendStylesheet('vendor/slick.css');
-  $this->headLink()->appendStylesheet('vendor/slick-theme.css');
-  $this->headScript()->appendFile('vendor/slick.min.js');
+  $this->headLink()->appendStylesheet('vendor/splide.min.css');
+  $this->headScript()->appendFile('vendor/splide.min.js');
   $this->headScript()->appendFile('channels.js');
   $this->jsTranslations()->addStrings([
     'channel_browse' => 'channel_browse',
@@ -56,17 +55,23 @@
       </div>
     <?php endif; ?>
 
-    <div id="<?=$channelID ?>" class="channel" data-group="<?=$groupId ?>" data-link-json='<?=empty($channel['links']) ? '[]' : $this->htmlSafeJsonEncode($channel['links']) ?>'>
+    <div id="<?=$channelID ?>" class="channel splide" data-group="<?=$groupId ?>" data-link-json='<?=empty($channel['links']) ? '[]' : $this->htmlSafeJsonEncode($channel['links']) ?>'>
       <!-- Wrapper for slides -->
-      <?php foreach ($channel['contents'] as $index => $item): ?>
-        <?php $url = empty($item['routeDetails']) ? $this->recordLinker()->getUrl("{$item['source']}|{$item['id']}") : $this->url($item['routeDetails']['route'], $item['routeDetails']['params']); ?>
-        <a href="<?=$this->escapeHtmlAttr($url)?>" class="channel-record slide hidden" data-record-id="<?=$this->escapeHtmlAttr($item['id']) ?>" data-record-source="<?=$item['source'] ?>" title="<?=$this->escapeHtml($item['title'])?>">
-          <div class="thumb">
-            <img <?=$index < 6 ? "src" : "src=\"#\" data-lazy" ?>="<?=$this->escapeHtmlAttr($item['thumbnail'] ? $item['thumbnail'] : $this->url('cover-unavailable'))?>" alt="">
-          </div>
-          <p class="channel-record-title"><?=$this->escapeHtml($item['title'])?></p>
-        </a>
-      <?php endforeach; ?>
+      <div class="splide__track">
+        <ul class="splide__list">
+          <?php foreach ($channel['contents'] as $index => $item): ?>
+            <li class="splide__slide">
+              <?php $url = empty($item['routeDetails']) ? $this->recordLinker()->getUrl("{$item['source']}|{$item['id']}") : $this->url($item['routeDetails']['route'], $item['routeDetails']['params']); ?>
+              <a href="<?=$this->escapeHtmlAttr($url)?>" class="channel-record slide hidden" data-record-id="<?=$this->escapeHtmlAttr($item['id']) ?>" data-record-source="<?=$item['source'] ?>" title="<?=$this->escapeHtml($item['title'])?>">
+                <div class="thumb">
+                  <img <?=$index < 6 ? "src" : "src=\"#\" data-splide-lazy" ?>="<?=$this->escapeHtmlAttr($item['thumbnail'] ? $item['thumbnail'] : $this->url('cover-unavailable'))?>" alt="">
+                </div>
+                <p class="channel-record-title"><?=$this->escapeHtml($item['title'])?></p>
+              </a>
+            </li>
+          <?php endforeach; ?>
+        </ul>
+      </div>
     </div>
   </div>
 <?php endforeach; ?>

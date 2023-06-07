@@ -76,32 +76,29 @@ VuFind.register('channels', function Channels() {
   }
 
   function setupChannelSlider(i, op) {
-    $(op).find(".slide").removeClass("hidden");
-    $(op).slick({
-      slidesToShow: 6,
-      slidesToScroll: 6,
-      infinite: false,
-      rtl: $(document.body).hasClass("rtl"),
-      responsive: [
-        {
-          breakpoint: 768,
-          settings: {
-            slidesToShow: 3,
-            slidesToScroll: 3
-          }
+    $(op).find(".channel-record").removeClass("hidden");
+
+    const options = {
+      perPage: 6,
+      rewind: false,
+      direction: document.body.classList.contains("rtl") ? "rtl" : "ltr",
+      lazyLoad: true,
+      breakpoints: {
+        768: {
+          perPage: 3,
         },
-        {
-          breakpoint: 480,
-          settings: {
-            slidesToShow: 1,
-            slidesToScroll: 1
-          }
-        }
-      ]
-    });
+        480: {
+          perPage: 1,
+        },
+      },
+    };
+
+    new Splide(op, options).mount();
+
     $(op).on('swipe', function channelDrag() {
       switchPopover(false);
     });
+
     $(op).find('.channel-record').off("click").on("click", function channelRecord(event) {
       var record = $(event.delegateTarget);
       if (!record.data("popover-loaded")) {
