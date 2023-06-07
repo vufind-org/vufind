@@ -29,8 +29,8 @@
 
 namespace VuFindTest\View\Helper\Root;
 
-use \VuFind\View\Helper\Root\Session;
-use \VuFind\View\Helper\Root\SessionFactory;
+use VuFind\View\Helper\Root\Session;
+use VuFind\View\Helper\Root\SessionFactory;
 
 /**
  * Session view helper Test Class
