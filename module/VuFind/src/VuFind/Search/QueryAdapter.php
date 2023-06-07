@@ -187,20 +187,21 @@ abstract class QueryAdapter
             $groupId = $matches[1];
             $group = [];
             $lastBool = null;
+            $value = (array)$value;
 
             // Loop through each term inside the group
             for ($i = 0; $i < count($value); $i++) {
                 // Ignore advanced search fields with no lookup
                 if ($value[$i] != '') {
                     // Use default fields if not set
-                    $typeArr = $request->get("type$groupId");
+                    $typeArr = (array)$request->get("type$groupId");
                     $handler = !empty($typeArr[$i]) ? $typeArr[$i] : $defaultHandler;
 
-                    $opArr = $request->get("op$groupId");
+                    $opArr = (array)$request->get("op$groupId");
                     $operator = !empty($opArr[$i]) ? $opArr[$i] : null;
 
                     // Add term to this group
-                    $boolArr = $request->get("bool$groupId");
+                    $boolArr = (array)$request->get("bool$groupId");
                     $lastBool = $boolArr[0] ?? 'AND';
                     $group[] = new Query($value[$i], $handler, $operator);
                 }
