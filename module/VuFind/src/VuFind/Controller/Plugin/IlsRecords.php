@@ -116,7 +116,7 @@ class IlsRecords extends \Laminas\Mvc\Controller\Plugin\AbstractPlugin
     public function collectRequestStats(array $records): ?array
     {
         // Collect up to date stats for ajax account notifications:
-        if (empty($this->config->Authentication->enableAjax)) {
+        if (!($this->config->Authentication->enableAjax ?? true)) {
             return null;
         }
         return $this->getRequestSummary(
