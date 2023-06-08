@@ -23,7 +23,6 @@
  * @category VuFind
  * @package  Search
  * @author   David Maus <maus@hab.de>
- * @author   Maccabee Levine <msl321@lehigh.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
@@ -103,7 +102,7 @@ class LibGuidesBackendFactory extends AbstractBackendFactory
      *
      * @return Backend
      */
-    protected function createBackend($connector)
+    protected function createBackend(Connector $connector)
     {
         $defaultSearch = $this->libGuidesConfig->General->defaultSearch ?? null;
         $backend = new Backend(
