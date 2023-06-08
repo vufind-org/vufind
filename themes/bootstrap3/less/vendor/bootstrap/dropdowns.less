@@ -63,20 +63,7 @@
 
   // Links within the dropdown menu
   > li > a {
-    display: block;
-    padding: 3px 20px;
-    clear: both;
-    font-weight: 400;
-    line-height: @line-height-base;
-    color: @dropdown-link-color;
-    white-space: nowrap; // prevent links from randomly breaking onto new lines
-
-    &:hover,
-    &:focus {
-      color: @dropdown-link-hover-color;
-      text-decoration: none;
-      background-color: @dropdown-link-hover-bg;
-    }
+    @include dropdown-menu-ul-links;
   }
 }
 
