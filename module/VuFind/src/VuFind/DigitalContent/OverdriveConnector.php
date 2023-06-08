@@ -1,7 +1,6 @@
 <?php
-
 /**
- * PHP version 8
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -27,7 +26,6 @@
  *           License
  * @link     https://vufind.org/wiki/development Wiki
  */
-
 namespace VuFind\DigitalContent;
 
 use Exception;
@@ -88,7 +86,9 @@ class OverdriveConnector implements
     protected $recordConfig;
 
     /**
-     * Main VuFind configuration
+     * Record Config
+     *
+     * Overdrive configurations
      *
      * @var Config
      */
@@ -205,17 +205,17 @@ class OverdriveConnector implements
 
                 if ($conf->noAccessString) {
                     if (
-                        str_contains(
+                        strpos(
                             $this->getSessionContainer()->odAccessMessage,
                             $conf->noAccessString
-                        )
+                        ) !== false
                     ) {
                         // This user should not have access to OD
                         $result->code = "od_account_noaccess";
                     }
                 }
-                // odAccessMessage is set in the session by the API call above
-                // maybe it should be saved to a class property instead
+                //odAccessMessage is set in the session by the API call above
+                //maybe it should be saved to a class property instead
                 $result->msg = $this->getSessionContainer()->odAccessMessage;
                 $this->getSessionContainer()->odAccess = $result;
             }
@@ -262,7 +262,7 @@ class OverdriveConnector implements
             $availabilityUrl .= "$overDriveId/availability";
             $res = $this->callUrl($availabilityUrl);
 
-            if (isset($res->errorCode) and $res->errorCode == "NotFound") {
+            if ($res->errorCode == "NotFound") {
                 if ($conf->consortiumSupport && !$this->getUser()) {
                     // Consortium support is turned on but user is not logged in;
                     // if the title is not found it probably means that it's only
@@ -275,9 +275,6 @@ class OverdriveConnector implements
                 }
             } else {
                 $result->status = true;
-                $res->copiesAvailable = $res->copiesAvailable ?? 0;
-                $res->copiesOwned = $res->copiesOwned ?? 0;
-                $res->numberOfHolds = $res->numberOfHolds ?? 0;
                 $result->data = $res;
             }
         }
@@ -328,7 +325,7 @@ class OverdriveConnector implements
             if (!$res) {
                 $result->code = 'od_code_connection_failed';
             } else {
-                if ((isset($res->errorCode) and $res->errorCode == "NotFound") or $res->totalItems == 0) {
+                if ($res->errorCode == "NotFound" || $res->totalItems == 0) {
                     if ($loginRequired) {
                         // Consortium support is turned on but user is not logged in.
                         // If the title is not found it could mean that it's only
@@ -343,9 +340,6 @@ class OverdriveConnector implements
                     $result->status = true;
                     foreach ($res->availability as $item) {
                         $this->debug("item:" . print_r($item, true));
-                        $item->copiesAvailable = $item->copiesAvailable ?? 0;
-                        $item->copiesOwned = $item->copiesOwned ?? 0;
-                        $item->numberOfHolds = $item->numberOfHolds ?? 0;
                         $result->data[strtolower($item->reserveId)] = $item;
                     }
                     // Now look for items not returned
@@ -367,9 +361,9 @@ class OverdriveConnector implements
     }
 
     /**
-     * Get Collection Token
+     * Get Colllection Token
      *
-     * Gets the collection token for the Overdrive collection. The collection
+     * Gets the colleciton token for the Overdrive collection. The collection
      * token doesn't change much but according to
      * the OD API docs it could change and should be retrieved each session.
      * Also, the collection token depends on the user if the user is in a
@@ -438,7 +432,7 @@ class OverdriveConnector implements
 
         $this->debug("doOverdriveCheckout: overdriveID: " . $overDriveId);
         if (!$user = $this->getUser()) {
-            $this->error("Checkout - user is not logged in", [], true);
+            $this->error("user is not logged in", false, true);
             return $result;
         }
         if ($config = $this->getConfig()) {
@@ -464,7 +458,6 @@ class OverdriveConnector implements
                         );
                     }
                     $result->status = true;
-                    $result->data = (object) [];
                     $result->data->expires = $expires;
                     $result->data->formats = $response->formats;
                     // Add the checkout to the session cache
@@ -483,18 +476,16 @@ class OverdriveConnector implements
      * Places a hold on an item within OverDrive
      *
      * @param string $overDriveId The overdrive id for the title
-     * @param string $email       The email overdrive should use for notif
+     * @param string $email The email overdrive should use for notif
      *
      * @return \stdClass Object with result
      */
     public function placeOverDriveHold($overDriveId, $email)
     {
-        $overDriveId = strtoupper($overDriveId);
         $this->debug("placeOverdriveHold");
         $holdResult = $this->getResultObject();
-
         if (!$user = $this->getUser()) {
-            $this->error("user is not logged in (hold)", [], true);
+            $this->error("user is not logged in", false, true);
             return $holdResult;
         }
 
@@ -513,7 +504,7 @@ class OverdriveConnector implements
                 $user["cat_password"],
                 $url,
                 $params,
-                $action
+                "POST"
             );
 
             if (!empty($response)) {
@@ -536,7 +527,7 @@ class OverdriveConnector implements
      * Updates the email address for a hold on an item within OverDrive
      *
      * @param string $overDriveId The overdrive id for the title
-     * @param string $email       The email overdrive should use for notif
+     * @param string $email The email overdrive should use for notif
      *
      * @return \stdClass Object with result
      */
@@ -569,7 +560,7 @@ class OverdriveConnector implements
                 $action
             );
 
-            // Because this is a DELETE Call, we are just looking for a boolean
+            //because this is a PUT Call, we are just looking for a boolean
             if ($response) {
                 $holdResult->status = true;
             } else {
@@ -583,11 +574,11 @@ class OverdriveConnector implements
      * Suspend Hold
      * Suspend an existing Overdrive Hold
      *
-     * @param string $overDriveId    The overdrive id for the title
-     * @param string $email          The email overdrive should use for notif
-     * @param string $suspensionType indefinite or limited
-     * @param int    $numberOfDays   number of days to suspend the hold
+     * @param string $overDriveId The overdrive id for the title
      *
+     * @param string $email The email overdrive should use for notif
+     * @param string $suspensionType indefinite or limited
+     * @param int $numberOfDays number of days to suspend the hold
      * @return \stdClass Object with result
      */
     public function suspendHold($overDriveId, $email, $suspensionType = "indefinite", $numberOfDays = 7)
@@ -611,8 +602,7 @@ class OverdriveConnector implements
             }
 
             $response = $this->callPatronUrl(
-                $user["cat_username"],
-                $user["cat_password"],
+                $user["cat_username"], $user["cat_password"],
                 $url,
                 $params,
                 $action
@@ -636,10 +626,10 @@ class OverdriveConnector implements
      * Edit Suspended Hold
      * Change the redelivery date on an already suspended hold
      *
-     * @param string $overDriveId    The overdrive id for the title
-     * @param string $email          The email overdrive should use for notif
+     * @param string $overDriveId The overdrive id for the title
+     * @param string $email The email overdrive should use for notif
      * @param string $suspensionType indefinite or limited
-     * @param int    $numberOfDays   number of days to suspend the hold
+     * @param int $numberOfDays number of days to suspend the hold
      *
      * @return \stdClass Object with result
      */
@@ -664,14 +654,13 @@ class OverdriveConnector implements
             }
 
             $response = $this->callPatronUrl(
-                $user["cat_username"],
-                $user["cat_password"],
+                $user["cat_username"], $user["cat_password"],
                 $url,
                 $params,
                 $action
             );
 
-            // because this is a PUT Call, we are just looking for a boolean
+            //because this is a PUT Call, we are just looking for a boolean
             if ($response) {
                 $holdResult->status = true;
             } else {
@@ -702,14 +691,13 @@ class OverdriveConnector implements
             $url = $config->circURL . "/v1/patrons/me/holds/$overDriveId/suspension";
             $action = "DELETE";
             $response = $this->callPatronUrl(
-                $user["cat_username"],
-                $user["cat_password"],
+                $user["cat_username"], $user["cat_password"],
                 $url,
                 null,
                 $action
             );
 
-            // because this is a DELETE Call, we are just looking for a boolean
+            //because this is a DELETE Call, we are just looking for a boolean
             if ($response) {
                 $holdResult->status = true;
             } else {
@@ -719,34 +707,34 @@ class OverdriveConnector implements
         return $holdResult;
     }
     /**
-     * Cancel Hold
-     * Cancel and existing Overdrive Hold
+     * Updates the email address for a hold on an item within OverDrive
      *
      * @param string $overDriveId The overdrive id for the title
+     * @param string $email       The email overdrive should use for notif
      *
      * @return \stdClass Object with result
      */
-    public function cancelHold($overDriveId)
+    public function updateOverDriveHold($overDriveId, $email)
     {
+        $overDriveId = strtoupper($overDriveId);
+        $this->debug("updateOverdriveHold");
         $holdResult = $this->getResultObject();
-        $this->debug("OverdriveConnector: cancelHold");
-        // $this->debug(print_r($user,true));
+
         if (!$user = $this->getUser()) {
             $this->error("user is not logged in (cancel hold)", [], true);
             return $holdResult;
         }
+
         if ($config = $this->getConfig()) {
             $url = $config->circURL . "/v1/patrons/me/holds/$overDriveId";
-            $action = "DELETE";
             $response = $this->callPatronUrl(
-                $user["cat_username"],
-                $user["cat_password"],
+                $user["cat_username"], $user["cat_password"],
                 $url,
-                null,
+                $params,
                 $action
             );
 
-            // because this is a DELETE Call, we are just looking for a boolean
+            // Because this is a DELETE Call, we are just looking for a boolean
             if ($response) {
                 $holdResult->status = true;
             } else {
@@ -757,8 +745,174 @@ class OverdriveConnector implements
     }
 
     /**
-     * Return Resource
-     * Return a title early.
+     * Suspend Hold
+     * Suspend an existing Overdrive Hold
+     *
+     * @param string $overDriveId    The overdrive id for the title
+     * @param string $email          The email overdrive should use for notif
+     * @param string $suspensionType indefinite or limited
+     * @param int    $numberOfDays   number of days to suspend the hold
+     *
+     * @return \stdClass Object with result
+     */
+    public function suspendHold($overDriveId, $email, $suspensionType = "indefinite", $numberOfDays = 7)
+    {
+        $result = $this->getResultObject();
+        if (!$user = $this->getUser()) {
+            $this->error("user is not logged in (susp hold)", [], true);
+            return $holdResult;
+        }
+        if ($config = $this->getConfig()) {
+            $url = $config->circURL . "/v1/patrons/me/checkouts/$resourceID";
+            $response = $this->callPatronUrl(
+                $user["cat_username"],
+                $user["cat_password"],
+                $url,
+                $params,
+                $action
+            );
+
+            if (!empty($response)) {
+                if (isset($response->holdListPosition)) {
+                    $holdResult->status = true;
+                    $holdResult->data = $response;
+                } else {
+                    $holdResult->msg = $response->message;
+                }
+            } else {
+                $holdResult->code = 'od_code_connection_failed';
+            }
+        }
+        return $holdResult;
+    }
+
+
+    public function getAuthHeader()
+    {
+        $this->debug("getAuthHeader");
+        $result = $this->getResultObject();
+        if (!$user = $this->getUser()) {
+            $this->error("user is not logged in (getauth header)", [], true);
+            return $result;
+        }
+        //todo: check result
+        $patronTokenData = $this->connectToPatronAPI(
+            $user["cat_username"],
+            $user["cat_password"],
+            $forceNewConnection = false
+        );
+        $authorizationData = $patronTokenData->token_type .
+            ' ' . $patronTokenData->access_token;
+        $header = "Authorization: $authorizationData";
+        $result->data->authheader = $header;
+        $result->status = true;
+        return $result;
+    }
+
+    /**
+     * Get Download Link for an Overdrive Resource
+     *
+     * @param string $overDriveId Overdrive ID
+     * @param string $format      Overdrive string for this format
+     * @param string $errorURL    A URL to show err if the download doesn't wk
+     *
+     * @return \stdClass Object with result
+     */
+    public function editSuspendedHold($overDriveId, $email, $suspensionType = "indefinite", $numberOfDays = 7)
+    {
+        $holdResult = $this->getResultObject();
+        $this->debug("OverdriveConnector: suspendHold");
+
+        if (!$user = $this->getUser()) {
+            $this->error("user is not logged in (edit susp hold)", [], true);
+            return $holdResult;
+        }
+        $checkout = $this->getCheckout($overDriveId, false);
+
+        // Either they are requesting a format that is always available
+        // or it is locked in and they are requesting the format that
+        // is already locked in.
+        if ($template = $this->getLinkTemplate($checkout, $format)) {
+            $this->debug("template: " . print_r($template, true));
+            $downloadLink = $template->downloadLinkV2->href;
+            $this->debug("found the link: $downloadLink");
+        } elseif (!$checkout->isFormatLockedIn) {
+            // If we get this far, and the checkout is not locked in, then we should
+            // lock it in and try again
+
+            $lockinResult = $this->lockinResource($overDriveId, $format);
+            if ($lockinResult->status) {
+                $downloadLink
+                    = $lockinResult->data->linkTemplates->downloadLink->href;
+                $this->debug("(locked in. found the link: $downloadLink");
+            } else {
+                $result->msg = $lockinResult->msg;
+            }
+        } else {
+            // The checkout is locked in but we didn't find the template
+            // for this format; means that they are requesting the wrong
+            // format for the locked-in resource.
+            $result->msg
+                = "The title appears to be already locked in for a different format";
+            $result->status = false;
+            $this->debug("locked in for another format.");
+            return $result;
+        }
+
+        if ($downloadLink) {
+            $this->debug("dll true");
+            $url = str_replace("{errorurl}", $errorURL, $downloadLink);
+            $url = str_replace("{errorpageurl}", $errorURL, $url);
+            $url = str_replace("{successurl}", $errorURL, $url);
+            $this->debug("getting download link using: $url");
+            $response = $this->callPatronUrl(
+                $user["cat_username"],
+                $user["cat_password"],
+                $dlRedirectUrl,
+                null,
+                $action
+            );
+
+            if (!empty($response)) {
+                if (isset($response->links)) {
+                    $result->status = true;
+                    $result->data->downloadLink
+                        = $response->links->contentlink->href;
+                } else {
+                    $this->debug("problem getting link:" . $response->message);
+                    $result->msg
+                        = "Could not get download link for resourceID "
+                        . "[$overDriveId]: " . $response->message;
+                }
+            } else {
+                $result->code = 'od_code_connection_failed';
+            }
+        } else {
+            $this->debug("dll false");
+        }
+        return $result;
+    }
+
+    /**
+     * Returns the link template for this format
+     *
+     * @param object $checkout The checkout object
+     * @param string $format   The name of the format to check
+     *
+     * @return bool
+     */
+    protected function getLinkTemplate($checkout, $format)
+    {
+        foreach ($checkout->formats as $f) {
+            if ($f->formatType == $format) {
+                return $f->linkTemplates;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Lock In Overdrive Resource for a particular format
      *
      * @param string $resourceID Overdrive ID of the resource
      *
@@ -895,65 +1049,6 @@ class OverdriveConnector implements
     }
 
     /**
-     * Returns permanant links for Ovedrive resources
-     *
-     * @param array $overDriveIds An array of overdrive IDs we need links for
-     *
-     * @return array<string>
-     */
-    public function getPermanentLinks($overDriveIds = [])
-    {
-        $links = [];
-        if (!$overDriveIds || count($overDriveIds) < 1) {
-            $this->logWarning("no overdrive content IDs were passed in.");
-            return [];
-        }
-        if ($conf = $this->getConfig()) {
-            $libraryURL = $conf->libraryURL;
-            $md = $this->getMetadata($overDriveIds);
-
-            foreach ($md as $item) {
-                $links[$item->id] = "$libraryURL/media/" . $item->crossRefId;
-            }
-        }
-        return $links;
-    }
-
-    /**
-     * Returns
-     *
-     * @param string $overDriveId Overdrive Identifier for magazine title
-     * @param int    $limit       maximum number of issues to retrieve (default 100)
-     * @param int    $offset      page of results (default 0)
-     *
-     * @return object results of metadata fetch
-     */
-    public function getMagazineIssues($overDriveId = false, $limit = 100, $offset = 0)
-    {
-        $this->debug("get Overdrive Magazine Issues: $overDriveId");
-        $result = $this->getResultObject();
-        if (!$overDriveId) {
-            $this->logWarning("no overdrive content ID was passed in.");
-            $result->msg = "no overdrive content ID was passed in.";
-            return $result;
-        }
-        if ($conf = $this->getConfig()) {
-            $libraryURL = $conf->libraryURL;
-            $productsKey = $this->getCollectionToken();
-            $baseUrl = $conf->discURL;
-            $issuesURL = "$baseUrl/v1/collections/$productsKey/products/$overDriveId/issues";
-            $issuesURL .= "?limit=$limit&offset=$offset";
-            $response = $this->callUrl($issuesURL);
-            if ($response) {
-                $result->status = true;
-                $result->data = (object) [];
-                $result->data = $response;
-            }
-        }
-        return $result;
-    }
-
-    /**
      * Returns a hash of metadata keyed on overdrive reserveID
      *
      * @param array $overDriveIds Set of Overdrive IDs
@@ -987,36 +1082,6 @@ class OverdriveConnector implements
         }
         return $metadata;
     }
-
-    /**
-     * For  array of titles passed in this will return the same array
-     * with metadata attached to the records with the property name of 'metadata'
-     *
-     * @param array $overDriveTitles Assoc array of objects with OD IDs as keys (generally what
-     * you get from getCheckouts and getHolds)
-     *
-     * @return array inital array with results of metadata attached as "metadata" property
-     *
-     * @todo if more tan 25 passed in, make multiple calls
-     */
-    public function getMetadataForTitles($overDriveTitles = [])
-    {
-        if (!$overDriveTitles || count($overDriveTitles) < 1) {
-            $this->logWarning("getMetadataForTitles - no overdrive content was passed in.");
-            return [];
-        }
-        $metadata = $this->getMetadata(array_column($overDriveTitles, 'reserveId', 'reserveId'));
-        foreach ($overDriveTitles as &$title) {
-            $id = $title->reserveId;
-            if (!isset($metadata[strtolower($id)])) {
-                $this->logWarning("no metadata found for " . strtolower($id));
-            } else {
-                $title->metadata = $metadata[strtolower($id)];
-            }
-        }
-        return $overDriveTitles;
-    }
-
 
     /**
      * Get Overdrive Checkout
@@ -1115,26 +1180,19 @@ class OverdriveConnector implements
                 if (!empty($response)) {
                     $result->status = true;
                     $result->message = '';
-                    if (isset($response->checkouts)) {
-                        // get the metadata for these so we can check for magazines.
-                        $result->data = (object) [];
-                        $result->data = $this->getMetadataForTitles($response->checkouts);
-
-                        foreach ($response->checkouts as $key => $checkout) {
-                            // Convert dates to desired format
-                            $coExpires = new \DateTime($checkout->expires);
-                            $result->data[$key]->expires = $coExpires->format(
-                                $config->displayDateFormat
-                            );
-                            $result->data[$key]->isReturnable
-                                = !$checkout->isFormatLockedIn;
-                        }
-                        $this->getSessionContainer()->checkouts
-                            = $response->checkouts;
-                    } else {
-                        $result->data = [];
-                        $this->getSessionContainer()->checkouts = false;
+                    $result->data = $response->checkouts;
+                    // Convert dates to desired format
+                    foreach ($response->checkouts as $key => $checkout) {
+                        $coExpires = new \DateTime($checkout->expires);
+                        $result->data[$key]->expires = $coExpires->format(
+                            $config->displayDateFormat
+                        );
+                        $result->data[$key]->isReturnable
+                            = !$checkout->isFormatLockedIn;
                     }
+
+                    $this->getSessionContainer()->checkouts
+                        = $response->checkouts;
                 } else {
                     $accessResult = $this->getAccess();
                     return $accessResult;
@@ -1155,8 +1213,7 @@ class OverdriveConnector implements
      *
      * @param bool $refresh Whether or not to ignore cache and get latest
      *
-     * @return \stdClass Results of the call. the data property will be set
-     *     to an empty array if there are no  holds.
+     * @return \stdClass Results of the call
      */
     public function getHolds($refresh = true)
     {
@@ -1184,47 +1241,28 @@ class OverdriveConnector implements
                 if (!empty($response)) {
                     $result->status = true;
                     $result->message = 'hold_place_success_html';
-
-
-                    if (isset($response->holds)) {
-                        $result->data = [];
-                        $result->data = $response->holds;
-                        // Check for holds ready for chechout
-                        foreach ($response->holds as $key => $hold) {
-                            // check for hold suspension
-                            if (isset($hold->holdSupension)) {
-                                $result->data[$key]->holdSupension = $hold->holdSupension;
-                            } else {
-                                $result->data[$key]->holdSupension = false;
-                            }
-                            // check if ready for checkout
-                            foreach ($hold->actions as $action => $value) {
-                                if ($action == "checkout") {
-                                    $result->data[$key]->holdReadyForCheckout = true;
-                                    $this->debug("hold ready for checkout");
-                                    // format the expires date.
-                                    $holdExpires = new \DateTime($hold->holdExpires);
-                                    $result->data[$key]->holdExpires
-                                        = $holdExpires->format(
-                                            (string) $config->displayDateFormat
-                                        );
-                                } else {
-                                    $result->data[$key]->holdReadyForCheckout = false;
-                                }
-                            }
-
-                            $holdPlacedDate = new \DateTime($hold->holdPlacedDate);
-                            $result->data[$key]->holdPlacedDate
-                                = $holdPlacedDate->format(
-                                    (string) $config->displayDateFormat
+                    $result->data = $response->holds;
+                    // Check for holds ready for chechout
+                    foreach ($response->holds as $key => $hold) {
+                        if (
+                            !$hold->autoCheckout
+                            && $hold->holdListPosition == 1
+                        ) {
+                            $result->data[$key]->holdReadyForCheckout = true;
+                            // format the expires date.
+                            $holdExpires = new \DateTime($hold->holdExpires);
+                            $result->data[$key]->holdExpires
+                                = $holdExpires->format(
+                                    (string)$config->displayDateFormat
                                 );
-                        } // end foreach
-                        $this->getSessionContainer()->holds = $response->holds;
-                    } else {
-                        // no holds found for this patron
-                        $result->data = [];
-                        $this->getSessionContainer()->holds;
+                        }
+                        $holdPlacedDate = new \DateTime($hold->holdPlacedDate);
+                        $result->data[$key]->holdPlacedDate
+                            = $holdPlacedDate->format(
+                                (string)$config->displayDateFormat
+                            );
                     }
+                    $this->getSessionContainer()->holds = $response->holds;
                 } else {
                     $result->code = 'od_code_connection_failed';
                 }
@@ -1271,21 +1309,17 @@ class OverdriveConnector implements
                 return false;
             }
             if ($headers === null) {
-                $headers = [];
-                if (
-                    isset($tokenData->token_type)
-                    && isset($tokenData->access_token)
-                ) {
-                    $headers[] = "Authorization: {$tokenData->token_type} "
-                        . $tokenData->access_token;
-                }
-                $headers[] = "User-Agent: VuFind";
+                $headers = [
+                    "Authorization: {$tokenData->token_type} " .
+                    "{$tokenData->access_token}",
+                    "User-Agent: VuFind"
+                ];
             }
             $client->setHeaders($headers);
             $client->setMethod($requestType);
             $client->setUri($url);
             try {
-                // throw new Exception('testException');
+                //throw new Exception('testException');
                 $response = $client->send();
             } catch (Exception $ex) {
                 $this->error(
@@ -1312,7 +1346,7 @@ class OverdriveConnector implements
             );
             if ($returnVal != null) {
                 if (isset($returnVal->errorCode)) {
-                    // In some cases, this should be returned perhaps...
+                    //In some cases, this should be returned perhaps...
                     $this->error("Overdrive Error: " . $returnVal->errorCode);
                     return $returnVal;
                 } else {
@@ -1389,12 +1423,12 @@ class OverdriveConnector implements
             );
             if ($tokenData != null) {
                 if (isset($tokenData->errorCode)) {
-                    // In some cases, this should be returned perhaps...
+                    //In some cases, this should be returned perhaps...
                     $this->error("Overdrive Error: " . $tokenData->errorCode);
                     return false;
                 } else {
                     $tokenData->expirationTime = time()
-                        + ($tokenData->expires_in ?? 0);
+                        + $tokenData->expires_in;
                     $this->getSessionContainer()->tokenData = $tokenData;
                     return $tokenData;
                 }
@@ -1421,12 +1455,10 @@ class OverdriveConnector implements
      * @param string $url           The url to call
      * @param array  $params        parameters to call
      * @param string $requestType   HTTP request type (default=GET)
-     * @param string $returnType    options are json(def),body,redirect
      *
      * @return object|bool The json response from the API call
-     *  Converted to an object. If body is specified, the raw body is returned.
-     *  If redirect, then it returns the URL specified in the redirect header.
-     *  If the call fails at the HTTP level then the error is logged and false is returned.
+     *  converted to an object. If the call fails at the
+     *  HTTP level then the error is logged and false is returned.
      */
     protected function callPatronUrl(
         $patronBarcode,
@@ -1498,24 +1530,8 @@ class OverdriveConnector implements
                 }
             }
 
-            if ($returnType == "body") {
-                // probably need to check for return status
-                return $body;
-            } elseif ($returnType == "redirect") {
-                $headers = $response->getHeaders();
-                if ($headers->has('location')) {
-                    $loc = $headers->get('location');
-                    $uri = $loc->getUri();
-                    return $uri;
-                } else {
-                    $this->error(
-                        "Overdrive Error: returnType is redirect but no redirect found."
-                    );
-                    return false;
-                }
-            } else {
-                $returnVal = json_decode($body);
-                $this->debug("response from call: " . print_r($returnVal, true));
+            $returnVal = json_decode($body);
+            $this->debug("response from call: " . print_r($returnVal, true));
 
                 if ($returnVal != null) {
                     if (
@@ -1655,12 +1671,6 @@ class OverdriveConnector implements
             $this->client->setOptions(['keepalive', true]);
         }
         $this->client->resetParameters();
-        // set keep alive to true since we are sending to the same server
-        $options = ['keepalive' => true];
-        if (!$allowRedirects) {
-            $options['maxredirects'] = 0;
-        }
-        $this->client->setOptions($options);
         return $this->client;
     }
 
@@ -1696,10 +1706,10 @@ class OverdriveConnector implements
         $conf = $this->getConfig();
         $fullKey = $this->getCacheKey($key);
         $item = $this->cache->getItem($fullKey);
+        $this->debug(
+            "pulling item from cache for key $key : " . $item['entry']
+        );
         if (null !== $item) {
-            $this->debug(
-                "pulling item from cache for key $key : " . $item['entry']
-            );
             // Return value if still valid:
             if (time() - $item['time'] < $conf->tokenCacheLifetime) {
                 return $item['entry'];
