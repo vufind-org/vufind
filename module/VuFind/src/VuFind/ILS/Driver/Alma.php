@@ -264,7 +264,13 @@ class Alma extends AbstractBase implements
     {
         // Check location type to status mappings first since they override
         // everything else:
-        [$available, $status] = $this->getItemStatusFromLocationTypeMap($item);
+        $available = null;
+        $status = null;
+        if ($this->locationTypeToItemStatus) {
+            [$available, $status] = $this->getItemStatusFromLocationTypeMap(
+                $this->getItemLocationType($item)
+            );
+        }
 
         // Normal checks for status if no mapping found above:
         if (null === $status) {
@@ -297,40 +303,29 @@ class Alma extends AbstractBase implements
      * Given an item, return its availability and status based on location type
      * mappings.
      *
-     * @param \SimpleXMLElement $item Item data
+     * @param string $locationType Location type
      *
      * @return array Availability and status
      */
-    protected function getItemStatusFromLocationTypeMap(\SimpleXMLElement $item): array
+    protected function getItemStatusFromLocationTypeMap(string $locationType): array
     {
-        $available = null;
-        $status = null;
-        if (!$this->locationTypeToItemStatus) {
+        if (null === ($setting = $this->locationTypeToItemStatus[$locationType] ?? null)) {
             return [null, null];
         }
-
-        $locationType = $this->getItemLocationType($item);
-        if (
-            $locationType
-            && isset($this->locationTypeToItemStatus[$locationType])
-        ) {
-            $parts = explode(
-                ':',
-                $this->locationTypeToItemStatus[$locationType]
-            );
-            $status = new TranslatableString($parts[0], $parts[0]);
-            if (isset($parts[1])) {
-                switch ($parts[1]) {
-                    case 'unavailable':
-                        $available = ItemStatus::STATUS_UNAVAILABLE;
-                        break;
-                    case 'uncertain':
-                        $available = ItemStatus::STATUS_UNCERTAIN;
-                        break;
-                    default:
-                        $available = ItemStatus::STATUS_AVAILABLE;
-                        break;
-                }
+        $parts = explode(':', $setting);
+        $available = null;
+        $status = new TranslatableString($parts[0], $parts[0]);
+        if (isset($parts[1])) {
+            switch ($parts[1]) {
+                case 'unavailable':
+                    $available = ItemStatus::STATUS_UNAVAILABLE;
+                    break;
+                case 'uncertain':
+                    $available = ItemStatus::STATUS_UNCERTAIN;
+                    break;
+                default:
+                    $available = ItemStatus::STATUS_AVAILABLE;
+                    break;
             }
         }
         return [$available, $status];
@@ -1815,9 +1810,26 @@ class Alma extends AbstractBase implements
                 // Physical
                 $physicalItems = $marc->getFields('AVA');
                 foreach ($physicalItems as $field) {
-                    $avail = $marc->getSubfield($field, 'e');
+                    $available = null;
+                    $statusText = '';
+                    if ($this->locationTypeToItemStatus) {
+                        $locationCode = $marc->getSubfield($field, 'j');
+                        $library = $marc->getSubfield($field, 'b');
+                        [$available, $statusText] = $this->getItemStatusFromLocationTypeMap(
+                            $this->getLocationType($library, $locationCode)
+                        );
+                    }
+
+                    if (null === $available) {
+                        $availStr = strtolower($marc->getSubfield($field, 'e'));
+                        $available = 'available' === $availStr;
+                        // No status message available, so set it based on availability:
+                        $statusText = $available ? 'Item in place' : 'Item not in place';
+                    }
+
                     $item = $tmpl;
-                    $item['availability'] = strtolower($avail) === 'available';
+                    $item['availability'] = $available;
+                    $item['status'] = $statusText;
                     $item['location'] = $marc->getSubfield($field, 'c');
                     $item['callnumber'] = $marc->getSubfield($field, 'd');
                     $status[] = $item;

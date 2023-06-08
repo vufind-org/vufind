@@ -80,6 +80,10 @@
       $account = $this->auth()->getManager();
       if ($account->ajaxEnabled()) {
         $this->headScript()->appendFile("account_ajax.js");
+        if ($this->session()->put('reset_account_status', null)) {
+          $this->headScript()->setAllowArbitraryAttributes(true);
+          $this->headScript()->appendScript('VuFind.account.clearAllCaches();', 'text/javascript', ['data-lightbox-run' => 'always']);
+        }
       }
 
       $root = rtrim($this->url('home'), '/');

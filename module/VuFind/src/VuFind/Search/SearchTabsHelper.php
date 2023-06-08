@@ -136,7 +136,7 @@ class SearchTabsHelper extends \Laminas\View\Helper\AbstractHelper
             $filters = $this->getDefaultTabHiddenFilters($searchClassId);
         }
         return null === $filters
-            ? [] : $this->parseFilters($searchClassId, $filters);
+            ? [] : $this->parseFilters($searchClassId, (array)$filters);
     }
 
     /**
