@@ -2,7 +2,7 @@
 
 // Dropdown link styles mixin, see also vendor/bootstrap/dropdowns.less
 
-.dropdown-menu-ul-links {
+@mixin dropdown-menu-ul-links {
   display: block;
   padding: 3px 20px;
   clear: both;

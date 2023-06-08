@@ -375,7 +375,13 @@ footer {
 }
 
 .dropdown-menu > li > .prompt-text {
-  @extend .dropdown-menu > li > a;
+  /* #LESS>
+  @extend .dropdown-menu-ul-links;
+  <#LESS */
+  /* #SCSS> */
+  @include dropdown-menu-ul-links;
+  /* <#SCSS */
+
 
   white-space: inherit;
   min-width: 200px;
