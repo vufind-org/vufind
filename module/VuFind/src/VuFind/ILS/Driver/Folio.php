@@ -1712,11 +1712,16 @@ class Folio extends AbstractAPI implements
     {
         $retVal = [];
 
+        $query = [
+            'query' => 'copiedItem.instanceDiscoverySuppress==false',
+        ];
+
         // Results can be paginated, so let's loop until we've gotten everything:
         foreach (
             $this->getPagedResults(
                 'reserves',
-                '/coursereserves/reserves'
+                '/coursereserves/reserves',
+                $query
             ) as $item
         ) {
             $idProperty = $this->getBibIdType() === 'hrid'
