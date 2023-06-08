@@ -42,6 +42,8 @@ namespace VuFind\Search\LibGuidesAZ;
  */
 class Options extends \VuFind\Search\LibGuides\Options
 {
+    protected string $iniName = 'LibGuidesAZ';
+
     /**
      * Return the route name for the search results action.
      *
