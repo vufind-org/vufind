@@ -30,6 +30,7 @@
 
 namespace VuFind\Search\Factory;
 
+use Psr\Container\ContainerInterface;
 use VuFindSearch\Backend\LibGuides\Backend;
 use VuFindSearch\Backend\LibGuides\Connector;
 use VuFindSearch\Backend\LibGuides\QueryBuilder;
@@ -44,7 +45,7 @@ use VuFindSearch\Backend\LibGuides\Response\RecordCollectionFactory;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class LibGuidesBackendFactory extends AbstractLibGuidesBackendFactory
+class LibGuidesBackendFactory extends AbstractBackendFactory
 {
     /**
      * Return the service name.
@@ -57,45 +58,89 @@ class LibGuidesBackendFactory extends AbstractLibGuidesBackendFactory
     }
 
     /**
-     * Instantiate the LibGuidesAZ connector.
+     * Logger.
      *
-     * @param string     $iid     Institution ID
-     * @param HttpClient $client  HTTP client
-     * @param float      $ver     API version number
-     * @param string     $baseUrl API base URL (optional)
-     *
-     * @return Connector
+     * @var \Laminas\Log\LoggerInterface
      */
-    protected function createConnectorInstance($iid, $client, $ver, $baseUrl)
+    protected $logger;
+
+    /**
+     * LibGuides configuration
+     *
+     * @var \Laminas\Config\Config
+     */
+    protected $libGuidesConfig;
+
+    /**
+     * Create service
+     *
+     * @param ContainerInterface $sm      Service manager
+     * @param string             $name    Requested service name (unused)
+     * @param array              $options Extra options (unused)
+     *
+     * @return Backend
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function __invoke(ContainerInterface $sm, $name, array $options = null)
     {
-        return new Connector($iid, $client, $ver, $baseUrl);
+        $this->setup($sm);
+        $configReader = $this->serviceLocator
+            ->get(\VuFind\Config\PluginManager::class);
+        $this->libGuidesConfig = $configReader->get($this->getServiceName());
+        if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
+            $this->logger = $this->serviceLocator->get(\VuFind\Log\Logger::class);
+        }
+        $connector = $this->createConnector();
+        $backend   = $this->createBackend($connector);
+        return $backend;
     }
 
     /**
-     * Instantiate the LibGuidesAZ backend.
+     * Create the LibGuides backend.
      *
-     * @param Connector                        $connector     LibGuides connector
-     * @param RecordCollectionFactoryInterface $factory       Record collection
-     * factory (null for default)
-     * @param string                           $defaultSearch Default search query
+     * @param Connector $connector Connector
      *
      * @return Backend
      */
-    protected function createBackendInstance($connector, $factory, $defaultSearch)
+    protected function createBackend($connector)
     {
-        return new Backend($connector, $factory, $defaultSearch);
+        $defaultSearch = $this->libGuidesConfig->General->defaultSearch ?? null;
+        $backend = new Backend(
+            $connector,
+            $this->createRecordCollectionFactory(),
+            $defaultSearch
+        );
+        $backend->setLogger($this->logger);
+        $backend->setQueryBuilder($this->createQueryBuilder());
+        return $backend;
     }
 
     /**
-     * Instantiate the LibGuidesAZ record collection factory.
+     * Create the LibGuides connector.
      *
-     * @param callback $callback Record factory callback (null for default)
-     *
-     * @return RecordCollectionFactory
+     * @return Connector
      */
-    protected function createRecordCollectionFactoryInstance($callback)
+    protected function createConnector()
     {
-        return new RecordCollectionFactory($callback);
+        // Load credentials:
+        $iid = $this->libGuidesConfig->General->iid ?? null;
+
+        // Pick version:
+        $ver = $this->libGuidesConfig->General->version ?? 1;
+
+        // Get base URI, if available:
+        $baseUrl = $this->libGuidesConfig->General->baseUrl ?? null;
+
+        // Create connector:
+        $connector = new Connector(
+            $iid,
+            $this->createHttpClient($this->libGuidesConfig->General->timeout ?? 30),
+            $ver,
+            $baseUrl
+        );
+        $connector->setLogger($this->logger);
+        return $connector;
     }
 
     /**
@@ -103,9 +148,26 @@ class LibGuidesBackendFactory extends AbstractLibGuidesBackendFactory
      *
      * @return QueryBuilder
      */
-    protected function createQueryBuilderInstance()
+    protected function createQueryBuilder()
     {
         $builder = new QueryBuilder();
         return $builder;
+    }
+
+    /**
+     * Create the record collection factory
+     *
+     * @return RecordCollectionFactory
+     */
+    protected function createRecordCollectionFactory()
+    {
+        $manager = $this->serviceLocator
+            ->get(\VuFind\RecordDriver\PluginManager::class);
+        $callback = function ($data) use ($manager) {
+            $driver = $manager->get($this->getServiceName());
+            $driver->setRawData($data);
+            return $driver;
+        };
+        return new RecordCollectionFactory($callback);
     }
 }

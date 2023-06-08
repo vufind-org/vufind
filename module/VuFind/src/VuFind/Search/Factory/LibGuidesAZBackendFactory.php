@@ -30,11 +30,6 @@
 
 namespace VuFind\Search\Factory;
 
-use VuFindSearch\Backend\LibGuides\Backend;
-use VuFindSearch\Backend\LibGuides\Connector;
-use VuFindSearch\Backend\LibGuides\QueryBuilder;
-use VuFindSearch\Backend\LibGuides\Response\RecordCollectionFactory;
-
 /**
  * Factory for LibGuides A-Z Databases backends.
  *
@@ -45,7 +40,7 @@ use VuFindSearch\Backend\LibGuides\Response\RecordCollectionFactory;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class LibGuidesAZBackendFactory extends AbstractLibGuidesBackendFactory
+class LibGuidesAZBackendFactory extends LibGuidesBackendFactory
 {
     /**
      * Return the service name.
@@ -55,62 +50,5 @@ class LibGuidesAZBackendFactory extends AbstractLibGuidesBackendFactory
     protected function getServiceName()
     {
         return 'LibGuidesAZ';
-    }
-
-    /**
-     * Instantiate the LibGuides A-Z Databases connector.
-     *
-     * @param string     $iid     Institution ID
-     * @param HttpClient $client  HTTP client
-     * @param float      $ver     API version number
-     * @param string     $baseUrl API base URL (optional)
-     *
-     * @return Connector
-     */
-    protected function createConnectorInstance($iid, $client, $ver, $baseUrl)
-    {
-        return new Connector($iid, $client, $ver, $baseUrl);
-    }
-
-    /**
-     * Instantiate the LibGuides A-Z Databases backend.
-     *
-     * @param Connector                        $connector     LibGuides connector
-     * @param RecordCollectionFactoryInterface $factory       Record collection
-     * factory (null for default)
-     * @param string                           $defaultSearch Default search query
-     *
-     * @return Backend
-     */
-    protected function createBackendInstance($connector, $factory, $defaultSearch)
-    {
-        return new Backend($connector, $factory, $defaultSearch);
-    }
-
-    /**
-     * Instantiate the LibGuides A-Z Databases record collection factory.
-     *
-     * @param callback $callback Record factory callback (null for default)
-     *
-     * @return RecordCollectionFactory
-     */
-    protected function createRecordCollectionFactoryInstance($callback)
-    {
-        return new RecordCollectionFactory($callback);
-    }
-
-    /**
-     * Instantiate the LibGuides A-Z Databases query builder.
-     *
-     * @return QueryBuilder
-     */
-    protected function createQueryBuilderInstance()
-    {
-        $builder = new QueryBuilder();
-
-        // Widget type 2 = Databases A-Z
-        $builder->setDefaultWidgetType("2");
-
-        return $builder;
     }
 }
