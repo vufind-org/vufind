@@ -2036,7 +2036,7 @@ class SierraRest extends AbstractBase implements
                 $location = '';
                 foreach ($entry['fixedFields'] as $code => $field) {
                     if (
-                        (string)$code === static::HOLDINGS_LINE_NUMBER
+                        (int)$code === static::HOLDINGS_LINE_NUMBER
                         || $field['label'] === 'LOCATION'
                     ) {
                         $location = $field['value'];
