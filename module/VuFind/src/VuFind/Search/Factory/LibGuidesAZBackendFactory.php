@@ -54,7 +54,7 @@ class LibGuidesAZBackendFactory extends LibGuidesBackendFactory
         return 'LibGuidesAZ';
     }
 
-        /**
+    /**
      * Create the LibGuides query builder.
      *
      * @return QueryBuilder
@@ -65,7 +65,7 @@ class LibGuidesAZBackendFactory extends LibGuidesBackendFactory
 
         // Widget type 2 = Databases A-Z
         $builder->setDefaultWidgetType("2");
-        
+
         return $builder;
     }
 }
