@@ -42,6 +42,11 @@ namespace VuFind\Search\LibGuidesAZ;
  */
 class Options extends \VuFind\Search\LibGuides\Options
 {
+    /**
+     * Name of .ini file to use for LibGuides API and display settings.
+     *
+     * @var string
+     */
     protected string $iniName = 'LibGuidesAZ';
 
     /**
