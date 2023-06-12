@@ -105,7 +105,9 @@ trait LiveDatabaseTrait
         $container->set(
             'doctrine.cache.filesystem',
             new \DoctrineModule\Cache\LaminasStorageCache(
-                new \Laminas\Cache\Storage\Adapter\Filesystem(compact('cacheDir'))
+                new \Laminas\Cache\Storage\Adapter\Filesystem(
+                    compact('cacheDir') + ['key_pattern' => '/^[a-z0-9_\+\-\[\]\\\\$#]*$/Di']
+                )
             )
         );
         $driverFactory = new \DoctrineModule\Service\DriverFactory('orm_default');
