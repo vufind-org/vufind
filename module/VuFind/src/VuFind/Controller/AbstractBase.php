@@ -68,7 +68,7 @@ use VuFind\I18n\Translator\TranslatorAwareTrait;
  * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
 class AbstractBase extends AbstractActionController
-    implements TranslatorAwareInterface
+implements TranslatorAwareInterface
 {
     use TranslatorAwareTrait;
 

@@ -388,24 +388,24 @@ class DbUpgrade extends AbstractPlugin
                 'updateRule' => $current->getUpdateRule()
             ];
             switch ($current->getType()) {
-            case 'FOREIGN KEY':
-                $retVal['foreign'][$current->getName()] = $fields;
-                break;
-            case 'PRIMARY KEY':
-                $retVal['primary']['primary'] = $fields;
-                break;
-            case 'UNIQUE':
-                $retVal['unique'][$current->getName()] = $fields;
-                break;
-            case 'CHECK':
-                // We don't get enough information from getConstraints() to handle
-                // CHECK constraints, so just ignore them for now:
-                break;
-            default:
-                throw new \Exception(
-                    'Unexpected constraint type: ' . $current->getType()
-                );
-                break;
+                case 'FOREIGN KEY':
+                    $retVal['foreign'][$current->getName()] = $fields;
+                    break;
+                case 'PRIMARY KEY':
+                    $retVal['primary']['primary'] = $fields;
+                    break;
+                case 'UNIQUE':
+                    $retVal['unique'][$current->getName()] = $fields;
+                    break;
+                case 'CHECK':
+                    // We don't get enough information from getConstraints() to
+                    // handle CHECK constraints, so just ignore them for now:
+                    break;
+                default:
+                    throw new \Exception(
+                        'Unexpected constraint type: ' . $current->getType()
+                    );
+                    break;
             }
         }
         return $retVal;

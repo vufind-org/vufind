@@ -42,7 +42,7 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class Citation extends \Laminas\View\Helper\AbstractHelper
-    implements TranslatorAwareInterface
+implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 

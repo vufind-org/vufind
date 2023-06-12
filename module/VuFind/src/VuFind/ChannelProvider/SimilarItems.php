@@ -45,7 +45,7 @@ use VuFindSearch\Command\SimilarCommand;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class SimilarItems extends AbstractChannelProvider
-    implements TranslatorAwareInterface
+implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 

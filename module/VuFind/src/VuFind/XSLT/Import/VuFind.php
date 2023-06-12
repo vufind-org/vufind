@@ -179,13 +179,13 @@ class VuFind
     {
         $parser = static::getParser();
         switch (strtolower($parser)) {
-        case 'aperture':
-            return static::harvestWithAperture($url);
-        case 'tika':
-            return static::harvestWithTika($url);
-        default:
-            // Ignore unrecognized parser option:
-            return '';
+            case 'aperture':
+                return static::harvestWithAperture($url);
+            case 'tika':
+                return static::harvestWithTika($url);
+            default:
+                // Ignore unrecognized parser option:
+                return '';
         }
     }
 

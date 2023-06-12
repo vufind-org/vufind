@@ -37,7 +37,7 @@ namespace VuFind\Validator;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class SessionCsrf extends \Laminas\Validator\Csrf
-    implements CsrfInterface
+implements CsrfInterface
 {
     /**
      * Keep only the most recent N tokens.

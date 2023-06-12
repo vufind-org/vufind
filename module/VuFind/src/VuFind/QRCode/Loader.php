@@ -138,19 +138,19 @@ class Loader extends \VuFind\ImageLoader
     protected function mapErrorLevel($level): ErrorCorrectionLevelInterface
     {
         switch (strtoupper(substr($level, 0, 1))) {
-        case '3':
-        case 'H':
-            return new ErrorCorrectionLevelHigh();
-        case '2':
-        case 'Q':
-            return new ErrorCorrectionLevelQuartile();
-        case '1':
-        case 'M':
-            return new ErrorCorrectionLevelMedium();
-        case '0':
-        case 'L':
-        default:
-            return new ErrorCorrectionLevelLow();
+            case '3':
+            case 'H':
+                return new ErrorCorrectionLevelHigh();
+            case '2':
+            case 'Q':
+                return new ErrorCorrectionLevelQuartile();
+            case '1':
+            case 'M':
+                return new ErrorCorrectionLevelMedium();
+            case '0':
+            case 'L':
+            default:
+                return new ErrorCorrectionLevelLow();
         }
     }
 

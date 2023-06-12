@@ -295,7 +295,6 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
         if ($this->wsDefaultPickUpLocation == false) {
-
             // Select
             $sqlSelect = ["b.location LOCATION"];
 

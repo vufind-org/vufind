@@ -434,29 +434,29 @@ class SearchHandler
     protected function customMunge($string, $operation)
     {
         switch ($operation[0]) {
-        case 'append':
-            $string .= $operation[1];
-            break;
-        case 'lowercase':
-            $string = strtolower($string);
-            break;
-        case 'preg_replace':
-            $string = preg_replace(
-                $operation[1],
-                $operation[2],
-                $string
-            );
-            break;
-        case 'ucfirst':
-            $string = ucfirst($string);
-            break;
-        case 'uppercase':
-            $string = strtoupper($string);
-            break;
-        default:
-            throw new \InvalidArgumentException(
-                sprintf('Unknown munge operation: %s', $operation[0])
-            );
+            case 'append':
+                $string .= $operation[1];
+                break;
+            case 'lowercase':
+                $string = strtolower($string);
+                break;
+            case 'preg_replace':
+                $string = preg_replace(
+                    $operation[1],
+                    $operation[2],
+                    $string
+                );
+                break;
+            case 'ucfirst':
+                $string = ucfirst($string);
+                break;
+            case 'uppercase':
+                $string = strtoupper($string);
+                break;
+            default:
+                throw new \InvalidArgumentException(
+                    sprintf('Unknown munge operation: %s', $operation[0])
+                );
         }
         return $string;
     }

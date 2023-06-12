@@ -577,7 +577,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      * @return RecordCollectionFactoryInterface
      */
     protected function createRecordCollectionFactory()
-        : RecordCollectionFactoryInterface
+    : RecordCollectionFactoryInterface
     {
         return new $this->recordCollectionFactoryClass(
             $this->getCreateRecordCallback(),

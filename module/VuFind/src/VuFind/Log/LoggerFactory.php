@@ -357,29 +357,29 @@ class LoggerFactory implements FactoryInterface
             // VuFind's configuration provides four priority options, each
             // combining two of the standard Laminas levels.
             switch (trim($priority)) {
-            case 'debug':
-                // Set static flag indicating that debug is turned on:
-                $logger->debugNeeded(true);
+                case 'debug':
+                    // Set static flag indicating that debug is turned on:
+                    $logger->debugNeeded(true);
 
-                $max = Logger::INFO;  // Informational: informational messages
-                $min = Logger::DEBUG; // Debug: debug messages
-                break;
-            case 'notice':
-                $max = Logger::WARN;  // Warning: warning conditions
-                $min = Logger::NOTICE;// Notice: normal but significant condition
-                break;
-            case 'error':
-                $max = Logger::CRIT;  // Critical: critical conditions
-                $min = Logger::ERR;   // Error: error conditions
-                break;
-            case 'alert':
-                $max = Logger::EMERG; // Emergency: system is unusable
-                $min = Logger::ALERT; // Alert: action must be taken immediately
-                break;
-            default:
-                // INVALID FILTER, so skip it. We must continue 2 levels, so we
-                // continue the foreach loop instead of just breaking the switch.
-                continue 2;
+                    $max = Logger::INFO;  // Informational: informational messages
+                    $min = Logger::DEBUG; // Debug: debug messages
+                    break;
+                case 'notice':
+                    $max = Logger::WARN;  // Warning: warning conditions
+                    $min = Logger::NOTICE;// Notice: normal but significant condition
+                    break;
+                case 'error':
+                    $max = Logger::CRIT;  // Critical: critical conditions
+                    $min = Logger::ERR;   // Error: error conditions
+                    break;
+                case 'alert':
+                    $max = Logger::EMERG; // Emergency: system is unusable
+                    $min = Logger::ALERT; // Alert: action must be taken immediately
+                    break;
+                default:
+                    // INVALID FILTER, so skip it. We must continue 2 levels, so we
+                    // continue the foreach loop instead of just breaking the switch.
+                    continue 2;
             }
 
             // Clone the submitted writer since we'll need a separate instance of the

@@ -40,7 +40,7 @@ use VuFind\I18n\Translator\TranslatorAwareTrait;
  * @link     https://vufind.org/wiki/development:plugins:record_tabs Wiki
  */
 class Versions extends \VuFind\RecordTab\AbstractBase
-    implements TranslatorAwareInterface
+implements TranslatorAwareInterface
 {
     use TranslatorAwareTrait;
 

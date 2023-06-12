@@ -157,7 +157,7 @@ class DefaultText extends AbstractTextLayer
             );
         } while ($textWidth > $settings->wrapWidth &&
               $fontSize > $settings->minAuthorFontSize
-          );
+        );
         // Too small to read? Align left
         $textWidth = $this->textWidth(
             $author,

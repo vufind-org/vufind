@@ -38,6 +38,6 @@ namespace VuFindSearch\Exception;
  * @link     https://vufind.org
  */
 class InvalidArgumentException extends \InvalidArgumentException
-    implements ExceptionInterface
+implements ExceptionInterface
 {
 }

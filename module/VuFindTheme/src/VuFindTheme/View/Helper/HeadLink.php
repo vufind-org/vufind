@@ -43,7 +43,7 @@ use VuFindTheme\ThemeInfo;
  * @method getSeparator()
  */
 class HeadLink extends \Laminas\View\Helper\HeadLink
-    implements \Laminas\Log\LoggerAwareInterface
+implements \Laminas\Log\LoggerAwareInterface
 {
     use ConcatTrait;
     use \VuFind\Log\LoggerAwareTrait;

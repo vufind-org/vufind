@@ -484,16 +484,17 @@ class SearchController extends AbstractSolrSearch
     public function opensearchAction()
     {
         switch ($this->params()->fromQuery('method')) {
-        case 'describe':
-            $config = $this->getConfig();
-            $xml = $this->getViewRenderer()->render(
-                'search/opensearch-describe.phtml',
-                ['site' => $config->Site]
-            );
-            break;
-        default:
-            $xml = $this->getViewRenderer()->render('search/opensearch-error.phtml');
-            break;
+            case 'describe':
+                $config = $this->getConfig();
+                $xml = $this->getViewRenderer()->render(
+                    'search/opensearch-describe.phtml',
+                    ['site' => $config->Site]
+                );
+                break;
+            default:
+                $xml = $this->getViewRenderer()
+                    ->render('search/opensearch-error.phtml');
+                break;
         }
 
         $response = $this->getResponse();

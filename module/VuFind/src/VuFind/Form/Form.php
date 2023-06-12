@@ -974,81 +974,81 @@ class Form extends \Laminas\Form\Form implements
         }
 
         switch ($type) {
-        case 'checkbox':
-            $options = [];
-            if (isset($el['options'])) {
-                $options = $el['options'];
-            }
-            $optionElements = [];
-            foreach ($options as $key => $item) {
-                $optionElements[] = [
-                    'label' => $this->translate($item['label']),
-                    'value' => $key,
-                    'attributes' => [
-                        'id' => $this->getElementId($el['name'] . '_' . $key)
-                    ]
-                ];
-            }
-            $conf['options'] = ['value_options' => $optionElements];
-            break;
-        case 'date':
-            if (isset($el['minValue'])) {
-                $attributes['min'] = date('Y-m-d', strtotime($el['minValue']));
-            }
-            if (isset($el['maxValue'])) {
-                $attributes['max'] = date('Y-m-d', strtotime($el['maxValue']));
-            }
-            break;
-        case 'radio':
-            $options = [];
-            if (isset($el['options'])) {
-                $options = $el['options'];
-            }
-            $optionElements = [];
-            $first = true;
-            foreach ($options as $key => $option) {
-                $elemId = $this->getElementId($el['name'] . '_' . $key);
-                $optionElements[] = [
-                    'label' => $this->translate($option['label']),
-                    'value' => $key,
-                    'label_attributes' => ['for' => $elemId],
-                    'attributes' => [
-                        'id' => $elemId
-                    ],
-                    'selected' => $first
-                ];
-                $first = false;
-            }
-            $conf['options'] = ['value_options' => $optionElements];
-            break;
-        case 'select':
-            if (isset($el['options'])) {
-                $options = $el['options'];
-                foreach ($options as $key => &$option) {
-                    $option['value'] = $key;
+            case 'checkbox':
+                $options = [];
+                if (isset($el['options'])) {
+                    $options = $el['options'];
                 }
-                // Unset reference:
-                unset($option);
-                $conf['options'] = ['value_options' => $options];
-            } elseif (isset($el['optionGroups'])) {
-                $groups = $el['optionGroups'];
-                foreach ($groups as &$group) {
-                    foreach ($group['options'] as $key => &$option) {
+                $optionElements = [];
+                foreach ($options as $key => $item) {
+                    $optionElements[] = [
+                        'label' => $this->translate($item['label']),
+                        'value' => $key,
+                        'attributes' => [
+                            'id' => $this->getElementId($el['name'] . '_' . $key)
+                        ]
+                    ];
+                }
+                $conf['options'] = ['value_options' => $optionElements];
+                break;
+            case 'date':
+                if (isset($el['minValue'])) {
+                    $attributes['min'] = date('Y-m-d', strtotime($el['minValue']));
+                }
+                if (isset($el['maxValue'])) {
+                    $attributes['max'] = date('Y-m-d', strtotime($el['maxValue']));
+                }
+                break;
+            case 'radio':
+                $options = [];
+                if (isset($el['options'])) {
+                    $options = $el['options'];
+                }
+                $optionElements = [];
+                $first = true;
+                foreach ($options as $key => $option) {
+                    $elemId = $this->getElementId($el['name'] . '_' . $key);
+                    $optionElements[] = [
+                        'label' => $this->translate($option['label']),
+                        'value' => $key,
+                        'label_attributes' => ['for' => $elemId],
+                        'attributes' => [
+                            'id' => $elemId
+                        ],
+                        'selected' => $first
+                    ];
+                    $first = false;
+                }
+                $conf['options'] = ['value_options' => $optionElements];
+                break;
+            case 'select':
+                if (isset($el['options'])) {
+                    $options = $el['options'];
+                    foreach ($options as $key => &$option) {
                         $option['value'] = $key;
                     }
                     // Unset reference:
-                    unset($key);
+                    unset($option);
+                    $conf['options'] = ['value_options' => $options];
+                } elseif (isset($el['optionGroups'])) {
+                    $groups = $el['optionGroups'];
+                    foreach ($groups as &$group) {
+                        foreach ($group['options'] as $key => &$option) {
+                            $option['value'] = $key;
+                        }
+                        // Unset reference:
+                        unset($key);
+                    }
+                    // Unset reference:
+                    unset($group);
+                    $conf['options'] = ['value_options' => $groups];
                 }
-                // Unset reference:
-                unset($group);
-                $conf['options'] = ['value_options' => $groups];
-            }
-            break;
-        case 'submit':
-            $attributes['value'] = $el['label'];
-            $attributes['class'][] = 'btn';
-            $attributes['class'][] = 'btn-primary';
-            break;
+                break;
+            case 'submit':
+                $attributes['value'] = $el['label'];
+                $attributes['class'][] = 'btn';
+                $attributes['class'][] = 'btn-primary';
+                break;
         }
 
         $attributes['class'] = trim(implode(' ', $attributes['class']));

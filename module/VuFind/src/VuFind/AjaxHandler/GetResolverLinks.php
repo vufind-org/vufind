@@ -124,20 +124,20 @@ class GetResolverLinks extends AbstractBase implements TranslatorAwareInterface
         $electronic = $print = $services = [];
         foreach ($result as $link) {
             switch ($link['service_type'] ?? '') {
-            case 'getHolding':
-                $print[] = $link;
-                break;
-            case 'getWebService':
-                $services[] = $link;
-                break;
-            case 'getDOI':
-                // Special case -- modify DOI text for special display:
-                $link['title'] = $this->translate('Get full text');
-                $link['coverage'] = '';
-            case 'getFullTxt':
-            default:
-                $electronic[] = $link;
-                break;
+                case 'getHolding':
+                    $print[] = $link;
+                    break;
+                case 'getWebService':
+                    $services[] = $link;
+                    break;
+                case 'getDOI':
+                    // Special case -- modify DOI text for special display:
+                    $link['title'] = $this->translate('Get full text');
+                    $link['coverage'] = '';
+                case 'getFullTxt':
+                default:
+                    $electronic[] = $link;
+                    break;
             }
         }
 

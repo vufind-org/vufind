@@ -1486,15 +1486,15 @@ class MyResearchController extends AbstractBase
 
             if (null !== $accountStatus) {
                 switch ($current['dueStatus'] ?? '') {
-                case 'due':
-                    $accountStatus['warn']++;
-                    break;
-                case 'overdue':
-                    $accountStatus['overdue']++;
-                    break;
-                default:
-                    $accountStatus['ok']++;
-                    break;
+                    case 'due':
+                        $accountStatus['warn']++;
+                        break;
+                    case 'overdue':
+                        $accountStatus['overdue']++;
+                        break;
+                    default:
+                        $accountStatus['ok']++;
+                        break;
                 }
             }
 

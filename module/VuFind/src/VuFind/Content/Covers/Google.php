@@ -37,7 +37,7 @@ namespace VuFind\Content\Covers;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class Google extends \VuFind\Content\AbstractCover
-    implements \VuFindHttp\HttpServiceAwareInterface
+implements \VuFindHttp\HttpServiceAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
 

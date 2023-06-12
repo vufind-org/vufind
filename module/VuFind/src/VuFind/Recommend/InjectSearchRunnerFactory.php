@@ -44,7 +44,7 @@ use VuFind\Search\SearchRunner;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class InjectSearchRunnerFactory
-    implements \Laminas\ServiceManager\Factory\FactoryInterface
+implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object

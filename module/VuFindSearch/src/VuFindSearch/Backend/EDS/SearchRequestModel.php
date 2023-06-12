@@ -174,27 +174,27 @@ class SearchRequestModel
     {
         foreach ($parameters as $key => $values) {
             switch ($key) {
-            case 'filters':
-                $cnt = 1;
-                foreach ($values as $filter) {
-                    if (substr($filter, 0, 6) == 'LIMIT|') {
-                        $this->addLimiter(substr($filter, 6));
-                    } elseif (substr($filter, 0, 7) == 'EXPAND:') {
-                        $this->addExpander(substr($filter, 7));
-                    } elseif (substr($filter, 0, 11) == 'SEARCHMODE:') {
-                        $this->searchMode = substr($filter, 11, null);
-                    } elseif (substr($filter, 0, 15) == 'PublicationDate') {
-                        $this->addLimiter($this->formatDateLimiter($filter));
-                    } else {
-                        $this->addFilter("$cnt,$filter");
-                        $cnt++;
+                case 'filters':
+                    $cnt = 1;
+                    foreach ($values as $filter) {
+                        if (substr($filter, 0, 6) == 'LIMIT|') {
+                            $this->addLimiter(substr($filter, 6));
+                        } elseif (substr($filter, 0, 7) == 'EXPAND:') {
+                            $this->addExpander(substr($filter, 7));
+                        } elseif (substr($filter, 0, 11) == 'SEARCHMODE:') {
+                            $this->searchMode = substr($filter, 11, null);
+                        } elseif (substr($filter, 0, 15) == 'PublicationDate') {
+                            $this->addLimiter($this->formatDateLimiter($filter));
+                        } else {
+                            $this->addFilter("$cnt,$filter");
+                            $cnt++;
+                        }
                     }
-                }
-                break;
-            default:
-                if (property_exists($this, $key)) {
-                    $this->$key = $values;
-                }
+                    break;
+                default:
+                    if (property_exists($this, $key)) {
+                        $this->$key = $values;
+                    }
             }
         }
     }

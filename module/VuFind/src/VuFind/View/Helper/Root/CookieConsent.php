@@ -42,7 +42,7 @@ use VuFind\I18n\Translator\TranslatorAwareTrait;
  * @link     https://vufind.org Main Site
  */
 class CookieConsent extends \Laminas\View\Helper\AbstractHelper
-    implements TranslatorAwareInterface
+implements TranslatorAwareInterface
 {
     use TranslatorAwareTrait;
 
@@ -387,25 +387,26 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper
                         . $this->translate('CookieConsent::third_party_html') . ')';
                 }
                 switch ($cookie['Expiration']) {
-                case 'never':
-                    $expiration
-                        = $this->translate('CookieConsent::expiration_never');
-                    break;
-                case 'session':
-                    $expiration
-                        = $this->translate('CookieConsent::expiration_session');
-                    break;
-                default:
-                    if (!empty($cookie['ExpirationUnit'])) {
-                        $expiration = ' ' . $this->translate(
-                            'CookieConsent::expiration_unit_'
-                            . $cookie['ExpirationUnit'],
-                            ['%%expiration%%' => $cookie['Expiration']],
-                            $cookie['Expiration'] . ' ' . $cookie['ExpirationUnit']
-                        );
-                    } else {
-                        $expiration = $cookie['Expiration'];
-                    }
+                    case 'never':
+                        $expiration
+                            = $this->translate('CookieConsent::expiration_never');
+                        break;
+                    case 'session':
+                        $expiration
+                            = $this->translate('CookieConsent::expiration_session');
+                        break;
+                    default:
+                        if (!empty($cookie['ExpirationUnit'])) {
+                            $expiration = ' ' . $this->translate(
+                                'CookieConsent::expiration_unit_'
+                                . $cookie['ExpirationUnit'],
+                                ['%%expiration%%' => $cookie['Expiration']],
+                                $cookie['Expiration'] . ' '
+                                . $cookie['ExpirationUnit']
+                            );
+                        } else {
+                            $expiration = $cookie['Expiration'];
+                        }
                 }
                 $section['cookieTable']['body'][] = [
                     'name' => $name,

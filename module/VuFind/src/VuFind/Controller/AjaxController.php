@@ -41,7 +41,7 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 class AjaxController extends AbstractActionController
-    implements TranslatorAwareInterface
+implements TranslatorAwareInterface
 {
     use AjaxResponseTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;

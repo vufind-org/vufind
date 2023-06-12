@@ -250,14 +250,14 @@ class VuFindSitemap extends VuFind
 
         // Use the appropriate full text parser:
         switch ($parser) {
-        case 'Aperture':
-            $fields = static::getApertureFields($htmlFile);
-            break;
-        case 'Tika':
-            $fields = static::getTikaFields($htmlFile);
-            break;
-        default:
-            throw new \Exception('Unexpected parser: ' . $parser);
+            case 'Aperture':
+                $fields = static::getApertureFields($htmlFile);
+                break;
+            case 'Tika':
+                $fields = static::getTikaFields($htmlFile);
+                break;
+            default:
+                throw new \Exception('Unexpected parser: ' . $parser);
         }
 
         // Clean up HTML file:

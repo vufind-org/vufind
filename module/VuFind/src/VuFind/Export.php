@@ -115,25 +115,25 @@ class Export
         foreach ($matches[1] as $current) {
             $parts = explode('|', $current);
             switch ($parts[0]) {
-            case 'config':
-            case 'encodedConfig':
-                if (isset($this->mainConfig->{$parts[1]}->{$parts[2]})) {
-                    $value = $this->mainConfig->{$parts[1]}->{$parts[2]};
-                } else {
-                    $value = $parts[3];
-                }
-                if ($parts[0] == 'encodedConfig') {
-                    $value = urlencode($value);
-                }
-                $template = str_replace('{' . $current . '}', $value, $template);
-                break;
-            case 'encodedCallback':
-                $template = str_replace(
-                    '{' . $current . '}',
-                    urlencode($callback),
-                    $template
-                );
-                break;
+                case 'config':
+                case 'encodedConfig':
+                    if (isset($this->mainConfig->{$parts[1]}->{$parts[2]})) {
+                        $value = $this->mainConfig->{$parts[1]}->{$parts[2]};
+                    } else {
+                        $value = $parts[3];
+                    }
+                    if ($parts[0] == 'encodedConfig') {
+                        $value = urlencode($value);
+                    }
+                    $template = str_replace('{' . $current . '}', $value, $template);
+                    break;
+                case 'encodedCallback':
+                    $template = str_replace(
+                        '{' . $current . '}',
+                        urlencode($callback),
+                        $template
+                    );
+                    break;
             }
         }
         return $template;

@@ -175,21 +175,21 @@ class Importer
     protected function processHeader(ImporterConfig $config, $in, string $mode): void
     {
         switch (strtolower(trim($mode))) {
-        case 'fields':
-            // Load configuration from the header row:
-            $row = fgetcsv($in);
-            foreach ($row as $i => $field) {
-                $config->configureColumn($i, ['field' => $field]);
-            }
-            break;
-        case 'skip':
-            //  Just skip a row:
-            fgetcsv($in);
-            break;
-        case 'none':
-        default:
-            // Do nothing.
-            break;
+            case 'fields':
+                // Load configuration from the header row:
+                $row = fgetcsv($in);
+                foreach ($row as $i => $field) {
+                    $config->configureColumn($i, ['field' => $field]);
+                }
+                break;
+            case 'skip':
+                //  Just skip a row:
+                fgetcsv($in);
+                break;
+            case 'none':
+            default:
+                // Do nothing.
+                break;
         }
     }
 
@@ -231,14 +231,14 @@ class Importer
             if (strpos($section, ':') !== false) {
                 [$type, $details] = explode(':', $section);
                 switch (strtolower(trim($type))) {
-                case 'column':
-                    $config->configureColumn($details, $settings);
-                    break;
-                case 'field':
-                    $config->configureField($details, $settings);
-                    break;
-                default:
-                    throw new \Exception('Unexpected config section: ' . $section);
+                    case 'column':
+                        $config->configureColumn($details, $settings);
+                        break;
+                    case 'field':
+                        $config->configureField($details, $settings);
+                        break;
+                    default:
+                        throw new \Exception("Unexpected config section: $section");
                 }
             }
         }
@@ -274,14 +274,14 @@ class Importer
             ) {
                 $parts = explode(':', trim($arg, '$'), 2);
                 switch ($parts[0]) {
-                case 'csv':
-                    return $value;
-                case 'field':
-                    return $fieldValues[$parts[1] ?? ''] ?? [];
-                case 'fieldFirst':
-                    return $fieldValues[$parts[1] ?? ''][0] ?? '';
-                default:
-                    throw new \Exception('Unknown directive: ' . $parts[0]);
+                    case 'csv':
+                        return $value;
+                    case 'field':
+                        return $fieldValues[$parts[1] ?? ''] ?? [];
+                    case 'fieldFirst':
+                        return $fieldValues[$parts[1] ?? ''][0] ?? '';
+                    default:
+                        throw new \Exception('Unknown directive: ' . $parts[0]);
                 }
             }
             return $arg;

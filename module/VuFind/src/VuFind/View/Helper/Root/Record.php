@@ -556,12 +556,12 @@ class Record extends \Laminas\View\Helper\AbstractHelper
         }
 
         switch ($context) {
-        case "core":
-        case "results":
-            $key = 'showIn' . ucwords(strtolower($context));
-            break;
-        default:
-            return false;
+            case "core":
+            case "results":
+                $key = 'showIn' . ucwords(strtolower($context));
+                break;
+            default:
+                return false;
         }
 
         if (!isset($this->config->QRCode->$key)

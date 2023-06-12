@@ -44,7 +44,7 @@ use VuFind\OAuth2\Entity\AccessTokenEntity;
  * @link     https://vufind.org Main Site
  */
 class AccessTokenRepository extends AbstractTokenRepository
-    implements AccessTokenRepositoryInterface
+implements AccessTokenRepositoryInterface
 {
     /**
      * Constructor

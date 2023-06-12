@@ -114,28 +114,28 @@ class ThemeCompiler extends AbstractThemeUtility
     {
         foreach ($src as $key => $value) {
             switch ($key) {
-            case 'extends':
-                // always set "extends" to false; we're flattening, after all!
-                $dest[$key] = false;
-                break;
-            case 'helpers':
-                // Call this function recursively to deal with the helpers
-                // sub-array:
-                $dest[$key] = $this
-                    ->mergeConfig($value, $dest[$key] ?? []);
-                break;
-            case 'mixins':
-                // Omit mixin settings entirely
-                break;
-            default:
-                // Default behavior: merge arrays, let existing flat settings
-                // trump new incoming ones:
-                if (!isset($dest[$key])) {
-                    $dest[$key] = $value;
-                } elseif (is_array($dest[$key])) {
-                    $dest[$key] = array_merge($value, $dest[$key]);
-                }
-                break;
+                case 'extends':
+                    // always set "extends" to false; we're flattening, after all!
+                    $dest[$key] = false;
+                    break;
+                case 'helpers':
+                    // Call this function recursively to deal with the helpers
+                    // sub-array:
+                    $dest[$key] = $this
+                        ->mergeConfig($value, $dest[$key] ?? []);
+                    break;
+                case 'mixins':
+                    // Omit mixin settings entirely
+                    break;
+                default:
+                    // Default behavior: merge arrays, let existing flat settings
+                    // trump new incoming ones:
+                    if (!isset($dest[$key])) {
+                        $dest[$key] = $value;
+                    } elseif (is_array($dest[$key])) {
+                        $dest[$key] = array_merge($value, $dest[$key]);
+                    }
+                    break;
             }
         }
         return $dest;

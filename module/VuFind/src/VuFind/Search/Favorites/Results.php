@@ -47,7 +47,7 @@ use VuFindSearch\Service as SearchService;
  * @link     https://vufind.org Main Site
  */
 class Results extends BaseResults
-    implements AuthorizationServiceAwareInterface
+implements AuthorizationServiceAwareInterface
 {
     use AuthorizationServiceAwareTrait;
 
@@ -140,22 +140,22 @@ class Results extends BaseResults
                     'list' => []
                 ];
                 switch ($field) {
-                case 'tags':
-                    if ($this->list) {
-                        $tags = $this->list->getResourceTags();
-                    } else {
-                        $tags = $this->user ? $this->user->getTags() : [];
-                    }
-                    foreach ($tags as $tag) {
-                        $this->facets[$field]['list'][] = [
-                            'value' => $tag->tag,
-                            'displayText' => $tag->tag,
-                            'count' => $tag->cnt,
-                            'isApplied' =>
-                                $this->getParams()->hasFilter("$field:" . $tag->tag)
-                        ];
-                    }
-                    break;
+                    case 'tags':
+                        if ($this->list) {
+                            $tags = $this->list->getResourceTags();
+                        } else {
+                            $tags = $this->user ? $this->user->getTags() : [];
+                        }
+                        foreach ($tags as $tag) {
+                            $this->facets[$field]['list'][] = [
+                                'value' => $tag->tag,
+                                'displayText' => $tag->tag,
+                                'count' => $tag->cnt,
+                                'isApplied' => $this->getParams()
+                                    ->hasFilter("$field:" . $tag->tag)
+                            ];
+                        }
+                        break;
                 }
             }
             if (isset($this->facets[$field])) {

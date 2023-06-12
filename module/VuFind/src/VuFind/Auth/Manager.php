@@ -834,11 +834,11 @@ class Manager implements \LmcRbacMvc\Identity\IdentityProviderInterface,
     {
         // Convert 'numeric' or 'alphanumeric' pattern to a regular expression:
         switch ($policy['pattern'] ?? '') {
-        case 'numeric':
-            $policy['pattern'] = '\d+';
-            break;
-        case 'alphanumeric':
-            $policy['pattern'] = '[\da-zA-Z]+';
+            case 'numeric':
+                $policy['pattern'] = '\d+';
+                break;
+            case 'alphanumeric':
+                $policy['pattern'] = '[\da-zA-Z]+';
         }
 
         // Map settings to attributes for a text input field:

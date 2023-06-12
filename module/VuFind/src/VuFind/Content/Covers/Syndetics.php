@@ -70,15 +70,15 @@ class Syndetics extends \VuFind\Content\AbstractCover
     public function getUrl($key, $size, $ids)
     {
         switch ($size) {
-        case 'small':
-            $size = 'SC.GIF';
-            break;
-        case 'medium':
-            $size = 'MC.GIF';
-            break;
-        case 'large':
-            $size = 'LC.JPG';
-            break;
+            case 'small':
+                $size = 'SC.GIF';
+                break;
+            case 'medium':
+                $size = 'MC.GIF';
+                break;
+            case 'large':
+                $size = 'LC.JPG';
+                break;
         }
 
         $url = $this->useSSL

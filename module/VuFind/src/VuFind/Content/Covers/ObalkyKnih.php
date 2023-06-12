@@ -91,18 +91,18 @@ class ObalkyKnih extends \VuFind\Content\AbstractCover
             return false;
         }
         switch ($size) {
-        case 'small':
-            $imageUrl = $data->cover_icon_url ?? false;
-            break;
-        case 'medium':
-            $imageUrl = $data->cover_medium_url ?? false;
-            break;
-        case 'large':
-            $imageUrl = $data->cover_preview510_url ?? false;
-            break;
-        default:
-            $imageUrl = $data->cover_medium_url ?? false;
-            break;
+            case 'small':
+                $imageUrl = $data->cover_icon_url ?? false;
+                break;
+            case 'medium':
+                $imageUrl = $data->cover_medium_url ?? false;
+                break;
+            case 'large':
+                $imageUrl = $data->cover_preview510_url ?? false;
+                break;
+            default:
+                $imageUrl = $data->cover_medium_url ?? false;
+                break;
         }
         return $imageUrl;
     }

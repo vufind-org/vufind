@@ -44,7 +44,7 @@ use VuFind\I18n\Locale\LocaleSettings;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class PageLocatorFactory
-    implements \Laminas\ServiceManager\Factory\FactoryInterface
+implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object

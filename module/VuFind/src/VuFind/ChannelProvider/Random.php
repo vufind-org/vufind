@@ -43,7 +43,7 @@ use VuFindSearch\Command\RandomCommand;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class Random extends AbstractChannelProvider
-    implements TranslatorAwareInterface
+implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 

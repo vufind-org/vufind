@@ -978,74 +978,75 @@ class PAIA extends DAIA
         //       (cf.  http://gbv.github.io/paia/paia.html#request-errors)
         if (isset($array['error'])) {
             switch ($array['error']) {
-                // cf. http://gbv.github.io/paia/paia.html#request-errors
-                // error        code    error_description
-                // access_denied     403     Wrong or missing credentials to get an
-                //                          access token
-            case 'access_denied':
-                throw new AuthException(
-                    $array['error_description'] ?? $array['error'],
-                    (int)($array['code'] ?? 0)
-                );
+                case 'access_denied':
+                    // error        code    error_description
+                    // access_denied     403     Wrong or missing credentials to get
+                    //                           an access token
+                    throw new AuthException(
+                        $array['error_description'] ?? $array['error'],
+                        (int)($array['code'] ?? 0)
+                    );
 
-                // invalid_grant     401     The access token was missing, invalid
-                //                          or expired
-            case 'invalid_grant':
+                case 'invalid_grant':
+                    // invalid_grant     401     The access token was missing,
+                    //                           invalid or expired
 
-                // insufficient_scope     403     The access token was accepted but
-                //                              it lacks permission for the request
-            case 'insufficient_scope':
-                throw new ForbiddenException(
-                    $array['error_description'] ?? $array['error'],
-                    (int)($array['code'] ?? 0)
-                );
+                case 'insufficient_scope':
+                    // insufficient_scope   403   The access token was accepted but
+                    //                            it lacks permission for the request
+                    throw new ForbiddenException(
+                        $array['error_description'] ?? $array['error'],
+                        (int)($array['code'] ?? 0)
+                    );
 
-                // not_found     404     Unknown request URL or unknown patron.
-                //                      Implementations SHOULD first check
-                //                      authentication and prefer error invalid_grant
-                //                      or access_denied to prevent leaking patron
-                //                      identifiers.
-            case 'not_found':
+                case 'not_found':
+                    // not_found     404     Unknown request URL or unknown patron.
+                    //                       Implementations SHOULD first check
+                    //                       authentication and prefer error
+                    //                       invalid_grant or access_denied to
+                    //                       prevent leaking patron identifiers.
 
-                // not_implemented     501     Known but unsupported request URL (for
-                //                          instance a PAIA auth server server may
-                //                          not implement
-                //                          http://example.org/core/change)
-            case 'not_implemented':
+                case 'not_implemented':
+                    // not_implemented     501     Known but unsupported request URL
+                    //                             (for instance a PAIA auth server
+                    //                             server may not implement
+                    //                             http://example.org/core/change)
 
-                // invalid_request     405     Unexpected HTTP verb
-                // invalid_request     400     Malformed request (for instance error
-                //                          parsing JSON, unsupported request content
-                //                          type, etc.)
-                // invalid_request     422     The request parameters could be parsed
-                //                          but they don’t match the request method
-                //                          (for instance missing fields, invalid
-                //                          values, etc.)
-            case 'invalid_request':
+                case 'invalid_request':
+                    // invalid_request     405     Unexpected HTTP verb
+                    // invalid_request     400     Malformed request (for instance
+                    //                             error parsing JSON, unsupported
+                    //                             request content type, etc.)
+                    // invalid_request     422     The request parameters could be
+                    //                             parsed but they don’t match the
+                    //                             request method (for instance
+                    //                             missing fields, invalid values,
+                    //                             etc.)
 
-                // internal_error     500     An unexpected error occurred. This
-                //                          error corresponds to a bug in the
-                //                          implementation of a PAIA auth/core server
-            case 'internal_error':
+                case 'internal_error':
+                    // internal_error     500     An unexpected error occurred. This
+                    //                            error corresponds to a bug in the
+                    //                            implementation of a PAIA auth/core
+                    //                            server
 
-                // service_unavailable     503     The request couldn’t be serviced
-                //                              because of a temporary failure
-            case 'service_unavailable':
+                case 'service_unavailable':
+                    // service_unavailable    503    The request couldn’t be serviced
+                    //                               because of a temporary failure
 
-                // bad_gateway     502     The request couldn’t be serviced because
-                //                     of a backend failure (for instance the library
-                //                      system’s database)
-            case 'bad_gateway':
+                case 'bad_gateway':
+                    // bad_gateway    502    The request couldn’t be serviced because
+                    //                       of a backend failure (for instance the
+                    //                       library system’s database)
 
-                // gateway_timeout     504     The request couldn’t be serviced
-                //                          because of a backend failure
-            case 'gateway_timeout':
+                case 'gateway_timeout':
+                    // gateway_timeout     504     The request couldn’t be serviced
+                    //                             because of a backend failure
 
-            default:
-                throw new ILSException(
-                    $array['error_description'] ?? $array['error'],
-                    (int)($array['code'] ?? 0)
-                );
+                default:
+                    throw new ILSException(
+                        $array['error_description'] ?? $array['error'],
+                        (int)($array['code'] ?? 0)
+                    );
             }
         }
     }
@@ -1808,29 +1809,29 @@ class PAIA extends DAIA
         // prepare post data depending on configured grant type
         $post_data = [];
         switch ($this->grantType) {
-        case 'password':
-            $post_data["username"] = $username;
-            $post_data["password"] = $password;
-            break;
-        case 'client_credentials':
-            // client_credentials only works if we have client_credentials
-            // username and password (see PAIA.ini for further explanation)
-            if (isset($this->config['PAIA']['clientUsername'])
-                && isset($this->config['PAIA']['clientPassword'])
-            ) {
-                $header_data["Authorization"] = 'Basic ' .
-                    base64_encode(
-                        $this->config['PAIA']['clientUsername'] . ':' .
-                        $this->config['PAIA']['clientPassword']
+            case 'password':
+                $post_data["username"] = $username;
+                $post_data["password"] = $password;
+                break;
+            case 'client_credentials':
+                // client_credentials only works if we have client_credentials
+                // username and password (see PAIA.ini for further explanation)
+                if (isset($this->config['PAIA']['clientUsername'])
+                    && isset($this->config['PAIA']['clientPassword'])
+                ) {
+                    $header_data["Authorization"] = 'Basic ' .
+                        base64_encode(
+                            $this->config['PAIA']['clientUsername'] . ':' .
+                            $this->config['PAIA']['clientPassword']
+                        );
+                    $post_data["patron"] = $username; // actual patron identifier
+                } else {
+                    throw new ILSException(
+                        'Missing username and/or password for PAIA grant_type' .
+                        ' client_credentials in PAIA configuration.'
                     );
-                $post_data["patron"] = $username; // actual patron identifier
-            } else {
-                throw new ILSException(
-                    'Missing username and/or password for PAIA grant_type' .
-                    ' client_credentials in PAIA configuration.'
-                );
-            }
-            break;
+                }
+                break;
         }
 
         // finalize post data

@@ -1631,25 +1631,25 @@ class DefaultRecord extends AbstractBase
         $types = [];
         foreach ($this->getFormats() as $format) {
             switch ($format) {
-            case 'Book':
-            case 'eBook':
-                $types['Book'] = 1;
-                break;
-            case 'Video':
-            case 'VHS':
-                $types['Movie'] = 1;
-                break;
-            case 'Photo':
-                $types['Photograph'] = 1;
-                break;
-            case 'Map':
-                $types['Map'] = 1;
-                break;
-            case 'Audio':
-                $types['MusicAlbum'] = 1;
-                break;
-            default:
-                $types['CreativeWork'] = 1;
+                case 'Book':
+                case 'eBook':
+                    $types['Book'] = 1;
+                    break;
+                case 'Video':
+                case 'VHS':
+                    $types['Movie'] = 1;
+                    break;
+                case 'Photo':
+                    $types['Photograph'] = 1;
+                    break;
+                case 'Map':
+                    $types['Map'] = 1;
+                    break;
+                case 'Audio':
+                    $types['MusicAlbum'] = 1;
+                    break;
+                default:
+                    $types['CreativeWork'] = 1;
             }
         }
         return array_keys($types);

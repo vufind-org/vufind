@@ -41,7 +41,7 @@ use Laminas\Mvc\Controller\Plugin\Url as UrlPlugin;
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
 class JSTree extends AbstractBase
-    implements \VuFind\I18n\Translator\TranslatorAwareInterface
+implements \VuFind\I18n\Translator\TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
