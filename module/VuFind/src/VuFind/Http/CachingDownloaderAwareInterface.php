@@ -48,4 +48,13 @@ interface CachingDownloaderAwareInterface
      * @return void
      */
     public function setCachingDownloader(CachingDownloader $cachingDownloader);
+
+    /**
+     * Set config plugin manager.
+     *
+     * @param \VuFind\Config\PluginManager $configPluginManager Config Plugin Manager
+     *
+     * @return void
+     */
+    public function setConfigPluginManager(\VuFind\Config\PluginManager $configPluginManager);
 }

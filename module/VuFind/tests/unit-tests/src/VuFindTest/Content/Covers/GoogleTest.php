@@ -44,6 +44,7 @@ use VuFindCode\ISBN;
  */
 class GoogleTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ConfigPluginManagerTrait;
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
@@ -54,6 +55,18 @@ class GoogleTest extends \PHPUnit\Framework\TestCase
     public function testValidCoverLoading(): void
     {
         $loader = new Google();
+
+        $configMgr = $this->getMockConfigPluginManager(
+            [
+                'config' => [
+                    'Cache' => [
+                        'ttl' => 30,
+                    ],
+                ],
+            ],
+        );
+        $loader->setConfigPluginManager($configMgr);
+
         $mockDownloader = $this->getMockBuilder(CachingDownloader::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -75,6 +88,7 @@ class GoogleTest extends \PHPUnit\Framework\TestCase
         $mockDownloader->expects($this->once())->method('download')
             ->will($this->returnCallback($downloadCallback));
         $loader->setCachingDownloader($mockDownloader);
+
         $this->assertEquals(
             'https://books.google.com/books/content'
             . '?id=dEMBBAAAQBAJ&printsec=frontcover&img=1&zoom=5&edge=curl',

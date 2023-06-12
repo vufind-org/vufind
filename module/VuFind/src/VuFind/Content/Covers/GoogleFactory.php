@@ -71,6 +71,8 @@ class GoogleFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         }
 
         $google = new $requestedName();
+        $configPluginManager = $container->get(\VuFind\Config\PluginManager::class);
+        $google->setConfigPluginManager($configPluginManager);
         $cachingDownloader = $container->get(\VuFind\Http\CachingDownloader::class);
         $google->setCachingDownloader($cachingDownloader);
         return $google;

@@ -56,6 +56,27 @@ trait CachingDownloaderAwareTrait
     protected $cachingDownloader = null;
 
     /**
+     * Config plugin manager.
+     *
+     * @var \VuFind\Config\PluginManager
+     */
+    protected $configPluginManager = null;
+
+    /**
+     * Config file to take the config settings from
+     *
+     * @var string
+     */
+    protected $configFile = 'config';
+
+    /**
+     * Config section to take the config settings from
+     *
+     * @var string
+     */
+    protected $configSection = 'Cache';
+
+    /**
      * Set caching downloader
      *
      * @param $cachingDownloader CachingDownloader
@@ -64,7 +85,20 @@ trait CachingDownloaderAwareTrait
      */
     public function setCachingDownloader(CachingDownloader $cachingDownloader)
     {
+        $cacheOptions = $this->configPluginManager->get($this->configFile)->{$this->configSection}->toArray();
         $this->cachingDownloader = $cachingDownloader;
-        $this->cachingDownloader->setUpCache($this->downloaderCacheId);
+        $this->cachingDownloader->setUpCache($this->downloaderCacheId, $cacheOptions);
+    }
+
+    /**
+     * Set config plugin manager
+     *
+     * @param \VuFind\Config\PluginManager $configPluginManager Config Plugin Manager
+     *
+     * @return void
+     */
+    public function setConfigPluginManager(\VuFind\Config\PluginManager $configPluginManager)
+    {
+        $this->configPluginManager = $configPluginManager;
     }
 }
