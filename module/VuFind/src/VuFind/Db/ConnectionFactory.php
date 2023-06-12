@@ -140,14 +140,14 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
     public function getDriverName($type)
     {
         switch (strtolower($type)) {
-        case 'mysql':
-            return 'pdo_mysql';
-        /* TODO: fix/test
-        case 'oci8':
-            return 'Oracle';
-        case 'pgsql':
-            return 'Pdo_Pgsql';
-         */
+            case 'mysql':
+                return 'pdo_mysql';
+            case 'oci8':
+                // TODO: fix/test
+                return 'Oracle';
+            case 'pgsql':
+                // TODO: fix/test:
+                return 'Pdo_Pgsql';
         }
         return $type;
     }
@@ -162,9 +162,9 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
     protected function getDriverOptions($driver)
     {
         switch ($driver) {
-        case 'mysqli':
-            return ($this->config->Database->verify_server_certificate ?? false)
-                ? [] : [MYSQLI_CLIENT_SSL_DONT_VERIFY_SERVER_CERT];
+            case 'mysqli':
+                return ($this->config->Database->verify_server_certificate ?? false)
+                    ? [] : [MYSQLI_CLIENT_SSL_DONT_VERIFY_SERVER_CERT];
         }
         return [];
     }

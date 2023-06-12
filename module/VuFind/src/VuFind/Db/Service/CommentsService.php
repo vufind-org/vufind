@@ -39,7 +39,7 @@ use VuFind\Db\Entity\Comments;
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 class CommentsService extends AbstractService
-    implements \VuFind\Db\Service\ServiceAwareInterface
+implements \VuFind\Db\Service\ServiceAwareInterface
 {
     use \VuFind\Db\Service\ServiceAwareTrait;
 
