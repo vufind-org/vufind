@@ -55,7 +55,7 @@
       </div>
     <?php endif; ?>
 
-    <div id="<?=$channelID ?>" class="channel splide" data-group="<?=$groupId ?>" data-link-json='<?=empty($channel['links']) ? '[]' : $this->htmlSafeJsonEncode($channel['links']) ?>'>
+    <div id="<?=$channelID ?>" class="channel" data-group="<?=$groupId ?>" data-link-json='<?=empty($channel['links']) ? '[]' : $this->htmlSafeJsonEncode($channel['links']) ?>'>
       <!-- Wrapper for slides -->
       <div class="splide__track">
         <ul class="splide__list">
