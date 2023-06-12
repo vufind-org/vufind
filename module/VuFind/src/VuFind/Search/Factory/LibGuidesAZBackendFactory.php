@@ -30,6 +30,8 @@
 
 namespace VuFind\Search\Factory;
 
+use VuFindSearch\Backend\LibGuides\QueryBuilder;
+
 /**
  * Factory for LibGuides A-Z Databases backends.
  *
@@ -50,5 +52,20 @@ class LibGuidesAZBackendFactory extends LibGuidesBackendFactory
     protected function getServiceName()
     {
         return 'LibGuidesAZ';
+    }
+
+        /**
+     * Create the LibGuides query builder.
+     *
+     * @return QueryBuilder
+     */
+    protected function createQueryBuilder()
+    {
+        $builder = new QueryBuilder();
+
+        // Widget type 2 = Databases A-Z
+        $builder->setDefaultWidgetType("2");
+        
+        return $builder;
     }
 }
