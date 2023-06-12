@@ -279,6 +279,12 @@ class Manager
     protected function createFileCache($cacheName, $dirName, $overrideOpts = [])
     {
         $opts = array_merge($this->defaults, $overrideOpts);
+        $disabled = $opts['disabled'] ?? false;
+        if ($disabled) {
+            $this->createNoCache($cacheName);
+            return;
+        }
+
         if (!is_dir($dirName)) {
             if (isset($opts['umask'])) {
                 // convert umask from string
