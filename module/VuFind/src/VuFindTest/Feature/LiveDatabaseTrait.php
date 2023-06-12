@@ -98,16 +98,15 @@ trait LiveDatabaseTrait
         );
         $config = $container->get('config');
         $cacheFactory = new \DoctrineModule\Service\CacheFactory(('filesystem'));
-        $container->set(
-            \Doctrine\Common\Cache\FilesystemCache::class,
-            // Use a different directory name for tests to avoid permission issues:
-            new \Doctrine\Common\Cache\FilesystemCache(
-                $config['doctrine']['cache']['filesystem']['directory'] . '_testmode'
-            )
-        );
+        $cacheDir = $config['doctrine']['cache']['filesystem']['directory'] . '_testmode';
+        if (!is_dir($cacheDir)) {
+            mkdir($cacheDir);
+        }
         $container->set(
             'doctrine.cache.filesystem',
-            $cacheFactory($container, 'filesystem')
+            new \DoctrineModule\Cache\LaminasStorageCache(
+                new \Laminas\Cache\Storage\Adapter\Filesystem(compact('cacheDir'))
+            )
         );
         $driverFactory = new \DoctrineModule\Service\DriverFactory('orm_default');
         $container->set(
