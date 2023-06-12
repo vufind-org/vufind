@@ -373,7 +373,16 @@ class AbstractSearch extends AbstractBase
         } catch (\VuFindSearch\Backend\Exception\DeepPagingException $e) {
             return $this->redirectToLegalSearchPage($request, $e->getLegalPage());
         }
-        $view->params = $results->getParams();
+        $view->params = $params = $results->getParams();
+
+        // For page parameter being out of results list, we want to redirect to correct page
+        $page = $params->getPage();
+        $lastPage = ceil($results->getResultTotal() / $params->getLimit());
+        if ($page > $lastPage) {
+            $queryParams = $request;
+            $queryParams['page'] = $lastPage;
+            $this->redirect()->toRoute('search-results', [], [ 'query' => $queryParams ]);
+        }
 
         // If we received an EmptySet back, that indicates that the real search
         // failed due to some kind of syntax error, and we should display a
