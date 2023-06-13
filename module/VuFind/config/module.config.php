@@ -551,12 +551,14 @@ $config = [
             'VuFind\Form\Form' => false,
         ],
     ],
-    'doctrine' => [
-        'cache' => [
-            'filesystem' => [
-                'directory' => LOCAL_CACHE_DIR . '/doctrine',
+    'caches' => [
+        'doctrinemodule.cache.filesystem' => [
+            'options' => [
+                'cache_dir' => LOCAL_CACHE_DIR . '/objects',
             ],
         ],
+    ],
+    'doctrine' => [
         'configuration' => [
             'orm_vufind' => [
                 'query_cache' => 'filesystem',
