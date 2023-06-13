@@ -79,7 +79,6 @@ class OrbFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
             throw new \Exception("Orb 'key' not set in VuFind config");
         }
         $orb = new $requestedName($url, $config->Orb->user, $config->Orb->key);
-        $orb->setConfigPluginManager($configPluginManager);
         $cachingDownloader = $container->get(\VuFind\Http\CachingDownloader::class);
         $orb->setCachingDownloader($cachingDownloader);
         return $orb;
