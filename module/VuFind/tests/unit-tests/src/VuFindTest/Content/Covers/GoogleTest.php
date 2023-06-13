@@ -56,16 +56,14 @@ class GoogleTest extends \PHPUnit\Framework\TestCase
     {
         $loader = new Google();
 
-        $configMgr = $this->getMockConfigPluginManager(
-            [
-                'config' => [
-                    'Cache' => [
-                        'ttl' => 30,
-                    ],
+        $cacheOptions = [
+            'config' => [
+                'Cache' => [
+                    'ttl' => 30,
                 ],
             ],
-        );
-        $loader->setConfigPluginManager($configMgr);
+        ];
+        $loader->setCacheOptions($cacheOptions);
 
         $mockDownloader = $this->getMockBuilder(CachingDownloader::class)
             ->disableOriginalConstructor()
