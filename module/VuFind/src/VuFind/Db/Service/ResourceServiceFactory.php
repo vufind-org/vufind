@@ -1,6 +1,6 @@
 <?php
 /**
- * Factory for CommentRecord AJAX handler.
+ * Database resource service factory
  *
  * PHP version 7
  *
@@ -20,29 +20,28 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  AJAX
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Database
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-namespace VuFind\AjaxHandler;
+namespace VuFind\Db\Service;
 
+use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-use Psr\Container\ContainerExceptionInterface as ContainerException;
-use Psr\Container\ContainerInterface;
 
 /**
- * Factory for CommentRecord AJAX handler.
+ * Database resource service factory
  *
  * @category VuFind
- * @package  AJAX
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Database
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class CommentRecordFactory
-implements \Laminas\ServiceManager\Factory\FactoryInterface
+class ResourceServiceFactory extends AbstractServiceFactory
 {
     /**
      * Create an object
@@ -57,8 +56,6 @@ implements \Laminas\ServiceManager\Factory\FactoryInterface
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
         ContainerInterface $container,
@@ -66,21 +63,10 @@ implements \Laminas\ServiceManager\Factory\FactoryInterface
         array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options passed to factory.');
+            throw new \Exception('Unexpected options sent to factory!');
         }
-        $servicePluginManager = $container->get(
-            \VuFind\Db\Service\PluginManager::class
-        );
-        $controllerPluginManager = $container->get('ControllerPluginManager');
-        $capabilities = $container->get(\VuFind\Config\AccountCapabilities::class);
-        return new $requestedName(
-            $servicePluginManager->get(\VuFind\Db\Service\ResourceService::class),
-            $controllerPluginManager
-                ->get(\VuFind\Controller\Plugin\Captcha::class),
-            $container->get(\VuFind\Auth\Manager::class)->isLoggedIn(),
-            $capabilities->getCommentSetting() !== 'disabled',
-            $container->get(\VuFind\Record\Loader::class),
-            $container->get(\VuFind\Config\AccountCapabilities::class)
-        );
+        $loader = $container->get(\VuFind\Record\Loader::class);
+        $converter = $container->get(\VuFind\Date\Converter::class);
+        return parent::__invoke($container, $requestedName, [$loader, $converter]);
     }
 }

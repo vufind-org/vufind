@@ -121,4 +121,92 @@ class Resource implements EntityInterface
      * )
      */
     protected $extraMetadata;
+
+    /**
+     * Id getter
+     *
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * Record Id setter
+     *
+     * @param string $recordId recordId
+     *
+     * @return Resource
+     */
+    public function setRecordId(string $recordId): Resource
+    {
+        $this->recordId = $recordId;
+        return $this;
+    }
+
+    /**
+     * Title setter
+     *
+     * @param string $title Title of the record.
+     *
+     * @return Resource
+     */
+    public function setTitle(string $title): Resource
+    {
+        $this->title = $title;
+        return $this;
+    }
+
+    /**
+     * Author setter
+     *
+     * @param ?string $author Author of the title.
+     *
+     * @return Resource
+     */
+    public function setAuthor(?string $author): Resource
+    {
+        $this->author = $author;
+        return $this;
+    }
+
+    /**
+     * Year setter
+     *
+     * @param ?int $year Year title is published.
+     *
+     * @return Resource
+     */
+    public function setYear(?int $year): Resource
+    {
+        $this->year = $year;
+        return $this;
+    }
+
+    /**
+     * Source setter
+     *
+     * @param string $source Source (a search backend ID).
+     *
+     * @return Resource
+     */
+    public function setSource(string $source): Resource
+    {
+        $this->source = $source;
+        return $this;
+    }
+
+    /**
+     * Extra Metadata setter
+     *
+     * @param ?string $extraMetadata ExtraMetadata.
+     *
+     * @return Resource
+     */
+    public function setExtraMetadata(?string $extraMetadata): Resource
+    {
+        $this->extraMetadata = $extraMetadata;
+        return $this;
+    }
 }

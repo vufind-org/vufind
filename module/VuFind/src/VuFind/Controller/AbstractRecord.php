@@ -155,17 +155,16 @@ class AbstractRecord extends AbstractBase
         // something has gone wrong (or user submitted blank form) and we
         // should do nothing:
         if (!empty($comment)) {
-            $table = $this->getTable('Resource');
-            $resource = $table->findResource(
+            $resourceService = $this->getDbService(
+                \VuFind\Db\Service\ResourceService::class
+            );
+            $resource = $resourceService->findResource(
                 $driver->getUniqueId(),
                 $driver->getSourceIdentifier(),
                 true,
                 $driver
             );
-            $resourceService = $this->getDbService(
-                \VuFind\Db\Service\ResourceService::class
-            );
-            $resourceService->addComment($comment, $user->id, $resource->id);
+            $resourceService->addComment($comment, $user->id, $resource);
 
             // Save rating if allowed:
             if ($driver->isRatingAllowed()

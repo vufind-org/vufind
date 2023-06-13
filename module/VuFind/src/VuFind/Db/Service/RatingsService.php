@@ -55,7 +55,7 @@ implements \VuFind\Db\Service\ServiceAwareInterface
     public function getForResource(string $id, string $source, ?int $userId): array
     {
         $resource = $this->getDbService(ResourceService::class)
-            ->findResource($id, $source);
+            ->findResource($id, $source, false);
 
         if (empty($resource)) {
             return [
@@ -107,7 +107,7 @@ implements \VuFind\Db\Service\ServiceAwareInterface
         }
 
         $resource = $this->getDbService(ResourceService::class)
-            ->findResource($id, $source);
+            ->findResource($id, $source, false);
 
         if (empty($resource)) {
             return $result;

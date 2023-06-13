@@ -32,7 +32,6 @@ use VuFind\Config\AccountCapabilities;
 use VuFind\Controller\Plugin\Captcha;
 use VuFind\Db\Row\User;
 use VuFind\Db\Service\ResourceService;
-use VuFind\Db\Table\Resource;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Loader as RecordLoader;
 
@@ -48,13 +47,6 @@ use VuFind\Record\Loader as RecordLoader;
 class CommentRecord extends AbstractBase implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
-
-    /**
-     * Resource database table
-     *
-     * @var Resource
-     */
-    protected $table;
 
     /**
      * Resource database service
@@ -101,7 +93,6 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
     /**
      * Constructor
      *
-     * @param Resource            $table           Resource database table
      * @param ResourceService     $resourceService Resource database service
      * @param Captcha             $captcha         Captcha controller plugin
      * @param User|bool           $user            Logged in user (or false)
@@ -110,7 +101,6 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
      * @param AccountCapabilities $ac              Account capabilities helper
      */
     public function __construct(
-        Resource $table,
         ResourceService $resourceService,
         Captcha $captcha,
         $user,
@@ -118,7 +108,6 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
         RecordLoader $loader,
         AccountCapabilities $ac
     ) {
-        $this->table = $table;
         $this->resourceService = $resourceService;
         $this->captcha = $captcha;
         $this->user = $user;
@@ -184,11 +173,11 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
             );
         }
 
-        $resource = $this->table->findResource($id, $source);
+        $resource = $this->resourceService->findResource($id, $source);
         $commentId = $this->resourceService->addComment(
             $comment,
             $this->user->id,
-            $resource->id
+            $resource
         );
 
         $rating = $params->fromPost('rating', '');

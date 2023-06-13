@@ -62,7 +62,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         CommentsService::class => AbstractServiceFactory::class,
         FeedbackService::class => AbstractServiceFactory::class,
         RatingsService::class => AbstractServiceFactory::class,
-        ResourceService::class => AbstractServiceFactory::class,
+        ResourceService::class => ResourceServiceFactory::class,
         TagService::class => TagServiceFactory::class,
         UserService::class => AbstractServiceFactory::class,
         UserResourceService::class => AbstractServiceFactory::class,
