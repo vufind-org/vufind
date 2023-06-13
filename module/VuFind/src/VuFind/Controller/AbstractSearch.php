@@ -381,7 +381,7 @@ class AbstractSearch extends AbstractBase
         if ($page > $lastPage) {
             $queryParams = $request;
             $queryParams['page'] = $lastPage;
-            $this->redirect()->toRoute('search-results', [], [ 'query' => $queryParams ]);
+            return $this->redirect()->toRoute('search-results', [], [ 'query' => $queryParams ]);
         }
 
         // If we received an EmptySet back, that indicates that the real search
