@@ -97,17 +97,15 @@ trait LiveDatabaseTrait
             $connectionFactory($container, \VuFind\Db\Connection::class)
         );
         $config = $container->get('config');
-        $cacheFactory = new \DoctrineModule\Service\CacheFactory(('filesystem'));
-        $cacheDir = $config['doctrine']['cache']['filesystem']['directory'] . '_testmode';
-        if (!is_dir($cacheDir)) {
-            mkdir($cacheDir);
+        $options = $config['caches']['doctrinemodule.cache.filesystem']['options'];
+        $options['cache_dir'] = LOCAL_CACHE_DIR . '/' . $options['cache_dir'] . '_testmode';
+        if (!is_dir($options['cache_dir'])) {
+            mkdir($options['cache_dir'], 0777, true);
         }
         $container->set(
             'doctrine.cache.filesystem',
             new \DoctrineModule\Cache\LaminasStorageCache(
-                new \Laminas\Cache\Storage\Adapter\Filesystem(
-                    compact('cacheDir') + ['key_pattern' => '/^[a-z0-9_\+\-\[\]\\\\$#]*$/Di']
-                )
+                new \Laminas\Cache\Storage\Adapter\Filesystem($options)
             )
         );
         $driverFactory = new \DoctrineModule\Service\DriverFactory('orm_default');
