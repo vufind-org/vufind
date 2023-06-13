@@ -102,11 +102,11 @@ trait LiveDatabaseTrait
         if (!is_dir($options['cache_dir'])) {
             mkdir($options['cache_dir'], 0777, true);
         }
+        $cacheAdapter = new \Laminas\Cache\Storage\Adapter\Filesystem($options);
+        $cacheAdapter->addPlugin(new \Laminas\Cache\Storage\Plugin\Serializer());
         $container->set(
             'doctrine.cache.filesystem',
-            new \DoctrineModule\Cache\LaminasStorageCache(
-                new \Laminas\Cache\Storage\Adapter\Filesystem($options)
-            )
+            new \DoctrineModule\Cache\LaminasStorageCache($cacheAdapter)
         );
         $driverFactory = new \DoctrineModule\Service\DriverFactory('orm_default');
         $container->set(
