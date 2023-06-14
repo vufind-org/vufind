@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Overdrive Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * @category VuFind
  * @package  Controller
@@ -10,6 +11,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Controller;
 
 
@@ -46,8 +48,9 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
      */
     public function __construct(ServiceLocatorInterface $sm)
     {
-        $this->setLogger($sm->get('VuFind\Logger'));
-        $this->connector = $sm->get('VuFind\DigitalContent\OverdriveConnector');
+        $this->setLogger($sm->get(\VuFind\Log\Logger::class));
+        $this->connector
+            = $sm->get(\VuFind\DigitalContent\OverdriveConnector::class);
         parent::__construct($sm);
         $this->debug("ODRC constructed");
     }
@@ -61,7 +64,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     public function mycontentAction()
     {
         $this->debug("ODC mycontent action");
-        //force login
+        // force login
         if (!is_array($patron = $this->catalogLogin())) {
             return $patron;
         }
@@ -70,28 +73,27 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         $checkoutsUnavailable = false;
         $holdsUnavailable = false;
 
-        //check on this patrons's access to Overdrive
+        // check on this patrons's access to Overdrive
         $odAccessResult = $this->connector->getAccess();
 
-        if (!$odAccessResult->status) {
+        if (!($odAccessResult->status ?? false)) {
             $this->debug("result:".print_r($odAccessResult, true));
             $this->flashMessenger()->addErrorMessage(
                 $this->translate(
-                    $odAccessResult->code,
-                    ["%%message%%" => $odAccessResult->msg]
+                    $odAccessResult->code ?? 'An error has occurred',
+                    ["%%message%%" => $odAccessResult->msg ?? '']
                 )
             );
             $checkoutsUnavailable = true;
             $holdsUnavailable = true;
-        }
-
-        if ($odAccessResult->status) {
-            //get the current Overdrive checkouts
-            //for this user and add to our array of IDS
+        } else {
+            // get the current Overdrive checkouts
+            // for this user and add to our array of IDS
             $checkoutResults = $this->connector->getCheckouts(true);
-            if (!$checkoutResults->status) {
+            if (!($checkoutResults->status ?? false)) {
                 $this->flashMessenger()->addMessage(
-                    $checkoutResults->code, 'error'
+                    $checkoutResults->code ?? 'An error has occurred',
+                    'error'
                 );
                 $checkoutsUnavailable = true;
             } else {
@@ -113,32 +115,33 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
                   try {
                     $this->debug("loading checkout using: $idToLoad");
                     $mycheckout['record']
-                        = $this->serviceLocator->get('VuFind\Record\Loader')
+                        = $this->serviceLocator->get(\VuFind\Record\Loader::class)
                             ->load($idToLoad );
                     $checkouts[] = $mycheckout;
                   }catch (\VuFind\Exception\RecordMissing $e){
                         $this->debug("missing record in index: $idToLoad");
-                        //checkout is missing from Solr
+                        // checkout is missing from Solr
                         $this->flashMessenger()->addMessage(
                             "One or more checkouts could not be displayed properly: ".
                             $e->getMessage(), 'error'
                         );
-                        //get metadata from overdrive.
+                        // get metadata from overdrive.
                         $meta = $this->connector->getMetadata([strtolower($checkout->reserveId)]);
                         $mycheckout['metadata'] = $meta[strtolower($checkout->reserveId)];
                         $checkouts[] = $mycheckout; 
                   }
                 }
             }
-            //get the current Overdrive holds for this user and add to
+            // get the current Overdrive holds for this user and add to
             // our array of IDS
             $holdsResults = $this->connector->getHolds(true);
-            if (!$holdsResults->status) {
-                if ($checkoutResults->status) {
-                    $this->flashMessenger()->addMessage(
-                        $holdsResults->code, 'error'
-                    );
-                }
+            if (!($holdsResults->status ?? false)
+                && ($checkoutResults->status ?? false) // avoid double errors
+            ) {
+                $this->flashMessenger()->addMessage(
+                    $holdsResults->code ?? 'An error has occurred',
+                    'error'
+                );
                 $holdsUnavailable = true;
             } else {
                 foreach ($holdsResults->data as $hold) {
@@ -146,7 +149,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
                     try {
                         $this->debug("loading hold");
                         $myhold['record']
-                            = $this->serviceLocator->get('VuFind\Record\Loader')
+                            = $this->serviceLocator->get(\VuFind\Record\Loader::class)
                             ->load(strtolower($hold->reserveId));
                         $this->debug("loaded hold");
                         $holds[] = $myhold;
@@ -165,13 +168,15 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
                 }
             }
         }
-        //Future: get reading history will be here
-        //Future: get hold and checkoutlimit using the Patron Info API
+        // TODO: Future: get reading history will be here
+        // TODO: Future: get hold and checkoutlimit using the Patron Info API
 
         $view = $this->createViewModel(
             compact(
-                'checkoutsUnavailable', 'holdsUnavailable',
-                'checkouts', 'holds'
+                'checkoutsUnavailable', 
+                'holdsUnavailable',
+                'checkouts', 
+                'holds'
             )
         );
 
@@ -189,7 +194,8 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     {
         $this->debug("ODC getStatus action");
         $ids = $this->params()->fromPost(
-            'id', $this->params()->fromQuery('id', [])
+            'id', 
+            $this->params()->fromQuery('id', [])
         );
         $this->debug("ODRC availability for :" . print_r($ids, true));
         $result = $this->connector->getAvailabilityBulk($ids);
@@ -226,12 +232,12 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         $isMagazine = false;
         $holdEmail = "";
 
-        //place hold action comes in through the form
+        // place hold action comes in through the form
         if (null !== $this->params()->fromPost('doAction')) {
             $action = $this->params()->fromPost('doAction');
         }
 
-        //place hold action comes in through the form
+        // place hold action comes in through the form
         if (null !== $this->params()->fromPost('getTitleFormat')) {
             $format = $this->params()->fromPost('getTitleFormat');
         }
@@ -239,8 +245,8 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         $format = $this->params()->fromQuery('getTitleFormat');
 
         $this->debug("ODRC od_id=$od_id rec_id=$rec_id action=$action");
-        //load the Record Driver.  Should be a SolrOverdrive  driver.
-        $driver = $this->serviceLocator->get('VuFind\Record\Loader')->load(
+        // load the Record Driver.  Should be a SolrOverdrive  driver.
+        $driver = $this->serviceLocator->get(\VuFind\Record\Loader::class)->load(
             $rec_id
         );
 
@@ -260,8 +266,10 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
             }
         }
         //CONFIRM SECTION
+        $result = null;
+        $actionTitleCode = '';
         if ($action == "checkoutConfirm") {
-            //looks like this is a magazine...
+            // looks like this is a magazine...
             if(current($formats)->id == "magazine-overdrive"){
                 $isMagazine = true;
                 $result = $this->connector->getMagazineIssues($od_id);
@@ -275,8 +283,8 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
                 }
             }else{
                 $result = $this->connector->getResultObject();
-                //check to make sure they don't already have this checked out
-                //shouldn't need to refresh.
+                // check to make sure they don't already have this checked out
+                // shouldn't need to refresh.
                 if ($checkout = $this->connector->getCheckout($od_id, false)) {
                     $result->status = false;
                     $result->data->checkout = $checkout;
@@ -297,8 +305,8 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
             $actionTitleCode = "od_checkout";
         } elseif ($action == "holdConfirm") {
             $result = $this->connector->getResultObject();
-            //check to make sure they don't already have this checked out
-            //shouldn't need to refresh.
+            // check to make sure they don't already have this checked out
+            // shouldn't need to refresh.
             if ($checkout = $this->connector->getCheckout($od_id, false)) {
                 $result->status = false;
                 $result->data->checkout = $checkout;
@@ -326,13 +334,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
 
         } elseif ($action == "returnTitleConfirm") {
             $actionTitleCode = "od_early_return";
-/*
-        } elseif ($action == "getTitleConfirm") {
-            //get only formats that are available...
-            $formats = $driver->getAvailableDigitalFormats();
-            $actionTitleCode = "od_get_title";
-*/
-        //ACTION SECTION
+        // ACTION SECTION
         } elseif ($action == "doCheckout") {
             $actionTitleCode = "od_checkout";
             if($edition){
@@ -432,9 +434,18 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
 
         $view = $this->createViewModel(
             compact(
-                'od_id', 'rec_id', 'action',
-                'result', 'formats', 'cover', 'title', 'actionTitleCode',
-                'listAuthors','holdEmail','issues','isMagazine'
+                'od_id', 
+                'rec_id', 
+                'action',
+                'result', 
+                'formats', 
+                'cover', 
+                'title', 
+                'actionTitleCode',
+                'listAuthors',
+                'holdEmail',
+                'issues',
+                'isMagazine'
             )
         );
 
