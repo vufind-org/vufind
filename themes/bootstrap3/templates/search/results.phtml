@@ -30,9 +30,10 @@
   $this->layout()->searchId = $this->results->getSearchId();
 
   // Enable cart if appropriate:
-  $this->showBulkOptions = $this->params->getOptions()->supportsCart() && $this->showBulkOptions;
+  $options = $this->params->getOptions();
+  $this->showBulkOptions = $options->supportsCart() && $this->showBulkOptions;
   // Checkboxes if appropriate:
-  $this->showCartControls = $this->params->getOptions()->supportsCart() && $this->cart()->isActive()
+  $this->showCartControls = $options->supportsCart() && $this->cart()->isActive()
     && ($this->showBulkOptions || !$this->cart()->isActiveInSearch());
   // Enable bulk options if appropriate:
   $this->showCheckboxes = $this->showCartControls || $this->showBulkOptions;
@@ -43,13 +44,13 @@
   }
   $this->resultsClass = 'search-results-' . strtolower($searchClass);
 
-  $this->render('search/results-scripts.phtml', ['displayVersions' => !empty($this->params->getOptions()->getVersionsAction())]);
-
-  // Load only if list view parameter is NOT full:
-  if ($this->params->getOptions()->getListViewOption() !== 'full') {
-      $this->headScript()->appendFile("record.js");
-      $this->headScript()->appendFile("embedded_record.js");
-  }
+  $this->render(
+      'search/results-scripts.phtml',
+      [
+          'displayVersions' => !empty($options->getVersionsAction()),
+          'listViewOption' => $options->getListViewOption(),
+      ]
+  );
 ?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
