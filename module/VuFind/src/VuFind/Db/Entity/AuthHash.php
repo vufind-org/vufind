@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Entity model for auth_hash table
  *

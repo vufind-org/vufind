@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Database service for Ratings.
  *
@@ -132,7 +133,8 @@ class RatingsService extends AbstractService implements \VuFind\Db\Service\Servi
             ++$groupCount;
             if ($groups) {
                 foreach ($groups as $key => $range) {
-                    if ($rating['rating'] >= $range[0]
+                    if (
+                        $rating['rating'] >= $range[0]
                         && $rating['rating'] <= $range[1]
                     ) {
                         $result['groups'][$key] = ($result['groups'][$key] ?? 0)

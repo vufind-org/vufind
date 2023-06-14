@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Entity model for external_session table
  *

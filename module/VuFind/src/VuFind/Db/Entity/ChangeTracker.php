@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Entity model for change_tracker table
  *

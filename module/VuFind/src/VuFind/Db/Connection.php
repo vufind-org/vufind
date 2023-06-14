@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Wrapper class for VuFind Doctrine connections.
  *

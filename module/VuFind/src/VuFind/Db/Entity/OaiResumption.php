@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Entity model for oai_resumption table
  *

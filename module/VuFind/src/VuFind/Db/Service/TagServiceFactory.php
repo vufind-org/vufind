@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Database tag service factory
  *

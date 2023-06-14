@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Entity model for resource_tags table
  *

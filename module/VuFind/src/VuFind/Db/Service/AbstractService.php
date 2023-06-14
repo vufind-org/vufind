@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Database service abstract base class
  *

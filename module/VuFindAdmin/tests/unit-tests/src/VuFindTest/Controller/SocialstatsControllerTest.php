@@ -66,7 +66,7 @@ class SocialstatsControllerTest extends \PHPUnit\Framework\TestCase
         $dbServices->set(CommentsService::class, $commentsService);
 
         $userResourceStats = ['users' => 5,
-            'lists' =>4,
+            'lists' => 4,
             'resources' => 7,
             'total' => 23,
         ];

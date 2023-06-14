@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Database service for resource.
  *
@@ -262,6 +263,6 @@ class ResourceService extends AbstractService implements \VuFind\Db\Service\Serv
     public function createEntity(): Resource
     {
         $class = $this->getEntityClass(Resource::class);
-        return new $class;
+        return new $class();
     }
 }

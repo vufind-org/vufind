@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Database entity plugin manager
  *

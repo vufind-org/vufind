@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for Doctrine connection. May be used as a service or as a standard
  * Laminas factory.
