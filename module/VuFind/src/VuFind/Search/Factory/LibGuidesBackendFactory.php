@@ -47,6 +47,16 @@ use VuFindSearch\Backend\LibGuides\Response\RecordCollectionFactory;
 class LibGuidesBackendFactory extends AbstractBackendFactory
 {
     /**
+     * Return the service name.
+     *
+     * @return string
+     */
+    protected function getServiceName()
+    {
+        return 'LibGuides';
+    }
+
+    /**
      * Logger.
      *
      * @var \Laminas\Log\LoggerInterface
@@ -76,7 +86,7 @@ class LibGuidesBackendFactory extends AbstractBackendFactory
         $this->setup($sm);
         $configReader = $this->serviceLocator
             ->get(\VuFind\Config\PluginManager::class);
-        $this->libGuidesConfig = $configReader->get('LibGuides');
+        $this->libGuidesConfig = $configReader->get($this->getServiceName());
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
             $this->logger = $this->serviceLocator->get(\VuFind\Log\Logger::class);
         }
@@ -153,7 +163,7 @@ class LibGuidesBackendFactory extends AbstractBackendFactory
         $manager = $this->serviceLocator
             ->get(\VuFind\RecordDriver\PluginManager::class);
         $callback = function ($data) use ($manager) {
-            $driver = $manager->get('LibGuides');
+            $driver = $manager->get($this->getServiceName());
             $driver->setRawData($data);
             return $driver;
         };

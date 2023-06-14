@@ -2221,8 +2221,8 @@ class SierraRest extends AbstractBase implements
                 ['v5', 'holdings'],
                 [
                     'bibIds' => $this->extractBibId($id),
-                    //'deleted' => 'false',
-                    //'suppressed' => 'false',
+                    'deleted' => 'false',
+                    'suppressed' => 'false',
                     'fields' => 'fixedFields,varFields',
                 ],
                 'GET'
@@ -2231,7 +2231,7 @@ class SierraRest extends AbstractBase implements
                 $location = '';
                 foreach ($entry['fixedFields'] as $code => $field) {
                     if (
-                        $code === static::HOLDINGS_LOCATION_FIELD
+                        (string)$code === static::HOLDINGS_LOCATION_FIELD
                         || $field['label'] === 'LOCATION'
                     ) {
                         $location = $field['value'];
@@ -2319,8 +2319,10 @@ class SierraRest extends AbstractBase implements
                 'item_id' => 'HLD_' . $holdings[0]['id'],
                 'location' => $location,
                 'requests_placed' => 0,
+                'number' => '',
                 'status' => '',
                 'use_unknown_message' => true,
+                'reserve' => 'N',
                 'availability' => false,
                 'duedate' => '',
                 'barcode' => '',
