@@ -3,7 +3,7 @@
  * Factory for Doctrine connection. May be used as a service or as a standard
  * Laminas factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Db;
 
 use Doctrine\DBAL\Connection;
@@ -146,7 +147,7 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
                 // TODO: fix/test
                 return 'Oracle';
             case 'pgsql':
-                // TODO: fix/test:
+                // TODO: fix/test
                 return 'Pdo_Pgsql';
         }
         return $type;
@@ -241,7 +242,7 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         $credentials = $matches[1] ?? null;
         $host = $port = null;
         if (isset($matches[2])) {
-            if (strpos($matches[2], ':') !== false) {
+            if (str_contains($matches[2], ':')) {
                 [$host, $port] = explode(':', $matches[2]);
             } else {
                 $host = $matches[2];

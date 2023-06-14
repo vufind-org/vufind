@@ -1,11 +1,12 @@
 <?php
+
 /**
  * Catalog Connection Class
  *
  * This wrapper works with a driver class to pass information from the ILS to
  * VuFind.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -29,6 +30,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS;
 
 use Laminas\Log\LoggerAwareInterface;
@@ -56,6 +58,27 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
+
+    /**
+     * Status code for unavailable items
+     *
+     * @var int
+     */
+    public const ITEM_STATUS_UNAVAILABLE = 0;
+
+    /**
+     * Status code for available items
+     *
+     * @var int
+     */
+    public const ITEM_STATUS_AVAILABLE = 1;
+
+    /**
+     * Status code for items with uncertain availability
+     *
+     * @var int
+     */
+    public const ITEM_STATUS_UNCERTAIN = 2;
 
     /**
      * Has the driver been initialized yet?
@@ -227,7 +250,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         // done so!
         if ($this->hasNoILSFailover()) {
             $noILS = $this->driverManager->get('NoILS');
-            if (get_class($noILS) != $this->getDriverClass()) {
+            if ($noILS::class != $this->getDriverClass()) {
                 $this->setDriver($noILS);
                 $this->initializeDriver();
                 return true;
@@ -350,7 +373,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         // should contain 'id' and 'patron' keys; this isn't exactly the same as
         // the full parameter expected by placeHold() but should contain the
         // necessary details for determining eligibility.
-        if ($this->getHoldsMode() != "none"
+        if (
+            $this->getHoldsMode() != "none"
             && $this->checkCapability('placeHold', [$params ?: []])
             && isset($functionConfig['HMACKeys'])
         ) {
@@ -409,12 +433,14 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         // We can't pass exactly accurate parameters to checkCapability in this
         // context, so we'll just pass along $params as the best available
         // approximation.
-        if (isset($this->config->cancel_holds_enabled)
+        if (
+            isset($this->config->cancel_holds_enabled)
             && $this->config->cancel_holds_enabled == true
             && $this->checkCapability('cancelHolds', [$params ?: []])
         ) {
             $response = ['function' => "cancelHolds"];
-        } elseif (isset($this->config->cancel_holds_enabled)
+        } elseif (
+            isset($this->config->cancel_holds_enabled)
             && $this->config->cancel_holds_enabled == true
             && $this->checkCapability('getCancelHoldLink', [$params ?: []])
         ) {
@@ -444,12 +470,14 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         // We can't pass exactly accurate parameters to checkCapability in this
         // context, so we'll just pass along $params as the best available
         // approximation.
-        if (isset($this->config->renewals_enabled)
+        if (
+            isset($this->config->renewals_enabled)
             && $this->config->renewals_enabled == true
             && $this->checkCapability('renewMyItems', [$params ?: []])
         ) {
             $response = ['function' => "renewMyItems"];
-        } elseif (isset($this->config->renewals_enabled)
+        } elseif (
+            isset($this->config->renewals_enabled)
             && $this->config->renewals_enabled == true
             && $this->checkCapability('renewMyItemsLink', [$params ?: []])
         ) {
@@ -516,7 +544,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     ) {
         $response = false;
 
-        if (isset($this->config->cancel_storage_retrieval_requests_enabled)
+        if (
+            isset($this->config->cancel_storage_retrieval_requests_enabled)
             && $this->config->cancel_storage_retrieval_requests_enabled
         ) {
             $check = $this->checkCapability(
@@ -528,7 +557,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             } else {
                 $cancelParams = [
                     $params ?: [],
-                    $params['patron'] ?? null
+                    $params['patron'] ?? null,
                 ];
                 $check2 = $this->checkCapability(
                     'getCancelStorageRetrievalRequestLink',
@@ -536,7 +565,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
                 );
                 if ($check2) {
                     $response = [
-                        'function' => 'getCancelStorageRetrievalRequestLink'
+                        'function' => 'getCancelStorageRetrievalRequestLink',
                     ];
                 }
             }
@@ -563,7 +592,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
 
         // $params doesn't include all of the keys used by
         // placeILLRequest, but it is the best we can do in the context.
-        if ($this->checkCapability('placeILLRequest', [$params ?: []])
+        if (
+            $this->checkCapability('placeILLRequest', [$params ?: []])
             && isset($functionConfig['HMACKeys'])
         ) {
             $response = ['function' => 'placeILLRequest'];
@@ -601,7 +631,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     {
         $response = false;
 
-        if (isset($this->config->cancel_ill_requests_enabled)
+        if (
+            isset($this->config->cancel_ill_requests_enabled)
             && $this->config->cancel_ill_requests_enabled
         ) {
             $check = $this->checkCapability(
@@ -613,7 +644,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             } else {
                 $cancelParams = [
                     $params ?: [],
-                    $params['patron'] ?? null
+                    $params['patron'] ?? null,
                 ];
                 $check2 = $this->checkCapability(
                     'getCancelILLRequestLink',
@@ -621,7 +652,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
                 );
                 if ($check2) {
                     $response = [
-                        'function' => 'getCancelILLRequestLink'
+                        'function' => 'getCancelILLRequestLink',
                     ];
                 }
             }
@@ -694,6 +725,29 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     protected function checkMethodgetMyTransactionHistory($functionConfig, $params)
     {
         if ($this->checkCapability('getMyTransactionHistory', [$params ?: []])) {
+            return $functionConfig;
+        }
+        return false;
+    }
+
+    /**
+     * Check Purge Historic Loans
+     *
+     * A support method for checkFunction(). This is responsible for checking
+     * the driver configuration to determine if the system supports purging of
+     * historic loans.
+     *
+     * @param array $functionConfig Function configuration
+     * @param array $params         Patron data
+     *
+     * @return mixed On success, an associative array with specific function keys
+     * and values; on failure, false.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function checkMethodpurgeTransactionHistory($functionConfig, $params)
+    {
+        if ($this->checkCapability('purgeTransactionHistory', [$params ?: []])) {
             return $functionConfig;
         }
         return false;
@@ -1030,7 +1084,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         if (!isset($result['count'])) {
             $result = [
                 'count' => count($result),
-                'records' => $result
+                'records' => $result,
             ];
         }
 

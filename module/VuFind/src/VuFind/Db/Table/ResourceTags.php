@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Table Definition for resource_tags
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
@@ -177,7 +179,7 @@ class ResourceTags extends Gateway
                         'DISTINCT(?)',
                         ['resource_tags.resource_id'],
                         [Expression::TYPE_IDENTIFIER]
-                    ), Select::SQL_STAR
+                    ), Select::SQL_STAR,
                 ]
             );
             $select->join(
@@ -239,7 +241,7 @@ class ResourceTags extends Gateway
                 'resource_tags.tag_id = t.id',
                 [
                     'tag' =>
-                        $this->caseSensitive ? 'tag' : new Expression('lower(tag)')
+                        $this->caseSensitive ? 'tag' : new Expression('lower(tag)'),
                 ]
             );
             $select->join(
@@ -479,7 +481,7 @@ class ResourceTags extends Gateway
                         'MIN(?)',
                         ['id'],
                         [Expression::TYPE_IDENTIFIER]
-                    )
+                    ),
                 ]
             );
             $select->group(['resource_id', 'tag_id', 'list_id', 'user_id']);

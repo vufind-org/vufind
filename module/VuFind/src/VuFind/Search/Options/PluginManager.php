@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Search options plugin manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\Search\Options;
 
 /**
@@ -52,6 +54,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'emptyset' => \VuFind\Search\EmptySet\Options::class,
         'favorites' => \VuFind\Search\Favorites\Options::class,
         'libguides' => \VuFind\Search\LibGuides\Options::class,
+        'libguidesaz' => \VuFind\Search\LibGuidesAZ\Options::class,
         'mixedlist' => \VuFind\Search\MixedList\Options::class,
         'pazpar2' => \VuFind\Search\Pazpar2\Options::class,
         'primo' => \VuFind\Search\Primo\Options::class,
@@ -84,6 +87,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         \VuFind\Search\EmptySet\Options::class => OptionsFactory::class,
         \VuFind\Search\Favorites\Options::class => OptionsFactory::class,
         \VuFind\Search\LibGuides\Options::class => OptionsFactory::class,
+        \VuFind\Search\LibGuidesAZ\Options::class => OptionsFactory::class,
         \VuFind\Search\MixedList\Options::class => OptionsFactory::class,
         \VuFind\Search\Pazpar2\Options::class => OptionsFactory::class,
         \VuFind\Search\Primo\Options::class => OptionsFactory::class,

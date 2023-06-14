@@ -2,7 +2,7 @@
 /**
  * Database service for resource.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2023.
  *
@@ -25,6 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
+
 namespace VuFind\Db\Service;
 
 use Doctrine\ORM\EntityManager;
@@ -46,8 +47,7 @@ use VuFind\Record\Loader;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class ResourceService extends AbstractService
-implements \VuFind\Db\Service\ServiceAwareInterface, LoggerAwareInterface
+class ResourceService extends AbstractService implements \VuFind\Db\Service\ServiceAwareInterface, LoggerAwareInterface
 {
     use \VuFind\Db\Service\ServiceAwareTrait;
     use LoggerAwareTrait;

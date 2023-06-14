@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Overdrive Connector factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -28,6 +29,7 @@
  *           License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\DigitalContent;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;

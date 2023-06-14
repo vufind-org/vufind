@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Holds trait (for subclasses of AbstractRecord)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Controller;
 
 /**
@@ -58,7 +60,7 @@ trait HoldsTrait
             'Holds',
             [
                 'id' => $driver->getUniqueID(),
-                'patron' => $patron
+                'patron' => $patron,
             ]
         );
         if (!$checkHolds) {
@@ -105,7 +107,8 @@ trait HoldsTrait
                     || count($requestGroups) > 1));
 
         $pickupDetails = $gatheredDetails;
-        if (!$requestGroupNeeded && !empty($requestGroups)
+        if (
+            !$requestGroupNeeded && !empty($requestGroups)
             && count($requestGroups) == 1
         ) {
             // Request group selection is not required, but we have a single request
@@ -120,6 +123,17 @@ trait HoldsTrait
             $this->flashMessenger()
                 ->addErrorMessage('No pickup locations available');
             return $this->redirectToRecord('#top');
+        }
+
+        $proxiedUsers = [];
+        if (
+            in_array('proxiedUsers', $extraHoldFields)
+            && $catalog->checkCapability(
+                'getProxiedUsers',
+                [$driver->getUniqueID(), $patron, $gatheredDetails]
+            )
+        ) {
+            $proxiedUsers = $catalog->getProxiedUsers($patron);
         }
 
         // Process form submissions if necessary:
@@ -156,7 +170,8 @@ trait HoldsTrait
                 // if successful, we will redirect and can stop here.
 
                 // Pass start date to the driver only if it's in the future:
-                if (!empty($gatheredDetails['startDate'])
+                if (
+                    !empty($gatheredDetails['startDate'])
                     && $dateValidationResults['startDateTS'] < strtotime('+1 day')
                 ) {
                     $gatheredDetails['startDate'] = '';
@@ -178,9 +193,11 @@ trait HoldsTrait
                 if (isset($results['success']) && $results['success'] == true) {
                     $msg = [
                         'html' => true,
-                        'msg' => 'hold_place_success_html',
+                        'msg' => empty($gatheredDetails['proxiedUser'])
+                            ? 'hold_place_success_html'
+                            : 'proxy_hold_place_success_html',
                         'tokens' => [
-                            '%%url%%' => $this->url()->fromRoute('holds-list')
+                            '%%url%%' => $this->url()->fromRoute('holds-list'),
                         ],
                     ];
                     $this->flashMessenger()->addMessage($msg, 'success');
@@ -188,7 +205,8 @@ trait HoldsTrait
                         $this->flashMessenger()
                             ->addWarningMessage($results['warningMessage']);
                     }
-                    return $this->redirectToRecord('#top');
+                    $this->getViewRenderer()->plugin('session')->put('reset_account_status', true);
+                    return $this->redirectToRecord($this->inLightbox() ? '?layout=lightbox' : '');
                 } else {
                     // Failure: use flash messenger to display messages, stay on
                     // the current form.
@@ -209,15 +227,17 @@ trait HoldsTrait
         $defaultStartDate = $dateConverter->convertToDisplayDate('U', time());
 
         // Find and format the default required date:
-        $defaultRequiredDate = $dateConverter->convertToDisplayDate(
-            'U',
-            $this->holds()->getDefaultRequiredDate(
-                $checkHolds,
-                $catalog,
-                $patron,
-                $gatheredDetails
-            )
+        $defaultRequiredTS = $this->holds()->getDefaultRequiredDate(
+            $checkHolds,
+            $catalog,
+            $patron,
+            $gatheredDetails
         );
+        $defaultRequiredDate = $defaultRequiredTS
+            ? $dateConverter->convertToDisplayDate(
+                'U',
+                $defaultRequiredTS
+            ) : '';
         try {
             $defaultPickup
                 = $catalog->getDefaultPickUpLocation($patron, $gatheredDetails);
@@ -250,6 +270,7 @@ trait HoldsTrait
                 'requestGroups',
                 'defaultRequestGroup',
                 'requestGroupNeeded',
+                'proxiedUsers',
                 'helpText',
                 'helpTextHtml'
             )

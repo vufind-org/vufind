@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Record driver view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use VuFind\Cover\Router as CoverRouter;
@@ -237,7 +239,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
                 'driver' => $this->driver,
                 'list' => $list,
                 'user' => $user,
-                'lists' => $lists
+                'lists' => $lists,
             ]
         );
     }
@@ -350,9 +352,14 @@ class Record extends \Laminas\View\Helper\AbstractHelper
             'link-' . $type . '.phtml',
             ['driver' => $this->driver, 'lookfor' => $lookfor]
         );
+
+        $prepend = (!str_contains($link, '?')) ? '?' : '&amp;';
+
         $link .= $this->getView()->plugin('searchTabs')
             ->getCurrentHiddenFilterParams(
-                $this->driver->getSearchBackendIdentifier()
+                $this->driver->getSearchBackendIdentifier(),
+                false,
+                $prepend
             );
         return $link;
     }
@@ -367,7 +374,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     public function getTab(\VuFind\RecordTab\TabInterface $tab)
     {
         $context = ['driver' => $this->driver, 'tab' => $tab];
-        $classParts = explode('\\', get_class($tab));
+        $classParts = explode('\\', $tab::class);
         $template = 'RecordTab/' . strtolower(array_pop($classParts)) . '.phtml';
         $oldContext = $this->contextHelper->apply($context);
         $html = $this->view->render($template);
@@ -502,7 +509,8 @@ class Record extends \Laminas\View\Helper\AbstractHelper
      */
     protected function getCoverSize($context, $default = 'medium')
     {
-        if (isset($this->config->Content->coversize)
+        if (
+            isset($this->config->Content->coversize)
             && !$this->config->Content->coversize
         ) {
             // covers disabled entirely
@@ -564,7 +572,8 @@ class Record extends \Laminas\View\Helper\AbstractHelper
                 return false;
         }
 
-        if (!isset($this->config->QRCode->$key)
+        if (
+            !isset($this->config->QRCode->$key)
             || !$this->config->QRCode->$key
         ) {
             return false;
@@ -578,7 +587,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
             $extra + ['driver' => $this->driver]
         );
         $qrcode = [
-            "text" => $text, 'level' => $level, 'size' => $size, 'margin' => $margin
+            "text" => $text, 'level' => $level, 'size' => $size, 'margin' => $margin,
         ];
 
         $urlHelper = $this->getView()->plugin('url');

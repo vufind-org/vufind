@@ -1,9 +1,10 @@
 <?php
+
 /**
  * Database utility class. May be used as a service or as a standard
  * Laminas factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,13 +27,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Db;
 
 use Laminas\Config\Config;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
@@ -216,7 +217,7 @@ class AdapterFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         $credentials = $matches[1] ?? null;
         $host = $port = null;
         if (isset($matches[2])) {
-            if (strpos($matches[2], ':') !== false) {
+            if (str_contains($matches[2], ':')) {
                 [$host, $port] = explode(':', $matches[2]);
             } else {
                 $host = $matches[2];

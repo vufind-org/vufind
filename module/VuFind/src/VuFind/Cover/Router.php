@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Cover image router
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/configuration:external_content Wiki
  */
+
 namespace VuFind\Cover;
 
 use VuFind\Cover\Loader as CoverLoader;
@@ -158,7 +160,8 @@ class Router implements \Laminas\Log\LoggerAwareInterface
             }
             try {
                 // Is the current provider appropriate for the available data?
-                if ($handler['handler']->supports($ids)
+                if (
+                    $handler['handler']->supports($ids)
                     && $handler['handler']->useDirectUrls()
                 ) {
                     $nextMetadata = $handler['handler']
@@ -171,7 +174,7 @@ class Router implements \Laminas\Log\LoggerAwareInterface
                 }
             } catch (\Exception $e) {
                 $this->debug(
-                    get_class($e) . ' during processing of '
+                    $e::class . ' during processing of '
                     . get_class($handler['handler']) . ': ' . $e->getMessage()
                 );
             }

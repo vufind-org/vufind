@@ -1,8 +1,9 @@
 <?php
+
 /**
  * HTTP download exception
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Exception;
 
 use Laminas\Http\Headers;
@@ -81,10 +83,10 @@ class HttpDownloadException extends \Exception implements HttpStatusInterface
     public function __construct(
         string $message,
         string $url,
-        ?int $statusCode=null,
-        ?Headers $responseHeaders=null,
-        ?string $responseBody=null,
-        ?\Throwable $previous=null
+        ?int $statusCode = null,
+        ?Headers $responseHeaders = null,
+        ?string $responseBody = null,
+        ?\Throwable $previous = null
     ) {
         $this->url = $url;
         $this->statusCode = $statusCode;

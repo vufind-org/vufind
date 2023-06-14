@@ -2,7 +2,7 @@
 /**
  * Database service for Comments.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2023.
  *
@@ -25,6 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
+
 namespace VuFind\Db\Service;
 
 use VuFind\Db\Entity\Comments;
@@ -38,8 +39,7 @@ use VuFind\Db\Entity\Comments;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class CommentsService extends AbstractService
-implements \VuFind\Db\Service\ServiceAwareInterface
+class CommentsService extends AbstractService implements \VuFind\Db\Service\ServiceAwareInterface
 {
     use \VuFind\Db\Service\ServiceAwareTrait;
 
@@ -51,7 +51,7 @@ implements \VuFind\Db\Service\ServiceAwareInterface
     public function createEntity(): Comments
     {
         $class = $this->getEntityClass(Comments::class);
-        return new $class;
+        return new $class();
     }
 
     /**

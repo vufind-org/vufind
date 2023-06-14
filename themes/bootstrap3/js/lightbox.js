@@ -1,4 +1,4 @@
-/*global recaptchaOnLoad, resetCaptcha, VuFind */
+/*global VuFind, getFocusableNodes, recaptchaOnLoad, resetCaptcha */
 VuFind.register('lightbox', function Lightbox() {
   // State
   var _originalUrl = false;
@@ -68,7 +68,13 @@ VuFind.register('lightbox', function Lightbox() {
    *
    * Form data options:
    *
-   * data-lightbox-ignore = do not submit this form in lightbox
+   * data-lightbox-ignore        do not submit this form in lightbox
+   *
+   * Script data options:
+   *
+   * data-lightbox-run           run the script when lightbox content is shown
+   * data-lightbox-run="always"  run the script even if only a success message is displayed
+   *
    */
   // function declarations to avoid style warnings about circular references
   var _constrainLink;
@@ -77,8 +83,10 @@ VuFind.register('lightbox', function Lightbox() {
     if (typeof content !== "string") {
       return;
     }
-    // Isolate successes.
+    // Isolate any success messages and scripts that should always run
     var htmlDiv = $('<div/>').html(VuFind.updateCspNonce(content));
+    var runScripts = htmlDiv.find('script[data-lightbox-run]');
+    var alwaysRunScripts = htmlDiv.find('script[data-lightbox-run="always"]');
     var alerts = htmlDiv.find('.flash-message.alert-success:not([data-lightbox-ignore])');
     if (alerts.length > 0) {
       var msgs = alerts.toArray().map(function getSuccessHtml(el) {
@@ -90,6 +98,10 @@ VuFind.register('lightbox', function Lightbox() {
         close();
       } else {
         showAlert(msgs, 'success');
+        // Add any scripts to head to run them
+        alwaysRunScripts.each(function addScript(i, script) {
+          $(document).find('head').append(script);
+        });
       }
       return;
     }
@@ -113,14 +125,18 @@ VuFind.register('lightbox', function Lightbox() {
       $(forms[i]).on('submit', _formSubmit);
     }
     // Select all checkboxes
-    $('#modal').find('.checkbox-select-all').change(function lbSelectAllCheckboxes() {
+    $('#modal').find('.checkbox-select-all').on("change", function lbSelectAllCheckboxes() {
       $(this).closest('.modal-body').find('.checkbox-select-item').prop('checked', this.checked);
     });
-    $('#modal').find('.checkbox-select-item').change(function lbSelectAllDisable() {
+    $('#modal').find('.checkbox-select-item').on("change", function lbSelectAllDisable() {
       $(this).closest('.modal-body').find('.checkbox-select-all').prop('checked', false);
     });
     // Recaptcha
     recaptchaOnLoad();
+    // Add any scripts to head to run them
+    runScripts.each(function addScript(i2, script) {
+      $(document).find('head').append(script);
+    });
   }
 
   var _xhr = false;
@@ -334,21 +350,11 @@ VuFind.register('lightbox', function Lightbox() {
   };
 
   /**
-   * Keyboard and focus controllers
-   * Adapted from Micromodal
-   * - https://github.com/ghosh/Micromodal/blob/master/lib/src/index.js
-   */
-  var FOCUSABLE_ELEMENTS = ['a[href]', 'area[href]', 'input:not([disabled]):not([type="hidden"]):not([aria-hidden])', 'select:not([disabled]):not([aria-hidden])', 'textarea:not([disabled]):not([aria-hidden])', 'button:not([disabled]):not([aria-hidden])', 'iframe', 'object', 'embed', '[contenteditable]', '[tabindex]:not([tabindex^="-"])'];
-  function getFocusableNodes () {
-    var nodes = _modal[0].querySelectorAll(FOCUSABLE_ELEMENTS);
-    return [].slice.apply(nodes);
-  }
-  /**
    * Tries to set focus on a node which is not a close trigger
    * if no other nodes exist then focuses on first close trigger
    */
   function setFocusToFirstNode() {
-    var focusableNodes = getFocusableNodes();
+    var focusableNodes = getFocusableNodes(_modal.get(0));
 
     // no focusable nodes
     if (focusableNodes.length === 0) return;
@@ -370,7 +376,7 @@ VuFind.register('lightbox', function Lightbox() {
   }
 
   function retainFocus(event) {
-    var focusableNodes = getFocusableNodes();
+    var focusableNodes = getFocusableNodes(_modal.get(0));
 
     // no focusable nodes
     if (focusableNodes.length === 0) return;
@@ -424,24 +430,24 @@ VuFind.register('lightbox', function Lightbox() {
   function bind(el) {
     var target = el || document;
     $(target).find('a[data-lightbox]')
-      .unbind('click', _constrainLink)
+      .off('click', _constrainLink)
       .on('click', _constrainLink);
     $(target).find('form[data-lightbox]')
-      .unbind('submit', _formSubmit)
+      .off('submit', _formSubmit)
       .on('submit', _formSubmit);
 
     // Handle submit buttons attached to a form as well as those in a form. Store
     // information about which button was clicked here as checking focused button
     // doesn't work on all browsers and platforms.
     $('form[data-lightbox]').each(function bindFormSubmitsLightbox(i, form) {
-      $(form).find('[type=submit]').click(_storeClickedStatus);
-      $('[type="submit"][form="' + form.id + '"]').click(_storeClickedStatus);
+      $(form).find('[type=submit]').on("click", _storeClickedStatus);
+      $('[type="submit"][form="' + form.id + '"]').on("click", _storeClickedStatus);
     });
 
     // Display images in the lightbox
     $('[data-lightbox-image]', el).each(function lightboxOpenImage(i, link) {
-      $(link).unbind("click", _constrainLink);
-      $(link).bind("click", function lightboxImageRender(event) {
+      $(link).off("click", _constrainLink);
+      $(link).on("click", function lightboxImageRender(event) {
         event.preventDefault();
         var url = link.dataset.lightboxHref || link.href || link.src;
         var imageCheck = $.ajax({

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * StartPage Plugin Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Sitemap\Plugin;
 
 use VuFind\Sitemap\Plugin\StartPage;
@@ -63,7 +65,7 @@ class StartPageTest extends \PHPUnit\Framework\TestCase
     public function testOptions(): void
     {
         // Use anonymous class to test the callable verbose message option:
-        $messageCollector = new class {
+        $messageCollector = new class () {
             /**
              * Messages collected
              */

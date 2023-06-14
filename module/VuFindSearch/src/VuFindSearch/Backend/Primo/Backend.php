@@ -3,7 +3,7 @@
 /**
  * Primo backend.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -26,15 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\Primo;
 
 use VuFindSearch\Backend\AbstractBackend;
-
 use VuFindSearch\Backend\Exception\BackendException;
-
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
-
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Response\RecordCollectionInterface;
 
@@ -240,7 +238,7 @@ class Backend extends AbstractBackend
         // Most parameters need to be flattened from array format, but a few
         // should remain as arrays:
         $arraySettings = [
-            'query', 'facets', 'filterList', 'groupFilters', 'rangeFilters'
+            'query', 'facets', 'filterList', 'groupFilters', 'rangeFilters',
         ];
         foreach ($params as $key => $param) {
             $options[$key] = in_array($key, $arraySettings) ? $param : $param[0];

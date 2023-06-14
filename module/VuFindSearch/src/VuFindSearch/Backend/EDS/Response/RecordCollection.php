@@ -3,7 +3,7 @@
 /**
  * EDS API record collection.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) EBSCO Industries 2013
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\EDS\Response;
 
 use VuFindSearch\Response\AbstractRecordCollection;
@@ -131,7 +132,8 @@ class RecordCollection extends AbstractRecordCollection
      */
     public function getOffset()
     {
-        if (isset($this->response['SearchRequestGet'])
+        if (
+            isset($this->response['SearchRequestGet'])
             && !empty($this->response['SearchRequestGet']['QueryString'])
         ) {
             $qsParameters = explode(

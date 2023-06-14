@@ -6,7 +6,7 @@
     <?php [0 => $comment, 'firstname' => $firstname, 'lastname' => $lastname] = $commentRow; ?>
     <div class="comment">
       <div class="comment-name">
-        <strong><?=null === $comment->getUser()->getId() ? $this->transEsc('comment_anonymous_user') : $this->escapeHtml(trim($firstname . ' ' . $lastname))?></strong><br/>
+        <strong><?=null === $comment->getUser()->getId() ? $this->transEsc('comment_anonymous_user') : $this->escapeHtml(trim($firstname . ' ' . $lastname))?></strong><br>
         <small>
           <?=$this->escapeHtml($comment->getCreated()->format('Y-m-d H:i:s'))?>
           <?php if (($user = $this->auth()->isLoggedIn()) && $comment->getUser()->getId() == $user->id): ?>

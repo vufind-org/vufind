@@ -36,13 +36,13 @@
 <div class="record source<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
   <?php $sidebarList = $this->related()->getList($this->driver); ?>
   <div class="<?=$this->layoutClass('mainbody')?><?=count($sidebarList) < 1 ? ' solo' : '' ?>">
-    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" />
-    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource" />
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId">
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource">
     <?=$this->flashmessages()?>
     <?=$this->record($this->driver)->getCoreMetadata()?>
 
     <?php if (count($this->tabs) > 0): ?>
-      <a name="tabnav"></a>
+      <a id="tabnav"></a>
       <div class="record-tabs">
         <ul class="nav nav-tabs" role="tablist">
           <?php foreach ($this->tabs as $tab => $obj): ?>
@@ -57,8 +57,12 @@
                 $tabClasses[] = 'initiallyActive';
                 $activeTabObj = $obj;
               }
-              if (!$obj->isVisible()) { $tabClasses[] = 'hidden'; }
-              if (!$obj->supportsAjax()) { $tabClasses[] = 'noajax'; }
+              if (!$obj->isVisible()) {
+                $tabClasses[] = 'hidden';
+              }
+              if (!$obj->supportsAjax()) {
+                $tabClasses[] = 'noajax';
+              }
             ?>
             <li class="<?=implode(' ', $tabClasses)?>" role="tab" data-tab="<?=$this->escapeHtmlAttr($tabName)?>"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>>
               <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, $tab))?>#tabnav" data-lightbox-ignore>
@@ -78,10 +82,10 @@
       </div>
     <?php endif; ?>
 
-    <?=$this->driver->supportsCoinsOpenURL()?'<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenURL()) . '"></span>':''?>
+    <?=$this->driver->supportsCoinsOpenURL() ? '<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenURL()) . '"></span>' : ''?>
   </div>
 
-  <div class="<?=$this->layoutClass('sidebar')?>">
+  <div class="<?=$this->layoutClass('sidebar')?>" role="region" aria-label="<?=$this->translate('Related Items')?>">
     <?php foreach ($sidebarList as $current): ?>
       <?=$this->related()->render($current)?>
     <?php endforeach; ?>

@@ -33,7 +33,7 @@
     <?php if (in_array('frozenThrough', $this->fields)): ?>
       <div class="form-group hold-frozen-through">
         <label for="frozen_through" class="control-label"><?=$this->transEsc('hold_edit_frozen_through')?>:</label>
-        <input id="frozen_through" type="text" name="gatheredDetails[frozenThrough]" value="<?=$this->escapeHtmlAttr($this->gatheredDetails['frozenThrough'] ?? '')?>" size="10" class="form-control"/>
+        <input id="frozen_through" type="text" name="gatheredDetails[frozenThrough]" value="<?=$this->escapeHtmlAttr($this->gatheredDetails['frozenThrough'] ?? '')?>" size="10" class="form-control">
         (<?=$this->dateTime()->getDisplayDateFormat()?>)
       </div>
     <?php endif; ?>
@@ -42,7 +42,7 @@
   <?php if (in_array('startDate', $this->fields)): ?>
     <div class="form-group hold-start-date">
       <label for="start_date" class="control-label"><?=$this->transEsc('hold_start_date')?>:</label>
-      <input id="start_date" type="text" name="gatheredDetails[startDate]" value="<?=$this->escapeHtmlAttr($this->gatheredDetails['startDate'] ?? '')?>" size="10" class="form-control"/>
+      <input id="start_date" type="text" name="gatheredDetails[startDate]" value="<?=$this->escapeHtmlAttr($this->gatheredDetails['startDate'] ?? '')?>" size="10" class="form-control">
         (<?=$this->dateTime()->getDisplayDateFormat()?>)
     </div>
   <?php endif; ?>
@@ -50,7 +50,7 @@
   <?php if (in_array("requiredByDate", $this->fields)): ?>
     <div class="form-group hold-required-by">
       <label for="required_by_date" class="control-label"><?=$this->transEsc('hold_required_by')?>:</label>
-      <input id="required_by_date" type="text" name="gatheredDetails[requiredBy]" value="<?=$this->escapeHtmlAttr($this->gatheredDetails['requiredBy'] ?? '')?>" size="10" class="form-control"/>
+      <input id="required_by_date" type="text" name="gatheredDetails[requiredBy]" value="<?=$this->escapeHtmlAttr($this->gatheredDetails['requiredBy'] ?? '')?>" size="10" class="form-control">
       (<?=$this->dateTime()->getDisplayDateFormat()?>)
     </div>
   <?php endif; ?>
@@ -78,7 +78,7 @@
   <?php endif; ?>
 
   <div class="form-group">
-    <input class="btn btn-primary" type="submit" name="updateHolds" value="<?=$this->transEscAttr('Save')?>"/>
+    <input class="btn btn-primary" type="submit" name="updateHolds" value="<?=$this->transEscAttr('Save')?>">
   </div>
 </form>
 
@@ -94,6 +94,6 @@
                 setupHoldEditForm();
             });
         }
-JS;
+        JS;
     echo $this->inlineScript()->appendScript($js);
 ?>

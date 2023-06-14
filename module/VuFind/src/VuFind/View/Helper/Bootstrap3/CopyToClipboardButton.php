@@ -1,10 +1,9 @@
 <?php
-declare(strict_types=1);
 
 /**
  * Helper class for creating copy to clipboard button
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2021.
  *
@@ -27,6 +26,9 @@ declare(strict_types=1);
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
+declare(strict_types=1);
+
 namespace VuFind\View\Helper\Bootstrap3;
 
 /**

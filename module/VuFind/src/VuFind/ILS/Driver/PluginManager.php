@@ -1,8 +1,9 @@
 <?php
+
 /**
  * ILS driver plugin manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use Laminas\ServiceManager\Factory\InvokableFactory;
@@ -82,7 +84,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         Aleph::class => AlephFactory::class,
-        Alma::class => AlmaFactory::class,
+        Alma::class => DriverWithDateConverterFactory::class,
         Amicus::class => InvokableFactory::class,
         DAIA::class => DriverWithDateConverterFactory::class,
         Demo::class => DemoFactory::class,

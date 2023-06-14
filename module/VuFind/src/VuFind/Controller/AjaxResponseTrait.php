@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Trait to allow AJAX response generation.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
+
 namespace VuFind\Controller;
 
 use VuFind\AjaxHandler\AjaxHandlerInterface as Ajax;
@@ -77,7 +79,8 @@ trait AjaxResponseTrait
             case 'application/javascript':
             case 'application/json':
                 $output = ['data' => $data];
-                if ('development' == APPLICATION_ENV
+                if (
+                    'development' == APPLICATION_ENV
                     && count(self::$php_errors) > 0
                 ) {
                     $output['php_errors'] = self::$php_errors;
@@ -182,7 +185,7 @@ trait AjaxResponseTrait
      */
     public static function storeError($errno, $errstr, $errfile, $errline)
     {
-        self::$php_errors[] = "ERROR [$errno] - " . $errstr . "<br />\n"
+        self::$php_errors[] = "ERROR [$errno] - " . $errstr . "<br>\n"
             . " Occurred in " . $errfile . " on line " . $errline . ".";
         return true;
     }

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Abstract results search model.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\Base;
 
 use Laminas\Paginator\Paginator;
@@ -178,6 +180,13 @@ abstract class Results
      * @var HierarchicalFacetHelperInterface
      */
     protected $hierarchicalFacetHelper = null;
+
+    /**
+     * Extra search details.
+     *
+     * @var ?array
+     */
+    protected $extraSearchBackendDetails = null;
 
     /**
      * Constructor
@@ -612,8 +621,6 @@ abstract class Results
      * @param array $data Extra data
      *
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function setExtraData(array $data): void
     {
@@ -787,6 +794,16 @@ abstract class Results
     }
 
     /**
+     * Get the extra search details
+     *
+     * @return ?array
+     */
+    public function getExtraSearchBackendDetails()
+    {
+        return $this->extraSearchBackendDetails;
+    }
+
+    /**
      * A helper method that converts the list of facets for the last search from
      * RecordCollection's facet list.
      *
@@ -821,7 +838,7 @@ abstract class Results
             // Initialize the settings for the current field
             $result[$field] = [
                 'label' => $filter[$field],
-                'list' => []
+                'list' => [],
             ];
             // Should we translate values for the current facet?
             $translate = in_array($field, $translatedFacets);

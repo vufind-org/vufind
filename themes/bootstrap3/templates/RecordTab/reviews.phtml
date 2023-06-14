@@ -11,7 +11,7 @@
       <?php if (!empty($review['Summary'])): ?>
         <p>
           <?php if (isset($review['Rating'])): ?>
-            <img src="<?=$this->imageLink($review['Rating'] . '.gif')?>" alt="<?=$review['Rating']?>/5 Stars"/>
+            <img src="<?=$this->imageLink($review['Rating'] . '.gif')?>" alt="<?=$review['Rating']?>/5 Stars">
           <?php endif; ?>
           <strong><?=$review['Summary']?></strong>
           <?php
@@ -30,7 +30,7 @@
         <?php endif; ?>
       </p>
       <?=$review['Copyright'] ?? ''?>
-      <hr/>
+      <hr>
     <?php endforeach; ?>
   <?php endforeach; ?>
 <?php else: ?>

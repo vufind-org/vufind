@@ -26,15 +26,15 @@
   <?php if (in_array('startDate', $this->extraHoldFields)): ?>
     <div class="form-group hold-start-date">
       <label class="control-label"><?=$this->transEsc('hold_start_date')?>:</label>
-      <input id="startDate" type="text" name="gatheredDetails[startDate]" value="<?=!empty($this->gatheredDetails['startDate']) ? $this->escapeHtmlAttr($this->gatheredDetails['startDate']) : $this->escapeHtmlAttr($this->defaultStartDate)?>" size="10" class="form-control"/>
+      <input id="startDate" type="text" name="gatheredDetails[startDate]" value="<?=!empty($this->gatheredDetails['startDate']) ? $this->escapeHtmlAttr($this->gatheredDetails['startDate']) : $this->escapeHtmlAttr($this->defaultStartDate)?>" size="10" class="form-control">
       (<?=$this->dateTime()->getDisplayDateFormat()?>)
     </div>
   <?php endif; ?>
 
-  <?php if (in_array("requiredByDate", $this->extraHoldFields)): ?>
+  <?php if (in_array("requiredByDate", $this->extraHoldFields) || in_array("requiredByDateOptional", $this->extraHoldFields)): ?>
     <div class="form-group hold-required-by">
-      <label class="control-label"><?=$this->transEsc("hold_required_by")?>:</label>
-      <input id="requiredByDate" type="text" name="gatheredDetails[requiredBy]" value="<?=!empty($this->gatheredDetails['requiredBy']) ? $this->escapeHtmlAttr($this->gatheredDetails['requiredBy']) : $this->escapeHtmlAttr($this->defaultRequiredDate)?>" size="10" class="form-control"/>
+      <label class="control-label"><?=$this->transEsc(in_array("requiredByDateOptional", $this->extraHoldFields) ? 'hold_required_by_optional' : 'hold_required_by')?>:</label>
+      <input id="requiredByDate" type="text" name="gatheredDetails[requiredBy]" value="<?=!empty($this->gatheredDetails['requiredBy']) ? $this->escapeHtmlAttr($this->gatheredDetails['requiredBy']) : $this->escapeHtmlAttr($this->defaultRequiredDate)?>" size="10" class="form-control">
       (<?=$this->dateTime()->getDisplayDateFormat()?>)
     </div>
   <?php endif; ?>
@@ -112,11 +112,28 @@
         </select>
       </div>
     <?php else: ?>
-      <input type="hidden" name="gatheredDetails[pickUpLocation]" value="<?=$this->escapeHtmlAttr($this->defaultPickup)?>" />
+      <input type="hidden" name="gatheredDetails[pickUpLocation]" value="<?=$this->escapeHtmlAttr($this->defaultPickup)?>">
+    <?php endif; ?>
+
+    <?php if (!empty($this->proxiedUsers)): ?>
+      <div class="form-group hold-proxied-users">
+        <label class="control-label"><?=$this->transEsc("proxied_user")?>:</label>
+        <?php $selectedProxy = $this->gatheredDetails['proxiedUser'] ?? ''; ?>
+        <select id="proxiedUser" name="gatheredDetails[proxiedUser]" class="form-control">
+          <option value=""<?php if (empty($selectedProxy)): ?> selected="selected"<?php endif; ?>>
+            <?=$this->transEsc('no_proxied_user')?>
+          </option>
+          <?php foreach ($this->proxiedUsers as $userId => $userName): ?>
+            <option value="<?=$this->escapeHtmlAttr($userId)?>"<?=($selectedProxy == $userId) ? ' selected="selected"' : ''?>>
+              <?=$this->escapeHtml($userName)?>
+            </option>
+          <?php endforeach; ?>
+        </select>
+      </div>
     <?php endif; ?>
   <?php endif; ?>
   <div class="form-group">
-    <input class="btn btn-primary" type="submit" name="placeHold" value="<?=$this->transEscAttr('request_submit_text')?>"/>
+    <input class="btn btn-primary" type="submit" name="placeHold" value="<?=$this->transEscAttr('request_submit_text')?>">
   </div>
 </form>
 
@@ -132,7 +149,7 @@
                 setUpHoldRequestForm("{$this->escapeHtml($this->driver->getUniqueId())}");
             });
         }
-JS;
+        JS;
 
     echo $this->inlineScript()->appendScript($js);
 ?>

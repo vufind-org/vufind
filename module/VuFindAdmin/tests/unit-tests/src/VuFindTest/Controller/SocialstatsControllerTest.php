@@ -3,7 +3,7 @@
 /**
  * Unit tests for Socialstats controller.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2023.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Controller;
 
 use VuFind\Db\Service\CommentsService;
@@ -67,7 +68,7 @@ class SocialstatsControllerTest extends \PHPUnit\Framework\TestCase
         $userResourceStats = ['users' => 5,
             'lists' =>4,
             'resources' => 7,
-            'total' => 23
+            'total' => 23,
         ];
         $userResourceService = $this->getMockBuilder(UserResourceService::class)
             ->disableOriginalConstructor()->onlyMethods(['getStatistics'])

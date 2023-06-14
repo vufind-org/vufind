@@ -3,7 +3,7 @@
 /**
  * Class TemplateBasedFactory
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2020.
  *
@@ -26,6 +26,7 @@
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\ContentBlock;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -42,8 +43,7 @@ use Psr\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class TemplateBasedFactory
-implements \Laminas\ServiceManager\Factory\FactoryInterface
+class TemplateBasedFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object

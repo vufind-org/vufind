@@ -45,11 +45,18 @@
   <property name="snooze_multiplier" value="1" /><!-- can be used to slow down tests (selenium only) -->
   <property name="solr_startup_sleep" value="0" />
   <property name="solr_additional_jvm_options" value="-Dlog4j2.formatMsgNoLookups=true" />
-  <property name="solr_version" value="9.1.0" />
+  <property name="solr_version" value="9.1.1" />
   <property name="skip_phpdoc" value="false" />
   <property name="phpdoc_version" value="3.3.1" />
+  <property name="html_validator" value="" /><!-- set to base address of NU Validator (e.g. http://localhost:8888/) for HTML validation during Mink tests -->
+  <property name="html_validator_fail_tests" value="1" /><!-- set to 0 to just log HTML validation errors without causing tests to fail -->
+  <property name="html_validator_log_file" value="" /><!-- set to a file name to log HTML validation messages to -->
+  <property name="html_validator_quiet" value="" /><!-- set to 1 to prevent the HTML validation from outputting results to the console  -->
+  <property name="phpunit_html_validation_params" value="VUFIND_HTML_VALIDATOR=${html_validator} VUFIND_HTML_VALIDATOR_FAIL_TESTS=${html_validator_fail_tests} VUFIND_HTML_VALIDATOR_LOG_FILE=${html_validator_log_file} VUFIND_HTML_VALIDATOR_QUIET=${html_validator_quiet}" />
+  <property name="phpunit_remote_coverage" value="" /><!-- set to 1 to enable code coverage for Mink tests  -->
+  <property name="retain_coverage_files" value="false" /><!-- set to true to keep temporary coverage files from Mink tests -->
 
-  <property name="version" value="8.1.2" />
+  <property name="version" value="9.0.1" />
 
   <!-- We only need the -p switch if the password is non-blank -->
   <if>
@@ -173,13 +180,13 @@
 
   <!-- ESLint -->
   <target name="eslint">
-    <exec command="npx eslint -c ${srcdir}/.eslintrc.js ${srcdir}/themes/bootstrap3/js/*.js" escape="false" checkreturn="true" passthru="true" />
+    <exec command="npx eslint ${srcdir}/themes/**/*.js -c ${srcdir}/.eslintrc.js" escape="false" checkreturn="true" passthru="true" />
   </target>
   <target name="eslint-fix">
-    <exec command="npx eslint -c ${srcdir}/.eslintrc.js ${srcdir}/themes/bootstrap3/js/*.js --fix" escape="false" passthru="true" />
+    <exec command="npx eslint ${srcdir}/themes/**/*.js -c ${srcdir}/.eslintrc.js --fix" escape="false" passthru="true" />
   </target>
   <target name="eslint-report">
-    <exec command="npx eslint -c ${srcdir}/.eslintrc.js ${srcdir}/themes/bootstrap3/js/*.js --format checkstyle -o ${builddir}/reports/eslint-checkstyle.xml" escape="false" />
+    <exec command="npx eslint ${srcdir}/themes/**/*.js -c ${srcdir}/.eslintrc.js --format checkstyle -o ${builddir}/reports/eslint-checkstyle.xml" escape="false" />
   </target>
 
   <!-- JSHint -->
@@ -233,17 +240,58 @@
 
   <!-- PHPUnit -->
   <target name="phpunit" description="Run tests">
-    <exec dir="${srcdir}/module/VuFind/tests" command="XDEBUG_MODE=coverage VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${localdir} VUFIND_URL=${vufindurl} ${phpunit_command} --log-junit ${builddir}/reports/phpunit.xml --coverage-clover ${builddir}/reports/coverage/clover.xml --coverage-html ${builddir}/reports/coverage/ ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+    <!-- Clean up any previous tmp files but keep the directory if it exists to avoid changing its permissions -->
+    <property name="coveragedir" value="${builddir}/reports/coverage" />
+    <if>
+      <available file="${coveragedir}/tmp" type="dir" />
+      <then>
+        <delete>
+          <fileset dir="${coveragedir}/tmp">
+            <include name="**/*" />
+          </fileset>
+        </delete>
+      </then>
+      <else>
+        <mkdir dir="${coveragedir}/tmp" />
+      </else>
+    </if>
+
+    <!-- Run tests -->
+    <if>
+      <istrue value="${phpunit_remote_coverage}" />
+      <then>
+        <property name="paramCoverageDir" value="VUFIND_REMOTE_COVERAGE_DIR=${coveragedir}/tmp" />
+      </then>
+      <else>
+        <property name="paramCoverageDir" value="" />
+      </else>
+    </if>
+    <exec dir="${srcdir}/module/VuFind/tests" command="XDEBUG_MODE=coverage VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} ${phpunit_html_validation_params} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${localdir} VUFIND_URL=${vufindurl} ${paramCoverageDir} ${phpunit_command} --log-junit ${builddir}/reports/phpunit.xml --coverage-php ${coveragedir}/tmp/unit.cov ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+
+    <!-- Produce coverage reports -->
+    <exec command="${srcdir}/vendor/bin/phpcov merge --clover ${coveragedir}/clover.xml --html ${coveragedir} ${coveragedir}/tmp" passthru="true" checkreturn="true" />
+
+    <!-- Clean up any tmp files unless told not to, but keep the directory to avoid changing its permissions -->
+    <if>
+      <isfalse value="${retain_coverage_files}" />
+      <then>
+        <delete>
+          <fileset dir="${coveragedir}/tmp">
+            <include name="**/*" />
+          </fileset>
+        </delete>
+      </then>
+    </if>
   </target>
 
   <!-- PHPUnit without logging output -->
   <target name="phpunitfast" description="Run tests">
-    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${localdir} VUFIND_URL=${vufindurl} ${phpunit_command} ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} ${phpunit_html_validation_params} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${localdir} VUFIND_URL=${vufindurl} ${phpunit_command} ${phpunit_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
   <!-- PHPUnit without logging output, stopping at first error or failure -->
   <target name="phpunitfaster" description="Run tests until first failure">
-    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${localdir} VUFIND_URL=${vufindurl} ${phpunit_command} --stop-on-failure ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} ${phpunit_html_validation_params} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${localdir} VUFIND_URL=${vufindurl} ${phpunit_command} --stop-on-failure ${phpunit_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
   <target name="installsolr" description="Install Solr">
@@ -330,8 +378,18 @@
 
   <!-- Copy files from node modules to themes -->
   <target name="copynodemodules">
+    <!-- autocomplete.js -->
+    <copy file="${srcdir}/node_modules/autocomplete.js/autocomplete.js" todir="${srcdir}/themes/bootstrap3/js/vendor" overwrite="true" />
+    <!-- jstree -->
+    <copy todir="${srcdir}/themes/bootstrap3/js/vendor/jsTree" overwrite="true">
+      <fileset dir="${srcdir}/node_modules/jstree/dist/" >
+        <include name="**/**" />
+        <exclude name="jstree.js" />
+        <exclude name="themes/default-dark/" />
+      </fileset>
+    </copy>
     <!-- vanilla-cookieconsent -->
-    <copy file="${srcdir}/node_modules/vanilla-cookieconsent/dist/cookieconsent.umd.js" todir="${srcdir}/themes/bootstrap3/js/vendor" />
+    <copy file="${srcdir}/node_modules/vanilla-cookieconsent/dist/cookieconsent.umd.js" todir="${srcdir}/themes/bootstrap3/js/vendor" overwrite="true" />
   </target>
 
   <!-- Install and Activate VuFind -->
@@ -375,6 +433,18 @@
       <istrue value="${apachectl}" />
       <then>
         <copy file="${localdir}/httpd-vufind.conf" tofile="${apacheconfdir}/vufindtest.conf" />
+        <if>
+          <istrue value="${phpunit_remote_coverage}" />
+          <then>
+            <reflexive file="${apacheconfdir}/vufindtest.conf">
+              <filterchain>
+                <replaceregexp>
+                  <regexp pattern="#SetEnv VUFIND_CODE_COVERAGE 1" replace="SetEnv VUFIND_CODE_COVERAGE 1" />
+                </replaceregexp>
+              </filterchain>
+            </reflexive>
+          </then>
+        </if>
         <exec command="${apachectl} restart" passthru="true" />
       </then>
     </if>
@@ -444,6 +514,17 @@
         </copy>
       </then>
     </if>
+
+    <!-- Add a local translation for tests -->
+    <if>
+      <not>
+        <available file="${localdir}/languages" type="dir" />
+      </not>
+      <then>
+        <mkdir dir="${localdir}/languages" />
+      </then>
+    </if>
+    <append destFile="${localdir}/languages/en.ini" text="location_main = Main Library${line.separator}" />
   </target>
 
   <target name="setup_database" description="setup demo database">
@@ -501,6 +582,7 @@
     <foreach param="relfilename" absparam="filename" target="importrec">
       <fileset dir="${srcdir}/tests/data">
           <include name="*.mrc" />
+          <include name="*.xml" />
       </fileset>
     </foreach>
   </target>
@@ -646,6 +728,11 @@ ${git_status}
         <include name="**/*" />
       </fileset>
     </delete>
+    <delete>
+      <fileset dir="${localdir}/languages">
+        <include name="*" />
+      </fileset>
+    </delete>
 
     <phingcall target="configure_install" />
     <phingcall target="setup_database" />
@@ -714,6 +801,8 @@ ${git_status}
     <append destFile="${localdir}/import/marc-${BASENAME}.properties" text="building=&quot;${BASENAME}&quot;${line.separator}" />
 
     <copy file="${localdir}/import/import.properties" tofile="${localdir}/import/import-${BASENAME}.properties" />
+    <!-- normalize Unicode to avoid HTML validation warnings -->
+    <append destFile="${localdir}/import/import-${BASENAME}.properties" text="marc.unicode_normalize = C${line.separator}" />
     <reflexive>
       <fileset dir="${localdir}/import">
         <include pattern="import-${BASENAME}.properties" />

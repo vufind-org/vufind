@@ -1,10 +1,9 @@
 <?php
-declare(strict_types=1);
 
 /**
  * Class AbstractBaseFactory
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2022.
  *
@@ -27,6 +26,9 @@ declare(strict_types=1);
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
+declare(strict_types=1);
+
 namespace VuFind\Hierarchy\TreeDataFormatter;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -43,8 +45,7 @@ use Psr\Container\ContainerInterface;
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AbstractBaseFactory
-implements \Laminas\ServiceManager\Factory\FactoryInterface
+class AbstractBaseFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -68,7 +69,8 @@ implements \Laminas\ServiceManager\Factory\FactoryInterface
         if ($options !== null) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $treeDataFormatter = new $requestedName();
+        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
+        $treeDataFormatter = new $requestedName($config->Hierarchy->validateHierarchySequences ?? true);
         $treeDataFormatter->setSorter($container->get(\VuFind\I18n\Sorter::class));
         return $treeDataFormatter;
     }

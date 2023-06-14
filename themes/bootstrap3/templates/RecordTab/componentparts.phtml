@@ -1,4 +1,7 @@
-<?php $max = $this->tab->getMaxResults(); $showMore = false; ?>
+<?php
+  $max = $this->tab->getMaxResults();
+  $showMore = false;
+?>
 <?php foreach ($this->tab->getResults() as $i => $current): ?>
   <?php
     if ($max == $i) {

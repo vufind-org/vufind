@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Generator tools.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Generator;
 
 use Laminas\Code\Generator\ClassGenerator;
@@ -281,7 +283,7 @@ class GeneratorTools
             $parent = $interface;
             $interfaces = [];
         }
-        $configPath = $this->getConfigPathForClass(get_class($pm));
+        $configPath = $this->getConfigPathForClass($pm::class);
 
         // Generate the classes and configuration:
         $this->createClassInModule($class, $module, $parent, $interfaces);
@@ -331,7 +333,7 @@ class GeneratorTools
                 );
                 $param1 = [
                     'name' => 'container',
-                    'type' => 'Psr\Container\ContainerInterface'
+                    'type' => 'Psr\Container\ContainerInterface',
                 ];
                 $param2 = [
                     'name' => 'requestedName',
@@ -388,7 +390,7 @@ class GeneratorTools
             $configPath = ['controller_plugins'];
         } elseif ($pm = $this->getPluginManagerContainingClass($container, $class)) {
             $apmFactory = new \VuFind\ServiceManager\AbstractPluginManagerFactory();
-            $pmKey = $apmFactory->getConfigKey(get_class($pm));
+            $pmKey = $apmFactory->getConfigKey($pm::class);
             $factory = $this->getFactoryFromContainer($pm, $class);
             $configPath = ['vufind', 'plugin_managers', $pmKey];
             $delegators = $this->getDelegatorsFromContainer($pm, $class);
@@ -582,7 +584,8 @@ class GeneratorTools
         // either be a [controller, method] array or a "controller::method"
         // string; anything else will cause a problem.
         $parts = is_string($factory) ? explode('::', $factory) : $factory;
-        if (!is_array($parts) || count($parts) != 2 || !class_exists($parts[0])
+        if (
+            !is_array($parts) || count($parts) != 2 || !class_exists($parts[0])
             || !is_callable($parts)
         ) {
             throw new \Exception('Unexpected factory configuration format.');
@@ -865,7 +868,7 @@ class GeneratorTools
     {
         $generator = FileGenerator::fromArray(
             [
-                'body' => 'return ' . var_export($config, true) . ';'
+                'body' => 'return ' . var_export($config, true) . ';',
             ]
         );
         if (!file_put_contents($configPath, $generator->generate())) {
@@ -886,7 +889,7 @@ class GeneratorTools
     protected function applySettingToConfig(
         array $path,
         $setting,
-        array & $config
+        array &$config
     ) {
         $current = & $config;
         $finalStep = array_pop($path);
@@ -919,7 +922,7 @@ class GeneratorTools
     protected function writeNewConfigs(
         array $newValues,
         string $module,
-        bool $backup  = true
+        bool $backup = true
     ) {
         // Create backup of configuration
         $configPath = $this->getModuleConfigPath($module);
@@ -951,7 +954,7 @@ class GeneratorTools
      * @return void
      * @throws \Exception
      */
-    protected function writeNewConfig($path, $setting, $module, $backup  = true)
+    protected function writeNewConfig($path, $setting, $module, $backup = true)
     {
         $this->writeNewConfigs([compact('path', 'setting')], $module, $backup);
     }

@@ -3,7 +3,7 @@
 /**
  * Abstract factory for SOLR backends.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Factory;
 
 use Laminas\Config\Config;
@@ -324,7 +325,8 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
         $this->getInjectHighlightingListener($backend, $search)->attach($events);
 
         // Conditional Filters
-        if (isset($search->ConditionalHiddenFilters)
+        if (
+            isset($search->ConditionalHiddenFilters)
             && $search->ConditionalHiddenFilters->count() > 0
         ) {
             $this->getInjectConditionalFilterListener($search)->attach($events);
@@ -576,8 +578,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      *
      * @return RecordCollectionFactoryInterface
      */
-    protected function createRecordCollectionFactory()
-    : RecordCollectionFactoryInterface
+    protected function createRecordCollectionFactory(): RecordCollectionFactoryInterface
     {
         return new $this->recordCollectionFactoryClass(
             $this->getCreateRecordCallback(),
@@ -682,7 +683,8 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
         Config $search
     ) {
         $fl = $search->General->highlighting_fields ?? '*';
-        return new InjectHighlightingListener($backend, $fl);
+        $extras = $search->General->extra_hl_params ?? [];
+        return new InjectHighlightingListener($backend, $fl, $extras);
     }
 
     /**

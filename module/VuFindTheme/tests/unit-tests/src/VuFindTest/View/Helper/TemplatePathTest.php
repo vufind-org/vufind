@@ -1,8 +1,9 @@
 <?php
+
 /**
  * TemplatePath view helper Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper;
 
 use VuFindTheme\View\Helper\TemplatePath;
@@ -68,8 +70,7 @@ class TemplatePathTest extends \PHPUnit\Framework\TestCase
     protected function getHelper()
     {
         // Get mock TemplateStack
-        $stackMock =
-            $this->getMockBuilder(\Laminas\View\Resolver\TemplatePathStack::class)
+        $stackMock = $this->getMockBuilder(\Laminas\View\Resolver\TemplatePathStack::class)
             ->disableOriginalConstructor()->getMock();
 
         $return = new \SplStack();

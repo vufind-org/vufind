@@ -1,11 +1,12 @@
 <?php
+
 /**
  * Redis session handler
  *
  * Note: Using phpredis extension (see https://github.com/phpredis/phpredis) is
  * optional, this class use Credis in standalone mode by default
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2019.
  * Copyright (C) The National Library of Finland 2023.
@@ -31,6 +32,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
+
 namespace VuFind\Session;
 
 use Laminas\Config\Config;
