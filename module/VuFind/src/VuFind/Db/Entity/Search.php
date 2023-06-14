@@ -39,8 +39,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  *
- * @ORM\Table(name="search",
- * indexes={@ORM\Index(name="folder_id", columns={"folder_id"}),
+ * @ORM\Table(name="search"),
  * @ORM\Index(name="notification_base_url",  columns={"notification_base_url"}),
  * @ORM\Index(name="notification_frequency", columns={"notification_frequency"}),
  * @ORM\Index(name="session_id",             columns={"session_id"}),
@@ -81,15 +80,6 @@ class Search implements EntityInterface
      * @ORM\Column(name="session_id", type="string", length=128, nullable=true)
      */
     protected $sessionId;
-
-    /**
-     * Folder ID.
-     *
-     * @var int|null
-     *
-     * @ORM\Column(name="folder_id", type="integer", nullable=true)
-     */
-    protected $folderId;
 
     /**
      * Created date.
