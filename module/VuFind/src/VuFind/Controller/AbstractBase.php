@@ -35,7 +35,6 @@ use Laminas\Mvc\MvcEvent;
 use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\View\Model\ViewModel;
-use SerialsSolutions\Summon\Laminas;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Http\PhpEnvironment\Request as HttpRequest;
@@ -202,7 +201,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
             $params['inLightbox'] = true;
         }
         $this->layout()->lightboxParent = $this->getServerUrl();
-        if($lightboxChild = $this->getRequest()->getQuery('lightboxChild')){
+        if ($lightboxChild = $this->getRequest()->getQuery('lightboxChild')) {
             $this->layout()->lightboxChild = urldecode($lightboxChild);
         }
         return new ViewModel($params);
@@ -351,14 +350,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
             $msg = 'You must be logged in first';
         }
 
-        // We don't want to return to the lightbox
-//        $serverUrl = $this->getServerUrl();
-//        $serverUrl = str_replace(
-//            ['?layout=lightbox', '&layout=lightbox'],
-//            ['?', '&'],
-//            $serverUrl
-//        );
-
+        // store parent url of lightboxes
         $extras['lightboxParent'] = $this->getRequest()->getQuery('lightboxParent');
 
         // Store the current URL as a login followup action
@@ -750,7 +742,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
      */
     protected function hasFollowupUrl()
     {
-        return !is_null($this->followup()->retrieve('url'));
+        return null !== $this->followup()->retrieve('url');
     }
 
     /**
@@ -758,18 +750,20 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
      * to an appropriate location.
      * Unset the followup before returning.
      *
+     * @param bool $checkRedirect Whether the query should be checked for param 'redirect'
+     *
      * @return string
      */
     protected function getAndClearFollowupUrl($checkRedirect = false)
     {
-        if($url = $this->followup()->retrieve('url', '')){
+        if ($url = $this->followup()->retrieve('url', '')) {
             $this->clearFollowupUrl();
             $lightboxParent = $this->followup()->retrieveAndClear('lightboxParent');
             // If a user clicks on the "Your Account" link, we want to be sure
             // they get to their account rather than being redirected to an old
             // followup URL. We'll use a redirect=0 GET flag to indicate this:
             if (!$checkRedirect || $this->params()->fromQuery('redirect', true)) {
-                if(isset($lightboxParent) && $this->getAuthManager()->getSessionInitiator($this->getServerUrl())){
+                if (isset($lightboxParent) && $this->getAuthManager()->getSessionInitiator($this->getServerUrl())) {
                     $this->followup()->store([], $url);
                     $url = new \Laminas\Uri\Uri($lightboxParent);
                     $params = $url->getQueryAsArray();
@@ -781,7 +775,6 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
         }
         return null;
     }
-
 
     /**
      * Sometimes we need to unset the followup to trigger default behaviors

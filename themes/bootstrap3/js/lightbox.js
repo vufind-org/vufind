@@ -154,7 +154,7 @@ VuFind.register('lightbox', function Lightbox() {
     }
     // Add lightbox GET parameter
     if (!obj.url.match(/layout=lightbox/)) {
-      var parts = obj.url.split('#');
+      let parts = obj.url.split('#');
       obj.url = parts[0].indexOf('?') < 0
         ? parts[0] + '?'
         : parts[0] + '&';
@@ -168,8 +168,8 @@ VuFind.register('lightbox', function Lightbox() {
       }
       obj.url += parts.length < 2 ? '' : '#' + parts[1];
     }
-    if(window.lightboxParent){
-      var parts = obj.url.split('#');
+    if (window.lightboxParent){
+      let parts = obj.url.split('#');
       obj.url = parts[0].indexOf('?') < 0
         ? parts[0] + '?'
         : parts[0] + '&';
@@ -477,7 +477,7 @@ VuFind.register('lightbox', function Lightbox() {
   }
 
   function loadConfiguredLightbox(){
-    if(window.lightboxChild){
+    if (window.lightboxChild){
       // load lightbox
       var obj = {url: window.lightboxChild};
       ajax(obj);
