@@ -783,6 +783,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
      */
     protected function clearFollowupUrl()
     {
+        $this->followup()->clear('lightboxParent');
         $this->followup()->clear('url');
     }
 
