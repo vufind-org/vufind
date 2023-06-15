@@ -168,6 +168,13 @@ VuFind.register('lightbox', function Lightbox() {
       }
       obj.url += parts.length < 2 ? '' : '#' + parts[1];
     }
+    if(window.lightboxParent){
+      let url = new URL(obj.url);
+      let params = url.searchParams;
+      params.set('lightboxParent', window.lightboxParent);
+      url.search = params.toString();
+      obj.url = url.toString();
+    }
     // Store original URL with the layout=lightbox parameter:
     if (_originalUrl === false) {
       _originalUrl = obj.url;
@@ -467,6 +474,24 @@ VuFind.register('lightbox', function Lightbox() {
       });
     });
   }
+
+  function loadConfiguredLightbox(){
+    if(window.lightboxChild){
+      // load lightbox
+      var obj = {url: window.lightboxChild};
+      ajax(obj);
+      VuFind.modal('show');
+
+      // remove lightbox reference
+      window.lightboxChild = null;
+      let url = new URL(window.location.href);
+      let params = url.searchParams;
+      params.delete('lightboxChild');
+      url.search = params.toString();
+      window.history.replaceState({}, document.title, url.toString());
+    }
+  }
+
   // Element which to focus after modal is closed
   var _beforeOpenElement = null;
   function reset() {
@@ -512,6 +537,7 @@ VuFind.register('lightbox', function Lightbox() {
       }
     };
     bind();
+    loadConfiguredLightbox();
   }
 
   // Reveal

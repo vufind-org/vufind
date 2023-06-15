@@ -200,6 +200,10 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
             $this->layout()->setTemplate('layout/lightbox');
             $params['inLightbox'] = true;
         }
+        $this->layout()->lightboxParent = $this->getServerUrl();
+        if($lightboxChild = $this->getRequest()->getQuery('lightboxChild')){
+            $this->layout()->lightboxChild = urldecode($lightboxChild);
+        }
         return new ViewModel($params);
     }
 
