@@ -35,6 +35,7 @@ use Laminas\Mvc\MvcEvent;
 use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\View\Model\ViewModel;
+use SerialsSolutions\Summon\Laminas;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Http\PhpEnvironment\Request as HttpRequest;
@@ -351,15 +352,17 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
         }
 
         // We don't want to return to the lightbox
-        $serverUrl = $this->getServerUrl();
-        $serverUrl = str_replace(
-            ['?layout=lightbox', '&layout=lightbox'],
-            ['?', '&'],
-            $serverUrl
-        );
+//        $serverUrl = $this->getServerUrl();
+//        $serverUrl = str_replace(
+//            ['?layout=lightbox', '&layout=lightbox'],
+//            ['?', '&'],
+//            $serverUrl
+//        );
+
+        $extras['lightboxParent'] = $this->getRequest()->getQuery('lightboxParent');
 
         // Store the current URL as a login followup action
-        $this->followup()->store($extras, $serverUrl);
+        $this->followup()->store($extras);
         if (!empty($msg)) {
             $this->flashMessenger()->addMessage($msg, 'error');
         }
@@ -741,16 +744,44 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
     }
 
     /**
+     * Checks if a followup url is set
+     *
+     * @return bool
+     */
+    protected function hasFollowupUrl()
+    {
+        return !is_null($this->followup()->retrieve('url'));
+    }
+
+    /**
      * Retrieve a referer to keep post-login redirect pointing
      * to an appropriate location.
      * Unset the followup before returning.
      *
      * @return string
      */
-    protected function getFollowupUrl()
+    protected function getAndClearFollowupUrl($checkRedirect = false)
     {
-        return $this->followup()->retrieve('url', '');
+        if($url = $this->followup()->retrieve('url', '')){
+            $this->clearFollowupUrl();
+            $lightboxParent = $this->followup()->retrieveAndClear('lightboxParent');
+            // If a user clicks on the "Your Account" link, we want to be sure
+            // they get to their account rather than being redirected to an old
+            // followup URL. We'll use a redirect=0 GET flag to indicate this:
+            if (!$checkRedirect || $this->params()->fromQuery('redirect', true)) {
+                if(isset($lightboxParent) && $this->getAuthManager()->getSessionInitiator($this->getServerUrl())){
+                    $this->followup()->store([], $url);
+                    $url = new \Laminas\Uri\Uri($lightboxParent);
+                    $params = $url->getQueryAsArray();
+                    $params['lightboxChild'] = urlencode($this->getServerUrl());
+                    $url->setQuery($params);
+                }
+                return $url;
+            }
+        }
+        return null;
     }
+
 
     /**
      * Sometimes we need to unset the followup to trigger default behaviors

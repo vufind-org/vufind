@@ -219,8 +219,7 @@ class LibraryCardsController extends AbstractBase
         }
 
         $this->setFollowupUrlToReferer(false);
-        if ($url = $this->getFollowupUrl()) {
-            $this->clearFollowupUrl();
+        if ($url = $this->getAndClearFollowupUrl()) {
             return $this->redirect()->toUrl($this->adjustCardRedirectUrl($url));
         }
         return $this->redirect()->toRoute('myresearch-home');
