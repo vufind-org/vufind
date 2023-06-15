@@ -757,8 +757,8 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
     protected function getAndClearFollowupUrl($checkRedirect = false)
     {
         if ($url = $this->followup()->retrieve('url', '')) {
-            $this->clearFollowupUrl();
             $lightboxParent = $this->followup()->retrieveAndClear('lightboxParent');
+            $this->clearFollowupUrl();
             // If a user clicks on the "Your Account" link, we want to be sure
             // they get to their account rather than being redirected to an old
             // followup URL. We'll use a redirect=0 GET flag to indicate this:
