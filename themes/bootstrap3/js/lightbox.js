@@ -169,11 +169,12 @@ VuFind.register('lightbox', function Lightbox() {
       obj.url += parts.length < 2 ? '' : '#' + parts[1];
     }
     if(window.lightboxParent){
-      let url = new URL(obj.url);
-      let params = url.searchParams;
-      params.set('lightboxParent', window.lightboxParent);
-      url.search = params.toString();
-      obj.url = url.toString();
+      var parts = obj.url.split('#');
+      obj.url = parts[0].indexOf('?') < 0
+        ? parts[0] + '?'
+        : parts[0] + '&';
+      obj.url += '&lightboxParent=' + window.lightboxParent;
+      obj.url += parts.length < 2 ? '' : '#' + parts[1];
     }
     // Store original URL with the layout=lightbox parameter:
     if (_originalUrl === false) {
