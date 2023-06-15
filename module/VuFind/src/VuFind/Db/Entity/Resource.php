@@ -148,6 +148,16 @@ class Resource implements EntityInterface
     }
 
     /**
+     * Record Id getter
+     *
+     * @return string
+     */
+    public function getRecordId(): string
+    {
+        return $this->recordId;
+    }
+
+    /**
      * Title setter
      *
      * @param string $title Title of the record.
@@ -197,6 +207,16 @@ class Resource implements EntityInterface
     {
         $this->source = $source;
         return $this;
+    }
+
+    /**
+     * Source getter
+     *
+     * @return string
+     */
+    public function getSource(): string
+    {
+        return $this->source;
     }
 
     /**

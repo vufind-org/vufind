@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010-2023.
  * Copyright (C) The National Library of Finland 2016.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -763,8 +763,11 @@ class UpgradeController extends AbstractBase
         set_time_limit(0);
 
         // Check for problems:
-        $table = $this->getTable('Resource');
-        $problems = $table->findMissingMetadata();
+        $resourceService = $this->getDbService(
+            \VuFind\Db\Service\ResourceService::class
+        );
+
+        $problems = $resourceService->findMissingMetadata();
 
         // No problems?  We're done here!
         if (count($problems) == 0) {
@@ -776,14 +779,22 @@ class UpgradeController extends AbstractBase
         if ($this->formWasSubmitted('submit')) {
             $converter = $this->serviceLocator->get(Converter::class);
             foreach ($problems as $problem) {
+                $recordId = $problem->getRecordId();
+                $source = $problem->getSource();
                 try {
                     $driver = $this->getRecordLoader()
-                        ->load($problem->record_id, $problem->source);
-                    $problem->assignMetadata($driver, $converter)->save();
+                        ->load($recordId, $source);
+                    $resourceService->assignMetadata($driver, $converter, $problem);
+                    $resourceService->persistEntity($problem);
                 } catch (RecordMissingException $e) {
                     $this->session->warnings->append(
                         "Unable to load metadata for record "
-                        . "{$problem->source}:{$problem->record_id}"
+                        . "{$source}:{$recordId}"
+                    );
+                } catch (\Exception $e) {
+                    $this->session->warnings->append(
+                        "Problem saving metadata updates for record "
+                        . "{$source}:{$recordId}"
                     );
                 }
             }

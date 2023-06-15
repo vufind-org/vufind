@@ -265,4 +265,21 @@ class ResourceService extends AbstractService implements \VuFind\Db\Service\Serv
         $class = $this->getEntityClass(Resource::class);
         return new $class();
     }
+
+    /**
+     * Get a set of records that do not have metadata stored in the resource
+     * table.
+     *
+     * @return array|null
+     */
+    public function findMissingMetadata()
+    {
+        $dql = "SELECT r "
+            . "FROM " . $this->getEntityClass(Resource::class) . " r "
+            . "WHERE r.title = '' OR r.author IS NULL OR r.year IS NULL";
+
+        $query = $this->entityManager->createQuery($dql);
+        $result = $query->getResult();
+        return $result;
+    }
 }

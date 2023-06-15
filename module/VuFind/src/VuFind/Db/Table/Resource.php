@@ -224,22 +224,6 @@ class Resource extends Gateway
     }
 
     /**
-     * Get a set of records that do not have metadata stored in the resource
-     * table.
-     *
-     * @return \Laminas\Db\ResultSet\AbstractResultSet
-     */
-    public function findMissingMetadata()
-    {
-        $callback = function ($select) {
-            $select->where->equalTo('title', '')
-                ->OR->isNull('author')
-                ->OR->isNull('year');
-        };
-        return $this->select($callback);
-    }
-
-    /**
      * Update the database to reflect a changed record identifier.
      *
      * @param string $oldId  Original record ID
