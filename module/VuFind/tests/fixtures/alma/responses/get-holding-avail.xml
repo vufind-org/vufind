@@ -166,37 +166,23 @@
 			<datafield ind1="2" ind2=" " tag="710">
 				<subfield code="a">Mattilan kyläyhdistys.</subfield>
 			</datafield>
-			<datafield ind1=" " ind2=" " tag="AVA">
-				<subfield code="0">1111</subfield>
+			<datafield ind1=" " ind2=" " tag="AVE">
 				<subfield code="8">2221</subfield>
+				<subfield code="c">123456789</subfield>
+				<subfield code="e">Available</subfield>
+				<subfield code="m">Collection Name</subfield>
 				<subfield code="a">358FIN</subfield>
-				<subfield code="b">Central</subfield>
-				<subfield code="c">Central</subfield>
-				<subfield code="d">HB Ab</subfield>
-				<subfield code="e">available</subfield>
-				<subfield code="f">1</subfield>
-				<subfield code="g">0</subfield>
-				<subfield code="i">Campus</subfield>
-				<subfield code="j">general</subfield>
-				<subfield code="k">8</subfield>
-				<subfield code="p">1</subfield>
-				<subfield code="q">Central</subfield>
-			</datafield>
-			<datafield ind1=" " ind2=" " tag="AVA">
 				<subfield code="0">1111</subfield>
-				<subfield code="8">2222</subfield>
-				<subfield code="a">358FIN</subfield>
 				<subfield code="b">Central</subfield>
-				<subfield code="c">Central</subfield>
-				<subfield code="d">HB Ab</subfield>
-				<subfield code="e">unavailable</subfield>
-				<subfield code="f">1</subfield>
-				<subfield code="g">0</subfield>
-				<subfield code="i">Campus</subfield>
-				<subfield code="j">staff</subfield>
-				<subfield code="k">8</subfield>
-				<subfield code="p">1</subfield>
-				<subfield code="q">Central</subfield>
+			</datafield>
+			<datafield ind1=" " ind2=" " tag="AVE">
+				<subfield code="8">2222</subfield>
+				<subfield code="c">123456789</subfield>
+				<subfield code="e">Unavailable</subfield>
+				<subfield code="m">Other Collection</subfield>
+				<subfield code="a">358FIN</subfield>
+				<subfield code="0">1111</subfield>
+				<subfield code="b">Central</subfield>
 			</datafield>
 		</record>
 	</bib>

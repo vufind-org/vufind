@@ -481,7 +481,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
                 _paq.push(['setTrackerUrl', '$trackerUrl']);
                 _paq.push(['setSiteId', {$this->siteId}]);
                 var g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-                g.type='text/javascript'; g.async=true; g.src='$url';
+                g.async=true; g.src='$url';
                 g.id = '_matomo_js_script';
                 s.parentNode.insertBefore(g,s);
               }
