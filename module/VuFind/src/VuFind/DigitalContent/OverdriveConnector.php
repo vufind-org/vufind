@@ -484,7 +484,7 @@ class OverdriveConnector implements
      * Places a hold on an item within OverDrive
      *
      * @param string $overDriveId The overdrive id for the title
-     * @param string $email The email overdrive should use for notif
+     * @param string $email       The email overdrive should use for notif
      *
      * @return \stdClass Object with result
      */
@@ -537,7 +537,7 @@ class OverdriveConnector implements
      * Updates the email address for a hold on an item within OverDrive
      *
      * @param string $overDriveId The overdrive id for the title
-     * @param string $email The email overdrive should use for notif
+     * @param string $email       The email overdrive should use for notif
      *
      * @return \stdClass Object with result
      */
@@ -584,11 +584,10 @@ class OverdriveConnector implements
      * Suspend Hold
      * Suspend an existing Overdrive Hold
      *
-     * @param string $overDriveId The overdrive id for the title
-     *
-     * @param string $email The email overdrive should use for notif
+     * @param string $overDriveId    The overdrive id for the title
+     * @param string $email          The email overdrive should use for notif
      * @param string $suspensionType indefinite or limited
-     * @param int $numberOfDays number of days to suspend the hold
+     * @param int    $numberOfDays   number of days to suspend the hold
      * @return \stdClass Object with result
      */
     public function suspendHold($overDriveId, $email, $suspensionType = "indefinite", $numberOfDays = 7)
@@ -637,10 +636,10 @@ class OverdriveConnector implements
      * Edit Suspended Hold
      * Change the redelivery date on an already suspended hold
      *
-     * @param string $overDriveId The overdrive id for the title
-     * @param string $email The email overdrive should use for notif
+     * @param string $overDriveId    The overdrive id for the title
+     * @param string $email          The email overdrive should use for notif
      * @param string $suspensionType indefinite or limited
-     * @param int $numberOfDays number of days to suspend the hold
+     * @param int    $numberOfDays   number of days to suspend the hold
      *
      * @return \stdClass Object with result
      */
@@ -890,6 +889,11 @@ class OverdriveConnector implements
         ];
     }
 
+    /**
+     * Summary of getPermanentLinks
+     * @param mixed $overDriveIds
+     * @return array<string>
+     */
     public function getPermanentLinks($overDriveIds = [])
     {
         $links = [];
@@ -911,11 +915,10 @@ class OverdriveConnector implements
     /**
      * Returns
      *
-     * @param array $overDriveIds Set of Overdrive IDs
-     *
+     * @param string $overDriveId Overdrive Identifier for magazine title
+     * @param int    $limit       maximum number of issues to retrieve (default 100)
+     * @param int    $offset      page of results (default 0)
      * @return object results of metadata fetch
-     *
-     *
      */
     public function getMagazineIssues($overDriveId = false, $limit = 100, $offset = 0)
     {
