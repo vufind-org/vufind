@@ -108,10 +108,10 @@
     <?=$this->cookieConsent()->render()?>
     <?=$this->headScript() ?>
     <?php if (isset($lightboxParent)): ?>
-      <script>window.lightboxParent = "<?= $lightboxParent ?>";</script>
+      <script>window.lightboxParent = "<?= urlencode($lightboxParent) ?>";</script>
     <?php endif; ?>
     <?php if (isset($lightboxChild)): ?>
-      <script>window.lightboxChild = "<?= $lightboxChild ?>";</script>
+      <script>window.lightboxChild = "<?= urlencode($lightboxChild) ?>";</script>
     <?php endif; ?>
   </head>
   <body class="template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?> <?=$this->layoutClass('offcanvas-row')?><?php if ($this->layout()->rtl): ?> rtl<?php endif; ?>">

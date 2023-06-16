@@ -479,7 +479,9 @@ VuFind.register('lightbox', function Lightbox() {
   function loadConfiguredLightbox(){
     if (window.lightboxChild){
       // load lightbox
-      var obj = {url: window.lightboxChild};
+      var obj = {
+        url: decodeURIComponent(window.lightboxChild.replace(/\+/g, ' '))
+      };
       ajax(obj);
       VuFind.modal('show');
 
