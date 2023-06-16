@@ -612,7 +612,8 @@ class OverdriveConnector implements
             }
 
             $response = $this->callPatronUrl(
-                $user["cat_username"], $user["cat_password"],
+                $user["cat_username"],
+                $user["cat_password"],
                 $url,
                 $params,
                 $action
@@ -664,7 +665,8 @@ class OverdriveConnector implements
             }
 
             $response = $this->callPatronUrl(
-                $user["cat_username"], $user["cat_password"],
+                $user["cat_username"],
+                $user["cat_password"],
                 $url,
                 $params,
                 $action
@@ -701,7 +703,8 @@ class OverdriveConnector implements
             $url = $config->circURL . "/v1/patrons/me/holds/$overDriveId/suspension";
             $action = "DELETE";
             $response = $this->callPatronUrl(
-                $user["cat_username"], $user["cat_password"],
+                $user["cat_username"],
+                $user["cat_password"],
                 $url,
                 null,
                 $action
@@ -737,7 +740,8 @@ class OverdriveConnector implements
             $url = $config->circURL . "/v1/patrons/me/holds/$overDriveId";
             $action = "DELETE";
             $response = $this->callPatronUrl(
-                $user["cat_username"], $user["cat_password"],
+                $user["cat_username"],
+                $user["cat_password"],
                 $url,
                 null,
                 $action
@@ -900,20 +904,18 @@ class OverdriveConnector implements
             foreach ($md as $item) {
                 $links[$item->id] = "$libraryURL/media/" . $item->crossRefId;
             }
-
         }
         return $links;
-
     }
 
     /**
-     * Returns 
+     * Returns
      *
      * @param array $overDriveIds Set of Overdrive IDs
      *
      * @return object results of metadata fetch
      *
-     * 
+     *
      */
     public function getMagazineIssues($overDriveId = false, $limit = 100, $offset = 0)
     {
@@ -979,7 +981,7 @@ class OverdriveConnector implements
      * For  array of titles passed in this will return the same array
      * with metadata attached to the records with the property name of 'metadata'
      *
-     * @param array $overDriveTitles Assoc array of objects with OD IDs as keys (generally what 
+     * @param array $overDriveTitles Assoc array of objects with OD IDs as keys (generally what
      * you get from getCheckouts and getHolds)
      *
      * @return array inital array with results of metadata attached as "metadata" property
@@ -1122,7 +1124,6 @@ class OverdriveConnector implements
                         $result->data = [];
                         $this->getSessionContainer()->checkouts = false;
                     }
-
                 } else {
                     $accessResult = $this->getAccess();
                     return $accessResult;
@@ -1144,7 +1145,7 @@ class OverdriveConnector implements
      * @param bool $refresh Whether or not to ignore cache and get latest
      *
      * @return \stdClass Results of the call. the data property will be set
-     *     to an empty array if there are no  holds. 
+     *     to an empty array if there are no  holds.
      */
     public function getHolds($refresh = true)
     {
@@ -1409,11 +1410,11 @@ class OverdriveConnector implements
      * @param string $url           The url to call
      * @param array  $params        parameters to call
      * @param string $requestType   HTTP request type (default=GET)
-     * @param string $returnType    options are json(def),body,redirect 
+     * @param string $returnType    options are json(def),body,redirect
      *
      * @return object|bool The json response from the API call
      *  converted to an object. If body is specified, the raw body is returned.
-     *  If redirect, then it returns the URL specified in the redirect header. 
+     *  If redirect, then it returns the URL specified in the redirect header.
      *  If the call fails at the HTTP level then the error is logged and false is returned.
      */
     protected function callPatronUrl(
@@ -1684,7 +1685,7 @@ class OverdriveConnector implements
         if (null !== $item) {
             $this->debug(
                 "pulling item from cache for key $key : " . $item['entry']
-            );            
+            );
             // Return value if still valid:
             if (time() - $item['time'] < $conf->tokenCacheLifetime) {
                 return $item['entry'];
