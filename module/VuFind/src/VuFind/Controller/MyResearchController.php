@@ -155,7 +155,7 @@ class MyResearchController extends AbstractBase
                     if (
                         $this->params()->fromPost('processLogin')
                         && $this->inLightbox()
-                        && empty($this->hasFollowupUrl())
+                        && !$this->hasFollowupUrl()
                     ) {
                         return $this->getRefreshResponse();
                     }
