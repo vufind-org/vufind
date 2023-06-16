@@ -584,10 +584,10 @@ class OverdriveConnector implements
      * Suspend Hold
      * Suspend an existing Overdrive Hold
      *
-     * @param string $overDriveId    The overdrive id for the title
-     * @param string $email          The email overdrive should use for notif
-     * @param string $suspensionType indefinite or limited
-     * @param int    $numberOfDays   number of days to suspend the hold
+     * @param string $overDriveId     The overdrive id for the title
+     * @param string $email           The email overdrive should use for notif
+     * @param string $suspensionType  indefinite or limited
+     * @param int    $numberOfDays    number of days to suspend the hold
      * @return \stdClass Object with result
      */
     public function suspendHold($overDriveId, $email, $suspensionType = "indefinite", $numberOfDays = 7)
@@ -794,6 +794,11 @@ class OverdriveConnector implements
     }
 
 
+    /**
+     * Retrieves the auth header needed to get the Download HTML snippet 
+     * 
+     * @return object Object containing the auth header in the data property 
+     */
     public function getAuthHeader()
     {
         $this->debug("getAuthHeader");
@@ -890,8 +895,10 @@ class OverdriveConnector implements
     }
 
     /**
-     * Summary of getPermanentLinks
-     * @param mixed $overDriveIds
+     * Returns permanant links for Ovedrive resources
+     * 
+     * @param array $overDriveIds  An array of overdrive IDs we need links for
+     * 
      * @return array<string>
      */
     public function getPermanentLinks($overDriveIds = [])
@@ -915,9 +922,9 @@ class OverdriveConnector implements
     /**
      * Returns
      *
-     * @param string $overDriveId Overdrive Identifier for magazine title
-     * @param int    $limit       maximum number of issues to retrieve (default 100)
-     * @param int    $offset      page of results (default 0)
+     * @param string $overDriveId  Overdrive Identifier for magazine title
+     * @param int    $limit        maximum number of issues to retrieve (default 100)
+     * @param int    $offset       page of results (default 0)
      * @return object results of metadata fetch
      */
     public function getMagazineIssues($overDriveId = false, $limit = 100, $offset = 0)
@@ -1630,7 +1637,8 @@ class OverdriveConnector implements
     /**
      * Get an HTTP client
      *
-     * @param string $url URL for client to use
+     * @param string $url             URL for client to use
+     * @param bool   $allowRedirects  whether to allow client to follow redir
      *
      * @return \Zend\Http\Client
      * @throws Exception
