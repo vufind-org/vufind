@@ -114,6 +114,9 @@ abstract class Base
                     case 'auth_url':
                         $this->authHost = $value;
                         break;
+                    case 'session_url':
+                        $this->sessionHost = $value;
+                        break;
                     case 'debug':
                         $this->debug = $value;
                         break;
@@ -176,7 +179,8 @@ abstract class Base
             . "$profile, guest: $isGuest, authToken: $authToken "
         );
         $qs = ['profile' => $profile, 'guest' => $isGuest];
-        $url = $this->edsApiHost . '/createsession';
+        $sessionHost = $this->sessionHost ?? $this->edsApiHost;
+        $url = $sessionHost . '/createsession';
         $headers = $this->setTokens($authToken, null);
         return $this->call($url, $headers, $qs, 'GET', null, '', false);
     }
@@ -196,7 +200,7 @@ abstract class Base
      *
      * @return array    The requested record
      */
-    public function retrieve(
+    public function retrieveEdsItem(
         $an,
         $dbId,
         $authenticationToken,
@@ -211,6 +215,20 @@ abstract class Base
         if (null != $highlightTerms) {
             $qs['highlightterms'] = $highlightTerms;
         }
+        $url = $this->edsApiHost . '/retrieve';
+        $headers = $this->setTokens($authenticationToken, $sessionToken);
+        return $this->call($url, $headers, $qs);
+    }
+
+    public function retrieveEpfItem(
+        $pubId,
+        $authenticationToken,
+        $sessionToken
+    ) {
+        $this->debugPrint(
+            "Get Record. pubId: $pubId"
+        );
+        $qs = ['id' => $pubId];
         $url = $this->edsApiHost . '/retrieve';
         $headers = $this->setTokens($authenticationToken, $sessionToken);
         return $this->call($url, $headers, $qs);

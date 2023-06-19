@@ -125,4 +125,12 @@ class EdsrecordController extends AbstractRecord
         return isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation;
     }
+
+    protected function loadRecord(ParamBag $params = null, bool $force = false)
+    {
+        $params = $params ?? new ParamBag();
+        $params->set('backendType', 'EDS');
+        return parent::loadRecord($params, $force);
+    }
+
 }

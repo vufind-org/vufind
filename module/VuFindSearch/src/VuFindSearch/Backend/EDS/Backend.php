@@ -295,30 +295,47 @@ class Backend extends AbstractBackend
                 $this->profile = $overrideProfile;
             }
             $sessionToken = $this->getSessionToken();
-            $parts = explode(',', $id, 2);
-            if (!isset($parts[1])) {
-                throw new BackendException(
-                    'Retrieval id is not in the correct format.'
+
+            $backendType = (null !== $params) ? $params->get('backendType')[0] : null;
+            if ('EDS' === $backendType) {
+                $parts = explode(',', $id, 2);
+                if (!isset($parts[1])) {
+                    throw new BackendException(
+                        'Retrieval id is not in the correct format.'
+                    );
+                }
+                [$dbId, $an] = $parts;
+                $hlTerms = (null !== $params)
+                    ? $params->get('highlightterms') : null;
+                $extras = [];
+                if (
+                    null !== $params
+                    && ($eBookFormat = $params->get('ebookpreferredformat'))
+                ) {
+                    $extras['ebookpreferredformat'] = $eBookFormat;
+                }
+                $response = $this->client->retrieveEdsItem(
+                    $an,
+                    $dbId,
+                    $authenticationToken,
+                    $sessionToken,
+                    $hlTerms,
+                    $extras
                 );
             }
-            [$dbId, $an] = $parts;
-            $hlTerms = (null !== $params)
-                ? $params->get('highlightterms') : null;
-            $extras = [];
-            if (
-                null !== $params
-                && ($eBookFormat = $params->get('ebookpreferredformat'))
-            ) {
-                $extras['ebookpreferredformat'] = $eBookFormat;
+            elseif ('EPF' === $backendType) {
+                $pubId = $id;
+                $response = $this->client->retrieveEpfItem(
+                    $pubId,
+                    $authenticationToken,
+                    $sessionToken
+                );
             }
-            $response = $this->client->retrieve(
-                $an,
-                $dbId,
-                $authenticationToken,
-                $sessionToken,
-                $hlTerms,
-                $extras
-            );
+            else {
+                throw new BackendException(
+                    'Unknown backendType: ' . $backendType
+                );
+            }
         } catch (ApiException $e) {
             // Error codes can be reviewed at
             // https://connect.ebsco.com/s/article
