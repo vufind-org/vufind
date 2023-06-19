@@ -65,6 +65,7 @@ class BackendRegistry extends \VuFind\ServiceManager\AbstractPluginManager
         'EDS' => Factory\EdsBackendFactory::class,
         'EIT' => Factory\EITBackendFactory::class,
         'LibGuides' => Factory\LibGuidesBackendFactory::class,
+        'LibGuidesAZ' => Factory\LibGuidesAZBackendFactory::class,
         'Pazpar2' => Factory\Pazpar2BackendFactory::class,
         'Primo' => Factory\PrimoBackendFactory::class,
         'Search2' => Factory\Search2BackendFactory::class,

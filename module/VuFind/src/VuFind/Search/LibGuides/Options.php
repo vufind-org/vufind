@@ -41,13 +41,20 @@ namespace VuFind\Search\LibGuides;
 class Options extends \VuFind\Search\Base\Options
 {
     /**
+     * Name of .ini file to use for LibGuides API and display settings.
+     *
+     * @var string
+     */
+    protected string $iniName = 'LibGuides';
+
+    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Config loader
      */
     public function __construct(\VuFind\Config\PluginManager $configLoader)
     {
-        $this->searchIni = $this->facetsIni = 'LibGuides';
+        $this->searchIni = $this->facetsIni = $this->iniName;
         parent::__construct($configLoader);
         $searchSettings = $configLoader->get($this->searchIni);
         if (isset($searchSettings->General->default_limit)) {
