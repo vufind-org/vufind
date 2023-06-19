@@ -1056,7 +1056,7 @@ class Aleph extends AbstractBase implements
      * @param array $holdDetails A single hold array from getMyHolds
      * @param array $patron      Patron information from patronLogin
      *
-     * @return string Data for use in a form field
+     * @return string|null Data for use in a form field
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
@@ -1400,7 +1400,7 @@ class Aleph extends AbstractBase implements
      * @param array $holdInfo Contains most of the same values passed to
      * placeHold, minus the patron data.
      *
-     * @return int
+     * @return int|null
      */
     public function getHoldDefaultRequiredDate($patron, $holdInfo)
     {
@@ -1506,7 +1506,7 @@ class Aleph extends AbstractBase implements
      *
      * @param string $bar Barcode
      *
-     * @return string
+     * @return string|null
      */
     public function barcodeToID($bar)
     {
