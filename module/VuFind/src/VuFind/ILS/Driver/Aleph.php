@@ -1065,7 +1065,7 @@ class Aleph extends AbstractBase implements
         if ($holdDetails['delete']) {
             return $holdDetails['item_id'];
         } else {
-            return null;
+            return '';
         }
     }
 
@@ -1400,7 +1400,7 @@ class Aleph extends AbstractBase implements
      * @param array $holdInfo Contains most of the same values passed to
      * placeHold, minus the patron data.
      *
-     * @return int
+     * @return int|null
      */
     public function getHoldDefaultRequiredDate($patron, $holdInfo)
     {
@@ -1506,7 +1506,7 @@ class Aleph extends AbstractBase implements
      *
      * @param string $bar Barcode
      *
-     * @return string
+     * @return string|null
      */
     public function barcodeToID($bar)
     {
