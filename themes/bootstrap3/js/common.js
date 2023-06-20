@@ -7,6 +7,10 @@ window.console = window.console || { log: function polyfillLog() {} };
 var VuFind = (function VuFind() {
   var defaultSearchBackend = null;
   var path = null;
+  var lightbox = {
+    parent: null,
+    child: null
+  }
   var _initialized = false;
   var _submodules = [];
   var _cspNonce = '';
@@ -262,6 +266,7 @@ var VuFind = (function VuFind() {
   return {
     defaultSearchBackend: defaultSearchBackend,
     path: path,
+    lightbox: lightbox,
 
     addIcons: addIcons,
     addTranslations: addTranslations,

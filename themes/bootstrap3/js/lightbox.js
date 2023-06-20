@@ -168,12 +168,12 @@ VuFind.register('lightbox', function Lightbox() {
       }
       obj.url += parts.length < 2 ? '' : '#' + parts[1];
     }
-    if (window.lightboxParent) {
+    if (VuFind.lightbox.parent) {
       let parts = obj.url.split('#');
       obj.url = parts[0].indexOf('?') < 0
         ? parts[0] + '?'
         : parts[0] + '&';
-      obj.url += '&lightboxParent=' + window.lightboxParent;
+      obj.url += '&lightboxParent=' + VuFind.lightbox.parent;
       obj.url += parts.length < 2 ? '' : '#' + parts[1];
     }
     // Store original URL with the layout=lightbox parameter:
@@ -477,16 +477,16 @@ VuFind.register('lightbox', function Lightbox() {
   }
 
   function loadConfiguredLightbox(){
-    if (window.lightboxChild) {
+    if (VuFind.lightbox.child) {
       // load lightbox
       var obj = {
-        url: decodeURIComponent(window.lightboxChild.replace(/\+/g, ' '))
+        url: decodeURIComponent(VuFind.lightbox.child.replace(/\+/g, ' '))
       };
       ajax(obj);
       VuFind.modal('show');
 
       // remove lightbox reference
-      window.lightboxChild = null;
+      VuFind.lightbox.child = null;
       let url = new URL(window.location.href);
       let params = url.searchParams;
       params.delete('lightboxChild');

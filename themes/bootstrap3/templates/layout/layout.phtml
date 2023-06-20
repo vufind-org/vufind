@@ -99,6 +99,21 @@
           VuFind.setCspNonce('{$cspNonce}');
           VuFind.setCurrentSearchId($searchId);
           JS;
+
+      if (!empty($lightboxParent)){
+        $lightboxParent = urlencode($lightboxParent);
+        $appendScripts[] = <<<JS
+            VuFind.lightbox.parent = '{$lightboxParent}';
+        JS;
+      }
+
+      if (!empty($lightboxChild)){
+        $lightboxChild = urlencode($lightboxChild);
+        $appendScripts[] = <<<JS
+            VuFind.lightbox.child = '{$lightboxChild}';
+        JS;
+      }
+
       $this->headScript()->appendScript(implode("\n", $appendScripts));
 
       if ($this->config()->ajaxCoversEnabled()) {
@@ -107,12 +122,6 @@
     ?>
     <?=$this->cookieConsent()->render()?>
     <?=$this->headScript() ?>
-    <?php if (!empty($lightboxParent)): ?>
-      <script>window.lightboxParent = "<?= urlencode($lightboxParent) ?>";</script>
-    <?php endif; ?>
-    <?php if (!empty($lightboxChild)): ?>
-      <script>window.lightboxChild = "<?= urlencode($lightboxChild) ?>";</script>
-    <?php endif; ?>
   </head>
   <body class="template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?> <?=$this->layoutClass('offcanvas-row')?><?php if ($this->layout()->rtl): ?> rtl<?php endif; ?>">
     <?php // Set up the search box -- there are three possible cases:
