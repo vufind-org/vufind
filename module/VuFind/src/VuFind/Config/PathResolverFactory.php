@@ -29,6 +29,8 @@
 
 namespace VuFind\Config;
 
+use Laminas\Config\Config;
+use Laminas\Config\Reader\Ini as IniReader;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
@@ -61,6 +63,25 @@ class PathResolverFactory implements FactoryInterface
     protected $defaultLocalConfigSubdir = PathResolver::DEFAULT_CONFIG_SUBDIR;
 
     /**
+     * INI file reader
+     *
+     * @var IniReader
+     */
+    protected $iniReader;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        // Use ASCII 0 as a nest separator; otherwise some of the unusual key names
+        // we have (i.e. in WorldCat.ini search options) will get parsed in
+        // unexpected ways.
+        $this->iniReader = new IniReader();
+        $this->iniReader->setNestSeparator(chr(0));
+    }
+
+    /**
      * Create an object
      *
      * @param ContainerInterface $container     Service manager
@@ -82,14 +103,35 @@ class PathResolverFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $localDirs = defined('LOCAL_OVERRIDE_DIR')
-            && strlen(trim(LOCAL_OVERRIDE_DIR)) > 0
-                ? [
-                    [
-                        'directory' => LOCAL_OVERRIDE_DIR,
-                        'defaultConfigSubdir' => $this->defaultLocalConfigSubdir,
-                    ],
-                ] : [];
+        $localDirs = [];
+        $currentDir = defined('LOCAL_OVERRIDE_DIR')
+            && strlen(trim(LOCAL_OVERRIDE_DIR)) > 0 ?
+            LOCAL_OVERRIDE_DIR : '';
+        while (!empty($currentDir)) {
+            $systemConfigFile = $currentDir . '/localSystem.ini';
+            $systemConfig = new Config(
+                file_exists($systemConfigFile) ?
+                    $this->iniReader->fromFile($systemConfigFile) :
+                    []
+            );
+            array_unshift(
+                $localDirs,
+                [
+                    'directory' => $currentDir,
+                    'defaultConfigSubdir' =>
+                        $systemConfig['LocalConfig']['configSubdir'] ??
+                        $this->defaultLocalConfigSubdir,
+                ]
+            );
+            $parentDir = '';
+            if (!empty($systemConfig['ParentConfig']['absolutePath'])) {
+                $parentDir = $systemConfig['ParentConfig']['absolutePath'];
+            }
+            if (empty($parentDir) && !empty($systemConfig['ParentConfig']['relativePath'])) {
+                $parentDir = $currentDir . '/' . $systemConfig['ParentConfig']['relativePath'];
+            }
+            $currentDir = $parentDir;
+        }
         return new $requestedName(
             [
                 'directory' => APPLICATION_PATH,
