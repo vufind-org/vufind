@@ -202,7 +202,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
         }
         $this->layout()->lightboxParent = $this->getServerUrl();
         if ($lightboxChild = $this->getRequest()->getQuery('lightboxChild')) {
-            $this->layout()->lightboxChild = urldecode($lightboxChild);
+            $this->layout()->lightboxChild = $lightboxChild;
         }
         return new ViewModel($params);
     }
@@ -766,7 +766,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
                     $this->followup()->store([], $url);
                     $url = new \Laminas\Uri\Uri($lightboxParent);
                     $params = $url->getQueryAsArray();
-                    $params['lightboxChild'] = urlencode($this->getServerUrl());
+                    $params['lightboxChild'] = $this->getServerUrl();
                     $url->setQuery($params);
                 }
                 return $url;
