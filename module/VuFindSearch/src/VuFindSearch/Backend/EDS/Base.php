@@ -185,6 +185,23 @@ abstract class Base
         return $this->call($url, $headers, $qs, 'GET', null, '', false);
     }
 
+    /**
+     * Retrieves an EDS record specified by its identifiers
+     *
+     * @param string $an                  An of the record to retrieve from the
+     * EdsApi
+     * @param string $dbId                Database identifier of the record to
+     * retrieve from the EdsApi
+     * @param string $authenticationToken Authentication token
+     * @param string $sessionToken        Session token
+     * @param string $highlightTerms      Comma separated list of terms to highlight
+     * in the retrieved record responses
+     * @param array  $extraQueryParams    Extra query string parameters
+     *
+     * @return array    The requested record
+     * 
+     * @deprecated Use retrieveEdsItem
+     */
     public function retrieve(
         $an,
         $dbId,
@@ -204,7 +221,7 @@ abstract class Base
     }
 
     /**
-     * Retrieves a record specified by its identifiers
+     * Retrieves an EDS record specified by its identifiers
      *
      * @param string $an                  An of the record to retrieve from the
      * EdsApi
