@@ -137,6 +137,8 @@ class Backend extends AbstractBackend
      */
     protected $isGuest;
 
+    protected $backendType = null;
+
     /**
      * Constructor.
      *
@@ -296,8 +298,7 @@ class Backend extends AbstractBackend
             }
             $sessionToken = $this->getSessionToken();
 
-            $backendType = (null !== $params) ? $params->get('backendType')[0] : null;
-            if ('EDS' === $backendType) {
+            if ('EDS' === $this->backendType) {
                 $parts = explode(',', $id, 2);
                 if (!isset($parts[1])) {
                     throw new BackendException(
@@ -323,7 +324,7 @@ class Backend extends AbstractBackend
                     $extras
                 );
             }
-            elseif ('EPF' === $backendType) {
+            elseif ('EPF' === $this->backendType) {
                 $pubId = $id;
                 $response = $this->client->retrieveEpfItem(
                     $pubId,
@@ -757,5 +758,9 @@ class Backend extends AbstractBackend
     public function setAuthManager($authManager)
     {
         $this->authManager = $authManager;
+    }
+
+    public function setBackendType($backendType) {
+        $this->backendType = $backendType;
     }
 }

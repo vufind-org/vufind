@@ -130,6 +130,7 @@ class EdsBackendFactory extends AbstractBackendFactory
         );
         $backend->setLogger($this->logger);
         $backend->setQueryBuilder($this->createQueryBuilder());
+        $backend->setBackendType($this->getServiceName());
         return $backend;
     }
 

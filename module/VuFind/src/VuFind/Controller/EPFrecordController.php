@@ -14,11 +14,4 @@ class EPFrecordController extends AbstractRecord
         parent::__construct($sm);
     }
 
-    protected function loadRecord(ParamBag $params = null, bool $force = false)
-    {
-        $params = $params ?? new ParamBag();
-        $params->set('backendType', 'EPF');
-        return parent::loadRecord($params, $force);
-    }
-
 }
