@@ -16,12 +16,13 @@ class Options extends \VuFind\Search\Base\Options
         \VuFind\Config\PluginManager $configLoader,
         $apiInfo = null
     ) {
-        $this->searchIni = 'EPF';
+        $this->searchIni = $this->facetsIni = 'EPF';
         $this->searchSettings = $configLoader->get($this->searchIni);
 
         parent::__construct($configLoader);
 
         $this->setOptionsFromConfig();
+        $facetConf = $configLoader->get($this->facetsIni);
     }
 
     public function getSearchAction()

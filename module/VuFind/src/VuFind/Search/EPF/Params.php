@@ -4,7 +4,7 @@ namespace VuFind\Search\EPF;
 
 use VuFindSearch\ParamBag;
 
-class Params extends \VuFind\Search\Base\Params
+class Params extends \VuFind\Search\EDS\AbstractEDSParams
 {
 
     public function getBackendParameters()
@@ -16,6 +16,8 @@ class Params extends \VuFind\Search\Base\Params
         // https://connect.ebsco.com/s/article/Publication-Finder-API-Reference-Guide-Search
         $view = $this->getEpfView();
         $backendParams->set('view', $view);
+
+        $this->createBackendFilterParameters($backendParams);
 
         return $backendParams;
     }
