@@ -1056,7 +1056,7 @@ class Aleph extends AbstractBase implements
      * @param array $holdDetails A single hold array from getMyHolds
      * @param array $patron      Patron information from patronLogin
      *
-     * @return string|null Data for use in a form field
+     * @return string Data for use in a form field
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
@@ -1065,7 +1065,7 @@ class Aleph extends AbstractBase implements
         if ($holdDetails['delete']) {
             return $holdDetails['item_id'];
         } else {
-            return null;
+            return '';
         }
     }
 
