@@ -185,6 +185,24 @@ abstract class Base
         return $this->call($url, $headers, $qs, 'GET', null, '', false);
     }
 
+    public function retrieve(
+        $an,
+        $dbId,
+        $authenticationToken,
+        $sessionToken,
+        $highlightTerms = null,
+        $extraQueryParams = []
+    ) {
+        return $this->retrieveEdsItem(
+            $an, 
+            $dbId, 
+            $authenticationToken, 
+            $sessionToken, 
+            $highlightTerms, 
+            $extraQueryParams
+        );
+    }
+
     /**
      * Retrieves a record specified by its identifiers
      *
