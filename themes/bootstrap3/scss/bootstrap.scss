@@ -7,6 +7,8 @@ $fa-font-path: "../../bootstrap3/css/fonts";
 
 <#LESS */
 @import "variables";
+// Import custom (non-vendor) mixins1
+@import "mixins/mixins";
 @import "vendor/font-awesome/font-awesome";
 
 @import "components/accessibility";
