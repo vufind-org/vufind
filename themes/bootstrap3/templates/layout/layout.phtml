@@ -103,15 +103,15 @@
       if (!empty($lightboxParent)) {
         $lightboxParent = json_encode((string)$lightboxParent);
         $appendScripts[] = <<<JS
-            VuFind.lightbox.parent = '{$lightboxParent}';
-        JS;
+                   VuFind.lightbox.parent = '{$lightboxParent}';
+            JS;
       }
 
       if (!empty($lightboxChild)) {
         $lightboxChild = json_encode((string)$lightboxChild);
         $appendScripts[] = <<<JS
-            VuFind.lightbox.child = '{$lightboxChild}';
-        JS;
+                   VuFind.lightbox.child = '{$lightboxChild}';
+            JS;
       }
 
       $this->headScript()->appendScript(implode("\n", $appendScripts));

@@ -10,7 +10,7 @@ var VuFind = (function VuFind() {
   var lightbox = {
     parent: null,
     child: null
-  }
+  };
   var _initialized = false;
   var _submodules = [];
   var _cspNonce = '';
