@@ -119,16 +119,16 @@ class PathResolverFactory implements FactoryInterface
                 [
                     'directory' => $currentDir,
                     'defaultConfigSubdir' =>
-                        $systemConfig['LocalConfig']['configSubdir'] ??
+                        $systemConfig['Local_Dir']['config_subdir'] ??
                         $this->defaultLocalConfigSubdir,
                 ]
             );
             $parentDir = '';
-            if (!empty($systemConfig['ParentConfig']['absolutePath'])) {
-                $parentDir = $systemConfig['ParentConfig']['absolutePath'];
+            if (!empty($systemConfig['Parent_Dir']['absolute_path'])) {
+                $parentDir = $systemConfig['Parent_Dir']['absolute_path'];
             }
-            if (empty($parentDir) && !empty($systemConfig['ParentConfig']['relativePath'])) {
-                $parentDir = $currentDir . '/' . $systemConfig['ParentConfig']['relativePath'];
+            if (empty($parentDir) && !empty($systemConfig['Parent_Dir']['relative_path'])) {
+                $parentDir = $currentDir . '/' . $systemConfig['Parent_Dir']['relative_path'];
             }
             $currentDir = $parentDir;
         }
