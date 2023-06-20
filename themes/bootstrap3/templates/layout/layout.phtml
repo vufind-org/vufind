@@ -100,15 +100,15 @@
           VuFind.setCurrentSearchId($searchId);
           JS;
 
-      if (!empty($lightboxParent)){
-        $lightboxParent = urlencode($lightboxParent);
+      if (!empty($lightboxParent)) {
+        $lightboxParent = json_encode((string)$lightboxParent);
         $appendScripts[] = <<<JS
             VuFind.lightbox.parent = '{$lightboxParent}';
         JS;
       }
 
-      if (!empty($lightboxChild)){
-        $lightboxChild = urlencode($lightboxChild);
+      if (!empty($lightboxChild)) {
+        $lightboxChild = json_encode((string)$lightboxChild);
         $appendScripts[] = <<<JS
             VuFind.lightbox.child = '{$lightboxChild}';
         JS;
