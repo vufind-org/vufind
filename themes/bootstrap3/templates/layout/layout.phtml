@@ -107,10 +107,10 @@
     ?>
     <?=$this->cookieConsent()->render()?>
     <?=$this->headScript() ?>
-    <?php if (isset($lightboxParent)): ?>
+    <?php if (!empty($lightboxParent)): ?>
       <script>window.lightboxParent = "<?= urlencode($lightboxParent) ?>";</script>
     <?php endif; ?>
-    <?php if (isset($lightboxChild)): ?>
+    <?php if (!empty($lightboxChild)): ?>
       <script>window.lightboxChild = "<?= urlencode($lightboxChild) ?>";</script>
     <?php endif; ?>
   </head>

@@ -168,7 +168,7 @@ VuFind.register('lightbox', function Lightbox() {
       }
       obj.url += parts.length < 2 ? '' : '#' + parts[1];
     }
-    if (window.lightboxParent){
+    if (window.lightboxParent) {
       let parts = obj.url.split('#');
       obj.url = parts[0].indexOf('?') < 0
         ? parts[0] + '?'
@@ -477,7 +477,7 @@ VuFind.register('lightbox', function Lightbox() {
   }
 
   function loadConfiguredLightbox(){
-    if (window.lightboxChild){
+    if (window.lightboxChild) {
       // load lightbox
       var obj = {
         url: decodeURIComponent(window.lightboxChild.replace(/\+/g, ' '))
