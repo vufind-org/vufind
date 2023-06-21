@@ -33,7 +33,7 @@ namespace VuFind\Controller;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
- * EDS Record Controller
+ * EPF Record Controller
  *
  * @category VuFind
  * @package  Controller
