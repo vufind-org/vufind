@@ -55,6 +55,10 @@ jobs:
         if: ${{ matrix.phing_tasks == 'qa-console' }}
         run: npm install --ignore-scripts
 
+      - name: Rebuild node-sass dependency
+        if: ${{ matrix.phing_tasks == 'qa-console' }}
+        run: npm rebuild node-sass
+
       - name: Get composer cache directory
         id: composer-cache
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
