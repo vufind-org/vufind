@@ -1,4 +1,5 @@
-<?php $doi = $this->recommend->getDOI(); if (!empty($doi)): ?>
+<?php $doi = $this->recommend->getDOI(); ?>
+<?php if (!empty($doi)): ?>
   <?php $url = $this->recommend->getURL(); ?>
   <div class="alert alert-info">
     <?=$this->translate('doi_detected_html', ['%%url%%' => $this->escapeHtmlAttr($url), '%%doi%%' => $this->escapeHtml($doi)])?>

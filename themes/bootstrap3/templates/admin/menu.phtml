@@ -1,4 +1,4 @@
-<div class="list-group">
+<nav class="list-group">
   <a href="<?=$this->url('admin')?>" class="list-group-item<?=strtolower($this->layout()->templateName) == "home" ? ' active' : ''?>"><?=$this->transEsc('Home')?></a>
   <a href="<?=$this->url('admin/social')?>" class="list-group-item<?=strtolower($this->layout()->templateName) == "socialstats" ? ' active' : ''?>"><?=$this->transEsc('Social Statistics')?></a>
   <a href="<?=$this->url('admin/config')?>" class="list-group-item<?=strtolower($this->layout()->templateName) == "config" ? ' active' : ''?>"><?=$this->transEsc('Configuration')?></a>
@@ -8,4 +8,4 @@
   <?php if ($this->overdrive()->showOverdriveAdminLink()):?>
     <a href="<?=$this->url('admin/overdrive')?>" class="list-group-item<?=strtolower($this->layout()->templateName) == "overdrive" ? ' active' : ''?>"><?=$this->transEsc('Overdrive API')?></a>
   <?php endif;?>
-</div>
+</nav>

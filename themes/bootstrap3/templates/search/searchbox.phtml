@@ -110,7 +110,8 @@
         <a href="<?=$geoUrl ?>" class="btn btn-link"><?=$this->transEsc('Geographic Search')?></a>
     <?php endif; ?>
 
-    <?php $shards = $options->getShards(); if ($options->showShardCheckboxes() && !empty($shards)): ?>
+    <?php $shards = $options->getShards(); ?>
+    <?php if ($options->showShardCheckboxes() && !empty($shards)): ?>
       <?php
       $selectedShards = $this->selectedShards ?? $options->getDefaultSelectedShards();
       ?>

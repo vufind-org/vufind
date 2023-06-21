@@ -3,7 +3,7 @@
 /**
  * Storage retrieval requests trait (for subclasses of AbstractRecord)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -137,7 +137,8 @@ trait StorageRetrievalRequestsTrait
                         ],
                     ];
                     $this->flashMessenger()->addMessage($msg, 'success');
-                    return $this->redirectToRecord('#top');
+                    $this->getViewRenderer()->plugin('session')->put('reset_account_status', true);
+                    return $this->redirectToRecord($this->inLightbox() ? '?layout=lightbox' : '');
                 } else {
                     // Failure: use flash messenger to display messages, stay on
                     // the current form.

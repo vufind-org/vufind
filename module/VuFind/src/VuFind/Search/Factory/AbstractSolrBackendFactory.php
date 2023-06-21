@@ -3,7 +3,7 @@
 /**
  * Abstract factory for SOLR backends.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -683,7 +683,8 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
         Config $search
     ) {
         $fl = $search->General->highlighting_fields ?? '*';
-        return new InjectHighlightingListener($backend, $fl);
+        $extras = $search->General->extra_hl_params ?? [];
+        return new InjectHighlightingListener($backend, $fl, $extras);
     }
 
     /**

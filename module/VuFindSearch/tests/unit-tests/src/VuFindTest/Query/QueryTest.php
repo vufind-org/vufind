@@ -3,7 +3,7 @@
 /**
  * Unit tests for Query class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -146,6 +146,11 @@ class QueryTest extends TestCase
         );
         $q->replaceTerm('test', 'mess', $normalizer);
         $this->assertEquals('this is a mess of things', $q->getString());
+
+        // Test UNICODE characters ("composers" in Northern Sámi):
+        $q = new Query('šuokŋadahkkit');
+        $this->assertTrue($q->containsTerm('šuokŋadahkkit', $normalizer));
+        $this->assertTrue($q->containsTerm('suokŋadahkkit', $normalizer));
     }
 
     /**

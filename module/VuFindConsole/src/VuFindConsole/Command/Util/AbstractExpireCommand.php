@@ -3,7 +3,7 @@
 /**
  * Generic base class for expiration commands.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -93,7 +93,7 @@ class AbstractExpireCommand extends Command
     public function __construct(Gateway $table, $name = null)
     {
         if (!method_exists($table, 'deleteExpired')) {
-            $tableName = get_class($table);
+            $tableName = $table::class;
             throw new \Exception("$tableName does not support deleteExpired()");
         }
         $this->table = $table;

@@ -4,7 +4,7 @@
  * Class to determine which account capabilities are available, based on
  * configuration and other factors.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2015.
  *

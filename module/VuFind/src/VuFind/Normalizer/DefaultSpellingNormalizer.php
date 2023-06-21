@@ -3,7 +3,7 @@
 /**
  * Default text normalizer for spellcheck text replacement.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -55,7 +55,7 @@ class DefaultSpellingNormalizer
         $booleans = ['AND', 'OR', 'NOT'];
         $words = [];
         foreach (preg_split('/\s+/', $stripped) as $word) {
-            $words[] = in_array($word, $booleans) ? $word : strtolower($word);
+            $words[] = in_array($word, $booleans) ? $word : mb_strtolower($word, 'UTF-8');
         }
         return implode(' ', $words);
     }

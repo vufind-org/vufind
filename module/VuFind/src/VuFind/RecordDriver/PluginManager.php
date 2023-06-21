@@ -3,7 +3,7 @@
 /**
  * Record driver plugin manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -52,6 +52,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'eds' => EDS::class,
         'eit' => EIT::class,
         'libguides' => LibGuides::class,
+        'libguidesaz' => LibGuidesAZ::class,
         'missing' => Missing::class,
         'pazpar2' => Pazpar2::class,
         'primo' => Primo::class,
@@ -90,6 +91,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         EDS::class => NameBasedConfigFactory::class,
         EIT::class => NameBasedConfigFactory::class,
         LibGuides::class => InvokableFactory::class,
+        LibGuidesAZ::class => InvokableFactory::class,
         Missing::class => AbstractBaseFactory::class,
         Pazpar2::class => NameBasedConfigFactory::class,
         Primo::class => NameBasedConfigFactory::class,

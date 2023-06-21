@@ -3,7 +3,7 @@
 /**
  * PubDateVisAjax Recommendations Module
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Till Kinstler 2011.
  *

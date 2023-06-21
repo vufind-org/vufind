@@ -26,7 +26,8 @@
   background-color: transparent;
 }
 .facet,
-.facet-group .title {
+.facet-group .title,
+.user-list-link {
   display: flex;
   align-items: center;
 
@@ -174,6 +175,10 @@ body.rtl .full-facet-list .active .fa.fa-times { float: left; }
   .date-from, .date-to { flex: 0 1 100%; }
   .date-from { padding-right: .25rem; }
   .date-to   { padding-left:  .25rem; }
+}
+h3.facet-title {
+  font-size: @font-size-base;
+  margin: 0;
 }
 @media (min-width: 768px) {
   .author-facets { display: flex; }

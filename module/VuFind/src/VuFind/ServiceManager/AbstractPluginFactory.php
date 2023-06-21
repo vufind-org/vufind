@@ -3,7 +3,7 @@
 /**
  * VuFind Abstract Plugin Factory
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -67,7 +67,7 @@ abstract class AbstractPluginFactory implements AbstractFactoryInterface
     protected function getClassName($requestedName)
     {
         // If we have a FQCN that refers to an existing class, return it as-is:
-        if (strpos($requestedName, '\\') !== false && class_exists($requestedName)) {
+        if (str_contains($requestedName, '\\') && class_exists($requestedName)) {
             return $requestedName;
         }
         // First try the raw service name, then try a normalized version:

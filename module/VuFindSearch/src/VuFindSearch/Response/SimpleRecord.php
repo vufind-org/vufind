@@ -3,7 +3,7 @@
 /**
  * A minimal record class for wrapping an array of fields
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland
  *

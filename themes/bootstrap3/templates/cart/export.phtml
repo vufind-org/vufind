@@ -38,7 +38,11 @@
       <select name="format" id="format" class="form-control">
         <?php $firstOption = null; ?>
         <?php foreach ($this->exportOptions as $exportOption): ?>
-          <?php if ($firstOption == null) $firstOption = $exportOption; ?>
+          <?php
+            if ($firstOption == null) {
+              $firstOption = $exportOption;
+            }
+          ?>
           <option value="<?=$this->escapeHtmlAttr($exportOption)?>"<?php if ($this->export()->needsRedirect($exportOption)): ?> data-redirect<?php endif; ?>><?=$this->transEsc($this->export()->getLabelForFormat($exportOption))?></option>
         <?php endforeach; ?>
       </select>

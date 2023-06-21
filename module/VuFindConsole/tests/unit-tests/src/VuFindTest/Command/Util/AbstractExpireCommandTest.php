@@ -3,7 +3,7 @@
 /**
  * AbstractExpireCommand test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -91,7 +91,7 @@ class AbstractExpireCommandTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage(
-            get_class($table) . ' does not support deleteExpired()'
+            $table::class . ' does not support deleteExpired()'
         );
         new $this->targetClass($table, 'foo');
     }

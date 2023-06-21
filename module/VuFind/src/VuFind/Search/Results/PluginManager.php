@@ -3,7 +3,7 @@
 /**
  * Search results plugin manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -54,6 +54,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'emptyset' => \VuFind\Search\EmptySet\Results::class,
         'favorites' => \VuFind\Search\Favorites\Results::class,
         'libguides' => \VuFind\Search\LibGuides\Results::class,
+        'libguidesaz' => \VuFind\Search\LibGuidesAZ\Results::class,
         'mixedlist' => \VuFind\Search\MixedList\Results::class,
         'pazpar2' => \VuFind\Search\Pazpar2\Results::class,
         'primo' => \VuFind\Search\Primo\Results::class,
@@ -87,6 +88,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         \VuFind\Search\Favorites\Results::class =>
             \VuFind\Search\Favorites\ResultsFactory::class,
         \VuFind\Search\LibGuides\Results::class => ResultsFactory::class,
+        \VuFind\Search\LibGuidesAZ\Results::class => ResultsFactory::class,
         \VuFind\Search\MixedList\Results::class => ResultsFactory::class,
         \VuFind\Search\Pazpar2\Results::class => ResultsFactory::class,
         \VuFind\Search\Primo\Results::class => ResultsFactory::class,

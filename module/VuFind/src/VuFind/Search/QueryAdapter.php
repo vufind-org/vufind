@@ -3,7 +3,7 @@
 /**
  * Legacy adapter: search query parameters to AbstractQuery object
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -69,7 +69,7 @@ abstract class QueryAdapter
             $operator = $search['g'][0]['b'];
             return new QueryGroup(
                 $operator,
-                array_map(['self', 'deminify'], $search['g'])
+                array_map(self::class . '::deminify', $search['g'])
             );
         } else {
             // Special case: The outer-most group-of-groups.
@@ -77,7 +77,7 @@ abstract class QueryAdapter
                 $operator = $search[0]['j'];
                 return new QueryGroup(
                     $operator,
-                    array_map(['self', 'deminify'], $search)
+                    array_map(self::class . '::deminify', $search)
                 );
             } else {
                 // Simple query
@@ -134,11 +134,11 @@ abstract class QueryAdapter
                             = call_user_func($showName, $group->getHandler()) . ':'
                             . $group->getString();
                     } else {
-                        throw new \Exception('Unexpected ' . get_class($group));
+                        throw new \Exception('Unexpected ' . $group::class);
                     }
                 }
                 // Is this an exclusion (NOT) group or a normal group?
-                $str = join(
+                $str = implode(
                     ' ' . call_user_func($translate, $search->getOperator())
                     . ' ',
                     $thisGroup
@@ -149,18 +149,18 @@ abstract class QueryAdapter
                     $groups[] = $str;
                 }
             } else {
-                throw new \Exception('Unexpected ' . get_class($search));
+                throw new \Exception('Unexpected ' . $search::class);
             }
         }
 
         // Base 'advanced' query
         $operator = call_user_func($translate, $query->getOperator());
-        $output = '(' . join(') ' . $operator . ' (', $groups) . ')';
+        $output = '(' . implode(') ' . $operator . ' (', $groups) . ')';
 
         // Concatenate exclusion after that
         if (count($excludes) > 0) {
             $output .= ' ' . call_user_func($translate, 'NOT') . ' (('
-                . join(') ' . call_user_func($translate, 'OR') . ' (', $excludes)
+                . implode(') ' . call_user_func($translate, 'OR') . ' (', $excludes)
                 . '))';
         }
 
@@ -187,20 +187,21 @@ abstract class QueryAdapter
             $groupId = $matches[1];
             $group = [];
             $lastBool = null;
+            $value = (array)$value;
 
             // Loop through each term inside the group
             for ($i = 0; $i < count($value); $i++) {
                 // Ignore advanced search fields with no lookup
                 if ($value[$i] != '') {
                     // Use default fields if not set
-                    $typeArr = $request->get("type$groupId");
+                    $typeArr = (array)$request->get("type$groupId");
                     $handler = !empty($typeArr[$i]) ? $typeArr[$i] : $defaultHandler;
 
-                    $opArr = $request->get("op$groupId");
+                    $opArr = (array)$request->get("op$groupId");
                     $operator = !empty($opArr[$i]) ? $opArr[$i] : null;
 
                     // Add term to this group
-                    $boolArr = $request->get("bool$groupId");
+                    $boolArr = (array)$request->get("bool$groupId");
                     $lastBool = $boolArr[0] ?? 'AND';
                     $group[] = new Query($value[$i], $handler, $operator);
                 }

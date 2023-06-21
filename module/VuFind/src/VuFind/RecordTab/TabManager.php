@@ -3,7 +3,7 @@
 /**
  * Record tab manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -170,7 +170,7 @@ class TabManager
         // Get the current record driver's class name, then start a loop
         // in case we need to use a parent class' name to find the appropriate
         // setting.
-        $className = get_class($driver);
+        $className = $driver::class;
         do {
             if (isset($this->config[$this->context][$className][$setting])) {
                 return $this->config[$this->context][$className][$setting];

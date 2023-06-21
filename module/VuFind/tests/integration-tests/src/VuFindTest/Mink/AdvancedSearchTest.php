@@ -3,7 +3,7 @@
 /**
  * Mink test class to test advanced search.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2014.
  *

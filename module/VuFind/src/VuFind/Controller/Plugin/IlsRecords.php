@@ -3,7 +3,7 @@
 /**
  * VuFind Action Helper - ILS Records Support Methods
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2021.
  *
@@ -116,7 +116,7 @@ class IlsRecords extends \Laminas\Mvc\Controller\Plugin\AbstractPlugin
     public function collectRequestStats(array $records): ?array
     {
         // Collect up to date stats for ajax account notifications:
-        if (empty($this->config->Authentication->enableAjax)) {
+        if (!($this->config->Authentication->enableAjax ?? true)) {
             return null;
         }
         return $this->getRequestSummary(

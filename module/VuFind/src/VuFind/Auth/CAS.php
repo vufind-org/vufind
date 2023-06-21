@@ -3,7 +3,7 @@
 /**
  * CAS authentication module.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -191,7 +191,7 @@ class CAS extends AbstractBase
         } else {
             $casTarget = $target;
         }
-        $append = (strpos($casTarget, '?') !== false) ? '&' : '?';
+        $append = (str_contains($casTarget, '?')) ? '&' : '?';
         $sessionInitiator = $config->CAS->login
             . '?service=' . urlencode($casTarget)
             . urlencode($append . 'auth_method=CAS');

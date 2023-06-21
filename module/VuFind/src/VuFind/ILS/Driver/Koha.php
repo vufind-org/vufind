@@ -3,7 +3,7 @@
 /**
  * Koha ILS Driver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Ayesha Abed Library, BRAC University 2010.
  *

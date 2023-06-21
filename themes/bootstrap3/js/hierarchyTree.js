@@ -158,7 +158,7 @@ function buildTreeWithXml(cb) {
     });
 }
 
-$(document).ready(function hierarchyTreeReady() {
+$(function hierarchyTreeReady() {
   // Code for the search button
   hierarchyID = $("#hierarchyTree").find(".hiddenHierarchyId")[0].value;
   recordID = $("#hierarchyTree").find(".hiddenRecordId")[0].value;
@@ -172,7 +172,7 @@ $(document).ready(function hierarchyTreeReady() {
   if (!hierarchySettings.fullHierarchy) {
     // Set Up Partial Hierarchy View Toggle
     $('#hierarchyTree').parent().prepend('<a href="#" id="toggleTree" class="closed">' + VuFind.translate("showTree") + '</a>');
-    $('#toggleTree').click(function toggleFullTree(e) {
+    $('#toggleTree').on("click", function toggleFullTree(e) {
       e.preventDefault();
       $(this).toggleClass("open");
       if ($(this).hasClass("open")) {
@@ -254,8 +254,8 @@ $(document).ready(function hierarchyTreeReady() {
     });
 
   $('#treeSearch').removeClass('hidden');
-  $('#treeSearch [type=submit]').click(doTreeSearch);
-  $('#treeSearchText').keyup(function treeSearchKeyup(e) {
+  $('#treeSearch [type=submit]').on("click", doTreeSearch);
+  $('#treeSearchText').on("keyup", function treeSearchKeyup(e) {
     var code = (e.keyCode ? e.keyCode : e.which);
     if (code === 13 || $(this).val().length === 0) {
       doTreeSearch();

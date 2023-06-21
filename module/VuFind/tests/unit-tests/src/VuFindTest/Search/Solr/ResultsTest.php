@@ -3,7 +3,7 @@
 /**
  * Solr Search Object Results Test
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  * Copyright (C) The National Library of Finland 2022.
@@ -187,7 +187,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($collection));
 
         $checkCommand = function ($command) use ($expectedParams) {
-            return get_class($command) === \VuFindSearch\Command\SearchCommand::class
+            return $command::class === \VuFindSearch\Command\SearchCommand::class
                 && $command->getTargetIdentifier() === 'Solr'
                 && get_class($command->getArguments()[0]) === \VuFindSearch\Query\Query::class
                 && $command->getArguments()[1] === 0
@@ -469,7 +469,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($collection));
 
         $checkCommand = function ($command) {
-            return get_class($command) === \VuFindSearch\Command\SearchCommand::class;
+            return $command::class === \VuFindSearch\Command\SearchCommand::class;
         };
         $searchService->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))
