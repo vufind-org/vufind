@@ -119,7 +119,7 @@
     <phingcall target="eslint"/>
     <phingcall target="jshint"/>
     <phingcall target="checkLessToSass"/>
-    <phingcall target="checkSass"/>
+    <phingcall target="checkSassBuild"/>
   </target>
 
   <!-- Quality Assurance PHP Tasks -->
