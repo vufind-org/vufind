@@ -27,7 +27,7 @@
     "watch:lessToSass": "grunt watch:lessToSass"
   },
   "dependencies": {
-    "autocomplete.js": "vufind-org/autocomplete.js#v2.1.6",
+    "autocomplete.js": "vufind-org/autocomplete.js#v2.1.7",
     "grunt": "^1.0.4",
     "grunt-contrib-less": "^2.0.0",
     "grunt-less-to-sass": "duvillierA/grunt-less-to-sass#0.0.11",
