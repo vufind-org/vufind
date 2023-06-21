@@ -49,7 +49,9 @@ abstract class Base
     protected $debug = false;
 
     /**
-     * EDSAPI host
+     * EDSAPI host.  Although the default is the same as $sessionHost, 
+     * this value is set via constructor and is not identical
+     * to $sessionHost when used with EPF.
      *
      * @var string
      */
@@ -61,6 +63,13 @@ abstract class Base
      * @var string
      */
     protected $authHost = 'https://eds-api.ebscohost.com/authservice/rest';
+
+    /**
+     * Session host.
+     *
+     * @var string
+     */
+    protected $sessionHost = 'https://eds-api.ebscohost.com/edsapi/rest';
 
     /**
      * The organization id use for authentication

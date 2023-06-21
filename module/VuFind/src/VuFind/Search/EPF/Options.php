@@ -53,15 +53,19 @@ class Options extends \VuFind\Search\Base\Options
     protected $defaultView = null;
 
     /**
+     * Search configuration
+     *
+     * @var \Laminas\Config\Config
+     */
+    protected $searchSettings;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Configuration loader
-     * @param array|callable               $apiInfo      API information or callback
-     * to retrieve it
      */
     public function __construct(
-        \VuFind\Config\PluginManager $configLoader,
-        $apiInfo = null
+        \VuFind\Config\PluginManager $configLoader
     ) {
         $this->searchIni = $this->facetsIni = 'EPF';
         $this->searchSettings = $configLoader->get($this->searchIni);

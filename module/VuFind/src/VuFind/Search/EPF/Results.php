@@ -54,6 +54,13 @@ class Results extends \VuFind\Search\Base\Results
     protected $backendId = 'EPF';
 
     /**
+     * Facet list
+     *
+     * @var array
+     */
+    protected $responseFacets;
+
+    /**
      * Support method for performAndProcessSearch -- perform a search based on the
      * parameters passed to the object.
      *
