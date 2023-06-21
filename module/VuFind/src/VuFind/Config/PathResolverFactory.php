@@ -87,22 +87,22 @@ class PathResolverFactory implements FactoryInterface
         }
         $localDirs = [];
         $currentDir = defined('LOCAL_OVERRIDE_DIR')
-            && strlen(trim(LOCAL_OVERRIDE_DIR)) > 0 ?
-            LOCAL_OVERRIDE_DIR : '';
+            && strlen(trim(LOCAL_OVERRIDE_DIR)) > 0
+            ? LOCAL_OVERRIDE_DIR : '';
         while (!empty($currentDir)) {
             $systemConfigFile = $currentDir . '/DirLocations.ini';
             $systemConfig = new Config(
-                file_exists($systemConfigFile) ?
-                    $this->getIniReader()->fromFile($systemConfigFile) :
-                    []
+                file_exists($systemConfigFile)
+                    ? $this->getIniReader()->fromFile($systemConfigFile)
+                    : []
             );
             array_unshift(
                 $localDirs,
                 [
                     'directory' => $currentDir,
                     'defaultConfigSubdir' =>
-                        $systemConfig['Local_Dir']['config_subdir'] ??
-                        $this->defaultLocalConfigSubdir,
+                        $systemConfig['Local_Dir']['config_subdir']
+                        ?? $this->defaultLocalConfigSubdir,
                 ]
             );
             $parentDir = '';
