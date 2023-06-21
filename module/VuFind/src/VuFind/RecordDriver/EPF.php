@@ -16,4 +16,9 @@ class EPF extends EDS
         return DefaultRecord::getThumbnail($size);
     }
 
+    public function getFullTextHoldings()
+    {
+        return $this->fields['FullTextHoldings'] ?? [];
+    }
+
 }
