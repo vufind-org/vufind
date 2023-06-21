@@ -30,7 +30,7 @@
  * @link     https://vufind.org Main Page
  */
 
- namespace VuFind\Search\EPF;
+namespace VuFind\Search\EPF;
 
 use VuFindSearch\ParamBag;
 

@@ -28,7 +28,7 @@
  * @link     https://vufind.org Main Site
  */
 
- namespace VuFind\Controller;
+namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
 
