@@ -49,13 +49,11 @@ abstract class Base
     protected $debug = false;
 
     /**
-     * EDSAPI host.  Although the default is the same as $sessionHost,
-     * this value is set via constructor and is not identical
-     * to $sessionHost when used with EPF.
+     * EDS or EPF API host.
      *
      * @var string
      */
-    protected $edsApiHost = 'https://eds-api.ebscohost.com/edsapi/rest';
+    protected $apiHost;
 
     /**
      * Auth host
@@ -118,7 +116,7 @@ abstract class Base
             foreach ($settings as $key => $value) {
                 switch ($key) {
                     case 'api_url':
-                        $this->edsApiHost = $value;
+                        $this->apiHost = $value;
                         break;
                     case 'auth_url':
                         $this->authHost = $value;
@@ -164,7 +162,7 @@ abstract class Base
     public function info($authenticationToken = null, $sessionToken = null)
     {
         $this->debugPrint("Info");
-        $url = $this->edsApiHost . '/info';
+        $url = $this->apiHost . '/info';
         $headers = $this->setTokens($authenticationToken, $sessionToken);
         return $this->call($url, $headers);
     }
@@ -188,7 +186,7 @@ abstract class Base
             . "$profile, guest: $isGuest, authToken: $authToken "
         );
         $qs = ['profile' => $profile, 'guest' => $isGuest];
-        $sessionHost = $this->sessionHost ?? $this->edsApiHost;
+        $sessionHost = $this->sessionHost ?? $this->apiHost;
         $url = $sessionHost . '/createsession';
         $headers = $this->setTokens($authToken, null);
         return $this->call($url, $headers, $qs, 'GET', null, '', false);
@@ -259,7 +257,7 @@ abstract class Base
         if (null != $highlightTerms) {
             $qs['highlightterms'] = $highlightTerms;
         }
-        $url = $this->edsApiHost . '/retrieve';
+        $url = $this->apiHost . '/retrieve';
         $headers = $this->setTokens($authenticationToken, $sessionToken);
         return $this->call($url, $headers, $qs);
     }
@@ -283,7 +281,7 @@ abstract class Base
             "Get Record. pubId: $pubId"
         );
         $qs = ['id' => $pubId];
-        $url = $this->edsApiHost . '/retrieve';
+        $url = $this->apiHost . '/retrieve';
         $headers = $this->setTokens($authenticationToken, $sessionToken);
         return $this->call($url, $headers, $qs);
     }
@@ -306,7 +304,7 @@ abstract class Base
         $this->debugPrint(
             'Query: ' . ($method === 'GET' ? print_r($qs, true) : $json)
         );
-        $url = $this->edsApiHost . '/search';
+        $url = $this->apiHost . '/search';
         $headers = $this->setTokens($authenticationToken, $sessionToken);
         return $this->call($url, $headers, $qs, $method, $json);
     }
