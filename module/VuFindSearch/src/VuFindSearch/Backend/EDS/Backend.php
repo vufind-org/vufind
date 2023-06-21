@@ -137,6 +137,11 @@ class Backend extends AbstractBackend
      */
     protected $isGuest;
 
+    /**
+     * Backend type
+     *
+     * @var str
+     */
     protected $backendType = null;
 
     /**
@@ -758,6 +763,13 @@ class Backend extends AbstractBackend
         $this->authManager = $authManager;
     }
 
+    /**
+     * Set the EBSCO backend type.  Backend/EDS is used for both EDS and EPF.
+     *
+     * @param str $backendType 'EDS' or 'EPF'
+     *
+     * @return void
+     */
     public function setBackendType($backendType)
     {
         $this->backendType = $backendType;

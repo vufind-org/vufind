@@ -255,6 +255,16 @@ abstract class Base
         return $this->call($url, $headers, $qs);
     }
 
+    /**
+     * Retrieves an EPF record specified by its identifiers
+     *
+     * @param string $pubId               Id of the record to retrieve from the
+     * EpfApi
+     * @param string $authenticationToken Authentication token
+     * @param string $sessionToken        Session token
+     *
+     * @return array    The requested record
+     */
     public function retrieveEpfItem(
         $pubId,
         $authenticationToken,

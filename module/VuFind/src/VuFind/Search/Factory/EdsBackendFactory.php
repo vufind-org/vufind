@@ -69,6 +69,12 @@ class EdsBackendFactory extends AbstractBackendFactory
      */
     protected $accountData;
 
+    /**
+     * Get the service name.  This is used for both configuration
+     * and record driver retrieval.
+     *
+     * @return str
+     */
     protected function getServiceName()
     {
         return 'EDS';
@@ -160,6 +166,11 @@ class EdsBackendFactory extends AbstractBackendFactory
         return $connector;
     }
 
+    /**
+     * Create the options array for the EDS connector.
+     *
+     * @return array
+     */
     protected function createConnectorOptions()
     {
         $options = [
