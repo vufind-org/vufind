@@ -31,6 +31,10 @@ function Autocomplete(_settings) {
     };
   }
 
+  function randomID() {
+    return Math.random().toString(16).slice(-6);
+  }
+
   function _align(input) {
     const inputBox = input.getBoundingClientRect();
     list.style.minWidth = inputBox.width + "px";
@@ -96,12 +100,14 @@ function Autocomplete(_settings) {
 
   function _renderItem(item, input, index = null) {
     let el = document.createElement("div");
-    el.setAttribute("aria-selected", "false");
     el.setAttribute("role", "option");
+    el.setAttribute("aria-selected", false);
     el.classList.add("ac-item");
-    if (index !== null) {
-      el.setAttribute("id", list.getAttribute("id") + "__" + (index === null ? -1 : index));
-    }
+    el.setAttribute(
+      "id",
+      input.getAttribute("id") + "__" + (index === null ? randomID() : index),
+    );
+
     if (typeof item === "string" || typeof item === "number") {
       el.innerHTML = item;
     } else if (typeof item._header !== "undefined") {
@@ -190,21 +196,18 @@ function Autocomplete(_settings) {
     }
     switch (event.which) {
       // arrow keys through items
-      case 38: // up key
+      case 38: // UP key
         event.preventDefault();
         if (_currentIndex > -1) {
           _currentListEls[_currentIndex].classList.remove("is-selected");
-          _currentListEls[_currentIndex].setAttribute("aria-selected", "false");
+          _currentListEls[_currentIndex].setAttribute("aria-selected", false);
         }
-        _currentIndex = Math.max(
-          _currentIndex === -1 ? _currentListEls.length - 1 : _currentIndex - 1,
-          0
-        );
-        _currentListEls[_currentIndex].classList.add("is-selected");
-        _currentListEls[_currentIndex].setAttribute("aria-selected", "true");
-        input.setAttribute("aria-owns", _currentListEls[_currentIndex].getAttribute("id"));
+        _currentIndex -= 1;
+        if (_currentIndex <= -2) {
+          _currentIndex = _currentItems.length - 1;
+        }
         break;
-      case 40: // down key
+      case 40: // DOWN key
         event.preventDefault();
         if (lastInput === false) {
           _search(handler, input);
@@ -212,37 +215,36 @@ function Autocomplete(_settings) {
         }
         if (_currentIndex > -1) {
           _currentListEls[_currentIndex].classList.remove("is-selected");
-          _currentListEls[_currentIndex].setAttribute("aria-selected", "false");
+          _currentListEls[_currentIndex].setAttribute("aria-selected", false);
         }
-        _currentIndex = Math.min(
-          _currentIndex === -1 ? 0 : _currentIndex + 1,
-          _currentListEls.length - 1 // don't overflow
-        );
-        _currentListEls[_currentIndex].classList.add("is-selected");
-        _currentListEls[_currentIndex].setAttribute("aria-selected", "true");
-        input.setAttribute("aria-owns", _currentListEls[_currentIndex].getAttribute("id"));
+        _currentIndex += 1;
+        if (_currentIndex >= _currentItems.length) {
+          _currentIndex = -1;
+        }
         break;
-      // enter to nav or populate
+      // ENTER to nav or populate
       case 13:
-        if (_currentIndex === -1) {
-          return;
+        if (_currentIndex > -1) {
+          event.preventDefault();
+          _selectItem(_currentItems[_currentIndex], input);
         }
-        event.preventDefault();
-        _selectItem(_currentItems[_currentIndex], input);
         break;
-      // hide on escape
+      // hide on ESCAPE
       case 27:
         _hide();
         break;
     }
 
     if (_currentIndex > -1) {
-      list.setAttribute(
+      input.setAttribute(
         "aria-activedescendant",
-        list.getAttribute("id") + "__" + _currentIndex
+        _currentListEls[_currentIndex].getAttribute("id"),
       );
+
+      _currentListEls[_currentIndex].classList.add("is-selected");
+      _currentListEls[_currentIndex].setAttribute("aria-selected", true);
     } else {
-      list.removeAttribute("aria-activedescendant");
+      input.removeAttribute("aria-activedescendant");
     }
   }
 
@@ -261,7 +263,7 @@ function Autocomplete(_settings) {
       list = document.querySelector(".autocomplete-results");
       if (!list) {
         list = document.createElement("div");
-        list.setAttribute("id", "ac-" + Math.random().toString().slice(-6));
+        list.setAttribute("id", "ac-" + randomID());
         list.classList.add("autocomplete-results");
         document.body.appendChild(list);
         window.addEventListener(
@@ -278,10 +280,15 @@ function Autocomplete(_settings) {
     }
 
     // Aria
-    input.setAttribute("autocomplete", "off");
+    list.setAttribute("role", "listbox");
     input.setAttribute("role", "combobox");
     input.setAttribute("aria-autocomplete", "both");
-    list.setAttribute("role", "listbox");
+    input.setAttribute("aria-controls", list.getAttribute("id"));
+    input.setAttribute("enterkeyhint", "search"); // phone keyboard hint
+    input.setAttribute("autocapitalize", "off");  // disable browser tinkering
+    input.setAttribute("autocomplete", "off");    // ^
+    input.setAttribute("autocorrect", "off");     // ^
+    input.setAttribute("spellcheck", "false");    // ^
 
     // Activation / De-activation
     input.addEventListener("focus", (_) => _search(handler, input), false);
