@@ -96,9 +96,11 @@ function Autocomplete(_settings) {
 
   function _renderItem(item, input, index = null) {
     let el = document.createElement("div");
+    el.setAttribute("aria-selected", "false");
+    el.setAttribute("role", "option");
     el.classList.add("ac-item");
     if (index !== null) {
-      el.setAttribute("id", input.getAttribute("id") + "__" + _currentIndex);
+      el.setAttribute("id", list.getAttribute("id") + "__" + (index === null ? -1 : index));
     }
     if (typeof item === "string" || typeof item === "number") {
       el.innerHTML = item;
@@ -192,12 +194,16 @@ function Autocomplete(_settings) {
         event.preventDefault();
         if (_currentIndex > -1) {
           _currentListEls[_currentIndex].classList.remove("is-selected");
+          _currentListEls[_currentIndex].setAttribute("aria-selected", "true");
+          input.setAttribute("aria-owns", _currentListEls[_currentIndex].getAttribute("id"));
         }
         _currentIndex = Math.max(
           _currentIndex === -1 ? _currentListEls.length - 1 : _currentIndex - 1,
           0
         );
         _currentListEls[_currentIndex].classList.add("is-selected");
+        _currentListEls[_currentIndex].setAttribute("aria-selected", "true");
+        input.setAttribute("aria-owns", _currentListEls[_currentIndex].getAttribute("id"));
         break;
       case 40: // down key
         event.preventDefault();
@@ -207,12 +213,15 @@ function Autocomplete(_settings) {
         }
         if (_currentIndex > -1) {
           _currentListEls[_currentIndex].classList.remove("is-selected");
+          _currentListEls[_currentIndex].setAttribute("aria-selected", "false");
         }
         _currentIndex = Math.min(
           _currentIndex === -1 ? 0 : _currentIndex + 1,
           _currentListEls.length - 1 // don't overflow
         );
         _currentListEls[_currentIndex].classList.add("is-selected");
+        _currentListEls[_currentIndex].setAttribute("aria-selected", "true");
+        input.setAttribute("aria-owns", _currentListEls[_currentIndex].getAttribute("id"));
         break;
       // enter to nav or populate
       case 13:
@@ -229,12 +238,12 @@ function Autocomplete(_settings) {
     }
 
     if (_currentIndex > -1) {
-      input.setAttribute(
+      list.setAttribute(
         "aria-activedescendant",
         list.getAttribute("id") + "__" + _currentIndex
       );
     } else {
-      input.removeAttribute("aria-activedescendant");
+      list.removeAttribute("aria-activedescendant");
     }
   }
 
@@ -272,7 +281,6 @@ function Autocomplete(_settings) {
     // Aria
     input.setAttribute("autocomplete", "off");
     input.setAttribute("role", "combobox");
-    input.setAttribute("aria-owns", list.getAttribute("id"));
     input.setAttribute("aria-autocomplete", "both");
     list.setAttribute("role", "listbox");
 
