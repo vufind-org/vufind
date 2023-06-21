@@ -49,7 +49,7 @@ abstract class Base
     protected $debug = false;
 
     /**
-     * EDSAPI host.  Although the default is the same as $sessionHost, 
+     * EDSAPI host.  Although the default is the same as $sessionHost,
      * this value is set via constructor and is not identical
      * to $sessionHost when used with EPF.
      *
