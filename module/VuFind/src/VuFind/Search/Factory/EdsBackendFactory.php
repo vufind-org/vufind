@@ -160,7 +160,7 @@ class EdsBackendFactory extends AbstractBackendFactory
         return $connector;
     }
 
-    protected function createConnectorOptions() 
+    protected function createConnectorOptions()
     {
         $options = [
             'search_http_method' => $this->edsConfig->General->search_http_method

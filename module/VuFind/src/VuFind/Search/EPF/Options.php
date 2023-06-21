@@ -4,7 +4,6 @@ namespace VuFind\Search\EPF;
 
 class Options extends \VuFind\Search\Base\Options
 {
-
     /**
      * Default view option
      *

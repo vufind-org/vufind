@@ -6,7 +6,6 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 
 class EPFController extends AbstractSearch
 {
-
     public function __construct(ServiceLocatorInterface $sm)
     {
         $this->searchClassId = 'EPF';
@@ -17,5 +16,4 @@ class EPFController extends AbstractSearch
     {
         return $this->resultsAction();
     }
-
 }

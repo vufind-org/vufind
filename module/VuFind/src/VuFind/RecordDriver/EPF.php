@@ -4,8 +4,7 @@ namespace VuFind\RecordDriver;
 
 class EPF extends EDS
 {
-
-    public function getUniqueId() 
+    public function getUniqueId()
     {
         return $this->fields['Header']['PublicationId'];
     }
@@ -20,5 +19,4 @@ class EPF extends EDS
     {
         return $this->fields['FullTextHoldings'] ?? [];
     }
-
 }

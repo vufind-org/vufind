@@ -6,7 +6,6 @@ use VuFindSearch\ParamBag;
 
 class AbstractEDSParams extends \VuFind\Search\Base\Params
 {
-
     /**
      * Set up filters based on VuFind settings.
      *

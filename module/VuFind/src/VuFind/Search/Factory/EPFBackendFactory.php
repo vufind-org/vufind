@@ -4,7 +4,6 @@ namespace VuFind\Search\Factory;
 
 class EPFBackendFactory extends EdsBackendFactory
 {
-
     protected function getServiceName()
     {
         return 'EPF';
@@ -20,5 +19,4 @@ class EPFBackendFactory extends EdsBackendFactory
 
         return $options;
     }
-
 }

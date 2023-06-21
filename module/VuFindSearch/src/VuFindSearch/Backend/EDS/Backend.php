@@ -323,16 +323,14 @@ class Backend extends AbstractBackend
                     $hlTerms,
                     $extras
                 );
-            }
-            elseif ('EPF' === $this->backendType) {
+            } elseif ('EPF' === $this->backendType) {
                 $pubId = $id;
                 $response = $this->client->retrieveEpfItem(
                     $pubId,
                     $authenticationToken,
                     $sessionToken
                 );
-            }
-            else {
+            } else {
                 throw new BackendException(
                     'Unknown backendType: ' . $backendType
                 );
@@ -760,7 +758,8 @@ class Backend extends AbstractBackend
         $this->authManager = $authManager;
     }
 
-    public function setBackendType($backendType) {
+    public function setBackendType($backendType)
+    {
         $this->backendType = $backendType;
     }
 }

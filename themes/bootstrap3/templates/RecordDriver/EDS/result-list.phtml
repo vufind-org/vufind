@@ -78,8 +78,9 @@
       </div>
 
       <?=$this->record($this->driver)->renderTemplate(
-        'result-list/full-text-links.phtml', 
-        ['recordLinker' => $recordLinker]); 
+                'result-list/full-text-links.phtml',
+                ['recordLinker' => $recordLinker]
+            );
       ?>
 
       <?php /* Links from DOI linker */ ?>

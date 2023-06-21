@@ -199,7 +199,7 @@ abstract class Base
      * @param array  $extraQueryParams    Extra query string parameters
      *
      * @return array    The requested record
-     * 
+     *
      * @deprecated Use retrieveEdsItem
      */
     public function retrieve(
@@ -211,11 +211,11 @@ abstract class Base
         $extraQueryParams = []
     ) {
         return $this->retrieveEdsItem(
-            $an, 
-            $dbId, 
-            $authenticationToken, 
-            $sessionToken, 
-            $highlightTerms, 
+            $an,
+            $dbId,
+            $authenticationToken,
+            $sessionToken,
+            $highlightTerms,
             $extraQueryParams
         );
     }

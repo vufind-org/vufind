@@ -6,7 +6,6 @@ use VuFindSearch\Command\SearchCommand;
 
 class Results extends \VuFind\Search\Base\Results
 {
-
     protected $backendId = 'EPF';
 
     protected function performSearch()
