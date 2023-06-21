@@ -145,18 +145,20 @@
         {
             "id": "1111",
             "source": "Solr",
-            "callnumber": "HB Ab",
+            "callnumber": "",
             "reserve": "N",
             "availability": true,
-            "location": "Central"
+            "location": "Collection Name - Central",
+            "status": null
         },
         {
             "id": "1111",
             "source": "Solr",
-            "callnumber": "HB Ab",
+            "callnumber": "",
             "reserve": "N",
             "availability": false,
-            "location": "Central"
+            "location": "Other Collection - Central",
+            "status": null
         }
     ]
 }
