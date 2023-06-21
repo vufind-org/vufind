@@ -165,17 +165,6 @@ class Params extends AbstractEDSParams
      *
      * @return string
      */
-    public function getView()
-    {
-        $viewArr = explode('|', $this->view ?? '');
-        return $viewArr[0];
-    }
-
-    /**
-     * Return the value for which search view we use
-     *
-     * @return string
-     */
     public function getEdsView()
     {
         $viewArr = explode('|', $this->view ?? '');

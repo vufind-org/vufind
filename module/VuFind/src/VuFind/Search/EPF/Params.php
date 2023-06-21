@@ -21,12 +21,6 @@ class Params extends \VuFind\Search\EDS\AbstractEDSParams
         return $backendParams;
     }
 
-    public function getView()
-    {
-        $viewArr = explode('|', $this->view ?? '');
-        return $viewArr[0];
-    }
-
     public function getEpfView()
     {
         return $this->options->getEpfView();

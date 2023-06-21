@@ -38,4 +38,16 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
             }
         }
     }
+
+    /**
+     * Return the value for which search view we use
+     *
+     * @return string
+     */
+    public function getView()
+    {
+        $viewArr = explode('|', $this->view ?? '');
+        return $viewArr[0];
+    }
+
 }
