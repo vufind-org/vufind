@@ -61,6 +61,8 @@ class EPFBackendFactory extends EdsBackendFactory
     protected function createConnectorOptions()
     {
         $options = parent::createConnectorOptions();
+        $options['api_url'] = $this->edsConfig->General->api_url
+            ?? 'https://eds-api.ebscohost.com/edsapi/publication';
 
         if (isset($this->edsConfig->General->session_url)) {
             $options['session_url'] = $this->edsConfig->General->session_url;

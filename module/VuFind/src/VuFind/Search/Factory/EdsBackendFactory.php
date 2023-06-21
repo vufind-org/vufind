@@ -176,10 +176,9 @@ class EdsBackendFactory extends AbstractBackendFactory
         $options = [
             'search_http_method' => $this->edsConfig->General->search_http_method
                 ?? 'POST',
+            'api_url' => $this->edsConfig->General->api_url
+                ?? 'https://eds-api.ebscohost.com/edsapi/rest',
         ];
-        if (isset($this->edsConfig->General->api_url)) {
-            $options['api_url'] = $this->edsConfig->General->api_url;
-        }
         if (isset($this->edsConfig->General->auth_url)) {
             $options['auth_url'] = $this->edsConfig->General->auth_url;
         }
