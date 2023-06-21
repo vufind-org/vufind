@@ -337,7 +337,7 @@ class Backend extends AbstractBackend
                 );
             } else {
                 throw new BackendException(
-                    'Unknown backendType: ' . $backendType
+                    'Unknown backendType: ' . $this->backendType
                 );
             }
         } catch (ApiException $e) {

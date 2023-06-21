@@ -90,12 +90,12 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testRetrieve()
+    public function testRetrieveEdsItem()
     {
-        $conn = $this->getConnectorMock(['retrieve']);
+        $conn = $this->getConnectorMock(['retrieveEdsItem']);
         $conn->expects($this->once())
-            ->method('retrieve')
-            ->will($this->returnValue($this->loadResponse('retrieve')));
+            ->method('retrieveEdsItem')
+            ->will($this->returnValue($this->loadResponse('retrieveEdsItem')));
 
         $back = $this->getBackend(
             $conn,
@@ -105,6 +105,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
             [],
             ['getAuthenticationToken', 'getSessionToken']
         );
+        $back->setBackendType('EDS');
         $back->expects($this->any())
             ->method('getAuthenticationToken')
             ->will($this->returnValue('auth1234'));
