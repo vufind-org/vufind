@@ -30,7 +30,6 @@
 namespace VuFind\Config;
 
 use Laminas\Config\Config;
-use Laminas\Config\Reader\Ini as IniReader;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
@@ -48,6 +47,8 @@ use Psr\Container\ContainerInterface;
  */
 class PathResolverFactory implements FactoryInterface
 {
+    use IniReaderTrait;
+
     /**
      * Default base config file subdirectory under the base directory
      *
@@ -61,25 +62,6 @@ class PathResolverFactory implements FactoryInterface
      * @var string
      */
     protected $defaultLocalConfigSubdir = PathResolver::DEFAULT_CONFIG_SUBDIR;
-
-    /**
-     * INI file reader
-     *
-     * @var IniReader
-     */
-    protected $iniReader;
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        // Use ASCII 0 as a nest separator; otherwise some of the unusual key names
-        // we have (i.e. in WorldCat.ini search options) will get parsed in
-        // unexpected ways.
-        $this->iniReader = new IniReader();
-        $this->iniReader->setNestSeparator(chr(0));
-    }
 
     /**
      * Create an object
@@ -108,10 +90,10 @@ class PathResolverFactory implements FactoryInterface
             && strlen(trim(LOCAL_OVERRIDE_DIR)) > 0 ?
             LOCAL_OVERRIDE_DIR : '';
         while (!empty($currentDir)) {
-            $systemConfigFile = $currentDir . '/localSystem.ini';
+            $systemConfigFile = $currentDir . '/DirLocations.ini';
             $systemConfig = new Config(
                 file_exists($systemConfigFile) ?
-                    $this->iniReader->fromFile($systemConfigFile) :
+                    $this->getIniReader()->fromFile($systemConfigFile) :
                     []
             );
             array_unshift(
