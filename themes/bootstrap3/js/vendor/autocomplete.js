@@ -194,8 +194,7 @@ function Autocomplete(_settings) {
         event.preventDefault();
         if (_currentIndex > -1) {
           _currentListEls[_currentIndex].classList.remove("is-selected");
-          _currentListEls[_currentIndex].setAttribute("aria-selected", "true");
-          input.setAttribute("aria-owns", _currentListEls[_currentIndex].getAttribute("id"));
+          _currentListEls[_currentIndex].setAttribute("aria-selected", "false");
         }
         _currentIndex = Math.max(
           _currentIndex === -1 ? _currentListEls.length - 1 : _currentIndex - 1,
