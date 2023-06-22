@@ -107,15 +107,14 @@ class PathResolverFactory implements FactoryInterface
                 ]
             );
 
-            $parentDir = '';
+            // If there's a parent, set it as the current directory for the next loop iteration:
             if (!empty($systemConfig['Parent_Dir']['path'])) {
+                $isRelative = $systemConfig['Parent_Dir']['is_relative_path'] ?? false;
                 $parentDir = $systemConfig['Parent_Dir']['path'];
-                if ($systemConfig['Parent_Dir']['is_relative_path']) {
-                    $parentDir = $currentDir . '/' . $parentDir;
-                }
+                $currentDir = $isRelative ? $currentDir . '/' . $parentDir : $parentDir;
+            } else {
+                $currentDir = '';
             }
-
-            $currentDir = $parentDir;
         }
         return new $requestedName(
             [
