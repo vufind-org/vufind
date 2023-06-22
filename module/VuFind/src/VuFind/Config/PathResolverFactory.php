@@ -97,6 +97,11 @@ class PathResolverFactory implements FactoryInterface
                     ? $this->getIniReader()->fromFile($systemConfigFile)
                     : []
             );
+
+            if (!($currentDir = realpath($currentDir))) {
+                throw new \Exception("Configured local directory does not exist: " . $currentDir);
+            }
+
             array_unshift(
                 $localDirs,
                 [
