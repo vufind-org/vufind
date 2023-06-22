@@ -32,6 +32,7 @@ namespace VuFind\Config;
 use Laminas\Config\Config;
 use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\Feature\IniReaderTrait;
 
 /**
  * VuFind Config Plugin Factory

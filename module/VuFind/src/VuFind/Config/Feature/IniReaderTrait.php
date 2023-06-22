@@ -27,7 +27,7 @@
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Config;
+namespace VuFind\Config\Feature;
 
 use Laminas\Config\Reader\Ini as IniReader;
 
