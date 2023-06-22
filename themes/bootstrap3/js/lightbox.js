@@ -1,5 +1,8 @@
 /*global VuFind, getFocusableNodes, recaptchaOnLoad, resetCaptcha */
 VuFind.register('lightbox', function Lightbox() {
+  var child = "";
+  var parent = "";
+
   // State
   var _originalUrl = false;
   var _currentUrl = false;
@@ -547,6 +550,8 @@ VuFind.register('lightbox', function Lightbox() {
   return {
     // Properties
     refreshOnClose: refreshOnClose,
+    parent: parent,
+    child: child,
 
     // Methods
     ajax: ajax,
