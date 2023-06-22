@@ -91,6 +91,14 @@ class PathResolverFactory implements FactoryInterface
             && strlen(trim(LOCAL_OVERRIDE_DIR)) > 0
             ? LOCAL_OVERRIDE_DIR : '';
         while (!empty($currentDir)) {
+            // check if the directory exists
+            if (!($canonicalizedCurrentDir = realpath($currentDir))) {
+                trigger_error("Configured local directory does not exist: " . $currentDir, E_USER_WARNING);
+                break;
+            }
+            $currentDir = $canonicalizedCurrentDir;
+
+            // loading DirLocations.ini of currentDir
             $systemConfigFile = $currentDir . '/DirLocations.ini';
             $systemConfig = new Config(
                 file_exists($systemConfigFile)
@@ -98,10 +106,7 @@ class PathResolverFactory implements FactoryInterface
                     : []
             );
 
-            if (!($currentDir = realpath($currentDir))) {
-                throw new \Exception("Configured local directory does not exist: " . $currentDir);
-            }
-
+            // adding directory to the stack
             array_unshift(
                 $localDirs,
                 [
