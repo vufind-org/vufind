@@ -43,6 +43,13 @@ namespace VuFind\Search\Factory;
 class EPFBackendFactory extends EdsBackendFactory
 {
     /**
+     * Default URL for the EDS Backend.  Set here for the EPF API.
+     *
+     * @var str
+     */
+    protected $defaultApiUrl = 'https://eds-api.ebscohost.com/edsapi/publication';
+
+    /**
      * Get the service name.  This is used for both configuration
      * and record driver retrieval.
      *
@@ -51,23 +58,5 @@ class EPFBackendFactory extends EdsBackendFactory
     protected function getServiceName()
     {
         return 'EPF';
-    }
-
-    /**
-     * Create the options array for the EDS connector.
-     *
-     * @return array
-     */
-    protected function createConnectorOptions()
-    {
-        $options = parent::createConnectorOptions();
-        $options['api_url'] = $this->edsConfig->General->api_url
-            ?? 'https://eds-api.ebscohost.com/edsapi/publication';
-
-        if (isset($this->edsConfig->General->session_url)) {
-            $options['session_url'] = $this->edsConfig->General->session_url;
-        }
-
-        return $options;
     }
 }

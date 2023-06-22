@@ -186,8 +186,7 @@ abstract class Base
             . "$profile, guest: $isGuest, authToken: $authToken "
         );
         $qs = ['profile' => $profile, 'guest' => $isGuest];
-        $sessionHost = $this->sessionHost ?? $this->apiHost;
-        $url = $sessionHost . '/createsession';
+        $url = $this->sessionHost . '/createsession';
         $headers = $this->setTokens($authToken, null);
         return $this->call($url, $headers, $qs, 'GET', null, '', false);
     }

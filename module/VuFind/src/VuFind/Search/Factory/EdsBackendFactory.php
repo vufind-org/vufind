@@ -70,6 +70,13 @@ class EdsBackendFactory extends AbstractBackendFactory
     protected $accountData;
 
     /**
+     * Default URL for the EDS Backend.  Set here for the EDS API.
+     *
+     * @var str
+     */
+    protected $defaultApiUrl = 'https://eds-api.ebscohost.com/edsapi/rest';
+
+    /**
      * Get the service name.  This is used for both configuration
      * and record driver retrieval.
      *
@@ -177,10 +184,13 @@ class EdsBackendFactory extends AbstractBackendFactory
             'search_http_method' => $this->edsConfig->General->search_http_method
                 ?? 'POST',
             'api_url' => $this->edsConfig->General->api_url
-                ?? 'https://eds-api.ebscohost.com/edsapi/rest',
+                ?? $this->defaultApiUrl,
         ];
         if (isset($this->edsConfig->General->auth_url)) {
             $options['auth_url'] = $this->edsConfig->General->auth_url;
+        }
+        if (isset($this->edsConfig->General->session_url)) {
+            $options['session_url'] = $this->edsConfig->General->session_url;
         }
         return $options;
     }
