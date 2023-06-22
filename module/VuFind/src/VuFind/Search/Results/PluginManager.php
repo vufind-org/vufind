@@ -51,6 +51,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'combined' => \VuFind\Search\Combined\Results::class,
         'eds' => \VuFind\Search\EDS\Results::class,
         'eit' => \VuFind\Search\EIT\Results::class,
+        'epf' => \VuFind\Search\EPF\Results::class,
         'emptyset' => \VuFind\Search\EmptySet\Results::class,
         'favorites' => \VuFind\Search\Favorites\Results::class,
         'libguides' => \VuFind\Search\LibGuides\Results::class,
@@ -84,6 +85,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         \VuFind\Search\Combined\Results::class => ResultsFactory::class,
         \VuFind\Search\EDS\Results::class => ResultsFactory::class,
         \VuFind\Search\EIT\Results::class => ResultsFactory::class,
+        \VuFind\Search\EPF\Results::class => ResultsFactory::class,
         \VuFind\Search\EmptySet\Results::class => ResultsFactory::class,
         \VuFind\Search\Favorites\Results::class =>
             \VuFind\Search\Favorites\ResultsFactory::class,
