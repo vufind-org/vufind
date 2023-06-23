@@ -1,0 +1,60 @@
+.keyboard-selection {
+  position: absolute;
+  right: 5px;
+  top: 7px;
+  z-index: 4;
+
+  > .dropdown-menu {
+    min-width: 20px;
+    > li > a {
+      padding: 3px 10px;
+    }
+  }
+}
+
+#keyboard-selection-button {
+  padding: 0 !important;
+}
+
+.keyboard-box {
+  position: relative;
+  top: @input-height-base + 4px;
+  height: 0;
+}
+
+.simple-keyboard {
+  display: none;
+  position: absolute;
+  z-index: 1;
+
+  .hg-functionBtn {
+    font-weight: bold;
+    font-size: 30px;
+    background-color: #f4f4f4 !important;
+    span {
+      padding-top: 5px;
+    }
+  }
+
+  .hg-standardBtn {
+    font-size: 18px;
+  }
+
+  .hg-button-space {
+    background-color: white !important;
+  }
+}
+
+.show-keyboard {
+  display: block;
+}
+
+@media (max-width: 400px) {
+  .keyboard-selection {
+    display: none;
+  }
+
+  .show-keyboard {
+    display: none;
+  }
+}
