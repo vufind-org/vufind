@@ -138,7 +138,7 @@ class Params extends AbstractEDSParams
         $options = $this->getOptions();
 
         // The "relevance" sort option is a VuFind reserved word; we need to make
-        // this null in order to achieve the desired effect with Summon:
+        // this null in order to achieve the desired effect with EDS:
         $sort = $this->getSort();
         $finalSort = ($sort == 'relevance') ? null : $sort;
         $backendParams->set('sort', $finalSort);
@@ -183,7 +183,7 @@ class Params extends AbstractEDSParams
     public function addFacet($newField, $newAlias = null, $ored = false)
     {
         // Save the full field name (which may include extra parameters);
-        // we'll need these to do the proper search using the Summon class:
+        // we'll need these to do the proper search using the EDS class:
         if (strstr($newField, 'PublicationDate')) {
             // Special case -- we don't need to send this to the EDS API,
             // but we do need to set a flag so VuFind knows to display the
