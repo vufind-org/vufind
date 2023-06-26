@@ -1711,12 +1711,22 @@ class Folio extends AbstractAPI implements
     public function findReserves($course, $inst, $dept)
     {
         $retVal = [];
+        $query = [];
+
+        $includeSuppressed = $this->config['CourseReserves']['includeSuppressed'] ?? false;
+
+        if (!$includeSuppressed) {
+            $query = [
+                'query' => 'copiedItem.instanceDiscoverySuppress==false',
+            ];
+        }
 
         // Results can be paginated, so let's loop until we've gotten everything:
         foreach (
             $this->getPagedResults(
                 'reserves',
-                '/coursereserves/reserves'
+                '/coursereserves/reserves',
+                $query
             ) as $item
         ) {
             $idProperty = $this->getBibIdType() === 'hrid'

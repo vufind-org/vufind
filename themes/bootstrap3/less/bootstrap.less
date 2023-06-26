@@ -7,6 +7,8 @@ $fa-font-path: "../../bootstrap3/css/fonts";
 
 /* <#LESS */
 @import "variables";
+// Import custom (non-vendor) mixins
+@import "mixins/mixins";
 @import "vendor/font-awesome/font-awesome";
 
 @import "components/accessibility";
@@ -375,7 +377,7 @@ footer {
 }
 
 .dropdown-menu > li > .prompt-text {
-  &:extend(.dropdown-menu > li > a);
+  &:extend(.dropdown-menu-ul-links);
 
   white-space: inherit;
   min-width: 200px;

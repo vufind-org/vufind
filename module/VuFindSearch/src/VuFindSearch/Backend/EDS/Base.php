@@ -49,11 +49,11 @@ abstract class Base
     protected $debug = false;
 
     /**
-     * EDSAPI host
+     * EDS or EPF API host.
      *
      * @var string
      */
-    protected $edsApiHost = 'https://eds-api.ebscohost.com/edsapi/rest';
+    protected $apiHost;
 
     /**
      * Auth host
@@ -61,6 +61,13 @@ abstract class Base
      * @var string
      */
     protected $authHost = 'https://eds-api.ebscohost.com/authservice/rest';
+
+    /**
+     * Session host.
+     *
+     * @var string
+     */
+    protected $sessionHost = 'https://eds-api.ebscohost.com/edsapi/rest';
 
     /**
      * The organization id use for authentication
@@ -109,10 +116,13 @@ abstract class Base
             foreach ($settings as $key => $value) {
                 switch ($key) {
                     case 'api_url':
-                        $this->edsApiHost = $value;
+                        $this->apiHost = $value;
                         break;
                     case 'auth_url':
                         $this->authHost = $value;
+                        break;
+                    case 'session_url':
+                        $this->sessionHost = $value;
                         break;
                     case 'debug':
                         $this->debug = $value;
@@ -152,7 +162,7 @@ abstract class Base
     public function info($authenticationToken = null, $sessionToken = null)
     {
         $this->debugPrint("Info");
-        $url = $this->edsApiHost . '/info';
+        $url = $this->apiHost . '/info';
         $headers = $this->setTokens($authenticationToken, $sessionToken);
         return $this->call($url, $headers);
     }
@@ -176,13 +186,48 @@ abstract class Base
             . "$profile, guest: $isGuest, authToken: $authToken "
         );
         $qs = ['profile' => $profile, 'guest' => $isGuest];
-        $url = $this->edsApiHost . '/createsession';
+        $url = $this->sessionHost . '/createsession';
         $headers = $this->setTokens($authToken, null);
         return $this->call($url, $headers, $qs, 'GET', null, '', false);
     }
 
     /**
-     * Retrieves a record specified by its identifiers
+     * Retrieves an EDS record specified by its identifiers
+     *
+     * @param string $an                  An of the record to retrieve from the
+     * EdsApi
+     * @param string $dbId                Database identifier of the record to
+     * retrieve from the EdsApi
+     * @param string $authenticationToken Authentication token
+     * @param string $sessionToken        Session token
+     * @param string $highlightTerms      Comma separated list of terms to highlight
+     * in the retrieved record responses
+     * @param array  $extraQueryParams    Extra query string parameters
+     *
+     * @return array    The requested record
+     *
+     * @deprecated Use retrieveEdsItem
+     */
+    public function retrieve(
+        $an,
+        $dbId,
+        $authenticationToken,
+        $sessionToken,
+        $highlightTerms = null,
+        $extraQueryParams = []
+    ) {
+        return $this->retrieveEdsItem(
+            $an,
+            $dbId,
+            $authenticationToken,
+            $sessionToken,
+            $highlightTerms,
+            $extraQueryParams
+        );
+    }
+
+    /**
+     * Retrieves an EDS record specified by its identifiers
      *
      * @param string $an                  An of the record to retrieve from the
      * EdsApi
@@ -196,7 +241,7 @@ abstract class Base
      *
      * @return array    The requested record
      */
-    public function retrieve(
+    public function retrieveEdsItem(
         $an,
         $dbId,
         $authenticationToken,
@@ -211,7 +256,31 @@ abstract class Base
         if (null != $highlightTerms) {
             $qs['highlightterms'] = $highlightTerms;
         }
-        $url = $this->edsApiHost . '/retrieve';
+        $url = $this->apiHost . '/retrieve';
+        $headers = $this->setTokens($authenticationToken, $sessionToken);
+        return $this->call($url, $headers, $qs);
+    }
+
+    /**
+     * Retrieves an EPF record specified by its identifiers
+     *
+     * @param string $pubId               Id of the record to retrieve from the
+     * EpfApi
+     * @param string $authenticationToken Authentication token
+     * @param string $sessionToken        Session token
+     *
+     * @return array    The requested record
+     */
+    public function retrieveEpfItem(
+        $pubId,
+        $authenticationToken,
+        $sessionToken
+    ) {
+        $this->debugPrint(
+            "Get Record. pubId: $pubId"
+        );
+        $qs = ['id' => $pubId];
+        $url = $this->apiHost . '/retrieve';
         $headers = $this->setTokens($authenticationToken, $sessionToken);
         return $this->call($url, $headers, $qs);
     }
@@ -234,7 +303,7 @@ abstract class Base
         $this->debugPrint(
             'Query: ' . ($method === 'GET' ? print_r($qs, true) : $json)
         );
-        $url = $this->edsApiHost . '/search';
+        $url = $this->apiHost . '/search';
         $headers = $this->setTokens($authenticationToken, $sessionToken);
         return $this->call($url, $headers, $qs, $method, $json);
     }
