@@ -363,7 +363,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     /**
      * Build a real record collection factory
      *
-     * @param class $driverClass class of the RecordDriver to create
+     * @param string $driverClass class of the RecordDriver to create
      *
      * @return \VuFindSearch\Backend\EDS\Response\RecordCollectionFactory
      */
