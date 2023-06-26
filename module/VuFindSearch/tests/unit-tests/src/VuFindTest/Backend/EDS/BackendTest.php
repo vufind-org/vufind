@@ -64,7 +64,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
 
         $back = $this->getBackend(
             $conn,
-            $this->getRCFactory(),
+            $this->getEdsRCFactory(),
             null,
             null,
             [],
@@ -86,7 +86,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test retrieving a record.
+     * Test retrieving an EDS record.
      *
      * @return void
      */
@@ -99,7 +99,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
 
         $back = $this->getBackend(
             $conn,
-            $this->getRCFactory(),
+            $this->getEdsRCFactory(),
             null,
             null,
             [],
@@ -123,6 +123,43 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test retrieving an EPF record.
+     *
+     * @return void
+     */
+    public function testRetrieveEpfItem()
+    {
+        $conn = $this->getConnectorMock(['retrieveEpfItem']);
+        $conn->expects($this->once())
+            ->method('retrieveEpfItem')
+            ->will($this->returnValue($this->loadResponse('retrieveEpfItem')));
+
+        $back = $this->getBackend(
+            $conn,
+            $this->getEpfRCFactory(),
+            null,
+            null,
+            [],
+            ['getAuthenticationToken', 'getSessionToken']
+        );
+        $back->setBackendType('EPF');
+        $back->expects($this->any())
+            ->method('getAuthenticationToken')
+            ->will($this->returnValue('auth1234'));
+        $back->expects($this->any())
+            ->method('getSessionToken')
+            ->will($this->returnValue('sess1234'));
+        $back->setIdentifier('test');
+
+        $coll = $back->retrieve('edp297646');
+        $this->assertCount(1, $coll);
+        $this->assertEquals('test', $coll->getSourceIdentifier());
+        $rec  = $coll->first();
+        $this->assertEquals('test', $rec->getSourceIdentifier());
+        $this->assertEquals('edp297646', $rec->getUniqueID());
+    }
+
+    /**
      * Test performing a search.
      *
      * @return void
@@ -136,7 +173,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
 
         $back = $this->getBackend(
             $conn,
-            $this->getRCFactory(),
+            $this->getEdsRCFactory(),
             null,
             null,
             [],
@@ -302,14 +339,38 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Build a real record collection factory
+     * Build a real record collection factory for EDS records
      *
      * @return \VuFindSearch\Backend\EDS\Response\RecordCollectionFactory
      */
-    protected function getRCFactory()
+    protected function getEdsRCFactory()
     {
-        $callback = function ($data) {
-            $driver = new \VuFind\RecordDriver\EDS();
+        $driverClass = \VuFind\RecordDriver\EDS::class;
+        return $this->getRCFactory($driverClass);
+    }
+
+    /**
+     * Build a real record collection factory for EPF records
+     *
+     * @return \VuFindSearch\Backend\EDS\Response\RecordCollectionFactory
+     */
+    protected function getEpfRCFactory()
+    {
+        $driverClass = \VuFind\RecordDriver\EPF::class;
+        return $this->getRCFactory($driverClass);
+    }
+
+    /**
+     * Build a real record collection factory
+     *
+     * @param string $driverClass class of the RecordDriver to create
+     *
+     * @return \VuFindSearch\Backend\EDS\Response\RecordCollectionFactory
+     */
+    protected function getRCFactory($driverClass)
+    {
+        $callback = function ($data) use ($driverClass) {
+            $driver = new $driverClass();
             $driver->setRawData($data);
             return $driver;
         };
