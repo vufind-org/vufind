@@ -57,7 +57,7 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
         $command = $this->getMockCommand(
             ['buildDirs', 'getApacheLocation', 'getInput', 'writeFileToDisk']
         );
-        $command->expects($this->exactly(3))->method('getInput')
+        $command->expects($this->exactly(4))->method('getInput')
             ->withConsecutive(
                 [
                     $this->isInstanceOf(InputInterface::class),
@@ -74,8 +74,13 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
                     $this->isInstanceOf(InputInterface::class),
                     $this->isInstanceOf(OutputInterface::class),
                     'What base path should be used in VuFind\'s URL? [/vufind] ',
+                ],
+                [
+                    $this->isInstanceOf(InputInterface::class),
+                    $this->isInstanceOf(OutputInterface::class),
+                    'What port number should Solr use? [8983] ',
                 ]
-            )->willReturnOnConsecutiveCalls($localFixtures, '', '/bar');
+            )->willReturnOnConsecutiveCalls($localFixtures, '', '/bar', '8080');
         $expectedDirs = [
             $localFixtures,
             $localFixtures . '/cache',
@@ -87,10 +92,13 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo($expectedDirs))
             ->will($this->returnValue(true));
         $expectedEnvBat = "@set VUFIND_HOME=$expectedBaseDir\n"
-            . "@set VUFIND_LOCAL_DIR=$localFixtures\n";
-        $command->expects($this->exactly(4))->method('writeFileToDisk')
+            . "@set VUFIND_LOCAL_DIR=$localFixtures\n"
+            . "@set SOLR_PORT=8080\n";
+        $expectedEnvSh = str_replace('@set', 'export', $expectedEnvBat);
+        $command->expects($this->exactly(5))->method('writeFileToDisk')
             ->withConsecutive(
                 ["$expectedBaseDir/env.bat", $expectedEnvBat],
+                ["$expectedBaseDir/env.sh", $expectedEnvSh],
                 ["$localFixtures/import/import.properties"],
                 ["$localFixtures/import/import_auth.properties"],
                 ["$localFixtures/httpd-vufind.conf"]
@@ -147,10 +155,13 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo($expectedDirs))
             ->will($this->returnValue(true));
         $expectedEnvBat = "@set VUFIND_HOME=$expectedBaseDir\n"
-            . "@set VUFIND_LOCAL_DIR=$localFixtures\n";
-        $command->expects($this->exactly(4))->method('writeFileToDisk')
+            . "@set VUFIND_LOCAL_DIR=$localFixtures\n"
+            . "@set SOLR_PORT=8983\n";
+        $expectedEnvSh = str_replace('@set', 'export', $expectedEnvBat);
+        $command->expects($this->exactly(5))->method('writeFileToDisk')
             ->withConsecutive(
                 ["$expectedBaseDir/env.bat", $expectedEnvBat],
+                ["$expectedBaseDir/env.sh", $expectedEnvSh],
                 ["$localFixtures/import/import.properties"],
                 ["$localFixtures/import/import_auth.properties"],
                 ["$localFixtures/httpd-vufind.conf"]
