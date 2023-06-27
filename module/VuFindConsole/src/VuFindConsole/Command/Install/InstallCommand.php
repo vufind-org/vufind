@@ -898,7 +898,7 @@ class InstallCommand extends Command
 
             $solrPort = trim($input->getOption('solr-port') ?? '');
             if (!empty($solrPort)) {
-                if ($result = $this->validateSolrPort($solrPort)) {
+                if (($result = $this->validateSolrPort($solrPort)) !== true) {
                     return $this->failWithError($output, $result);
                 }
                 $this->solrPort = $solrPort;
