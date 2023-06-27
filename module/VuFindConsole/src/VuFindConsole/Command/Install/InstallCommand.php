@@ -347,15 +347,15 @@ class InstallCommand extends Command
     {
         // Get VuFind base path:
         while (true) {
-            $input = $this->getInput(
+            $solrInput = $this->getInput(
                 $input,
                 $output,
                 "What port number should Solr use? [{$this->solrPort}] "
             );
-            if (empty($input)) {
+            if (empty($solrInput)) {
                 return $this->solrPort;
-            } elseif (($result = $this->validateSolrPort($input)) === true) {
-                return $input;
+            } elseif (($result = $this->validateSolrPort($solrInput)) === true) {
+                return $solrInput;
             }
             $output->writeln($result);
         }
@@ -647,6 +647,29 @@ class InstallCommand extends Command
         }
         return $this->writeFileToDisk($target, $config)
             ? true : "Problem writing {$this->overrideDir}/httpd-vufind.conf.";
+    }
+
+    /**
+     * Build the Unix-specific environment configuration. Returns true on success,
+     * error message otherwise.
+     *
+     * @return bool|string
+     */
+    protected function buildUnixEnvironment()
+    {
+        $filename = $this->baseDir . '/env.sh';
+        if (file_exists($filename)) {
+            if (!copy($filename, $filename . '.bak.' . time())) {
+                return "Problem backing up $filename";
+            }
+        }
+        $module = empty($this->module)
+            ? '' : "export VUFIND_LOCAL_MODULES={$this->module}\n";
+        $env = "export VUFIND_HOME={$this->baseDir}\n"
+            . "export VUFIND_LOCAL_DIR={$this->overrideDir}\n" . $module
+            . "export SOLR_PORT={$this->solrPort}\n";
+        return $this->writeFileToDisk($filename, $env)
+            ? true : "Problem writing {$filename}.";
     }
 
     /**
@@ -976,6 +999,11 @@ class InstallCommand extends Command
 
         // Build the Windows start file in case we need it:
         if (($result = $this->buildWindowsConfig()) !== true) {
+            return $this->failWithError($output, $result);
+        }
+
+        // Build a Unix environment file in case we need it:
+        if (($result = $this->buildUnixEnvironment()) !== true) {
             return $this->failWithError($output, $result);
         }
 
