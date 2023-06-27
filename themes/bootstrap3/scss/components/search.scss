@@ -209,6 +209,15 @@ header .container.navbar { margin-bottom: 0; }
   padding-bottom: .25rem;
 }
 
+.result-body,
+.media-body {
+  h2 {
+    font-size: unset;
+    line-height: $line-height-base;
+    margin: 0;
+  }
+}
+
 .btn-bookbag-toggle,
 .result-links a {
   line-height: 1.5;
