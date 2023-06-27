@@ -100,6 +100,13 @@ class InstallCommand extends Command
     protected $basePath = '/vufind';
 
     /**
+     * Solr port to use.
+     *
+     * @var string
+     */
+    protected $solrPort = '8983';
+
+    /**
      * Constructor
      *
      * @param string|null $name The name of the command; passing null means it must
@@ -161,6 +168,12 @@ class InstallCommand extends Command
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Specify the hostname for the VuFind Site, when multisite=host'
+            )->addOption(
+                'solr-port',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Port number to use for Solr'
+                . " (defaults to {$this->solrPort} when --non-interactive is set)"
             )->addOption(
                 'non-interactive',
                 null,
@@ -282,6 +295,21 @@ class InstallCommand extends Command
     }
 
     /**
+     * Validate a Solr port number. Returns true on success, message on failure.
+     *
+     * @param string $solrPort Port to validate.
+     *
+     * @return bool|string
+     */
+    protected function validateSolrPort($solrPort)
+    {
+        if (is_numeric($solrPort)) {
+            return true;
+        }
+        return 'Solr port must be a number.';
+    }
+
+    /**
      * Get a base path from the user (or return a default).
      *
      * @param InputInterface  $input  Input object
@@ -302,6 +330,32 @@ class InstallCommand extends Command
                 return $this->basePath;
             } elseif (($result = $this->validateBasePath($basePathInput)) === true) {
                 return $basePathInput;
+            }
+            $output->writeln($result);
+        }
+    }
+
+    /**
+     * Get a Solr port number from the user (or return a default).
+     *
+     * @param InputInterface  $input  Input object
+     * @param OutputInterface $output Output object
+     *
+     * @return string
+     */
+    protected function getSolrPort(InputInterface $input, OutputInterface $output)
+    {
+        // Get VuFind base path:
+        while (true) {
+            $input = $this->getInput(
+                $input,
+                $output,
+                "What port number should Solr use? [{$this->solrPort}] "
+            );
+            if (empty($input)) {
+                return $this->solrPort;
+            } elseif (($result = $this->validateSolrPort($input)) === true) {
+                return $input;
             }
             $output->writeln($result);
         }
@@ -606,7 +660,8 @@ class InstallCommand extends Command
         $module = empty($this->module)
             ? '' : "@set VUFIND_LOCAL_MODULES={$this->module}\n";
         $batch = "@set VUFIND_HOME={$this->baseDir}\n"
-            . "@set VUFIND_LOCAL_DIR={$this->overrideDir}\n" . $module;
+            . "@set VUFIND_LOCAL_DIR={$this->overrideDir}\n" . $module
+            . "@set SOLR_PORT={$this->solrPort}\n";
         return $this->writeFileToDisk($this->baseDir . '/env.bat', $batch)
             ? true : "Problem writing {$this->baseDir}/env.bat.";
     }
@@ -630,7 +685,11 @@ class InstallCommand extends Command
             return true;
         }
         $import = @file_get_contents($this->baseDir . '/import/' . $filename);
-        $import = str_replace("/usr/local/vufind", $this->baseDir, $import);
+        $import = str_replace(
+            ['/usr/local/vufind', ':8983'],
+            [$this->baseDir, ':' . $this->solrPort],
+            $import
+        );
         $import = preg_replace(
             "/^\s*solrmarc.path\s*=.*$/m",
             "solrmarc.path = {$this->overrideDir}/import|{$this->baseDir}/import",
@@ -837,6 +896,16 @@ class InstallCommand extends Command
                 $userInputNeeded['basePath'] = true;
             }
 
+            $solrPort = trim($input->getOption('solr-port') ?? '');
+            if (!empty($solrPort)) {
+                if ($result = $this->validateSolrPort($solrPort)) {
+                    return $this->failWithError($output, $result);
+                }
+                $this->solrPort = $solrPort;
+            } elseif ($interactive) {
+                $userInputNeeded['solr-port'] = true;
+            }
+
             // We assume "single site" mode unless the --multisite option is set;
             // note that $mode will be null if the user provided the option with
             // no value specified, and false if the user did not provide the option.
@@ -864,6 +933,9 @@ class InstallCommand extends Command
             }
             if (isset($userInputNeeded['basePath'])) {
                 $this->basePath = $this->getBasePath($input, $output);
+            }
+            if (isset($userInputNeeded['solr-port'])) {
+                $this->solrPort = $this->getSolrPort($input, $output);
             }
             if (isset($userInputNeeded['multisiteMode'])) {
                 $this->multisiteMode = $this->getMultisiteMode($input, $output);
