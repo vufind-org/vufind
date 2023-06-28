@@ -195,6 +195,32 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test that providing an invalid Solr port number causes an error.
+     *
+     * @return void
+     */
+    public function testInvalidSolrPort()
+    {
+        $expectedBaseDir = realpath(__DIR__ . '/../../../../../../../../');
+        $command = $this->getMockCommand(
+            ['backUpFile', 'buildDirs', 'getApacheLocation', 'getInput', 'writeFileToDisk']
+        );
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(
+            ['--solr-port' => 'bad']
+        );
+        $expectedOutput = <<<EXPECTED
+            VuFind has been found in $expectedBaseDir.
+            Solr port must be a number.
+            EXPECTED;
+        $this->assertEquals(
+            $expectedOutput,
+            trim($commandTester->getDisplay())
+        );
+        $this->assertEquals(1, $commandTester->getStatusCode());
+    }
+
+    /**
      * Get a mock command object
      *
      * @param array $methods Methods to mock
