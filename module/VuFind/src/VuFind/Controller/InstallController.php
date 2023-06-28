@@ -136,6 +136,29 @@ class InstallController extends AbstractBase
     }
 
     /**
+     * Extract the Solr base URL from the SolrMarc configuration file,
+     * so a custom Solr port configured in install.php can be applied to
+     * the initial config.ini file.
+     *
+     * Return null if no custom Solr URL can be found.
+     *
+     * @return ?string
+     */
+    protected function getSolrUrlFromImportConfig()
+    {
+        $resolver = $this->serviceLocator->get(\VuFind\Config\PathResolver::class);
+        $importConfig = $resolver->getLocalConfigPath('import.properties', 'import');
+        if (file_exists($importConfig)) {
+            $props = file_get_contents($importConfig);
+            preg_match('|solr.hosturl\s*=\s*(https?://\w+:\d+/\w+)|', $props, $matches);
+            if (!empty($matches[1])) {
+                return $matches[1];
+            }
+        }
+        return null;
+    }
+
+    /**
      * Display repair instructions for basic configuration problems.
      *
      * @return mixed
@@ -152,6 +175,9 @@ class InstallController extends AbstractBase
             $serverUrl = $this->getViewRenderer()->plugin('serverurl');
             $path = $this->url()->fromRoute('home');
             $writer->set('Site', 'url', rtrim($serverUrl($path), '/'));
+            if ($solrUrl = $this->getSolrUrlFromImportConfig()) {
+                $writer->set('Index', 'url', $solrUrl);
+            }
             if (!$writer->save()) {
                 throw new \Exception('Cannot write config to disk.');
             }
