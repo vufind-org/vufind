@@ -8,7 +8,7 @@
     <?php foreach ($results as $driver): ?>
       <div class="list-group-item">
         <span>
-          <a href="<?=$driver->getUniqueID()?>" class="title">
+          <a href="<?=$this->escapeHtmlAttr($driver->getUniqueID())?>" class="title">
             <?=$this->record($driver)->getTitleHtml()?>
           </a>
         </span>
