@@ -584,6 +584,28 @@ class InstallCommand extends Command
     }
 
     /**
+     * Back up an existing file and inform the user. Return true on success,
+     * error message otherwise.
+     *
+     * @param OutputInterface $output   Output object
+     * @param string          $filename File to back up (if it exists)
+     * @param string          $desc     Description of file (for output message)
+     *
+     * @return bool|string
+     */
+    protected function backUpFile(OutputInterface $output, string $filename, string $desc)
+    {
+        if (file_exists($filename)) {
+            $bak = $filename . '.bak.' . time();
+            if (!copy($filename, $bak)) {
+                return "Problem backing up $filename to $bak";
+            }
+            $output->writeln("Backed up existing $desc to $bak.");
+        }
+        return true;
+    }
+
+    /**
      * Generate the Apache configuration. Returns true on success, error message
      * otherwise.
      *
@@ -640,10 +662,8 @@ class InstallCommand extends Command
         }
 
         $target = $this->overrideDir . '/httpd-vufind.conf';
-        if (file_exists($target)) {
-            $bak = $target . '.bak.' . time();
-            copy($target, $bak);
-            $output->writeln("Backed up existing Apache configuration to $bak.");
+        if (($msg = $this->backUpFile($output, $target, "Apache configuration")) !== true) {
+            return $msg;
         }
         return $this->writeFileToDisk($target, $config)
             ? true : "Problem writing {$this->overrideDir}/httpd-vufind.conf.";
@@ -653,15 +673,15 @@ class InstallCommand extends Command
      * Build the Unix-specific environment configuration. Returns true on success,
      * error message otherwise.
      *
+     * @param OutputInterface $output Output object
+     *
      * @return bool|string
      */
-    protected function buildUnixEnvironment()
+    protected function buildUnixEnvironment($output)
     {
         $filename = $this->baseDir . '/env.sh';
-        if (file_exists($filename)) {
-            if (!copy($filename, $filename . '.bak.' . time())) {
-                return "Problem backing up $filename";
-            }
+        if (($msg = $this->backUpFile($output, $filename, "Unix environment file")) !== true) {
+            return $msg;
         }
         $module = empty($this->module)
             ? '' : "export VUFIND_LOCAL_MODULES={$this->module}\n";
@@ -676,17 +696,23 @@ class InstallCommand extends Command
      * Build the Windows-specific startup configuration. Returns true on success,
      * error message otherwise.
      *
+     * @param OutputInterface $output Output object
+     *
      * @return bool|string
      */
-    protected function buildWindowsConfig()
+    protected function buildWindowsConfig($output)
     {
+        $filename = $this->baseDir . '/env.bat';
+        if (($msg = $this->backUpFile($output, $filename, "Windows environment file")) !== true) {
+            return $msg;
+        }
         $module = empty($this->module)
             ? '' : "@set VUFIND_LOCAL_MODULES={$this->module}\n";
         $batch = "@set VUFIND_HOME={$this->baseDir}\n"
             . "@set VUFIND_LOCAL_DIR={$this->overrideDir}\n" . $module
             . "@set SOLR_PORT={$this->solrPort}\n";
-        return $this->writeFileToDisk($this->baseDir . '/env.bat', $batch)
-            ? true : "Problem writing {$this->baseDir}/env.bat.";
+        return $this->writeFileToDisk($filename, $batch)
+            ? true : "Problem writing {$filename}.";
     }
 
     /**
@@ -998,12 +1024,12 @@ class InstallCommand extends Command
         }
 
         // Build the Windows start file in case we need it:
-        if (($result = $this->buildWindowsConfig()) !== true) {
+        if (($result = $this->buildWindowsConfig($output)) !== true) {
             return $this->failWithError($output, $result);
         }
 
         // Build a Unix environment file in case we need it:
-        if (($result = $this->buildUnixEnvironment()) !== true) {
+        if (($result = $this->buildUnixEnvironment($output)) !== true) {
             return $this->failWithError($output, $result);
         }
 

@@ -55,8 +55,9 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
         $expectedBaseDir = realpath(__DIR__ . '/../../../../../../../../');
         $localFixtures = $expectedBaseDir . '/module/VuFindConsole/tests/fixtures';
         $command = $this->getMockCommand(
-            ['buildDirs', 'getApacheLocation', 'getInput', 'writeFileToDisk']
+            ['backUpFile', 'buildDirs', 'getApacheLocation', 'getInput', 'writeFileToDisk']
         );
+        $command->expects($this->any())->method('backUpFile')->will($this->returnValue(true));
         $command->expects($this->exactly(4))->method('getInput')
             ->withConsecutive(
                 [
@@ -142,7 +143,7 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
         $expectedBaseDir = realpath(__DIR__ . '/../../../../../../../../');
         $localFixtures = $expectedBaseDir . '/module/VuFindConsole/tests/fixtures';
         $command = $this->getMockCommand(
-            ['buildDirs', 'getApacheLocation', 'getInput', 'writeFileToDisk']
+            ['backUpFile', 'buildDirs', 'getApacheLocation', 'getInput', 'writeFileToDisk']
         );
         $expectedDirs = [
             $localFixtures,
@@ -151,6 +152,7 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
             $localFixtures . '/harvest',
             $localFixtures . '/import',
         ];
+        $command->expects($this->any())->method('backUpFile')->will($this->returnValue(true));
         $command->expects($this->once())->method('buildDirs')
             ->with($this->equalTo($expectedDirs))
             ->will($this->returnValue(true));
