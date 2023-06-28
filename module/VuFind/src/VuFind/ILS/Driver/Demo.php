@@ -7,7 +7,7 @@
  * the session.  You can log out and log back in to get a different set of
  * values.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007, 2022.
  * Copyright (C) The National Library of Finland 2014.
@@ -40,6 +40,7 @@ use Laminas\Http\Request as HttpRequest;
 use Laminas\Session\Container as SessionContainer;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
+use VuFind\ILS\Logic\ItemStatus;
 use VuFindSearch\Command\RandomCommand;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Service as SearchService;
@@ -322,6 +323,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 return "On Order";
             case 8:
                 return "Invoiced";
+            case 7:
+                return "Uncertain";
             default:
                 return "Available";
         }
@@ -464,17 +467,39 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         $status = $this->getFakeStatus();
         $location = $this->getFakeLoc();
         $locationhref = ($location === 'Campus A') ? 'http://campus-a' : false;
+        switch ($status) {
+            case 'Uncertain':
+                $availability = ItemStatus::STATUS_UNCERTAIN;
+                break;
+            case 'Available':
+                if (rand(1, 2) === 1) {
+                    // Legacy boolean value
+                    $availability = true;
+                } else {
+                    $availability = ItemStatus::STATUS_AVAILABLE;
+                    $status = 'Item in Library';
+                }
+                break;
+            default:
+                if (rand(1, 2) === 1) {
+                    // Legacy boolean value
+                    $availability = false;
+                } else {
+                    $availability = ItemStatus::STATUS_UNAVAILABLE;
+                }
+                break;
+        }
         $result = [
             'id'           => $id,
             'source'       => $this->getRecordSource(),
             'item_id'      => $number,
             'number'       => $number,
             'barcode'      => sprintf("%08d", rand() % 50000),
-            'availability' => $status == 'Available',
+            'availability' => $availability,
             'status'       => $status,
             'location'     => $location,
             'locationhref' => $locationhref,
-            'reserve'      => (rand() % 100 > 49) ? 'Y' : 'N',
+            'reserve'      => rand(1, 4) === 1 ? 'Y' : 'N',
             'callnumber'   => $this->getFakeCallNum(),
             'callnumber_prefix' => $this->getFakeCallNumPrefix(),
             'duedate'      => '',
@@ -766,6 +791,21 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     public function getStatuses($ids)
     {
         $this->checkIntermittentFailure();
+
+        if ($this->isFailing(__METHOD__, 0)) {
+            return array_map(
+                function ($id) {
+                    return [
+                        [
+                            'id' => $id,
+                            'error' => 'Simulated failure',
+                        ],
+                    ];
+                },
+                $ids
+            );
+        }
+
         return array_map([$this, 'getStatus'], $ids);
     }
 
@@ -786,6 +826,13 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     public function getHolding($id, array $patron = null, array $options = [])
     {
         $this->checkIntermittentFailure();
+
+        if ($this->isFailing(__METHOD__, 0)) {
+            return [
+                'id' => $id,
+                'error' => 'Simulated failure',
+            ];
+        }
 
         // Get basic status info:
         $status = $this->getSimulatedStatus($id, $patron);
@@ -1306,7 +1353,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 '_dueDate' => $dueDate,
                 '_returnDate' => $returnDate,
                 'barcode' => sprintf("%08d", rand() % 50000),
-                'item_id' => $i,
+                'row_id' => $i,
             ];
             if ($this->idsInMyResearch) {
                 [$transList[$i]['id'], $transList[$i]['title']]
@@ -1388,6 +1435,38 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         return [
             'count' => count($session->historicLoans),
             'transactions' => $historicLoans,
+        ];
+    }
+
+    /**
+     * Purge Patron Transaction History
+     *
+     * @param array  $patron The patron array from patronLogin
+     * @param ?array $ids    IDs to purge, or null for all
+     *
+     * @throws ILSException
+     * @return array Associative array of the results
+     */
+    public function purgeTransactionHistory(array $patron, ?array $ids): array
+    {
+        $this->checkIntermittentFailure();
+        $session = $this->getSession($patron['id'] ?? null);
+        if (null === $ids) {
+            $session->historicLoans = [];
+            $status = 'loan_history_all_purged';
+        } else {
+            $session->historicLoans = array_filter(
+                $session->historicLoans ?? [],
+                function ($loan) use ($ids) {
+                    return !in_array($loan['row_id'], $ids);
+                }
+            );
+            $status = 'loan_history_selected_purged';
+        }
+        return [
+            'success' => true,
+            'status' => $status,
+            'sys_message' => '',
         ];
     }
 
@@ -2612,6 +2691,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                     'due asc' => 'sort_due_date_asc',
                 ],
                 'default_sort' => 'checkout desc',
+                'purge_all' => $this->config['TransactionHistory']['purgeAll'] ?? true,
+                'purge_selected' => $this->config['TransactionHistory']['purgeSelected'] ?? true,
             ];
             if ($this->config['Loans']['paging'] ?? false) {
                 $config['max_results']
@@ -2698,5 +2779,25 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     public function getProxiedUsers(array $patron): array
     {
         return $this->config['ProxiedUsers'] ?? [];
+    }
+
+    /**
+     * Provide an array of URL data (in the same format returned by the record
+     * driver's getURLs method) for the specified bibliographic record.
+     *
+     * @param string $id Bibliographic record ID
+     *
+     * @return array
+     */
+    public function getUrlsForRecord(string $id): array
+    {
+        $links = [];
+        if ($this->config['RecordLinks']['fakeOpacLink'] ?? false) {
+            $links[] = [
+                'url' => 'http://localhost/my-fake-ils?id=' . urlencode($id),
+                'desc' => 'View in OPAC (fake demo link)',
+            ];
+        }
+        return $links;
     }
 }

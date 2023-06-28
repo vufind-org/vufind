@@ -3,7 +3,7 @@
 /**
  * Shibboleth authentication module.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2014.
  * Copyright (C) The National Library of Finland 2016.
@@ -278,7 +278,7 @@ class Shibboleth extends AbstractBase
     {
         $config = $this->getConfig();
         $shibTarget = $config->Shibboleth->target ?? $target;
-        $append = (strpos($shibTarget, '?') !== false) ? '&' : '?';
+        $append = (str_contains($shibTarget, '?')) ? '&' : '?';
         // Adding the auth_method parameter makes it possible to handle logins when
         // using an auth method that proxies others.
         $sessionInitiator = $config->Shibboleth->login
@@ -327,7 +327,7 @@ class Shibboleth extends AbstractBase
             isset($config->Shibboleth->logout)
             && !empty($config->Shibboleth->logout)
         ) {
-            $append = (strpos($config->Shibboleth->logout, '?') !== false) ? '&'
+            $append = (str_contains($config->Shibboleth->logout, '?')) ? '&'
                 : '?';
             $url = $config->Shibboleth->logout . $append . 'return='
                 . urlencode($url);

@@ -3,7 +3,7 @@
 /**
  * Generic controller factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -63,7 +63,7 @@ class AbstractBaseFactory implements FactoryInterface
         if (!empty($permissions)) {
             // Iterate through parent classes until we find the most specific
             // class access permission defined (if any):
-            $class = get_class($controller);
+            $class = $controller::class;
             do {
                 if (isset($permissions[$class])) {
                     $controller->setAccessPermission($permissions[$class]);

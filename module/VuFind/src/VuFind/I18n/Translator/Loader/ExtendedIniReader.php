@@ -3,7 +3,7 @@
 /**
  * Helper class to load .ini files from disk.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *

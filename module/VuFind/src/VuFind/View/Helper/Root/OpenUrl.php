@@ -3,7 +3,7 @@
 /**
  * OpenUrl view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -160,7 +160,7 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
             $imageOpenUrl = $params['openUrlImageBasedOverride']
                 ? $params['openUrlImageBasedOverride'] : $params['openUrl'];
             $params['openUrlImageBasedSrc'] = $base
-                . ((false === strpos($base, '?')) ? '?' : '&')
+                . ((!str_contains($base, '?')) ? '?' : '&')
                 . $imageOpenUrl;
         }
 

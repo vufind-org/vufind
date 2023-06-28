@@ -7,6 +7,8 @@ $fa-font-path: "../../bootstrap3/css/fonts";
 
 <#LESS */
 @import "variables";
+// Import custom (non-vendor) mixins
+@import "mixins/mixins";
 @import "vendor/font-awesome/font-awesome";
 
 @import "components/accessibility";
@@ -16,7 +18,7 @@ $fa-font-path: "../../bootstrap3/css/fonts";
 @import "components/alphabrowse";
 @import "components/autocomplete";
 @import "components/channels";
-@import "components/cookie-consent";
+@import "components/cookie-consent/index";
 @import "components/devtools";
 @import "components/form";
 @import "components/icons";
@@ -374,6 +376,13 @@ footer {
   }
 }
 
+.dropdown-menu > li > .prompt-text {
+  @extend .dropdown-menu-ul-links;
+
+  white-space: inherit;
+  min-width: 200px;
+}
+
 .logoutOptions.with-dropdown a { padding-right: .5rem; }
 #login-dropdown a {
   margin-right: .5rem;
@@ -490,14 +499,11 @@ div.holding-notes {
 }
 
 /* --- Cookie Consent --- */
-.disable--interaction #cc-main .cm-wrapper::before,
-.show--preferences #cc-main .cc--anim.pm-wrapper::before {
+.show--preferences #cc-main .cc--anim .pm-overlay {
   opacity: $modal-backdrop-opacity;
 }
 
 #cc-main {
-  z-index: $zindex-cookie-consent !important;
-
   a {
     &:hover {
       color: $link-hover-color;

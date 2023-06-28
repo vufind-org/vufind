@@ -3,7 +3,7 @@
 /**
  * Factory for instantiating Logger
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -396,7 +396,7 @@ class LoggerFactory implements FactoryInterface
                     $newWriter->setVerbosity($verbosity);
                 } else {
                     throw new \Exception(
-                        get_class($newWriter) . ' does not support verbosity.'
+                        $newWriter::class . ' does not support verbosity.'
                     );
                 }
             }

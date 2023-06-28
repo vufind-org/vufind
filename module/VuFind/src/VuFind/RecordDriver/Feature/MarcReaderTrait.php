@@ -3,7 +3,7 @@
 /**
  * Functions for reading MARC records.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  *

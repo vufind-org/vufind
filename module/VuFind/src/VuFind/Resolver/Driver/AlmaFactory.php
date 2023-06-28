@@ -3,7 +3,7 @@
 /**
  * Factory for Alma resolver driver.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  * Copyright (C) Düsseldorf University and State Library 2022.

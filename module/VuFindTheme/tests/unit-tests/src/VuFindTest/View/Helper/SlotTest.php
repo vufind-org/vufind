@@ -3,7 +3,7 @@
 /**
  * HeadThemeResources view helper Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -111,7 +111,7 @@ class SlotTest extends \PHPUnit\Framework\TestCase
         // test object
         $helper('array')->clear();
         $ret = $helper('array')->set(new \SplStack());
-        $this->assertEquals(\SplStack::class, get_class($ret));
+        $this->assertEquals(\SplStack::class, $ret::class);
 
         // test shortcuts
         $ret = $helper('short', 'SUCCESS');

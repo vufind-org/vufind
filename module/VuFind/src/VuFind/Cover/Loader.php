@@ -3,7 +3,7 @@
 /**
  * Book Cover Generator
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -745,7 +745,7 @@ class Loader extends \VuFind\ImageLoader
                 }
             } catch (\Exception $e) {
                 $this->debug(
-                    get_class($e) . ' during processing of ' . $handler['apiName']
+                    $e::class . ' during processing of ' . $handler['apiName']
                     . ': ' . $e->getMessage()
                 );
             }

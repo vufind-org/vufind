@@ -45,7 +45,7 @@ VuFind.register('openurl', function OpenUrl() {
   function init(_container) {
     var container = $(_container || 'body');
     // assign action to the openUrlWindow link class
-    container.find('a.openUrlWindow').unbind('click').click(function openUrlWindowClick() {
+    container.find('a.openUrlWindow').off('click').on("click", function openUrlWindowClick() {
       var params = extractClassParams(this);
       var settings = params.window_settings;
       window.open($(this).attr('href'), 'openurl', settings);
@@ -53,7 +53,7 @@ VuFind.register('openurl', function OpenUrl() {
     });
 
     // assign action to the openUrlEmbed link class
-    container.find('.openUrlEmbed a').unbind('click').click(function openUrlEmbedClick() {
+    container.find('.openUrlEmbed a').off('click').on("click", function openUrlEmbedClick() {
       embedOpenUrlLinks(this);
       return false;
     });

@@ -4,7 +4,7 @@
  * Deprecated cover content loader (for backward-compatibility with deprecated
  * settings).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *

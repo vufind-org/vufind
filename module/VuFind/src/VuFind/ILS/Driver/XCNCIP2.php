@@ -3,7 +3,7 @@
 /**
  * XC NCIP Toolkit (v2) ILS Driver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -1676,7 +1676,7 @@ class XCNCIP2 extends AbstractBase implements
         $blocks = array_filter(
             $blocks,
             function ($item) {
-                return strpos($item, 'Block') === 0;
+                return str_starts_with($item, 'Block');
             }
         );
         return !empty($blocks);

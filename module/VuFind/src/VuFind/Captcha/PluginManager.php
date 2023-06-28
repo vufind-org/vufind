@@ -3,7 +3,7 @@
 /**
  * CAPTCHA plugin manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -49,6 +49,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         'demo' => Demo::class,
+        'dumb' => Dumb::class,
         'figlet' => Figlet::class,
         'image' => Image::class,
         'interval' => Interval::class,
@@ -62,6 +63,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         Demo::class => InvokableFactory::class,
+        Dumb::class => DumbFactory::class,
         Figlet::class => FigletFactory::class,
         Image::class => ImageFactory::class,
         Interval::class => IntervalFactory::class,

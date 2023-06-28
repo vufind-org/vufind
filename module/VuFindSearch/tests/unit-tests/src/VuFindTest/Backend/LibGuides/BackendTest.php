@@ -3,7 +3,7 @@
 /**
  * Unit tests for LibGuides backend.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -166,7 +166,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     public function testMergedParamBag()
     {
         $myParams = new ParamBag(['foo' => 'bar']);
-        $expectedParams = ['foo' => 'bar', 'search' => 'baz'];
+        $expectedParams = ['foo' => 'bar', 'search' => 'baz', 'widget_type' => '1'];
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
             ->method('query')
@@ -184,8 +184,8 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     public function testSearchFallback()
     {
         $conn = $this->getConnectorMock(['query']);
-        $expectedParams0 = ['search' => 'baz'];
-        $expectedParams1 = ['search' => 'fallback'];
+        $expectedParams0 = ['search' => 'baz', 'widget_type' => '1'];
+        $expectedParams1 = ['search' => 'fallback', 'widget_type' => '1'];
         $conn->expects($this->exactly(2))
             ->method('query')
             ->withConsecutive([$expectedParams0, 0, 10], [$expectedParams1, 0, 10])

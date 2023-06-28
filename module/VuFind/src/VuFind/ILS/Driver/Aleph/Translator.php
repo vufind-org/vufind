@@ -3,7 +3,7 @@
 /**
  * Translator support class for Aleph ILS driver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) UB/FU Berlin
  *
@@ -105,9 +105,9 @@ class Translator
         $rgxp = "";
         while (!feof($file_handle)) {
             $line = fgets($file_handle);
-            $line = chop($line);
+            $line = rtrim($line);
             if (preg_match("/!!/", $line)) {
-                $line = chop($line);
+                $line = rtrim($line);
                 $rgxp = static::regexp($line);
             }
             if (preg_match("/!.*/", $line) || $rgxp == "" || $line == "") {
