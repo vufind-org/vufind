@@ -670,6 +670,25 @@ class InstallCommand extends Command
     }
 
     /**
+     * Get an array of environment variables.
+     *
+     * @return array
+     */
+    protected function getEnvironmentVariables(): array
+    {
+        $vars = [
+            'VUFIND_HOME' => $this->baseDir,
+            'VUFIND_LOCAL_DIR' => $this->overrideDir,
+            'VUFIND_LOCAL_MODULES' => $this->module,
+            'SOLR_PORT' => $this->solrPort,
+        ];
+        if (empty($vars['VUFIND_LOCAL_MODULES'])) {
+            unset($vars['VUFIND_LOCAL_MODULES']);
+        }
+        return $vars;
+    }
+
+    /**
      * Build the Unix-specific environment configuration. Returns true on success,
      * error message otherwise.
      *
@@ -683,11 +702,10 @@ class InstallCommand extends Command
         if (($msg = $this->backUpFile($output, $filename, "Unix environment file")) !== true) {
             return $msg;
         }
-        $module = empty($this->module)
-            ? '' : "export VUFIND_LOCAL_MODULES={$this->module}\n";
-        $env = "export VUFIND_HOME={$this->baseDir}\n"
-            . "export VUFIND_LOCAL_DIR={$this->overrideDir}\n" . $module
-            . "export SOLR_PORT={$this->solrPort}\n";
+        $env = '';
+        foreach ($this->getEnvironmentVariables() as $key => $val) {
+            $env .= "export $key=$val\n";
+        }
         return $this->writeFileToDisk($filename, $env)
             ? true : "Problem writing {$filename}.";
     }
@@ -706,11 +724,10 @@ class InstallCommand extends Command
         if (($msg = $this->backUpFile($output, $filename, "Windows environment file")) !== true) {
             return $msg;
         }
-        $module = empty($this->module)
-            ? '' : "@set VUFIND_LOCAL_MODULES={$this->module}\n";
-        $batch = "@set VUFIND_HOME={$this->baseDir}\n"
-            . "@set VUFIND_LOCAL_DIR={$this->overrideDir}\n" . $module
-            . "@set SOLR_PORT={$this->solrPort}\n";
+        $batch = '';
+        foreach ($this->getEnvironmentVariables() as $key => $val) {
+            $batch .= "@set $key=$val\n";
+        }
         return $this->writeFileToDisk($filename, $batch)
             ? true : "Problem writing {$filename}.";
     }
