@@ -57,7 +57,7 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
         $command = $this->getMockCommand(
             ['backUpFile', 'buildDirs', 'getApacheLocation', 'getInput', 'writeFileToDisk']
         );
-        $command->expects($this->any())->method('backUpFile')->will($this->returnValue(true));
+        $command->expects($this->exactly(3))->method('backUpFile')->will($this->returnValue(true));
         $command->expects($this->exactly(4))->method('getInput')
             ->withConsecutive(
                 [
@@ -152,7 +152,7 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
             $localFixtures . '/harvest',
             $localFixtures . '/import',
         ];
-        $command->expects($this->any())->method('backUpFile')->will($this->returnValue(true));
+        $command->expects($this->exactly(3))->method('backUpFile')->will($this->returnValue(true));
         $command->expects($this->once())->method('buildDirs')
             ->with($this->equalTo($expectedDirs))
             ->will($this->returnValue(true));
