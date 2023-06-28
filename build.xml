@@ -408,6 +408,18 @@
         <fail>Solr PID file (${solr_pid_file}) detected. Is the system already running?</fail>
       </then>
     </if>
+    <if>
+      <available file="${srcdir}/env.bat" />
+      <then>
+        <fail>Environment file (env.bat) detected. Is the system already running?</fail>
+      </then>
+    </if>
+    <if>
+      <available file="${srcdir}/env.sh" />
+      <then>
+        <fail>Environment file (env.sh) detected. Is the system already running?</fail>
+      </then>
+    </if>
 
     <phingcall target="check_local_config" />
 
@@ -667,6 +679,18 @@ ${git_status}
     </if>
 
     <!-- delete the configuration, sample index, logs and cache data -->
+    <if>
+      <available file="${srcdir}/env.bat" />
+      <then>
+        <delete file="${srcdir}/env.bat" failonerror="true" />
+      </then>
+    </if>
+    <if>
+      <available file="${srcdir}/env.sh" />
+      <then>
+        <delete file="${srcdir}/env.sh" failonerror="true" />
+      </then>
+    </if>
     <if>
       <available file="${srcdir}/import/solrmarc.log" />
       <then>
