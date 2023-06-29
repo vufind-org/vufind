@@ -39,7 +39,7 @@ namespace VuFind\Recommend;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-abstract class AbstractSummonRecommendDeferred extends SearchObjectDeferred
+abstract class AbstractSummonRecommendDeferred extends AbstractSearchObjectDeferred
 {
     /**
      * Name of module being loaded by AJAX -- MUST be set in constructor!

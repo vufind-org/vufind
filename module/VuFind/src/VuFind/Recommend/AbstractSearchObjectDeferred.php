@@ -44,7 +44,7 @@ namespace VuFind\Recommend;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-abstract class SearchObjectDeferred implements RecommendInterface
+abstract class AbstractSearchObjectDeferred implements RecommendInterface
 {
     /**
      * Raw configuration parameters
