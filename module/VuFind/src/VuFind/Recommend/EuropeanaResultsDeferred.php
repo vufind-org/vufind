@@ -45,37 +45,31 @@ namespace VuFind\Recommend;
 class EuropeanaResultsDeferred extends AbstractSearchObjectDeferred
 {
     /**
-     * Called before the Search Results object performs its main search
-     * (specifically, in response to \VuFind\Search\SearchRunner::EVENT_CONFIGURED).
-     * This method is responsible for setting search parameters needed by the
-     * recommendation module and for reading any existing search parameters that may
-     * be needed.
+     * Number of expected module parameters (from .ini config)
+     *
+     * @var int
+     */
+    protected $paramCount = 4;
+
+    /**
+     * Initialize the lookFor query parameter.  Called from init().
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
      * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
+     * @param array $settings Parameter array
+     * request.
      *
      * @return void
      */
-    public function init($params, $request)
+    protected function initLookFor($params, $request, &$settings)
     {
-        // Parse out parameters:
-        $settings = explode(':', $this->rawParams);
-
-        // Make sure all elements of the params array are filled in, even if just
-        // with a blank string, so we can rebuild the parameters to pass through
-        // AJAX later on!
-        for ($i = 0; $i < 4; $i++) {
-            $settings[$i] ??= '';
-        }
-
         // Collect the best possible search term(s):
         $this->lookfor = $request->get('lookfor', '');
         if (empty($this->lookfor) && is_object($params)) {
             $this->lookfor = $params->getQuery()->getAllTerms();
         }
         $this->lookfor = trim($this->lookfor);
-        $this->processedParams = implode(':', $settings);
     }
 
      /**

@@ -68,6 +68,13 @@ abstract class AbstractSearchObjectDeferred implements RecommendInterface
     protected $processedParams;
 
     /**
+     * Number of expected module parameters (from .ini config)
+     *
+     * @var int
+     */
+    protected $paramCount = 2;
+
+    /**
      * Store the configuration of the recommendation module.
      *
      * @return string Module name in call to AjaxHandler
@@ -107,15 +114,32 @@ abstract class AbstractSearchObjectDeferred implements RecommendInterface
         // Make sure all elements of the params array are filled in, even if just
         // with a blank string, so we can rebuild the parameters to pass through
         // AJAX later on!
-        for ($i = 0; $i < 2; $i++) {
+        for ($i = 0; $i < $this->paramCount; $i++) {
             $settings[$i] ??= '';
         }
 
+        $this->initLookFor($params, $request, $settings);
+
+        $this->processedParams = implode(':', $settings);
+    }
+
+    /**
+     * Initialize the lookFor query parameter.  Called from init().
+     *
+     * @param \VuFind\Search\Base\Params $params  Search parameter object
+     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * request.
+     * @param array $settings Parameter array
+     * request.
+     *
+     * @return void
+     */
+    protected function initLookFor($params, $request, &$settings)
+    {
         // Map the user-specified query field to 'lookfor' for simplicity:
         $this->lookfor
             = $request->get(empty($settings[0]) ? 'lookfor' : $settings[0], '');
         $settings[0] = 'lookfor';
-        $this->processedParams = implode(':', $settings);
     }
 
     /**

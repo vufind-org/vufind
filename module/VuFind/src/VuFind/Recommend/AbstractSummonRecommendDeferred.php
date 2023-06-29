@@ -49,31 +49,18 @@ abstract class AbstractSummonRecommendDeferred extends AbstractSearchObjectDefer
     protected $paramCount = 1;
 
     /**
-     * Called before the Search Results object performs its main search
-     * (specifically, in response to \VuFind\Search\SearchRunner::EVENT_CONFIGURED).
-     * This method is responsible for setting search parameters needed by the
-     * recommendation module and for reading any existing search parameters that may
-     * be needed.
+     * Initialize the lookFor query parameter.  Called from init().
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
      * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
      * request.
+     * @param array $settings Parameter array
+     * request.
      *
      * @return void
-     * @throws \Exception
      */
-    public function init($params, $request)
+    protected function initLookFor($params, $request, &$settings)
     {
-        // Parse out parameters:
-        $settings = explode(':', $this->rawParams);
-
-        // Make sure all elements of the params array are filled in, even if just
-        // with a blank string, so we can rebuild the parameters to pass through
-        // AJAX later on!
-        for ($i = 0; $i < $this->paramCount; $i++) {
-            $settings[$i] ??= '';
-        }
-
         // Collect the best possible search term(s):
         $lookforParam = empty($settings[0]) ? 'lookfor' : $settings[0];
         $this->lookfor = $request->get($lookforParam, '');
@@ -85,8 +72,5 @@ abstract class AbstractSummonRecommendDeferred extends AbstractSearchObjectDefer
         // In AJAX mode, the query will always be found in the 'lookfor' parameter,
         // so override the setting:
         $settings[0] = 'lookfor';
-
-        // Now rebuild the parameters to pass via AJAX:
-        $this->processedParams = implode(':', $settings);
     }
 }
