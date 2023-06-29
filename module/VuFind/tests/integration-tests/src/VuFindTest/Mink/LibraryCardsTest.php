@@ -129,7 +129,7 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
 
         // Now click change password button:
-        $this->clickCss($page, '.add-card span');
+        $this->clickCss($page, '.add-card span.icon-link__label');
         $this->waitForPageLoad($page);
 
         // Try to create a library card, but get the password wrong:

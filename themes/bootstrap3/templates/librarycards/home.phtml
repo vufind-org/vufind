@@ -62,13 +62,13 @@
     <?php if ($this->allowConnectingCards): ?>
       <a href="<?=$this->url('librarycards-connectcardlogin') ?>" class="add-card-login btn btn-link">
         <?=$this->icon('ui-add') ?>
-        <span><?=$this->transEsc('Add a Library Card using login')?></span>
+        <span class="icon-link__label"><?=$this->transEsc('Add a Library Card using login')?></span>
       </a>
     <?php endif;?>
     <?php if ($this->auth()->getManager()->allowsUserIlsLogin()): ?>
       <a href="<?=$this->url('editLibraryCard') ?>NEW" class="add-card btn btn-link">
         <?=$this->icon('ui-add') ?>
-        <span><?=$this->transEsc('Add a Library Card')?></span>
+        <span class="icon-link__label"><?=$this->transEsc('Add a Library Card')?></span>
       </a>
     <?php endif; ?>
   </div>
