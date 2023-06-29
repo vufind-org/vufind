@@ -34,7 +34,7 @@
           <?php $summAuthors = $this->driver->getPrimaryAuthorsWithHighlighting(); ?>
           <?php if (!empty($summAuthors)): ?>
             <br>
-            <span>
+            <span class="authors">
               <?=$this->transEsc('by')?>
               <?php $authorCount = count($summAuthors); ?>
               <?php foreach ($summAuthors as $i => $summAuthor): ?>

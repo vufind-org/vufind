@@ -146,7 +146,7 @@
                 ?><br>
                 <?php $listAuthors = $resource->getPrimaryAuthors(); ?>
                 <?php if (!empty($listAuthors)): ?>
-                  <span>
+                  <span class="authors">
                     <?=$this->transEsc('by')?>:
                     <a href="<?=$this->record($resource)->getLink('author', $listAuthors[0])?>"><?=$this->escapeHtml($listAuthors[0])?></a><?php if (count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?><br>
                   </span>

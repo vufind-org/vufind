@@ -18,22 +18,24 @@
     <?=$thumbnail ?>
   <?php endif; ?>
   <div class="media-body">
-    <div>
+    <h2>
       <b>
         <?=$this->record($this->driver)->getTitleHtml()?>
       </b>
-    </div>
 
-    <div>
       <?php $summAuthors = $this->driver->getPrimaryAuthorsWithHighlighting(); ?>
       <?php if (!empty($summAuthors)): ?>
-        <?=$this->transEsc('by')?>
-        <?php $authorCount = count($summAuthors); ?>
-        <?php foreach ($summAuthors as $i => $summAuthor): ?>
-          <a href="<?=$this->record($this->driver)->getLink('author', $this->highlight($summAuthor, null, true, false))?>" class="result-author"><?=$this->highlight($summAuthor)?></a><?=$i + 1 < $authorCount ? ',' : ''?>
-        <?php endforeach; ?>
+        <br>
+        <span class="authors">
+          <?=$this->transEsc('by')?>
+          <?php $authorCount = count($summAuthors); ?>
+          <?php foreach ($summAuthors as $i => $summAuthor): ?>
+            <a href="<?=$this->record($this->driver)->getLink('author', $this->highlight($summAuthor, null, true, false))?>" class="result-author"><?=$this->highlight($summAuthor)?></a><?=$i + 1 < $authorCount ? ',' : ''?>
+          <?php endforeach; ?>
+        </span>
       <?php endif; ?>
-
+    </h2>
+    <div>
       <?php
         $journalTitle = $this->driver->getContainerTitle();
         $summDate = $this->driver->getPublicationDates();
