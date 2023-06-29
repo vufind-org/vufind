@@ -42,13 +42,6 @@ namespace VuFind\Recommend;
 abstract class AbstractSummonRecommendDeferred extends AbstractSearchObjectDeferred
 {
     /**
-     * Name of module being loaded by AJAX -- MUST be set in constructor!
-     *
-     * @var string
-     */
-    protected $module = null;
-
-    /**
      * Number of expected module parameters (from .ini config)
      *
      * @var int
