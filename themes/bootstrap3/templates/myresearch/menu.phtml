@@ -91,7 +91,7 @@
 <?php if ($user && $this->userlist()->getMode() !== 'disabled'): ?>
   <h3><?=$this->transEsc('Your Lists')?></h3>
   <div class="myresearch-menu">
-    <a href="<?=$this->url('myresearch-favorites')?>" class="icon-link <?=$this->active == ' favorites' ? 'active' : ''?>">
+    <a href="<?=$this->url('myresearch-favorites')?>" class="icon-link <?=$this->active == 'favorites' ? 'active' : ''?>">
       <?=$this->icon('user-favorites', 'icon-link__icon') ?>
       <span class="icon-link__label"><?=$this->transEsc('Your Favorites')?></span>
     </a>
