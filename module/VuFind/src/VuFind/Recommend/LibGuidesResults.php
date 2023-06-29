@@ -1,7 +1,7 @@
 <?php
 
 /**
- * LibGuidesAZResultsDeferred Recommendations Module
+ * LibGuidesResults Recommendations Module
  *
  * PHP version 8
  *
@@ -31,9 +31,9 @@
 namespace VuFind\Recommend;
 
 /**
- * LibGuidesAZResultsDeferred Recommendations Module
+ * LibGuidesResults Recommendations Module
  *
- * This class sets up an AJAX call to trigger a call to the LibGuidesAZ module.
+ * This class provides recommendations by doing a search of LibGuides research guides.
  *
  * @category VuFind
  * @package  Recommendations
@@ -42,15 +42,15 @@ namespace VuFind\Recommend;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class LibGuidesAZResultsDeferred extends AbstractSearchObjectDeferred
+class LibGuidesResults extends AbstractSearchObject
 {
     /**
-     * Store the configuration of the recommendation module.
+     * Get the search class ID to use for building search objects.
      *
-     * @return string Module name in call to AjaxHandler
+     * @return string
      */
-    protected function getAjaxModule()
+    protected function getSearchClassId()
     {
-        return 'LibGuidesAZResults';
+        return 'LibGuides';
     }
 }
