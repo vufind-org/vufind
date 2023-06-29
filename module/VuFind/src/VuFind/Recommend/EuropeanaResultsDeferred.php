@@ -57,7 +57,7 @@ class EuropeanaResultsDeferred extends AbstractSearchObjectDeferred
      * @param \VuFind\Search\Base\Params $params   Search parameter object
      * @param \Laminas\Stdlib\Parameters $request  Parameter object representing user
      * request.
-     * @param array                      $settings Parameter array
+     * @param array                      $settings Parameter array (passed by reference)
      *
      * @return void
      */
