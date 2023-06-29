@@ -1,7 +1,7 @@
 <?php
 
 /**
- * LibGuidesAZResultsDeferred Recommendations Module
+ * LibGuidesResultsDeferred recommendation module Test Class
  *
  * PHP version 8
  *
@@ -21,36 +21,42 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Recommendations
+ * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Maccabee Levine <msl321@lehigh.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 
-namespace VuFind\Recommend;
+namespace VuFindTest\Recommend;
 
 /**
- * LibGuidesAZResultsDeferred Recommendations Module
- *
- * This class sets up an AJAX call to trigger a call to the LibGuidesAZ module.
+ * LibGuidesResultsDeferred recommendation module Test Class
  *
  * @category VuFind
- * @package  Recommendations
+ * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Maccabee Levine <msl321@lehigh.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class LibGuidesAZResultsDeferred extends AbstractSearchObjectDeferred
+class LibGuidesResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestCase
 {
     /**
-     * Store the configuration of the recommendation module.
+     * Test standard operation
      *
-     * @return string Module name in call to AjaxHandler
+     * @return void
      */
-    protected function getAjaxModule()
+    public function testStandardOperation()
     {
-        return 'LibGuidesAZResults';
+        $mod = $this->getRecommend(
+            \VuFind\Recommend\LibGuidesResultsDeferred::class,
+            ':3',
+            new \Laminas\Stdlib\Parameters(['lookfor' => 'foo'])
+        );
+        $this->assertEquals(
+            'mod=LibGuidesResults&params=lookfor%3A3&lookfor=foo',
+            $mod->getUrlParams()
+        );
     }
 }
