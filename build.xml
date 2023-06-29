@@ -56,7 +56,7 @@
   <property name="phpunit_remote_coverage" value="" /><!-- set to 1 to enable code coverage for Mink tests  -->
   <property name="retain_coverage_files" value="false" /><!-- set to true to keep temporary coverage files from Mink tests -->
 
-  <property name="version" value="9.0.1" />
+  <property name="version" value="9.0.2" />
 
   <!-- We only need the -p switch if the password is non-blank -->
   <if>
@@ -119,6 +119,7 @@
     <phingcall target="eslint"/>
     <phingcall target="jshint"/>
     <phingcall target="checkLessToSass"/>
+    <phingcall target="checkSassBuild"/>
   </target>
 
   <!-- Quality Assurance PHP Tasks -->
@@ -197,9 +198,14 @@
     <exec command="npx jshint --config=${srcdir}/tests/jshint.json --exclude=themes/*/js/vendor --reporter=checkstyle ${srcdir}/themes &gt; ${builddir}/reports/jshint-checkstyle.xml" />
   </target>
 
-  <!-- Run LessToSass, error if there are uncommitted changes (used by Travis) -->
+  <!-- Run Sass build, error if it fails -->
+  <target name="checkSassBuild">
+    <exec command="npm run build:scss" checkreturn="true" passthru="true" />
+  </target>
+
+  <!-- Run LessToSass, error if there are uncommitted changes (used by continuous integration) -->
   <target name="checkLessToSass">
-    <exec command="grunt lessToSass" checkreturn="true" passthru="true" />
+    <exec command="npm run lessToSass" checkreturn="true" passthru="true" />
     <exec command="git diff --exit-code *.scss" checkreturn="true" passthru="true" />
   </target>
 

@@ -58,7 +58,7 @@ class SierraRest extends AbstractBase implements
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\I18n\HasSorterTrait;
     use \VuFind\Service\Feature\RetryTrait;
-    use \VuFind\Config\ExplodeSettingTrait;
+    use \VuFind\Config\Feature\ExplodeSettingTrait;
 
     /**
      * Fixed field number for location in holdings records
