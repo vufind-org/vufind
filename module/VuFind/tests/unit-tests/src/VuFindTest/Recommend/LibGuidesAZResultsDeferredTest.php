@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Console command: build CSS from SCSS.
+ * LibGuidesAZResultsDeferred recommendation module Test Class
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2020.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,51 +21,42 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Console
+ * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Maccabee Levine <msl321@lehigh.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 
-namespace VuFindConsole\Command\Util;
-
-use Symfony\Component\Console\Output\OutputInterface;
-use VuFindTheme\ScssCompiler;
+namespace VuFindTest\Recommend;
 
 /**
- * Console command: build CSS from SCSS.
+ * LibGuidesAZResultsDeferred recommendation module Test Class
  *
  * @category VuFind
- * @package  Console
+ * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Maccabee Levine <msl321@lehigh.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ScssBuilderCommand extends AbstractCssBuilderCommand
+class LibGuidesAZResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestCase
 {
     /**
-     * The name of the command (the part after "public/index.php")
+     * Test standard operation
      *
-     * @var string
+     * @return void
      */
-    protected static $defaultName = 'util/scssBuilder';
-
-    /**
-     * Name of precompiler format
-     *
-     * @var string
-     */
-    protected $format = 'SCSS';
-
-    /**
-     * Build the LESS compiler.
-     *
-     * @param OutputInterface $output Output object
-     *
-     * @return ScssCompiler
-     */
-    protected function getCompiler(OutputInterface $output)
+    public function testStandardOperation()
     {
-        return new ScssCompiler($output);
+        $mod = $this->getRecommend(
+            \VuFind\Recommend\LibGuidesAZResultsDeferred::class,
+            ':3',
+            new \Laminas\Stdlib\Parameters(['lookfor' => 'foo'])
+        );
+        $this->assertEquals(
+            'mod=LibGuidesAZResults&params=lookfor%3A3&lookfor=foo',
+            $mod->getUrlParams()
+        );
     }
 }

@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Console command: build CSS from SCSS.
+ * LibGuidesAZResults Recommendations Module
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2020.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,51 +21,36 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Console
+ * @package  Recommendations
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Maccabee Levine <msl321@lehigh.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
 
-namespace VuFindConsole\Command\Util;
-
-use Symfony\Component\Console\Output\OutputInterface;
-use VuFindTheme\ScssCompiler;
+namespace VuFind\Recommend;
 
 /**
- * Console command: build CSS from SCSS.
+ * LibGuidesAZResults Recommendations Module
+ *
+ * This class provides recommendations by doing a search of LibGuides AZ Databases.
  *
  * @category VuFind
- * @package  Console
+ * @package  Recommendations
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Maccabee Levine <msl321@lehigh.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class ScssBuilderCommand extends AbstractCssBuilderCommand
+class LibGuidesAZResults extends SearchObject
 {
     /**
-     * The name of the command (the part after "public/index.php")
+     * Get the search class ID to use for building search objects.
      *
-     * @var string
+     * @return string
      */
-    protected static $defaultName = 'util/scssBuilder';
-
-    /**
-     * Name of precompiler format
-     *
-     * @var string
-     */
-    protected $format = 'SCSS';
-
-    /**
-     * Build the LESS compiler.
-     *
-     * @param OutputInterface $output Output object
-     *
-     * @return ScssCompiler
-     */
-    protected function getCompiler(OutputInterface $output)
+    protected function getSearchClassId()
     {
-        return new ScssCompiler($output);
+        return 'LibGuidesAZ';
     }
 }

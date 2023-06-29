@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Console command: build CSS from SCSS.
+ * EPF Controller
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2020.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,51 +21,47 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Console
+ * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Maccabee Levine <msl321@lehigh.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org Main Site
  */
 
-namespace VuFindConsole\Command\Util;
+namespace VuFind\Controller;
 
-use Symfony\Component\Console\Output\OutputInterface;
-use VuFindTheme\ScssCompiler;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
- * Console command: build CSS from SCSS.
+ * EPF Controller
  *
  * @category VuFind
- * @package  Console
+ * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Maccabee Levine <msl321@lehigh.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org Main Site
  */
-class ScssBuilderCommand extends AbstractCssBuilderCommand
+class EPFController extends AbstractSearch
 {
     /**
-     * The name of the command (the part after "public/index.php")
+     * Constructor
      *
-     * @var string
+     * @param ServiceLocatorInterface $sm Service locator
      */
-    protected static $defaultName = 'util/scssBuilder';
-
-    /**
-     * Name of precompiler format
-     *
-     * @var string
-     */
-    protected $format = 'SCSS';
-
-    /**
-     * Build the LESS compiler.
-     *
-     * @param OutputInterface $output Output object
-     *
-     * @return ScssCompiler
-     */
-    protected function getCompiler(OutputInterface $output)
+    public function __construct(ServiceLocatorInterface $sm)
     {
-        return new ScssCompiler($output);
+        $this->searchClassId = 'EPF';
+        parent::__construct($sm);
+    }
+
+    /**
+     * Search action -- call standard results action
+     *
+     * @return mixed
+     */
+    public function searchAction()
+    {
+        return $this->resultsAction();
     }
 }
