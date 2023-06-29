@@ -39,29 +39,8 @@ namespace VuFind\Recommend;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class AbstractSummonRecommendDeferred implements RecommendInterface
+abstract class AbstractSummonRecommendDeferred extends SearchObjectDeferred
 {
-    /**
-     * Raw configuration parameters
-     *
-     * @var string
-     */
-    protected $rawParams;
-
-    /**
-     * Current search query
-     *
-     * @var string
-     */
-    protected $lookfor;
-
-    /**
-     * Configuration parameters processed for submission via AJAX
-     *
-     * @var string
-     */
-    protected $processedParams;
-
     /**
      * Name of module being loaded by AJAX -- MUST be set in constructor!
      *
@@ -75,18 +54,6 @@ class AbstractSummonRecommendDeferred implements RecommendInterface
      * @var int
      */
     protected $paramCount = 1;
-
-    /**
-     * Store the configuration of the recommendation module.
-     *
-     * @param string $settings Settings from searches.ini.
-     *
-     * @return void
-     */
-    public function setConfig($settings)
-    {
-        $this->rawParams = $settings;
-    }
 
     /**
      * Called before the Search Results object performs its main search
@@ -104,11 +71,6 @@ class AbstractSummonRecommendDeferred implements RecommendInterface
      */
     public function init($params, $request)
     {
-        // Validate module setting:
-        if (null === $this->module) {
-            throw new \Exception('Missing module property');
-        }
-
         // Parse out parameters:
         $settings = explode(':', $this->rawParams);
 
@@ -133,31 +95,5 @@ class AbstractSummonRecommendDeferred implements RecommendInterface
 
         // Now rebuild the parameters to pass via AJAX:
         $this->processedParams = implode(':', $settings);
-    }
-
-    /**
-     * Called after the Search Results object has performed its main search.  This
-     * may be used to extract necessary information from the Search Results object
-     * or to perform completely unrelated processing.
-     *
-     * @param \VuFind\Search\Base\Results $results Search results object
-     *
-     * @return void
-     */
-    public function process($results)
-    {
-        // No action needed
-    }
-
-    /**
-     * Get the URL parameters needed to make the AJAX recommendation request.
-     *
-     * @return string
-     */
-    public function getUrlParams()
-    {
-        return 'mod=' . urlencode($this->module)
-            . '&params=' . urlencode($this->processedParams)
-            . '&lookfor=' . urlencode($this->lookfor);
     }
 }

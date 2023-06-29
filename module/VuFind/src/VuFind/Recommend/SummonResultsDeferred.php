@@ -56,7 +56,6 @@ class SummonResultsDeferred extends AbstractSummonRecommendDeferred
      */
     public function __construct()
     {
-        $this->module = 'SummonResults';
         $this->paramCount = 2;
     }
 
@@ -83,6 +82,16 @@ class SummonResultsDeferred extends AbstractSummonRecommendDeferred
                 $params->getSearchHandler()
             );
         }
+    }
+
+    /**
+     * Store the configuration of the recommendation module.
+     *
+     * @return string Module name in call to AjaxHandler
+     */
+    protected function getAjaxModule()
+    {
+        return 'SummonResults';
     }
 
     /**
