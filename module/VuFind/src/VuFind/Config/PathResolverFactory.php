@@ -99,7 +99,7 @@ class PathResolverFactory implements FactoryInterface
             $currentDir = $canonicalizedCurrentDir;
 
             // check if the current directory was already included in the stack to avoid infinite loops
-            if(in_array($currentDir, array_column($localDirs, 'directory'))){
+            if (in_array($currentDir, array_column($localDirs, 'directory'))) {
                 trigger_error("Current directory was already included in the stack: " . $currentDir, E_USER_WARNING);
                 break;
             }
