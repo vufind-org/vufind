@@ -764,10 +764,11 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
             if (!$checkRedirect || $this->params()->fromQuery('redirect', true)) {
                 if (null !== $lightboxParent && $this->getAuthManager()->getSessionInitiator($this->getServerUrl())) {
                     $this->followup()->store([], $url);
-                    $url = new \Laminas\Uri\Uri($lightboxParent);
-                    $params = $url->getQueryAsArray();
+                    $parentUrl = new \Laminas\Uri\Uri($lightboxParent);
+                    $params = $parentUrl->getQueryAsArray();
                     $params['lightboxChild'] = $this->getServerUrl();
-                    $url->setQuery($params);
+                    $parentUrl->setQuery($params);
+                    return $parentUrl;
                 }
                 return $url;
             }
