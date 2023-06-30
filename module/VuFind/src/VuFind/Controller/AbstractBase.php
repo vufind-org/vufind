@@ -351,7 +351,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
         }
 
         // store parent url of lightboxes
-        $extras['lightboxParent'] = urldecode($this->getRequest()->getQuery('lightboxParent'));
+        $extras['lightboxParent'] = $this->getRequest()->getQuery('lightboxParent');
 
         // Store the current URL as a login followup action
         $this->followup()->store($extras);
