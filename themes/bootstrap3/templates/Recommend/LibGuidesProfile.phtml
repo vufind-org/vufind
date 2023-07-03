@@ -1,0 +1,12 @@
+<?php $account = $this->recommend->getResults(); ?>
+<?php if (!empty($account)): ?>
+    <div class="suggested-librarian">
+        <h4>Talk to a Subject Librarian</h4>
+        <a href="<?=$account->profile->url?>" target="_blank">
+            <img class="librarian-img" src="<?=$account->profile->image->url?>" />
+            <div class="librarian-name"><?=$account->first_name . ' ' . $account->last_name?></div>
+        </a>
+        <div class="librarian-title"><?=$account->title?></div>
+    </div>
+    <? /* echo print_r($account) */ ?>
+<?php endif; ?>
