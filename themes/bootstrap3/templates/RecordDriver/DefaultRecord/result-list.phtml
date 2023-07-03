@@ -33,7 +33,6 @@
         <?php if (!$this->driver->isCollection()): ?>
           <?php $summAuthors = $this->driver->getPrimaryAuthorsWithHighlighting(); ?>
           <?php if (!empty($summAuthors)): ?>
-            <br>
             <span class="authors">
               <?=$this->transEsc('by')?>
               <?php $authorCount = count($summAuthors); ?>
