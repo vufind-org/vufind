@@ -87,7 +87,7 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test adding a library card.
+     * Test adding two library cards.
      *
      * @retryCallback tearDownAfterClass
      *
@@ -128,7 +128,7 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
         $session->visit($this->getVuFindUrl('/LibraryCards/Home'));
         $this->waitForPageLoad($page);
 
-        // Now click change password button:
+        // Now click add card button:
         $this->clickCss($page, '.add-card span.icon-link__label');
         $this->waitForPageLoad($page);
 
@@ -147,7 +147,18 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertEquals(
             'card 1',
-            $this->findCss($page, 'td')->getText()
+            $this->findCss($page, 'tr:nth-child(2) td')->getText()
+        );
+
+        // Now click add card button to add a second card:
+        $this->clickCss($page, '.add-card span.icon-link__label');
+        $this->waitForPageLoad($page);
+        $this->fillInLibraryCardForm($page, 'card 2', 'catuser2', 'catpass2');
+        $this->clickCss($page, '.form-edit-card .btn.btn-primary');
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            'card 2',
+            $this->findCss($page, 'tr:nth-child(3) td')->getText()
         );
     }
 
