@@ -89,11 +89,12 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Set up configuration for library card functionality.
      *
-     * @param bool $enabled Are library cards enabled?
+     * @param bool  $enabled              Are library cards enabled?
+     * @param array $extraCatalogSettings Extra settings for Catalog section of config.ini
      *
      * @return void
      */
-    protected function setUpLibraryCardConfigs(bool $enabled = true): void
+    protected function setUpLibraryCardConfigs(bool $enabled = true, $extraCatalogSettings = []): void
     {
         // Setup config
         $demoSettings = $this->getDemoIniOverrides();
@@ -105,7 +106,7 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
             [
                 'Demo' => $demoSettings,
                 'config' => [
-                    'Catalog' => [
+                    'Catalog' => $extraCatalogSettings + [
                         'driver' => 'Demo',
                         'library_cards' => $enabled,
                     ],
@@ -171,6 +172,24 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
             'card 2',
             $this->findCss($page, 'tr:nth-child(3) td')->getText()
         );
+    }
+
+    /**
+     * Test that disabling the allowUserLogin setting disables the "add card" button.
+     *
+     * @return void
+     */
+    public function testAllowUserLoginDisablesButton()
+    {
+        $this->setUpLibraryCardConfigs(true, ['allowUserLogin' => false]);
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl('/LibraryCards/Home'));
+        $page = $session->getPage();
+        $this->fillInLoginForm($page, 'username1', 'test', false);
+        $this->submitLoginForm($page, false);
+        $this->waitForPageLoad($page);
+        $this->assertEquals('Library Cards', $this->findCss($page, 'h2')->getText());
+        $this->unfindCss($page, '.add-card span.icon-link__label');
     }
 
     /**
