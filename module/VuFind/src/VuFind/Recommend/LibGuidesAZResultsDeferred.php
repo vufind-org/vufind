@@ -1,11 +1,11 @@
 <?php
 
 /**
- * EDSResultsDeferred Recommendations Module
+ * LibGuidesAZResultsDeferred Recommendations Module
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2020.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  Recommendations
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Maccabee Levine <msl321@lehigh.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
@@ -30,17 +31,18 @@
 namespace VuFind\Recommend;
 
 /**
- * EDSResultsDeferred Recommendations Module
+ * LibGuidesAZResultsDeferred Recommendations Module
  *
- * This class sets up an AJAX call to trigger a call to the EDSResults module.
+ * This class sets up an AJAX call to trigger a call to the LibGuidesAZ module.
  *
  * @category VuFind
  * @package  Recommendations
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Maccabee Levine <msl321@lehigh.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class EDSResultsDeferred extends AbstractSearchObjectDeferred
+class LibGuidesAZResultsDeferred extends AbstractSearchObjectDeferred
 {
     /**
      * Store the configuration of the recommendation module.
@@ -49,6 +51,6 @@ class EDSResultsDeferred extends AbstractSearchObjectDeferred
      */
     protected function getAjaxModule()
     {
-        return 'EDSResults';
+        return 'LibGuidesAZResults';
     }
 }
