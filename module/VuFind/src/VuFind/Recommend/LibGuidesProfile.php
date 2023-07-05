@@ -1,35 +1,93 @@
 <?php
 
+/**
+ * LibGuides Profile Recommendations Module
+ *
+ * PHP version 8
+ *
+ * Copyright (C) Villanova University 2023.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * @category VuFind
+ * @package  Recommendations
+ * @author   Maccabee Levine <msl321@lehigh.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
+ */
+
 namespace VuFind\Recommend;
 
 use Laminas\Http\Client as HttpClient;
 use VuFind\Connection\LibGuides;
 
-class LibGuidesProfile implements 
+/**
+ * LibGuides Profile Recommendations Module
+ *
+ * @category VuFind
+ * @package  Recommendations
+ * @author   Maccabee Levine <msl321@lehigh.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
+ */
+class LibGuidesProfile implements
     RecommendInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
 
+    /**
+     * Search results object
+     * 
+     * @var \VuFind\Search\Base\Results 
+     */
+    protected $results;
+
+    /**
+     * Map of LibGuides account ID to data about that account
+     *
+     * @var array
+     */
     protected $idToAccount = [];
+
+    /**
+     * Map of LibGuides subject name (lowercase) to ID of an account
+     * (presumably a librarian) who wrote its subject guide
+     *
+     * @var array
+     */
     protected $subjectToId = [];
 
+    /**
+     * LibGuides connector
+     *
+     * @var LibGuides
+     */
     protected $libGuides;
 
     /**
      * Constructor
      *
-     * @param string     $apiKey API key
+     * @param array      $config Config object representing LibGuidesAPI.ini
      * @param HttpClient $client VuFind HTTP client
      */
     public function __construct($config, HttpClient $client)
     {
-        $this->config = $config;
-        $this->client = $client;
         $this->libGuides = new LibGuides(
             $client,
-            $this->config->General->api_base_url,
-            $this->config->General->client_id,
-            $this->config->General->client_secret
+            $config->General->api_base_url,
+            $config->General->client_id,
+            $config->General->client_secret
         );
     }
 
@@ -76,7 +134,7 @@ class LibGuidesProfile implements
      */
     public function process($results)
     {
-        $this->searchObject = $results;
+        $this->results = $results;
     }
 
     /**
@@ -89,12 +147,20 @@ class LibGuidesProfile implements
         // TODO: cache data, check it for staleness
         $this->refreshData();
 
-        $query = $this->searchObject->getParams()->getQuery();
+        $query = $this->results->getParams()->getQuery();
         $account = $this->findBestMatch($query);
         return $account;
     }
 
-    protected function findBestMatch($query)
+    /**
+     * Find the VuFind account whose profile best matches the
+     * given query.
+     *
+     * @param \VuFindSearch\Query\QueryInterface $query Current search query
+     *
+     * @return array LibGuides account
+     */
+    protected function findBestMatch(\VuFindSearch\Query\QueryInterface $query)
     {
         $queryString = $query->getAllTerms();
         if (!$queryString) {
@@ -105,12 +171,16 @@ class LibGuidesProfile implements
         // Find the closest levenshtein match.
         $minDistance = PHP_INT_MAX;
         $subjects = array_keys($this->subjectToId);
-        foreach($subjects as $subject) {
+        $id = null;
+        foreach ($subjects as $subject) {
             $distance = levenshtein($subject, $queryString);
             if ($distance < $minDistance) {
                 $id = $this->subjectToId[$subject];
                 $minDistance = $distance;
             }
+        }
+        if ($id == null) {
+            return false;
         }
 
         // // Find an exact match
@@ -126,10 +196,15 @@ class LibGuidesProfile implements
         if (!$account) {
             return false;
         }
-        
+
         return $account;
     }
 
+    /**
+     * Load the list of LibGuides accounts from the LibGuides API.
+     *
+     * @return void
+     */
     protected function refreshData()
     {
         $idToAccount = [];
