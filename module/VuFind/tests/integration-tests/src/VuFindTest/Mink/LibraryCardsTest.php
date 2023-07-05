@@ -89,9 +89,11 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Set up configuration for library card functionality.
      *
+     * @param bool $enabled Are library cards enabled?
+     *
      * @return void
      */
-    protected function setUpLibraryCardConfigs(): void
+    protected function setUpLibraryCardConfigs(bool $enabled = true): void
     {
         // Setup config
         $demoSettings = $this->getDemoIniOverrides();
@@ -105,7 +107,7 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
                 'config' => [
                     'Catalog' => [
                         'driver' => 'Demo',
-                        'library_cards' => true,
+                        'library_cards' => $enabled,
                     ],
                 ],
             ]
@@ -211,6 +213,27 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
             'Lib-catuser2',
             $this->findCss($page, '.catalog-profile tr:nth-child(1) td:nth-child(2)')->getText()
         );
+    }
+
+    /**
+     * Test that library cards are disabled by default.
+     *
+     * @depends testAddCards
+     *
+     * @return void
+     */
+    public function testCardsDisabledByDefault(): void
+    {
+        $this->setUpLibraryCardConfigs(false);
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $page = $session->getPage();
+        $this->fillInLoginForm($page, 'username1', 'test', false);
+        $this->submitLoginForm($page, false);
+        $this->waitForPageLoad($page);
+        // Confirm that we are on the profile page with no cards showing:
+        $this->assertEquals('Your Profile', $this->findCss($page, 'h2')->getText());
+        $this->unFindCss($page, '#library_card');
     }
 
     /**
