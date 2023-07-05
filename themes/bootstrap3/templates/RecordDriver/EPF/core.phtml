@@ -52,8 +52,8 @@
                 foreach($holdings as $holding):
                   if (!empty($holding)): ?>
                     <li>
-                      <a href="<?=$holding['URL']?>"><?=$holding['Name']?></a>
-                      <?=$holding['CoverageStatement']?>
+                      <a href="<?=$this->escapeHtmlAttr($holding['URL'])?>"><?=$this->escapeHtml($holding['Name'])?></a>
+                      <?=$this->escapeHtml($holding['CoverageStatement'])?>
                     </li>
                   <?php endif;
                 endforeach; ?>
