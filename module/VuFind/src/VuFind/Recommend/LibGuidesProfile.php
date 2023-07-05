@@ -2,24 +2,18 @@
 
 namespace VuFind\Recommend;
 
-use Exception;
 use Laminas\Http\Client as HttpClient;
-use Laminas\Log\LoggerAwareInterface;
+use VuFind\Connection\LibGuides;
 
 class LibGuidesProfile implements 
-    RecommendInterface, 
-    LoggerAwareInterface,
-    \VuFindHttp\HttpServiceAwareInterface
+    RecommendInterface
 {
-    use \VuFind\Log\LoggerAwareTrait {
-        logError as error;
-    }
     use \VuFindHttp\HttpServiceAwareTrait;
-
-    protected $tokenData = null;
 
     protected $idToAccount = [];
     protected $subjectToId = [];
+
+    protected $libGuides;
 
     /**
      * Constructor
@@ -31,6 +25,12 @@ class LibGuidesProfile implements
     {
         $this->config = $config;
         $this->client = $client;
+        $this->libGuides = new LibGuides(
+            $client,
+            $this->config->General->api_base_url,
+            $this->config->General->client_id,
+            $this->config->General->client_secret
+        );
     }
 
     /**
@@ -134,7 +134,7 @@ class LibGuidesProfile implements
     {
         $idToAccount = [];
         $subjectToId = [];
-        $accounts = $this->getAccounts();
+        $accounts = $this->libGuides->getAccounts();
         foreach ($accounts as $account) {
             $id = $account->id;
             $idToAccount[$id] = $account;
@@ -152,180 +152,6 @@ class LibGuidesProfile implements
         //TODO cache
         $this->idToAccount = $idToAccount;
         $this->subjectToId = $subjectToId;
-    }
-
-    // Adapted from OverdriveConnector.
-    // TODO: refactor?
-    protected function getAccounts()
-    {
-        $tokenData = $this->connectToApi();
-        if (!$tokenData){
-            return [];
-        }
-
-        try {
-            $client = $this->getHttpClient();
-        } catch (Exception $e) {
-            $this->error(
-                "error while setting up the client: " . $e->getMessage()
-            );
-            return [];
-        }
-
-        $headers = [];
-        if (
-            isset($tokenData->token_type)
-            && isset($tokenData->access_token)
-        ) {
-            $headers[] = "Authorization: {$tokenData->token_type} "
-                . $tokenData->access_token;
-        }
-        $headers[] = "User-Agent: VuFind";
-
-        $client->setHeaders($headers);
-        $client->setMethod("GET");
-        $client->setUri(
-            $this->config->General->api_base_url . "/accounts?expand=profile,subjects"
-        );
-        try {
-            // throw new Exception('testException');
-            $response = $client->send();
-        } catch (Exception $ex) {
-            $this->error(
-                "Exception during request: " .
-                $ex->getMessage()
-            );
-            return [];
-        }
-
-        if ($response->isServerError()) {
-            $this->error(
-                "LibGuides API HTTP Error: " .
-                $response->getStatusCode()
-            );
-            $this->debug("Request: " . $client->getRequest());
-            $this->debug("Response: " . $client->getResponse());
-            return [];
-        }
-        $body = $response->getBody();
-        $returnVal = json_decode($body);
-        $this->debug(
-            "Return from LibGuides API Call: " . print_r($returnVal, true)
-        );
-        if ($returnVal != null) {
-            if (isset($returnVal->errorCode)) {
-                // In some cases, this should be returned perhaps...
-                $this->error("Overdrive Error: " . $returnVal->errorCode);
-                return $returnVal;
-            } else {
-                return $returnVal;
-            }
-        } else {
-            $this->error(
-                "LibGuides API Error: Nothing returned from API call."
-            );
-            $this->debug(
-                "Body return from LibGuides API Call: " . print_r($body, true)
-            );
-        }
-    }
-
-    // Adapted from OverdriveConnector.
-    // TODO: refactor?
-    protected function connectToApi($forceNewConnection = false)
-    {
-        $this->debug("connecting to API");
-        $tokenData = $this->tokenData;
-        $this->debug("Last API Token: " . print_r($tokenData, true));
-        if (
-            $forceNewConnection || $tokenData == null
-            || !isset($tokenData->access_token)
-            || time() >= $tokenData->expirationTime
-        ) {
-            $authHeader = base64_encode(
-                $this->config->General->client_id . ":" . $this->config->General->client_secret
-            );
-            $headers = [
-                'Content-Type: application/x-www-form-urlencoded;charset=UTF-8',
-                "Authorization: Basic $authHeader",
-            ];
-
-            try {
-                $client = $this->getHttpClient();
-            } catch (Exception $e) {
-                $this->error(
-                    "error while setting up the client: " . $e->getMessage()
-                );
-                return false;
-            }
-            $client->setHeaders($headers);
-            $client->setMethod("POST");
-            $client->setRawBody("grant_type=client_credentials");
-            $response = $client
-                ->setUri($this->config->General->api_base_url . "/oauth/token")
-                ->send();
-
-            if ($response->isServerError()) {
-                $this->error(
-                    "LibGuides API HTTP Error: " .
-                    $response->getStatusCode()
-                );
-                $this->debug("Request: " . $client->getRequest());
-                return false;
-            }
-
-            $body = $response->getBody();
-            $tokenData = json_decode($body);
-            $this->debug(
-                "TokenData returned from LibGuides API Call: " . print_r(
-                    $tokenData,
-                    true
-                )
-            );
-            if ($tokenData != null) {
-                if (isset($tokenData->errorCode)) {
-                    // In some cases, this should be returned perhaps...
-                    $this->error("LibGuides API Error: " . $tokenData->errorCode);
-                    return false;
-                } else {
-                    $tokenData->expirationTime = time()
-                        + ($tokenData->expires_in ?? 0);
-                    $this->tokenData = $tokenData;
-                    return $tokenData;
-                }
-            } else {
-                $this->error(
-                    "Overdrive Error: Nothing returned from API call."
-                );
-                $this->debug(
-                    "Body return from OD API Call: " . print_r($body, true)
-                );
-            }
-        }
-        return $tokenData;
-    }
-
-    /**
-     * Get an HTTP client
-     *
-     * @param string $url URL for client to use
-     *
-     * @return \Laminas\Http\Client
-     * @throws Exception
-     */
-    // copied from OverdriveConnector
-    protected function getHttpClient($url = null)
-    {
-        if (null === $this->httpService) {
-            throw new Exception('HTTP service missing.');
-        }
-        if (!$this->client) {
-            $this->client = $this->httpService->createClient($url);
-            // set keep alive to true since we are sending to the same server
-            $this->client->setOptions(['keepalive', true]);
-        }
-        $this->client->resetParameters();
-        return $this->client;
     }
 
     /**
