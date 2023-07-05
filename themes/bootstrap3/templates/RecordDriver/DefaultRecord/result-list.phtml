@@ -56,7 +56,7 @@
             <?php $containerSource = $this->driver->getSourceIdentifier(); ?>
             <?php $containerID = $this->driver->getContainerRecordID(); ?>
             <?php /* TODO: handle highlighting more elegantly here: */?>
-            <a href="<?=($containerID ? $this->escapeHtmlAttr($recordLinker->getUrl("$containerSource|$containerID")) : $this->record($this->driver)->getLink('journaltitle', str_replace(['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'], '', $journalTitle)))?>"><?=$this->highlight($journalTitle) ?></a>
+            <a class="container-link" href="<?=($containerID ? $this->escapeHtmlAttr($recordLinker->getUrl("$containerSource|$containerID")) : $this->record($this->driver)->getLink('journaltitle', str_replace(['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'], '', $journalTitle)))?>"><?=$this->highlight($journalTitle) ?></a>
             <?=!empty($summDate) ? ' (' . $this->escapeHtml($summDate[0]) . ')' : ''?>
           <?php elseif (!empty($summDate)): ?>
             <?=$this->transEsc('Published') . ' ' . $this->escapeHtml($summDate[0])?>
