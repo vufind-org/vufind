@@ -62,18 +62,5 @@
         </tr>
       <?php endif; ?>
     </table>
-
-    <div class="resultItemLine4 holdings-links">
-      <?php $holdings = $this->driver->getFullTextHoldings();
-      if (!empty($holdings)): ?>
-        <?php foreach ($holdings as $holding): ?>
-          <div>
-            <a href="<?=$this->escapeHtmlAttr($holding['URL'])?>" target="_blank" class="full-text-holding">
-              <?=$this->escapeHtml($holding['Name'])?>
-            </a>
-          </div>
-        <?php endforeach; ?>
-      <?php endif; ?>
-    </div>
   </div>
 </div>
