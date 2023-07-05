@@ -74,12 +74,12 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function fillInLibraryCardForm(
         Element $page,
-        $name,
-        $user,
-        $pass,
-        $inModal = false,
-        $prefix = '.form-edit-card '
-    ) {
+        string $name,
+        string $user,
+        string $pass,
+        bool $inModal = false,
+        string $prefix = '.form-edit-card '
+    ): void {
         $prefix = ($inModal ? '.modal-body ' : '') . $prefix;
         $this->findCssAndSetValue($page, $prefix . '[name="card_name"]', $name);
         $this->findCssAndSetValue($page, $prefix . '[name="username"]', $user);
@@ -87,13 +87,11 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test adding two library cards.
-     *
-     * @retryCallback tearDownAfterClass
+     * Set up configuration for library card functionality.
      *
      * @return void
      */
-    public function testAddCards()
+    protected function setUpLibraryCardConfigs(): void
     {
         // Setup config
         $demoSettings = $this->getDemoIniOverrides();
@@ -112,7 +110,18 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
                 ],
             ]
         );
+    }
 
+    /**
+     * Test adding two library cards.
+     *
+     * @retryCallback tearDownAfterClass
+     *
+     * @return void
+     */
+    public function testAddCards(): void
+    {
+        $this->setUpLibraryCardConfigs();
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl());
         $page = $session->getPage();
@@ -159,6 +168,63 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals(
             'card 2',
             $this->findCss($page, 'tr:nth-child(3) td')->getText()
+        );
+    }
+
+    /**
+     * Test adding a card that duplicates an existing username.
+     *
+     * @depends testAddCards
+     *
+     * @return void
+     */
+    public function testAddingDuplicateCardUsername(): void
+    {
+        $this->setUpLibraryCardConfigs();
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl('/LibraryCards/Home'));
+        $page = $session->getPage();
+        $this->fillInLoginForm($page, 'username1', 'test', false);
+        $this->submitLoginForm($page, false);
+        $this->waitForPageLoad($page);
+
+        $this->clickCss($page, '.add-card span.icon-link__label');
+        $this->waitForPageLoad($page);
+        $this->fillInLibraryCardForm($page, 'card 2 repeat', 'catuser2', 'catpass2');
+        $this->clickCss($page, '.form-edit-card .btn.btn-primary');
+        $this->waitForPageLoad($page);
+
+        $this->assertEquals(
+            'Username is already in use in another library card',
+            $this->findCss($page, '.alert-danger')->getText()
+        );
+    }
+
+    /**
+     * Test editing a card.
+     *
+     * @depends testAddCards
+     *
+     * @return void
+     */
+    public function testEditingCard()
+    {
+        $this->setUpLibraryCardConfigs();
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl('/LibraryCards/Home'));
+        $page = $session->getPage();
+        $this->fillInLoginForm($page, 'username1', 'test', false);
+        $this->submitLoginForm($page, false);
+        $this->waitForPageLoad($page);
+
+        $this->clickCss($page, 'tr:nth-child(2) a[title="Edit Library Card"]');
+        $this->waitForPageLoad($page);
+        $this->findCssAndSetValue($page, '[name="card_name"]', 'Edited Card');
+        $this->clickCss($page, '.form-edit-card .btn.btn-primary');
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            'Edited Card',
+            $this->findCss($page, 'tr:nth-child(2) td')->getText()
         );
     }
 
