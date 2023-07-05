@@ -321,7 +321,7 @@ body.rtl {
   .grid-body {
     flex: 1;
     h2 {
-      font-size: 13px;
+      font-size: inherit;
       line-height: $line-height-base;
       margin: 0;
 
