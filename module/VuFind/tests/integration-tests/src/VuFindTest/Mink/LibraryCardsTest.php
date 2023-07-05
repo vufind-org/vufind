@@ -172,6 +172,48 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test switching between cards on the profile page.
+     *
+     * @depends testAddCards
+     *
+     * @return void
+     */
+    public function testSwitchingCards(): void
+    {
+        $this->setUpLibraryCardConfigs();
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $page = $session->getPage();
+        $this->fillInLoginForm($page, 'username1', 'test', false);
+        $this->submitLoginForm($page, false);
+        $this->waitForPageLoad($page);
+
+        // Confirm the presence of a library card selector on the page:
+        $firstCard = $this->findCss($page, "#library_card option:nth-child(1)");
+        $secondCard = $this->findCss($page, "#library_card option:nth-child(2)");
+        $card2Value = $secondCard->getValue();
+        $this->assertEquals('card 1', $firstCard->getText());
+        $this->assertEquals('card 2', $secondCard->getText());
+
+        // Check that the appropriate username is reflected in the output:
+        $this->assertEquals(
+            'Lib-catuser1',
+            $this->findCss($page, '.catalog-profile tr:nth-child(1) td:nth-child(2)')->getText()
+        );
+
+        // Switch to the second card; we can't currently use findCssAndSetValue() here because
+        // it conflicts with the behavior of jumpMenu.
+        $this->findCss($page, '#library_card')->setValue($card2Value);
+        $this->waitForPageLoad($page);
+
+        // Check that the appropriate username is reflected in the output:
+        $this->assertEquals(
+            'Lib-catuser2',
+            $this->findCss($page, '.catalog-profile tr:nth-child(1) td:nth-child(2)')->getText()
+        );
+    }
+
+    /**
      * Test adding a card that duplicates an existing username.
      *
      * @depends testAddCards
@@ -207,7 +249,7 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testEditingCard()
+    public function testEditingCard(): void
     {
         $this->setUpLibraryCardConfigs();
         $session = $this->getMinkSession();
