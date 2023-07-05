@@ -64,6 +64,7 @@ class BackendRegistry extends \VuFind\ServiceManager\AbstractPluginManager
         'BrowZine' => Factory\BrowZineBackendFactory::class,
         'EDS' => Factory\EdsBackendFactory::class,
         'EIT' => Factory\EITBackendFactory::class,
+        'EPF' => Factory\EPFBackendFactory::class,
         'LibGuides' => Factory\LibGuidesBackendFactory::class,
         'LibGuidesAZ' => Factory\LibGuidesAZBackendFactory::class,
         'Pazpar2' => Factory\Pazpar2BackendFactory::class,

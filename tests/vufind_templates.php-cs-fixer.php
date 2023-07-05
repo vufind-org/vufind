@@ -12,7 +12,6 @@ $rules = [
         'default' => 'single_space',
     ],
     'blank_line_after_opening_tag' => false,
-    'braces' => false, // disabled because we don't want to create inconsistent indentation, but useful to normalize control structure spacing
     'cast_spaces' => ['space' => 'none'],
     'class_attributes_separation' => ['elements' => ['method' => 'one', 'property' => 'one']],
     'concat_space' => ['spacing' => 'one'],

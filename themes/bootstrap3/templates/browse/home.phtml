@@ -29,7 +29,7 @@
             <span class="pull-right flip"><?=$this->icon('more', ['title' => $this->translate('more')]) ?></span>
           <?php else: ?>
             <?=$this->transEsc($category['text'])?>
-            <span class="badge"><?=number_format($category['count'])?></span>
+            <span class="badge"><?=$this->localizedNumber($category['count'])?></span>
           <?php endif; ?>
         </a>
       <?php endforeach; ?>
@@ -56,7 +56,7 @@
       <a href="<?=$url ?>" class="browse-item<?php if ($hasBadge): ?> with-badge<?php endif; ?><?php if ($this->query == $secondary['value'] . '' || $this->query == $secondary['value'] . '*'): ?> active<?php endif; ?>">
         <?=$this->escapeHtml($secondary['displayText']) ?>
         <?php if ($hasBadge): ?>
-          <span class="badge"><?=number_format($secondary['count']) ?></span>
+          <span class="badge"><?=$this->localizedNumber($secondary['count']) ?></span>
         <?php else: ?>
           <span class="pull-right flip"><?=$this->icon('more', ['title' => $this->translate('more')]) ?></span>
         <?php endif; ?>
@@ -73,7 +73,7 @@
     <?php foreach ($this->resultList as $result): ?>
       <a class="browse-item with-badge" href="<?=$SEARCH_BASE ?>?<?=$this->paramTitle ?><?=urlencode($result['value']) ?><?php if ($this->searchParams): foreach ($this->searchParams as $var => $val): ?>&amp;<?=$var ?>=<?=urlencode($val) ?><?php endforeach;endif; ?>">
         <?=$this->escapeHtml($result['displayText'])?>
-        <span class="badge"><?=number_format($result['count']) ?></span>
+        <span class="badge"><?=$this->localizedNumber($result['count']) ?></span>
       </a>
     <?php endforeach; ?>
     </div>
