@@ -120,7 +120,7 @@ trait OauthServiceTrait
                 }
             } else {
                 $this->error(
-                    "Overdrive Error: Nothing returned from API call."
+                    "Error: Nothing returned from API call."
                 );
                 $this->debug(
                     "Body return from API Call: " . print_r($body, true)
