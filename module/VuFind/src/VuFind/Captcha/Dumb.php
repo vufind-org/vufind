@@ -1,11 +1,11 @@
 <?php
 
 /**
- * EDSResultsDeferred Recommendations Module
+ * Laminas "Dumb" CAPTCHA.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2020.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,34 +21,23 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Recommendations
+ * @package  CAPTCHA
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
+ * @link     https://vufind.org Main Page
  */
 
-namespace VuFind\Recommend;
+namespace VuFind\Captcha;
 
 /**
- * EDSResultsDeferred Recommendations Module
- *
- * This class sets up an AJAX call to trigger a call to the EDSResults module.
+ * Laminas "Dumb" CAPTCHA.
  *
  * @category VuFind
- * @package  Recommendations
+ * @package  CAPTCHA
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class EDSResultsDeferred extends AbstractSearchObjectDeferred
+class Dumb extends LaminasBase
 {
-    /**
-     * Store the configuration of the recommendation module.
-     *
-     * @return string Module name in call to AjaxHandler
-     */
-    protected function getAjaxModule()
-    {
-        return 'EDSResults';
-    }
 }

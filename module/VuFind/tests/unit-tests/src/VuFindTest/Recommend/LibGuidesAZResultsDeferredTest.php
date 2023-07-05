@@ -1,11 +1,11 @@
 <?php
 
 /**
- * EDSResultsDeferred Recommendations Module
+ * LibGuidesAZResultsDeferred recommendation module Test Class
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2020.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,34 +21,42 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Recommendations
+ * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Maccabee Levine <msl321@lehigh.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 
-namespace VuFind\Recommend;
+namespace VuFindTest\Recommend;
 
 /**
- * EDSResultsDeferred Recommendations Module
- *
- * This class sets up an AJAX call to trigger a call to the EDSResults module.
+ * LibGuidesAZResultsDeferred recommendation module Test Class
  *
  * @category VuFind
- * @package  Recommendations
+ * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Maccabee Levine <msl321@lehigh.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class EDSResultsDeferred extends AbstractSearchObjectDeferred
+class LibGuidesAZResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestCase
 {
     /**
-     * Store the configuration of the recommendation module.
+     * Test standard operation
      *
-     * @return string Module name in call to AjaxHandler
+     * @return void
      */
-    protected function getAjaxModule()
+    public function testStandardOperation()
     {
-        return 'EDSResults';
+        $mod = $this->getRecommend(
+            \VuFind\Recommend\LibGuidesAZResultsDeferred::class,
+            ':3',
+            new \Laminas\Stdlib\Parameters(['lookfor' => 'foo'])
+        );
+        $this->assertEquals(
+            'mod=LibGuidesAZResults&params=lookfor%3A3&lookfor=foo',
+            $mod->getUrlParams()
+        );
     }
 }
