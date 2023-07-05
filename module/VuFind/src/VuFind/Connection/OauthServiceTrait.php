@@ -48,8 +48,6 @@ trait OauthServiceTrait
 {
     protected $tokenData = null;
 
-    // Lightly adapted from OverdriveConnector->connectToApi().
-    // TODO: refactor?
     /**
      * Authentiate via the OAuth Client Credentials grant type.
      *
