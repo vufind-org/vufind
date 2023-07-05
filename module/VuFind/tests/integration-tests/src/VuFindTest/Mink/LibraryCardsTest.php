@@ -229,6 +229,51 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test deleting a card.
+     *
+     * @depends testEditingCard
+     *
+     * @return void
+     */
+    public function testDeletingCard(): void
+    {
+        $this->setUpLibraryCardConfigs();
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl('/LibraryCards/Home'));
+        $page = $session->getPage();
+        $this->fillInLoginForm($page, 'username1', 'test', false);
+        $this->submitLoginForm($page, false);
+        $this->waitForPageLoad($page);
+
+        // Confirm that second item in table is card 2
+        $this->assertEquals(
+            'card 2',
+            $this->findCss($page, 'tr:nth-child(3) td')->getText()
+        );
+
+        // Click the delete button
+        $button = $this->findCss($page, 'tr:nth-child(3) a:nth-child(2)');
+        $this->assertEquals('Delete', $button->getText());
+        $button->click();
+        $this->waitForPageLoad($page);
+        $this->clickCss($page, '.mainbody .open .dropdown-menu li:nth-child(1) a');
+        $this->waitForPageLoad($page);
+
+        // Check for success message
+        $this->assertEquals(
+            'Library Card Deleted',
+            $this->findCss($page, '.alert-success')->getText()
+        );
+
+        // Check that the deleted card is now gone, but the other card still exists.
+        $this->assertEquals(
+            'Edited Card',
+            $this->findCss($page, 'tr:nth-child(2) td')->getText()
+        );
+        $this->unFindCss($page, 'tr:nth-child(3) td');
+    }
+
+    /**
      * Standard teardown method.
      *
      * @return void
