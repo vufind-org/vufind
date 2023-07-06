@@ -48,8 +48,8 @@ class LibGuidesProfile implements
 
     /**
      * Search results object
-     * 
-     * @var \VuFind\Search\Base\Results 
+     *
+     * @var \VuFind\Search\Base\Results
      */
     protected $results;
 
@@ -153,7 +153,7 @@ class LibGuidesProfile implements
     }
 
     /**
-     * Find the VuFind account whose profile best matches the
+     * Find the LibGuides account whose profile best matches the
      * given query.
      *
      * @param \VuFindSearch\Query\QueryInterface $query Current search query

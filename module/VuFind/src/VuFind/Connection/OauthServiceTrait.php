@@ -48,7 +48,7 @@ trait OauthServiceTrait
 {
     /**
      * Current OAuth token
-     * 
+     *
      * @var stdClass
      */
     protected $tokenData = null;

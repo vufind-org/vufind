@@ -92,7 +92,7 @@ class LibGuides implements
 
     /**
      * User agent to send in header
-     * 
+     *
      * @var string
      */
     protected $userAgent = "VuFind";
