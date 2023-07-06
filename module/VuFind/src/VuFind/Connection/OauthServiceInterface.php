@@ -43,10 +43,9 @@ interface OauthServiceInterface
     /**
      * Authentiate via the OAuth Client Credentials grant type.
      *
-     * @param string $oauthUrl           URL of thee OAuth service
-     * @param string $clientId           client_id for a client_credentials grant
-     * @param string $clientSecret       client_secret for a client_credentials grant
-     * @param bool   $forceNewConnection Force a new connection (get a new token)
+     * @param string $oauthUrl     URL of thee OAuth service
+     * @param string $clientId     client_id for a client_credentials grant
+     * @param string $clientSecret client_secret for a client_credentials grant
      *
      * @return string token for the session or false
      *     if the token request failed
@@ -56,7 +55,6 @@ interface OauthServiceInterface
     public function authenticateWithClientCredentials(
         $oauthUrl,
         $clientId,
-        $clientSecret,
-        $forceNewConnection
+        $clientSecret
     );
 }

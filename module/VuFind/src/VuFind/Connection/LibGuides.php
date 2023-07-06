@@ -100,11 +100,10 @@ class LibGuides implements
     /**
      * Constructor
      *
-     * @param \Laminas\Http\Client $client             HTTP client
-     * @param string               $baseUrl            Base URL of the LibGuides API
-     * @param string               $clientId           Client Id provided by LibGuides API configuration
-     * @param string               $clientSecret       Client Secret provided by LibGuides API configuration
-     * @param bool                 $forceNewConnection Force a new connection (get a new token)
+     * @param \Laminas\Http\Client $client       HTTP client
+     * @param string               $baseUrl      Base URL of the LibGuides API
+     * @param string               $clientId     Client Id provided by LibGuides API configuration
+     * @param string               $clientSecret Client Secret provided by LibGuides API configuration
      *
      * @link https://ask.springshare.com/libguides/faq/873#api-auth
      */
@@ -112,8 +111,7 @@ class LibGuides implements
         $client,
         $baseUrl,
         $clientId,
-        $clientSecret,
-        $forceNewConnection = false
+        $clientSecret
     ) {
         $this->client = $client;
         $this->baseUrl = $baseUrl;

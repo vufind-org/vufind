@@ -56,10 +56,9 @@ trait OauthServiceTrait
     /**
      * Authentiate via the OAuth Client Credentials grant type.
      *
-     * @param string $oauthUrl           URL of thee OAuth service
-     * @param string $clientId           client_id for a client_credentials grant
-     * @param string $clientSecret       client_secret for a client_credentials grant
-     * @param bool   $forceNewConnection Force a new connection (get a new token)
+     * @param string $oauthUrl     URL of thee OAuth service
+     * @param string $clientId     client_id for a client_credentials grant
+     * @param string $clientSecret client_secret for a client_credentials grant
      *
      * @return stdClass|bool token for the session or false
      *     if the token request failed
@@ -69,14 +68,13 @@ trait OauthServiceTrait
     public function authenticateWithClientCredentials(
         $oauthUrl,
         $clientId,
-        $clientSecret,
-        $forceNewConnection = false
+        $clientSecret
     ) {
         $this->debug("connecting to API");
         $tokenData = $this->tokenData;
         $this->debug("Last API Token: " . print_r($tokenData, true));
         if (
-            $forceNewConnection || $tokenData == null
+            $tokenData == null
             || !isset($tokenData->access_token)
             || time() >= $tokenData->expirationTime
         ) {
