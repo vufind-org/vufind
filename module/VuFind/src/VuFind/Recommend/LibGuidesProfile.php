@@ -228,14 +228,4 @@ class LibGuidesProfile implements
         $this->idToAccount = $idToAccount;
         $this->subjectToId = $subjectToId;
     }
-
-    /**
-     * Return the list of facets configured to be collapsed
-     *
-     * @return array
-     */
-    public function isCollapsed()
-    {
-        return false;
-    }
 }
