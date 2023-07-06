@@ -91,6 +91,13 @@ class LibGuides implements
     protected $clientSecret;
 
     /**
+     * User agent to send in header
+     * 
+     * @var string
+     */
+    protected $userAgent = "VuFind";
+
+    /**
      * Constructor
      *
      * @param \Laminas\Http\Client $client             HTTP client
@@ -139,7 +146,7 @@ class LibGuides implements
             $headers[] = "Authorization: {$tokenData->token_type} "
                 . $tokenData->access_token;
         }
-        $headers[] = "User-Agent: VuFind";
+        $headers[] = "User-Agent: " . $this->userAgent;
 
         $this->client->setHeaders($headers);
         $this->client->setMethod("GET");
@@ -147,7 +154,6 @@ class LibGuides implements
             $this->baseUrl . "/accounts?expand=profile,subjects"
         );
         try {
-            // throw new Exception('testException');
             $response = $this->client->send();
         } catch (Exception $ex) {
             $this->error(
