@@ -46,6 +46,11 @@ namespace VuFind\Connection;
  */
 trait OauthServiceTrait
 {
+    /**
+     * Current OAuth token
+     * 
+     * @var stdClass
+     */
     protected $tokenData = null;
 
     /**
@@ -56,7 +61,7 @@ trait OauthServiceTrait
      * @param string $clientSecret       client_secret for a client_credentials grant
      * @param bool   $forceNewConnection Force a new connection (get a new token)
      *
-     * @return string token for the session or false
+     * @return stdClass|bool token for the session or false
      *     if the token request failed
      *
      * @link https://www.oauth.com/oauth2-servers/access-tokens/client-credentials/
