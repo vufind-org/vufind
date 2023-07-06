@@ -1,7 +1,7 @@
 <?php
 
 /**
- * LibGuides Profile recommendation module factory.
+ * Libuides API connection factory.
  *
  * PHP version 8
  *
@@ -21,26 +21,32 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Recommendations
+ * @package  Connection
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Maccabee Levine <msl321@lehigh.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Recommend;
+namespace VuFind\Connection;
 
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * LibGuides Profile recommendation module factory.
+ * LibGuides API connection factory.
  *
  * @category VuFind
- * @package  Recommendations
+ * @package  Connection
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Maccabee Levine <msl321@lehigh.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class LibGuidesProfileFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+class LibGuidesFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -55,8 +61,6 @@ class LibGuidesProfileFactory implements \Laminas\ServiceManager\Factory\Factory
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
         ContainerInterface $container,
@@ -64,10 +68,20 @@ class LibGuidesProfileFactory implements \Laminas\ServiceManager\Factory\Factory
         array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options passed to factory.');
+            throw new \Exception('Unexpected options sent to factory.');
         }
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('LibGuidesAPI');
+        if (!isset($config->General->client_id)) {
+            throw new \Exception('client_id key missing from configuration.');
+        }
+        if (!isset($config->General->client_secret)) {
+            throw new \Exception('client_secret key missing from configuration.');
+        }
+        $client = $container->get(\VuFindHttp\HttpService::class)->createClient();
         return new $requestedName(
-            $container->get(\VuFind\Connection\LibGuides::class)
+            $config,
+            $client
         );
     }
 }

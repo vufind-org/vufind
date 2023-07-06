@@ -29,7 +29,6 @@
 
 namespace VuFind\Recommend;
 
-use Laminas\Http\Client as HttpClient;
 use VuFind\Connection\LibGuides;
 
 /**
@@ -78,17 +77,11 @@ class LibGuidesProfile implements
     /**
      * Constructor
      *
-     * @param array      $config Config object representing LibGuidesAPI.ini
-     * @param HttpClient $client VuFind HTTP client
+     * @param LibGuides $libGuides LibGuides API connection
      */
-    public function __construct($config, HttpClient $client)
+    public function __construct(LibGuides $libGuides)
     {
-        $this->libGuides = new LibGuides(
-            $client,
-            $config->General->api_base_url,
-            $config->General->client_id,
-            $config->General->client_secret
-        );
+        $this->libGuides = $libGuides;
     }
 
     /**
