@@ -6,7 +6,7 @@
       <?php if (!empty($account->profile->image)): ?>
         <img class="libguides-profile-img" src="<?=$this->escapeHtmlAttr($account->profile->image->url)?>" />
       <?php endif; ?>
-      <div class="libguides-profile-name"><?=$this->escapeHtml($account->first_name) . ' ' . $this->escapeHtml($account->last_name)?></div>
+      <div class="libguides-profile-name"><?=$this->escapeHtml($account->first_name) . ' ' . $this->escapeHtml($account->last_name ?? '')?></div>
     </a>
     <?php if (!empty($account->title)): ?>
       <div class="libguides-profile-title"><?=$this->escapeHtml($account->title)?></div>
