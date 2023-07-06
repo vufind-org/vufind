@@ -525,10 +525,14 @@ function setupAutocomplete() {
       },
       dataType: 'json',
       success: function autocompleteJSON(json) {
+        // Special case -- tag search should not be quoted
+        var quotedQuery = type !== 'tag';
         const highlighted = json.data.suggestions.map(
           (item) => ({
-            text: item.replace(query, `<b>${query}</b>`),
-            value: item,
+            text: item.replaceAll(query, `<b>${query}</b>`),
+            value: quotedQuery
+              ? '"' + item.replaceAll('"', '\\"') + '"'
+              : item,
           })
         );
         cache[cacheKey][query] = highlighted;

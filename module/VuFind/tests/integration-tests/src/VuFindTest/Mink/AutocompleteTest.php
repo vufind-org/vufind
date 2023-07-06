@@ -86,7 +86,33 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
         $acItem->click();
         $this->waitForPageLoad($page);
         $this->assertEquals(
-            $this->getVuFindUrl() . '/Search/Results?lookfor=Fake+DOI+test+1&type=AllFields',
+            $this->getVuFindUrl() . '/Search/Results?lookfor=%22Fake+DOI+test+1%22&type=AllFields',
+            $session->getCurrentUrl()
+        );
+    }
+
+    /**
+     * Test that titles containing quotes are properly escaped.
+     *
+     * @return void
+     */
+    public function testBasicAutocompleteQuoteEscaping(): void
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Home');
+        $page = $session->getPage();
+        $this->findCss($page, '#searchForm_lookfor')
+            ->setValue('millers mechanical');
+        $acItem = $this->getAndAssertFirstAutocompleteValue(
+            $page,
+            'Letterhead enclosure: "The Millers Mechanical Battlefield: world\'s greatest exhibition", [1920?].'
+        );
+        $acItem->click();
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            $this->getVuFindUrl() . '/Search/Results?lookfor=%22Letterhead+enclosure%3A+'
+                . '%5C%22The+Millers+Mechanical+Battlefield%3A+world%27s+greatest+exhibition'
+                . '%5C%22%2C+%5B1920%3F%5D.%22&type=AllFields',
             $session->getCurrentUrl()
         );
     }
@@ -109,7 +135,7 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
         $acItem->click();
         $this->waitForPageLoad($page);
         $this->assertEquals(
-            $this->getVuFindUrl() . '/Search/Results?lookfor=JSTOR+%28Organization%29&type=Author',
+            $this->getVuFindUrl() . '/Search/Results?lookfor=%22JSTOR+%28Organization%29%22&type=Author',
             $session->getCurrentUrl()
         );
     }
@@ -139,7 +165,7 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
         $acItem->click();
         $this->waitForPageLoad($page);
         $this->assertEquals(
-            $this->getVuFindUrl() . '/Search/Results?lookfor=JSTOR+%28Organization%29&type=Author',
+            $this->getVuFindUrl() . '/Search/Results?lookfor=%22JSTOR+%28Organization%29%22&type=Author',
             $session->getCurrentUrl()
         );
     }
@@ -163,7 +189,7 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
         $acItem->click();
         $this->waitForPageLoad($page);
         $this->assertEquals(
-            'Fake DOI test 1',
+            '"Fake DOI test 1"',
             $this->findCss($page, '#searchForm_lookfor')->getValue()
         );
         $this->assertEquals(
