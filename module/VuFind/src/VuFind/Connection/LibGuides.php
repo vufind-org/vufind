@@ -181,10 +181,8 @@ class LibGuides implements
             if (isset($returnVal->errorCode)) {
                 // In some cases, this should be returned perhaps...
                 $this->error("LibGuides Error: " . $returnVal->errorCode);
-                return $returnVal;
-            } else {
-                return $returnVal;
             }
+            return $returnVal;
         } else {
             $this->error(
                 "LibGuides API Error: Nothing returned from API call."
