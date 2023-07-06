@@ -174,15 +174,6 @@ class LibGuidesProfile implements
             return false;
         }
 
-        // // Find an exact match
-        // if (!array_key_exists($queryString, $subjectToId)) {
-        //     return false;
-        // }
-        // $id = $subjectToId[$queryString];
-        // if (!$id) {
-        //     return false;
-        // }
-
         $account = $idToAccount[$id];
         if (!$account) {
             return false;
