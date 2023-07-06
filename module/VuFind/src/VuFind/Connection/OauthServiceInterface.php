@@ -32,6 +32,8 @@ namespace VuFind\Connection;
 /**
  * Interface for classes using OauthServiceTrait.
  *
+ * Classes which use this trait should also use LoggerAwareTrait.
+ *
  * @category VuFind
  * @package  Connection
  * @author   Maccabee Levine <msl321@lehigh.edu>

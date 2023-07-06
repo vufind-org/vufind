@@ -34,6 +34,8 @@ namespace VuFind\Connection;
 /**
  * Helper trait for OAuth 2.0 connections.
  *
+ * Classes which use this trait should also use LoggerAwareTrait.
+ *
  * Closely adapted from VuFind\DigitalContent\OverdriveConnector.
  *
  * @category VuFind
@@ -70,9 +72,9 @@ trait OauthServiceTrait
         $clientId,
         $clientSecret
     ) {
-        $this->debug("connecting to API");
+        $this->debugSafe("connecting to API");
         $tokenData = $this->tokenData;
-        $this->debug("Last API Token: " . print_r($tokenData, true));
+        $this->debugSafe("Last API Token: " . print_r($tokenData, true));
         if (
             $tokenData == null
             || !isset($tokenData->access_token)
@@ -94,17 +96,17 @@ trait OauthServiceTrait
                 ->send();
 
             if ($response->isServerError()) {
-                $this->error(
+                $this->errorSafe(
                     "API HTTP Error: " .
                     $response->getStatusCode()
                 );
-                $this->debug("Request: " . $this->client->getRequest());
+                $this->debugSafe("Request: " . $this->client->getRequest());
                 return false;
             }
 
             $body = $response->getBody();
             $tokenData = json_decode($body);
-            $this->debug(
+            $this->debugSafe(
                 "TokenData returned from API Call: " . print_r(
                     $tokenData,
                     true
@@ -113,7 +115,7 @@ trait OauthServiceTrait
             if ($tokenData != null) {
                 if (isset($tokenData->errorCode)) {
                     // In some cases, this should be returned perhaps...
-                    $this->error("API Error: " . $tokenData->errorCode);
+                    $this->errorSafe("API Error: " . $tokenData->errorCode);
                     return false;
                 } else {
                     $tokenData->expirationTime = time()
@@ -122,14 +124,53 @@ trait OauthServiceTrait
                     return $tokenData;
                 }
             } else {
-                $this->error(
+                $this->errorSafe(
                     "Error: Nothing returned from API call."
                 );
-                $this->debug(
+                $this->debugSafe(
                     "Body return from API Call: " . print_r($body, true)
                 );
             }
         }
         return $tokenData;
+    }
+
+    /**
+     * Log a debug message, if $this->log exists.
+     *
+     * @param string $msg Log message
+     *
+     * @return void
+     */
+    protected function debugSafe($msg)
+    {
+        $this->logSafe('debug', $msg);
+    }
+
+    /**
+     * Log an error message, if $this->log exists.
+     *
+     * @param string $msg Log message
+     *
+     * @return void
+     */
+    protected function errorSafe($msg)
+    {
+        $this->logSafe('err', $msg);
+    }
+
+    /**
+     * Log a message, if $this->log exists.
+     *
+     * @param string $level Loging level
+     * @param string $msg   Log message
+     *
+     * @return void
+     */
+    protected function logSafe($level, $msg)
+    {
+        if (method_exists($this, 'log')) {
+            $this->log(...func_get_args());
+        }
     }
 }
