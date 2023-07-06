@@ -29,6 +29,8 @@
 
 namespace VuFind\Recommend;
 
+use Laminas\Cache\Storage\Adapter\AbstractAdapter as CacheAdapter;
+use Laminas\Config\Config;
 use VuFind\Connection\LibGuides;
 
 /**
@@ -43,6 +45,7 @@ use VuFind\Connection\LibGuides;
 class LibGuidesProfile implements
     RecommendInterface
 {
+    use \VuFind\Cache\CacheTrait;
     use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
@@ -51,21 +54,6 @@ class LibGuidesProfile implements
      * @var \VuFind\Search\Base\Results
      */
     protected $results;
-
-    /**
-     * Map of LibGuides account ID to data about that account
-     *
-     * @var array
-     */
-    protected $idToAccount = [];
-
-    /**
-     * Map of LibGuides subject name (lowercase) to ID of an account
-     * (presumably a librarian) who wrote its subject guide
-     *
-     * @var array
-     */
-    protected $subjectToId = [];
 
     /**
      * LibGuides connector
@@ -77,11 +65,20 @@ class LibGuidesProfile implements
     /**
      * Constructor
      *
-     * @param LibGuides $libGuides LibGuides API connection
+     * @param LibGuides    $libGuides LibGuides API connection
+     * @param Config       $config    LibGuides API configuration object
+     * @param CacheAdapter $cache     Object cache
      */
-    public function __construct(LibGuides $libGuides)
-    {
+    public function __construct(
+        LibGuides $libGuides,
+        Config $config,
+        CacheAdapter $cache
+    ) {
         $this->libGuides = $libGuides;
+        $this->setCacheStorage($cache);
+
+        // Cache the data related to profiles for up to 10 minutes:
+        $this->cacheLifetime = intval($config->GetAccounts->cache_lifetime ?? 600);
     }
 
     /**
@@ -137,9 +134,6 @@ class LibGuidesProfile implements
      */
     public function getResults()
     {
-        // TODO: cache data, check it for staleness
-        $this->refreshData();
-
         $query = $this->results->getParams()->getQuery();
         $account = $this->findBestMatch($query);
         return $account;
@@ -155,6 +149,10 @@ class LibGuidesProfile implements
      */
     protected function findBestMatch(\VuFindSearch\Query\QueryInterface $query)
     {
+        $data = $this->loadDataIfNeeded();
+        $subjectToId = $data['subjectToId'];
+        $idToAccount = $data['idToAccount'];
+
         $queryString = $query->getAllTerms();
         if (!$queryString) {
             return false;
@@ -163,12 +161,12 @@ class LibGuidesProfile implements
 
         // Find the closest levenshtein match.
         $minDistance = PHP_INT_MAX;
-        $subjects = array_keys($this->subjectToId);
+        $subjects = array_keys($subjectToId);
         $id = null;
         foreach ($subjects as $subject) {
             $distance = levenshtein($subject, $queryString);
             if ($distance < $minDistance) {
-                $id = $this->subjectToId[$subject];
+                $id = $subjectToId[$subject];
                 $minDistance = $distance;
             }
         }
@@ -177,15 +175,15 @@ class LibGuidesProfile implements
         }
 
         // // Find an exact match
-        // if (!array_key_exists($queryString, $this->subjectToId)) {
+        // if (!array_key_exists($queryString, $subjectToId)) {
         //     return false;
         // }
-        // $id = $this->subjectToId[$queryString];
+        // $id = $subjectToId[$queryString];
         // if (!$id) {
         //     return false;
         // }
 
-        $account = $this->idToAccount[$id];
+        $account = $idToAccount[$id];
         if (!$account) {
             return false;
         }
@@ -194,11 +192,31 @@ class LibGuidesProfile implements
     }
 
     /**
+     * Load or retrieve from the cache the list of LibGuides accounts
+     * from the LibGuides API.
+     *
+     * @return array An array containing the idToAccount and subjectToId maps
+     */
+    protected function loadDataIfNeeded()
+    {
+        $idToAccount = $this->getCachedData('libGuidesProfile-idToAccount');
+        $subjectToId = $this->getCachedData('libGuidesProfile-subjectToId');
+        if (!empty($idToAccount) && !empty($subjectToId)) {
+            return [
+                'idToAccount' => $idToAccount,
+                'subjectToId' => $subjectToId,
+            ];
+        }
+
+        return $this->loadData();
+    }
+
+    /**
      * Load the list of LibGuides accounts from the LibGuides API.
      *
-     * @return void
+     * @return array An array containing the idToAccount and subjectToId maps
      */
-    protected function refreshData()
+    protected function loadData()
     {
         $idToAccount = [];
         $subjectToId = [];
@@ -217,8 +235,11 @@ class LibGuidesProfile implements
             }
         }
 
-        //TODO cache
-        $this->idToAccount = $idToAccount;
-        $this->subjectToId = $subjectToId;
+        $this->putCachedData('libGuidesProfile-idToAccount', $idToAccount);
+        $this->putCachedData('libGuidesProfile-subjectToId', $subjectToId);
+        return [
+            'idToAccount' => $idToAccount,
+            'subjectToId' => $subjectToId,
+        ];
     }
 }

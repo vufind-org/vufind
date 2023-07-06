@@ -67,7 +67,11 @@ class LibGuidesProfileFactory implements \Laminas\ServiceManager\Factory\Factory
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
-            $container->get(\VuFind\Connection\LibGuides::class)
+            $container->get(\VuFind\Connection\LibGuides::class),
+            $container->get(\VuFind\Config\PluginManager::class)
+                ->get('LibGuidesAPI'),
+            $container->get(\VuFind\Cache\Manager::class)
+                ->getCache('object'),
         );
     }
 }
