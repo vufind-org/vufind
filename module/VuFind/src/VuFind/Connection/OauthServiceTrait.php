@@ -72,9 +72,9 @@ trait OauthServiceTrait
         $clientId,
         $clientSecret
     ) {
-        $this->debugSafe("connecting to API");
+        $this->oauthServiceTraitDebug("connecting to API");
         $tokenData = $this->tokenData;
-        $this->debugSafe("Last API Token: " . print_r($tokenData, true));
+        $this->oauthServiceTraitDebug("Last API Token: " . print_r($tokenData, true));
         if (
             $tokenData == null
             || !isset($tokenData->access_token)
@@ -96,17 +96,17 @@ trait OauthServiceTrait
                 ->send();
 
             if ($response->isServerError()) {
-                $this->errorSafe(
+                $this->oauthServiceTraitError(
                     "API HTTP Error: " .
                     $response->getStatusCode()
                 );
-                $this->debugSafe("Request: " . $this->client->getRequest());
+                $this->oauthServiceTraitDebug("Request: " . $this->client->getRequest());
                 return false;
             }
 
             $body = $response->getBody();
             $tokenData = json_decode($body);
-            $this->debugSafe(
+            $this->oauthServiceTraitDebug(
                 "TokenData returned from API Call: " . print_r(
                     $tokenData,
                     true
@@ -115,7 +115,7 @@ trait OauthServiceTrait
             if ($tokenData != null) {
                 if (isset($tokenData->errorCode)) {
                     // In some cases, this should be returned perhaps...
-                    $this->errorSafe("API Error: " . $tokenData->errorCode);
+                    $this->oauthServiceTraitError("API Error: " . $tokenData->errorCode);
                     return false;
                 } else {
                     $tokenData->expirationTime = time()
@@ -124,10 +124,10 @@ trait OauthServiceTrait
                     return $tokenData;
                 }
             } else {
-                $this->errorSafe(
+                $this->oauthServiceTraitError(
                     "Error: Nothing returned from API call."
                 );
-                $this->debugSafe(
+                $this->oauthServiceTraitDebug(
                     "Body return from API Call: " . print_r($body, true)
                 );
             }
@@ -142,9 +142,9 @@ trait OauthServiceTrait
      *
      * @return void
      */
-    protected function debugSafe($msg)
+    protected function oauthServiceTraitDebug($msg)
     {
-        $this->logSafe('debug', $msg);
+        $this->oauthServiceTraitLog('debug', $msg);
     }
 
     /**
@@ -154,9 +154,9 @@ trait OauthServiceTrait
      *
      * @return void
      */
-    protected function errorSafe($msg)
+    protected function oauthServiceTraitError($msg)
     {
-        $this->logSafe('err', $msg);
+        $this->oauthServiceTraitLog('err', $msg);
     }
 
     /**
@@ -167,7 +167,7 @@ trait OauthServiceTrait
      *
      * @return void
      */
-    protected function logSafe($level, $msg)
+    protected function oauthServiceTraitLog($level, $msg)
     {
         if (method_exists($this, 'log')) {
             $this->log(...func_get_args());
