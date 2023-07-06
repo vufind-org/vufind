@@ -122,7 +122,7 @@ class LibGuides implements
     /**
      * Load all LibGuides accounts.
      *
-     * @return array An array of all LibGuides accounts, or an empty array
+     * @return object|null A JSON object of all LibGuides accounts, or null
      * if an error occurs
      */
     public function getAccounts()
@@ -133,7 +133,7 @@ class LibGuides implements
             $this->clientSecret
         );
         if (!$tokenData) {
-            return [];
+            return null;
         }
 
         $headers = [];
@@ -158,7 +158,7 @@ class LibGuides implements
                 "Exception during request: " .
                 $ex->getMessage()
             );
-            return [];
+            return null;
         }
 
         if ($response->isServerError()) {
@@ -168,7 +168,7 @@ class LibGuides implements
             );
             $this->debug("Request: " . $this->client->getRequest());
             $this->debug("Response: " . $this->client->getResponse());
-            return [];
+            return null;
         }
         $body = $response->getBody();
         $returnVal = json_decode($body);
@@ -189,6 +189,6 @@ class LibGuides implements
                 "Body return from LibGuides API Call: " . print_r($body, true)
             );
         }
-        return [];
+        return null;
     }
 }

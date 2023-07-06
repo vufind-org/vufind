@@ -210,7 +210,7 @@ class LibGuidesProfile implements
         $idToAccount = [];
         $subjectToId = [];
         $accounts = $this->libGuides->getAccounts();
-        foreach ($accounts as $account) {
+        foreach ($accounts ?? [] as $account) {
             $id = $account->id;
             $idToAccount[$id] = $account;
 
