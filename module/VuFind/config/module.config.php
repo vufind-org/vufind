@@ -376,6 +376,7 @@ $config = [
             'VuFind\Config\PluginManager' => 'VuFind\Config\PluginManagerFactory',
             'VuFind\Config\SearchSpecsReader' => 'VuFind\Config\YamlReaderFactory',
             'VuFind\Config\YamlReader' => 'VuFind\Config\YamlReaderFactory',
+            'VuFind\Connection\LibGuides' => 'VuFind\Connection\LibGuidesFactory',
             'VuFind\Connection\Relais' => 'VuFind\Connection\RelaisFactory',
             'VuFind\Connection\WorldCatUtils' => 'VuFind\Connection\WorldCatUtilsFactory',
             'VuFind\Content\PageLocator' => 'VuFind\Content\PageLocatorFactory',
