@@ -149,7 +149,7 @@ class LibGuidesProfile implements
      */
     protected function findBestMatch(\VuFindSearch\Query\QueryInterface $query)
     {
-        $data = $this->loadDataIfNeeded();
+        $data = $this->getLibGuidesData();
         $subjectToId = $data['subjectToId'];
         $idToAccount = $data['idToAccount'];
 
@@ -188,7 +188,7 @@ class LibGuidesProfile implements
      *
      * @return array An array containing the idToAccount and subjectToId maps
      */
-    protected function loadDataIfNeeded()
+    protected function getLibGuidesData()
     {
         $idToAccount = $this->getCachedData('libGuidesProfile-idToAccount');
         $subjectToId = $this->getCachedData('libGuidesProfile-subjectToId');
@@ -199,7 +199,7 @@ class LibGuidesProfile implements
             ];
         }
 
-        return $this->loadData();
+        return $this->populateLibGuidesCache();
     }
 
     /**
@@ -207,7 +207,7 @@ class LibGuidesProfile implements
      *
      * @return array An array containing the idToAccount and subjectToId maps
      */
-    protected function loadData()
+    protected function populateLibGuidesCache()
     {
         $idToAccount = [];
         $subjectToId = [];
