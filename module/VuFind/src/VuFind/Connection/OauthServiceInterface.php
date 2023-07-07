@@ -32,7 +32,7 @@ namespace VuFind\Connection;
 /**
  * Interface for classes using OauthServiceTrait.
  *
- * Classes which use this trait should also implement LoggerAwareInterface.
+ * Classes which use this interface should also implement LoggerAwareInterface.
  *
  * @category VuFind
  * @package  Connection
