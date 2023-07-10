@@ -408,7 +408,7 @@ class Folio extends AbstractAPI implements
         ];
         $response = $this->makeRequest('GET', '/instance-storage/instances', $query);
         $instances = json_decode($response->getBody());
-        if (count($instances->instances) == 0) {
+        if (count($instances->instances ?? []) == 0) {
             throw new ILSException("Item Not Found");
         }
         return $instances->instances[0];
@@ -608,18 +608,18 @@ class Folio extends AbstractAPI implements
             array_map([$this, 'formatNote'], $holding->notes ?? [])
         );
         $hasHoldingNotes = !empty(implode($holdingNotes));
-        $holdingsStatements = array_map(
+        $holdingsStatements = array_values(array_filter(array_map(
             $textFormatter,
             $holding->holdingsStatements ?? []
-        );
-        $holdingsSupplements = array_map(
+        )));
+        $holdingsSupplements = array_values(array_filter(array_map(
             $textFormatter,
             $holding->holdingsStatementsForSupplements ?? []
-        );
-        $holdingsIndexes = array_map(
+        )));
+        $holdingsIndexes = array_values(array_filter(array_map(
             $textFormatter,
             $holding->holdingsStatementsForIndexes ?? []
-        );
+        )));
         $holdingCallNumber = $holding->callNumber ?? '';
         $holdingCallNumberPrefix = $holding->callNumberPrefix ?? '';
         return compact(
