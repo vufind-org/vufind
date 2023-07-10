@@ -31,8 +31,10 @@
             if (!empty($item)): ?>
               <div class="resultItemLine1">
                 <?php if ('Ti' == $item['Group']): ?>
-                  <a href="<?=$this->escapeHtmlAttr($recordLinker->getUrl($this->driver))?>" class="title getFull _record_link"  data-view="<?=$this->escapeHtmlAttr($this->params->getOptions()->getListViewOption())?>">
-                  <?=$item['Data']?> </a>
+                  <h2>
+                    <a href="<?=$this->escapeHtmlAttr($recordLinker->getUrl($this->driver))?>" class="title getFull _record_link"  data-view="<?=$this->escapeHtmlAttr($this->params->getOptions()->getListViewOption())?>">
+                    <?=$item['Data']?> </a>
+                  </h2>
                 <?php else:?>
                   <p>
                     <b><?=$this->transEsc($item['Label'])?>:</b>
