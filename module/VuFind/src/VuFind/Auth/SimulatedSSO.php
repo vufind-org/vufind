@@ -44,7 +44,7 @@ use VuFind\Exception\Auth as AuthException;
 class SimulatedSSO extends AbstractBase
 {
     /**
-     * Session initiator UR callbackL
+     * Session initiator URL callback
      *
      * @var callable
      */
