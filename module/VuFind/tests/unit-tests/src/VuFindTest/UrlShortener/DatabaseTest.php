@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,7 +22,7 @@
  *
  * @category VuFind
  * @package  Tests
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
@@ -30,12 +30,8 @@
 namespace VuFindTest\UrlShortener;
 
 use Exception;
-use Laminas\Db\Adapter\Adapter;
-use Laminas\Db\Adapter\Driver\ConnectionInterface;
-use Laminas\Db\Adapter\Driver\DriverInterface;
-use Laminas\Db\ResultSet\ResultSet;
 use PHPUnit\Framework\TestCase;
-use VuFind\Db\Table\Shortlinks;
+use VuFind\Db\Entity\Shortlinks;
 use VuFind\UrlShortener\Database;
 
 /**
@@ -43,38 +39,159 @@ use VuFind\UrlShortener\Database;
  *
  * @category VuFind
  * @package  Tests
- * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Cornelius Amzar <cornelius.amzar@bsz-bw.de>
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 class DatabaseTest extends TestCase
 {
     /**
-     * Get the object to test.
+     * Database object to test.
      *
-     * @param object $table Database table object/mock
+     * @param MockObject      $entityManager Mock entity manager object
+     * @param MockObject      $pluginManager Mock plugin manager object
+     * @param MockObject|null $shortlink     Mock shortlink entity object
+     * @param string          $hashAlgorithm Hash Algorithm to be used
      *
      * @return Database
      */
-    public function getShortener($table)
-    {
-        return new Database('http://foo', $table, 'RAnD0mVuFindSa!t');
+    protected function getShortener(
+        $entityManager,
+        $pluginManager,
+        $shortlink = null,
+        $hashAlgorithm = 'md5'
+    ) {
+        $serviceMock = $this->getMockBuilder(
+            \VuFind\Db\Service\ShortlinksService::class
+        )
+            ->setMethods(['createEntity'])
+            ->setConstructorArgs([$entityManager, $pluginManager])
+            ->getMock();
+        if ($shortlink) {
+            $serviceMock->expects($this->once())->method('createEntity')
+                ->willReturn($shortlink);
+        }
+        $database = new Database(
+            'http://foo',
+            $serviceMock,
+            'RAnD0mVuFindSa!t',
+            $hashAlgorithm
+        );
+
+        return $database;
     }
 
     /**
-     * Get the mock table object.
+     * Mock entity plugin manager.
      *
-     * @param array $methods Methods to mock.
+     * @param bool $setExpectation Flag to set the method expectations.
      *
-     * @return object
+     * @return MockObject
      */
-    public function getMockTable($methods)
+    protected function getPluginManager($setExpectation = false)
     {
-        return $this->getMockBuilder(Shortlinks::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods($methods)
+        $pluginManager = $this->getMockBuilder(
+            \VuFind\Db\Entity\PluginManager::class
+        )->disableOriginalConstructor()
             ->getMock();
+        if ($setExpectation) {
+            $pluginManager->expects($this->once())->method('get')
+                ->with($this->equalTo(Shortlinks::class))
+                ->willReturn(new Shortlinks());
+        }
+        return $pluginManager;
+    }
+
+    /**
+     * Mock entity manager.
+     *
+     * @param string|null $shortlink Input query parameter
+     * @param int         $count     Expectation count
+     *
+     * @return MockObject
+     */
+    protected function getEntityManager($shortlink = null, $count = 0)
+    {
+        $entityManager = $this->getMockBuilder(\Doctrine\ORM\EntityManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        if ($shortlink) {
+            $entityManager->expects($this->exactly($count))->method('persist');
+            $entityManager->expects($this->exactly($count))->method('flush');
+        }
+        return $entityManager;
+    }
+
+    /**
+     * Mock queryBuilder
+     *
+     * @param string $parameter Input query parameter
+     * @param array  $result    Expected return value of getResult method.
+     *
+     * @return MockObject
+     */
+    protected function getQueryBuilder($parameter, $result)
+    {
+        $queryBuilder = $this->getMockBuilder(\Doctrine\ORM\QueryBuilder::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $queryBuilder->expects($this->once())->method('select')
+            ->with($this->equalTo('s'))
+            ->willReturn($queryBuilder);
+        $queryBuilder->expects($this->once())->method('from')
+            ->with($this->equalTo(Shortlinks::class), $this->equalTo('s'))
+            ->willReturn($queryBuilder);
+        $queryBuilder->expects($this->once())->method('where')
+            ->with($this->equalTo('s.hash = :hash'))
+            ->willReturn($queryBuilder);
+        $queryBuilder->expects($this->once())->method('setParameter')
+            ->with($this->equalTo('hash'), $this->equalTo($parameter))
+            ->willReturn($queryBuilder);
+        $query = $this->getMockBuilder(\Doctrine\ORM\AbstractQuery::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getResult'])
+            ->getMockForAbstractClass();
+        $query->expects($this->once())->method('getResult')
+            ->willReturn($result);
+        $queryBuilder->expects($this->once())->method('getQuery')
+            ->willReturn($query);
+        return $queryBuilder;
+    }
+
+    /**
+     * Test that the shortener works correctly under base62 hashing
+     *
+     * @return void
+     *
+     * @throws Exception
+     */
+    public function testGetBase62Hash()
+    {
+        $shortlink = $this->getMockBuilder(\VuFind\Db\Entity\Shortlinks::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $entityManager = $this->getEntityManager($shortlink, 2);
+        $pluginManager = $this->getPluginManager();
+        $shortlink->expects($this->once())->method('setPath')
+            ->with($this->equalTo('/bar'))
+            ->willReturn($shortlink);
+        $shortlink->expects($this->once())->method('setCreated')
+            ->with($this->anything())
+            ->willReturn($shortlink);
+        $shortlink->expects($this->once())->method('getId')
+            ->willReturn(2);
+        $shortlink->expects($this->once())->method('setHash')
+            ->with($this->equalTo('2'))
+            ->willReturn($shortlink);
+        $shortlink->expects($this->once())->method('getHash')
+            ->willReturn('2');
+        $db = $this->getShortener(
+            $entityManager,
+            $pluginManager,
+            $shortlink,
+            'base62'
+        );
+        $this->assertEquals('http://foo/short/2', $db->shorten('http://foo/bar'));
     }
 
     /**
@@ -84,52 +201,40 @@ class DatabaseTest extends TestCase
      *
      * @throws Exception
      */
-    public function testShortener()
+    public function testsaveAndShortenHash()
     {
-        $connection = $this->getMockBuilder(ConnectionInterface::class)
-            ->onlyMethods(
-                [
-                    'beginTransaction', 'commit', 'connect', 'getResource',
-                    'isConnected', 'getCurrentSchema', 'disconnect', 'rollback',
-                    'execute', 'getLastGeneratedValue',
-                ]
-            )->disableOriginalConstructor()
-            ->getMock();
-        $connection->expects($this->once())->method('beginTransaction');
-        $connection->expects($this->once())->method('commit');
-        $driver = $this->getMockBuilder(DriverInterface::class)
-            ->onlyMethods(
-                [
-                    'getConnection', 'getDatabasePlatformName', 'checkEnvironment',
-                    'createStatement', 'createResult', 'getPrepareType',
-                    'formatParameterName', 'getLastGeneratedValue',
-                ]
-            )->disableOriginalConstructor()
-            ->getMock();
-        $driver->expects($this->once())->method('getConnection')
-            ->will($this->returnValue($connection));
-        $adapter = $this->getMockBuilder(Adapter::class)
-            ->onlyMethods(['getDriver'])
+        $shortlink = $this->getMockBuilder(\VuFind\Db\Entity\Shortlinks::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $adapter->expects($this->once())->method('getDriver')
-            ->will($this->returnValue($driver));
-        $table = $this->getMockTable(['insert', 'select', 'getAdapter']);
-        $table->expects($this->once())->method('insert')
-            ->with($this->equalTo(['path' => '/bar', 'hash' => 'a1e7812e2']));
-        $table->expects($this->once())->method('getAdapter')
-            ->will($this->returnValue($adapter));
-        $mockResults = $this->getMockBuilder(ResultSet::class)
-            ->onlyMethods(['count', 'current'])
+        $entityManager = $this->getEntityManager($shortlink, 1);
+        $pluginManager = $this->getPluginManager(true);
+        $queryBuilder = $this->getQueryBuilder('a1e7812e2', []);
+
+        $entityManager->expects($this->once())->method('createQueryBuilder')
+            ->willReturn($queryBuilder);
+        $shortlink->expects($this->once())->method('setHash')
+            ->with($this->equalTo('a1e7812e2'))
+            ->willReturn($shortlink);
+        $shortlink->expects($this->once())->method('setPath')
+            ->with($this->equalTo('/bar'))
+            ->willReturn($shortlink);
+        $shortlink->expects($this->once())->method('setCreated')
+            ->with($this->anything())
+            ->willReturn($shortlink);
+        $connection = $this->getMockBuilder(\Doctrine\DBAL\Connection::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockResults->expects($this->once())->method('count')
-            ->will($this->returnValue(0));
-        $table->expects($this->once())->method('select')
-            ->with($this->equalTo(['hash' => 'a1e7812e2']))
-            ->will($this->returnValue($mockResults));
-        $db = $this->getShortener($table);
-        $this->assertEquals('http://foo/short/a1e7812e2', $db->shorten('http://foo/bar'));
+        $entityManager->expects($this->exactly(2))->method('getConnection')
+            ->willReturn($connection);
+        $connection->expects($this->once())->method('beginTransaction')
+            ->willReturn($this->equalTo(true));
+        $connection->expects($this->once())->method('commit')
+            ->willReturn($this->equalTo(true));
+        $db = $this->getShortener($entityManager, $pluginManager, $shortlink);
+        $this->assertEquals(
+            'http://foo/short/a1e7812e2',
+            $db->shorten('http://foo/bar')
+        );
     }
 
     /**
@@ -141,19 +246,17 @@ class DatabaseTest extends TestCase
      */
     public function testResolution()
     {
-        $table = $this->getMockTable(['select']);
-        $mockResults = $this->getMockBuilder(ResultSet::class)
-            ->onlyMethods(['count', 'current'])
+        $shortlink = $this->getMockBuilder(\VuFind\Db\Entity\Shortlinks::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockResults->expects($this->once())->method('count')
-            ->will($this->returnValue(1));
-        $mockResults->expects($this->once())->method('current')
-            ->will($this->returnValue(['path' => '/bar', 'hash' => '8ef580184']));
-        $table->expects($this->once())->method('select')
-            ->with($this->equalTo(['hash' => '8ef580184']))
-            ->will($this->returnValue($mockResults));
-        $db = $this->getShortener($table);
+        $entityManager = $this->getEntityManager();
+        $pluginManager = $this->getPluginManager(true);
+        $queryBuilder = $this->getQueryBuilder('8ef580184', [$shortlink]);
+        $entityManager->expects($this->once())->method('createQueryBuilder')
+            ->willReturn($queryBuilder);
+        $shortlink->expects($this->once())->method('getPath')
+            ->willReturn('/bar');
+        $db = $this->getShortener($entityManager, $pluginManager);
         $this->assertEquals('http://foo/bar', $db->resolve('8ef580184'));
     }
 
@@ -168,42 +271,12 @@ class DatabaseTest extends TestCase
     {
         $this->expectExceptionMessage('Shortlink could not be resolved: abcd12?');
 
-        $table = $this->getMockTable(['select']);
-        $mockResults = $this->getMockBuilder(ResultSet::class)
-            ->onlyMethods(['count'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $mockResults->expects($this->once())->method('count')
-            ->will($this->returnValue(0));
-        $table->expects($this->once())->method('select')
-            ->with($this->equalTo(['hash' => 'abcd12?']))
-            ->will($this->returnValue($mockResults));
-        $db = $this->getShortener($table);
+        $entityManager = $this->getEntityManager();
+        $pluginManager = $this->getPluginManager(true);
+        $queryBuilder = $this->getQueryBuilder('abcd12?', []);
+        $entityManager->expects($this->once())->method('createQueryBuilder')
+            ->willReturn($queryBuilder);
+        $db = $this->getShortener($entityManager, $pluginManager);
         $db->resolve('abcd12?');
-    }
-
-    /**
-     * Test that resolve errors correctly when given bad input
-     *
-     * @return void
-     *
-     * @throws Exception
-     */
-    public function testResolutionOfOldIds()
-    {
-        $table = $this->getMockTable(['select']);
-        $mockResults = $this->getMockBuilder(ResultSet::class)
-            ->onlyMethods(['count', 'current'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $mockResults->expects($this->once())->method('count')
-            ->will($this->returnValue(1));
-        $mockResults->expects($this->once())->method('current')
-            ->will($this->returnValue(['path' => '/bar', 'hash' => 'A']));
-        $table->expects($this->once())->method('select')
-            ->with($this->equalTo(['hash' => 'A']))
-            ->will($this->returnValue($mockResults));
-        $db = $this->getShortener($table);
-        $this->assertEquals('http://foo/bar', $db->resolve('A'));
     }
 }

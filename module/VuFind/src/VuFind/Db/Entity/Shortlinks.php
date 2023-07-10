@@ -29,6 +29,7 @@
 
 namespace VuFind\Db\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -74,7 +75,7 @@ class Shortlinks implements EntityInterface
     /**
      * Shortlinks hash.
      *
-     * @var string|null
+     * @var ?string
      *
      * @ORM\Column(name="hash", type="string", length=32, nullable=true)
      */
@@ -92,4 +93,83 @@ class Shortlinks implements EntityInterface
      * )
      */
     protected $created = 'CURRENT_TIMESTAMP';
+
+    /**
+     * Id getter
+     *
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * Shortlinks hash setter
+     *
+     * @param ?string $hash Shortlinks hash.
+     *
+     * @return Shortlinks
+     */
+    public function setHash(?string $hash): Shortlinks
+    {
+        $this->hash = $hash;
+        return $this;
+    }
+
+    /**
+     * Hash getter
+     *
+     * @return ?string
+     */
+    public function getHash(): ?string
+    {
+        return $this->hash;
+    }
+
+    /**
+     * Shortened URL setter
+     *
+     * @param string $path Shortened URL.
+     *
+     * @return Shortlinks
+     */
+    public function setPath(string $path): Shortlinks
+    {
+        $this->path = $path;
+        return $this;
+    }
+
+    /**
+     * Path getter
+     *
+     * @return string
+     */
+    public function getPath(): string
+    {
+        return $this->path;
+    }
+
+    /**
+     * Created setter.
+     *
+     * @param Datetime $dateTime Created date
+     *
+     * @return Shortlinks
+     */
+    public function setCreated(DateTime $dateTime): Shortlinks
+    {
+        $this->created = $dateTime;
+        return $this;
+    }
+
+    /**
+     * Created getter
+     *
+     * @return DateTime
+     */
+    public function getCreated(): DateTime
+    {
+        return $this->created;
+    }
 }
