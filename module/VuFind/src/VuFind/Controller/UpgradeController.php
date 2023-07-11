@@ -109,7 +109,7 @@ class UpgradeController extends AbstractBase
         $this->cookie = new CookieContainer('vfup', $cookieManager);
 
         // ...however, once the configuration piece of the upgrade is done, we can
-        // safely use the session for storing some values.  We'll use this for the
+        // safely use the session for storing some values. We'll use this for the
         // temporary storage of root database credentials, since it is unwise to
         // send such sensitive values around as cookies!
         $this->session = $sessionContainer;
@@ -391,7 +391,7 @@ class UpgradeController extends AbstractBase
             }
         }
 
-        // Check for missing tables.  Note that we need to finish dealing with
+        // Check for missing tables. Note that we need to finish dealing with
         // missing tables before we proceed to the missing columns check, or else
         // the missing tables will cause fatal errors during the column test.
         $missingTables = $this->dbUpgrade()->getMissingTables();

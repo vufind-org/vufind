@@ -252,7 +252,7 @@ class WorldCatUtils implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
-     * Given a name string, get related identities.  Inspired by Eric Lease
+     * Given a name string, get related identities. Inspired by Eric Lease
      * Morgan's Name Finder demo (http://zoia.library.nd.edu/sandbox/name-finder/).
      * Return value is an associative array where key = author name and value =
      * subjects used in that author's works.

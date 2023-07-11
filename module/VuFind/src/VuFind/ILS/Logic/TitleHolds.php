@@ -183,7 +183,7 @@ class TitleHolds
             $holdings = $this->getHoldings($id);
 
             // For title holds, the most important override feature to handle
-            // is to prevent displaying a link if all items are disabled.  We
+            // is to prevent displaying a link if all items are disabled. We
             // may eventually want to address other scenarios as well.
             $allDisabled = true;
             foreach ($holdings as $holding) {

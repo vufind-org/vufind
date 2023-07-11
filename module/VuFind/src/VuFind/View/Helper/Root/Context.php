@@ -89,7 +89,7 @@ class Context extends AbstractHelper
 
     /**
      * Render a template using a temporary context; restore the view to its
-     * original state when done.  This offers the template full access to the
+     * original state when done. This offers the template full access to the
      * global scope, modified by $context, then puts the global scope back
      * the way it was.
      *
