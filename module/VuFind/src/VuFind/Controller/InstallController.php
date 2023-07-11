@@ -385,7 +385,7 @@ class InstallController extends AbstractBase
                         ->addMessage(
                             'Problem initializing database adapter; '
                             . 'check for missing ' . $view->driver
-                            . ' library . Details: ' . $e->getMessage(),
+                            . ' library. Details: ' . $e->getMessage(),
                             'error'
                         );
                     return $view;
