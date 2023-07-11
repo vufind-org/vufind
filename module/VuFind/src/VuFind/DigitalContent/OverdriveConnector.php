@@ -199,7 +199,7 @@ class OverdriveConnector implements
                     = $this->getResultObject(true);
             } else {
                 $result = $this->getResultObject();
-                // there is some problem with the account
+                // There is some problem with the account
                 $result->code = "od_account_problem";
                 $conf = $this->getConfig();
 
@@ -210,7 +210,7 @@ class OverdriveConnector implements
                             $conf->noAccessString
                         )
                     ) {
-                        // this user should not have access to OD
+                        // This user should not have access to OD
                         $result->code = "od_account_noaccess";
                     }
                 }
@@ -249,8 +249,8 @@ class OverdriveConnector implements
 
         if ($conf = $this->getConfig()) {
             $collectionToken = $this->getCollectionToken();
-            // hmm. no token.  if user is logged in let's check access
-            if (!$collectionToken && $user = $this->getUser()) {
+            // Hmm, no token. If user is logged in let's check access
+            if (!$collectionToken && $this->getUser()) {
                 $accessResult = $this->getAccess();
                 if (!$accessResult->status) {
                     return $accessResult;
@@ -264,7 +264,7 @@ class OverdriveConnector implements
 
             if (isset($res->errorCode) and $res->errorCode == "NotFound") {
                 if ($conf->consortiumSupport && !$this->getUser()) {
-                    // consortium support is turned on but user is not logged in;
+                    // Consortium support is turned on but user is not logged in;
                     // if the title is not found it probably means that it's only
                     // available to some users.
                     $result->status = true;
@@ -288,7 +288,7 @@ class OverdriveConnector implements
     /**
      * Get Availability (in) Bulk
      *
-     * Gets availability for up to 25 titles at once.  This is used by the
+     * Gets availability for up to 25 titles at once. This is used by the
      * the ajax availability system
      *
      * @param array $overDriveIds The Overdrive ID (reserve IDs) of the
@@ -312,8 +312,8 @@ class OverdriveConnector implements
                 $loginRequired = true;
             }
             $collectionToken = $this->getCollectionToken();
-            // hmm. no token.  if user is logged in let's check access
-            if (!$collectionToken && $user = $this->getUser()) {
+            // Hmm, no token. If user is logged in let's check access
+            if (!$collectionToken && $this->getUser()) {
                 $accessResult = $this->getAccess();
                 if (!$accessResult->status) {
                     return $accessResult;
@@ -330,9 +330,8 @@ class OverdriveConnector implements
             } else {
                 if ((isset($res->errorCode) and $res->errorCode == "NotFound") or $res->totalItems == 0) {
                     if ($loginRequired) {
-                        // consortium support is turned on but user is
-                        // not logged in
-                        // if the title is not found it could mean that it's only
+                        // Consortium support is turned on but user is not logged in.
+                        // If the title is not found it could mean that it's only
                         // available to some users.
                         $result->status = true;
                         $result->code = 'od_code_login_for_avail';
@@ -349,7 +348,7 @@ class OverdriveConnector implements
                         $item->numberOfHolds = $item->numberOfHolds ?? 0;
                         $result->data[strtolower($item->reserveId)] = $item;
                     }
-                    // now look for items not returned
+                    // Now look for items not returned
                     foreach ($overDriveIds as $id) {
                         if (!isset($result->data[$id])) {
                             if ($loginRequired) {
@@ -374,7 +373,7 @@ class OverdriveConnector implements
      * token doesn't change much but according to
      * the OD API docs it could change and should be retrieved each session.
      * Also, the collection token depends on the user if the user is in a
-     * consortium.  If consortium support is turned on then the user collection
+     * consortium. If consortium support is turned on then the user collection
      * token will override the library collection token.
      * The token itself is returned but it's also saved in the session and
      * automatically returned.
@@ -467,8 +466,8 @@ class OverdriveConnector implements
                     $result->status = true;
                     $result->data = (object) [];
                     $result->data->expires = $expires;
-                    $result->data->formats = $response->formats ?? false;
-                    // add the checkout to the session cache
+                    $result->data->formats = $response->formats;
+                    // Add the checkout to the session cache
                     $this->getSessionContainer()->checkouts[] = $response;
                 } else {
                     $result->msg = $response->message;
@@ -570,7 +569,7 @@ class OverdriveConnector implements
                 $action
             );
 
-            // because this is a PUT Call, we are just looking for a boolean
+            // Because this is a DELETE Call, we are just looking for a boolean
             if ($response) {
                 $holdResult->status = true;
             } else {
@@ -1093,7 +1092,7 @@ class OverdriveConnector implements
      */
     public function getCheckouts($refresh = true)
     {
-        // the checkouts are cached in the session, but we can force a refresh
+        // The checkouts are cached in the session, but we can force a refresh
         $this->debug("get Overdrive Checkouts");
         $result = $this->getResultObject();
 
@@ -1250,7 +1249,7 @@ class OverdriveConnector implements
      * @param string $requestType The request type (GET, POST etc)
      *
      * @return object|bool The json response from the API call
-     *  converted to an object.  If the call fails at the
+     *  converted to an object. If the call fails at the
      *  HTTP level then the error is logged and false is returned.
      */
     protected function callUrl(
@@ -1425,7 +1424,7 @@ class OverdriveConnector implements
      * @param string $returnType    options are json(def),body,redirect
      *
      * @return object|bool The json response from the API call
-     *  converted to an object. If body is specified, the raw body is returned.
+     *  Converted to an object. If body is specified, the raw body is returned.
      *  If redirect, then it returns the URL specified in the redirect header.
      *  If the call fails at the HTTP level then the error is logged and false is returned.
      */
@@ -1614,9 +1613,9 @@ class OverdriveConnector implements
                         true
                     )
                 );
-                // if we have an unauthorized error, then we are going
+                // If we have an unauthorized error, then we are going
                 // to cache that in the session so we don't keep making
-                // unnecessary calls, otherwise, just don't store the tokenData
+                // unnecessary calls; otherwise, just don't store the tokenData
                 // object so that it gets checked again next time
                 if ($patronTokenData->error == 'unauthorized_client') {
                     $this->getSessionContainer()->odAccessMessage
@@ -1652,6 +1651,8 @@ class OverdriveConnector implements
         }
         if (!$this->client) {
             $this->client = $this->httpService->createClient($url);
+            // Set keep alive to true since we are sending to the same server
+            $this->client->setOptions(['keepalive', true]);
         }
         $this->client->resetParameters();
         // set keep alive to true since we are sending to the same server

@@ -230,7 +230,7 @@ class WebCrawlCommand extends Command
         $index = $input->getOption('index');
 
         // Get the time we started indexing -- we'll delete records older than this
-        // date after everything is finished.  Note that we subtract a few seconds
+        // date after everything is finished. Note that we subtract a few seconds
         // for safety.
         $startTime = date('Y-m-d\TH:i:s\Z', time() - 5);
 

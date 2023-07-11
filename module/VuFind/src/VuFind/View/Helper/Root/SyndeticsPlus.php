@@ -52,7 +52,7 @@ class SyndeticsPlus extends \Laminas\View\Helper\AbstractHelper
      *
      * @param \Laminas\Config\Config $config Syndetics configuration (should contain
      * 'plus' boolean value (true if Syndetics Plus is enabled) and 'plus_id' string
-     * value (Syndetics Plus user ID).  If these values are absent, SyndeticsPlus
+     * value (Syndetics Plus user ID). If these values are absent, SyndeticsPlus
      * will be disabled.
      */
     public function __construct($config)

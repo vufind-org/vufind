@@ -63,7 +63,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     public function mycontentAction()
     {
         $this->debug("ODC mycontent action");
-        // force login
+        // Force login
         if (!is_array($patron = $this->catalogLogin())) {
             return $patron;
         }
@@ -72,7 +72,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         $checkoutsUnavailable = false;
         $holdsUnavailable = false;
 
-        // check on this patrons's access to Overdrive
+        // Check on this patrons's access to Overdrive
         $odAccessResult = $this->connector->getAccess();
 
         if (!($odAccessResult->status ?? false)) {
@@ -86,7 +86,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
             $checkoutsUnavailable = true;
             $holdsUnavailable = true;
         } else {
-            // get the current Overdrive checkouts
+            // Get the current Overdrive checkouts
             // for this user and add to our array of IDS
             $checkoutResults = $this->connector->getCheckouts(true);
             if (!($checkoutResults->status ?? false)) {
@@ -233,12 +233,11 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         $isMagazine = false;
         $holdEmail = "";
 
-        // place hold action comes in through the form
+        // Action comes in through the form
         if (null !== $this->params()->fromPost('doAction')) {
             $action = $this->params()->fromPost('doAction');
         }
 
-        // place hold action comes in through the form
         if (null !== $this->params()->fromPost('getTitleFormat')) {
             $format = $this->params()->fromPost('getTitleFormat');
         }
@@ -246,7 +245,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         $format = $this->params()->fromQuery('getTitleFormat');
 
         $this->debug("ODRC od_id=$od_id rec_id=$rec_id action=$action");
-        // load the Record Driver.  Should be a SolrOverdrive  driver.
+        // Load the Record Driver. Should be a SolrOverdrive driver.
         $driver = $this->serviceLocator->get(\VuFind\Record\Loader::class)->load(
             $rec_id
         );
@@ -257,8 +256,8 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         $listAuthors = $driver->getPrimaryAuthors();
         $issues = [];
         if (!$action) {
-            //double check the availability in case it
-            //has changed since the page was loaded.
+            // Double check the availability in case it has changed since the page
+            // was loaded.
             $avail = $driver->getOverdriveAvailability();
             if ($avail->copiesAvailable > 0) {
                 $action = "checkoutConfirm";
@@ -270,44 +269,25 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         $result = null;
         $actionTitleCode = '';
         if ($action == "checkoutConfirm") {
-            // looks like this is a magazine...
-            if (current($formats)->id == "magazine-overdrive") {
-                $isMagazine = true;
-                $result = $this->connector->getMagazineIssues($od_id);
-                if ($result->status) {
-                    $issues = $result->data->products;
-                } else {
-                    $this->debug("couldn't get issues for checkout");
-                    $result->status = false;
-                    $result->code = "OD_CODE_NOMAGISSUES";
-                    $result->msg = "No magazine issue available.";
-                }
+            $result = $this->connector->getResultObject();
+            // Check to make sure they don't already have this checked out.
+            // Shouldn't need to refresh.
+            if ($checkout = $this->connector->getCheckout($od_id, false)) {
+                $result->status = false;
+                $result->data->checkout = $checkout;
+                $result->code = "OD_CODE_ALREADY_CHECKED_OUT";
+            } elseif ($hold = $this->connector->getHold($od_id, false)) {
+                $result->status = false;
+                $result->data->hold = $hold;
+                $result->code = "OD_CODE_ALREADY_ON_HOLD";
             } else {
-                $result = $this->connector->getResultObject();
-                // check to make sure they don't already have this checked out
-                // shouldn't need to refresh.
-                if ($checkout = $this->connector->getCheckout($od_id, false)) {
-                    $result->status = false;
-                    $result->data->checkout = $checkout;
-                    $result->code = "OD_CODE_ALREADY_CHECKED_OUT";
-                } elseif ($hold = $this->connector->getHold($od_id, false)) {
-                    if ($hold->holdReadyForCheckout) {
-                        $this->debug("hold is avail for checkout: $od_id");
-                        $result->status = true;
-                    } else {
-                        $result->status = false;
-                        $result->data->hold = $hold;
-                        $result->code = "OD_CODE_ALREADY_ON_HOLD";
-                    }
-                } else {
-                    $result->status = true;
-                }
+                $result->status = true;
             }
             $actionTitleCode = "od_checkout";
         } elseif ($action == "holdConfirm") {
             $result = $this->connector->getResultObject();
-            // check to make sure they don't already have this checked out
-            // shouldn't need to refresh.
+            // Check to make sure they don't already have this checked out.
+            // Shouldn't need to refresh.
             if ($checkout = $this->connector->getCheckout($od_id, false)) {
                 $result->status = false;
                 $result->data->checkout = $checkout;
@@ -334,7 +314,10 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
             $holdEmail = $hold->emailAddress;
         } elseif ($action == "returnTitleConfirm") {
             $actionTitleCode = "od_early_return";
-        // ACTION SECTION
+        } elseif ($action == "getTitleConfirm") {
+            // Get only formats that are available...
+            $formats = $driver->getAvailableDigitalFormats();
+            $actionTitleCode = "od_get_title";
         } elseif ($action == "doCheckout") {
             $actionTitleCode = "od_checkout";
             if ($edition) {
@@ -416,10 +399,10 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
             );
             $result = $this->connector->getDownloadRedirect($od_id);
             if ($result->status) {
-                $this->debug("DL redir: " . $result->data->downloadRedirect);
-            } else {
-                $this->debug("result: " . print_r($result, true));
-                $result->code = "od_gettitle_failure";
+                // Redirect to resource
+                $url = $result->data->downloadLink;
+                $this->debug("redirecting to: $url");
+                return $this->redirect()->toUrl($url);
             }
         } else {
             $this->logWarning("overdrive action not defined: $action");
