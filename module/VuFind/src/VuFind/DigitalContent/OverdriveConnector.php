@@ -247,7 +247,7 @@ class OverdriveConnector implements
 
         if ($conf = $this->getConfig()) {
             $collectionToken = $this->getCollectionToken();
-            // hmm. no token. if user is logged in let's check access
+            // Hmm, no token. If user is logged in let's check access
             if (!$collectionToken && $this->getUser()) {
                 $accessResult = $this->getAccess();
                 if (!$accessResult->status) {
@@ -307,7 +307,7 @@ class OverdriveConnector implements
                 $loginRequired = true;
             }
             $collectionToken = $this->getCollectionToken();
-            // hmm. no token. if user is logged in let's check access
+            // Hmm, no token. If user is logged in let's check access
             if (!$collectionToken && $this->getUser()) {
                 $accessResult = $this->getAccess();
                 if (!$accessResult->status) {
