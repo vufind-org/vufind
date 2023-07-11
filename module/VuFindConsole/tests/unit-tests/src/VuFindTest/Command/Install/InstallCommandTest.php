@@ -109,7 +109,7 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
             Apache configuration written to $localFixtures/httpd-vufind.conf.
 
             You now need to load this configuration into Apache.
-            Once the configuration is linked, restart Apache.  You should now be able
+            Once the configuration is linked, restart Apache. You should now be able
             to access VuFind at http://localhost/bar
 
             For proper use of command line tools, you should also ensure that your
@@ -166,7 +166,7 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
             Apache configuration written to $localFixtures/httpd-vufind.conf.
 
             You now need to load this configuration into Apache.
-            Once the configuration is linked, restart Apache.  You should now be able
+            Once the configuration is linked, restart Apache. You should now be able
             to access VuFind at http://localhost/vufind
 
             For proper use of command line tools, you should also ensure that your

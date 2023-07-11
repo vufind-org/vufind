@@ -228,7 +228,7 @@ trait MarcBasicTrait
 
     /**
      * Get the date coverage for a record which spans a period of time (i.e. a
-     * journal).  Use getPublicationDates for publication dates of particular
+     * journal). Use getPublicationDates for publication dates of particular
      * monographic items.
      *
      * @return array

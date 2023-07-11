@@ -444,7 +444,7 @@ class InstallCommand extends Command
     ) {
         $output->writeln(
             "\nWhen running multiple VuFind sites against a single installation, you"
-            . " need\nto decide how to distinguish between instances.  Choose an "
+            . " need\nto decide how to distinguish between instances. Choose an "
             . "option:\n\n" . self::MULTISITE_DIR_BASED . ".) Directory-based "
             . "(i.e. http://server/vufind1 vs. http://server/vufind2)\n"
             . self::MULTISITE_HOST_BASED
@@ -780,7 +780,7 @@ class InstallCommand extends Command
             );
         }
         $output->writeln(
-            "Once the configuration is linked, restart Apache.  You should now be "
+            "Once the configuration is linked, restart Apache. You should now be "
             . "able\nto access VuFind at http://localhost{$this->basePath}\n\nFor "
             . "proper use of command line tools, you should also ensure that your\n"
         );

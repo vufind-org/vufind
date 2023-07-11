@@ -403,8 +403,8 @@ class Innovative extends AbstractBase implements
             }
 
             if (!$api_data['PBARCODE']) {
-                // no barcode found, can look up specific error to return more
-                // useful info.  this check needs to be modified to handle using
+                // No barcode found, can look up specific error to return more
+                // useful info. This check needs to be modified to handle using
                 // III patron ids also.
                 return null;
             }

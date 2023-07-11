@@ -77,7 +77,7 @@ class EdsBackendFactory extends AbstractBackendFactory
     protected $defaultApiUrl = 'https://eds-api.ebscohost.com/edsapi/rest';
 
     /**
-     * Get the service name.  This is used for both configuration
+     * Get the service name. This is used for both configuration
      * and record driver retrieval.
      *
      * @return str

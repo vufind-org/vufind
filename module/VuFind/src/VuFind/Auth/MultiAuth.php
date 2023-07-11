@@ -34,13 +34,13 @@ use VuFind\Exception\Auth as AuthException;
 /**
  * MultiAuth Authentication plugin
  *
- * This module enables chaining of multiple authentication plugins.  Authentication
+ * This module enables chaining of multiple authentication plugins. Authentication
  * plugins are executed in order, and the first successful authentication is
- * returned with the rest ignored.  The last error message is used to be returned
+ * returned with the rest ignored. The last error message is used to be returned
  * to the calling function.
  *
  * The plugin works by being defined as the authentication handler for the system
- * and then defining its own order for plugins.  For example, you could edit
+ * and then defining its own order for plugins. For example, you could edit
  * config.ini like this:
  *
  * [Authentication]
@@ -102,7 +102,7 @@ class MultiAuth extends AbstractBase
     protected $manager;
 
     /**
-     * Validate configuration parameters.  This is a support method for getConfig(),
+     * Validate configuration parameters. This is a support method for getConfig(),
      * so the configuration MUST be accessed using $this->config; do not call
      * $this->getConfig() from within this method!
      *
@@ -148,7 +148,7 @@ class MultiAuth extends AbstractBase
     }
 
     /**
-     * Attempt to authenticate the current user.  Throws exception if login fails.
+     * Attempt to authenticate the current user. Throws exception if login fails.
      *
      * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.
