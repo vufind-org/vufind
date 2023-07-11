@@ -58,7 +58,7 @@ class DateTime extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Extract a year from a human-readable date.  Return false if no year can
+     * Extract a year from a human-readable date. Return false if no year can
      * be found.
      *
      * @param string $date Date to reformat

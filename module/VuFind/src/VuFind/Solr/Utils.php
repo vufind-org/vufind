@@ -33,7 +33,7 @@ namespace VuFind\Solr;
  * Solr Utility Functions
  *
  * This class is designed to hold Solr-related support methods that may
- * be called statically.  This allows sharing of some Solr-related logic
+ * be called statically. This allows sharing of some Solr-related logic
  * between the Solr and Summon classes.
  *
  * @category VuFind

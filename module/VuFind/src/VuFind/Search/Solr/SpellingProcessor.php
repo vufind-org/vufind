@@ -154,7 +154,7 @@ class SpellingProcessor
 
         // If the last token ends in a double quote but the input string does not,
         // the tokenization process added the quote, which will break spelling
-        // replacements.  We need to strip it back off again:
+        // replacements. We need to strip it back off again:
         $last = count($tokens) > 0 ? $tokens[count($tokens) - 1] : null;
         if ($last && substr($last, -1) == '"' && substr($input, -1) != '"') {
             $tokens[count($tokens) - 1] = substr($last, 0, strlen($last) - 1);

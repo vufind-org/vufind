@@ -247,7 +247,7 @@ class OverdriveConnector implements
 
         if ($conf = $this->getConfig()) {
             $collectionToken = $this->getCollectionToken();
-            // hmm. no token.  if user is logged in let's check access
+            // hmm. no token. if user is logged in let's check access
             if (!$collectionToken && $this->getUser()) {
                 $accessResult = $this->getAccess();
                 if (!$accessResult->status) {
@@ -283,7 +283,7 @@ class OverdriveConnector implements
     /**
      * Get Availability (in) Bulk
      *
-     * Gets availability for up to 25 titles at once.  This is used by the
+     * Gets availability for up to 25 titles at once. This is used by the
      * the ajax availability system
      *
      * @param array $overDriveIds The Overdrive ID (reserve IDs) of the
@@ -307,7 +307,7 @@ class OverdriveConnector implements
                 $loginRequired = true;
             }
             $collectionToken = $this->getCollectionToken();
-            // hmm. no token.  if user is logged in let's check access
+            // hmm. no token. if user is logged in let's check access
             if (!$collectionToken && $this->getUser()) {
                 $accessResult = $this->getAccess();
                 if (!$accessResult->status) {
@@ -366,7 +366,7 @@ class OverdriveConnector implements
      * token doesn't change much but according to
      * the OD API docs it could change and should be retrieved each session.
      * Also, the collection token depends on the user if the user is in a
-     * consortium.  If consortium support is turned on then the user collection
+     * consortium. If consortium support is turned on then the user collection
      * token will override the library collection token.
      * The token itself is returned but it's also saved in the session and
      * automatically returned.
@@ -713,7 +713,7 @@ class OverdriveConnector implements
             $this->error("user is not logged in", false, true);
             return $result;
         }
-        // shouldn't need to refresh.  This should be in the cache if it exists
+        // shouldn't need to refresh. This should be in the cache if it exists
         $checkout = $this->getCheckout($overDriveId, false);
         if (!$checkout) {
             $result->msg
@@ -1080,7 +1080,7 @@ class OverdriveConnector implements
      * @param string $requestType The request type (GET, POST etc)
      *
      * @return object|bool The json response from the API call
-     *  converted to an object.  If the call fails at the
+     *  converted to an object. If the call fails at the
      *  HTTP level then the error is logged and false is returned.
      */
     protected function callUrl(
@@ -1254,7 +1254,7 @@ class OverdriveConnector implements
      * @param string $requestType   HTTP request type (default=GET)
      *
      * @return object|bool The json response from the API call
-     *  converted to an object.  If the call fails at the
+     *  converted to an object. If the call fails at the
      *  HTTP level then the error is logged and false is returned.
      */
     protected function callPatronUrl(

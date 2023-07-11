@@ -92,7 +92,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
      * for more information.
      * Configuration:  Sources are processed in order - refer to $sourceList above.
      * If your library prefers one reviewer over another change the order.
-     * If your library does not like a reviewer, remove it.  If there are more
+     * If your library does not like a reviewer, remove it. If there are more
      * syndetics reviewers add another entry.
      *
      * @param string           $key     API key (unused here)
