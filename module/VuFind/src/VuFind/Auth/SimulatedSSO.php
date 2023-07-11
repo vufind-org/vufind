@@ -53,7 +53,7 @@ class SimulatedSSO extends AbstractBase
     /**
      * Constructor
      *
-     * @param string $url Session initiator URL callback
+     * @param callable $url Session initiator URL callback
      */
     public function __construct($url)
     {
@@ -61,7 +61,7 @@ class SimulatedSSO extends AbstractBase
     }
 
     /**
-     * Attempt to authenticate the current user.  Throws exception if login fails.
+     * Attempt to authenticate the current user. Throws exception if login fails.
      *
      * @param Request $request Request object containing account credentials.
      *
@@ -83,7 +83,7 @@ class SimulatedSSO extends AbstractBase
 
     /**
      * Get the URL to establish a session (needed when the internal VuFind login
-     * form is inadequate).  Returns false when no session initiator is needed.
+     * form is inadequate). Returns false when no session initiator is needed.
      *
      * @param string $target Full URL where external authentication method should
      * send user after login (some drivers may override this).
