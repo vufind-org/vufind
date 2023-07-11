@@ -1978,7 +1978,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * This function returns the item id and recall id as a string
      * separated by a pipe, which is then submitted as form data in Hold.php. This
-     * value is then extracted by the CancelHolds function. item id is used as the
+     * value is then extracted by the CancelHolds function. Item id is used as the
      * array key in the response.
      *
      * @param array $holdDetails A single hold array from getMyHolds

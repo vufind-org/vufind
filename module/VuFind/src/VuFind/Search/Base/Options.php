@@ -935,8 +935,7 @@ abstract class Options implements TranslatorAwareInterface
 
     /**
      * If there is a limit to how many search results a user can access, this
-     * method will return that limit. If there is no limit, this will return
-     * -1.
+     * method will return that limit. If there is no limit, this will return -1.
      *
      * @return int
      */
