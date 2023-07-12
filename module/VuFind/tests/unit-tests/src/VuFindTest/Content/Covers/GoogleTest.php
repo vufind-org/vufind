@@ -56,15 +56,6 @@ class GoogleTest extends \PHPUnit\Framework\TestCase
     {
         $loader = new Google();
 
-        $cacheOptions = [
-            'config' => [
-                'Cache' => [
-                    'ttl' => 30,
-                ],
-            ],
-        ];
-        $loader->setCacheOptions($cacheOptions);
-
         $mockDownloader = $this->getMockBuilder(CachingDownloader::class)
             ->disableOriginalConstructor()
             ->getMock();

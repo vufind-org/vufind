@@ -92,8 +92,11 @@ class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
             ->with('downloader-default')
             ->willReturn($storage);
 
+        // configManager
+        $configManagerMock = $this->createMock(\VuFind\Config\PluginManager::class);
+
         // downloader
-        $downloader = new CachingDownloader($cacheManagerMock);
+        $downloader = new CachingDownloader($cacheManagerMock, $configManagerMock);
         $downloader->setHttpService($service);
 
         $body = $downloader->download(
@@ -142,8 +145,11 @@ class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
             ->with('downloader-default')
             ->willReturn($storage);
 
+        // configManager
+        $configManagerMock = $this->createMock(\VuFind\Config\PluginManager::class);
+
         // downloader
-        $downloader = new CachingDownloader($cacheManagerMock);
+        $downloader = new CachingDownloader($cacheManagerMock, $configManagerMock);
         $downloader->setHttpService($service);
 
         $downloader->download(

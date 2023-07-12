@@ -76,6 +76,7 @@ class Orb extends \VuFind\Content\AbstractCover implements \VuFind\Http\CachingD
         $this->apiUser = $apiUser;
         $this->apiKey = $apiKey;
         $this->supportsIsbn = $this->cacheAllowed = true;
+        $this->cacheOptionsId = 'OrbCover';
     }
 
     /**

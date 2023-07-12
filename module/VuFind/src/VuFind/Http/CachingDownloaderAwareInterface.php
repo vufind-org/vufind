@@ -41,15 +41,6 @@ namespace VuFind\Http;
 interface CachingDownloaderAwareInterface
 {
     /**
-     * Set cache options.
-     *
-     * @param array $cacheOptions Cache options
-     *
-     * @return void
-     */
-    public function setCacheOptions(array $cacheOptions);
-
-    /**
      * Set a caching downloader.
      *
      * @param CachingDownloader $cachingDownloader Caching downloader

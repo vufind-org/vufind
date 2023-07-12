@@ -49,11 +49,13 @@ trait CachingDownloaderAwareTrait
     protected $downloaderCacheId = 'downloader';
 
     /**
-     * Cache options
+     * Cache Options ID. This can be overridden by child classes to declare
+     * a section in config.ini which will be parsed to override default settings.
+     * Note that the prefix "Cache_" will be prepended on this string.
      *
-     * @var array
+     * @var string
      */
-    protected $cacheOptions = [];
+    protected $cacheOptionsId = null;
 
     /**
      * Caching downloader
@@ -61,18 +63,6 @@ trait CachingDownloaderAwareTrait
      * @var CachingDownloader
      */
     protected $cachingDownloader = null;
-
-    /**
-     * Set cache options.
-     *
-     * @param array $cacheOptions Cache options
-     *
-     * @return void
-     */
-    public function setCacheOptions(array $cacheOptions)
-    {
-        $this->cacheOptions = $cacheOptions;
-    }
 
     /**
      * Set caching downloader
@@ -84,6 +74,6 @@ trait CachingDownloaderAwareTrait
     public function setCachingDownloader(CachingDownloader $cachingDownloader)
     {
         $this->cachingDownloader = $cachingDownloader;
-        $this->cachingDownloader->setUpCache($this->downloaderCacheId, $this->cacheOptions);
+        $this->cachingDownloader->setUpCache($this->downloaderCacheId, $this->cacheOptionsId);
     }
 }

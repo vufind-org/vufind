@@ -50,6 +50,7 @@ class Google extends \VuFind\Content\AbstractCover implements \VuFind\Http\Cachi
     public function __construct()
     {
         $this->supportsIsbn = true;
+        $this->cacheOptionsId = 'GoogleCover';
     }
 
     /**
