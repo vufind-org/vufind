@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Channels controller factory.
+ * Factory for SimulatedSSO authentication module.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,13 +21,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Controller
+ * @package  Authentication
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Controller;
+namespace VuFind\Auth;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -35,15 +35,15 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Channels controller factory.
+ * Factory for SimulatedSSO authentication module.
  *
  * @category VuFind
- * @package  Controller
+ * @package  Authentication
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ChannelsControllerFactory extends AbstractBaseFactory
+class SimulatedSSOFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -67,7 +67,17 @@ class ChannelsControllerFactory extends AbstractBaseFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $loader = $container->get(\VuFind\ChannelProvider\ChannelLoader::class);
-        return $this->applyPermissions($container, new $requestedName($loader, $container));
+        $helpers = $container->get('ViewHelperManager');
+        // The view helpers aren't set up yet when this factory runs, so we need to
+        // wrap the view helper functionality in a callback function to ensure
+        // everything is ready when it is called.
+        $getUrl = function ($target) use ($helpers) {
+            $serverUrl = $helpers->get('serverUrl');
+            $url = $helpers->get('url');
+            return $serverUrl(
+                $url('simulatedsso-login', [], ['query' => ['return' => $target]])
+            );
+        };
+        return new $requestedName($getUrl);
     }
 }

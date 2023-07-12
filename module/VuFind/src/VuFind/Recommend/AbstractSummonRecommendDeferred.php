@@ -49,7 +49,7 @@ abstract class AbstractSummonRecommendDeferred extends AbstractSearchObjectDefer
     protected $paramCount = 1;
 
     /**
-     * Initialize the lookFor query parameter.  Called from init().
+     * Initialize the lookFor query parameter. Called from init().
      *
      * @param \VuFind\Search\Base\Params $params   Search parameter object
      * @param \Laminas\Stdlib\Parameters $request  Parameter object representing user

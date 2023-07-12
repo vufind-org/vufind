@@ -112,9 +112,9 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      */
     protected function pickStatus($statusArray)
     {
-        // This array controls the rankings of possible status messages.  The lower
+        // This array controls the rankings of possible status messages. The lower
         // the ID in the ITEM_STATUS_TYPE table, the higher the priority of the
-        // message.  We only need to load it once -- after that, it's cached in the
+        // message. We only need to load it once -- after that, it's cached in the
         // driver.
         if ($this->statusRankings == false) {
             // Execute SQL
@@ -145,7 +145,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
 
     /**
      * Support method to take an array of status strings and determine
-     * whether or not this indicates an available item.  Returns an array with
+     * whether or not this indicates an available item. Returns an array with
      * two keys: 'available', the boolean availability status, and 'otherStatuses',
      * every status code found other than "Not Charged" - for use with _pickStatus().
      *
@@ -155,7 +155,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      */
     protected function determineAvailability($statusArray)
     {
-        // It's possible for a record to have multiple status codes.  We
+        // It's possible for a record to have multiple status codes. We
         // need to loop through in search of the "Not Charged" (i.e. on
         // shelf) status, collecting any other statuses we find along the
         // way...
@@ -293,7 +293,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
     {
         // There are two possible queries we can use to obtain status information.
         // The first (and most common) obtains information from a combination of
-        // items and holdings records.  The second (a rare case) obtains
+        // items and holdings records. The second (a rare case) obtains
         // information from the holdings record when no items are available.
 
         $items = "select BIB_ITM_NBR, ILL_CDE as ON_RESERVE, " .
