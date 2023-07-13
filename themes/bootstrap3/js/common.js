@@ -649,6 +649,55 @@ function setupQRCodeLinks(_container) {
   });
 }
 
+// Useful function to delay callbacks, e.g. when using a keyup event
+// to detect when the user stops typing.
+// See also: https://stackoverflow.com/questions/1909441/how-to-delay-the-keyup-handler-until-the-user-stops-typing
+function getFacetListContentKeyupCallback() {
+    var timeout = null;
+    $('#ajax_contains').keyup(function() {
+        clearTimeout(timeout);
+        timeout = setTimeout(function() {
+            getFacetListContent();
+        }, 500);
+    });
+}
+
+function getFacetListContent() {
+    let facet = $('#ajax_facet').val();
+    var url = "/AJAX/JSON?q=sta&method=getFacetListContent&facet=" + facet;
+
+    let params = ['contains', 'sort', 'exclude', 'operator', 'page', 'limit', 'searchAction', 'urlBase'];
+    params.forEach(function(item) {
+        let val = $('#ajax_' + item).val();
+        if (val !== undefined) {
+            url += '&' + encodeURI(item) + '=' + encodeURI(val);
+        }
+    });
+
+    $.ajax({
+        type: "GET",
+        url: url,
+        dataType: "json",
+        success: function (json) {
+            $('#facet-info-result').html(json.data.html);
+        }, // end success
+        error: function (xhr, ajaxOptions, thrownError) {
+            $("#snippet_place_holder").each(function () {
+                $('#facet-info-result').replaceWith('Invalid server response!!!!!');
+            });
+        }
+    });
+
+    // This needs to be registered here as well so it works in a lightbox
+    getFacetListContentKeyupCallback();
+}
+
+function setupFacetList() {
+    $('#ajax_contains').keyup(function() {
+        getFacetListContentKeyupCallback();
+    });
+}
+
 $(function commonDocReady() {
   // Start up all of our submodules
   VuFind.init();
@@ -664,6 +713,9 @@ $(function commonDocReady() {
 
   // handle QR code links
   setupQRCodeLinks();
+
+  // Setup facet list autocomplete
+  setupFacetList();
 
   // Checkbox select all
   $('.checkbox-select-all').on('change', function selectAllCheckboxes() {
