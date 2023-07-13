@@ -10,7 +10,8 @@ class GetFacetListContent extends AbstractBase
 
     protected $viewRenderer;
 
-    public function __construct(\VuFind\Search\Results\PluginManager $searchResultsManager, $viewRenderer) {
+    public function __construct(\VuFind\Search\Results\PluginManager $searchResultsManager, $viewRenderer)
+    {
         $this->searchResultsManager = $searchResultsManager;
         $this->viewRenderer = $viewRenderer;
 
