@@ -664,7 +664,7 @@ function getFacetListContentKeyupCallback() {
 
 function getFacetListContent() {
   let facet = $('#ajax_facet').val();
-  var url = "/AJAX/JSON?q=sta&method=getFacetListContent&facet=" + facet;
+  var url = VuFind.path + "/AJAX/JSON?q=sta&method=getFacetListContent&facet=" + facet;
 
   let params = ['contains', 'sort', 'exclude', 'operator', 'page', 'limit', 'searchAction', 'urlBase'];
   params.forEach(function(item) {
