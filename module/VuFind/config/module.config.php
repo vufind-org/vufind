@@ -571,7 +571,7 @@ $config = [
     'caches' => [
         'doctrinemodule.cache.filesystem' => [
             'options' => [
-                'cache_dir' => LOCAL_CACHE_DIR . '/objects',
+                'cache_dir' => LOCAL_CACHE_DIR . (PHP_SAPI == 'cli' ? '/cli' : '') . '/objects',
             ],
         ],
     ],
@@ -582,7 +582,7 @@ $config = [
                 'result_cache' => 'filesystem',
                 'metadata_cache' => 'filesystem',
                 'hydration_cache' => 'filesystem',
-                'proxy_dir' => LOCAL_CACHE_DIR . '/doctrine-proxies',
+                'proxy_dir' => LOCAL_CACHE_DIR . (PHP_SAPI == 'cli' ? '/cli' : '') . '/doctrine-proxies',
             ],
         ],
         'driver' => [
