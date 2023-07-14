@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -32,7 +32,7 @@ namespace VuFind\AjaxHandler;
 use Laminas\Config\Config;
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Session\SessionManager;
-use VuFind\Db\Table\Session;
+use VuFind\Db\Service\SessionService;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 
 /**
@@ -57,11 +57,11 @@ class SystemStatus extends AbstractBase
     protected $sessionManager;
 
     /**
-     * Session database table
+     * Session database service
      *
-     * @var Session
+     * @var SessionService
      */
-    protected $sessionTable;
+    protected $sessionService;
 
     /**
      * Results manager
@@ -80,21 +80,21 @@ class SystemStatus extends AbstractBase
     /**
      * Constructor
      *
-     * @param SessionManager $sm     Session manager
-     * @param ResultsManager $rm     Results manager
-     * @param Config         $config Top-level VuFind configuration (config.ini)
-     * @param Session        $table  Session database table
+     * @param SessionManager $sm             Session manager
+     * @param ResultsManager $rm             Results manager
+     * @param Config         $config         Top-level VuFind configuration (config.ini)
+     * @param SessionService $sessionService Session database service
      */
     public function __construct(
         SessionManager $sm,
         ResultsManager $rm,
         Config $config,
-        Session $table
+        SessionService $sessionService
     ) {
         $this->sessionManager = $sm;
         $this->resultsManager = $rm;
         $this->config = $config;
-        $this->sessionTable = $table;
+        $this->sessionService = $sessionService;
     }
 
     /**
@@ -134,7 +134,7 @@ class SystemStatus extends AbstractBase
 
         // Test database connection
         try {
-            $this->sessionTable->getBySessionId('healthcheck', false);
+            $this->sessionService->getBySessionId('healthcheck', false);
         } catch (\Exception $e) {
             return $this->formatResponse(
                 'Database error: ' . $e->getMessage(),

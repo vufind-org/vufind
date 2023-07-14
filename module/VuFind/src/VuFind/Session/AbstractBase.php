@@ -32,6 +32,8 @@
 namespace VuFind\Session;
 
 use Laminas\Config\Config;
+use VuFind\Db\Service\ServiceAwareInterface;
+use VuFind\Db\Service\ServiceAwareTrait;
 
 /**
  * Base class for session handling
@@ -43,11 +45,12 @@ use Laminas\Config\Config;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
-abstract class AbstractBase implements HandlerInterface
+abstract class AbstractBase implements HandlerInterface, ServiceAwareInterface
 {
     use \VuFind\Db\Table\DbTableAwareTrait {
         getDbTable as getTable;
     }
+    use ServiceAwareTrait;
 
     /**
      * Session lifetime in seconds
