@@ -35,7 +35,9 @@
 <?php endif; ?>
 
 <!-- Hopefully we can find a better way for passthrough of these variables -->
-<input id="ajax_contains" placeholder="<?=$this->transEscAttr('Filter')?>" class="form-control" type="text">
+<?php if (method_exists($this->results->getParams(), 'setFacetContains')): ?>
+  <input id="ajax_contains" placeholder="<?=$this->transEscAttr('Filter')?>" class="form-control" type="text">
+<?php endif; ?>
 <input id="ajax_facet" type="hidden" value="<?=$this->facet?>">
 <input id="ajax_exclude" type="hidden" value="<?=$this->exclude?>">
 <input id="ajax_operator" type="hidden" value="<?=$this->operator?>">
@@ -43,6 +45,7 @@
 <input id="ajax_sort" type="hidden" value="<?=$this->sort?>">
 <input id="ajax_searchAction" type="hidden" value="<?=$searchAction?>">
 <input id="ajax_urlBase" type="hidden" value="<?=$urlBase?>">
+
 
 <div id="facet-info-result" class="lightbox-scroll full-facets">
   <?php foreach ($this->sortOptions as $key => $sort): ?>
