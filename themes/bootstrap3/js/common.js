@@ -656,7 +656,7 @@ function getFacetListContentKeyupCallback() {
   var timeout = null;
   $('#ajax_contains').on('keyup', function onKeyupChangeFacetList() {
     clearTimeout(timeout);
-    timeout = setTimeout(function() {
+    timeout = setTimeout(function onKeyupTimeout() {
       getFacetListContent();
     }, 500);
   });
