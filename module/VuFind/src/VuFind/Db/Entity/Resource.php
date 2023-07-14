@@ -82,7 +82,7 @@ class Resource implements EntityInterface
     /**
      * Primary author.
      *
-     * @var string|null
+     * @var ?string
      *
      * @ORM\Column(name="author", type="string", length=255, nullable=true)
      */
@@ -91,7 +91,7 @@ class Resource implements EntityInterface
     /**
      * Published year.
      *
-     * @var int|null
+     * @var ?int
      *
      * @ORM\Column(name="year", type="integer", nullable=true)
      */
@@ -114,7 +114,7 @@ class Resource implements EntityInterface
     /**
      * Record Metadata
      *
-     * @var string|null
+     * @var ?string
      *
      * @ORM\Column(name="extra_metadata",
      *          type="text",

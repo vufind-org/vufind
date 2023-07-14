@@ -78,7 +78,7 @@ class ChangeTracker implements EntityInterface
     /**
      * First time added to index
      *
-     * @var \DateTime|null
+     * @var ?DateTime
      *
      * @ORM\Column(name="first_indexed", type="datetime", nullable=true)
      */
@@ -87,7 +87,7 @@ class ChangeTracker implements EntityInterface
     /**
      * Last time changed in index.
      *
-     * @var \DateTime|null
+     * @var ?DateTime
      *
      * @ORM\Column(name="last_indexed", type="datetime", nullable=true)
      */
@@ -96,7 +96,7 @@ class ChangeTracker implements EntityInterface
     /**
      * Last time original record was edited.
      *
-     * @var \DateTime|null
+     * @var ?DateTime
      *
      * @ORM\Column(name="last_record_change", type="datetime", nullable=true)
      */
@@ -105,7 +105,7 @@ class ChangeTracker implements EntityInterface
     /**
      * Time record was removed from index.
      *
-     * @var \DateTime|null
+     * @var ?DateTime
      *
      * @ORM\Column(name="deleted", type="datetime", nullable=true)
      */

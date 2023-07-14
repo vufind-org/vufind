@@ -76,7 +76,7 @@ class Search implements EntityInterface
     /**
      * Session ID.
      *
-     * @var string|null
+     * @var ?string
      *
      * @ORM\Column(name="session_id", type="string", length=128, nullable=true)
      */
@@ -98,7 +98,7 @@ class Search implements EntityInterface
     /**
      * Title.
      *
-     * @var string|null
+     * @var ?string
      *
      * @ORM\Column(name="title", type="string", length=20, nullable=true)
      */
@@ -116,7 +116,7 @@ class Search implements EntityInterface
     /**
      * Search object.
      *
-     * @var string|null
+     * @var ?string
      *
      * @ORM\Column(name="search_object", type="blob", length=65535, nullable=true)
      */
@@ -125,7 +125,7 @@ class Search implements EntityInterface
     /**
      * Checksum
      *
-     * @var int|null
+     * @var ?int
      *
      * @ORM\Column(name="checksum", type="integer", nullable=true)
      */

@@ -82,7 +82,7 @@ class UserCard implements EntityInterface
     /**
      * Cat password.
      *
-     * @var string|null
+     * @var ?string
      *
      * @ORM\Column(name="cat_password", type="string", length=70, nullable=true)
      */
@@ -91,7 +91,7 @@ class UserCard implements EntityInterface
     /**
      * Cat password (encrypted).
      *
-     * @var string|null
+     * @var ?string
      *
      * @ORM\Column(name="cat_pass_enc", type="string", length=255, nullable=true)
      */

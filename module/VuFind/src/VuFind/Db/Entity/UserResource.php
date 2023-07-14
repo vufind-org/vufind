@@ -66,7 +66,7 @@ class UserResource implements EntityInterface
     /**
      * Notes associated with the resource.
      *
-     * @var string|null
+     * @var ?string
      *
      * @ORM\Column(name="notes", type="text", length=65535, nullable=true)
      */

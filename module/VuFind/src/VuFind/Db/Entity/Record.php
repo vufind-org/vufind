@@ -64,7 +64,7 @@ class Record implements EntityInterface
     /**
      * Record ID.
      *
-     * @var string|null
+     * @var ?string
      *
      * @ORM\Column(name="record_id", type="string", length=255, nullable=true)
      */
@@ -73,7 +73,7 @@ class Record implements EntityInterface
     /**
      * Record source.
      *
-     * @var string|null
+     * @var ?string
      *
      * @ORM\Column(name="source", type="string", length=50, nullable=true)
      */
@@ -91,7 +91,7 @@ class Record implements EntityInterface
     /**
      * Record Data.
      *
-     * @var string|null
+     * @var ?string
      *
      * @ORM\Column(name="data", type="text", length=0, nullable=true)
      */

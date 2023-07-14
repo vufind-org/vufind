@@ -73,7 +73,7 @@ class UserList implements EntityInterface
     /**
      * Description of the list.
      *
-     * @var string|null
+     * @var ?string
      *
      * @ORM\Column(name="description", type="text", length=65535, nullable=true)
      */
