@@ -654,7 +654,7 @@ function setupQRCodeLinks(_container) {
 // See also: https://stackoverflow.com/questions/1909441/how-to-delay-the-keyup-handler-until-the-user-stops-typing
 function getFacetListContentKeyupCallback() {
   var timeout = null;
-  $('#ajax_contains').keyup(function() {
+  $('#ajax_contains').on('keyup', function onKeyupChangeFacetList() {
     clearTimeout(timeout);
     timeout = setTimeout(function() {
       getFacetListContent();
@@ -667,7 +667,7 @@ function getFacetListContent() {
   var url = VuFind.path + "/AJAX/JSON?q=sta&method=getFacetListContent&facet=" + facet;
 
   let params = ['contains', 'sort', 'exclude', 'operator', 'page', 'limit', 'searchAction', 'urlBase'];
-  params.forEach(function(item) {
+  params.forEach(function facetItemEach(item) {
     let val = $('#ajax_' + item).val();
     if (val !== undefined) {
       url += '&' + encodeURI(item) + '=' + encodeURI(val);
@@ -680,12 +680,7 @@ function getFacetListContent() {
     dataType: "json",
     success: function (json) {
       $('#facet-info-result').html(json.data.html);
-    }, // end success
-    error: function (xhr, ajaxOptions, thrownError) {
-      $("#snippet_place_holder").each(function () {
-        $('#facet-info-result').replaceWith('Invalid server response!!!!!');
-      });
-     }
+    }
   });
 
   // This needs to be registered here as well so it works in a lightbox
@@ -693,9 +688,9 @@ function getFacetListContent() {
 }
 
 function setupFacetList() {
-    $('#ajax_contains').keyup(function() {
-        getFacetListContentKeyupCallback();
-    });
+  $('#ajax_contains').on('keyup', function onKeyupChangeFacetList() {
+    getFacetListContentKeyupCallback();
+  });
 }
 
 $(function commonDocReady() {
