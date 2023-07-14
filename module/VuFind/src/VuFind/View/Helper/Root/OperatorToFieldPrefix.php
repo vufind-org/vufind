@@ -29,8 +29,6 @@
 
 namespace VuFind\View\Helper\Root;
 
-use VuFind\Resolver\Driver\PluginManager;
-
 /**
  * OperatorToFieldPrefix view helper
  *
