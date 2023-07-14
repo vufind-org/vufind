@@ -97,9 +97,9 @@ trait MarcReaderTrait
 
     /**
      * Return an array of all values extracted from the specified field/subfield
-     * combination.  If multiple subfields are specified and $concat is true, they
+     * combination. If multiple subfields are specified and $concat is true, they
      * will be concatenated together in the order listed -- each entry in the array
-     * will correspond with a single MARC field.  If $concat is false, the return
+     * will correspond with a single MARC field. If $concat is false, the return
      * array will contain separate entries for separate subfields.
      *
      * @param string $field     The MARC field number to read
@@ -158,7 +158,7 @@ trait MarcReaderTrait
 
         // Now track down relevant RDA-style 264 fields; we only care about
         // copyright and publication places (and ignore copyright places if
-        // publication places are present).  This behavior is designed to be
+        // publication places are present). This behavior is designed to be
         // consistent with default SolrMarc handling of names/dates.
         $pubResults = $copyResults = [];
 
@@ -215,9 +215,9 @@ trait MarcReaderTrait
 
     /**
      * Return an array of non-empty subfield values found in the provided MARC
-     * field.  If $concat is true, the array will contain either zero or one
+     * field. If $concat is true, the array will contain either zero or one
      * entries (empty array if no subfields found, subfield values concatenated
-     * together in specified order if found).  If concat is false, the array
+     * together in specified order if found). If concat is false, the array
      * will contain a separate entry for each subfield value found.
      *
      * @param array  $currentField Result from MarcReader::getFields

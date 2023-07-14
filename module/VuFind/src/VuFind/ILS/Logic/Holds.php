@@ -113,7 +113,7 @@ class Holds
      * @param array $holdings An associative array of location => item array
      *
      * @return array          An associative array keyed by location with each
-     * entry being an array with 'notes', 'summary' and 'items' keys.  The 'notes'
+     * entry being an array with 'notes', 'summary' and 'items' keys. The 'notes'
      * and 'summary' arrays are note/summary information collected from within the
      * items.
      */

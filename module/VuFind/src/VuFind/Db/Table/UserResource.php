@@ -152,7 +152,7 @@ class UserResource extends Gateway
     }
 
     /**
-     * Unlink rows for the specified resource.  This will also automatically remove
+     * Unlink rows for the specified resource. This will also automatically remove
      * any tags associated with the relationship.
      *
      * @param string|array $resource_id ID (or array of IDs) of resource(s) to
