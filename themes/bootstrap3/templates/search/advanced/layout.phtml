@@ -194,7 +194,7 @@
             <div class="title"><?=$this->transEsc($field)?></div>
             <?php foreach ($data as $i => $value): ?>
               <label class="facet checkbox">
-                <input class="checkbox-select-item" type="checkbox" checked="checked" name="filter[]" value='<?=$this->escapeHtmlAttr($this->operatorToFieldPrefix($value['operator']) . $value['field'] . ':"' . $value['value'])?>"'>
+                <input class="checkbox-select-item" type="checkbox" checked="checked" name="filter[]" value="<?=$this->escapeHtmlAttr($this->operatorToFieldPrefix($value['operator']) . $value['field'] . ':"' . $value['value'] . '"')?>">
                 <?php if ($value['operator'] === 'NOT'): ?>
                   <?=$this->transEsc('NOT')?>
                 <?php elseif ($value['operator'] === 'OR' && $i > 0): ?>
