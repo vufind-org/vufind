@@ -192,8 +192,17 @@
         <?php foreach ($searchFilters as $field => $data): ?>
           <div class="facet-group">
             <div class="title"><?=$this->transEsc($field)?></div>
-            <?php foreach ($data as $value): ?>
-              <label class="facet checkbox"><input class="checkbox-select-item" type="checkbox" checked="checked" name="filter[]" value='<?=$this->escapeHtmlAttr($value['field'])?>:"<?=$this->escapeHtmlAttr($value['value'])?>"'> <?=$this->escapeHtml($value['displayText'])?></label>
+            <?php foreach ($data as $i => $value): ?>
+              <?php $operator = $value['operator'] ?? 'AND'; ?>
+              <label class="facet checkbox">
+                <input class="checkbox-select-item" type="checkbox" checked="checked" name="filter[]" value="<?=$this->escapeHtmlAttr($this->operatorToFieldPrefix($operator) . $value['field'] . ':"' . $value['value'] . '"')?>">
+                <?php if ($operator === 'NOT'): ?>
+                  <?=$this->transEsc('NOT')?>
+                <?php elseif ($operator === 'OR' && $i > 0): ?>
+                  <?=$this->transEsc('OR')?>
+                <?php endif; ?>
+                <?=$this->escapeHtml($value['displayText'])?>
+              </label>
             <?php endforeach; ?>
           </div>
         <?php endforeach; ?>
