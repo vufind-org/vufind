@@ -150,38 +150,37 @@ class CachingDownloader implements \VuFindHttp\HttpServiceAwareInterface
         $cache = $this->getDownloaderCache();
         $cacheItemKey = md5($url . http_build_query($params));
 
-        // Add new item to cache if not exists
-        if (!$cache->hasItem($cacheItemKey)) {
-            try {
-                $response = $this->httpService->get($url, $params);
-            } catch (\Exception $e) {
-                throw new HttpDownloadException(
-                    'HttpService download failed (error)',
-                    $url,
-                    null,
-                    null,
-                    null,
-                    $e
-                );
-            }
-            if (!$response->isOk()) {
-                throw new HttpDownloadException(
-                    'HttpService download failed (not ok)',
-                    $url,
-                    $response->getStatusCode(),
-                    $response->getHeaders(),
-                    $response->getBody()
-                );
-            }
-
-            if ($decodeCallback !== null) {
-                $cache->addItem($cacheItemKey, $decodeCallback($response, $url));
-            } else {
-                $cache->addItem($cacheItemKey, $response->getBody());
-            }
+        if ($cache->hasItem($cacheItemKey)) {
+            return $cache->getItem($cacheItemKey);
         }
 
-        return $cache->getItem($cacheItemKey);
+        // Add new item to cache if not exists
+        try {
+            $response = $this->httpService->get($url, $params);
+        } catch (\Exception $e) {
+            throw new HttpDownloadException(
+                'HttpService download failed (error)',
+                $url,
+                null,
+                null,
+                null,
+                $e
+            );
+        }
+        if (!$response->isOk()) {
+            throw new HttpDownloadException(
+                'HttpService download failed (not ok)',
+                $url,
+                $response->getStatusCode(),
+                $response->getHeaders(),
+                $response->getBody()
+            );
+        }
+
+        $finalValue = $decodeCallback !== null
+            ? $decodeCallback($response, $url) : $response->getBody();
+        $cache->addItem($cacheItemKey, $finalValue);
+        return $finalValue;
     }
 
     /**
