@@ -70,7 +70,10 @@
   <form id="searchForm" class="searchForm navbar-form navbar-left flip" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off">
     <?= $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $tabConfig['tabs'], 'showCounts' => $tabConfig['showCounts']]); ?>
     <?php $placeholder = $this->searchbox()->getPlaceholderText($tabConfig['selected']['id'] ?? null); ?>
-    <input id="searchForm_lookfor" class="searchForm_lookfor form-control search-query<?php if ($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete searcher:<?=$this->escapeHtmlAttr($this->searchClassId) ?><?=$this->searchbox()->autocompleteAutoSubmit($this->searchClassId) ? ' ac-auto-submit' : '' ?><?php endif ?>" type="search" name="lookfor" value="<?=$this->escapeHtmlAttr($this->lookfor)?>"<?php if ($placeholder): ?> placeholder="<?=$this->transEscAttr($placeholder) ?>"<?php endif ?> aria-label="<?=$this->transEscAttr("search_terms")?>">
+    <div class="searchForm-query">
+      <input id="searchForm_lookfor" class="searchForm_lookfor form-control search-query<?php if ($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete searcher:<?=$this->escapeHtmlAttr($this->searchClassId) ?><?=$this->searchbox()->autocompleteAutoSubmit($this->searchClassId) ? ' ac-auto-submit' : '' ?><?php endif ?>" type="search" name="lookfor" value="<?=$this->escapeHtmlAttr($this->lookfor)?>"<?php if ($placeholder): ?> placeholder="<?=$this->transEscAttr($placeholder) ?>"<?php endif ?> aria-label="<?=$this->transEscAttr("search_terms")?>">
+      <button id="searchForm-reset" class="searchForm-reset form-control" type="reset" tabindex="-1" aria-label="<?=$this->transEsc('searchform-reset-button')?>">&times;</button>
+    </div>
     <?php if ($handlerCount > 1): ?>
       <select id="searchForm_type" class="searchForm_type form-control" name="type" data-native-menu="false" aria-label="<?=$this->transEscAttr("Search type")?>">
         <?php $currentGroup = $insideGroup = false; ?>
@@ -163,3 +166,29 @@
   </form>
 <?php endif; ?>
 
+<?php
+$js = <<<JS
+        $(document).ready(function searchFormResetHandler() {
+          const queryInput = $('#searchForm_lookfor');
+          const resetButton = $('#searchForm-reset');
+
+          let query = queryInput.val();
+          if (query !== '') {
+            resetButton.show();
+            queryInput.focus().val('').val(query);
+          }
+          queryInput.on('input', function onInput() {
+            if ($(this).val() === '') {
+              resetButton.hide();
+            } else {
+              resetButton.show();
+            }
+          })
+          resetButton.on('click', function onClick(event) {
+            queryInput.attr('value', '').focus();
+            resetButton.hide();
+          })
+        });
+        JS;
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $js, 'SET');
