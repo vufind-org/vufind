@@ -1622,7 +1622,7 @@ class XCNCIP2 extends AbstractBase implements
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
      * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.  May be used to limit the pickup options
+     * placeHold, minus the patron data. May be used to limit the pickup options
      * or may be ignored.
      *
      * @return string A location ID
@@ -1691,10 +1691,10 @@ class XCNCIP2 extends AbstractBase implements
      * @param array $patron      Patron information returned by the patronLogin
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
-     * in the context of placing or editing a hold.  When placing a hold, it contains
-     * most of the same values passed to placeHold, minus the patron data.  When
+     * in the context of placing or editing a hold. When placing a hold, it contains
+     * most of the same values passed to placeHold, minus the patron data. When
      * editing a hold it contains all the hold information returned by getMyHolds.
-     * May be used to limit the pickup options or may be ignored.  The driver must
+     * May be used to limit the pickup options or may be ignored. The driver must
      * not add new options to the return array based on this data or other areas of
      * VuFind may behave incorrectly.
      *
@@ -1978,7 +1978,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * This function returns the item id and recall id as a string
      * separated by a pipe, which is then submitted as form data in Hold.php. This
-     * value is then extracted by the CancelHolds function.  item id is used as the
+     * value is then extracted by the CancelHolds function. Item id is used as the
      * array key in the response.
      *
      * @param array $holdDetails A single hold array from getMyHolds
@@ -2033,7 +2033,7 @@ class XCNCIP2 extends AbstractBase implements
     /**
      * Renew My Items
      *
-     * Function for attempting to renew a patron's items.  The data in
+     * Function for attempting to renew a patron's items. The data in
      * $renewDetails['details'] is determined by getRenewDetails().
      *
      * @param array $renewDetails An array of data required for renewing items

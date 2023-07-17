@@ -68,7 +68,7 @@ class ContainerLinksTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch('id:jnl1-1');
         $this->assertMatchesRegularExpression(
             '{.*/Search/Results\?lookfor=%22Arithmetic\+Facts%22&type=JournalTitle}',
-            $this->findCss($page, '.result-body div a', null, 1)->getAttribute('href')
+            $this->findCss($page, '.result-body a.container-link')->getAttribute('href')
         );
     }
 
@@ -98,7 +98,7 @@ class ContainerLinksTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->performSearch('id:jnl1-1');
         // Check parent link:
-        $parentLink = $this->findCss($page, '.result-body div a', null, 1);
+        $parentLink = $this->findCss($page, '.result-body a.container-link');
         $this->assertMatchesRegularExpression(
             '{.*/Record/jnl1\?checkRoute=1&sid=\d+}',
             $parentLink->getAttribute('href')

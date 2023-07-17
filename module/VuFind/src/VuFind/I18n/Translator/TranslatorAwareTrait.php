@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Lightweight translator aware marker interface.
+ * Reusable implementation of TranslatorAwareInterface.
  *
  * PHP version 8
  *
@@ -32,10 +32,7 @@ namespace VuFind\I18n\Translator;
 use Laminas\I18n\Translator\TranslatorInterface;
 
 /**
- * Lightweight translator aware marker interface (used as an alternative to
- * \Laminas\I18n\Translator\TranslatorAwareInterface, which requires an excessive
- * number of methods to be implemented).  If we switch to PHP 5.4 traits in the
- * future, we can eliminate this interface in favor of the default Laminas version.
+ * Reusable implementation of TranslatorAwareInterface.
  *
  * @category VuFind
  * @package  Translator

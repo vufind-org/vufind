@@ -477,7 +477,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
     }
 
     /**
-     * Construct volume/issue/date portion of APA citation.  Returns an array with
+     * Construct volume/issue/date portion of APA citation. Returns an array with
      * three elements: volume, issue and date (since these end up in different areas
      * of the final citation, we don't return a single string, but since their
      * determination is related, we need to do the work in a single function).
@@ -706,7 +706,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
         $newwords = [];
         $followsColon = false;
         foreach ($words as $word) {
-            // Capitalize words unless they are in the exception list...  but even
+            // Capitalize words unless they are in the exception list... but even
             // exceptional words get capitalized if they follow a colon. Note that
             // we need to strip non-word characters (like punctuation) off of words
             // in order to reliably look them up in the uncappedWords list.
@@ -827,7 +827,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
         ) {
             foreach ($this->details['edition'] as $edition) {
                 // Strip punctuation from the edition to get rid of unwanted
-                // junk...  but if there is nothing left after stripping, put
+                // junk... but if there is nothing left after stripping, put
                 // back at least one period!
                 $edition = $this->stripPunctuation($edition);
                 if (empty($edition)) {

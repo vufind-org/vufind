@@ -147,7 +147,7 @@ class LuceneSyntaxHelper
 
         // The following conditions do not apply to text inside quoted strings,
         // so let's just strip all quoted strings out of the query to simplify
-        // detection.  We'll replace quoted phrases with a dummy keyword so quote
+        // detection. We'll replace quoted phrases with a dummy keyword so quote
         // removal doesn't interfere with the field specifier check below.
         $searchString = preg_replace('/"[^"]*"/', 'quoted', $searchString);
 
@@ -457,7 +457,7 @@ class LuceneSyntaxHelper
         // Remove unwanted brackets/braces that are not part of range queries.
         // This is a bit of a shell game -- first we replace valid brackets and
         // braces with tokens that cannot possibly already be in the query (due
-        // to the work of normalizeBoosts()).  Next, we escape all remaining
+        // to the work of normalizeBoosts()). Next, we escape all remaining
         // invalid brackets/braces, and transform our tokens back into valid ones.
         // Obviously, the order of the patterns/merges array is critically
         // important to get this right!!

@@ -29,7 +29,18 @@
           <?php else: ?>
             <?php if ($holding['availability']): ?>
               <?php /* Begin Available Items (Holds) */ ?>
-              <span class="text-success"><?=$this->transEsc("Available")?><link property="availability" href="http://schema.org/InStock"></span>
+              <?php
+                if ((int)$holding['availability'] === \VuFind\ILS\Logic\ItemStatus::STATUS_UNCERTAIN) {
+                  $statusClassEsc = 'text-warning';
+                  $status = $holding['status'];
+                  $schemaAvailEsc = 'http://schema.org/LimitedAvailability';
+                } else {
+                  $statusClassEsc = 'text-success';
+                  $status = is_int($holding['availability']) && !empty($holding['status']) ? $holding['status'] : 'Available';
+                  $schemaAvailEsc = 'http://schema.org/InStock';
+                }
+              ?>
+              <span class="<?=$statusClassEsc?>"><?=$this->transEsc($status)?><link property="availability" href="<?=$schemaAvailEsc?>"></span>
             <?php else: ?>
               <?php /* Begin Unavailable Items (Recalls) */ ?>
               <span class="text-danger"><?=$this->transEsc($holding['status'])?><link property="availability" href="http://schema.org/OutOfStock"></span>

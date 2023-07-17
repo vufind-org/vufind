@@ -66,7 +66,7 @@ class SolrAuthMarc extends SolrAuthDefault
     }
 
     /**
-     * Get a raw LCCN (not normalized).  Returns false if none available.
+     * Get a raw LCCN (not normalized). Returns false if none available.
      *
      * @return string|bool
      */

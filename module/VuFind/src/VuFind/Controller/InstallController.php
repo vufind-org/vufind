@@ -271,7 +271,7 @@ class InstallController extends AbstractBase
         if (!$this->phpVersionIsNewEnough()) {
             $msg = "VuFind requires PHP version " . $this->getMinimalPhpVersion()
                 . " or newer; you are running " . phpversion()
-                . ".  Please upgrade.";
+                . ". Please upgrade.";
             $this->flashMessenger()->addMessage($msg, 'error');
             $problems++;
         }
@@ -385,7 +385,7 @@ class InstallController extends AbstractBase
                         ->addMessage(
                             'Problem initializing database adapter; '
                             . 'check for missing ' . $view->driver
-                            . ' library .  Details: ' . $e->getMessage(),
+                            . ' library. Details: ' . $e->getMessage(),
                             'error'
                         );
                     return $view;
@@ -646,7 +646,7 @@ class InstallController extends AbstractBase
             try {
                 $this->testSearchService();
 
-                // If we got this far, the fix worked.  Let's write it to disk!
+                // If we got this far, the fix worked. Let's write it to disk!
                 $writer = new ConfigWriter($configFile);
                 $writer->set('Index', 'url', $newUrl);
                 if (!$writer->save()) {
@@ -687,7 +687,7 @@ class InstallController extends AbstractBase
     }
 
     /**
-     * Support method for fixsecurityAction().  Returns true if the configuration
+     * Support method for fixsecurityAction(). Returns true if the configuration
      * was modified, false otherwise.
      *
      * @param \Laminas\Config\Config $config Existing VuFind configuration

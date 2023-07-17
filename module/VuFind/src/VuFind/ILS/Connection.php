@@ -60,6 +60,27 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
+     * Status code for unavailable items
+     *
+     * @var int
+     */
+    public const ITEM_STATUS_UNAVAILABLE = 0;
+
+    /**
+     * Status code for available items
+     *
+     * @var int
+     */
+    public const ITEM_STATUS_AVAILABLE = 1;
+
+    /**
+     * Status code for items with uncertain availability
+     *
+     * @var int
+     */
+    public const ITEM_STATUS_UNCERTAIN = 2;
+
+    /**
      * Has the driver been initialized yet?
      *
      * @var bool
@@ -279,7 +300,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Get configuration for the ILS driver.  We will load an .ini file named
+     * Get configuration for the ILS driver. We will load an .ini file named
      * after the driver class if it exists; otherwise we will return an empty
      * array.
      *
@@ -1127,7 +1148,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
 
     /**
      * Default method -- pass along calls to the driver if available; return
-     * false otherwise.  This allows custom functions to be implemented in
+     * false otherwise. This allows custom functions to be implemented in
      * the driver without constant modification to the connection class.
      *
      * @param string $methodName The name of the called method.

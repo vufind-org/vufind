@@ -4,7 +4,7 @@
  * Advanced Dummy ILS Driver -- Returns sample values based on Solr index.
  *
  * Note that some sample values (holds, transactions, fines) are stored in
- * the session.  You can log out and log back in to get a different set of
+ * the session. You can log out and log back in to get a different set of
  * values.
  *
  * PHP version 8
@@ -40,6 +40,7 @@ use Laminas\Http\Request as HttpRequest;
 use Laminas\Session\Container as SessionContainer;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
+use VuFind\ILS\Logic\ItemStatus;
 use VuFindSearch\Command\RandomCommand;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Service as SearchService;
@@ -322,6 +323,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 return "On Order";
             case 8:
                 return "Invoiced";
+            case 7:
+                return "Uncertain";
             default:
                 return "Available";
         }
@@ -464,18 +467,39 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         $status = $this->getFakeStatus();
         $location = $this->getFakeLoc();
         $locationhref = ($location === 'Campus A') ? 'http://campus-a' : false;
+        switch ($status) {
+            case 'Uncertain':
+                $availability = ItemStatus::STATUS_UNCERTAIN;
+                break;
+            case 'Available':
+                if (rand(1, 2) === 1) {
+                    // Legacy boolean value
+                    $availability = true;
+                } else {
+                    $availability = ItemStatus::STATUS_AVAILABLE;
+                    $status = 'Item in Library';
+                }
+                break;
+            default:
+                if (rand(1, 2) === 1) {
+                    // Legacy boolean value
+                    $availability = false;
+                } else {
+                    $availability = ItemStatus::STATUS_UNAVAILABLE;
+                }
+                break;
+        }
         $result = [
             'id'           => $id,
-            'record_id'    => $id, // for hold links to not rely on id from route
             'source'       => $this->getRecordSource(),
             'item_id'      => $number,
             'number'       => $number,
             'barcode'      => sprintf("%08d", rand() % 50000),
-            'availability' => $status == 'Available',
+            'availability' => $availability,
             'status'       => $status,
             'location'     => $location,
             'locationhref' => $locationhref,
-            'reserve'      => (rand() % 100 > 49) ? 'Y' : 'N',
+            'reserve'      => rand(1, 4) === 1 ? 'Y' : 'N',
             'callnumber'   => $this->getFakeCallNum(),
             'callnumber_prefix' => $this->getFakeCallNumPrefix(),
             'duedate'      => '',
@@ -767,6 +791,21 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     public function getStatuses($ids)
     {
         $this->checkIntermittentFailure();
+
+        if ($this->isFailing(__METHOD__, 0)) {
+            return array_map(
+                function ($id) {
+                    return [
+                        [
+                            'id' => $id,
+                            'error' => 'Simulated failure',
+                        ],
+                    ];
+                },
+                $ids
+            );
+        }
+
         return array_map([$this, 'getStatus'], $ids);
     }
 
@@ -787,6 +826,13 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     public function getHolding($id, array $patron = null, array $options = [])
     {
         $this->checkIntermittentFailure();
+
+        if ($this->isFailing(__METHOD__, 0)) {
+            return [
+                'id' => $id,
+                'error' => 'Simulated failure',
+            ];
+        }
 
         // Get basic status info:
         $status = $this->getSimulatedStatus($id, $patron);
@@ -1433,10 +1479,10 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @param array $patron      Patron information returned by the patronLogin
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
-     * in the context of placing or editing a hold.  When placing a hold, it contains
-     * most of the same values passed to placeHold, minus the patron data.  When
+     * in the context of placing or editing a hold. When placing a hold, it contains
+     * most of the same values passed to placeHold, minus the patron data. When
      * editing a hold it contains all the hold information returned by getMyHolds.
-     * May be used to limit the pickup options or may be ignored.  The driver must
+     * May be used to limit the pickup options or may be ignored. The driver must
      * not add new options to the return array based on this data or other areas of
      * VuFind may behave incorrectly.
      *
@@ -1498,7 +1544,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
      * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.  May be used to limit the pickup options
+     * placeHold, minus the patron data. May be used to limit the pickup options
      * or may be ignored.
      *
      * @return false|string      The default pickup location for the patron or false
@@ -1521,7 +1567,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
      * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.  May be used to limit the request group
+     * placeHold, minus the patron data. May be used to limit the request group
      * options or may be ignored.
      *
      * @return false|string      The default request group for the patron.
@@ -1546,7 +1592,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
      * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.  May be used to limit the request group
+     * placeHold, minus the patron data. May be used to limit the request group
      * options or may be ignored.
      *
      * @return array  False if request groups not in use or an array of
@@ -1924,7 +1970,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     /**
      * Renew My Items
      *
-     * Function for attempting to renew a patron's items.  The data in
+     * Function for attempting to renew a patron's items. The data in
      * $renewDetails['details'] is determined by getRenewDetails().
      *
      * @param array $renewDetails An array of data required for renewing items
@@ -2113,7 +2159,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         }
         $session->holds->append(
             [
-                'id'       => $holdDetails['record_id'],
+                'id'       => $holdDetails['id'],
                 'source'   => $this->getRecordSource(),
                 'location' => $holdDetails['pickUpLocation'],
                 'expire'   => $expire,
@@ -2594,7 +2640,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         if ($function == 'Holds') {
             return $this->config['Holds']
                 ?? [
-                    'HMACKeys' => 'record_id:item_id:level',
+                    'HMACKeys' => 'id:item_id:level',
                     'extraHoldFields' =>
                         'comments:requestGroup:pickUpLocation:requiredByDate',
                     'defaultRequiredDate' => 'driver:0:2:0',

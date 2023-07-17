@@ -302,7 +302,7 @@ class Solr implements AutocompleteInterface
     }
 
     /**
-     * Set the display field list.  Useful for child classes.
+     * Set the display field list. Useful for child classes.
      *
      * @param array $new Display field list.
      *
@@ -314,7 +314,7 @@ class Solr implements AutocompleteInterface
     }
 
     /**
-     * Set the sort field list.  Useful for child classes.
+     * Set the sort field list. Useful for child classes.
      *
      * @param string $new Sort field list.
      *

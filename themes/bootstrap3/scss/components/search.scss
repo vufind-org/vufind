@@ -219,6 +219,19 @@ header .container.navbar { margin-bottom: 0; }
   padding-bottom: .25rem;
 }
 
+.result-body,
+.media-body {
+  h2 {
+    font-size: unset;
+    line-height: $line-height-base;
+    margin: 0;
+
+    .authors {
+      display: block;
+    }
+  }
+}
+
 .btn-bookbag-toggle,
 .result-links a {
   line-height: 1.5;
@@ -305,14 +318,22 @@ body.rtl {
   float: left;
   width: 50%;
 
-  .grid-body { flex: 1; }
+  .grid-body {
+    flex: 1;
+    h2 {
+      font-size: inherit;
+      line-height: $line-height-base;
+      margin: 0;
+
+      .title {
+        display: inline-block;
+        font-weight: bold;
+      }
+    }
+  }
   .grid-checkbox {
     flex: 0 0 30px;
     min-width: 0;
-  }
-  .title {
-    display: inline-block;
-    font-weight: bold;
   }
   .label,
   .format {
@@ -543,7 +564,7 @@ table.search-history-table {
   table-layout: auto;
 
   tbody > tr > td { vertical-align: middle; }
-  th:first-child {
+  .history_time {
     width: 20%;
   }
 }
