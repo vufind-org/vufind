@@ -104,7 +104,7 @@ class AccessToken implements EntityInterface
     /**
      * Data.
      *
-     * @var string|null
+     * @var ?string
      *
      * @ORM\Column(name="data", type="text", length=16777215, nullable=true)
      */

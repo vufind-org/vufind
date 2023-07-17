@@ -29,6 +29,7 @@
 
 namespace VuFind\Db\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -83,7 +84,7 @@ class User implements EntityInterface
     /**
      * Hash of the password.
      *
-     * @var string|null
+     * @var ?string
      *
      * @ORM\Column(name="pass_hash", type="string", length=60, nullable=true)
      */
@@ -119,7 +120,7 @@ class User implements EntityInterface
     /**
      * Date of email verification.
      *
-     * @var \DateTime|null
+     * @var ?DateTime
      *
      * @ORM\Column(name="email_verified", type="datetime", nullable=true)
      */
@@ -146,7 +147,7 @@ class User implements EntityInterface
     /**
      * Cat ID.
      *
-     * @var string|null
+     * @var ?string
      *
      * @ORM\Column(name="cat_id", type="string", length=255, nullable=true)
      */
@@ -155,7 +156,7 @@ class User implements EntityInterface
     /**
      * Cat username.
      *
-     * @var string|null
+     * @var ?string
      *
      * @ORM\Column(name="cat_username", type="string", length=50, nullable=true)
      */
@@ -164,7 +165,7 @@ class User implements EntityInterface
     /**
      * Cat password.
      *
-     * @var string|null
+     * @var ?string
      *
      * @ORM\Column(name="cat_password", type="string", length=70, nullable=true)
      */
@@ -173,7 +174,7 @@ class User implements EntityInterface
     /**
      * Cat encrypted password.
      *
-     * @var string|null
+     * @var ?string
      *
      * @ORM\Column(name="cat_pass_enc", type="string", length=255, nullable=true)
      */
@@ -244,7 +245,7 @@ class User implements EntityInterface
     /**
      * Method of authentication.
      *
-     * @var string|null
+     * @var ?string
      *
      * @ORM\Column(name="auth_method", type="string", length=50, nullable=true)
      */

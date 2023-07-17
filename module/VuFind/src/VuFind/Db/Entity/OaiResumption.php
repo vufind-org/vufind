@@ -62,7 +62,7 @@ class OaiResumption implements EntityInterface
     /**
      * Resumption parameters.
      *
-     * @var string|null
+     * @var ?string
      *
      * @ORM\Column(name="params", type="text", length=65535, nullable=true)
      */

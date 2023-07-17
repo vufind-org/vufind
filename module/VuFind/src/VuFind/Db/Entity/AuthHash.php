@@ -68,7 +68,7 @@ class AuthHash implements EntityInterface
     /**
      * Session ID.
      *
-     * @var string|null
+     * @var ?string
      *
      * @ORM\Column(name="session_id", type="string", length=128, nullable=true)
      */
@@ -86,7 +86,7 @@ class AuthHash implements EntityInterface
     /**
      * Type of the hash.
      *
-     * @var string|null
+     * @var ?string
      *
      * @ORM\Column(name="type", type="string", length=50, nullable=true)
      */
@@ -95,7 +95,7 @@ class AuthHash implements EntityInterface
     /**
      * Data.
      *
-     * @var string|null
+     * @var ?string
      *
      * @ORM\Column(name="data", type="text", length=16777215, nullable=true)
      */
