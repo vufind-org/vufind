@@ -283,6 +283,8 @@ class Manager
         if ($disabled) {
             $this->createNoCache($cacheName);
             return;
+        } else {
+            unset($opts['disabled']);
         }
 
         if (!is_dir($dirName)) {
