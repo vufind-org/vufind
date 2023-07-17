@@ -19,6 +19,11 @@ then
   HARVEST_DIR="$VUFIND_HOME/harvest"
 fi
 
+if [ -z "$MAX_BATCH_COUNT" ]
+then
+  MAX_BATCH_COUNT=10
+fi
+
 BASEPATH_UNDER_HARVEST=true
 LOGGING=true
 MOVE_DATA=true
@@ -41,6 +46,7 @@ Options:
 -h:  Print this message
 -m:  Do not move the data files after importing.
 -p:  Used specified SolrMarc configuration properties file
+-x:  Maximum number of files to send in batches to import-marc.sh (default is MAX_BATCH_COUNT or 10)
 -z:  No logging.
 EOF
 }
@@ -53,6 +59,7 @@ do
        exit 0;;
     m) MOVE_DATA=false;;
     p) PROPERTIES_FILE="$OPTARG"; export PROPERTIES_FILE;;
+    x) MAX_BATCH_COUNT="$OPTARG";;
     z) LOGGING=false;;
     :)
       echo "argument to '-$OPTARG' is missing" >&2
@@ -109,20 +116,33 @@ then
   }
 else
   function log {
-    local FILE=$1
-    cat -u - > $BASEPATH/log/`basename $FILE`.log
+    local FILES=$@
+    local LOGFILE
+    if [ $MAX_BATCH_COUNT -eq "1" ]
+    then
+      LOGFILE=$BASEPATH/log/`basename $FILES`.log
+      > $LOGFILE
+    else
+      TIMESTAMP=$( date +%Y%m%d%H%M%S )
+      LOGFILE=$BASEPATH/log/$TIMESTAMP.log
+      echo -e "This log is for the following files: \n$FILES\n" > $LOGFILE
+    fi
+    cat -u - >> $LOGFILE
   }
 fi
 
 # Process all the files in the target directory:
-find $BASEPATH -maxdepth 1 \( -iname "*.xml" -o -iname "*.mrc" -o -iname "*.marc" \) -type f -print0 | \
-  while read -d $'\0' file
+find $BASEPATH -maxdepth 1 \( -iname "*.xml" -o -iname "*.mrc" -o -iname "*.marc" \) -type f -print0 | xargs -0 -n $MAX_BATCH_COUNT | \
+  while read -d $'\n' files
 do
   # Logging output handled by log() function
   # PROPERTIES_FILE passed via environment
-  $VUFIND_HOME/import-marc.sh $file 2> >(log $file)
+  $VUFIND_HOME/import-marc.sh $files 2> >(log $files)
   if [ "$?" -eq "0" ] && [ $MOVE_DATA == true ]
   then
-    mv $file $BASEPATH/processed/`basename $file`
+    for file in $files
+    do
+      mv $file $BASEPATH/processed/`basename $file`
+    done
   fi
 done
