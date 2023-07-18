@@ -48,6 +48,32 @@ class GoogleTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
+     * Get a callback to check the download function call.
+     *
+     * @param string $body         Body for mock to return
+     * @param string $expectedISBN ISBN expected in request URL
+     *
+     * @return callable
+     */
+    protected function getDownloadCallback(string $body, string $expectedISBN): callable
+    {
+        return function ($url, $params, $callback) use ($body, $expectedISBN) {
+            $this->assertEquals(
+                'https://books.google.com/books?jscmd=viewapi'
+                . '&bibkeys=ISBN:' . $expectedISBN . '&callback=addTheCover',
+                $url
+            );
+            $this->assertEquals([], $params);
+            $response = $this->getMockBuilder(\Laminas\Http\Response::class)
+                ->disableOriginalConstructor()
+                ->getMock();
+            $response->expects($this->any())->method('getBody')
+                ->will($this->returnValue($body));
+            return $callback($response, $url);
+        };
+    }
+
+    /**
      * Test cover loading
      *
      * @return void
@@ -59,21 +85,10 @@ class GoogleTest extends \PHPUnit\Framework\TestCase
         $mockDownloader = $this->getMockBuilder(CachingDownloader::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $downloadCallback = function ($url, $params, $callback) {
-            $this->assertEquals(
-                'https://books.google.com/books?jscmd=viewapi'
-                . '&bibkeys=ISBN:9781612917986&callback=addTheCover',
-                $url
-            );
-            $this->assertEquals([], $params);
-            $fixture = $this->getFixture('content/covers/google-cover.js');
-            $response = $this->getMockBuilder(\Laminas\Http\Response::class)
-                ->disableOriginalConstructor()
-                ->getMock();
-            $response->expects($this->once())->method('getBody')
-                ->will($this->returnValue($fixture));
-            return $callback($response, $url);
-        };
+        $downloadCallback = $this->getDownloadCallback(
+            $this->getFixture('content/covers/google-cover.js'),
+            '9781612917986'
+        );
         $mockDownloader->expects($this->once())->method('download')
             ->will($this->returnCallback($downloadCallback));
         $loader->setCachingDownloader($mockDownloader);
@@ -86,6 +101,73 @@ class GoogleTest extends \PHPUnit\Framework\TestCase
                 'small',
                 ['isbn' => new ISBN('1612917984')]
             )
+        );
+    }
+
+    /**
+     * Test invalid (empty) response
+     *
+     * @return void
+     */
+    public function testEmptyResponse(): void
+    {
+        $loader = new Google();
+
+        $mockDownloader = $this->getMockBuilder(CachingDownloader::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $downloadCallback = $this->getDownloadCallback('', '9781612917986');
+        $mockDownloader->expects($this->once())->method('download')
+            ->will($this->returnCallback($downloadCallback));
+        $loader->setCachingDownloader($mockDownloader);
+        $this->expectExceptionMessage('Invalid response body (raw)');
+        $loader->getUrl(
+            '',
+            'small',
+            ['isbn' => new ISBN('1612917984')]
+        );
+    }
+
+    /**
+     * Test invalid (non-empty, non-parseable) response
+     *
+     * @return void
+     */
+    public function testInvalidNonEmptyResponse(): void
+    {
+        $loader = new Google();
+
+        $mockDownloader = $this->getMockBuilder(CachingDownloader::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $downloadCallback = $this->getDownloadCallback(
+            $this->getFixture('content/covers/google-cover-invalid.js'),
+            '9781612917986'
+        );
+        $mockDownloader->expects($this->once())->method('download')
+            ->will($this->returnCallback($downloadCallback));
+        $loader->setCachingDownloader($mockDownloader);
+        $this->expectExceptionMessage('Invalid response body (json)');
+        $loader->getUrl(
+            '',
+            'small',
+            ['isbn' => new ISBN('1612917984')]
+        );
+    }
+
+    /**
+     * Test missing downloader
+     *
+     * @return void
+     */
+    public function testMissingDownloader(): void
+    {
+        $loader = new Google();
+        $this->expectExceptionMessage('CachingDownloader initialization failed.');
+        $loader->getUrl(
+            '',
+            'small',
+            ['isbn' => new ISBN('0123456789')]
         );
     }
 
