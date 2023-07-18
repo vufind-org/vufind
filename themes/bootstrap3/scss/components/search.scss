@@ -579,15 +579,16 @@ table.search-history-table {
     box-sizing: border-box;
   }
 
-  button.searchForm-reset {
+  #searchForm-reset {
     position: absolute;
     display: none;
     right: 3px;
     width: 2em;
     height: 2em;
+    border: none;
     border-radius: 50%;
     background-color: $gray-lighter;
-    font: 1em monospace;
+    font-size: 1em;
     text-align: center;
     line-height: 1em;
     cursor: pointer;
