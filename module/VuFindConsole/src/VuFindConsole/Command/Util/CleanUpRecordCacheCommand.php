@@ -32,7 +32,7 @@ namespace VuFindConsole\Command\Util;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use VuFind\Db\Table\Record;
+use VuFind\Db\Service\RecordService;
 
 /**
  * Console command: clean up record cache.
@@ -53,22 +53,22 @@ class CleanUpRecordCacheCommand extends Command
     protected static $defaultName = 'util/cleanup_record_cache';
 
     /**
-     * Record table object
+     * Record service object
      *
-     * @var Record
+     * @var RecordService
      */
-    protected $recordTable;
+    protected $recordService;
 
     /**
      * Constructor
      *
-     * @param Record      $table Record table object
-     * @param string|null $name  The name of the command; passing null means it
-     * must be set in configure()
+     * @param RecordService $service Record service object
+     * @param string|null   $name    The name of the command; passing null means it
+     *                               must be set in configure()
      */
-    public function __construct(Record $table, $name = null)
+    public function __construct(RecordService $service, $name = null)
     {
-        $this->recordTable = $table;
+        $this->recordService = $service;
         parent::__construct($name);
     }
 
@@ -97,7 +97,7 @@ class CleanUpRecordCacheCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $count = $this->recordTable->cleanup();
+        $count = $this->recordService->cleanup();
         $output->writeln("$count records deleted.");
         return 0;
     }

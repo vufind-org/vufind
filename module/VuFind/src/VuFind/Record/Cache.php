@@ -32,7 +32,7 @@
 namespace VuFind\Record;
 
 use Laminas\Config\Config as Config;
-use VuFind\Db\Table\Record as Record;
+use VuFind\Db\Service\RecordService;
 use VuFind\RecordDriver\PluginManager as RecordFactory;
 
 /**
@@ -61,11 +61,11 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
     protected $cacheConfig;
 
     /**
-     * Database table used by cache
+     * Database service used by cache
      *
-     * @var \VuFind\Db\Table\Record
+     * @var RecordService
      */
-    protected $recordTable;
+    protected $recordService;
 
     /**
      * Record driver plugin manager
@@ -86,15 +86,15 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
      *
      * @param RecordFactory $recordFactoryManager Record loader
      * @param Config        $config               VuFind main config
-     * @param Record        $recordTable          Record Table
+     * @param RecordService $recordService        Record service
      */
     public function __construct(
         RecordFactory $recordFactoryManager,
         Config $config,
-        Record $recordTable
+        RecordService $recordService
     ) {
         $this->cacheConfig = $config;
-        $this->recordTable = $recordTable;
+        $this->recordService = $recordService;
         $this->recordFactoryManager = $recordFactoryManager;
 
         $this->setContext(Cache::CONTEXT_DEFAULT);
@@ -113,7 +113,7 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
     {
         if (isset($this->cachableSources[$source])) {
             $this->debug("Updating {$source}|{$recordId}");
-            $this->recordTable->updateRecord($recordId, $source, $rawData);
+            $this->recordService->updateRecord($recordId, $source, $rawData);
         }
     }
 
@@ -128,7 +128,7 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
     public function lookup($id, $source)
     {
         $this->debug("Checking {$source}|{$id}");
-        $record = $this->recordTable->findRecord($id, $source);
+        $record = $this->recordService->findRecord($id, $source);
         $this->debug(
             "Cached record {$source}|{$id} "
             . ($record !== false ? 'found' : 'not found')
@@ -161,14 +161,14 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
 
         $this->debug("Checking $source batch: " . implode(', ', $ids));
         $vufindRecords = [];
-        $cachedRecords = $this->recordTable->findRecords($ids, $source);
+        $cachedRecords = $this->recordService->findRecords($ids, $source);
         foreach ($cachedRecords as $cachedRecord) {
             try {
                 $vufindRecords[] = $this->getVuFindRecord($cachedRecord);
             } catch (\Exception $e) {
                 $this->logError(
-                    'Could not load record ' . $cachedRecord['source'] . '|'
-                    . $cachedRecord['record_id'] . ' from the record cache: '
+                    'Could not load record ' . $cachedRecord->getSource() . '|'
+                    . $cachedRecord->getRecordId() . ' from the record cache: '
                     . $e->getMessage()
                 );
             }
@@ -275,8 +275,8 @@ class Cache implements \Laminas\Log\LoggerAwareInterface
      */
     protected function getVuFindRecord($cachedRecord)
     {
-        $source = $cachedRecord['source'];
-        $doc = unserialize($cachedRecord['data']);
+        $source = $cachedRecord->getSource();
+        $doc = unserialize($cachedRecord->getData());
 
         // Solr records are loaded in special-case fashion:
         if ($source === 'VuFind' || $source === 'Solr') {

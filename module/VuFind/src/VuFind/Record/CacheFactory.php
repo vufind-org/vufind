@@ -68,10 +68,13 @@ class CacheFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
+        $servicePluginManager = $container->get(
+            \VuFind\Db\Service\PluginManager::class
+        );
         return new $requestedName(
             $container->get(\VuFind\RecordDriver\PluginManager::class),
             $container->get(\VuFind\Config\PluginManager::class)->get('RecordCache'),
-            $container->get(\VuFind\Db\Table\PluginManager::class)->get('Record')
+            $servicePluginManager->get(\VuFind\Db\Service\RecordService::class)
         );
     }
 }

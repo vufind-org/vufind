@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2020.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -50,11 +50,11 @@ class CleanUpRecordCacheCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testBasicOperation()
     {
-        $table = $this->getMockBuilder(\VuFind\Db\Table\Record::class)
+        $recordService = $this->getMockBuilder(\VuFind\Db\Service\RecordService::class)
             ->disableOriginalConstructor()->getMock();
-        $table->expects($this->once())->method('cleanup')
+        $recordService->expects($this->once())->method('cleanup')
             ->will($this->returnValue(5));
-        $command = new CleanUpRecordCacheCommand($table);
+        $command = new CleanUpRecordCacheCommand($recordService);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
         $expected = "5 records deleted.\n";

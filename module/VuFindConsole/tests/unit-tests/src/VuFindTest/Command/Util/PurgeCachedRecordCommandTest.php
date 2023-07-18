@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2020.
+ * Copyright (C) Villanova University 2023.
  * Copyright (C) The National Library of Finland 2023.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -81,10 +81,12 @@ class PurgeCachedRecordCommandTest extends \PHPUnit\Framework\TestCase
         bool $recordRetVal,
         ?bool $resourceRetVal
     ): void {
-        $recordTable = $this->getMockBuilder(\VuFind\Db\Table\Record::class)
+        $recordService = $this->getMockBuilder(
+            \VuFind\Db\Service\RecordService::class
+        )
             ->disableOriginalConstructor()->getMock();
-        $recordTable->expects($this->once())->method('delete')
-            ->with($this->equalTo(['source' => 'Solr', 'record_id' => 123]))
+        $recordService->expects($this->once())->method('deleteRecord')
+            ->with($this->equalTo('123'), $this->equalTo('Solr'))
             ->willReturn($recordRetVal);
 
         $resourceTable = $this->getMockBuilder(\VuFind\Db\Table\Resource::class)
@@ -98,7 +100,7 @@ class PurgeCachedRecordCommandTest extends \PHPUnit\Framework\TestCase
             $params['--purge-resource'] = true;
         }
 
-        $command = new PurgeCachedRecordCommand($recordTable, $resourceTable);
+        $command = new PurgeCachedRecordCommand($recordService, $resourceTable);
         $commandTester = new CommandTester($command);
         $commandTester->execute($params);
         $expected = $recordRetVal ? "Cached record deleted\n" : "No cached record found\n";

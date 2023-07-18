@@ -29,6 +29,7 @@
 
 namespace VuFind\Db\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -109,4 +110,119 @@ class Record implements EntityInterface
      * )
      */
     protected $updated = '2000-01-01 00:00:00';
+
+    /**
+     * Record Id setter
+     *
+     * @param ?string $id Record Id.
+     *
+     * @return Record
+     */
+    public function setRecordId(?string $id): Record
+    {
+        $this->recordId = $id;
+        return $this;
+    }
+
+    /**
+     * Get record id.
+     *
+     * @return ?string
+     */
+    public function getRecordId(): ?string
+    {
+        return $this->recordId;
+    }
+
+    /**
+     * Record source setter
+     *
+     * @param ?string $source Record source.
+     *
+     * @return Record
+     */
+    public function setSource(?string $source): Record
+    {
+        $this->source = $source;
+        return $this;
+    }
+
+    /**
+     * Get record source.
+     *
+     * @return ?string
+     */
+    public function getSource(): ?string
+    {
+        return $this->source;
+    }
+
+    /**
+     * Record data setter
+     *
+     * @param ?string $data Record data.
+     *
+     * @return Record
+     */
+    public function setData(?string $data): Record
+    {
+        $this->data = $data;
+        return $this;
+    }
+
+    /**
+     * Get record data.
+     *
+     * @return ?string
+     */
+    public function getData(): ?string
+    {
+        return $this->data;
+    }
+
+    /**
+     * Record version setter
+     *
+     * @param string $version Record version.
+     *
+     * @return Record
+     */
+    public function setVersion(string $version): Record
+    {
+        $this->version = $version;
+        return $this;
+    }
+
+    /**
+     * Get record version.
+     *
+     * @return string
+     */
+    public function getVersion(): string
+    {
+        return $this->version;
+    }
+
+    /**
+     * Updated setter.
+     *
+     * @param Datetime $dateTime updated date
+     *
+     * @return Record
+     */
+    public function setUpdated(DateTime $dateTime): Record
+    {
+        $this->updated = $dateTime;
+        return $this;
+    }
+
+    /**
+     * Get record updation date.
+     *
+     * @return DateTime
+     */
+    public function getUpdated(): DateTime
+    {
+        return $this->updated;
+    }
 }

@@ -65,8 +65,11 @@ class PurgeCachedRecordCommandFactory implements FactoryInterface
         $requestedName,
         array $options = null
     ) {
+        $servicePluginManager = $container->get(
+            \VuFind\Db\Service\PluginManager::class
+        );
         return new $requestedName(
-            $container->get(\VuFind\Db\Table\PluginManager::class)->get('Record'),
+            $servicePluginManager->get(\VuFind\Db\Service\RecordService::class),
             $container->get(\VuFind\Db\Table\PluginManager::class)->get('Resource'),
             ...($options ?? [])
         );

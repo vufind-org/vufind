@@ -34,7 +34,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use VuFind\Db\Table\Record;
+use VuFind\Db\Service\RecordService;
 use VuFind\Db\Table\Resource;
 
 /**
@@ -56,11 +56,11 @@ class PurgeCachedRecordCommand extends Command
     protected static $defaultName = 'util/purge_cached_record';
 
     /**
-     * Record table object
+     * Record service object
      *
-     * @var Record
+     * @var RecordService
      */
-    protected $recordTable;
+    protected $recordService;
 
     /**
      * Resource table object
@@ -72,14 +72,17 @@ class PurgeCachedRecordCommand extends Command
     /**
      * Constructor
      *
-     * @param Record      $record   Record table object
-     * @param Resource    $resource Resource table object
-     * @param string|null $name     The name of the command; passing null means it
-     * must be set in configure()
+     * @param Record      $recordService Record service object
+     * @param Resource    $resource      Resource table object
+     * @param string|null $name          The name of the command; passing null means it
+     *                                   must be set in configure()
      */
-    public function __construct(Record $record, Resource $resource, $name = null)
-    {
-        $this->recordTable = $record;
+    public function __construct(
+        RecordService $recordService,
+        Resource $resource,
+        $name = null
+    ) {
+        $this->recordService = $recordService;
         $this->resourceTable = $resource;
         parent::__construct($name);
     }
@@ -117,7 +120,7 @@ class PurgeCachedRecordCommand extends Command
     {
         $source = $input->getArgument('source');
         $id = $input->getArgument('id');
-        if ($this->recordTable->delete(['source' => $source, 'record_id' => $id])) {
+        if ($this->recordService->deleteRecord($id, $source)) {
             $output->writeln('Cached record deleted');
         } else {
             $output->writeln('No cached record found');

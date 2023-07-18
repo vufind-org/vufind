@@ -31,6 +31,7 @@
 
 namespace VuFindTest\Record;
 
+use VuFind\Db\Entity\Record;
 use VuFind\Record\Cache;
 
 /**
@@ -55,25 +56,24 @@ class CacheTest extends \PHPUnit\Framework\TestCase
     protected function setUp(): void
     {
         $cache = $this->getRecordCache();
+        $record1 = new Record();
+        $record2 = new Record();
+        $record3 = new Record();
         $this->recordTable = [
-            [
-                'record_id' => '020645147',
-                'source' => 'Solr',
-                'version' => '2.5',
-                'data' => 's:17:"dummy_solr_record";',
-            ],
-            [
-                'record_id' => '70764764',
-                'source' => 'WorldCat',
-                'version' => '2.5',
-                'data' => 's:21:"dummy_worldcat_record";',
-            ],
-            [
-                'record_id' => '00033321',
-                'source' => 'Solr',
-                'version' => '2.5',
-                'data' => 's:19:"dummy_solr_record_2";',
-            ],
+            $record1->setRecordId('020645147')
+                ->setSource('Solr')
+                ->setVersion('2.5')
+                ->setData('s:17:"dummy_solr_record";'),
+
+            $record2->setRecordId('70764764')
+                ->setSource('WorldCat')
+                ->setVersion('2.5')
+                ->setData('s:21:"dummy_worldcat_record";'),
+
+            $record3->setRecordId('00033321')
+                ->setSource('Solr')
+                ->setVersion('2.5')
+                ->setData('s:19:"dummy_solr_record_2";'),
         ];
     }
 
@@ -230,16 +230,16 @@ class CacheTest extends \PHPUnit\Framework\TestCase
     /**
      * Create Record Table
      *
-     * @return \VuFind\Db\Table\Record
+     * @return \VuFind\Db\Service\RecordService
      */
-    protected function getRecordTable(): \VuFind\Db\Table\Record
+    protected function getRecordTable(): \VuFind\Db\Service\RecordService
     {
         $findRecordsCallback = function (array $ids, string $source): array {
             $results = [];
             foreach ($this->recordTable as $row) {
                 if (
-                    in_array($row['record_id'], $ids)
-                    && $row['source'] == $source
+                    in_array($row->getRecordId(), $ids)
+                    && $row->getSource() == $source
                 ) {
                     $results[] = $row;
                 }
@@ -250,8 +250,8 @@ class CacheTest extends \PHPUnit\Framework\TestCase
         $findRecordCallback = function ($id, $source) {
             foreach ($this->recordTable as $row) {
                 if (
-                    $row['record_id'] == $id
-                    && $row['source'] == $source
+                    $row->getRecordId() == $id
+                    && $row->getSource() == $source
                 ) {
                     return $row;
                 }
@@ -259,7 +259,7 @@ class CacheTest extends \PHPUnit\Framework\TestCase
             return false;
         };
 
-        $recordTable = $this->getMockBuilder(\VuFind\Db\Table\Record::class)
+        $recordTable = $this->getMockBuilder(\VuFind\Db\Service\RecordService::class)
             ->disableOriginalConstructor()->getMock();
         $recordTable->method('findRecords')
             ->will($this->returnCallback($findRecordsCallback));
@@ -267,12 +267,12 @@ class CacheTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnCallback($findRecordCallback));
 
         $updateRecordCallback = function ($recordId, $source, $rawData): void {
-            $this->recordTable[] = [
-                'record_id' => $recordId,
-                'source' => $source,
-                'version' => '2.5',
-                'data' => serialize($rawData),
-            ];
+            $record = new Record();
+            $record->setRecordId($recordId)
+                ->setSource($source)
+                ->setVersion('2.5')
+                ->setData(serialize($rawData));
+            $this->recordTable[] = $record;
         };
         $recordTable->method('updateRecord')
             ->will($this->returnCallback($updateRecordCallback));
