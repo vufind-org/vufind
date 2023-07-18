@@ -279,8 +279,7 @@ class Manager
     protected function createFileCache($cacheName, $dirName, $overrideOpts = [])
     {
         $opts = array_merge($this->defaults, $overrideOpts);
-        $disabled = $opts['disabled'] ?? false;
-        if ($disabled) {
+        if ($opts['disabled'] ?? false) {
             $this->createNoCache($cacheName);
             return;
         } else {
