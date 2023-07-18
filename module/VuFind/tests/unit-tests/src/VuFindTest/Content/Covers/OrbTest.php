@@ -52,6 +52,7 @@ class OrbTest extends \PHPUnit\Framework\TestCase
      *
      * @param ?string $fixtureFile Fixture file to return (null to skip downloader initialization)
      * @param string  $expectedEAN Expected EAN in URL when $fixtureFile is not null
+     *
      * @return Orb
      */
     protected function getLoader(?string $fixtureFile = null, string $expectedEAN = ''): Orb
