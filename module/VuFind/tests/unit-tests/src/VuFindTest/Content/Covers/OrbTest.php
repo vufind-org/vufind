@@ -50,9 +50,11 @@ class OrbTest extends \PHPUnit\Framework\TestCase
     /**
      * Get Orb object to test.
      *
+     * @param ?string $fixtureFile Fixture file to return (null to skip downloader initialization)
+     * @param string  $expectedEAN Expected EAN in URL when $fixtureFile is not null
      * @return Orb
      */
-    protected function getLoader($fixtureFile = null, $expectedEAN = ''): Orb
+    protected function getLoader(?string $fixtureFile = null, string $expectedEAN = ''): Orb
     {
         $loader = new Orb('http://foo', 'fakeuser', 'fakekey');
         if ($fixtureFile) {
