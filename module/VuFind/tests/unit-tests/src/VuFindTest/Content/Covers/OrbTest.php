@@ -52,9 +52,20 @@ class OrbTest extends \PHPUnit\Framework\TestCase
      *
      * @return Orb
      */
-    protected function getLoader(): Orb
+    protected function getLoader($fixtureFile = null, $expectedEAN = ''): Orb
     {
-        return new Orb('http://foo', 'fakeuser', 'fakekey');
+        $loader = new Orb('http://foo', 'fakeuser', 'fakekey');
+        if ($fixtureFile) {
+            $mockDownloader = $this->getMockBuilder(CachingDownloader::class)
+                ->disableOriginalConstructor()
+                ->getMock();
+            $fixture = $this->getFixture($fixtureFile);
+            $mockDownloader->expects($this->once())->method('downloadJson')
+                ->with($this->equalTo("https://fakeuser:fakekey@http://foo/products?eans=$expectedEAN&sort=ean_asc"))
+                ->will($this->returnValue(json_decode($fixture)));
+            $loader->setCachingDownloader($mockDownloader);
+        }
+        return $loader;
     }
 
     /**
@@ -64,15 +75,7 @@ class OrbTest extends \PHPUnit\Framework\TestCase
      */
     public function testValidCoverLoading(): void
     {
-        $loader = $this->getLoader();
-        $mockDownloader = $this->getMockBuilder(CachingDownloader::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $fixture = $this->getFixture('content/covers/orb-cover.json');
-        $mockDownloader->expects($this->once())->method('downloadJson')
-            ->with($this->equalTo("https://fakeuser:fakekey@http://foo/products?eans=9781612917986&sort=ean_asc"))
-            ->will($this->returnValue(json_decode($fixture)));
-        $loader->setCachingDownloader($mockDownloader);
+        $loader = $this->getLoader('content/covers/orb-cover.json', '9781612917986');
 
         $this->assertEquals(
             'http://bar/small',
@@ -81,6 +84,40 @@ class OrbTest extends \PHPUnit\Framework\TestCase
                 'small',
                 ['isbn' => new ISBN('1612917984')]
             )
+        );
+    }
+
+    /**
+     * Test cover not available
+     *
+     * @return void
+     */
+    public function testUnavailableCoverLoading(): void
+    {
+        $loader = $this->getLoader('content/covers/orb-cover.json', '9780123456786');
+
+        $this->assertFalse(
+            $loader->getUrl(
+                '',
+                'small',
+                ['isbn' => new ISBN('0123456789')]
+            )
+        );
+    }
+
+    /**
+     * Test missing downloader
+     *
+     * @return void
+     */
+    public function testMissingDownloader(): void
+    {
+        $loader = $this->getLoader();
+        $this->expectExceptionMessage('CachingDownloader initialization failed.');
+        $loader->getUrl(
+            '',
+            'small',
+            ['isbn' => new ISBN('0123456789')]
         );
     }
 
