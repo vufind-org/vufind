@@ -283,6 +283,7 @@ class Manager
             $this->createNoCache($cacheName);
             return;
         } else {
+            // Laminas does not support "disabled = false"; unset to avoid error.
             unset($opts['disabled']);
         }
 
