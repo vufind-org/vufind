@@ -105,6 +105,35 @@ class GoogleTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test successful transaction containing no thumbnails.
+     *
+     * @return void
+     */
+    public function testNoAvailableThumbnailLoading(): void
+    {
+        $loader = new Google();
+
+        $mockDownloader = $this->getMockBuilder(CachingDownloader::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $downloadCallback = $this->getDownloadCallback(
+            $this->getFixture('content/covers/google-cover-no-thumbnail.js'),
+            '9781612917986'
+        );
+        $mockDownloader->expects($this->once())->method('download')
+            ->will($this->returnCallback($downloadCallback));
+        $loader->setCachingDownloader($mockDownloader);
+
+        $this->assertFalse(
+            $loader->getUrl(
+                '',
+                'small',
+                ['isbn' => new ISBN('1612917984')]
+            )
+        );
+    }
+
+    /**
      * Test invalid (empty) response
      *
      * @return void
