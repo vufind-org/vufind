@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Caching downloader factory.
+ * Google cover loader factory
  *
- * PHP version 8
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -21,27 +21,29 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Http
+ * @package  Content
  * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 
-namespace VuFind\Http;
+namespace VuFind\Content\Covers;
 
-use Interop\Container\ContainerInterface;
-use Laminas\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
- * Caching downloader factory.
+ * Google cover loader factory
  *
  * @category VuFind
- * @package  Http
+ * @package  Content
  * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-class CachingDownloaderFactory implements FactoryInterface
+class GoogleFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -56,6 +58,8 @@ class CachingDownloaderFactory implements FactoryInterface
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
         ContainerInterface $container,
@@ -66,9 +70,9 @@ class CachingDownloaderFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
 
-        return new $requestedName(
-            $container->get(\VuFind\Cache\Manager::class),
-            $container->get(\VuFind\Config\PluginManager::class),
-        );
+        $google = new $requestedName();
+        $cachingDownloader = $container->get(\VuFind\Http\CachingDownloader::class);
+        $google->setCachingDownloader($cachingDownloader);
+        return $google;
     }
 }
