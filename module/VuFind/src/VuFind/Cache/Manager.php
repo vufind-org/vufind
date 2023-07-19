@@ -279,6 +279,14 @@ class Manager
     protected function createFileCache($cacheName, $dirName, $overrideOpts = [])
     {
         $opts = array_merge($this->defaults, $overrideOpts);
+        if ($opts['disabled'] ?? false) {
+            $this->createNoCache($cacheName);
+            return;
+        } else {
+            // Laminas does not support "disabled = false"; unset to avoid error.
+            unset($opts['disabled']);
+        }
+
         if (!is_dir($dirName)) {
             if (isset($opts['umask'])) {
                 // convert umask from string
