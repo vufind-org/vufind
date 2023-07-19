@@ -335,22 +335,6 @@ textarea::placeholder {
   text-decoration: inherit;
   speak: none;
 }
-
-/* facet and tree overflow  */
-.hierarchical-facet-anchor,
-.hierarchical-facet-anchor .text {
-  width: calc(100% - 1.5em);
-}
-.hierarchy-tree .jstree-node,
-.hierarchical-facet-anchor .text .icon-link__label {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-.hierarchical-facet-anchor .text .icon-link__label {
-  display: inline;
-}
-
 .hierarchy-tree .jstree-open > .jstree-ocl:before {
   content: "\f0d7";
 }
