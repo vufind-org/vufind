@@ -63,10 +63,19 @@
 }
 
 /* facet and tree text overflow  */
+.facet .text {
+  overflow: hidden;
+}
+
 .hierarchical-facet-anchor,
 .hierarchical-facet-anchor .text {
   width: calc(100% - 1.5em);
 }
+[data-exclude] .hierarchical-facet-anchor,
+[data-exclude] .hierarchical-facet-anchor .text {
+  width: calc(100% - 3.0em);
+}
+
 .hierarchy-tree .jstree-node,
 .hierarchical-facet-anchor .text .icon-link__label {
   overflow: hidden;
