@@ -45,7 +45,7 @@ use VuFind\Exception\Auth as AuthException;
 class SIP2 extends AbstractBase
 {
     /**
-     * Attempt to authenticate the current user.  Throws exception if login fails.
+     * Attempt to authenticate the current user. Throws exception if login fails.
      *
      * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.
@@ -134,7 +134,7 @@ class SIP2 extends AbstractBase
     {
         $user = $this->getUserTable()->getByUsername($info['variable']['AA'][0]);
 
-        // This could potentially be different depending on the ILS.  Name could be
+        // This could potentially be different depending on the ILS. Name could be
         // Bob Wicksall or Wicksall, Bob. This is currently assuming Wicksall, Bob
         $ae = $info['variable']['AE'][0];
         $user->firstname = trim(substr($ae, 1 + strripos($ae, ',')));

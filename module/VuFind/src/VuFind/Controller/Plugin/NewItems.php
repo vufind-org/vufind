@@ -75,7 +75,7 @@ class NewItems extends AbstractPlugin
     public function getBibIDsFromCatalog($catalog, $params, $range, $dept, $flash)
     {
         // The code always pulls in enough catalog results to get a fixed number
-        // of pages worth of Solr results.  Note that if the Solr index is out of
+        // of pages worth of Solr results. Note that if the Solr index is out of
         // sync with the ILS, we may see fewer results than expected.
         $resultPages = $this->getResultPages();
         $perPage = $params->getLimit();

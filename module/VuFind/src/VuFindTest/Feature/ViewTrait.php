@@ -55,7 +55,7 @@ trait ViewTrait
         $resolver = new \Laminas\View\Resolver\TemplatePathStack();
 
         // This assumes that all themes will be testing inherit directly
-        // from root with no intermediate themes.  Probably safe for most
+        // from root with no intermediate themes. Probably safe for most
         // test situations, though other scenarios are possible.
         $resolver->setPaths(
             [
