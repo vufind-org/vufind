@@ -4,7 +4,6 @@ return [
     'css' => [
         //'vendor/bootstrap.min.css',
         //'vendor/bootstrap-accessibility.css',
-        //'bootstrap-custom.css',
         'compiled.css',
         'print.css:print',
     ],

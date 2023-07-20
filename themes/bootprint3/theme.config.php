@@ -46,7 +46,7 @@ return [
             'external-link' => 'Fugue:link.png',
             'facet-applied' => 'Fugue:tick.png',
             // 'facet-checked' => inherited from parent theme,
-            'facet-exclude' => 'Fugue:cross.png',
+            // 'facet-exclude' => inherited from parent theme,
             // 'facet-unchecked' => inherited from parent theme,
             'feedback' => 'Fugue:email.png',
             'format-atlas' => 'Fugue:map.png',
