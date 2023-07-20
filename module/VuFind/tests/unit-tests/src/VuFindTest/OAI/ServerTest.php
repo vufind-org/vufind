@@ -78,7 +78,8 @@ class ServerTest extends \PHPUnit\Framework\TestCase
         $server = new Server(
             $this->getMockResultsManager(),
             $this->getMockRecordLoader(),
-            $this->getMockTableManager()
+            $this->getMockTableManager(),
+            $this->getMockResumptionService()
         );
         $server->setRecordFormatter($this->getMockRecordFormatter());
         return $server;
@@ -128,6 +129,18 @@ class ServerTest extends \PHPUnit\Framework\TestCase
     protected function getMockRecordFormatter()
     {
         return $this->getMockBuilder(\VuFindApi\Formatter\RecordFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
+
+     /**
+      * Get a mock resumption Service
+      *
+      * @return \VuFind\Db\Service\OaiResumptionService
+      */
+    protected function getMockResumptionService()
+    {
+        return $this->getMockBuilder(\VuFind\Db\Service\OaiResumptionService::class)
             ->disableOriginalConstructor()
             ->getMock();
     }

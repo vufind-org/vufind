@@ -48,6 +48,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $aliases = [
         'comments' => CommentsService::class,
         'feedback' => FeedbackService::class,
+        'oairesumption' => OaiResumptionService::class,
         'ratings' => RatingsService::class,
         'record' => RecordService::class,
         'resource' => ResourceService::class,
@@ -66,6 +67,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $factories = [
         CommentsService::class => AbstractServiceFactory::class,
         FeedbackService::class => AbstractServiceFactory::class,
+        OaiResumptionService::class => AbstractServiceFactory::class,
         RatingsService::class => AbstractServiceFactory::class,
         RecordService::class => AbstractServiceFactory::class,
         ResourceService::class => ResourceServiceFactory::class,
