@@ -78,7 +78,7 @@ then
 fi
 
 # Check MAX_BATCH_COUNT is a positive integer
-if ! [[ "$MAX_BATCH_COUNT" =~ ^[0-9]+$ ]]
+if ! [[ "$MAX_BATCH_COUNT" =~ ^[1-9][0-9]*$ ]]
 then
   echo "MAX_BATCH_COUNT (option -x) is not a positive integer: \"$MAX_BATCH_COUNT\""
   exit 1
