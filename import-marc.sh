@@ -162,7 +162,7 @@ fi
 #####################################################
 
 RUN_CMD="$JAVA $INDEX_OPTIONS -Duser.timezone=UTC -Dlog4j.configuration=file://$LOG4J_CONFIG $EXTRA_SOLRMARC_SETTINGS -jar $JAR_FILE $PROPERTIES_FILE -solrj $SOLRJ_DIR -lib_local "$VUFIND_HOME/import/lib_local\;$VUFIND_HOME/solr/vendor/modules/analysis-extras/lib" $NORMALIZED_PATHS"
-echo "Now Importing $1 ..."
+echo "Now Importing $NORMALIZED_PATHS ..."
 # solrmarc writes log messages to stderr, write RUN_CMD to the same place
 echo "`date '+%h %d, %H:%M:%S'` $RUN_CMD" >&2
 exec $RUN_CMD

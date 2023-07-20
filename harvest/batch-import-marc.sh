@@ -51,7 +51,7 @@ Options:
 EOF
 }
 
-while getopts ":dhmp:z" OPT
+while getopts ":dhmpx:z" OPT
 do
   case $OPT in
     d) BASEPATH_UNDER_HARVEST=false;;
@@ -74,6 +74,13 @@ shift $(($OPTIND - 1))
 if [ -z "$1" ]
 then
   usage
+  exit 1
+fi
+
+# Check MAX_BATCH_COUNT is a positive integer
+if ! [[ "$MAX_BATCH_COUNT" =~ ^[0-9]+$ ]]
+then
+  echo "MAX_BATCH_COUNT (option -x) is not a positive integer: \"$MAX_BATCH_COUNT\""
   exit 1
 fi
 
@@ -108,7 +115,7 @@ fi
 
 # The log() function can be redefined to suit a variety of logging needs
 # Positional parameters must be consistent:
-# $1 = name of the file being imported
+# $1 = name of the first file being imported
 if [ $LOGGING == false ]
 then
   function log {
@@ -118,13 +125,12 @@ else
   function log {
     local FILES=$@
     local LOGFILE
-    if [ $MAX_BATCH_COUNT -eq "1" ]
+    if [ $# -eq 1 ]
     then
-      LOGFILE=$BASEPATH/log/`basename $FILES`.log
+      LOGFILE=$BASEPATH/log/`basename $1`.log
       > $LOGFILE
     else
-      TIMESTAMP=$( date +%Y%m%d%H%M%S )
-      LOGFILE=$BASEPATH/log/$TIMESTAMP.log
+      LOGFILE=$BASEPATH/log/`basename $1`_and_more.log
       echo -e "This log is for the following files: \n$FILES\n" > $LOGFILE
     fi
     cat -u - >> $LOGFILE
