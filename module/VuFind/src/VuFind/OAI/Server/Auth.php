@@ -58,7 +58,7 @@ class Auth extends Base
         \VuFind\Search\Results\PluginManager $results,
         \VuFind\Record\Loader $loader,
         \VuFind\Db\Table\PluginManager $tables,
-        \VuFind\Db\Service\OaiResumptionService $oaiService
+        OaiResumptionService $oaiService
     ) {
         parent::__construct($results, $loader, $tables, $oaiService);
         $this->core = 'authority';
