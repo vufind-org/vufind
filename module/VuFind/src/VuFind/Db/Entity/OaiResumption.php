@@ -116,7 +116,7 @@ class OaiResumption implements EntityInterface
     }
 
     /**
-     * expiry date setter.
+     * Expiry date setter.
      *
      * @param Datetime $dateTime Expiration date
      *
