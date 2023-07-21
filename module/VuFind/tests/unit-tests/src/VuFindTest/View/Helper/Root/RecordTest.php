@@ -373,21 +373,18 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     public function testGetCheckbox()
     {
         $context = $this->getMockContext();
-        $this->expectConsecutiveCalls(
-            $context,
-            'renderInContext',
-            [
+        $context->expects($this->exactly(2))->method('renderInContext')
+            ->withConsecutive(
                 [
                     'record/checkbox.phtml',
-                    ['id' => 'Solr|000105196', 'number' => 1, 'prefix' => 'bar', 'formAttr' => 'foo'],
+                    ['id' => 'bar-Solr|000105196', 'number' => 1, 'prefix' => 'bar', 'formAttr' => 'foo'],
                 ],
                 [
                     'record/checkbox.phtml',
-                    ['id' => 'Solr|000105196', 'number' => 2, 'prefix' => 'bar', 'formAttr' => 'foo'],
-                ],
-            ],
-            'success'
-        );
+                    ['id' => 'bar-Solr|000105196', 'number' => 2, 'prefix' => 'bar', 'formAttr' => 'foo'],
+                ]
+            )
+            ->willReturnOnConsecutiveCalls('success', 'success');
         $record = $this->getRecord(
             $this->loadRecordFixture('testbug1.json'),
             [],
