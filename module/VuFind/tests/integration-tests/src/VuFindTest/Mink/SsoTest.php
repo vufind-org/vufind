@@ -116,7 +116,13 @@ class SsoTest extends \VuFindTest\Integration\MinkTestCase
         $this->logoutAndAssertSuccess();
     }
 
-    protected function logoutAndAssertSuccess() {
+    /**
+     * Logs out on the current page and checks if logout was successful
+     *
+     * @return void
+     */
+    protected function logoutAndAssertSuccess()
+    {
         $session = $this->getMinkSession();
         $page = $session->getPage();
 
