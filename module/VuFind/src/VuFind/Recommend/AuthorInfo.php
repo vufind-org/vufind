@@ -167,7 +167,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     }
 
     /**
-     * Called after the Search Results object has performed its main search.  This
+     * Called after the Search Results object has performed its main search. This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
      *
@@ -227,7 +227,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     }
 
     /**
-     * Translate an LCCN to a Wikipedia name through the VIAF web service.  Returns
+     * Translate an LCCN to a Wikipedia name through the VIAF web service. Returns
      * false if no value can be found.
      *
      * @param string $lccn LCCN

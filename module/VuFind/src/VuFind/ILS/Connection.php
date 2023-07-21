@@ -300,7 +300,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
-     * Get configuration for the ILS driver.  We will load an .ini file named
+     * Get configuration for the ILS driver. We will load an .ini file named
      * after the driver class if it exists; otherwise we will return an empty
      * array.
      *
@@ -1148,7 +1148,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
 
     /**
      * Default method -- pass along calls to the driver if available; return
-     * false otherwise.  This allows custom functions to be implemented in
+     * false otherwise. This allows custom functions to be implemented in
      * the driver without constant modification to the connection class.
      *
      * @param string $methodName The name of the called method.

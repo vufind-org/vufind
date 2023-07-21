@@ -29,6 +29,7 @@
 
 namespace VuFind\Controller;
 
+use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\ChannelProvider\ChannelLoader;
 
 /**
@@ -54,11 +55,14 @@ class ChannelsController extends AbstractBase
     /**
      * Constructor
      *
-     * @param ChannelLoader $loader Channel loader
+     * @param ChannelLoader           $loader Channel loader
+     * @param ServiceLocatorInterface $sm     Top-level service manager (needed for
+     * some AbstractBase behavior)
      */
-    public function __construct(ChannelLoader $loader)
+    public function __construct(ChannelLoader $loader, ServiceLocatorInterface $sm)
     {
         $this->loader = $loader;
+        parent::__construct($sm);
     }
 
     /**

@@ -138,6 +138,13 @@ class Backend extends AbstractBackend
     protected $isGuest;
 
     /**
+     * Backend type
+     *
+     * @var str
+     */
+    protected $backendType = null;
+
+    /**
      * Constructor.
      *
      * @param Connector                        $client  EdsApi client to use
@@ -295,30 +302,44 @@ class Backend extends AbstractBackend
                 $this->profile = $overrideProfile;
             }
             $sessionToken = $this->getSessionToken();
-            $parts = explode(',', $id, 2);
-            if (!isset($parts[1])) {
+
+            if ('EDS' === $this->backendType) {
+                $parts = explode(',', $id, 2);
+                if (!isset($parts[1])) {
+                    throw new BackendException(
+                        'Retrieval id is not in the correct format.'
+                    );
+                }
+                [$dbId, $an] = $parts;
+                $hlTerms = (null !== $params)
+                    ? $params->get('highlightterms') : null;
+                $extras = [];
+                if (
+                    null !== $params
+                    && ($eBookFormat = $params->get('ebookpreferredformat'))
+                ) {
+                    $extras['ebookpreferredformat'] = $eBookFormat;
+                }
+                $response = $this->client->retrieveEdsItem(
+                    $an,
+                    $dbId,
+                    $authenticationToken,
+                    $sessionToken,
+                    $hlTerms,
+                    $extras
+                );
+            } elseif ('EPF' === $this->backendType) {
+                $pubId = $id;
+                $response = $this->client->retrieveEpfItem(
+                    $pubId,
+                    $authenticationToken,
+                    $sessionToken
+                );
+            } else {
                 throw new BackendException(
-                    'Retrieval id is not in the correct format.'
+                    'Unknown backendType: ' . $this->backendType
                 );
             }
-            [$dbId, $an] = $parts;
-            $hlTerms = (null !== $params)
-                ? $params->get('highlightterms') : null;
-            $extras = [];
-            if (
-                null !== $params
-                && ($eBookFormat = $params->get('ebookpreferredformat'))
-            ) {
-                $extras['ebookpreferredformat'] = $eBookFormat;
-            }
-            $response = $this->client->retrieve(
-                $an,
-                $dbId,
-                $authenticationToken,
-                $sessionToken,
-                $hlTerms,
-                $extras
-            );
         } catch (ApiException $e) {
             // Error codes can be reviewed at
             // https://connect.ebsco.com/s/article
@@ -488,7 +509,7 @@ class Backend extends AbstractBackend
             );
 
             // Check to see if the token expiration time is greater than the current
-            // time.  If the token is expired or within 5 minutes of expiring,
+            // time. If the token is expired or within 5 minutes of expiring,
             // generate a new one.
             if (!empty($currentToken) && (time() <= ($expirationTime - (60 * 5)))) {
                 return $currentToken;
@@ -536,7 +557,7 @@ class Backend extends AbstractBackend
             $expirationTime = $autocompleteData['expiration'] ?? 0;
 
             // Check to see if the token expiration time is greater than the current
-            // time.  If the token is expired or within 5 minutes of expiring,
+            // time. If the token is expired or within 5 minutes of expiring,
             // generate a new one.
             if (!empty($currentToken) && (time() <= ($expirationTime - (60 * 5)))) {
                 return $autocompleteData;
@@ -740,5 +761,17 @@ class Backend extends AbstractBackend
     public function setAuthManager($authManager)
     {
         $this->authManager = $authManager;
+    }
+
+    /**
+     * Set the EBSCO backend type. Backend/EDS is used for both EDS and EPF.
+     *
+     * @param str $backendType 'EDS' or 'EPF'
+     *
+     * @return void
+     */
+    public function setBackendType($backendType)
+    {
+        $this->backendType = $backendType;
     }
 }

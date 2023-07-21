@@ -46,7 +46,7 @@ use VuFind\Exception\Auth as AuthException;
 class PasswordAccess extends AbstractBase
 {
     /**
-     * Get configuration (load automatically if not previously set).  Throw an
+     * Get configuration (load automatically if not previously set). Throw an
      * exception if the configuration is invalid.
      *
      * @throws AuthException
@@ -64,7 +64,7 @@ class PasswordAccess extends AbstractBase
     }
 
     /**
-     * Attempt to authenticate the current user.  Throws exception if login fails.
+     * Attempt to authenticate the current user. Throws exception if login fails.
      *
      * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.

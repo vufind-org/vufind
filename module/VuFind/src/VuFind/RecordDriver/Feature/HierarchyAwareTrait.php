@@ -58,7 +58,7 @@ trait HierarchyAwareTrait
     protected $hierarchyDriver = null;
 
     /**
-     * Get a hierarchy driver appropriate to the current object.  (May be false if
+     * Get a hierarchy driver appropriate to the current object. (May be false if
      * disabled/unavailable).
      *
      * @return \VuFind\Hierarchy\Driver\AbstractBase|bool

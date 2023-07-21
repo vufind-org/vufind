@@ -90,7 +90,7 @@ class Shibboleth extends AbstractBase
     /**
      * Http Request object
      *
-     * @var \Laminas\Http\PhpEnvironment\Request
+     * @var Request
      */
     protected $request;
 
@@ -118,17 +118,14 @@ class Shibboleth extends AbstractBase
     /**
      * Constructor
      *
-     * @param \Laminas\Session\ManagerInterface    $sessionManager      Session
-     * manager
-     * @param ConfigurationLoaderInterface         $configurationLoader Configuration
-     * loader
-     * @param \Laminas\Http\PhpEnvironment\Request $request             Http
-     * request object
+     * @param \Laminas\Session\ManagerInterface $sessionManager      Session manager
+     * @param ConfigurationLoaderInterface      $configurationLoader Configuration loader
+     * @param Request                           $request             Http request object
      */
     public function __construct(
         \Laminas\Session\ManagerInterface $sessionManager,
         ConfigurationLoaderInterface $configurationLoader,
-        \Laminas\Http\PhpEnvironment\Request $request
+        Request $request
     ) {
         $this->sessionManager = $sessionManager;
         $this->configurationLoader = $configurationLoader;
@@ -152,7 +149,7 @@ class Shibboleth extends AbstractBase
     }
 
     /**
-     * Validate configuration parameters.  This is a support method for getConfig(),
+     * Validate configuration parameters. This is a support method for getConfig(),
      * so the configuration MUST be accessed using $this->config; do not call
      * $this->getConfig() from within this method!
      *
@@ -178,10 +175,9 @@ class Shibboleth extends AbstractBase
     }
 
     /**
-     * Attempt to authenticate the current user.  Throws exception if login fails.
+     * Attempt to authenticate the current user. Throws exception if login fails.
      *
-     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
-     * account credentials.
+     * @param Request $request Request object containing account credentials.
      *
      * @throws AuthException
      * @return \VuFind\Db\Row\User Object representing logged-in user.
@@ -267,7 +263,7 @@ class Shibboleth extends AbstractBase
 
     /**
      * Get the URL to establish a session (needed when the internal VuFind login
-     * form is inadequate).  Returns false when no session initiator is needed.
+     * form is inadequate). Returns false when no session initiator is needed.
      *
      * @param string $target Full URL where external authentication method should
      * send user after login (some drivers may override this).
@@ -340,10 +336,8 @@ class Shibboleth extends AbstractBase
     /**
      * Connect user authenticated by Shibboleth to library card.
      *
-     * @param \Laminas\Http\PhpEnvironment\Request $request        Request object
-     * containing account credentials.
-     * @param \VuFind\Db\Row\User                  $connectingUser Connect newly
-     * created library card to this user.
+     * @param Request             $request        Request object containing account credentials.
+     * @param \VuFind\Db\Row\User $connectingUser Connect newly created library card to this user.
      *
      * @return void
      */
@@ -412,8 +406,7 @@ class Shibboleth extends AbstractBase
     /**
      * Add session id mapping to external_session table for single logout support
      *
-     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
-     * account credentials.
+     * @param Request $request Request object containing account credentials.
      *
      * @return void
      */
@@ -438,7 +431,7 @@ class Shibboleth extends AbstractBase
     /**
      * Fetch entityId used for authentication
      *
-     * @param \Laminas\Http\PhpEnvironment\Request $request Request object
+     * @param Request $request Request object
      *
      * @return string entityId of IdP
      */
@@ -450,8 +443,8 @@ class Shibboleth extends AbstractBase
     /**
      * Extract attribute from request.
      *
-     * @param \Laminas\Http\PhpEnvironment\Request $request   Request object
-     * @param string                               $attribute Attribute name
+     * @param Request $request   Request object
+     * @param string  $attribute Attribute name
      *
      * @return ?string attribute value
      */

@@ -98,7 +98,7 @@ class EdsController extends AbstractSearch
     }
 
     /**
-     * Return a Search Results object containing advanced facet information.  This
+     * Return a Search Results object containing advanced facet information. This
      * data may come from the cache.
      *
      * @return array

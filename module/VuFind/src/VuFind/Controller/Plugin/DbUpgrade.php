@@ -852,7 +852,7 @@ class DbUpgrade extends AbstractPlugin
 
     /**
      * Given a table column object, return true if the object's type matches the
-     * specified $type parameter.  Return false if there is a mismatch that will
+     * specified $type parameter. Return false if there is a mismatch that will
      * require table structure updates.
      *
      * @param \Laminas\Db\Metadata\Object\ColumnObject $column       Object to check

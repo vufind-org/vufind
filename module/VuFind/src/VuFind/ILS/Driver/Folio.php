@@ -408,7 +408,7 @@ class Folio extends AbstractAPI implements
         ];
         $response = $this->makeRequest('GET', '/instance-storage/instances', $query);
         $instances = json_decode($response->getBody());
-        if (count($instances->instances) == 0) {
+        if (count($instances->instances ?? []) == 0) {
             throw new ILSException("Item Not Found");
         }
         return $instances->instances[0];
@@ -608,18 +608,18 @@ class Folio extends AbstractAPI implements
             array_map([$this, 'formatNote'], $holding->notes ?? [])
         );
         $hasHoldingNotes = !empty(implode($holdingNotes));
-        $holdingsStatements = array_map(
+        $holdingsStatements = array_values(array_filter(array_map(
             $textFormatter,
             $holding->holdingsStatements ?? []
-        );
-        $holdingsSupplements = array_map(
+        )));
+        $holdingsSupplements = array_values(array_filter(array_map(
             $textFormatter,
             $holding->holdingsStatementsForSupplements ?? []
-        );
-        $holdingsIndexes = array_map(
+        )));
+        $holdingsIndexes = array_values(array_filter(array_map(
             $textFormatter,
             $holding->holdingsStatementsForIndexes ?? []
-        );
+        )));
         $holdingCallNumber = $holding->callNumber ?? '';
         $holdingCallNumberPrefix = $holding->callNumberPrefix ?? '';
         return compact(
@@ -1256,10 +1256,10 @@ class Folio extends AbstractAPI implements
      *
      * @param array $patron   Patron information returned by $this->patronLogin
      * @param array $holdInfo Optional array, only passed in when getting a list
-     * in the context of placing or editing a hold.  When placing a hold, it contains
-     * most of the same values passed to placeHold, minus the patron data.  When
+     * in the context of placing or editing a hold. When placing a hold, it contains
+     * most of the same values passed to placeHold, minus the patron data. When
      * editing a hold it contains all the hold information returned by getMyHolds.
-     * May be used to limit the pickup options or may be ignored.  The driver must
+     * May be used to limit the pickup options or may be ignored. The driver must
      * not add new options to the return array based on this data or other areas of
      * VuFind may behave incorrectly.
      *

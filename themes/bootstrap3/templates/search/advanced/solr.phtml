@@ -12,7 +12,7 @@
             <?php if (is_array($this->hierarchicalFacets) && in_array($field, $this->hierarchicalFacets)): ?>
               <?php foreach ($list['list'] as $value): ?>
                 <?php $display = str_pad('', 4 * $value['level'] * 6, '&nbsp;', STR_PAD_LEFT) . $this->escapeHtml($value['displayText']); ?>
-                <option value="<?=$this->escapeHtmlAttr(($value['operator'] == 'OR' ? '~' : '') . $field . ':"' . $value['value'] . '"')?>"<?=(isset($value['selected']) && $value['selected']) ? ' selected="selected"' : ''?>><?=$display?></option>
+                <option value="<?=$this->escapeHtmlAttr($this->operatorToFieldPrefix($value['operator']) . $field . ':"' . $value['value'] . '"')?>"<?=(isset($value['selected']) && $value['selected']) ? ' selected="selected"' : ''?>><?=$display?></option>
               <?php endforeach; ?>
             <?php else: ?>
               <?php
