@@ -76,7 +76,7 @@ class SsoTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#loginOptions a');
 
         // Log out
-        $this->clickCss($page, '.logoutOptions a.logout');
+        $this->logoutAndAssertSuccess();
     }
 
     /**
@@ -96,6 +96,7 @@ class SsoTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.record-nav .save-record');
 
         // Login in lightbox
+        $this->assertEquals('Institutional Login', $this->findCss($page, '.modal-body .btn.btn-link')->getText());
         $this->clickCss($page, '.modal-body .btn.btn-link');
 
         // Check if save form is in lightbox
@@ -112,6 +113,17 @@ class SsoTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Log out
+        $this->logoutAndAssertSuccess();
+    }
+
+    protected function logoutAndAssertSuccess() {
+        $session = $this->getMinkSession();
+        $page = $session->getPage();
+
+        // Log out
         $this->clickCss($page, '.logoutOptions a.logout');
+
+        // Check that login link is back
+        $this->assertNotEmpty($this->findCss($page, '#loginOptions a'));
     }
 }
