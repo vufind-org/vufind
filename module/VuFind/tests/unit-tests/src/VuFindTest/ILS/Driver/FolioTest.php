@@ -954,4 +954,85 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         ];
         $this->assertEquals($expected, $this->driver->getHolding("instanceid"));
     }
+
+    /**
+     * Test getPagedResults with less than the limit value returned
+     *
+     * @return void
+     */
+    public function testGetPagedResultsLessThanLimit(): void
+    {
+        $this->createConnector('get-my-holds-in_transit-limit');
+
+        // Passing a limit of 2
+        $result = $this->callMethod(
+            $this->driver,
+            'getPagedResults',
+            [
+                'requests',
+                '/request-storage/requests',
+                [
+                    'query' => '((requesterId == "foo" or proxyUserId == "foo") and status == Open*)',
+                ],
+                2,
+            ]
+        );
+        $result = iterator_to_array($result, false);
+
+        $this->assertCount(1, $result);
+    }
+
+    /**
+     * Test getPagedResults with greater than the limit value returned
+     *
+     * @return void
+     */
+    public function testGetPagedResultsGreaterThanLimit(): void
+    {
+        $this->createConnector('get-my-holds-in_transit-multiple');
+
+        // Passing a limit of 2
+        $result = $this->callMethod(
+            $this->driver,
+            'getPagedResults',
+            [
+                'requests',
+                '/request-storage/requests',
+                [
+                    'query' => '((requesterId == "foo" or proxyUserId == "foo") and status == Open*)',
+                ],
+                2,
+            ]
+        );
+        $result = iterator_to_array($result, false);
+
+        $this->assertCount(3, $result);
+    }
+
+    /**
+     * Test getPagedResults with results equal to the limit value returned
+     *
+     * @return void
+     */
+    public function testGetPagedResultsEqualToLimit(): void
+    {
+        $this->createConnector('get-my-holds-in_transit-two');
+
+        // Passing a limit of 2
+        $result = $this->callMethod(
+            $this->driver,
+            'getPagedResults',
+            [
+                'requests',
+                '/request-storage/requests',
+                [
+                    'query' => '((requesterId == "foo" or proxyUserId == "foo") and status == Open*)',
+                ],
+                2,
+            ]
+        );
+        $result = iterator_to_array($result, false);
+
+        $this->assertCount(2, $result);
+    }
 }

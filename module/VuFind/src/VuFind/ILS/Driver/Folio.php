@@ -945,13 +945,13 @@ class Folio extends AbstractAPI implements
      * @param string $responseKey Key containing values to collect in response
      * @param string $interface   FOLIO api interface to call
      * @param array  $query       CQL query
+     * @param int    $limit       How many results to retrieve from FOLIO per call
      *
      * @return array
      */
-    protected function getPagedResults($responseKey, $interface, $query = [])
+    protected function getPagedResults($responseKey, $interface, $query = [], $limit = 1000)
     {
         $count = 0;
-        $limit = 1000;
         $offset = 0;
 
         do {
@@ -966,19 +966,15 @@ class Folio extends AbstractAPI implements
                 $msg = $json->errors[0]->message ?? json_last_error_msg();
                 throw new ILSException("Error: '$msg' fetching '$responseKey'");
             }
-            $total = $json->totalRecords ?? 0;
-            $previousCount = $count;
+            $count = 0;
             foreach ($json->$responseKey ?? [] as $item) {
                 $count++;
-                if ($count % $limit == 0) {
-                    $offset += $limit;
-                }
                 yield $item ?? '';
             }
-            // Continue until the count reaches the total records
-            // found, if count does not increase, something has gone
-            // wrong. Stop so we don't loop forever.
-        } while ($count < $total && $previousCount != $count);
+            $offset += $limit;
+
+            // Continue until the results are not the limit value (i.e. the last page of results)
+        } while ($count == $limit);
     }
 
     /**
