@@ -29,6 +29,7 @@
 
 namespace VuFind\Db\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -80,4 +81,60 @@ class OaiResumption implements EntityInterface
      * )
      */
     protected $expires = '2000-01-01 00:00:00';
+
+    /**
+     * Id getter
+     *
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * Resumption parameters setter
+     *
+     * @param ?string $params Resumption parameters.
+     *
+     * @return OaiResumption
+     */
+    public function setResumptionParameters(?string $params): OaiResumption
+    {
+        $this->params = $params;
+        return $this;
+    }
+
+    /**
+     * Get resumption parameters.
+     *
+     * @return ?string
+     */
+    public function getResumptionParameters(): ?string
+    {
+        return $this->params;
+    }
+
+    /**
+     * Expiry date setter.
+     *
+     * @param Datetime $dateTime Expiration date
+     *
+     * @return OaiResumption
+     */
+    public function setExpiry(DateTime $dateTime): OaiResumption
+    {
+        $this->expires = $dateTime;
+        return $this;
+    }
+
+    /**
+     * Get expiry date.
+     *
+     * @return DateTime
+     */
+    public function getExpiry(): DateTime
+    {
+        return $this->expires;
+    }
 }

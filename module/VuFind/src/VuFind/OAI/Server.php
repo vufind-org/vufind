@@ -32,6 +32,7 @@
 namespace VuFind\OAI;
 
 use SimpleXMLElement;
+use VuFind\Db\Service\OaiResumptionService;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\SimpleXML;
 use VuFindApi\Formatter\RecordFormatter;
@@ -163,6 +164,13 @@ class Server
     protected $tableManager;
 
     /**
+     * OaiResumption service object
+     *
+     * @var OaiResumptionService
+     */
+    protected $resumptionService;
+
+    /**
      * Record link helper (optional)
      *
      * @var \VuFind\View\Helper\Root\RecordLinker
@@ -226,19 +234,22 @@ class Server
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Results\PluginManager $results Search manager for
-     * retrieving records
-     * @param \VuFind\Record\Loader                $loader  Record loader
-     * @param \VuFind\Db\Table\PluginManager       $tables  Table manager
+     * @param \VuFind\Search\Results\PluginManager $results    Search manager for
+     *                                                         retrieving records
+     * @param \VuFind\Record\Loader                $loader     Record loader
+     * @param \VuFind\Db\Table\PluginManager       $tables     Table manager
+     * @param OaiResumptionService                 $oaiService OaiResumption service
      */
     public function __construct(
         \VuFind\Search\Results\PluginManager $results,
         \VuFind\Record\Loader $loader,
-        \VuFind\Db\Table\PluginManager $tables
+        \VuFind\Db\Table\PluginManager $tables,
+        OaiResumptionService $oaiService
     ) {
         $this->resultsManager = $results;
         $this->recordLoader = $loader;
         $this->tableManager = $tables;
+        $this->resumptionService = $oaiService;
     }
 
     /**
@@ -1241,15 +1252,13 @@ class Server
      */
     protected function loadResumptionToken($token)
     {
-        // Create object for loading tokens:
-        $search = $this->tableManager->get('OaiResumption');
-
         // Clean up expired records before doing our search:
-        $search->removeExpired();
+        $this->resumptionService->removeExpired();
 
         // Load the requested token if it still exists:
-        if ($row = $search->findToken($token)) {
-            return $row->restoreParams();
+        if ($row = $this->resumptionService->findToken($token)) {
+            parse_str($row->getResumptionParameters(), $params);
+            return $params;
         }
 
         // If we got this far, the token is invalid or expired:
@@ -1319,9 +1328,8 @@ class Server
         $params['cursorMark'] = $cursorMark;
 
         // Save everything to the database:
-        $search = $this->tableManager->get('OaiResumption');
         $expire = time() + 24 * 60 * 60;
-        $token = $search->saveToken($params, $expire);
+        $token = $this->resumptionService->saveToken($params, $expire);
 
         // Add details to the xml:
         $token = $xml->addChild('resumptionToken', $token);
