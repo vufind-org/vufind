@@ -953,6 +953,7 @@ class Folio extends AbstractAPI implements
     {
         $count = 0;
         $offset = 0;
+        $totalCount = 0;
 
         do {
             $combinedQuery = array_merge($query, compact('offset', 'limit'));
@@ -967,14 +968,18 @@ class Folio extends AbstractAPI implements
                 throw new ILSException("Error: '$msg' fetching '$responseKey'");
             }
             $count = 0;
+            $totalEstimate = $json->totalRecords ?? 0;
             foreach ($json->$responseKey ?? [] as $item) {
                 $count++;
+                $totalCount++;
                 yield $item ?? '';
             }
             $offset += $limit;
 
             // Continue until the results are not the limit value (i.e. the last page of results)
-        } while ($count == $limit);
+            // or until the total count of records retrieved is greater than the records from
+            // the response (which could be an estimate if more than 1000 results are returned).
+        } while ($count == $limit || $totalCount < $totalEstimate);
     }
 
     /**
