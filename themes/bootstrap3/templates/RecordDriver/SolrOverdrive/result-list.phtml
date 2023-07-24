@@ -12,10 +12,10 @@
     <?php $thumbnail = ob_get_contents(); ?>
   <?php ob_end_clean(); ?>
 <?php endif; ?>
-<input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getOverdriveID())?>" class="hiddenId">
+<input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId">
 <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource">
 <input type="hidden" value="overdrive" class="handler-name">
-<div class="media" data-handler-name="overdrive">
+<div class="media">
   <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
     <?=$thumbnail ?>
   <?php endif ?>
@@ -42,6 +42,34 @@
             <?php $authorCount = count($summAuthors); ?>
             <?php foreach ($summAuthors as $i => $summAuthor): ?>
               <a href="<?=$this->record($this->driver)->getLink('author', $this->highlight($summAuthor, null, true, false))?>" class="result-author"><?=$this->highlight(rtrim($summAuthor, ','))?></a><?=$i + 1 < $authorCount ? ',' : ''?>
+            <?php endforeach; ?>
+          <?php endif; ?>
+
+          <?php
+            $journalTitle = $this->driver->getContainerTitle();
+            $summDate = $this->driver->getPublicationDates();
+          ?>
+          <?php if (!empty($journalTitle)): ?>
+            <?=!empty($summAuthor) ? '<br>' : ''?>
+            <?=$this->transEsc('Published in')?>
+            <?php $containerSource = $this->driver->getSourceIdentifier(); ?>
+            <?php $containerID = $this->driver->getContainerRecordID(); ?>
+            <?php /* TODO: handle highlighting more elegantly here: */?>
+            <a href="<?=($containerID ? $this->escapeHtmlAttr($recordLinker->getUrl("$containerSource|$containerID")) : $this->record($this->driver)->getLink('journaltitle', str_replace(['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'], '', $journalTitle)))?>"><?=$this->highlight($journalTitle) ?></a>
+            <?=!empty($summDate) ? ' (' . $this->escapeHtml($summDate[0]) . ')' : ''?>
+          <?php elseif (!empty($summDate)): ?>
+            <?=!empty($summAuthor) ? '<br>' : ''?>
+            <?=$this->transEsc('Published') . ' ' . $this->escapeHtml($summDate[0])?>
+          <?php endif; ?>
+          <?php $summInCollection = $this->driver->getContainingCollections(); ?>
+          <?php if (!empty($summInCollection)): ?>
+            <?php foreach ($summInCollection as $collId => $collText): ?>
+              <div>
+                <b><?=$this->transEsc("in_collection_label")?></b>
+                <a class="collectionLinkText" href="<?=$this->record($this->driver)->getLink('collection', $collId)?>">
+                  <?=$this->escapeHtml($collText)?>
+                </a>
+              </div>
             <?php endforeach; ?>
           <?php endif; ?>
         <?php endif; ?>
@@ -88,21 +116,10 @@
 
       <div class="callnumAndLocation ajax-availability hidden">
         <?php if ($this->driver->supportsAjaxStatus()): ?>
-          <div class="callnum ajax-availability hidden status">
+          <span class="callnumber ajax-availability hidden">
             <?=$this->transEsc('loading_ellipsis')?><br>
-          </div>
-        <?php elseif ($avail = $this->driver->getOverdriveAvailability()): ?>
-          <div class="availability">
-            <div class='copies'><strong><?= $this->transEsc("od_avail_total")?></strong> <?=$avail->copiesOwned ?></div>
-            <div class='avail'><strong><?= $this->transEsc("od_avail_avail")?></strong> <?=$avail->copiesAvailable ?></div>
-            <div class='holds'><strong><?= $this->transEsc("od_avail_holds")?></strong> <?=$avail->numberOfHolds ?></div>
-          </div>
+          </span>
         <?php endif; ?>
-      </div>
-
-      <div class="result-formats">
-          <?=$this->record($this->driver)->getFormatList() ?>
-          <?=$this->record($this->driver)->getLabelList() ?>
       </div>
 
       <?php
@@ -113,8 +130,8 @@
         $doiActive = $doi->isActive();
         // Account for replace_other_urls setting
         $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
-
-        if ($openUrlActive || $doiActive || !empty($urls)): ?>
+        ?>
+        <?php if ($openUrlActive || $doiActive || !empty($urls)): ?>
         <?php if ($openUrlActive): ?>
           <br>
           <?=$openUrl->renderTemplate()?>
@@ -126,15 +143,24 @@
         <?php $urls = is_array($urls) ? $urls : []; ?>
         <?php if (!$this->driver->isCollection()): ?>
           <?php foreach ($urls as $current): ?>
-            <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new">
-              <?=$this->icon('external-link') ?>
-              <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?>
+            <a class="fulltext icon-link" href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" target="new">
+                <?=$this->icon('external-link', 'icon-link__icon') ?>
+                <span class="icon-link__label"><?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></span>
             </a><br>
           <?php endforeach; ?>
         <?php endif; ?>
       <?php endif; ?>
 
+      <div class="result-formats">
+        <?=$this->record($this->driver)->getFormatList() ?>
+        <?=$this->record($this->driver)->getLabelList() ?>
 
+        <?php if (!$openUrlActive && empty($urls) && $this->driver->supportsAjaxStatus()): ?>
+          <span class="status ajax-availability hidden">
+            <span class="label label-default"><?=$this->transEsc('loading_ellipsis')?></span>
+          </span>
+        <?php endif; ?>
+      </div>
 
       <div class="result-previews">
         <?=$this->record($this->driver)->getPreviews()?>
@@ -150,9 +176,9 @@
       <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
         <?php if ($this->permission()->allowDisplay('feature.Favorites')): ?>
           <?php /* Add to favorites */ ?>
-          <a href="<?=$this->escapeHtmlAttr($recordLinker->getActionUrl($this->driver, 'Save'))?>" data-lightbox class="save-record" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>">
-            <?=$this->icon('user-favorites') ?>
-            <span class="result-link-label"><?=$this->transEsc('Add to favorites')?></span>
+          <a href="<?=$this->escapeHtmlAttr($recordLinker->getActionUrl($this->driver, 'Save'))?>" data-lightbox class="save-record result-link icon-link" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>">
+            <?=$this->icon('user-favorites', 'icon-link__icon') ?>
+            <span class="result-link-label icon-link__label"><?=$this->transEsc('Add to favorites')?></span>
           </a><br>
         <?php elseif ($block = $this->permission()->getAlternateContent('feature.Favorites')): ?>
           <?=$block?>
@@ -169,15 +195,15 @@
         <?php foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
           <div class="hierarchyTreeLink">
             <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId">
-            <?=$this->icon('tree-context') ?>
-            <a class="hierarchyTreeLinkText result-link-label" data-lightbox href="<?=$this->escapeHtmlAttr($recordLinker->getTabUrl($this->driver, 'HierarchyTree', ['hierarchy' => $hierarchyID]))?>#tabnav" title="<?=$this->transEscAttr('hierarchy_tree')?>" data-lightbox-href="<?=$this->escapeHtmlAttr($recordLinker->getTabUrl($this->driver, 'AjaxTab', ['hierarchy' => $hierarchyID]))?>" data-lightbox-post="tab=hierarchytree">
-              <?=$this->transEsc('hierarchy_view_context')?><?php if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><?php endif; ?>
+            <a class="hierarchyTreeLinkText result-link-label icon-link" data-lightbox href="<?=$this->escapeHtmlAttr($recordLinker->getTabUrl($this->driver, 'HierarchyTree', ['hierarchy' => $hierarchyID]))?>#tabnav" title="<?=$this->transEscAttr('hierarchy_tree')?>" data-lightbox-href="<?=$this->escapeHtmlAttr($recordLinker->getTabUrl($this->driver, 'AjaxTab', ['hierarchy' => $hierarchyID]))?>" data-lightbox-post="tab=hierarchytree">
+              <?=$this->icon('tree-context', 'icon-link__icon') ?>
+              <span class="icon-link__label"><?=$this->transEsc('hierarchy_view_context')?><?php if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><?php endif; ?></span>
             </a>
           </div>
         <?php endforeach; ?>
       <?php endif; ?>
-
-      <?php //$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>':'' ?>
+      
+      <?=$this->driver->supportsCoinsOpenUrl() ? '<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>' : ''?>
     </div>
   </div>
   <?php if ($thumbnail && $thumbnailAlignment == 'right'): ?>

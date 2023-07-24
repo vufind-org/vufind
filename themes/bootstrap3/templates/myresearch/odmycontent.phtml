@@ -32,8 +32,17 @@
           $cover = $coverDetails['html'];
           $thumbnail = false;
           $thumbnailAlignment = $this->record($resource['record'])->getThumbnailAlignment('account');
+          
+          if ($resource['checkout']->isMagazine):
+              $od_id = $resource['checkout']->reserveId;
+              $edition = $resource['checkout']->metadata->edition;
+              $cover = "<a href='{$this->recordLinker()->getUrl($resource['record'])}'><img alt='Cover Image' data-linkpreview='true' class='recordcover' src='{$resource['checkout']->metadata->images->thumbnail->href}'></a>";
+
+          else:
+            $edition ="";
+          endif;
   ?>
-          <div id="record<?=$rec_id?>" class="result">
+          <div id="record<?=$rec_id?>" class="well result">
    <?php
          if ($cover):
             ob_start(); ?>
@@ -55,6 +64,8 @@
             </a>
           </h4>
 
+          <div class="od_edition"><?=$edition?></div>
+          
           <?php $listAuthors = $resource['record']->getPrimaryAuthors() ?>
           <?php if (!empty($listAuthors)): ?>
             <?=$this->transEsc('by')?>:
@@ -64,13 +75,13 @@
             <?php if (count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?><br>
           <?php endif; ?>
 
-          <div><?=$this->transEsc('od_expires_on', ['%%due_date%%' => $resource['checkout']->expires])?></div>
+          <div> <?=$this->transEsc('od_expires_on', ['%%due_date%%' => $resource['checkout']->expires])?></div>
           <div class="pull-right">
             <?php if ($resource['checkout']->isReturnable): ?>
               <a
-                class="btn btn-primary icon-link returnTitle"
+                class="btn btn-warning icon-link returnTitle"
                 data-lightbox title="<?=$this->transEsc('od_but_return')?>"
-                href="<?=$this->url('overdrive-hold') . "?od_id=$od_id&rec_id=$rec_id&action=returnTitleConfirm"; ?>"
+                href="<?=$this->url('overdrive-hold') . "?od_id=$od_id&rec_id=$rec_id&edition=$edition&action=returnTitleConfirm"; ?>"
               >
                 <?=$this->icon('overdrive-return', 'icon-link__icon') ?>
                 <span class="icon-link__label"><?=$this->transEsc('od_but_return')?></span>
@@ -78,9 +89,9 @@
             <?php endif;?>
 
             <a
-              class="btn btn-primary icon-link getTitle"
+              class="btn btn-success icon-link getTitle"
               data-lightbox title="<?=$this->transEsc('od_but_gettitle')?>"
-              href="<?=$this->url('overdrive-hold') . "?od_id=$od_id&rec_id=$rec_id&action=getTitleConfirm"; ?>"
+              href="<?=$this->url('overdrive-hold') . "?od_id=$od_id&rec_id=$rec_id&action=getTitle"; ?>"
             >
               <?=$this->icon('overdrive-download', 'icon-link__icon') ?>
               <span class="icon-link__label"><?=$this->transEsc('od_but_gettitle')?></span>
@@ -104,6 +115,7 @@
       <?php
         $i = 0;
         foreach ($this->holds as $resource):
+          $hold_url = $this->url('overdrive-hold');
           $od_id = $resource['record']->getOverdriveID();
           $rec_id = $resource['record']->getUniqueID();
           $coverDetails = $this->record($resource['record'])->getCoverDetails('checkedout', 'small', $this->recordLinker()->getUrl($resource['record']));
@@ -111,7 +123,7 @@
           $thumbnail = false;
           $thumbnailAlignment = $this->record($resource['record'])->getThumbnailAlignment('account');
       ?>
-        <li id="record<?=$rec_id?>" class="result">
+        <li id="record<?=$rec_id?>" class="well result">
           <?php
             if ($cover):
               ob_start(); ?>
@@ -143,14 +155,46 @@
                 <?=$this->transEsc('od_hold_email', ['%%holdEmailAddress%%' => $resource['hold']->emailAddress]);?>
 
                 <div class="pull-right">
-                  <a
-                    class="btn btn-primary icon-link placehold"
-                    data-lightbox title="<?=$this->transEsc('request_place_text')?>"
-                    href="<?=$this->url('overdrive-hold') . "?od_id=$od_id&rec_id=$rec_id&action=cancelHoldConfirm"; ?>"
-                  >
-                    <?=$this->icon('ui-cancel', 'icon-link__icon') ?>
-                    <span class="icon-link__label"><?=$this->transEsc('od_but_cancel_hold')?></span>
-                  </a>
+                  <div class="btn-group">
+                    <button class="btn btn-primary " 
+                            type="button" id="dropdownMenu1" 
+                            data-toggle="dropdown" 
+                            aria-haspopup="true" aria-expanded="true">
+                                <?=$this->transEsc('od_but_edit_hold')?> <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                      <li><a class="cancelhold" 
+                            data-lightbox title="<?=$this->transEsc('request_place_text')?>" 
+                            href="<?="$hold_url?od_id=$od_id&rec_id=$rec_id&action=cancelHoldConfirm"?>">
+                              <i class="fa fa-minus-circle" aria-hidden="true"></i> 
+                              <?=$this->transEsc('od_but_cancel_hold')?></a>
+                      </li>
+
+                      <li><a class="editEmail" 
+                            data-lightbox title="{$this->transEsc('edit_hold_email')}" 
+                            href="<?="$hold_url?od_id=$od_id&rec_id=$rec_id&action=editHoldEmailConfirm"?>">
+                              <i class="fa fa-edit" aria-hidden="true"></i> 
+                              <?= $this->transEsc('od_edit_hold_email')?></a>
+                      </li>
+
+                      <?php //user already has a hold suspension.  allow them to edit the suspension
+                      if(isset($hold->holdSuspension)): ?>
+                      <li><a class="edithold"
+                            data-lightbox title="<?=$this->transEsc('od_susp_hold_edit')?>"
+                              href="<?="$hold_url?od_id=$od_id&rec_id=$rec_id&action=editHoldConfirm"?>">
+                                <i class="fa fa-calendar" aria-hidden="true"></i>
+                                <?= $this->transEsc('od_but_edit_hold')?></a>
+                      </li>
+                      <?php else: ?>
+                      <li><a class="susphold"
+                            data-lightbox title="<?=$this->transEsc('suspend_hold')?>"
+                              href="<?="$hold_url?od_id=$od_id&rec_id=$rec_id&action=suspHoldConfirm"?>">
+                                <i class="fa fa-flag" aria-hidden="true"></i>
+                                <?= $this->transEsc('od_but_susp_hold')?></a>
+                      </li>
+                      <?php endif; ?>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>

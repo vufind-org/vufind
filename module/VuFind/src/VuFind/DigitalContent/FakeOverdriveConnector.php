@@ -203,11 +203,11 @@ class FakeOverdriveConnector extends OverdriveConnector
      */
     public function updateOverDriveHold($overDriveId, $email)
     {
-        return (object) [
+        return (object)[
             'status' => true,
             'msg' => "",
             'data' => false,
-            'code' => 0
+            'code' => 0,
         ];
     }
 
@@ -224,11 +224,11 @@ class FakeOverdriveConnector extends OverdriveConnector
      */
     public function suspendHold($overDriveId, $email, $suspensionType = "indefinite", $numberOfDays = 7)
     {
-        return (object) [
+        return (object)[
             'status' => true,
             'msg' => "",
             'data' => false,
-            'code' => 0
+            'code' => 0,
         ];
     }
 
@@ -245,11 +245,11 @@ class FakeOverdriveConnector extends OverdriveConnector
      */
     public function editSuspendedHold($overDriveId, $email, $suspensionType = "indefinite", $numberOfDays = 7)
     {
-        return (object) [
+        return (object)[
             'status' => true,
             'msg' => "",
             'data' => false,
-            'code' => 0
+            'code' => 0,
         ];
     }
 
@@ -263,11 +263,11 @@ class FakeOverdriveConnector extends OverdriveConnector
      */
     public function deleteHoldSuspension($overDriveId)
     {
-        return (object) [
+        return (object)[
             'status' => true,
             'msg' => "",
             'data' => false,
-            'code' => 0
+            'code' => 0,
         ];
     }
 
@@ -304,11 +304,11 @@ class FakeOverdriveConnector extends OverdriveConnector
      */
     public function getAuthHeader()
     {
-        return (object) [
+        return (object)[
             'status' => true,
             'msg' => "",
             'data' => false,
-            'code' => 0
+            'code' => 0,
         ];
     }
 
@@ -323,6 +323,7 @@ class FakeOverdriveConnector extends OverdriveConnector
     {
         return [];
     }
+    
     /**
      * Returns
      *
@@ -334,11 +335,11 @@ class FakeOverdriveConnector extends OverdriveConnector
      */
     public function getMagazineIssues($overDriveId = false, $limit = 100, $offset = 0)
     {
-        return (object) [
+        return (object)[
             'status' => true,
             'msg' => "",
             'data' => false,
-            'code' => 0
+            'code' => 0,
         ];
     }
 
@@ -371,6 +372,7 @@ class FakeOverdriveConnector extends OverdriveConnector
     {
         return [];
     }
+
     /**
      * Get Overdrive Checkout
      *

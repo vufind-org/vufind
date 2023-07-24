@@ -302,6 +302,7 @@ class OverdriveConnector implements
      */
     public function getAvailabilityBulk($overDriveIds = [])
     {
+        $this->debug("availabilityBulk: " . implode(",", $overDriveIds));
         $result = $this->getResultObject();
         $loginRequired = false;
         if (count($overDriveIds) < 1) {
@@ -345,7 +346,6 @@ class OverdriveConnector implements
                 } else {
                     $result->status = true;
                     foreach ($res->availability as $item) {
-                        $this->debug("item:" . print_r($item, true));
                         $item->copiesAvailable = $item->copiesAvailable ?? 0;
                         $item->copiesOwned = $item->copiesOwned ?? 0;
                         $item->numberOfHolds = $item->numberOfHolds ?? 0;
@@ -356,11 +356,17 @@ class OverdriveConnector implements
                     foreach ($overDriveIds as $id) {
                         if (!isset($result->data[$id])) {
                             if ($loginRequired) {
-                                $result->data[$id]->code
-                                    = 'od_code_login_for_avail';
+                                $result->data[$id] = $this->getResultObject(
+                                    $status = false,
+                                    $msg = "",
+                                    $code = 'od_code_login_for_avail'
+                                );
                             } else {
-                                $result->data[$id]->code
-                                    = 'od_code_resource_not_found';
+                                $result->data[$id] = $this->getResultObject(
+                                    $status = false,
+                                    $msg = "",
+                                    $code = 'od_code_resource_not_found'
+                                );
                             }
                         }
                     }
@@ -797,6 +803,55 @@ class OverdriveConnector implements
         return $result;
     }
 
+    /**
+     * Get Download Redirect for an Overdrive Resource
+     *
+     * @param string $overDriveId Overdrive ID
+     *
+     * @return object Object with result. If successful, then data will
+     * have the download URI ($result->data->downloadRedirect)
+     */
+    public function getDownloadRedirect($overDriveId)
+    {
+        $this->debug("getDownloadRedirect: id: $overDriveId");
+        $result = $this->getResultObject();
+        $downloadLink = false;
+        if (!$user = $this->getUser()) {
+            $this->error("user is not logged in", false, true);
+            return $result;
+        }
+        $checkout = $this->getCheckout($overDriveId, false);
+        if ($checkout) {
+            $this->debug("checkout links" . print_r($checkout->links, true));
+            $dlRedirectUrl = $checkout->links->downloadRedirect->href;
+            $this->debug("download Redirect URL: $dlRedirectUrl");
+
+            $response = $this->callPatronUrl(
+                $user["cat_username"],
+                $user["cat_password"],
+                $dlRedirectUrl,
+                null,
+                "GET",
+                "redirect"
+            );
+            if (!empty($response)) {
+                $result->status = true;
+                $result->data = (object)[];
+                $result->data->downloadRedirect = $response;
+            } else {
+                $this->debug("problem getting redirect.");
+                $result->msg
+                    = "Could not get redirect link for resourceID "
+                    . "[$overDriveId]";
+            }
+        } else {
+            $this->debug("could not get checkout");
+            $result->msg
+                = "Could not get download redirect link for resourceID "
+                . "[$overDriveId]";
+        }
+        return $result;
+    }
 
     public function getAuthHeader()
     {
@@ -868,6 +923,7 @@ class OverdriveConnector implements
         $conf->tokenCacheLifetime
             = $this->recordConfig->API->tokenCacheLifetime;
         $conf->libraryURL = $this->recordConfig->Overdrive->overdriveLibraryURL;
+        $conf->enableAjaxStatus = $this->recordConfig->Overdrive->enableAjaxStatus;
         return $conf;
     }
 
@@ -914,13 +970,16 @@ class OverdriveConnector implements
     /**
      * Returns
      *
-     * @param array $overDriveIds Set of Overdrive IDs
+     * @param string $overDriveId Overdrive Identifier for magazine title
+       @param bool   $checkouts   Whether to add checkout information to each issue
+     * @param int    $limit       maximum number of issues to retrieve (default 100)
+     * @param int    $offset      page of results (default 0)
      *
      * @return object results of metadata fetch
      *
      *
      */
-    public function getMagazineIssues($overDriveId = false, $limit = 100, $offset = 0)
+    public function getMagazineIssues($overDriveId = false, $checkouts = false, $limit = 100, $offset = 0)
     {
         $this->debug("get Overdrive Magazine Issues: $overDriveId");
         $result = $this->getResultObject();
@@ -940,6 +999,16 @@ class OverdriveConnector implements
                 $result->status = true;
                 $result->data = (object) [];
                 $result->data = $response;
+            }
+
+            if ($checkouts) {
+                $checkoutResult = $this->getCheckouts();
+                $checkoutData = $checkoutResult->data;
+                foreach ($result->data->products as $key => $issue) {
+                    if ($checkoutData[strtolower($issue->id)]) {
+                        $issue->checkedout = true;
+                    }
+                }
             }
         }
         return $result;
@@ -1108,11 +1177,17 @@ class OverdriveConnector implements
                     $result->status = true;
                     $result->message = '';
                     if (isset($response->checkouts)) {
+                        //reset checkouts array to be keyed by id
+                        $mycheckouts = [];
+                        foreach ($response->checkouts as $co) {
+                            $mycheckouts[$co->reserveId] = $co;
+                        }
+
                         // get the metadata for these so we can check for magazines.
                         $result->data = (object) [];
-                        $result->data = $this->getMetadataForTitles($response->checkouts);
+                        $result->data = $this->getMetadataForTitles($mycheckouts);
 
-                        foreach ($response->checkouts as $key => $checkout) {
+                        foreach ($mycheckouts as $key => $checkout) {
                             // Convert dates to desired format
                             $coExpires = new \DateTime($checkout->expires);
                             $result->data[$key]->expires = $coExpires->format(
@@ -1122,7 +1197,7 @@ class OverdriveConnector implements
                                 = !$checkout->isFormatLockedIn;
                         }
                         $this->getSessionContainer()->checkouts
-                            = $response->checkouts;
+                            = $result->data;
                     } else {
                         $result->data = [];
                         $this->getSessionContainer()->checkouts = false;

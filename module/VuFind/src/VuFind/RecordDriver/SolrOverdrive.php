@@ -91,7 +91,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function supportsOpenUrl()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -103,6 +103,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     {
         return false;
     }
+
 
     /**
      * Get Available Digital Formats
@@ -232,6 +233,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
                 if (
                     $format->formatType == 'audiobook-overdrive'
                     || $format->formatType == 'ebook-overdrive'
+                    || $format->formatType == 'magazine-overdrive'
                 ) {
                     $results = $format;
                 }
@@ -248,8 +250,9 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function supportsAjaxStatus()
     {
-        // TODO: add this as an Overdrive configuration to turn it off
-        return true;
+        $this->debug("ajax status:" . $this->config->enableAjaxStatus);
+        $this->debug("all configs:" . print_r($this->config,true));
+        return $this->config->enableAjaxStatus;
     }
 
     /**
@@ -329,17 +332,24 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function isCheckedOut()
     {
-        $this->debug(" ischeckout", [], true);
+        $this->debug("isCheckedOut", [], true);
         $overdriveID = $this->getOverdriveID();
         $result = $this->connector->getCheckouts(true);
         if ($result->status) {
             $checkedout = false;
             $checkouts = $result->data;
+             $result->data = [];
             foreach ($checkouts as $checkout) {
-                if (strtolower($checkout->reserveId) == $overdriveID) {
+              $this->debug("comparing: {$checkout->reserveId} to $overdriveID");
+                if ($checkout->metadata->mediaType == "Magazine") {
+                    $idToCheck = strtolower($checkout->metadata->parentMagazineReferenceId);
+                } else ($idToCheck = $checkout->reserveId);
+                
+                if (strtolower($idToCheck) == $overdriveID) {
                     $checkedout = true;
                     $result->status = true;
-                    $result->data = $checkout;
+                    $result->isMagazine = true;
+                    $result->data[] = $checkout;
                 }
             }
             if (!$checkedout) {
@@ -347,6 +357,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
             }
         }
         // If it didn't work, an error should be logged from the connector
+         $this->debug("ischeckedOut ($overdriveID) result: ".print_r($result->data,true));
         return $result;
     }
 
@@ -561,4 +572,18 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         ];
         return $urlDetails;
     }
+
+    /**
+     * Get Permanent Link to the resource on your institutions Overdrive site
+     *
+     * @return string the permanent link to the resource
+     */
+    public function getPermanentLink()
+    {
+        $od_id = $this->getOverdriveID();
+        $result = $this->connector->getPermanentLinks([$od_id]);
+        
+        $this->debug("overdrive permananent link for $od_id:" . print_r($result,true));
+        return $result[$od_id];
+    }    
 }

@@ -233,7 +233,10 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         $od_id = $this->params()->fromQuery('od_id');
         $rec_id = $this->params()->fromQuery('rec_id');
         $action = $this->params()->fromQuery('action');
-        $edition = $this->params()->fromPost('edition', false);
+        $edition = $this->params()->fromPost(
+            'edition',
+            $this->params()->fromQuery('edition', false)
+        );
         $isMagazine = false;
         $holdEmail = "";
 
@@ -280,7 +283,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
             // Looks like this is a magazine...
             if (current($formats)->id == "magazine-overdrive") {
                 $isMagazine = true;
-                $result = $this->connector->getMagazineIssues($od_id);
+                $result = $this->connector->getMagazineIssues($od_id, true);
                 if ($result->status) {
                     $issues = $result->data->products;
                 } else {
@@ -341,6 +344,12 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
             $hold = $this->connector->getHold($od_id, false);
             $holdEmail = $hold->emailAddress;
         } elseif ($action == "returnTitleConfirm") {
+            if (current($formats)->id == "magazine-overdrive") {
+                $isMagazine = true;
+                //we don't have the cover of the actual issue here,
+                //but it's not worth going back to the API for it.
+                //just use current issue cover.
+            }
             $actionTitleCode = "od_early_return";
 
         // ACTION SECTION
@@ -448,7 +457,8 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
                 'listAuthors',
                 'holdEmail',
                 'issues',
-                'isMagazine'
+                'isMagazine',
+                'edition'
             )
         );
 
