@@ -82,7 +82,7 @@
               <?php if (isset($ilsDetails['row_id'])): ?>
                 <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['row_id']); ?>
                 <label>
-                  <input class="checkbox-select-item" type="checkbox" name="purgeSelectedIDs[]" value="<?=$this->escapeHtmlAttr($ilsDetails['row_id'])?>" id="checkbox_<?=$safeId?>" />
+                  <input class="checkbox-select-item" type="checkbox" name="purgeSelectedIDs[]" value="<?=$this->escapeHtmlAttr($ilsDetails['row_id'])?>" id="checkbox_<?=$safeId?>" aria-label="<?=$this->transEscAttr('select_item_purge')?>"/>
                 </label>
               <?php else: ?>
                 <label> </label>
