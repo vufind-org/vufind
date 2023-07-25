@@ -693,7 +693,7 @@ class Loader extends \VuFind\ImageLoader
             }
 
             // Figure out file paths -- $tempFile will be used to store the
-            // image for analysis.  $finalFile will be used for long-term storage if
+            // image for analysis. $finalFile will be used for long-term storage if
             // $cache is true or for temporary display purposes if $cache is false.
             $tempFile = str_replace('.jpg', uniqid(), $this->localFile);
             $finalFile = $cache ? $this->localFile : $tempFile . '.jpg';

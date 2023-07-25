@@ -387,7 +387,7 @@ class CartController extends AbstractBase
         $view = $this->createViewModel();
         $view->records = $this->getRecordLoader()->loadBatch($ids);
 
-        // Assign the list of legal export options.  We'll filter them down based
+        // Assign the list of legal export options. We'll filter them down based
         // on what the selected records actually support.
         $view->exportOptions = $export->getFormatsForRecords($view->records);
 
@@ -510,7 +510,7 @@ class CartController extends AbstractBase
 
         // If we entered the controller in the expected way (i.e. via the
         // myresearchbulk action), we should have a source set in the followup
-        // memory.  If that's missing for some reason, just forward to MyResearch.
+        // memory. If that's missing for some reason, just forward to MyResearch.
         if (isset($this->session->url)) {
             $target = $this->session->url;
             unset($this->session->url);

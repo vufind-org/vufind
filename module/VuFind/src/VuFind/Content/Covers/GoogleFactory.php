@@ -1,11 +1,11 @@
 <?php
 
 /**
- * WorldCatIdentities recommendation module factory.
+ * Google cover loader factory
  *
- * PHP version 8
+ * PHP version 7
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) Villanova University 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,13 +21,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Recommendations
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Content
+ * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
 
-namespace VuFind\Recommend;
+namespace VuFind\Content\Covers;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -35,15 +35,15 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * WorldCatIdentities recommendation module factory.
+ * Google cover loader factory
  *
  * @category VuFind
- * @package  Recommendations
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Content
+ * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
-class WorldCatIdentitiesFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+class GoogleFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -69,8 +69,10 @@ class WorldCatIdentitiesFactory implements \Laminas\ServiceManager\Factory\Facto
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        return new $requestedName(
-            $container->get(\VuFind\Connection\WorldCatUtils::class)
-        );
+
+        $google = new $requestedName();
+        $cachingDownloader = $container->get(\VuFind\Http\CachingDownloader::class);
+        $google->setCachingDownloader($cachingDownloader);
+        return $google;
     }
 }

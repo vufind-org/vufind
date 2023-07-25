@@ -1,6 +1,6 @@
 {
   "name": "vufind",
-  "version": "9.0.1",
+  "version": "9.0.3",
   "description": "Dev tools to handle css preprocessing, js magic, and compression",
   "repository": {
     "type": "git",
@@ -32,7 +32,7 @@
     "watch:lessToSass": "grunt watch:lessToSass"
   },
   "dependencies": {
-    "autocomplete.js": "vufind-org/autocomplete.js#v2.1.5",
+    "autocomplete.js": "vufind-org/autocomplete.js#v2.1.7",
     "grunt": "^1.0.4",
     "grunt-contrib-less": "^2.0.0",
     "grunt-less-to-sass": "duvillierA/grunt-less-to-sass#0.0.11",

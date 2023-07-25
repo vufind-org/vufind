@@ -265,9 +265,9 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
      */
     protected function getStatusRanking($status)
     {
-        // This array controls the rankings of possible status messages.  The lower
+        // This array controls the rankings of possible status messages. The lower
         // the ID in the ITEM_STATUS_TYPE table, the higher the priority of the
-        // message.  We only need to load it once -- after that, it's cached in the
+        // message. We only need to load it once -- after that, it's cached in the
         // driver.
         if ($this->statusRankings == false) {
             // Execute SQL
@@ -301,7 +301,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
 
     /**
      * Protected support method to take an array of status strings and determine
-     * whether or not this indicates an available item.  Returns an array with
+     * whether or not this indicates an available item. Returns an array with
      * two keys: 'available', the boolean availability status, and 'otherStatuses',
      * every status code found other than "Not Charged" - for use with
      * pickStatus().
@@ -312,7 +312,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
      */
     protected function determineAvailability($statusArray)
     {
-        // It's possible for a record to have multiple status codes.  We
+        // It's possible for a record to have multiple status codes. We
         // need to loop through in search of the "Not Charged" (i.e. on
         // shelf) status, collecting any other statuses we find along the
         // way...
@@ -565,7 +565,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
     {
         // There are two possible queries we can use to obtain status information.
         // The first (and most common) obtains information from a combination of
-        // items and holdings records.  The second (a rare case) obtains
+        // items and holdings records. The second (a rare case) obtains
         // information from the holdings record when no items are available.
         $sqlArrayItems = $this->getStatusSQL($id);
         $sqlArrayNoItems = $this->getStatusNoItemsSQL($id);
@@ -1163,7 +1163,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
 
         // There are two possible queries we can use to obtain status information.
         // The first (and most common) obtains information from a combination of
-        // items and holdings records.  The second (a rare case) obtains
+        // items and holdings records. The second (a rare case) obtains
         // information from the holdings record when no items are available.
 
         $sqlArrayItems = $this->getHoldingItemsSQL($id);
@@ -2096,7 +2096,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
     public function getHoldLink($recordId, $details)
     {
         // There is no easy way to link directly to hold screen; let's just use
-        // the record view.  For better hold behavior, use the VoyagerRestful
+        // the record view. For better hold behavior, use the VoyagerRestful
         // driver.
         return $this->config['Catalog']['pwebrecon'] . '?BBID=' . $recordId;
     }
@@ -2246,8 +2246,8 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
                 // array value to the on-screen display name.
                 //
                 // We actually want to use the NAME of the fund to do lookups, not
-                // its ID.  This is because multiple funds may share the same name,
-                // and it is useful to collate all these results together.  To
+                // its ID. This is because multiple funds may share the same name,
+                // and it is useful to collate all these results together. To
                 // achieve the effect, we just fill the same value in as the name
                 // and the ID in the return array.
                 //
