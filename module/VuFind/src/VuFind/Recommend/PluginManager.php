@@ -96,7 +96,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'topfacets' => TopFacets::class,
         'visualfacets' => VisualFacets::class,
         'webresults' => WebResults::class,
-        'worldcatidentities' => WorldCatIdentities::class,
+        'worldcatidentities' => Deprecated::class,
         'worldcatterms' => Deprecated::class,
     ];
 
@@ -154,7 +154,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         TopFacets::class => InjectConfigManagerFactory::class,
         VisualFacets::class => InjectConfigManagerFactory::class,
         WebResults::class => InjectSearchRunnerFactory::class,
-        WorldCatIdentities::class => WorldCatIdentitiesFactory::class,
     ];
 
     /**
