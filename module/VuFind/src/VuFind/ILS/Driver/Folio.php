@@ -971,7 +971,7 @@ class Folio extends AbstractAPI implements
             }
             $offset += $limit;
 
-            // Continue until the curent offset is greater than the totalRecords value returned
+            // Continue until the current offset is greater than the totalRecords value returned
             // from the API (which could be an estimate if more than 1000 results are returned).
         } while ($offset <= $totalEstimate);
     }
