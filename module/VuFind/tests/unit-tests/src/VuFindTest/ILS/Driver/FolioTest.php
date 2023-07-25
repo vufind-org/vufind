@@ -1035,4 +1035,35 @@ class FolioTest extends \PHPUnit\Framework\TestCase
 
         $this->assertCount(2, $result);
     }
+
+    /**
+     * Test getPagedResults with estimates being passed back from folio
+     * for the first response. This is different from
+     * testGetPagedResultsEqualToLimit since the totalRecords in the
+     * response from the API is inacurrate for the first response
+     * (i.e. just an estimate).
+     *
+     * @return void
+     */
+    public function testGetPagedResultsEstimatedTotal(): void
+    {
+        $this->createConnector('get-my-holds-in_transit-paginate-estimate');
+
+        // Passing a limit of 1
+        $result = $this->callMethod(
+            $this->driver,
+            'getPagedResults',
+            [
+                'requests',
+                '/request-storage/requests',
+                [
+                    'query' => '((requesterId == "foo" or proxyUserId == "foo") and status == Open*)',
+                ],
+                1,
+            ]
+        );
+        $result = iterator_to_array($result, false);
+
+        $this->assertCount(2, $result);
+    }
 }
