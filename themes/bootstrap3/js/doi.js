@@ -49,7 +49,7 @@ VuFind.register('doi', function Doi() {
   function init(_container) {
     var container = _container || $('body');
     // assign action to the openUrlWindow link class
-    if (typeof Hunt === 'undefined') {
+    if (typeof Hunt === 'undefined' || VuFind.isPrinting()) {
       embedDoiLinks(container);
     } else {
       new Hunt(

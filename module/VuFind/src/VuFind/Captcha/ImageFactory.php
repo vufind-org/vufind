@@ -96,10 +96,13 @@ class ImageFactory implements FactoryInterface
             $imageOptions['lineNoiseLevel'] = $config->Captcha->image_lineNoiseLevel;
         }
 
+        $baseUrl = rtrim(
+            ($container->get('ViewHelperManager')->get('url'))('home') ?? '',
+            '/'
+        );
         return new $requestedName(
             new \Laminas\Captcha\Image($imageOptions),
-            rtrim(($container->get('ViewHelperManager')->get('url'))('home'), '/')
-                . '/cache/'
+            "$baseUrl/cache/"
         );
     }
 }

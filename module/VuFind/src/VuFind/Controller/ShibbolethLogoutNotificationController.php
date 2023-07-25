@@ -77,16 +77,25 @@ class ShibbolethLogoutNotificationController extends AbstractBase
      */
     public function postAction()
     {
+        if (!extension_loaded('soap')) {
+            throw new \Exception('SOAP extension is not loaded.');
+        }
         $this->disableSessionWrites();
-        $soapServer = new \Laminas\Soap\Server(
+        $soapServer = new \SoapServer(
             'data://text/plain;base64,' . base64_encode($this->getWsdl())
         );
-        $soapServer->setReturnResponse(true);
         $soapServer->setObject($this);
-        $soapResponse = $soapServer->handle();
-        if ($soapResponse instanceof \SoapFault) {
-            $soapResponse = (string)$soapResponse;
+
+        ob_start();
+        try {
+            $request = file_get_contents('php://input');
+            $soapServer->handle($request);
+            $soapResponse = ob_get_clean();
+        } catch (\Exception $e) {
+            ob_end_clean();
+            $soapResponse = (string)$e;
         }
+
         $response = $this->getResponse();
         $response->getHeaders()->addHeaderLine('Content-Type', 'text/xml');
         $response->setContent($soapResponse);
@@ -122,7 +131,7 @@ class ShibbolethLogoutNotificationController extends AbstractBase
     {
         [$uri] = explode('?', $this->getRequest()->getUriString());
         return <<<EOT
-<?xml version ="1.0" encoding ="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <definitions name="LogoutNotification"
   targetNamespace="urn:mace:shibboleth:2.0:sp:notify"
   xmlns:notify="urn:mace:shibboleth:2.0:sp:notify"

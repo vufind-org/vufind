@@ -401,7 +401,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
             return false;
         }
         $newestRecordDate
-            = date($this->iso8601, strtotime($records[0]->getFirstIndexed()));
+            = date($this->iso8601, strtotime($records[0]->getFirstIndexed() ?? ''));
         $lastExecutionDate = $lastTime->format($this->iso8601);
         if ($newestRecordDate < $lastExecutionDate) {
             $this->msg(

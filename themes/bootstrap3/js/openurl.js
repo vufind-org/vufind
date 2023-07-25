@@ -58,7 +58,7 @@ VuFind.register('openurl', function OpenUrl() {
       return false;
     });
 
-    if (typeof Hunt === 'undefined') {
+    if (typeof Hunt === 'undefined' || VuFind.isPrinting()) {
       container.find('.openUrlEmbed.openUrlEmbedAutoLoad a').trigger('click');
     } else {
       new Hunt(

@@ -809,13 +809,13 @@ class InstallCommand extends Command
 
         // Load user settings if we are not forcing defaults:
         if (!$input->getOption('use-defaults')) {
-            $overrideDir = trim($input->getOption('overridedir'));
+            $overrideDir = trim($input->getOption('overridedir') ?? '');
             if (!empty($overrideDir)) {
                 $this->overrideDir = $overrideDir;
             } elseif ($interactive) {
                 $userInputNeeded['overrideDir'] = true;
             }
-            $moduleName = trim($input->getOption('module-name'));
+            $moduleName = trim($input->getOption('module-name') ?? '');
             if (!empty($moduleName) && $moduleName !== 'disabled') {
                 if (($result = $this->validateModules($moduleName)) !== true) {
                     return $this->failWithError($output, $result);
@@ -825,7 +825,7 @@ class InstallCommand extends Command
                 $userInputNeeded['module'] = true;
             }
 
-            $basePath = trim($input->getOption('basepath'));
+            $basePath = trim($input->getOption('basepath') ?? '');
             if (!empty($basePath)) {
                 if (($result = $this->validateBasePath($basePath, true)) !== true) {
                     return $this->failWithError($output, $result);

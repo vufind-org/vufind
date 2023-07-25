@@ -12,7 +12,7 @@
   <?=$this->auth()->getCreateFields()?>
   <?=$this->captcha()->html($this->useCaptcha) ?>
   <div class="form-group">
-    <a class="back-to-login btn btn-link" href="<?=$this->url('myresearch-userlogin') ?>"><i class="fa fa-chevron-left" aria-hidden="true"></i> <?=$this->transEsc('Back')?></a>
+    <a class="back-to-login btn btn-link" href="<?=$this->url('myresearch-userlogin') ?>"><i class="fa fa-chevron-left" aria-hidden="true"></i> <?=$this->transEsc('navigate_back')?></a>
     <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEscAttr('Submit')?>"/>
   </div>
 </form>

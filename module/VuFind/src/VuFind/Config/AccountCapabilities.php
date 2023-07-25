@@ -150,6 +150,16 @@ class AccountCapabilities
     }
 
     /**
+     * Is scheduled search enabled?
+     *
+     * @return bool
+     */
+    public function isScheduledSearchEnabled(): bool
+    {
+        return $this->config->Account->schedule_searches ?? false;
+    }
+
+    /**
      * Get SMS setting ('enabled' or 'disabled').
      *
      * @return string

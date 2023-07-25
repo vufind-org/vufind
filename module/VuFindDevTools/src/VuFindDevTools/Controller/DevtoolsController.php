@@ -132,6 +132,9 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
         $langs = $this->serviceLocator->get(LocaleSettings::class)
             ->getEnabledLocales();
         $helper = new LanguageHelper($loader, $langs);
-        return $helper->getAllDetails($this->params()->fromQuery('main', 'en'));
+        return $helper->getAllDetails(
+            $this->params()->fromQuery('main', 'en'),
+            (bool)$this->params()->fromQuery('includeOptional', 1)
+        );
     }
 }

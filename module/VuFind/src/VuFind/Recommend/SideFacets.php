@@ -393,13 +393,14 @@ class SideFacets extends AbstractFacets
      * defaults to 6
      *
      * @param string $facetName Name of the facet to get
+     * @param int    $default   Value to use if configuration is absent/invalid
      *
      * @return int
      */
-    public function getShowMoreSetting($facetName)
+    public function getShowMoreSetting($facetName, $default = 6)
     {
         // Look for either facet-specific configuration or else a configured
-        // default. If neither is found, initialize return value to 0.
+        // default. If neither is found, initialize return value to null.
         $val = null;
         if (isset($this->showMoreSettings[$facetName])) {
             $val = intval($this->showMoreSettings[$facetName]);
@@ -407,8 +408,8 @@ class SideFacets extends AbstractFacets
             $val = intval($this->showMoreSettings['*']);
         }
 
-        // Validate the return value, defaulting to 6 if missing/invalid
-        return (isset($val) && $val > 0) ? $val : 6;
+        // Validate the return value, using default if missing/invalid
+        return (isset($val) && $val > 0) ? $val : $default;
     }
 
     /**

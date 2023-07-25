@@ -171,7 +171,8 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         $this->details = [
             'authors' => $authors,
             'corporateAuthors' => $corporateAuthors,
-            'title' => trim($title), 'subtitle' => trim($subtitle),
+            'title' => trim($title ?? ''),
+            'subtitle' => trim($subtitle ?? ''),
             'pubPlace' => $pubPlaces[0] ?? null,
             'pubName' => $publishers[0] ?? null,
             'pubDate' => $pubDates[0] ?? null,
@@ -332,7 +333,8 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
             ' (%s)',
             ':',
             true,
-            'https://dx.doi.org/',
+            'https://doi.org/',
+            false,
             false
         );
     }
@@ -356,6 +358,8 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
      * @param string $doiPrefix       Prefix to display in front of DOI; set to
      * false to omit DOIs.
      * @param bool   $labelPageRange  Should we include p./pp. before page ranges?
+     * @param bool   $doiArticleComma Should we put a comma instead of period before
+     * a DOI in an article-style citation?
      *
      * @return string
      */
@@ -367,8 +371,9 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
         $yearFormat = ', %s',
         $pageNoSeparator = ',',
         $includePubPlace = false,
-        $doiPrefix = false,
-        $labelPageRange = true
+        $doiPrefix = 'https://doi.org/',
+        $labelPageRange = true,
+        $doiArticleComma = true
     ) {
         $mla = [
             'title' => $this->getMLATitle(),
@@ -391,6 +396,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper
             return $partial('Citation/mla.phtml', $mla);
         }
         // If we got this far, we should add other journal-specific details:
+        $mla['doiArticleComma'] = $doiArticleComma;
         $mla['pageRange'] = $this->getPageRange();
         $mla['journal'] = $this->capitalizeTitle($this->details['journal']);
         $mla['numberAndDate'] = $numPrefix . $this->getMLANumberAndDate(

@@ -11,15 +11,17 @@ jobs:
       VUFIND_LOCAL_DIR: $GITHUB_WORKSPACE/local
     strategy:
       matrix:
-        php-version: ['7.3', '7.4', '8.0']
-        # We run most tests on all platforms, but we only run Javascript-related tests in 8.0,
-        # since the results should be the same on all platforms, so we don't need to repeat them.
+        php-version: ['7.3', '7.4', '8.0', '8.1']
+        # We run most tests on all platforms, but we only run Javascript-related tests in 8.1.
+        # Since the results should be the same on all platforms, we don't need to repeat them.
         include:
           - php-version: 7.3
             phing_tasks: "qa-php"
           - php-version: 7.4
             phing_tasks: "qa-php"
           - php-version: 8.0
+            phing_tasks: "qa-php"
+          - php-version: 8.1
             phing_tasks: "qa-console"
 
     steps:
@@ -30,22 +32,29 @@ jobs:
           extensions: intl, xsl
           tools: composer:2.1.6
 
-      - name: Setup node
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-
       - name: Checkout
         uses: actions/checkout@v2
 
       - name: Disable Solr installation
         run: touch solr/.disableAutomaticInstall
 
+      - name: Setup node
+        if: ${{ matrix.phing_tasks == 'qa-console' }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: Cache NPM dependencies
+        if: ${{ matrix.phing_tasks == 'qa-console' }}
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: npm-${{ hashFiles('package-lock.json') }}
+          restore-keys: npm-
+
       - name: Install node dependencies
-        run: |
-          npm install -g eslint@"<5.0.0"
-          npm install -g jshint@"2.9.6"
-          npm install
+        if: ${{ matrix.phing_tasks == 'qa-console' }}
+        run: npm install --ignore-scripts
 
       - name: Get composer cache directory
         id: composer-cache

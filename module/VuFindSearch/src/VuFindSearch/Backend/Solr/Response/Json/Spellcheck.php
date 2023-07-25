@@ -139,7 +139,7 @@ class Spellcheck implements IteratorAggregate, Countable
      *
      * @return ArrayIterator
      */
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         return $this->terms->getIterator();
     }
@@ -149,9 +149,9 @@ class Spellcheck implements IteratorAggregate, Countable
     /**
      * Return number of terms.
      *
-     * @return integer
+     * @return int
      */
-    public function count()
+    public function count(): int
     {
         return $this->terms->count();
     }

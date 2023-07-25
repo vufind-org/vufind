@@ -45,7 +45,6 @@ fi
 # Xmx and Xms set the heap size for the Java Virtual Machine
 # You may also want to add the following:
 # -XX:+UseParallelGC
-# -XX:+AggressiveOpts
 ##################################################
 if [ -z "$INDEX_OPTIONS" ]
 then

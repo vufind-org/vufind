@@ -85,6 +85,8 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
         $response = $this->createMock(\Laminas\Http\Response::class);
         $response->expects($this->any())->method('isSuccess')
             ->will($this->returnValue(false));
+        $response->expects($this->once())->method('getStatusCode')
+            ->will($this->returnValue(418));
         $client->expects($this->once())->method('send')
             ->will($this->returnValue($response));
         $connector->getHoldings('baz');
