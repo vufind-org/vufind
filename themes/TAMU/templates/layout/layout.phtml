@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
     <?=$this->headMeta()?>
+    <?=$this->googleTagManager()->getHeadCode()?>	
     <?=$this->headTitle()?>
     <?php
       // Set up OpenSearch link:
@@ -136,6 +137,7 @@ JS;
       </div>
     </div>
     <div class="offcanvas-overlay" data-toggle="offcanvas"></div>
+    <?=$this->googleTagManager()->getBodyCode()?>
     <?=$this->googleanalytics()?>
     <?=$this->piwik()?>
     <?=$this->matomo()?>
