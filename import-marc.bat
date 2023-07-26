@@ -46,7 +46,7 @@ rem # You may also want to add the following:
 rem # -XX:+UseParallelGC
 rem ##################################################
 if not "!%INDEX_OPTIONS%!"=="!!" goto indexoptionsfound
-set INDEX_OPTIONS=-Xms512m -Xmx512m -DentityExpansionLimit=0
+set INDEX_OPTIONS=-Xms1024m -Xmx1024m -DentityExpansionLimit=0
 :indexoptionsfound
 
 rem ##################################################
