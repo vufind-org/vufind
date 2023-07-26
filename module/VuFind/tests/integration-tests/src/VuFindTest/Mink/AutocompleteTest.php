@@ -29,8 +29,6 @@
 
 namespace VuFindTest\Mink;
 
-use Behat\Mink\Element\Element;
-
 /**
  * Mink test class for autocomplete functionality.
  *
@@ -43,32 +41,7 @@ use Behat\Mink\Element\Element;
  */
 class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
 {
-    /**
-     * Get an autocomplete item, and assert its value.
-     *
-     * @param Element $page Page element
-     * @param string  $text Expected text
-     *
-     * @return Element
-     */
-    public function getAndAssertFirstAutocompleteValue(Element $page, string $text): Element
-    {
-        $tries = 0;
-        $loadMsg = 'Loading…';
-        do {
-            $acItem = $this->findCss($page, '.autocomplete-results .ac-item');
-            $acItemText = $acItem->getText();
-            if (strcasecmp($acItemText, $loadMsg) === 0) {
-                $this->snooze(0.5);
-            }
-            $tries++;
-        } while (strcasecmp($acItemText, $loadMsg) === 0 && $tries <= 5);
-        $this->assertEquals(
-            $text,
-            $this->findCss($page, '.autocomplete-results .ac-item')->getText()
-        );
-        return $acItem;
-    }
+    use \VuFindTest\Feature\AutocompleteTrait;
 
     /**
      * Test that default autocomplete behavior is correct.
