@@ -604,7 +604,7 @@ class UrlQueryHelper
     }
 
     /**
-     * Turn an array into a properly URL-encoded query string.  This is
+     * Turn an array into a properly URL-encoded query string. This is
      * equivalent to the built-in PHP http_build_query function, but it handles
      * arrays in a more compact way and ensures that ampersands don't get
      * messed up based on server-specific settings.

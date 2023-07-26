@@ -21,6 +21,7 @@ lessphp_*.list
 module/VuFind/tests/.phpunit.result.cache
 node_modules
 public/swagger-ui
+local/DirLocations.ini
 local/config/vufind/*.ini
 local/config/vufind/*.json
 local/config/vufind/*.yaml

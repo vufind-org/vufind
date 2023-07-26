@@ -71,7 +71,7 @@
         "laminas/laminas-validator": "2.30.1",
         "laminas/laminas-view": "2.27.0",
         "league/commonmark": "2.3.9",
-        "league/oauth2-server": "8.5.1",
+        "league/oauth2-server": "8.5.3",
         "lm-commons/lmc-rbac-mvc": "3.3.2",
         "matthiasmullie/minify": "1.3.70",
         "ocramius/proxy-manager": "2.14.1",

@@ -335,7 +335,7 @@ class Wikipedia implements TranslatorAwareInterface
         $replacement[] = '<strong>$1</strong>';
 
         // Trim leading newlines (which can result from leftovers after stripping
-        // other items above).  We want this to be greedy.
+        // other items above). We want this to be greedy.
         $pattern[] = '/^\n*/s';
         $replacement[] = '';
 

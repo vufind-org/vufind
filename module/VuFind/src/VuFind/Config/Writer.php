@@ -181,7 +181,7 @@ class Writer
     }
 
     /**
-     * Save the modified file to disk.  Return true on success, false on error.
+     * Save the modified file to disk. Return true on success, false on error.
      *
      * @return bool
      */

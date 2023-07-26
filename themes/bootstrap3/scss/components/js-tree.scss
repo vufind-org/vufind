@@ -62,6 +62,30 @@
   padding-left: 1rem;
 }
 
+/* facet and tree text overflow  */
+.facet .text {
+  overflow: hidden;
+}
+
+.hierarchical-facet-anchor,
+.hierarchical-facet-anchor .text {
+  width: calc(100% - 1.5em);
+}
+[data-exclude] .hierarchical-facet-anchor,
+[data-exclude] .hierarchical-facet-anchor .text {
+  width: calc(100% - 3.0em);
+}
+
+.hierarchy-tree .jstree-node,
+.hierarchical-facet-anchor .text .icon-link__label {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.hierarchical-facet-anchor .text .icon-link__label {
+  display: inline;
+}
+
 .jstree-clicked,
 .jstree-clicked:active,
 .jstree-clicked:focus,
@@ -71,7 +95,7 @@
     background-color: $list-group-active-bg;
 
     .jstree-themeicon-custom {
-      color: #fff;
+      color: $list-group-active-color;
       filter: invert(1);
     }
   }

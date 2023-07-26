@@ -45,7 +45,7 @@ use VuFind\Exception\Auth as AuthException;
 class LDAP extends AbstractBase
 {
     /**
-     * Validate configuration parameters.  This is a support method for getConfig(),
+     * Validate configuration parameters. This is a support method for getConfig(),
      * so the configuration MUST be accessed using $this->config; do not call
      * $this->getConfig() from within this method!
      *
@@ -87,7 +87,7 @@ class LDAP extends AbstractBase
     }
 
     /**
-     * Attempt to authenticate the current user.  Throws exception if login fails.
+     * Attempt to authenticate the current user. Throws exception if login fails.
      *
      * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.
@@ -187,7 +187,7 @@ class LDAP extends AbstractBase
     protected function bindForSearch($connection)
     {
         // If bind_username and bind_password were supplied in the config file, use
-        // them to access LDAP before proceeding.  In some LDAP setups, these
+        // them to access LDAP before proceeding. In some LDAP setups, these
         // settings can be excluded in order to skip this step.
         $user = $this->getSetting('bind_username');
         $pass = $this->getSetting('bind_password');

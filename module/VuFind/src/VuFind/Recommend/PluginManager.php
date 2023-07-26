@@ -67,6 +67,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'externalsearch' => ExternalSearch::class,
         'facetcloud' => FacetCloud::class,
         'favoritefacets' => FavoriteFacets::class,
+        'libguidesprofile' => LibGuidesProfile::class,
         'libguidesresults' => LibGuidesResults::class,
         'libguidesresultsdeferred' => LibGuidesResultsDeferred::class,
         'libguidesazresults' => LibGuidesAZResults::class,
@@ -95,7 +96,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'topfacets' => TopFacets::class,
         'visualfacets' => VisualFacets::class,
         'webresults' => WebResults::class,
-        'worldcatidentities' => WorldCatIdentities::class,
+        'worldcatidentities' => Deprecated::class,
         'worldcatterms' => Deprecated::class,
     ];
 
@@ -125,6 +126,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         ExternalSearch::class => InvokableFactory::class,
         FacetCloud::class => ExpandFacetsFactory::class,
         FavoriteFacets::class => FavoriteFacetsFactory::class,
+        LibGuidesProfile::class => LibGuidesProfileFactory::class,
         LibGuidesResults::class => InjectSearchRunnerFactory::class,
         LibGuidesResultsDeferred::class => InvokableFactory::class,
         LibGuidesAZResults::class => InjectSearchRunnerFactory::class,
@@ -152,7 +154,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         TopFacets::class => InjectConfigManagerFactory::class,
         VisualFacets::class => InjectConfigManagerFactory::class,
         WebResults::class => InjectSearchRunnerFactory::class,
-        WorldCatIdentities::class => WorldCatIdentitiesFactory::class,
     ];
 
     /**

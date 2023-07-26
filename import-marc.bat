@@ -31,10 +31,10 @@ if "%1"=="-p" (
 )
 
 rem #####################################################
-rem # Make sure we have the expected number of arguments
+rem # Print usage when called with no arguments
 rem #####################################################
 if not "!%1!"=="!!" goto argfound
-echo     Usage: %THISFILE% [-p c:\path\to\import.properties] c:\path\to\marc.mrc
+echo     Usage: %THISFILE% [-p c:\path\to\import.properties] c:\path\to\marc.mrc ...
 goto end
 :argfound
 
@@ -115,11 +115,19 @@ rem # Set Command Options
 rem ##################################################
 for %%a in (%VUFIND_HOME%\import\solrmarc_core_*.jar) do set JAR_FILE=%%a
 
+rem ##################################################
+rem # Collect all filenames from command line
+rem ##################################################
+:collectfilenamesloop
+set ALL_FILENAMES=%ALL_FILENAMES% %1
+shift
+if not "!%1!"=="!!" goto :collectfilenamesloop
+
 rem #####################################################
 rem # Execute Importer
 rem #####################################################
-set RUN_CMD=%JAVA% %INDEX_OPTIONS% -Duser.timezone=UTC -Dlog4j.configuration="file:///%LOG4J_CONFIG%" %EXTRA_SOLRMARC_SETTINGS% -jar %JAR_FILE% %PROPERTIES_FILE% -solrj %VUFIND_HOME%\solr\vendor\server\solr-webapp\webapp\WEB-INF\lib -lib_local %VUFIND_HOME%\import\lib_local;%VUFIND_HOME%\solr\vendor\modules\analysis-extras\lib %1
-echo Now Importing %1 ...
+set RUN_CMD=%JAVA% %INDEX_OPTIONS% -Duser.timezone=UTC -Dlog4j.configuration="file:///%LOG4J_CONFIG%" %EXTRA_SOLRMARC_SETTINGS% -jar %JAR_FILE% %PROPERTIES_FILE% -solrj %VUFIND_HOME%\solr\vendor\server\solr-webapp\webapp\WEB-INF\lib -lib_local %VUFIND_HOME%\import\lib_local;%VUFIND_HOME%\solr\vendor\modules\analysis-extras\lib%ALL_FILENAMES%
+echo Now Importing%ALL_FILENAMES% ...
 echo %RUN_CMD%
 %RUN_CMD%
 exit /b %ERRORLEVEL%

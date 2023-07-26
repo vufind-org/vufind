@@ -208,7 +208,7 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
     }
 
     /**
-     * Use a record driver to assign metadata to the current row.  Return the
+     * Use a record driver to assign metadata to the current row. Return the
      * current object to allow fluent interface.
      *
      * @param \VuFind\RecordDriver\AbstractBase $driver    The record driver
