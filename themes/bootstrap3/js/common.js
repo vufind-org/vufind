@@ -483,7 +483,7 @@ function setupAutocomplete() {
   // If .autocomplete class is missing, autocomplete is disabled and we should bail out.
   var $searchboxes = $('input.autocomplete');
   $searchboxes.each(function processAutocompleteForSearchbox(i, searchboxElement) {
-    $searchbox = $(searchboxElement);
+    const $searchbox = $(searchboxElement);
     const formattingRules = $searchbox.data('autocompleteFormattingRules');
     const getFormattingRule = function getAutocompleteFormattingRule(type) {
       if (typeof(formattingRules) !== "undefined") {
