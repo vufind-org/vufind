@@ -486,6 +486,16 @@ function setupAutocomplete() {
     return;
   }
 
+  const formattingRules = $searchbox.data('autocompleteFormattingRules');
+  const getFormattingRule = function getAutocompleteFormattingRule(type) {
+    if (typeof(formattingRules[type]) !== "undefined") {
+      return formattingRules[type];
+    }
+    if (typeof(formattingRules["*"]) !== "undefined") {
+      return formattingRules["*"];
+    }
+    return "none";
+  };
   const typeahead = new Autocomplete({
     rtl: $(document.body).hasClass("rtl"),
     maxResults: 10,
@@ -498,6 +508,7 @@ function setupAutocomplete() {
     const classParams = extractClassParams(input);
     const searcher = classParams.searcher;
     const type = classParams.type ? classParams.type : $('#searchForm_type').val();
+    const formattingRule = getFormattingRule(type);
 
     const cacheKey = searcher + "|" + type;
     if (typeof cache[cacheKey] === "undefined") {
@@ -525,12 +536,10 @@ function setupAutocomplete() {
       },
       dataType: 'json',
       success: function autocompleteJSON(json) {
-        // Special case -- tag search should not be quoted
-        var quotedQuery = type !== 'tag';
         const highlighted = json.data.suggestions.map(
           (item) => ({
             text: item.replaceAll(query, `<b>${query}</b>`),
-            value: quotedQuery
+            value: formattingRule === 'phrase'
               ? '"' + item.replaceAll('"', '\\"') + '"'
               : item,
           })

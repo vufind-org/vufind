@@ -145,6 +145,19 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
+     * Get JSON-encoded configuration for autocomplete query formatting.
+     *
+     * @param string $activeSearchClass Active search class ID
+     *
+     * @return string
+     */
+    public function autocompleteFormattingRulesJson($activeSearchClass): string
+    {
+        $options = $this->optionsManager->get($activeSearchClass);
+        return json_encode($options->getAutocompleteFormattingRules());
+    }
+
+    /**
      * Are alphabrowse options configured to display in the search options
      * drop-down?
      *
