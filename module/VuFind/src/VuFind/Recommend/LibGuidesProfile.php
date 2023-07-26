@@ -63,6 +63,34 @@ class LibGuidesProfile implements
     protected $libGuides;
 
     /**
+     * List of strategies enabled to find a matching LibGuides profile
+     *
+     * @var int
+     */
+    protected $strategies = [];
+
+    /**
+     * Map of call number pattern to config alias
+     *
+     * @var array
+     */
+    protected $callNumberToAlias;
+
+    /**
+     * Map of config alias to LibGuides account ID
+     *
+     * @var array
+     */
+    protected $aliasToAccountId;
+
+    /**
+     * Length of the substring at the start of a call number to match against
+     *
+     * @var int
+     */
+    protected $callNumberLength;
+
+    /**
      * Constructor
      *
      * @param LibGuides    $libGuides LibGuides API connection
@@ -79,6 +107,14 @@ class LibGuidesProfile implements
 
         // Cache the data related to profiles for up to 10 minutes:
         $this->cacheLifetime = intval($config->GetAccounts->cache_lifetime ?? 600);
+
+        $profile = $config->Profile;
+        if ($profile) {
+            $this->strategies = $profile->get('strategies', []);
+            $this->callNumberToAlias = $profile->call_numbers ? $profile->call_numbers->toArray() : [];
+            $this->aliasToAccountId = $profile->profile_aliases ? $profile->profile_aliases->toArray() : [];
+            $this->callNumberLength = $profile->get('call_number_length', 3);
+        }
     }
 
     /**
@@ -134,8 +170,83 @@ class LibGuidesProfile implements
      */
     public function getResults()
     {
-        $query = $this->results->getParams()->getQuery();
-        $account = $this->findBestMatch($query);
+        // Consider strategies in the order listed in the config file.
+        foreach ($this->strategies as $strategy) {
+            if ("call_number" == $strategy) {
+                // Try the best match for call numbers in the results facets.
+                $account = $this->findBestMatchByCallNumbers($this->results);
+                if ($account) {
+                    return $account;
+                }
+            } elseif ("subject" == $strategy) {
+                // Find best match for the query terms alone.
+                $query = $this->results->getParams()->getQuery();
+                $account = $this->findBestMatchByQuery($query);
+                if ($account) {
+                    return $account;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Find the LibGuides account whose profile best matches the
+     * call number facets in the given search results.
+     *
+     * Adapted from Demian Katz: https://gist.github.com/demiankatz/4600bdfb9af9882ad491f74c406a8a8a#file-guide-php-L308
+     *
+     * @param \VuFind\Search\Base\Results $results Search results object
+     *
+     * @return array LibGuides account
+     */
+    protected function findBestMatchByCallNumbers($results)
+    {
+        // Skip if no call number mapping was provided by config.
+        if (empty($this->callNumberToAlias)) {
+            return false;
+        }
+
+        // Get the Call Number facet list.
+        $filter = [
+            'callnumber-first' => 'Call Number',
+        ];
+        $facets = $results->getFacetList($filter);
+
+        // For each call number facet.
+        $profiles = [];
+        foreach ($facets['callnumber-first']['list'] ?? [] as $current) {
+            $callNumber = trim(substr($current['value'], 0, $this->callNumberLength));
+
+            // Find an alias for this call number, or a broader call number if none is found.
+            while (strlen($callNumber > 0) && !isset($this->callNumberToAlias[$callNumber])) {
+                $callNumber = substr($callNumber, 0, strlen($callNumber) - 1);
+            }
+
+            // Add "match value" to that alias based on the result count with that call number.
+            if (isset($this->callNumberToAlias[$callNumber])) {
+                $alias = $this->callNumberToAlias[$callNumber];
+                if (!isset($profiles[$alias])) {
+                    $profiles[$alias] = 0;
+                }
+                $profiles[$alias] += $current['count'];
+            }
+        }
+
+        // Identify the alias with the highest match value
+        arsort($profiles);
+        if (empty($profiles)) {
+            return false;
+        }
+        $alias = array_key_first($profiles);
+
+        // Return the profile for that alias.
+        $accountId = $this->aliasToAccountId[$alias] ?? null;
+        if (!$accountId) {
+            return false;
+        }
+        $idToAccount = $this->getLibGuidesData()['idToAccount'];
+        $account = $idToAccount[$accountId];
         return $account;
     }
 
@@ -147,7 +258,7 @@ class LibGuidesProfile implements
      *
      * @return array LibGuides account
      */
-    protected function findBestMatch(\VuFindSearch\Query\QueryInterface $query)
+    protected function findBestMatchByQuery(\VuFindSearch\Query\QueryInterface $query)
     {
         $data = $this->getLibGuidesData();
         $subjectToId = $data['subjectToId'];
