@@ -41,6 +41,12 @@ $thumbnail-width-large:  160px;
 .searchForm {
   margin: 0;
   padding: 0;
+
+  @media (max-width: 767px) {
+    .input-group {
+      width: 100%;
+    }
+  }
 }
 
 header .container.navbar { margin-bottom: 0; }

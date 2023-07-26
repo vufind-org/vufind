@@ -41,7 +41,10 @@
   .btn-primary[multiple],
   .form-control[multiple] { height: auto; }
   @media (min-width: 768px) {
-    .search-query { width: 400px; }
+    .input-group {
+      width: 400px;
+    }
+    .form-control.search-query { width: 400px; }
   }
   .nav-tabs {
     border-bottom: 0;
