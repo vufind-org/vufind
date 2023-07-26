@@ -48,7 +48,7 @@ fi
 ##################################################
 if [ -z "$INDEX_OPTIONS" ]
 then
-  INDEX_OPTIONS='-Xms512m -Xmx512m -DentityExpansionLimit=0'
+  INDEX_OPTIONS='-Xms1024m -Xmx1024m -DentityExpansionLimit=0'
 fi
 
 ##################################################
