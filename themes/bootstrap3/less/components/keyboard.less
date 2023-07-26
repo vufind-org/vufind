@@ -4,6 +4,12 @@
   top: 7px;
   z-index: 4;
 
+button.dropdown-toggle:hover,
+button.dropdown-toggle:focus {
+  border: none;
+  outline: none;
+}
+
   > .dropdown-menu {
     min-width: 20px;
     > li > a {
@@ -13,7 +19,11 @@
 }
 
 #keyboard-selection-button {
-  padding: 0 !important;
+  padding: 0 2px 0 4px !important;
+
+  .icon {
+    margin: 0;
+  }
 }
 
 .keyboard-box {
