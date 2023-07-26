@@ -169,8 +169,7 @@
   }
   @media (min-width: 768px) {
     height: 300px;
-    padding: 7rem 3rem;
-    padding-left: calc(50vw - 50% + .5rem); // Align searchbox with container
+    padding: 7rem calc(50vw - 50% + .5rem); // Align searchbox with container
   }
 }
 .searchHomeContent::after {
