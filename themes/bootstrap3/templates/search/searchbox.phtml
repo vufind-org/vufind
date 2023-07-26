@@ -70,7 +70,6 @@
   <form id="searchForm" class="searchForm navbar-form navbar-left flip" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off">
     <?= $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $tabConfig['tabs'], 'showCounts' => $tabConfig['showCounts']]); ?>
     <?php
-      $placeholder = $this->searchbox()->getPlaceholderText($tabConfig['selected']['id'] ?? null);
       $searchboxAttributes = [
         'id' => 'searchForm_lookfor',
         'class' => 'searchForm_lookfor form-control search-query',
@@ -79,7 +78,7 @@
         'value' => $this->lookfor,
         'aria-label' => $this->translate('search_terms'),
       ];
-      if ($placeholder) {
+      if ($placeholder = $this->searchbox()->getPlaceholderText($tabConfig['selected']['id'] ?? $this->searchClassId)) {
         $searchboxAttributes['placeholder'] = $placeholder;
       }
       if ($this->searchbox()->autocompleteEnabled($this->searchClassId)) {
