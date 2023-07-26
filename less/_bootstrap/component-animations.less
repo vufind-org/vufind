@@ -1,3 +1,5 @@
+// stylelint-disable selector-no-qualifying-type
+
 //
 // Component animations
 // --------------------------------------------------
@@ -10,6 +12,7 @@
 .fade {
   opacity: 0;
   .transition(opacity .15s linear);
+
   &.in {
     opacity: 1;
   }
@@ -27,5 +30,7 @@
   position: relative;
   height: 0;
   overflow: hidden;
-  .transition(height .35s ease);
+  .transition-property(~"height, visibility");
+  .transition-duration(.35s);
+  .transition-timing-function(ease);
 }

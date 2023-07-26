@@ -1,3 +1,10 @@
+// stylelint-disable selector-no-qualifying-type, selector-max-compound-selectors
+
+/*!
+ * Bootstrap v3.4.1 (https://getbootstrap.com/)
+ * Copyright 2011-2019 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ */
 
 //
 // Load core variables and mixins
@@ -5,7 +12,6 @@
 
 @import "variables.less";
 @import "mixins.less";
-
 
 
 //
@@ -19,21 +25,31 @@
 .btn-info,
 .btn-warning,
 .btn-danger {
-  text-shadow: 0 -1px 0 rgba(0,0,0,.2);
-  @shadow: inset 0 1px 0 rgba(255,255,255,.15), 0 1px 1px rgba(0,0,0,.075);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .2);
+  @shadow: inset 0 1px 0 rgba(255, 255, 255, .15), 0 1px 1px rgba(0, 0, 0, .075);
   .box-shadow(@shadow);
 
   // Reset the shadow
   &:active,
   &.active {
-    .box-shadow(inset 0 3px 5px rgba(0,0,0,.125));
+    .box-shadow(inset 0 3px 5px rgba(0, 0, 0, .125));
+  }
+
+  &.disabled,
+  &[disabled],
+  fieldset[disabled] & {
+    .box-shadow(none);
+  }
+
+  .badge {
+    text-shadow: none;
   }
 }
 
 // Mixin for generating new styles
 .btn-styles(@btn-color: #555) {
   #gradient > .vertical(@start-color: @btn-color; @end-color: darken(@btn-color, 12%));
-  .reset-filter(); // Disable gradients for IE9 because filter bleeds through rounded corners
+  .reset-filter(); // Disable gradients for IE9 because filter bleeds through rounded corners; see https://github.com/twbs/bootstrap/issues/10620
   background-repeat: repeat-x;
   border-color: darken(@btn-color, 14%);
 
@@ -49,10 +65,18 @@
     border-color: darken(@btn-color, 14%);
   }
 
-  &:disabled,
-  &[disabled] {
-    background-color: darken(@btn-color, 12%);
-    background-image: none;
+  &.disabled,
+  &[disabled],
+  fieldset[disabled] & {
+    &,
+    &:hover,
+    &:focus,
+    &.focus,
+    &:active,
+    &.active {
+      background-color: darken(@btn-color, 12%);
+      background-image: none;
+    }
   }
 }
 
@@ -66,13 +90,16 @@
 }
 
 // Apply the mixin to the buttons
-.btn-default { .btn-styles(@btn-default-bg); text-shadow: 0 1px 0 #fff; border-color: #ccc; }
+.btn-default {
+  .btn-styles(@btn-default-bg);
+  text-shadow: 0 1px 0 #fff;
+  border-color: #ccc;
+}
 .btn-primary { .btn-styles(@btn-primary-bg); }
 .btn-success { .btn-styles(@btn-success-bg); }
 .btn-info    { .btn-styles(@btn-info-bg); }
 .btn-warning { .btn-styles(@btn-warning-bg); }
 .btn-danger  { .btn-styles(@btn-danger-bg); }
-
 
 
 //
@@ -81,9 +108,8 @@
 
 .thumbnail,
 .img-thumbnail {
-  .box-shadow(0 1px 2px rgba(0,0,0,.075));
+  .box-shadow(0 1px 2px rgba(0, 0, 0, .075));
 }
-
 
 
 //
@@ -103,7 +129,6 @@
 }
 
 
-
 //
 // Navbar
 // --------------------------------------------------
@@ -113,32 +138,34 @@
   #gradient > .vertical(@start-color: lighten(@navbar-default-bg, 10%); @end-color: @navbar-default-bg);
   .reset-filter(); // Remove gradient in IE<10 to fix bug where dropdowns don't get triggered
   border-radius: @navbar-border-radius;
-  @shadow: inset 0 1px 0 rgba(255,255,255,.15), 0 1px 5px rgba(0,0,0,.075);
+  @shadow: inset 0 1px 0 rgba(255, 255, 255, .15), 0 1px 5px rgba(0, 0, 0, .075);
   .box-shadow(@shadow);
 
+  .navbar-nav > .open > a,
   .navbar-nav > .active > a {
-    #gradient > .vertical(@start-color: darken(@navbar-default-bg, 5%); @end-color: darken(@navbar-default-bg, 2%));
-    .box-shadow(inset 0 3px 9px rgba(0,0,0,.075));
+    #gradient > .vertical(@start-color: darken(@navbar-default-link-active-bg, 5%); @end-color: darken(@navbar-default-link-active-bg, 2%));
+    .box-shadow(inset 0 3px 9px rgba(0, 0, 0, .075));
   }
 }
 .navbar-brand,
 .navbar-nav > li > a {
-  text-shadow: 0 1px 0 rgba(255,255,255,.25);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .25);
 }
 
 // Inverted navbar
 .navbar-inverse {
   #gradient > .vertical(@start-color: lighten(@navbar-inverse-bg, 10%); @end-color: @navbar-inverse-bg);
-  .reset-filter(); // Remove gradient in IE<10 to fix bug where dropdowns don't get triggered
-
+  .reset-filter(); // Remove gradient in IE<10 to fix bug where dropdowns don't get triggered; see https://github.com/twbs/bootstrap/issues/10257
+  border-radius: @navbar-border-radius;
+  .navbar-nav > .open > a,
   .navbar-nav > .active > a {
-    #gradient > .vertical(@start-color: @navbar-inverse-bg; @end-color: lighten(@navbar-inverse-bg, 2.5%));
-    .box-shadow(inset 0 3px 9px rgba(0,0,0,.25));
+    #gradient > .vertical(@start-color: @navbar-inverse-link-active-bg; @end-color: lighten(@navbar-inverse-link-active-bg, 2.5%));
+    .box-shadow(inset 0 3px 9px rgba(0, 0, 0, .25));
   }
 
   .navbar-brand,
   .navbar-nav > li > a {
-    text-shadow: 0 -1px 0 rgba(0,0,0,.25);
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, .25);
   }
 }
 
@@ -149,6 +176,17 @@
   border-radius: 0;
 }
 
+// Fix active state of dropdown items in collapsed mode
+@media (max-width: @grid-float-breakpoint-max) {
+  .navbar .navbar-nav .open .dropdown-menu > .active > a {
+    &,
+    &:hover,
+    &:focus {
+      color: #fff;
+      #gradient > .vertical(@start-color: @dropdown-link-active-bg; @end-color: darken(@dropdown-link-active-bg, 5%));
+    }
+  }
+}
 
 
 //
@@ -157,8 +195,8 @@
 
 // Common styles
 .alert {
-  text-shadow: 0 1px 0 rgba(255,255,255,.2);
-  @shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 1px 2px rgba(0,0,0,.05);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .2);
+  @shadow: inset 0 1px 0 rgba(255, 255, 255, .25), 0 1px 2px rgba(0, 0, 0, .05);
   .box-shadow(@shadow);
 }
 
@@ -173,7 +211,6 @@
 .alert-info       { .alert-styles(@alert-info-bg); }
 .alert-warning    { .alert-styles(@alert-warning-bg); }
 .alert-danger     { .alert-styles(@alert-danger-bg); }
-
 
 
 //
@@ -210,7 +247,7 @@
 
 .list-group {
   border-radius: @border-radius-base;
-  .box-shadow(0 1px 2px rgba(0,0,0,.075));
+  .box-shadow(0 1px 2px rgba(0, 0, 0, .075));
 }
 .list-group-item.active,
 .list-group-item.active:hover,
@@ -218,8 +255,11 @@
   text-shadow: 0 -1px 0 darken(@list-group-active-bg, 10%);
   #gradient > .vertical(@start-color: @list-group-active-bg; @end-color: darken(@list-group-active-bg, 7.5%));
   border-color: darken(@list-group-active-border, 7.5%);
-}
 
+  .badge {
+    text-shadow: none;
+  }
+}
 
 
 //
@@ -228,7 +268,7 @@
 
 // Common styles
 .panel {
-  .box-shadow(0 1px 2px rgba(0,0,0,.05));
+  .box-shadow(0 1px 2px rgba(0, 0, 0, .05));
 }
 
 // Mixin for generating new styles
@@ -245,7 +285,6 @@
 .panel-danger > .panel-heading    { .panel-heading-styles(@panel-danger-heading-bg); }
 
 
-
 //
 // Wells
 // --------------------------------------------------
@@ -253,6 +292,6 @@
 .well {
   #gradient > .vertical(@start-color: darken(@well-bg, 5%); @end-color: @well-bg);
   border-color: darken(@well-bg, 10%);
-  @shadow: inset 0 1px 3px rgba(0,0,0,.05), 0 1px 0 rgba(255,255,255,.1);
+  @shadow: inset 0 1px 3px rgba(0, 0, 0, .05), 0 1px 0 rgba(255, 255, 255, .1);
   .box-shadow(@shadow);
 }

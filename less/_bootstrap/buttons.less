@@ -1,3 +1,5 @@
+// stylelint-disable selector-no-qualifying-type
+
 //
 // Buttons
 // --------------------------------------------------
@@ -11,42 +13,51 @@
   margin-bottom: 0; // For input.btn
   font-weight: @btn-font-weight;
   text-align: center;
+  white-space: nowrap;
   vertical-align: middle;
+  touch-action: manipulation;
   cursor: pointer;
   background-image: none; // Reset unusual Firefox-on-Android default style; see https://github.com/necolas/normalize.css/issues/214
   border: 1px solid transparent;
-  white-space: nowrap;
-  .button-size(@padding-base-vertical; @padding-base-horizontal; @font-size-base; @line-height-base; @border-radius-base);
+  .button-size(@padding-base-vertical; @padding-base-horizontal; @font-size-base; @line-height-base; @btn-border-radius-base);
   .user-select(none);
 
   &,
   &:active,
   &.active {
-    &:focus {
+    &:focus,
+    &.focus {
       .tab-focus();
     }
   }
 
   &:hover,
-  &:focus {
+  &:focus,
+  &.focus {
     color: @btn-default-color;
     text-decoration: none;
   }
 
   &:active,
   &.active {
-    outline: 0;
     background-image: none;
-    .box-shadow(inset 0 3px 5px rgba(0,0,0,.125));
+    outline: 0;
+    .box-shadow(inset 0 3px 5px rgba(0, 0, 0, .125));
   }
 
   &.disabled,
   &[disabled],
   fieldset[disabled] & {
-    cursor: not-allowed;
-    pointer-events: none; // Future-proof disabling of clicks
+    cursor: @cursor-disabled;
     .opacity(.65);
     .box-shadow(none);
+  }
+
+  a& {
+    &.disabled,
+    fieldset[disabled] & {
+      pointer-events: none; // Future-proof disabling of clicks on `<a>` elements
+    }
   }
 }
 
@@ -83,13 +94,13 @@
 
 // Make a button look and behave like a link
 .btn-link {
+  font-weight: 400;
   color: @link-color;
-  font-weight: normal;
-  cursor: pointer;
   border-radius: 0;
 
   &,
   &:active,
+  &.active,
   &[disabled],
   fieldset[disabled] & {
     background-color: transparent;
@@ -104,7 +115,7 @@
   &:hover,
   &:focus {
     color: @link-hover-color;
-    text-decoration: underline;
+    text-decoration: @link-hover-decoration;
     background-color: transparent;
   }
   &[disabled],
@@ -123,14 +134,14 @@
 
 .btn-lg {
   // line-height: ensure even-numbered height of button next to large input
-  .button-size(@padding-large-vertical; @padding-large-horizontal; @font-size-large; @line-height-large; @border-radius-large);
+  .button-size(@padding-large-vertical; @padding-large-horizontal; @font-size-large; @line-height-large; @btn-border-radius-large);
 }
 .btn-sm {
   // line-height: ensure proper height of button next to small input
-  .button-size(@padding-small-vertical; @padding-small-horizontal; @font-size-small; @line-height-small; @border-radius-small);
+  .button-size(@padding-small-vertical; @padding-small-horizontal; @font-size-small; @line-height-small; @btn-border-radius-small);
 }
 .btn-xs {
-  .button-size(@padding-xs-vertical; @padding-xs-horizontal; @font-size-small; @line-height-small; @border-radius-small);
+  .button-size(@padding-xs-vertical; @padding-xs-horizontal; @font-size-small; @line-height-small; @btn-border-radius-small);
 }
 
 
