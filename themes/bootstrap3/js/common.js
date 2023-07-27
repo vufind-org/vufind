@@ -699,3 +699,25 @@ $(function commonDocReady() {
 
   setupIeSupport();
 });
+
+$(function searchFormResetHandler() {
+  const queryInput = $('#searchForm_lookfor');
+  const resetButton = $('#searchForm-reset');
+
+  let query = queryInput.val();
+  if (query !== '') {
+    resetButton.show();
+    queryInput.focus().val('').val(query);
+  }
+  queryInput.on('input', function onInput() {
+    if ($(this).val() === '') {
+      resetButton.hide();
+    } else {
+      resetButton.show();
+    }
+  });
+  resetButton.on('click', function onClick() {
+    queryInput.attr('value', '').focus();
+    resetButton.hide();
+  });
+});
