@@ -182,6 +182,7 @@ class AlmaTest extends \PHPUnit\Framework\TestCase
         }
         return $testResult;
     }
+
     /**
      * Test
      *
