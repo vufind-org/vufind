@@ -42,7 +42,7 @@ namespace VuFindTest\Mink;
 class MarkdownTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
-     * Test that AJAX availability status is working.
+     * Test that Markdown static content rendering is working.
      *
      * @return void
      */
