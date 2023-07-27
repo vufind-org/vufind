@@ -3,7 +3,7 @@
 /**
  * Authentication manager test class.
  *
- * PHP version 8
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -573,9 +573,13 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
                 'salt' => 'csrftest',
             ]
         );
+        $loginToken = $this->getMockBuilder(\VuFind\Auth\LoginToken::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         return new Manager(
             $config,
             $userTable,
+            $loginToken,
             $sessionManager,
             $pm,
             $cookies,

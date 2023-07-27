@@ -3,7 +3,7 @@
 /**
  * Wrapper class for handling logged-in user in session.
  *
- * PHP version 8
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -34,6 +34,7 @@ use Laminas\Session\SessionManager;
 use VuFind\Cookie\CookieManager;
 use VuFind\Db\Row\User as UserRow;
 use VuFind\Db\Table\User as UserTable;
+use VuFind\Auth\LoginToken;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Validator\CsrfInterface;
 
@@ -95,6 +96,13 @@ class Manager implements
     protected $userTable;
 
     /**
+     * Login token
+     *
+     * @var LoginToken
+     */
+    protected $loginToken;
+
+    /**
      * Session manager
      *
      * @var SessionManager
@@ -134,6 +142,7 @@ class Manager implements
      *
      * @param Config         $config         VuFind configuration
      * @param UserTable      $userTable      User table gateway
+     * @param LoginToken     $loginToken     Login Token
      * @param SessionManager $sessionManager Session manager
      * @param PluginManager  $pm             Authentication plugin manager
      * @param CookieManager  $cookieManager  Cookie manager
@@ -142,14 +151,16 @@ class Manager implements
     public function __construct(
         Config $config,
         UserTable $userTable,
+        LoginToken $loginToken,
         SessionManager $sessionManager,
         PluginManager $pm,
         CookieManager $cookieManager,
-        CsrfInterface $csrf
+        CsrfInterface $csrf,
     ) {
         // Store dependencies:
         $this->config = $config;
         $this->userTable = $userTable;
+        $this->loginToken = $loginToken;
         $this->sessionManager = $sessionManager;
         $this->pluginManager = $pm;
         $this->cookieManager = $cookieManager;
@@ -268,6 +279,58 @@ class Manager implements
     }
 
     /**
+     * Is persistent login supported?
+     *
+     * @param User $user optional; check user auth method in database 
+     *
+     * @return bool
+     */
+    public function supportsPersistentLogin($user = null)
+    {
+        if (!empty($this->config->Authentication->persistent_login)) {
+            if ($user) {
+                $method = $this->getAuthMethodName($user->auth_method);
+            } else if ($this->getAuth() instanceof ChoiceAuth) {
+                $method = $this->getAuth()->getSelectedAuthOption();
+            } else {
+                $method = $this->getAuthMethod();
+            }
+            return in_array(
+                $method,
+                explode(',', $this->config->Authentication->persistent_login)
+            );
+        }
+        return false;
+    }
+
+    /**
+     * Get auth method name with proper uppercase characters
+     *
+     * @param string $method method name
+     *
+     * @return string
+     */
+    public function getAuthMethodName($method)
+    {
+        $map = [
+            'database' => 'Database',
+            'multiils' => 'MultiILS',
+            'ils' => 'ILS'
+        ];
+        return $map[$method] ?? $method;
+    }
+
+    /**
+     * Get persistent login lifetime in days
+     *
+     * @return int
+     */
+    public function getPersistentLoginLifetime()
+    {
+        return $this->config->Authentication->persistent_login_lifetime ?? 0;
+    }
+
+    /**
      * Username policy for a new account (e.g. minLength, maxLength)
      *
      * @param string $authMethod optional; check this auth method rather than
@@ -299,7 +362,7 @@ class Manager implements
 
     /**
      * Get the URL to establish a session (needed when the internal VuFind login
-     * form is inadequate). Returns false when no session initiator is needed.
+     * form is inadequate).  Returns false when no session initiator is needed.
      *
      * @param string $target Full URL where external authentication method should
      * send user after login (some drivers may override this).
@@ -343,7 +406,7 @@ class Manager implements
                 $auth = $this->getAuth($selected);
             }
         }
-        return $auth::class;
+        return get_class($auth);
     }
 
     /**
@@ -459,6 +522,7 @@ class Manager implements
         unset($this->session->userId);
         unset($this->session->userDetails);
         $this->cookieManager->set('loggedOut', 1);
+        $this->loginToken->deleteActiveToken();
 
         // Destroy the session for good measure, if requested.
         if ($destroy) {
@@ -508,6 +572,12 @@ class Manager implements
                 $results = $this->userTable->createRow();
                 $results->exchangeArray($this->session->userDetails);
                 $this->currentUser = $results;
+            } elseif ($this->cookieManager->get('loginToken')) {
+                if ($user = $this->loginToken->tokenLogin($this->sessionManager->getId())) {
+                    $this->setAuthMethod($this->getAuthMethodName($user->auth_method));
+                    $this->updateUser($user);
+                    $this->updateSession($user);
+                }
             } else {
                 // not logged in
                 $this->currentUser = false;
@@ -704,9 +774,31 @@ class Manager implements
         // Update user object
         $this->updateUser($user);
 
+        if ($request->getPost()->get('remember_me')
+            && $this->supportsPersistentLogin()
+        ) {
+            try {
+                $this->loginToken->createToken($user, '', $this->sessionManager->getId());
+            } catch (\Exception $e) {
+                throw new AuthException('authentication_error_technical', 0, $e);
+            }
+        }
         // Store the user in the session and send it back to the caller:
         $this->updateSession($user);
         return $user;
+    }
+
+    /**
+     * Delete a login token
+     *
+     * @param string $series Series to identify the token
+     * @param int    $userId User identifier
+     *
+     * @return void
+     */
+    public function deleteToken(string $series, int $userId)
+    {
+        $this->loginToken->deleteTokenSeries($series, $userId);
     }
 
     /**

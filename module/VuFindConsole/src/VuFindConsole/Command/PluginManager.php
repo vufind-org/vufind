@@ -3,7 +3,7 @@
 /**
  * Console command plugin manager
  *
- * PHP version 8
+ * PHP version 7
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -78,6 +78,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'util/expire_access_tokens' => Util\ExpireAccessTokensCommand::class,
         'util/expire_auth_hashes' => Util\ExpireAuthHashesCommand::class,
         'util/expire_external_sessions' => Util\ExpireExternalSessionsCommand::class,
+        'util/expire_login_tokens' => Util\ExpireLoginTokensCommand::class,
         'util/expire_searches' => Util\ExpireSearchesCommand::class,
         'util/expire_sessions' => Util\ExpireSessionsCommand::class,
         'util/index_reserves' => Util\IndexReservesCommand::class,
@@ -141,6 +142,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             Util\ExpireAuthHashesCommandFactory::class,
         Util\ExpireExternalSessionsCommand::class =>
             Util\ExpireExternalSessionsCommandFactory::class,
+        Util\ExpireLoginTokensCommand::class =>
+            Util\ExpireLoginTokensCommandFactory::class,
         Util\ExpireSearchesCommand::class =>
             Util\ExpireSearchesCommandFactory::class,
         Util\ExpireSessionsCommand::class =>
