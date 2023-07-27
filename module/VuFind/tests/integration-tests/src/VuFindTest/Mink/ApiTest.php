@@ -70,7 +70,10 @@ class ApiTest extends \VuFindTest\Integration\MinkTestCase
     public function testApiDisabledByDefault(): void
     {
         $page = $this->makeRecordApiCall();
-        $this->assertEquals('403', $this->findCss($page, '.live-responses-table .response td.response-col_status')->getText());
+        $this->assertEquals(
+            '403',
+            $this->findCss($page, '.live-responses-table .response td.response-col_status')->getText()
+        );
     }
 
     /**
@@ -92,6 +95,9 @@ class ApiTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         $page = $this->makeRecordApiCall();
-        $this->assertEquals('200', $this->findCss($page, '.live-responses-table .response td.response-col_status')->getText());
+        $this->assertEquals(
+            '200',
+            $this->findCss($page, '.live-responses-table .response td.response-col_status')->getText()
+        );
     }
 }
