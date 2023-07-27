@@ -392,7 +392,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $session = $this->getMinkSession();
         $session->wait(
             $timeout,
-            "typeof $ !== 'undefined' && $('$selector').length > $index"
+            "document.querySelectorAll('$selector').length > $index"
         );
         $results = $page->findAll('css', $selector);
         $this->assertIsArray($results, "Selector not found: $selector");
@@ -526,7 +526,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $session = $this->getMinkSession();
         $session->wait(
             $timeout,
-            "typeof $ !== 'undefined' && $('$selector:focusable').length > 0"
+            "document.querySelectorAll('$selector:focusable').length > 0"
         );
         $results = $page->findAll('css', $selector);
         $this->assertIsArray($results, "Selector not found: $selector");
@@ -665,12 +665,12 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         // Make sure any loading spinners are not visible:
         $session->wait(
             $timeout,
-            "typeof $ !== 'undefined' && $('.loading-spinner:visible').length === 0"
+            "document.querySelectorAll('.loading-spinner:visible').length === 0"
         );
         // Make sure nothing is being animated:
         $session->wait(
             $timeout,
-            "typeof $ !== 'undefined' && $(':animated').length === 0"
+            "document.querySelectorAll(':animated').length === 0"
         );
         // Finally, make sure all jQuery ready handlers are done:
         $session->evaluateScript(
