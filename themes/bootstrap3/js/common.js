@@ -575,7 +575,10 @@ function setupAutocomplete() {
       success: function autocompleteJSON(json) {
         const highlighted = json.data.suggestions.map(
           (item) => ({
-            text: item.replace(query, `<b>${query}</b>`),
+            text: item.replaceAll("&", "&amp;")
+              .replaceAll("<", "&lt;")
+              .replaceAll(">", "&gt;")
+              .replaceAll(query, `<b>${query}</b>`),
             value: item,
           })
         );
