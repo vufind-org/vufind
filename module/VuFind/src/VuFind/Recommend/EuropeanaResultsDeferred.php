@@ -71,11 +71,11 @@ class EuropeanaResultsDeferred extends AbstractSearchObjectDeferred
         $this->lookfor = trim($this->lookfor);
     }
 
-     /**
-      * Store the configuration of the recommendation module.
-      *
-      * @return string Module name in call to AjaxHandler
-      */
+    /**
+     * Store the configuration of the recommendation module.
+     *
+     * @return string Module name in call to AjaxHandler
+     */
     protected function getAjaxModule()
     {
         return 'EuropeanaResults';
