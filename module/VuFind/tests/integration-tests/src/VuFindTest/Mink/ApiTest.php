@@ -90,8 +90,8 @@ class ApiTest extends \VuFindTest\Integration\MinkTestCase
                         'permission' => 'access.api.Record',
                         'require' => 'ANY',
                         'role' => 'guest',
-                    ]
-                ]
+                    ],
+                ],
             ]
         );
         $page = $this->makeRecordApiCall();
