@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c4c37bff3a0d1ebc032f03e6491dc5a5",
+    "content-hash": "ce79ce6a3fedb2b603cd8821b7cda0a9",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -64,6 +64,77 @@
                 "source": "https://github.com/ahand/mobileesp/"
             },
             "time": "2017-06-06T22:20:56+00:00"
+        },
+        {
+            "name": "apereo/phpcas",
+            "version": "1.6.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/apereo/phpCAS.git",
+                "reference": "c129708154852656aabb13d8606cd5b12dbbabac"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/apereo/phpCAS/zipball/c129708154852656aabb13d8606cd5b12dbbabac",
+                "reference": "c129708154852656aabb13d8606cd5b12dbbabac",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-dom": "*",
+                "php": ">=7.1.0",
+                "psr/log": "^1.0 || ^2.0 || ^3.0"
+            },
+            "require-dev": {
+                "monolog/monolog": "^1.0.0 || ^2.0.0",
+                "phpstan/phpstan": "^1.5",
+                "phpunit/phpunit": ">=7.5"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.3.x-dev"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "source/CAS.php"
+                ],
+                "classmap": [
+                    "source/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Joachim Fritschi",
+                    "email": "jfritschi@freenet.de",
+                    "homepage": "https://github.com/jfritschi"
+                },
+                {
+                    "name": "Adam Franco",
+                    "homepage": "https://github.com/adamfranco"
+                },
+                {
+                    "name": "Henry Pan",
+                    "homepage": "https://github.com/phy25"
+                }
+            ],
+            "description": "Provides a simple API for authenticating users against a CAS server",
+            "homepage": "https://wiki.jasig.org/display/CASC/phpCAS",
+            "keywords": [
+                "apereo",
+                "cas",
+                "jasig"
+            ],
+            "support": {
+                "issues": "https://github.com/apereo/phpCAS/issues",
+                "source": "https://github.com/apereo/phpCAS/tree/1.6.1"
+            },
+            "time": "2023-02-19T19:52:35+00:00"
         },
         {
             "name": "bacon/bacon-qr-code",
@@ -1145,77 +1216,6 @@
                 }
             ],
             "time": "2023-04-12T12:00:00+00:00"
-        },
-        {
-            "name": "jasig/phpcas",
-            "version": "1.6.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/apereo/phpCAS.git",
-                "reference": "c129708154852656aabb13d8606cd5b12dbbabac"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/apereo/phpCAS/zipball/c129708154852656aabb13d8606cd5b12dbbabac",
-                "reference": "c129708154852656aabb13d8606cd5b12dbbabac",
-                "shasum": ""
-            },
-            "require": {
-                "ext-curl": "*",
-                "ext-dom": "*",
-                "php": ">=7.1.0",
-                "psr/log": "^1.0 || ^2.0 || ^3.0"
-            },
-            "require-dev": {
-                "monolog/monolog": "^1.0.0 || ^2.0.0",
-                "phpstan/phpstan": "^1.5",
-                "phpunit/phpunit": ">=7.5"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.3.x-dev"
-                }
-            },
-            "autoload": {
-                "files": [
-                    "source/CAS.php"
-                ],
-                "classmap": [
-                    "source/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "Apache-2.0"
-            ],
-            "authors": [
-                {
-                    "name": "Joachim Fritschi",
-                    "email": "jfritschi@freenet.de",
-                    "homepage": "https://github.com/jfritschi"
-                },
-                {
-                    "name": "Adam Franco",
-                    "homepage": "https://github.com/adamfranco"
-                },
-                {
-                    "name": "Henry Pan",
-                    "homepage": "https://github.com/phy25"
-                }
-            ],
-            "description": "Provides a simple API for authenticating users against a CAS server",
-            "homepage": "https://wiki.jasig.org/display/CASC/phpCAS",
-            "keywords": [
-                "apereo",
-                "cas",
-                "jasig"
-            ],
-            "support": {
-                "issues": "https://github.com/apereo/phpCAS/issues",
-                "source": "https://github.com/apereo/phpCAS/tree/1.6.1"
-            },
-            "time": "2023-02-19T19:52:35+00:00"
         },
         {
             "name": "laminas/laminas-cache",
@@ -12677,5 +12677,5 @@
     "platform-overrides": {
         "php": "8.0"
     },
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.2.0"
 }
