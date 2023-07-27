@@ -110,6 +110,37 @@
         );
       ?>
     </table>
+    <?php
+      $proxyHeadings = $proxyValues = [];
+      if (!empty($this->proxiedUsers)) {
+        $proxyHeadings[] = 'proxy_list_for';
+        $proxyValues[] = $this->proxiedUsers;
+      }
+      if (!empty($this->proxyingUsers)) {
+        $proxyHeadings[] = 'proxy_list_by';
+        $proxyValues[] = $this->proxyingUsers;
+      }
+    ?>
+    <?php if (!empty($proxyHeadings)): ?>
+      <h3><?=$this->transEsc('proxy_list_heading')?></h3>
+      <table class="table table-striped catalog-proxy-list">
+        <tr>
+          <?php foreach ($proxyHeadings as $proxyHeading): ?>
+            <th scope="col"><?=$this->transEsc($proxyHeading)?></th>
+          <?php endforeach; ?>
+        </tr>
+        <tr>
+          <?php foreach ($proxyValues as $proxyValueGroup): ?>
+            <td>
+              <?php natsort($proxyValueGroup); ?>
+              <?php foreach ($proxyValueGroup as $proxyValue): ?>
+                <?=$this->escapeHtml($proxyValue)?><br>
+              <?php endforeach; ?>
+            </td>
+          <?php endforeach; ?>
+        </tr>
+      </table>
+    <?php endif; ?>
   <?php elseif ('ils-none' !== $this->ils()->getOfflineMode() && $this->patronLoginView && !empty($this->patronLoginView->getTemplate())): ?>
     <?=$this->partial($this->patronLoginView);?>
   <?php endif; ?>

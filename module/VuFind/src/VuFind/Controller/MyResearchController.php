@@ -690,6 +690,14 @@ class MyResearchController extends AbstractBase
                     }
                 }
             }
+
+            // Add proxy details if available
+            if ($catalog->checkCapability('getProxiedUsers', [$patron])) {
+                $view->proxiedUsers = $catalog->getProxiedUsers($patron);
+            }
+            if ($catalog->checkCapability('getProxyingUsers', [$patron])) {
+                $view->proxyingUsers = $catalog->getProxyingUsers($patron);
+            }
         } else {
             $view->patronLoginView = $patron;
         }
