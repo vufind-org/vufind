@@ -101,7 +101,7 @@ trait TranslatorAwareTrait
      */
     public function translate($target, $tokens = [], $default = null)
     {
-        if ($this->translator->getLocale() == "keys") {
+        if ($this->translator !== null && $this->translator->getLocale() == "keys") {
             return "*$target*";
         }
 

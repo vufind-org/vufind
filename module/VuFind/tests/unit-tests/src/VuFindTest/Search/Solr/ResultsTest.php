@@ -76,7 +76,10 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
      */
     public function testFacetTranslations(): void
     {
-        $mockTranslator = $this->createMock(TranslatorInterface::class);
+        $mockTranslator
+            = $this->getMockBuilder(TranslatorInterface::class)
+            ->addMethods(['getLocale'])
+            ->getMockForAbstractClass();
         $mockTranslator->expects($this->exactly(2))
             ->method('translate')
             ->withConsecutive(
@@ -86,6 +89,8 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                 'Computer science, information, general works',
                 '%%raw%% - %%translated%%'
             );
+        $mockTranslator->expects($this->any())->method('getLocale')
+            ->will($this->returnValue('en'));
         $mockConfig = $this->createMock(PluginManager::class);
         $options = new Options($mockConfig);
         $options->setTranslator($mockTranslator);

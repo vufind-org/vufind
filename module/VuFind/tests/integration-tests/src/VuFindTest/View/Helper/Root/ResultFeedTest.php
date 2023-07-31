@@ -102,7 +102,8 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
                 . '</strong> results of <strong>%%total%%</strong>',
         ];
         $mock = $this->getMockBuilder(\Laminas\I18n\Translator\TranslatorInterface::class)
-            ->getMock();
+            ->addMethods(['getLocale'])
+            ->getMockForAbstractClass();
         $mock->expects($this->any())->method('translate')
             ->will(
                 $this->returnCallback(
@@ -111,6 +112,8 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
                     }
                 )
             );
+        $mock->expects($this->any())->method('getLocale')
+            ->will($this->returnValue('en'));
         return $mock;
     }
 

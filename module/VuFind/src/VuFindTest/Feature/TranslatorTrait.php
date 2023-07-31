@@ -53,9 +53,13 @@ trait TranslatorTrait
             return $translations[$domain][$str] ?? $str;
         };
         $translator
-            = $this->createMock(\Laminas\I18n\Translator\TranslatorInterface::class);
+            = $this->getMockBuilder(\Laminas\I18n\Translator\TranslatorInterface::class)
+                    ->addMethods(['getLocale'])
+                    ->getMockForAbstractClass();
         $translator->expects($this->any())->method('translate')
             ->will($this->returnCallback($callback));
+        $translator->expects($this->any())->method('getLocale')
+            ->will($this->returnValue('en'));
         return $translator;
     }
 }
