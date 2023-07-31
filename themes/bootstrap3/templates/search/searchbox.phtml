@@ -87,7 +87,10 @@
         $searchboxAttributes['data-autocomplete-formatting-rules'] = $this->searchbox()->autocompleteFormattingRulesJson($this->searchClassId);
       }
     ?>
-    <input<?=$this->htmlAttributes($searchboxAttributes)?>>
+    <div class="searchForm-query">
+      <input<?=$this->htmlAttributes($searchboxAttributes)?>>
+      <button id="searchForm-reset" class="searchForm-reset" type="reset" tabindex="-1" aria-label="<?=$this->transEsc('searchform_reset_button')?>"><?=$this->icon('ui-reset-search');?></button>
+    </div>
     <?php if ($handlerCount > 1): ?>
       <select id="searchForm_type" class="searchForm_type form-control" name="type" data-native-menu="false" aria-label="<?=$this->transEscAttr("Search type")?>">
         <?php $currentGroup = $insideGroup = false; ?>
@@ -179,4 +182,3 @@
     );?>
   </form>
 <?php endif; ?>
-
