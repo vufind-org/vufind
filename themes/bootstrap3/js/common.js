@@ -498,6 +498,15 @@ function setupAutocomplete() {
             return formattingRules[backendWildcard];
           }
         }
+        // Special case: alphabrowse options in combined handlers:
+        const alphabrowseRegex = /^External:.*\/Alphabrowse.*\?source=([^&]*)/;
+        const alphabrowseMatches = alphabrowseRegex.exec(type);
+        if (alphabrowseMatches && alphabrowseMatches.length > 1) {
+          const alphabrowseKey = "VuFind:Solr|alphabrowse_" + alphabrowseMatches[1];
+          if (typeof(formattingRules[alphabrowseKey]) !== "undefined") {
+            return formattingRules[alphabrowseKey];
+          }
+        }
         // Global wildcard fallback:
         if (typeof(formattingRules["*"]) !== "undefined") {
           return formattingRules["*"];
