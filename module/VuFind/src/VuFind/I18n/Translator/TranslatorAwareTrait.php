@@ -101,6 +101,10 @@ trait TranslatorAwareTrait
      */
     public function translate($target, $tokens = [], $default = null)
     {
+        if ($this->translator->getLocale() == "keys") {
+            return "*$target*";
+        }
+
         // Figure out the text domain for the string:
         [$domain, $str] = $this->extractTextDomain($target);
 
