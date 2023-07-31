@@ -490,6 +490,15 @@ function setupAutocomplete() {
         if (typeof(formattingRules[type]) !== "undefined") {
           return formattingRules[type];
         }
+        // If we're using combined handlers, we may need to use a backend-specific wildcard:
+        const typeParts = type.split("|");
+        if (typeParts.length > 1) {
+          const backendWildcard = typeParts[0] + "|*";
+          if (typeof(formattingRules[backendWildcard]) !== "undefined") {
+            return formattingRules[backendWildcard];
+          }
+        }
+        // Global wildcard fallback:
         if (typeof(formattingRules["*"]) !== "undefined") {
           return formattingRules["*"];
         }
