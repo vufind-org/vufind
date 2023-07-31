@@ -106,7 +106,8 @@ class Suggester
             // and type settings.
             [, $tmp] = explode(':', $type, 2);
             [$searcher, $type] = explode('|', $tmp, 2);
-        } elseif (str_starts_with($type, 'External:')
+        } elseif (
+            str_starts_with($type, 'External:')
             && str_contains($type, '/Alphabrowse')
         ) {
             // If includeAlphaBrowse is turned on in searchbox.ini, we should use a
