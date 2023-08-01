@@ -485,6 +485,8 @@ function setupAutocomplete() {
   $searchboxes.each(function processAutocompleteForSearchbox(i, searchboxElement) {
     const $searchbox = $(searchboxElement);
     const formattingRules = $searchbox.data('autocompleteFormattingRules');
+    const typeFieldSelector = $searchbox.data('autocompleteTypeFieldSelector');
+    const typePrefix = $searchbox.data('autocompleteTypePrefix');
     const getFormattingRule = function getAutocompleteFormattingRule(type) {
       if (typeof(formattingRules) !== "undefined") {
         if (typeof(formattingRules[type]) !== "undefined") {
@@ -525,7 +527,10 @@ function setupAutocomplete() {
     typeahead(input, function vufindACHandler(query, callback) {
       const classParams = extractClassParams(input);
       const searcher = classParams.searcher;
-      const type = classParams.type ? classParams.type : $('#searchForm_type').val();
+      const selectedType = classParams.type
+        ? classParams.type
+        : $(typeFieldSelector ? typeFieldSelector : '#searchForm_type').val();
+      const type = (typePrefix ? typePrefix : "") + selectedType;
       const formattingRule = getFormattingRule(type);
 
       const cacheKey = searcher + "|" + type;
