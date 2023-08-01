@@ -262,4 +262,28 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
             $session->getCurrentUrl()
         );
     }
+
+    /**
+     * Test alphabrowse autocomplete in searchbox with combined handlers.
+     *
+     * @return void
+     */
+    public function testAlphaBrowseAutocompleteInCombinedSearchbox(): void
+    {
+        $config = $this->getCombinedSearchHandlersConfigs();
+        $config['searchbox']['General']['includeAlphaBrowse'] = true;
+        $this->changeConfigs($config);
+        $session = $this->getMinkSession();
+        $vufindUrl = $this->getVuFindUrl();
+        $basePath = parse_url($vufindUrl, PHP_URL_PATH);
+        $handler = "External:$basePath/Alphabrowse/Home?source=title&from=";
+        $acItem = $this->assertAutocompleteValueAndReturnItem('test pu', 'test publication 20001', $handler);
+        $acItem->click();
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            $vufindUrl . '/Alphabrowse/Home?source=title&from=test+publication+20001',
+            $session->getCurrentUrl()
+        );
+    }
 }
