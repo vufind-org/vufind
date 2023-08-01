@@ -207,7 +207,7 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test that autocomplete works correctly in a searchbox with combined handlers.
+     * Test that default autocomplete works correctly in a searchbox with combined handlers.
      *
      * @return void
      */
@@ -221,6 +221,25 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertEquals(
             $this->getVuFindUrl() . '/Search/Results?lookfor=%22Fake+DOI+test+1%22&type=AllFields',
+            $session->getCurrentUrl()
+        );
+    }
+
+    /**
+     * Test that author autocomplete works correctly in a searchbox with combined handlers.
+     *
+     * @return void
+     */
+    public function testAuthorAutocompleteInCombinedSearchbox(): void
+    {
+        $this->changeConfigs($this->getCombinedSearchHandlersConfigs());
+        $session = $this->getMinkSession();
+        $acItem = $this->assertAutocompleteValueAndReturnItem('jsto', 'JSTOR (Organization)', 'VuFind:Solr|Author');
+        $acItem->click();
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            $this->getVuFindUrl() . '/Search/Results?lookfor=%22JSTOR+%28Organization%29%22&type=Author',
             $session->getCurrentUrl()
         );
     }
