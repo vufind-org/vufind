@@ -98,10 +98,8 @@
     <phingcall target="php-cs-fixer-dryrun"/>
     <phingcall target="phpunit"/>
     <phingcall target="phpdoc"/>
-    <phingcall target="phpcpd"/>
     <phingcall target="phpmd"/>
     <phingcall target="pdepend"/>
-    <phingcall target="phploc"/>
     <phingcall target="eslint-report"/>
     <phingcall target="jshint-report"/>
     <phingcall target="phpstan-checkstyle"/>
@@ -135,19 +133,9 @@
     <exec command="${srcdir}/vendor/bin/phpmd ${srcdir}/module xml ${srcdir}/tests/phpmd.xml --exclude ${srcdir}/module/VuFind/tests,${srcdir}/module/VuFindSearch/tests --reportfile ${builddir}/reports/phpmd.xml" />
   </target>
 
-  <!-- Measure project with phploc -->
-  <target name="phploc">
-    <exec command="${srcdir}/vendor/bin/phploc --log-csv ${builddir}/reports/phploc.csv ${srcdir}/module" />
-  </target>
-
   <!-- PHP_Depend code analysis -->
   <target name="pdepend">
     <exec command="${srcdir}/vendor/bin/pdepend --jdepend-xml=${builddir}/reports/jdepend.xml --jdepend-chart=${builddir}/reports/dependencies.svg --overview-pyramid=${builddir}/reports/pdepend-pyramid.svg ${srcdir}/module" />
-  </target>
-
-  <!-- PHP copy-and-paste detection -->
-  <target name="phpcpd">
-    <exec command="${srcdir}/vendor/bin/phpcpd --log-pmd ${builddir}/reports/pmd-cpd.xml --exclude tests ${srcdir}/module" />
   </target>
 
   <!-- PHP CodeSniffer -->
