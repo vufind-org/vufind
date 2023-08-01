@@ -243,4 +243,23 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
             $session->getCurrentUrl()
         );
     }
+
+    /**
+     * Test that authority autocomplete works correctly in a searchbox with combined handlers.
+     *
+     * @return void
+     */
+    public function testAuthorityAutocompleteInCombinedSearchbox(): void
+    {
+        $this->changeConfigs($this->getCombinedSearchHandlersConfigs());
+        $session = $this->getMinkSession();
+        $acItem = $this->assertAutocompleteValueAndReturnItem('roy', 'Royal Dublin Society', 'VuFind:SolrAuth|MainHeading');
+        $acItem->click();
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            $this->getVuFindUrl() . '/Authority/Search?lookfor=%22Royal+Dublin+Society%22&type=MainHeading',
+            $session->getCurrentUrl()
+        );
+    }
 }
