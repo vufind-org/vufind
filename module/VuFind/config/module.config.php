@@ -46,6 +46,19 @@ $config = [
                     ],
                 ],
             ],
+            'help-home' => [
+                'type'    => 'Laminas\Router\Http\Segment',
+                'options' => [
+                    'route'    => '/Help/Home/:topic',
+                    'constraints' => [
+                        'topic'     => '[a-zA-Z0-9_-]+',
+                    ],
+                    'defaults' => [
+                        'controller' => 'Help',
+                        'action'     => 'Home',
+                    ],
+                ],
+            ],
             'shortlink' => [
                 'type'    => 'Laminas\Router\Http\Segment',
                 'options' => [
@@ -726,7 +739,7 @@ $staticRoutes = [
     'EIT/Advanced', 'EIT/Home', 'EIT/Search',
     'EPF/Home', 'EPF/Search',
     'Error/PermissionDenied', 'Error/Unavailable',
-    'Feedback/Email', 'Feedback/Home', 'Help/Home',
+    'Feedback/Email', 'Feedback/Home',
     'Holds/Edit', 'Holds/List',
     'Install/Done', 'Install/FixBasicConfig', 'Install/FixCache',
     'Install/FixDatabase', 'Install/FixDependencies', 'Install/FixILS',
