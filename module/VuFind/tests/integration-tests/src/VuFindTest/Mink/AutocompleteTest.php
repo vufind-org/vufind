@@ -253,7 +253,11 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
     {
         $this->changeConfigs($this->getCombinedSearchHandlersConfigs());
         $session = $this->getMinkSession();
-        $acItem = $this->assertAutocompleteValueAndReturnItem('roy', 'Royal Dublin Society', 'VuFind:SolrAuth|MainHeading');
+        $acItem = $this->assertAutocompleteValueAndReturnItem(
+            'roy',
+            'Royal Dublin Society',
+            'VuFind:SolrAuth|MainHeading'
+        );
         $acItem->click();
         $page = $session->getPage();
         $this->waitForPageLoad($page);
