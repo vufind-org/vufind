@@ -84,6 +84,13 @@ class LibGuidesProfile implements
     protected $aliasToAccountId;
 
     /**
+     * Facet field name containing the call numbers to match against
+     *
+     * @var string
+     */
+    protected $callNumberField;
+
+    /**
      * Length of the substring at the start of a call number to match against
      *
      * @var int
@@ -112,6 +119,7 @@ class LibGuidesProfile implements
             $this->strategies = $profile->get('strategies', []);
             $this->callNumberToAlias = $profile->call_numbers ? $profile->call_numbers->toArray() : [];
             $this->aliasToAccountId = $profile->profile_aliases ? $profile->profile_aliases->toArray() : [];
+            $this->callNumberField = $profile->get('call_number_field', 'callnumber-first');
             $this->callNumberLength = $profile->get('call_number_length', 3);
         }
     }
@@ -201,7 +209,7 @@ class LibGuidesProfile implements
 
         // Get the Call Number facet list.
         $filter = [
-            'callnumber-first' => 'Call Number',
+            $this->callNumberField => 'Call Number',
         ];
         $facets = $results->getFacetList($filter);
 
