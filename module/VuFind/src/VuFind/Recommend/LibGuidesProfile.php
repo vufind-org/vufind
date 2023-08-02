@@ -110,7 +110,7 @@ class LibGuidesProfile implements
 
         $profile = $config->Profile;
         if ($profile) {
-            $this->strategies = $profile->get('strategies', []);
+            $this->strategies = (array) $profile->get('strategies', []);
             $this->callNumberToAlias = $profile->call_numbers ? $profile->call_numbers->toArray() : [];
             $this->aliasToAccountId = $profile->profile_aliases ? $profile->profile_aliases->toArray() : [];
             $this->callNumberLength = $profile->get('call_number_length', 3);
