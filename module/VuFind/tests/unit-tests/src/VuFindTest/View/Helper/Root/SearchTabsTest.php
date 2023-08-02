@@ -304,29 +304,6 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
                 'Solr:filtered' => 'logged-in',
             ]
         );
-        $ssearchTabsHelper = $this->getMockBuilder(SearchTabsHelper::class)
-            ->setConstructorArgs(
-                [
-                    $resultsPM,
-                    [],
-                    [],
-                    $request,
-                    [
-                        'Solr:filtered' => 'logged-in',
-                    ],
-                    [],
-                ]
-            )->onlyMethods(['getHiddenFilters', 'getTabConfig', 'getTabFilterConfig'])
-            ->getMock();
-        /*$searchTabsHelper->expects($this->exactly($filtersCalls))
-            ->method('getHiddenFilters')
-            ->willReturn($filters);
-        $searchTabsHelper->expects($this->exactly($tabConfigCalls))
-            ->method('getTabConfig')
-            ->willReturn($tabConfig);
-        $searchTabsHelper->expects($this->exactly($tabFilterConfigCalls))
-            ->method('getTabFilterConfig')
-            ->willReturn($tabFilterConfig);*/
         $searchMemory = $this->getMockBuilder(SearchMemory::class)
             ->disableOriginalConstructor()
             ->getMock();
