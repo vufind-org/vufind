@@ -162,7 +162,7 @@ class LibGuidesProfileTest extends \PHPUnit\Framework\TestCase
             ],
             'call_numbers' => [
                 'D' => 'Eratosthenes',
-                'P' => 'Dewey'
+                'P' => 'Dewey',
             ],
         ];
         $libGuidesProfile = $this->buildProfile($config);
