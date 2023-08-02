@@ -117,7 +117,6 @@ class ExtendedIni implements FileLoaderInterface
      */
     public function load($locale, $filename)
     {
-
         if ($locale == "keys") {
             return null;
         }
