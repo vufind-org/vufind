@@ -91,7 +91,7 @@ class LibGuidesProfileTest extends \PHPUnit\Framework\TestCase
 
         $config = new Config([], true);
         $config->Profile = [
-            'strategies' =>  ['subject']
+            'strategies' =>  ['Subject'],
         ];
 
         // Mock caching logic in LibGuidesProfile.

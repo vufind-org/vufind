@@ -171,19 +171,12 @@ class LibGuidesProfile implements
     {
         // Consider strategies in the order listed in the config file.
         foreach ($this->strategies as $strategy) {
-            if ("call_number" == $strategy) {
-                // Try the best match for call numbers in the results facets.
-                $account = $this->findBestMatchByCallNumbers($this->results);
-                if ($account) {
-                    return $account;
-                }
-            } elseif ("subject" == $strategy) {
-                // Find best match for the query terms alone.
-                $query = $this->results->getParams()->getQuery();
-                $account = $this->findBestMatchByQuery($query);
-                if ($account) {
-                    return $account;
-                }
+            $method = 'findBestMatchBy' . $strategy;
+            if (
+                method_exists($this, $method) &&
+                $account = $this->$method($this->results)
+            ) {
+                return $account;
             }
         }
         return false;
@@ -199,7 +192,7 @@ class LibGuidesProfile implements
      *
      * @return array LibGuides account
      */
-    protected function findBestMatchByCallNumbers($results)
+    protected function findBestMatchByCallNumber($results)
     {
         // Skip if no call number mapping was provided by config.
         if (empty($this->callNumberToAlias)) {
@@ -250,19 +243,20 @@ class LibGuidesProfile implements
     }
 
     /**
-     * Find the LibGuides account whose profile best matches the
-     * given query.
+     * Find the LibGuides account whose subject expertise in their
+     * profile best matches the given query.
      *
-     * @param \VuFindSearch\Query\QueryInterface $query Current search query
+     * @param \VuFind\Search\Base\Results $results Search results object
      *
      * @return array LibGuides account
      */
-    protected function findBestMatchByQuery(\VuFindSearch\Query\QueryInterface $query)
+    protected function findBestMatchBySubject($results)
     {
         $data = $this->getLibGuidesData();
         $subjectToId = $data['subjectToId'];
         $idToAccount = $data['idToAccount'];
 
+        $query = $results->getParams()->getQuery();
         $queryString = $query->getAllTerms();
         if (!$queryString) {
             return false;
