@@ -61,13 +61,6 @@ class LibGuidesProfileTest extends \PHPUnit\Framework\TestCase
     protected $connector;
 
     /**
-     * Config object
-     *
-     * @var Config
-     */
-    protected $config;
-
-    /**
      * Cache adapter object
      *
      * @var CacheAdapter
@@ -96,17 +89,18 @@ class LibGuidesProfileTest extends \PHPUnit\Framework\TestCase
         $accounts = json_decode(substr($accountsFixture, strpos($accountsFixture, '[')));
         $this->connector->method('getAccounts')->willReturn($accounts);
 
-        // Mock config and caching logic in LibGuidesProfile.
-        // Caching is from a trait, which is not the point of this test suite,
-        // and the config is only used in LibGuidesProfile for caching.
-        $this->config = $this->getMockBuilder(Config::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $config = new Config([], true);
+        $config->Profile = [
+            'strategies' =>  ['subject']
+        ];
+
+        // Mock caching logic in LibGuidesProfile.
+        // Caching is from a trait, which is not the point of this test suite.
         $this->cacheAdapter = $this->getMockBuilder(CacheAdapter::class)->getMock();
 
         // For the target class LibGuidesProfile, only mock the caching methods
         $this->libGuidesProfile = $this->getMockBuilder(LibGuidesProfile::class)
-            ->setConstructorArgs([$this->connector, $this->config, $this->cacheAdapter])
+            ->setConstructorArgs([$this->connector, $config, $this->cacheAdapter])
             ->onlyMethods(['getCachedData', 'putCachedData'])
             ->getMock();
         $this->libGuidesProfile->method('getCachedData')->willReturn(null);
