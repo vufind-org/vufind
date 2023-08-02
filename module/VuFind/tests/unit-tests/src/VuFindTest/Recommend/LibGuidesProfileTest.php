@@ -215,6 +215,7 @@ class LibGuidesProfileTest extends \PHPUnit\Framework\TestCase
      * Build a partially mocked Results object for a given query string
      *
      * @param string $queryString The query string
+     * @param array  $facets      The result facets
      *
      * @return Results The Results object
      */
