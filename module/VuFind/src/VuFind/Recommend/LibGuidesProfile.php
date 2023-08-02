@@ -215,7 +215,7 @@ class LibGuidesProfile implements
 
         // For each call number facet.
         $profiles = [];
-        foreach ($facets['callnumber-first']['list'] ?? [] as $current) {
+        foreach ($facets[$this->callNumberField]['list'] ?? [] as $current) {
             $callNumber = trim(substr($current['value'], 0, $this->callNumberLength));
 
             // Find an alias for this call number, or a broader call number if none is found.
