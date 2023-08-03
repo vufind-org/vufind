@@ -569,6 +569,32 @@ table.search-history-table {
   }
 }
 
+.searchForm-query {
+  position: relative;
+  display: inline-block;
+
+  #searchForm_lookfor {
+    padding-right: 28px;
+  }
+
+  #searchForm-reset {
+    position: absolute;
+    display: none;
+    right: 3px;
+    top: 3px;
+    bottom: 0;
+    width: 2em;
+    height: 2em;
+    border: none;
+    border-radius: 50%;
+    background-color: @gray-lighter;
+    margin: 0;
+    padding: 2px;
+    font-size: 1em;
+    cursor: pointer;
+  }
+}
+
 /* Break early to prevent table overflow */
 @media (max-width: 991px) {
   .template-dir-search.template-name-history {

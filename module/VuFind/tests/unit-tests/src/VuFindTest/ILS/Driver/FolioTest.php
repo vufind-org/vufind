@@ -703,16 +703,13 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getHolding with HRID-based lookup
+     * Get expected result of get-holding fixture (shared by multiple tests).
      *
-     * @return void
+     * @return array
      */
-    public function testGetHoldingWithHridLookup(): void
+    protected function getExpectedGetHoldingResult(): array
     {
-        $driverConfig = $this->defaultDriverConfig;
-        $driverConfig['IDs']['type'] = 'hrid';
-        $this->createConnector("get-holding", $driverConfig);
-        $expected = [
+        return [
             [
                 'callnumber_prefix' => '',
                 'callnumber' => 'PS2394 .M643 1883',
@@ -737,7 +734,19 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                 'addLink' => true,
             ],
         ];
-        $this->assertEquals($expected, $this->driver->getHolding("foo"));
+    }
+
+    /**
+     * Test getHolding with HRID-based lookup
+     *
+     * @return void
+     */
+    public function testGetHoldingWithHridLookup(): void
+    {
+        $driverConfig = $this->defaultDriverConfig;
+        $driverConfig['IDs']['type'] = 'hrid';
+        $this->createConnector("get-holding", $driverConfig);
+        $this->assertEquals($this->getExpectedGetHoldingResult(), $this->driver->getHolding("foo"));
     }
 
     /**
@@ -752,34 +761,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $driverConfig = $this->defaultDriverConfig;
         $driverConfig['IDs']['type'] = 'hrid';
         $this->createConnector("get-holding", $driverConfig);
-        $expected = [
-            [
-                [
-                    'callnumber_prefix' => '',
-                    'callnumber' => 'PS2394 .M643 1883',
-                    'id' => 'foo',
-                    'item_id' => 'itemid',
-                    'holding_id' => 'holdingid',
-                    'number' => 1,
-                    'enumchron' => '',
-                    'barcode' => 'barcode-test',
-                    'status' => 'Available',
-                    'duedate' => '',
-                    'availability' => true,
-                    'is_holdable' => true,
-                    'holdings_notes' => null,
-                    'item_notes' => null,
-                    'summary' => ["foo", "bar baz"],
-                    'supplements' => [],
-                    'indexes' => [],
-                    'location' => 'Special Collections',
-                    'location_code' => 'DCOC',
-                    'reserve' => 'TODO',
-                    'addLink' => true,
-                ],
-            ],
-        ];
-        $this->assertEquals($expected, $this->driver->getStatuses(["foo"]));
+        $this->assertEquals([$this->getExpectedGetHoldingResult()], $this->driver->getStatuses(["foo"]));
     }
 
     /**
