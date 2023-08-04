@@ -138,7 +138,7 @@ else
 fi
 
 # Process all the files in the target directory:
-find -L $BASEPATH -maxdepth 1 \( -iname "*.xml" -o -iname "*.mrc" -o -iname "*.marc" \) -type f -print0 | sort -z | xargs -0 -n $MAX_BATCH_COUNT | \
+find -L $BASEPATH -maxdepth 1 \( -iname "*.xml" -o -iname "*.mrc" -o -iname "*.marc" \) -type f -print0 | sort -z | xargs -0 -r -n $MAX_BATCH_COUNT | \
   while read -d $'\n' files
 do
   # Logging output handled by log() function
