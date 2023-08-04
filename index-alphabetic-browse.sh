@@ -31,11 +31,17 @@ then
   SOLR_HOME="$VUFIND_HOME/solr/vufind"
 fi
 
+# This would be /opt/bitnami/solr on a solr docker container
+if [ -z "$BITNAMI_SOLR_HOME" ]
+then
+  BITNAMI_SOLR_HOME="${SOLR_HOME}/../vendor"
+fi
+
 set -e
 set -x
 
 cd "`dirname $0`/import"
-CLASSPATH="browse-indexing.jar:${VUFIND_HOME}/import/lib/*:${SOLR_HOME}/jars/*:${SOLR_HOME}/../vendor/modules/analysis-extras/lib/*:${SOLR_HOME}/../vendor/server/solr-webapp/webapp/WEB-INF/lib/*"
+CLASSPATH="browse-indexing.jar:${VUFIND_HOME}/import/lib/*:${SOLR_HOME}/jars/*:${BITNAMI_SOLR_HOME}/modules/analysis-extras/lib/*:${BITNAMI_SOLR_HOME}/server/solr-webapp/webapp/WEB-INF/lib/*:${BITNAMI_SOLR_HOME}/server/lib/ext/log4j*.jar"
 
 # make index work with replicated index
 # current index is stored in the last line of index.properties
@@ -87,8 +93,9 @@ function build_browse
     mv "${browse}_browse.db" "$index_dir/${browse}_browse.db-updated"
     touch "$index_dir/${browse}_browse.db-ready"
 }
+# These parameters should match the ones in solr/vufind/biblio/conf/solrconfig.xml - BrowseRequestHandler
 build_browse "hierarchy" "hierarchy_browse"
-build_browse "title" "title_fullStr" 1 "-Dbibleech=StoredFieldLeech -Dsortfield=title_sort -Dvaluefield=title_fullStr"
+build_browse "title" "title_fullStr" 1 "-Dbibleech=StoredFieldLeech -Dsortfield=title_sort -Dvaluefield=title_fullStr -Dbrowse.normalizer=org.vufind.util.TitleNormalizer"
 build_browse "topic" "topic_browse"
 build_browse "author" "author_browse"
 build_browse "lcc" "callnumber-raw" 1 "-Dbrowse.normalizer=org.vufind.util.LCCallNormalizer"
