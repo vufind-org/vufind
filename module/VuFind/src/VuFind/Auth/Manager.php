@@ -155,7 +155,7 @@ class Manager implements
         SessionManager $sessionManager,
         PluginManager $pm,
         CookieManager $cookieManager,
-        CsrfInterface $csrf,
+        CsrfInterface $csrf
     ) {
         // Store dependencies:
         $this->config = $config;
@@ -346,7 +346,7 @@ class Manager implements
 
     /**
      * Get the URL to establish a session (needed when the internal VuFind login
-     * form is inadequate).  Returns false when no session initiator is needed.
+     * form is inadequate). Returns false when no session initiator is needed.
      *
      * @param string $target Full URL where external authentication method should
      * send user after login (some drivers may override this).
@@ -390,7 +390,7 @@ class Manager implements
                 $auth = $this->getAuth($selected);
             }
         }
-        return get_class($auth);
+        return $auth::class;
     }
 
     /**

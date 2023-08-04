@@ -3,7 +3,7 @@
 /**
  * MyResearch Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2023.
@@ -971,7 +971,7 @@ class MyResearchController extends AbstractBase
     protected function confirmDeleteFavorite($id, $source)
     {
         // Normally list ID is found in the route match, but in lightbox context it
-        // may sometimes be a GET parameter.  We must cover both cases.
+        // may sometimes be a GET parameter. We must cover both cases.
         $listID = $this->params()->fromRoute('id', $this->params()->fromQuery('id'));
         if (empty($listID)) {
             $url = $this->url()->fromRoute('myresearch-favorites');
@@ -1116,7 +1116,7 @@ class MyResearchController extends AbstractBase
                     $params[] = urlencode('ids[]') . '=' . urlencode($id);
                 }
                 $saveUrl = $this->url()->fromRoute('cart-save');
-                $saveUrl .= (strpos($saveUrl, '?') === false) ? '?' : '&';
+                $saveUrl .= (!str_contains($saveUrl, '?')) ? '?' : '&';
                 return $this->redirect()
                     ->toUrl($saveUrl . implode('&', $params));
             }
@@ -1696,7 +1696,7 @@ class MyResearchController extends AbstractBase
                     $this->flashMessenger()
                         ->addMessage('recovery_email_sent', 'success');
                 } catch (MailException $e) {
-                    $this->flashMessenger()->addMessage($e->getMessage(), 'error');
+                    $this->flashMessenger()->addMessage($e->getDisplayMessage(), 'error');
                 }
             }
         }
