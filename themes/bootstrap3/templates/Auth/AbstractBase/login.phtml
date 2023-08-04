@@ -13,6 +13,9 @@
       <?php if ($account->supportsRecovery()): ?>
         <a class="btn btn-link" href="<?=$this->url('myresearch-recover') ?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Forgot Password')?></a>
       <?php endif; ?>
+      <?php if ($account->supportsPersistentLogin()) : ?>
+        <input type="checkbox" name="remember_me"> <?=$this->transEsc('remember_me', ['%%days%%' => $account->getPersistentLoginLifetime()])?>
+      <?php endif; ?>
     </div>
   </form>
 <?php else: ?>

@@ -3,7 +3,7 @@
 /**
  * Wrapper class for handling logged-in user in session.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -289,35 +289,19 @@ class Manager implements
     {
         if (!empty($this->config->Authentication->persistent_login)) {
             if ($user) {
-                $method = $this->getAuthMethodName($user->auth_method);
+                $method = $user->auth_method;
             } else if ($this->getAuth() instanceof ChoiceAuth) {
                 $method = $this->getAuth()->getSelectedAuthOption();
             } else {
                 $method = $this->getAuthMethod();
             }
+
             return in_array(
-                $method,
-                explode(',', $this->config->Authentication->persistent_login)
+                strtolower($method),
+                explode(',', strtolower($this->config->Authentication->persistent_login))
             );
         }
         return false;
-    }
-
-    /**
-     * Get auth method name with proper uppercase characters
-     *
-     * @param string $method method name
-     *
-     * @return string
-     */
-    public function getAuthMethodName($method)
-    {
-        $map = [
-            'database' => 'Database',
-            'multiils' => 'MultiILS',
-            'ils' => 'ILS'
-        ];
-        return $map[$method] ?? $method;
     }
 
     /**
@@ -574,7 +558,6 @@ class Manager implements
                 $this->currentUser = $results;
             } elseif ($this->cookieManager->get('loginToken')) {
                 if ($user = $this->loginToken->tokenLogin($this->sessionManager->getId())) {
-                    $this->setAuthMethod($this->getAuthMethodName($user->auth_method));
                     $this->updateUser($user);
                     $this->updateSession($user);
                 }

@@ -84,6 +84,42 @@
     <?php endif; ?>
   </div>
 
+  <?php $user = $this->auth()->isLoggedIn(); ?>
+  <?php if ($this->auth()->getManager()->supportsPersistentLogin($user)): ?>
+    <div class="myresearch-profile-header">
+      <h3><?= $this->transEsc("Saved logins") ?></h3>
+    </div>
+    <?php $tokens = $user->getLoginTokens($user->id); ?>
+    <?php if (count($tokens) === 0): ?>
+      <div class="my-profile-col"><?=$this->transEsc('No saved logins')?></div>
+    <?php else: ?>
+      <table class="login-tokens-table table table-striped">
+        <thead>
+          <tr>
+            <th scope="col" class="login_token_browser"> <?=$this->transEsc('Platform')?> / <?=$this->transEsc('Browser')?></th>
+            <th scope="col" class="login_token_last_login"><?=$this->transEsc('Last Login')?>:</th>
+            <th scope="col" class="login_token_delete"><?=$this->transEsc("Delete")?></th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php foreach ($tokens as $token): ?>
+            <tr>
+              <th scope="col"><?=$this->transEsc($token->platform)?> / <?=$this->transEsc($token->browser)?></th>
+              <th scope="col"><?=$this->dateTime()->convertToDisplayDateAndTime('Y-m-d H:i:s', $token->last_login)?></th>
+              <th scope="col">
+                <form id="delete-login-token" method="post" action="<?=$this->url('myresearch-deletelogintoken') ?>" name="deleteAccount">
+                  <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>">
+                  <input type="hidden" name="series" value="<?=$this->escapeHtmlAttr($token->series)?>">
+                  <input id="delete-login-token-submit" class="btn btn-danger" type="submit" name="submit" value="<?=$this->transEscAttr('Forget Login'); ?>">
+                </form>
+              </th>
+            </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+    <?php endif; ?>
+  <?php endif; ?>
+
   <?php if (is_array($this->profile)): ?>
     <h3><?=$this->transEsc('Library Catalog Profile')?></h3>
     <p>
