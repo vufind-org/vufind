@@ -273,6 +273,7 @@ class OverdriveConnector implements
                     $result->code = 'od_code_login_for_avail';
                 } else {
                     $result->status = false;
+                    $result->code = 'od_code_resource_not_found';
                     $this->logWarning("resource not found: $overDriveId");
                 }
             } else {
@@ -280,6 +281,7 @@ class OverdriveConnector implements
                 $res->copiesAvailable = $res->copiesAvailable ?? 0;
                 $res->copiesOwned = $res->copiesOwned ?? 0;
                 $res->numberOfHolds = $res->numberOfHolds ?? 0;
+                $res->code = "od_none"; 
                 $result->data = $res;
             }
         }
@@ -341,6 +343,7 @@ class OverdriveConnector implements
                         $result->code = 'od_code_login_for_avail';
                     } else {
                         $result->status = false;
+                        $result->code = 'od_code_resource_not_found';
                         $this->logWarning("resources not found");
                     }
                 } else {
@@ -350,6 +353,7 @@ class OverdriveConnector implements
                         $item->copiesOwned = $item->copiesOwned ?? 0;
                         $item->numberOfHolds = $item->numberOfHolds ?? 0;
                         $result->data[strtolower($item->reserveId)] = $item;
+                        $res->code = "od_none"; 
                     }
 
                     // Now look for items not returned
@@ -971,7 +975,7 @@ class OverdriveConnector implements
      * Returns
      *
      * @param string $overDriveId Overdrive Identifier for magazine title
-       @param bool   $checkouts   Whether to add checkout information to each issue
+     * @param bool   $checkouts   Whether to add checkout information to each issue
      * @param int    $limit       maximum number of issues to retrieve (default 100)
      * @param int    $offset      page of results (default 0)
      *
@@ -1005,8 +1009,10 @@ class OverdriveConnector implements
                 $checkoutResult = $this->getCheckouts();
                 $checkoutData = $checkoutResult->data;
                 foreach ($result->data->products as $key => $issue) {
-                    if ($checkoutData[strtolower($issue->id)]) {
+                    if (isset($checkoutData[strtolower($issue->id)])) {
                         $issue->checkedout = true;
+                    }else {
+                        $issue->checkedout = false;
                     }
                 }
             }

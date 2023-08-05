@@ -298,6 +298,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
                 // shouldn't need to refresh.
                 if ($checkout = $this->connector->getCheckout($od_id, false)) {
                     $result->status = false;
+                    $result->data = (object) [];
                     $result->data->checkout = $checkout;
                     $result->code = "OD_CODE_ALREADY_CHECKED_OUT";
                 } elseif ($hold = $this->connector->getHold($od_id, false)) {
@@ -306,6 +307,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
                         $result->status = true;
                     } else {
                         $result->status = false;
+                        $result->data = (object) [];
                         $result->data->hold = $hold;
                         $result->code = "OD_CODE_ALREADY_ON_HOLD";
                     }
@@ -321,11 +323,14 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
             // Shouldn't need to refresh.
             if ($checkout = $this->connector->getCheckout($od_id, false)) {
                 $result->status = false;
+                $result->data = (object) [];
+                $this->debug("findme checkout: ".print_r($result,true));
                 $result->data->checkout = $checkout;
                 $result->code = "OD_CODE_ALREADY_CHECKED_OUT";
                 $this->debug("title already checked out: $od_id");
             } elseif ($hold = $this->connector->getHold($od_id, false)) {
                 $result->status = false;
+                $result->data = (object) [];
                 $result->data->hold = $hold;
                 $result->code = "OD_CODE_ALREADY_ON_HOLD";
                 $this->debug("title already on hold: $od_id");

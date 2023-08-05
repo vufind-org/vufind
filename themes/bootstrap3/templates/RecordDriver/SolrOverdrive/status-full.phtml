@@ -7,7 +7,7 @@ if ($code == 'od_code_login_for_avail') {
     $loginForAvail = true;
 } elseif ($code == 'od_account_noaccess') {
     $noshow = true;
-} elseif (empty($this->result->status)) {
+} elseif ($code == 'od_code_resource_not_found' || empty($this->result->status)) {
     //we must have had a connection error.
     $isError = true;
 }
@@ -22,9 +22,9 @@ foreach ($ids as $id) {
 
     if ($noshow) {
         //patron does not have access to overdrive. don't show avail
-    } elseif ($isError || $avail->code == 'od_code_resource_not_found') {
+    } elseif ((isset($avail->code) && $avail->code=='od_code_resource_not_found') || $isError) {
         $current['error'] = $this->transEsc('status_unknown_message');
-    } elseif ($loginForAvail || $avail->code == 'od_code_login_for_avail') {
+    } elseif ($loginForAvail) {
         $current['full_status'] = "<p class='alert-info'>"
             . $this->transEsc('od_code_login_for_avail') . "</p>";
     } else {

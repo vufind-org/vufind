@@ -42,7 +42,7 @@ $checkedOut = $hold = $message = false;
       </span>
       <?php endif; ?>
       
-      <?php if ($avail->data->availabilityType=="AlwaysAvailable"):?>
+      <?php if (isset($avail->data->availabilityType) && $avail->data->availabilityType=="AlwaysAvailable"):?>
         <?=$this->transEsc("od_unlimited")?>
       <?php else:?>
         <?=$avail->data->copiesAvailable."/".$avail->data->copiesOwned?>
@@ -53,21 +53,26 @@ $checkedOut = $hold = $message = false;
       <?php endif; ?>
     </p>
     
-    <?php if ((!$checkedOut && !$hold)|| $checkedOutResult->isMagazine ):?>
-    <p>
-      <?php if (isset($avail->data->copiesAvailable)&& $avail->data->copiesAvailable>0): ?>
+    <?php if (!$checkedOut || $checkedOutResult->isMagazine ):?>
+      <?php if (isset($avail->data->copiesAvailable) && $avail->data->copiesAvailable>0): ?>
+        <p>  
         <a class="btn btn-primary checkout" data-lightbox 
            title="<?=$this->transEsc('request_place_text')?>" 
            href="<?="$hold_url?od_id=$od_id&rec_id=$rec_id&action=checkoutConfirm"?>">
             <?=$this->transEsc('od_but_checkout')?></a>
-      <?php else: ?>
+        <p>
+      <?php endif ?>
+    <?php endif ?>  
+    <?php if (!$checkedOut && !$hold):?>
+      <?php if (isset($avail->data->copiesAvailable) && $avail->data->copiesAvailable==0): ?>
+      <p>
       <a class="btn btn-primary placehold" data-lightbox 
         title="<?=$this->transEsc('request_place_texts')?>" 
         href="<?="$hold_url?od_id=$od_id&rec_id=$rec_id&action=holdConfirm"?>">
         <?=$this->icon('place-hold', 'icon-link__icon') ?>
           <?=$this->transEsc('od_but_hold')?></a>
+      </p>
       <?php endif ?>
-    </p>
     <?php endif ?>
     
     <?php 
