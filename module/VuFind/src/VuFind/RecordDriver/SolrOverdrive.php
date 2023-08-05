@@ -91,7 +91,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function supportsOpenUrl()
     {
-        return true;
+        return false;
     }
 
     /**
