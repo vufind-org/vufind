@@ -322,7 +322,6 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
             if ($checkout = $this->connector->getCheckout($od_id, false)) {
                 $result->status = false;
                 $result->data = (object) [];
-                $this->debug("findme checkout: " . print_r($result, true));
                 $result->data->checkout = $checkout;
                 $result->code = "OD_CODE_ALREADY_CHECKED_OUT";
                 $this->debug("title already checked out: $od_id");

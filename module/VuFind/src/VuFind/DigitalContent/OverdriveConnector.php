@@ -601,7 +601,7 @@ class OverdriveConnector implements
      * @param string $email          The email overdrive should use for notif
      * @param string $suspensionType indefinite or limited
      * @param int    $numberOfDays   number of days to suspend the hold
-     * 
+     *
      * @return \stdClass Object with result
      */
     public function suspendHold($overDriveId, $email, $suspensionType = "indefinite", $numberOfDays = 7)
@@ -859,7 +859,7 @@ class OverdriveConnector implements
 
     /**
      * Find the authentication header
-     * 
+     *
      * @return object
      */
     public function getAuthHeader()
