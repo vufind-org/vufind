@@ -4,7 +4,6 @@ namespace VuFind\RecordTab;
 
 class OverdriveHoldingsFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
-
     /**
      * Create an object
      *
@@ -23,6 +22,4 @@ class OverdriveHoldingsFactory implements \Laminas\ServiceManager\Factory\Factor
     {
         return new \Vufind\RecordTab\OverdriveHoldings();
     }
-
-
 }

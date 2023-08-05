@@ -281,7 +281,7 @@ class OverdriveConnector implements
                 $res->copiesAvailable = $res->copiesAvailable ?? 0;
                 $res->copiesOwned = $res->copiesOwned ?? 0;
                 $res->numberOfHolds = $res->numberOfHolds ?? 0;
-                $res->code = "od_none"; 
+                $res->code = "od_none";
                 $result->data = $res;
             }
         }
@@ -353,7 +353,7 @@ class OverdriveConnector implements
                         $item->copiesOwned = $item->copiesOwned ?? 0;
                         $item->numberOfHolds = $item->numberOfHolds ?? 0;
                         $result->data[strtolower($item->reserveId)] = $item;
-                        $res->code = "od_none"; 
+                        $res->code = "od_none";
                     }
 
                     // Now look for items not returned
@@ -497,7 +497,7 @@ class OverdriveConnector implements
      * Places a hold on an item within OverDrive
      *
      * @param string $overDriveId The overdrive id for the title
-     * @param string $email The email overdrive should use for notif
+     * @param string $email       The email overdrive should use for notif
      *
      * @return \stdClass Object with result
      */
@@ -550,7 +550,7 @@ class OverdriveConnector implements
      * Updates the email address for a hold on an item within OverDrive
      *
      * @param string $overDriveId The overdrive id for the title
-     * @param string $email The email overdrive should use for notif
+     * @param string $email       The email overdrive should use for notif
      *
      * @return \stdClass Object with result
      */
@@ -597,11 +597,10 @@ class OverdriveConnector implements
      * Suspend Hold
      * Suspend an existing Overdrive Hold
      *
-     * @param string $overDriveId The overdrive id for the title
-     *
-     * @param string $email The email overdrive should use for notif
+     * @param string $overDriveId    The overdrive id for the title
+     * @param string $email          The email overdrive should use for notif
      * @param string $suspensionType indefinite or limited
-     * @param int $numberOfDays number of days to suspend the hold
+     * @param int    $numberOfDays   number of days to suspend the hold
      * @return \stdClass Object with result
      */
     public function suspendHold($overDriveId, $email, $suspensionType = "indefinite", $numberOfDays = 7)
@@ -650,10 +649,10 @@ class OverdriveConnector implements
      * Edit Suspended Hold
      * Change the redelivery date on an already suspended hold
      *
-     * @param string $overDriveId The overdrive id for the title
-     * @param string $email The email overdrive should use for notif
+     * @param string $overDriveId    The overdrive id for the title
+     * @param string $email          The email overdrive should use for notif
      * @param string $suspensionType indefinite or limited
-     * @param int $numberOfDays number of days to suspend the hold
+     * @param int    $numberOfDays   number of days to suspend the hold
      *
      * @return \stdClass Object with result
      */
@@ -857,6 +856,10 @@ class OverdriveConnector implements
         return $result;
     }
 
+    /**
+     * Find the authentication header
+     * @return object
+     */
     public function getAuthHeader()
     {
         $this->debug("getAuthHeader");
@@ -879,7 +882,7 @@ class OverdriveConnector implements
         return $result;
     }
 
-    /*
+    /**
      * Get Configuration
      * Sets up a local copy of configurations for convenience
      *
@@ -953,6 +956,13 @@ class OverdriveConnector implements
         ];
     }
 
+    /**
+     * Returns permanant links for Ovedrive resources
+     *
+     * @param array $overDriveIds An array of overdrive IDs we need links for
+     *
+     * @return array<string>
+     */
     public function getPermanentLinks($overDriveIds = [])
     {
         $links = [];
@@ -1011,7 +1021,7 @@ class OverdriveConnector implements
                 foreach ($result->data->products as $key => $issue) {
                     if (isset($checkoutData[strtolower($issue->id)])) {
                         $issue->checkedout = true;
-                    }else {
+                    } else {
                         $issue->checkedout = false;
                     }
                 }
@@ -1712,7 +1722,8 @@ class OverdriveConnector implements
     /**
      * Get an HTTP client
      *
-     * @param string $url URL for client to use
+     * @param string $url            URL for client to use
+     * @param bool   $allowRedirects Whether to allow the client to follow redirects
      *
      * @return \Zend\Http\Client
      * @throws Exception

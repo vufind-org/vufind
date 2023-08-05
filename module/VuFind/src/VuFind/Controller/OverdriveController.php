@@ -88,7 +88,6 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
             $checkoutsUnavailable = true;
             $holdsUnavailable = true;
         } else {
-
             // Get the current Overdrive checkouts
             // for this user and add to our array of IDS
             $checkoutResults = $this->connector->getCheckouts(true);
@@ -279,7 +278,6 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         $result = null;
         $actionTitleCode = '';
         if ($action == "checkoutConfirm") {
-
             // Looks like this is a magazine...
             if (current($formats)->id == "magazine-overdrive") {
                 $isMagazine = true;
@@ -324,7 +322,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
             if ($checkout = $this->connector->getCheckout($od_id, false)) {
                 $result->status = false;
                 $result->data = (object) [];
-                $this->debug("findme checkout: ".print_r($result,true));
+                $this->debug("findme checkout: " . print_r($result, true));
                 $result->data->checkout = $checkout;
                 $result->code = "OD_CODE_ALREADY_CHECKED_OUT";
                 $this->debug("title already checked out: $od_id");

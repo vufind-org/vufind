@@ -323,7 +323,7 @@ class FakeOverdriveConnector extends OverdriveConnector
     {
         return [];
     }
-    
+
     /**
      * Returns
      *

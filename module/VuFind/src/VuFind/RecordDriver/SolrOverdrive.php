@@ -251,7 +251,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     public function supportsAjaxStatus()
     {
         $this->debug("ajax status:" . $this->config->enableAjaxStatus);
-        $this->debug("all configs:" . print_r($this->config,true));
+        $this->debug("all configs:" . print_r($this->config, true));
         return $this->config->enableAjaxStatus;
     }
 
@@ -340,11 +340,13 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
             $checkouts = $result->data;
              $result->data = [];
             foreach ($checkouts as $checkout) {
-              $this->debug("comparing: {$checkout->reserveId} to $overdriveID");
+                $this->debug("comparing: {$checkout->reserveId} to $overdriveID");
                 if ($checkout->metadata->mediaType == "Magazine") {
                     $idToCheck = strtolower($checkout->metadata->parentMagazineReferenceId);
-                } else ($idToCheck = $checkout->reserveId);
-                
+                } else {
+                    ($idToCheck = $checkout->reserveId);
+                }
+
                 if (strtolower($idToCheck) == $overdriveID) {
                     $checkedout = true;
                     $result->status = true;
@@ -357,7 +359,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
             }
         }
         // If it didn't work, an error should be logged from the connector
-         $this->debug("ischeckedOut ($overdriveID) result: ".print_r($result->data,true));
+         $this->debug("ischeckedOut ($overdriveID) result: " . print_r($result->data, true));
         return $result;
     }
 
@@ -582,8 +584,8 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     {
         $od_id = $this->getOverdriveID();
         $result = $this->connector->getPermanentLinks([$od_id]);
-        
-        $this->debug("overdrive permananent link for $od_id:" . print_r($result,true));
+
+        $this->debug("overdrive permananent link for $od_id:" . print_r($result, true));
         return $result[$od_id];
-    }    
+    }
 }
