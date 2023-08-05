@@ -601,6 +601,7 @@ class OverdriveConnector implements
      * @param string $email          The email overdrive should use for notif
      * @param string $suspensionType indefinite or limited
      * @param int    $numberOfDays   number of days to suspend the hold
+     * 
      * @return \stdClass Object with result
      */
     public function suspendHold($overDriveId, $email, $suspensionType = "indefinite", $numberOfDays = 7)
@@ -858,6 +859,7 @@ class OverdriveConnector implements
 
     /**
      * Find the authentication header
+     * 
      * @return object
      */
     public function getAuthHeader()
@@ -982,7 +984,7 @@ class OverdriveConnector implements
     }
 
     /**
-     * Returns
+     * Returns all the issues for an overdrive magazine title
      *
      * @param string $overDriveId Overdrive Identifier for magazine title
      * @param bool   $checkouts   Whether to add checkout information to each issue
@@ -990,8 +992,6 @@ class OverdriveConnector implements
      * @param int    $offset      page of results (default 0)
      *
      * @return object results of metadata fetch
-     *
-     *
      */
     public function getMagazineIssues($overDriveId = false, $checkouts = false, $limit = 100, $offset = 0)
     {
