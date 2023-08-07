@@ -31,8 +31,8 @@ declare(strict_types=1);
 
 namespace VuFind\Auth;
 
-use VuFind\Exception\LoginToken as LoginTokenException;
 use Laminas\Session\SessionManager;
+use VuFind\Exception\LoginToken as LoginTokenException;
 
 /**
  * Class LoginToken
@@ -238,7 +238,6 @@ class LoginToken implements \VuFind\I18n\Translator\TranslatorAwareInterface
         }
     }
 
-
     /**
      * Set login token cookie
      *
@@ -273,7 +272,7 @@ class LoginToken implements \VuFind\I18n\Translator\TranslatorAwareInterface
             $result = [
                 'series' => $parts[0] ?? '',
                 'user_id' => (int)($parts[1] ?? -1),
-                'token' => $parts[2] ?? ''
+                'token' => $parts[2] ?? '',
             ];
         }
         return $result;

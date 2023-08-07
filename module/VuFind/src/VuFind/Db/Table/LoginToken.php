@@ -111,7 +111,7 @@ class LoginToken extends Gateway
         $row = $this->select(
             [
                 'user_id' => $token['user_id'],
-                'series' => $token['series']
+                'series' => $token['series'],
             ]
         )->current();
         if ($row && hash_equals($row['token'], hash('sha256', $token['token']))) {
