@@ -107,7 +107,7 @@
               <th scope="col"><?=$this->transEsc($token->platform)?> / <?=$this->transEsc($token->browser)?></th>
               <th scope="col"><?=$this->dateTime()->convertToDisplayDateAndTime('Y-m-d H:i:s', $token->last_login)?></th>
               <th scope="col">
-                <form id="delete-login-token" method="post" action="<?=$this->url('myresearch-deletelogintoken') ?>" name="deleteAccount">
+                <form id="delete-login-token" method="post" action="<?=$this->url('myresearch-deletelogintoken')?>">
                   <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>">
                   <input type="hidden" name="series" value="<?=$this->escapeHtmlAttr($token->series)?>">
                   <input id="delete-login-token-submit" class="btn btn-danger" type="submit" name="submit" value="<?=$this->transEscAttr('Forget Login'); ?>">
