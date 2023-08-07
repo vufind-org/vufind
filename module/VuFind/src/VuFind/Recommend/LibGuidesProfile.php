@@ -116,7 +116,9 @@ class LibGuidesProfile implements
         $this->cacheLifetime = intval($config->GetAccounts->cache_lifetime ?? 600);
 
         if ($profile = $config->Profile) {
-            $this->strategies = $profile->get('strategies', []);
+            $strategies = $profile->get('strategies', []);
+            $this->strategies = is_string($strategies) ? [$strategies] : $strategies;
+
             $this->callNumberToAlias = $profile->call_numbers ? $profile->call_numbers->toArray() : [];
             $this->aliasToAccountId = $profile->profile_aliases ? $profile->profile_aliases->toArray() : [];
             $this->callNumberField = $profile->get('call_number_field', 'callnumber-first');
