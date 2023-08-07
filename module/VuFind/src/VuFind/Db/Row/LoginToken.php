@@ -1,9 +1,10 @@
 <?php
+
 /**
  * Row Definition for login_token
  *
  * PHP version 8
- * 
+ *
  * Copyright (C) The National Library of Finland 2023.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Db\Row;
 
 /**

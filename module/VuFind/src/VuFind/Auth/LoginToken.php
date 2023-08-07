@@ -138,7 +138,7 @@ class LoginToken implements \VuFind\I18n\Translator\TranslatorAwareInterface
                 // associated with the tokens and send a warning email to user
                 $user = $this->userTable->getById($cookie['user_id']);
                 $userTokens = $this->loginTokenTable->getByUserId($cookie['user_id']);
-                $handler = $this->sessionManager->getSaveHandler();     
+                $handler = $this->sessionManager->getSaveHandler();
                 foreach ($userTokens as $t) {
                     $handler->destroy($t->last_session_id);
                 }
@@ -158,7 +158,7 @@ class LoginToken implements \VuFind\I18n\Translator\TranslatorAwareInterface
      * @param string              $sessionId Session identifier
      * @param int                 $expires   Token expiration date
      *
-     * @return void 
+     * @return void
      */
     public function createToken(\VuFind\Db\Row\User $user, string $series = '', string $sessionId = '', $expires = 0)
     {
@@ -179,7 +179,7 @@ class LoginToken implements \VuFind\I18n\Translator\TranslatorAwareInterface
             $expires = time() + $lifetime * 60 * 60 * 24;
         }
         $this->setLoginTokenCookie($user->id, $token, $series, $expires);
-        
+
         $this->loginTokenTable->saveToken($user->id, $token, $series, $browser, $platform, $expires, $sessionId);
     }
 

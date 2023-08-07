@@ -281,7 +281,7 @@ class Manager implements
     /**
      * Is persistent login supported?
      *
-     * @param User $user optional; check user auth method in database 
+     * @param User $user optional; check user auth method in database
      *
      * @return bool
      */
@@ -290,7 +290,7 @@ class Manager implements
         if (!empty($this->config->Authentication->persistent_login)) {
             if ($user) {
                 $method = $user->auth_method;
-            } else if ($this->getAuth() instanceof ChoiceAuth) {
+            } elseif ($this->getAuth() instanceof ChoiceAuth) {
                 $method = $this->getAuth()->getSelectedAuthOption();
             } else {
                 $method = $this->getAuthMethod();
@@ -757,9 +757,7 @@ class Manager implements
         // Update user object
         $this->updateUser($user);
 
-        if ($request->getPost()->get('remember_me')
-            && $this->supportsPersistentLogin()
-        ) {
+        if ($request->getPost()->get('remember_me') && $this->supportsPersistentLogin()) {
             try {
                 $this->loginToken->createToken($user, '', $this->sessionManager->getId());
             } catch (\Exception $e) {

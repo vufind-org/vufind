@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Table Definition for login_token
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
@@ -67,7 +69,7 @@ class LoginToken extends Gateway
      * @param string $userId    User identifier
      * @param string $token     Login token
      * @param string $series    Series the token belongs to
-     * @param string $browser   User browser 
+     * @param string $browser   User browser
      * @param string $platform  User platform
      * @param int    $expires   Token lifetime in days
      * @param string $sessionId Session associated with the token
@@ -118,7 +120,7 @@ class LoginToken extends Gateway
                 return false;
             }
             return $row;
-        } else if ($row) {
+        } elseif ($row) {
             // Matching series and user id found, but token does not match
             // throw exception
             throw new LoginTokenException("Token does not match");
@@ -138,7 +140,7 @@ class LoginToken extends Gateway
     {
         $this->delete(['user_id' => $userId, 'series' => $series]);
     }
-  
+
     /**
      * Delete all tokens for a user
      *
