@@ -57,4 +57,22 @@
 </div>
 <button class="btn btn-default lightbox-only" data-dismiss="modal"><?=$this->translate('close') ?></button>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, '(typeof VuFind.lightbox_facets !== "undefined") && VuFind.lightbox_facets.setup();', 'SET'); ?>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, 'getFacetListContent();', 'SET'); ?>
+
+<?php
+    // Set up ajax script; we do this inline instead of in the header for lightbox compatibility:
+    $this->inlineScript()->appendFile('facet_list.js');
+
+    $js = <<<JS
+        getFacetListContent();
+
+        if ($.isReady) {
+            setupFacetList();
+        } else {
+            $(document).ready(function() {
+                setupFacetList();
+            });
+        }
+        JS;
+
+    echo $this->inlineScript()->appendScript($js);
+?>
