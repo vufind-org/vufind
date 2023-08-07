@@ -30,7 +30,7 @@
     <?php if ($ilsNeeded): ?>
       <div class="oauth2-ils-selection">
         <?=$this->transEsc('external_auth_ils_prompt')?>
-        <?php if ($this->user->getLibraryCards()->count() > 1): ?>
+        <?php if (count($this->user->getLibraryCards()) > 1): ?>
           <?=$this->partial('librarycards/selectcard.phtml', ['user' => $this->user]); ?>
         <?php elseif ('ils-none' !== $this->ils()->getOfflineMode() && $this->patronLoginView && !empty($this->patronLoginView->getTemplate())): ?>
           <?=$this->partial($this->patronLoginView)?>

@@ -269,4 +269,119 @@ class User implements EntityInterface
     {
         return $this->id;
     }
+
+    /**
+     * Username setter
+     *
+     * @param string $username Username
+     *
+     * @return User
+     */
+    public function setUsername(string $username): User
+    {
+        $this->username = $username;
+        return $this;
+    }
+
+    /**
+     * Get username.
+     *
+     * @return string
+     */
+    public function getUsername(): string
+    {
+        return $this->username;
+    }
+
+    /**
+     * Cat username setter
+     *
+     * @param ?string $catUsername Cat username
+     *
+     * @return User
+     */
+    public function setCatUsername(?string $catUsername): User
+    {
+        $this->catUsername = $catUsername;
+        return $this;
+    }
+
+    /**
+     * Get cat username.
+     *
+     * @return ?string
+     */
+    public function getCatUsername(): ?string
+    {
+        return $this->catUsername;
+    }
+
+     /**
+      * Home library name setter
+      *
+      * @param ?string $homeLibrary Home Library
+      *
+      * @return User
+      */
+    public function setHomeLibrary(?string $homeLibrary): User
+    {
+        $this->homeLibrary = $homeLibrary;
+        return $this;
+    }
+
+    /**
+     * Get home library.
+     *
+     * @return ?string
+     */
+    public function getHomeLibrary(): ?string
+    {
+        return $this->homeLibrary;
+    }
+
+    /**
+     * Cat password setter
+     *
+     * @param ?string $catPassword Cat password
+     *
+     * @return User
+     */
+    public function setCatPassword(?string $catPassword): User
+    {
+        $this->catPassword = $catPassword;
+        return $this;
+    }
+
+    /**
+     * Get cat password.
+     *
+     * @return ?string
+     */
+    public function getCatPassword(): ?string
+    {
+        return $this->catPassword;
+    }
+
+    /**
+     * Cat encrypted password setter
+     *
+     * @param ?string $passEnc Encrypted password
+     *
+     * @return User
+     */
+    public function setCatPassEnc(?string $passEnc): User
+    {
+        $this->catPassEnc = $passEnc;
+        return $this;
+    }
+
+    /**
+     * Get cat encrypted password.
+     *
+     * @return ?string
+     */
+    public function getCatPassEnc(): ?string
+    {
+        return $this->catPassEnc;
+    }
 }

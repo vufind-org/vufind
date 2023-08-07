@@ -29,6 +29,7 @@
 
 namespace VuFind\Db\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -117,7 +118,7 @@ class UserCard implements EntityInterface
      *          options={"default"="2000-01-01 00:00:00"}
      * )
      */
-    protected $created = '2000-01-01 00:00:00';
+    protected $created;
 
     /**
      * Saved timestamp.
@@ -130,7 +131,7 @@ class UserCard implements EntityInterface
      *          options={"default"="CURRENT_TIMESTAMP"}
      * )
      */
-    protected $saved = 'CURRENT_TIMESTAMP';
+    protected $saved;
 
     /**
      * User.
@@ -144,4 +145,208 @@ class UserCard implements EntityInterface
      * })
      */
     protected $user;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        // Set the default value as a \DateTime object
+        $this->created = new \DateTime('2000-01-01 00:00:00');
+        $this->saved = new \DateTime();
+    }
+
+    /**
+     * Id getter
+     *
+     * @return ?int
+     */
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    /**
+     * Card name setter
+     *
+     * @param string $cardName User card name.
+     *
+     * @return UserCard
+     */
+    public function setCardName(string $cardName): UserCard
+    {
+        $this->cardName = $cardName;
+        return $this;
+    }
+
+    /**
+     * Get user card name.
+     *
+     * @return string
+     */
+    public function getCardName(): string
+    {
+        return $this->cardName;
+    }
+
+    /**
+     * Cat username setter
+     *
+     * @param string $catUsername Cat username
+     *
+     * @return UserCard
+     */
+    public function setCatUsername(string $catUsername): UserCard
+    {
+        $this->catUsername = $catUsername;
+        return $this;
+    }
+
+    /**
+     * Get cat username.
+     *
+     * @return string
+     */
+    public function getCatUsername(): string
+    {
+        return $this->catUsername;
+    }
+
+    /**
+     * Cat password setter
+     *
+     * @param ?string $catPassword Cat password
+     *
+     * @return UserCard
+     */
+    public function setCatPassword(?string $catPassword): UserCard
+    {
+        $this->catPassword = $catPassword;
+        return $this;
+    }
+
+    /**
+     * Get cat password.
+     *
+     * @return ?string
+     */
+    public function getCatPassword(): ?string
+    {
+        return $this->catPassword;
+    }
+
+    /**
+     * Cat encrypted password setter
+     *
+     * @param ?string $passEnc Encrypted password
+     *
+     * @return UserCard
+     */
+    public function setCatPassEnc(?string $passEnc): UserCard
+    {
+        $this->catPassEnc = $passEnc;
+        return $this;
+    }
+
+    /**
+     * Get cat encrypted password.
+     *
+     * @return ?string
+     */
+    public function getCatPassEnc(): ?string
+    {
+        return $this->catPassEnc;
+    }
+
+    /**
+     * Home library name setter
+     *
+     * @param ?string $homeLibrary Home Library
+     *
+     * @return UserCard
+     */
+    public function setHomeLibrary(?string $homeLibrary): UserCard
+    {
+        $this->homeLibrary = $homeLibrary;
+        return $this;
+    }
+
+    /**
+     * Get home library.
+     *
+     * @return ?string
+     */
+    public function getHomeLibrary(): ?string
+    {
+        return $this->homeLibrary;
+    }
+
+    /**
+     * Created setter.
+     *
+     * @param DateTime $dateTime Created date
+     *
+     * @return UserCard
+     */
+    public function setCreated(DateTime $dateTime): UserCard
+    {
+        $this->created = $dateTime;
+        return $this;
+    }
+
+    /**
+     * Get created time.
+     *
+     * @return DateTime
+     */
+    public function getCreated(): DateTime
+    {
+        return $this->created;
+    }
+
+    /**
+     * Set time the card is saved.
+     *
+     * @param DateTime $dateTime Saved date and time
+     *
+     * @return UserCard
+     */
+    public function setSaved(DateTime $dateTime): UserCard
+    {
+        $this->saved = $dateTime;
+        return $this;
+    }
+
+     /**
+      * Get saved time.
+      *
+      * @return DateTime
+      */
+    public function getSaved(): DateTime
+    {
+        return $this->saved;
+    }
+
+    /**
+     * User setter.
+     *
+     * @param User $user User that created request
+     *
+     * @return UserCard
+     */
+    public function setUser(User $user): UserCard
+    {
+        $this->user = $user;
+        return $this;
+    }
+
+    /**
+     * User getter
+     *
+     * @return User
+     */
+    public function getUser(): User
+    {
+        return $this->user;
+    }
 }

@@ -198,9 +198,11 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTest
     {
         $user = $this->getMockBuilder(UserRow::class)
             ->disableOriginalConstructor()
-            ->onlyMethods([])
+            ->onlyMethods(['getCatPassword'])
             ->getMock();
 
+        $user->expects($this->any())->method('getCatPassword')
+            ->willReturn("pass");
         $user->id = 2;
         $user->last_language = 'en-gb';
         $user->firstname = 'Lib';

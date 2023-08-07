@@ -10,7 +10,7 @@
   <?=$this->flashmessages()?>
 
   <h2><?=$this->transEsc('Library Cards')?></h2>
-  <?php if ($this->libraryCards->count() == 0): ?>
+  <?php if (count($this->libraryCards) == 0): ?>
     <div><?=$this->transEsc('You do not have any library cards')?></div>
   <?php else: ?>
     <table class="table table-striped">
@@ -25,8 +25,8 @@
     </tr>
     <?php foreach ($this->libraryCards as $record): ?>
       <tr>
-        <td><?=$this->escapeHtml($record['card_name'])?></td>
-        <?php $username = $record['cat_username']; ?>
+        <td><?=$this->escapeHtml($record->getCardName())?></td>
+        <?php $username = $record->getCatUsername(); ?>
         <?php if ($this->multipleTargets): ?>
           <?php $target = ''; ?>
           <?php if (strstr($username, '.')): ?>
@@ -38,17 +38,17 @@
         <td>
           <div class="btn-group">
             <?php if ($this->auth()->getManager()->allowsUserIlsLogin()): ?>
-              <a class="btn btn-link icon-link" href="<?=$this->url('editLibraryCard') . $this->escapeHtmlAttr($record['id']) ?>" title="<?=$this->transEscAttr('Edit Library Card')?>">
+              <a class="btn btn-link icon-link" href="<?=$this->url('editLibraryCard') . $this->escapeHtmlAttr($record->getId()) ?>" title="<?=$this->transEscAttr('Edit Library Card')?>">
                 <?=$this->icon('profile-card-edit', 'icon-link__icon') ?>
                 <span class="icon-link__label"><?=$this->transEsc('Edit')?></span>
               </a>
             <?php endif; ?>
-            <a class="btn btn-link icon-link dropdown-toggle" data-toggle="dropdown" href="<?=$this->url('librarycards-deletecard') ?>?cardID=<?=urlencode($record['id'])?>">
+            <a class="btn btn-link icon-link dropdown-toggle" data-toggle="dropdown" href="<?=$this->url('librarycards-deletecard') ?>?cardID=<?=urlencode($record->getId())?>">
               <?=$this->icon('profile-card-delete', 'icon-link__icon') ?>
               <span class="icon-link__label"><?=$this->transEsc('Delete')?></span>
             </a>
             <ul class="dropdown-menu">
-              <li><a href="<?=$this->url('librarycards-deletecard') ?>?cardID=<?=urlencode($record['id'])?>&amp;confirm=1" data-clear-account-cache><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
+              <li><a href="<?=$this->url('librarycards-deletecard') ?>?cardID=<?=urlencode($record->getId())?>&amp;confirm=1" data-clear-account-cache><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
               <li><a href="#"><?=$this->transEsc('confirm_dialog_no')?></a></li>
             </ul>
           </div>

@@ -97,4 +97,17 @@ abstract class AbstractService
         $this->entityManager->persist($entity);
         $this->entityManager->flush();
     }
+
+    /**
+     * Delete an entity.
+     *
+     * @param EntityInterface $entity Entity to persist.
+     *
+     * @return void
+     */
+    public function deleteEntity(EntityInterface $entity): void
+    {
+        $this->entityManager->remove($entity);
+        $this->entityManager->flush();
+    }
 }
