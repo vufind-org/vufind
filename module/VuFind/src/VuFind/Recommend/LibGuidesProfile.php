@@ -179,6 +179,10 @@ class LibGuidesProfile implements
      */
     public function getResults()
     {
+        if (empty($this->strategies)) {
+            throw new \Exception("LibGuidesAPI.ini must define at least one strategy if LibGuidesProfile is used.");
+        }
+
         // Consider strategies in the order listed in the config file.
         foreach ($this->strategies as $strategy) {
             $method = 'findBestMatchBy' . $strategy;
