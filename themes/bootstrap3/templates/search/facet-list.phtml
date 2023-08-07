@@ -36,15 +36,15 @@
 
 <!-- Hopefully we can find a better way for passthrough of these variables -->
 <?php if (method_exists($this->results->getParams(), 'setFacetContains')): ?>
-  <input id="ajax_contains" placeholder="<?=$this->transEscAttr('Filter')?>" class="form-control" type="text">
+  <input class="ajax_param" data-name="contains" placeholder="<?=$this->transEscAttr('Filter')?>" class="form-control" type="text">
 <?php endif; ?>
-<input id="ajax_facet" type="hidden" value="<?=$this->facet?>">
-<input id="ajax_exclude" type="hidden" value="<?=$this->exclude?>">
-<input id="ajax_operator" type="hidden" value="<?=$this->operator?>">
-<input id="ajax_page" type="hidden" value="<?=$this->page?>">
-<input id="ajax_sort" type="hidden" value="<?=$this->sort?>">
-<input id="ajax_searchAction" type="hidden" value="<?=$searchAction?>">
-<input id="ajax_urlBase" type="hidden" value="<?=$urlBase?>">
+<input class="ajax_param" data-name="facet" type="hidden" value="<?=$this->facet?>">
+<input class="ajax_param" data-name="exclude" type="hidden" value="<?=$this->exclude?>">
+<input class="ajax_param" data-name="operator" type="hidden" value="<?=$this->operator?>">
+<input class="ajax_param" data-name="page" type="hidden" value="<?=$this->page?>">
+<input class="ajax_param" data-name="sort" type="hidden" value="<?=$this->sort?>">
+<input class="ajax_param" data-name="searchAction" type="hidden" value="<?=$searchAction?>">
+<input class="ajax_param" data-name="urlBase" type="hidden" value="<?=$urlBase?>">
 
 
 <div id="facet-info-result" class="lightbox-scroll full-facets">

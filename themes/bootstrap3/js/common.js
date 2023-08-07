@@ -654,7 +654,7 @@ function setupQRCodeLinks(_container) {
 // See also: https://stackoverflow.com/questions/1909441/how-to-delay-the-keyup-handler-until-the-user-stops-typing
 function getFacetListContentKeyupCallback() {
   var timeout = null;
-  $('#ajax_contains').on('keyup', function onKeyupChangeFacetList() {
+  $('.ajax_param[data-name="contains"]').on('keyup', function onKeyupChangeFacetList() {
     clearTimeout(timeout);
     timeout = setTimeout(function onKeyupTimeout() {
       getFacetListContent();
@@ -663,15 +663,10 @@ function getFacetListContentKeyupCallback() {
 }
 
 function getFacetListContent() {
-  let facet = $('#ajax_facet').val();
-  var url = VuFind.path + "/AJAX/JSON?q=sta&method=getFacetListContent&facet=" + facet;
+  let url = VuFind.path + "/AJAX/JSON?q=sta&method=getFacetListContent";
 
-  let params = ['contains', 'sort', 'exclude', 'operator', 'page', 'limit', 'searchAction', 'urlBase'];
-  params.forEach(function facetItemEach(item) {
-    let val = $('#ajax_' + item).val();
-    if (val !== undefined) {
-      url += '&' + encodeURI(item) + '=' + encodeURI(val);
-    }
+  $('.ajax_param').each(function ajaxParamEach(param) {
+    url += '&' + encodeURI($(this).data('name')) + '=' + encodeURI($(this).val());
   });
 
   $.ajax({
@@ -688,7 +683,7 @@ function getFacetListContent() {
 }
 
 function setupFacetList() {
-  $('#ajax_contains').on('keyup', function onKeyupChangeFacetList() {
+  $('.ajax_param[data-name="contains"]').on('keyup', function onKeyupChangeFacetList() {
     getFacetListContentKeyupCallback();
   });
 }
