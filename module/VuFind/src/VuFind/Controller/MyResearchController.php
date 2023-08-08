@@ -1815,7 +1815,7 @@ class MyResearchController extends AbstractBase
                         $this->sendChangeNotificationEmail($user, $to);
                     }
                 } catch (MailException $e) {
-                    $this->flashMessenger()->addMessage($e->getMessage(), 'error');
+                    $this->flashMessenger()->addMessage($e->getDisplayMessage(), 'error');
                 }
             }
         }
