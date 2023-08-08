@@ -185,6 +185,9 @@ class LibGuidesProfile implements
 
         // Consider strategies in the order listed in the config file.
         foreach ($this->strategies as $strategy) {
+            // Sanitize the strategy name.
+            $strategy = preg_replace('/[^\w]/', '', $strategy);
+
             $method = 'findBestMatchBy' . $strategy;
             if (
                 method_exists($this, $method) &&
