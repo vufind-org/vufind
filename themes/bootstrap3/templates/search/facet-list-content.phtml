@@ -9,12 +9,12 @@
         'facet' => $item,
         'group' => $this->facet,
         'url' => $this->results->getUrlQuery(),
-        'urlBase' => $this->searchAction
+        'urlBase' => $this->urlBase
       ]) ?>
     <?php endforeach; ?>
   <?php endif; ?>
   <?php if ($this->anotherPage): ?>
-    <a href="<?=$urlBase . '&amp;facet=' . $facet . '&amp;page=' . ($this->page + 1) . '&amp;sort=' . urlencode($key) ?>" class="facet js-facet-next-page" data-page="<?=($this->page + 1) ?>" data-sort="<?=$this->escapeHtmlAttr($key) ?>">
+    <a href="<?=$urlBase . '&amp;facet=' . $facet . '&amp;facetpage=' . ($this->page + 1) . '&amp;facetsort=' . urlencode($key) ?>" class="facet js-facet-next-page" data-page="<?=($this->page + 1) ?>" data-sort="<?=$this->escapeHtmlAttr($key) ?>">
       <span class="text"><?=$this->translate('more_ellipsis') ?></span>
     </a>
   <?php endif; ?>

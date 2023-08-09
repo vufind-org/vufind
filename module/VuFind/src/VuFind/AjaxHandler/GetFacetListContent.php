@@ -14,7 +14,6 @@ class GetFacetListContent extends AbstractBase
     {
         $this->searchResultsManager = $searchResultsManager;
         $this->viewRenderer = $viewRenderer;
-
     }
 
     /**
@@ -24,12 +23,11 @@ class GetFacetListContent extends AbstractBase
     {
         $facet = $queryParams->fromQuery('facet');
         $contains = $queryParams->fromQuery('contains', '');
-        $page = $queryParams->fromQuery('page', 1);
-        $sort = $queryParams->fromQuery('sort', 'index');
-        $limit = $queryParams->fromQuery('limit', 50);
-        $operator = $queryParams->fromQuery('operator', 'AND');
-        $exclude = intval($queryParams->fromQuery('exclude', 0));
-        $searchAction = $queryParams->fromQuery('searchAction', '');
+        $page = (int)$queryParams->fromQuery('facetpage', 1);
+        $sort = $queryParams->fromQuery('facetsort', 'index');
+        $limit = $queryParams->fromQuery('facetlimit', 50);
+        $operator = $queryParams->fromQuery('facetop', 'AND');
+        $exclude = intval($queryParams->fromQuery('facetexclude', 0));
         $urlBase = $queryParams->fromQuery('urlBase', '');
 
         $results = $this->searchResultsManager->get('Solr');
@@ -63,8 +61,6 @@ class GetFacetListContent extends AbstractBase
              'page' => $page,
              'results' => $results,
              'anotherPage' => $partialFacets[$facet]['more'] ?? false,
-
-             'searchAction' => $searchAction,
              'urlBase' => $urlBase,
              'active' => $sort,
              'key' => $sort,
