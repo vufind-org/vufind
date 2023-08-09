@@ -3,11 +3,11 @@
 // Useful function to delay callbacks, e.g. when using a keyup event
 // to detect when the user stops typing.
 // See also: https://stackoverflow.com/questions/1909441/how-to-delay-the-keyup-handler-until-the-user-stops-typing
+var keyupCallbackTimeout = null;
 function getFacetListContentKeyupCallback() {
-  var timeout = null;
   $('.ajax_param[data-name="contains"]').on('keyup', function onKeyupChangeFacetList() {
-    clearTimeout(timeout);
-    timeout = setTimeout(function onKeyupTimeout() {
+    clearTimeout(keyupCallbackTimeout);
+    keyupCallbackTimeout = setTimeout(function onKeyupTimeout() {
       getFacetListContent();
     }, 500);
   });
