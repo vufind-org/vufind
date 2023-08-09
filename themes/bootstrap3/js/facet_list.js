@@ -1,3 +1,5 @@
+/*global VuFind */
+
 // Useful function to delay callbacks, e.g. when using a keyup event
 // to detect when the user stops typing.
 // See also: https://stackoverflow.com/questions/1909441/how-to-delay-the-keyup-handler-until-the-user-stops-typing
@@ -15,7 +17,7 @@ function getFacetListContent() {
   let url = VuFind.path + "/AJAX/JSON?q=sta&method=getFacetListContent";
 
   $('.ajax_param').each(function ajaxParamEach() {
-    url += '&' + encodeURI($(this).data('name')) + '=' + encodeURI($(this).val());
+    url += '&' + encodeURIComponent($(this).data('name')) + '=' + encodeURIComponent($(this).val());
   });
 
   $.ajax({
