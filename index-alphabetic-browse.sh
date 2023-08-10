@@ -42,7 +42,7 @@ set -x
 
 cd "`dirname $0`/import"
 LOG4J_CLASSPATH=$(find "${SOLR_JAR_PATH}/server/lib/ext" -name 'log4j*.jar' -printf '%p:' | sed 's/:$//')
-CLASSPATH="browse-indexing.jar:${VUFIND_HOME}/import/lib/*:${SOLR_HOME}/jars/*:${SOLR_JAR_PATH}/modules/analysis-extras/lib/*:${SOLR_JAR_PATH}/server/solr-webapp/webapp/WEB-INF/lib/*:${LOG4J_CLASSPATH}"
+CLASSPATH="browse-indexing.jar:$(echo solrmarc_core*.jar):${VUFIND_HOME}/import/lib/*:${SOLR_HOME}/jars/*:${SOLR_JAR_PATH}/modules/analysis-extras/lib/*:${SOLR_JAR_PATH}/server/solr-webapp/webapp/WEB-INF/lib/*:${LOG4J_CLASSPATH}"
 
 # make index work with replicated index
 # current index is stored in the last line of index.properties

@@ -43,6 +43,7 @@
   <dataDir>${solr.solr.home:./solr}/biblio</dataDir>
 
   <lib dir="../../../import/lib" regex="marc4j.*\.jar" />
+  <lib dir="../../../import" regex="solrmarc_core.*\.jar" />
   <lib dir="../../vendor/modules/analysis-extras/lib" regex=".*\.jar" />
   <lib dir="../jars" regex=".*\.jar" />
 
