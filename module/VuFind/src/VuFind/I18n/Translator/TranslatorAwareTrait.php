@@ -102,9 +102,13 @@ trait TranslatorAwareTrait
     public function translate($target, $tokens = [], $default = null)
     {
         if ($this->getTranslatorLocale() == "keys") {
-            return "*$target"
-                . (!empty($tokens) ? " | ['" . implode("', '", array_keys($tokens)) . "']" : "")
-                . "*";
+            $keyValueToString = function ($key, $val) {
+                return "$key = $val";
+            };
+            $tokenDetails = empty($tokens)
+                ? ''
+                : '| [' . implode(', ', array_map($keyValueToString, array_keys($tokens), array_values($tokens))) . ']';
+            return "*$target$tokenDetails*";
         }
 
         // Figure out the text domain for the string:
