@@ -302,30 +302,32 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
   function setup() {
     lightboxFacetSorting();
     $('.js-facet-next-page').on("click", function facetLightboxMore() {
-      var button = $(this);
-      var page = parseInt(button.attr('data-page'), 10);
+      let button = $(this);
+      let page = parseInt(button.attr('data-page'), 10);
       if (button.attr('disabled')) {
         return false;
       }
       button.attr('disabled', 1);
       button.html(VuFind.translate('loading_ellipsis'));
-      $.ajax(this.href + '&layout=lightbox')
-        .done(function facetLightboxMoreDone(data) {
-          var htmlDiv = $('<div>' + data + '</div>');
-          var list = htmlDiv.find('.js-facet-item');
-          button.before(list);
-          if (list.length && htmlDiv.find('.js-facet-next-page').length) {
-            button.attr('data-page', page + 1);
-            button.attr('href', button.attr('href').replace(/facetpage=\d+/, 'facetpage=' + (page + 1)));
-            button.html(VuFind.translate('more_ellipsis'));
-            button.removeAttr('disabled');
-          } else {
-            button.remove();
-          }
-        });
+
+      let overrideParams = {facetpage: page, layout: 'lightbox'};
+      getFacetListContent(overrideParams).then(json => {
+        let data = json.data.html;
+        let htmlDiv = $('<div>' + data + '</div>');
+        let list = htmlDiv.find('.js-facet-item');
+        button.before(list);
+        if (list.length && htmlDiv.find('.js-facet-next-page').length) {
+          button.attr('data-page', page + 1);
+          button.attr('href', button.attr('href').replace(/facetpage=\d+/, 'facetpage=' + (page + 1)));
+          button.html(VuFind.translate('more_ellipsis'));
+          button.removeAttr('disabled');
+        } else {
+          button.remove();
+        }
+      });
       return false;
     });
-    var margin = 230;
+    let margin = 230;
     $('#modal').on('show.bs.modal', function facetListHeight() {
       $('#modal .lightbox-scroll').css('max-height', window.innerHeight - margin);
     });

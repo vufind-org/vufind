@@ -4,37 +4,44 @@
 // to detect when the user stops typing.
 // See also: https://stackoverflow.com/questions/1909441/how-to-delay-the-keyup-handler-until-the-user-stops-typing
 var keyupCallbackTimeout = null;
-function getFacetListContentKeyupCallback() {
+function registerFacetListContentKeyupCallback() {
   $('.ajax_param[data-name="contains"]').on('keyup', function onKeyupChangeFacetList() {
     clearTimeout(keyupCallbackTimeout);
     keyupCallbackTimeout = setTimeout(function onKeyupTimeout() {
-      getFacetListContent();
+      updateFacetListContent();
     }, 500);
   });
 }
 
-function getFacetListContent() {
+function getFacetListContent(overrideParams={}) {
   let url = VuFind.path + "/AJAX/JSON?q=sta&method=getFacetListContent";
 
   $('.ajax_param').each(function ajaxParamEach() {
-    url += '&' + encodeURIComponent($(this).data('name')) + '=' + encodeURIComponent($(this).val());
+    let key = $(this).data('name');
+    let val = $(this).val();
+    if (key in overrideParams) {
+      val = overrideParams[key];
+    }
+    url += '&' + encodeURIComponent(key) + '=' + encodeURIComponent(val);
   });
 
-  $.ajax({
+  return Promise.resolve($.ajax({
     type: "GET",
     url: url,
-    dataType: "json",
-    success: function (json) {
-      $('#facet-info-result').html(json.data.html);
-    }
-  });
+    dataType: "json"
+  }));
+}
 
-  // This needs to be registered here as well so it works in a lightbox
-  getFacetListContentKeyupCallback();
+function updateFacetListContent() {
+  getFacetListContent().then(json => {
+    $('#facet-info-result').html(json.data.html);
+    // This needs to be registered here as well so it works in a lightbox
+    registerFacetListContentKeyupCallback();
+  });
 }
 
 function setupFacetList() {
   $('.ajax_param[data-name="contains"]').on('keyup', function onKeyupChangeFacetList() {
-    getFacetListContentKeyupCallback();
+    registerFacetListContentKeyupCallback();
   });
 }
