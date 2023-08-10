@@ -13,7 +13,7 @@ function registerFacetListContentKeyupCallback() {
   });
 }
 
-function getFacetListContent(overrideParams={}) {
+function getFacetListContent(overrideParams = {}) {
   let url = VuFind.path + "/AJAX/JSON?q=sta&method=getFacetListContent";
 
   $('.ajax_param').each(function ajaxParamEach() {
