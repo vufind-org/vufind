@@ -201,7 +201,7 @@
 
   <!-- Run Sass build, error if it fails -->
   <target name="checkSassBuild">
-    <exec command="npm run build:scss" checkreturn="true" passthru="true" />
+    <exec command="npm run check:scss" checkreturn="true" passthru="true" />
   </target>
 
   <!-- Run LessToSass, error if there are uncommitted changes (used by continuous integration) -->
