@@ -1,6 +1,5 @@
 /*global VuFind */
-/*exported getFacetListContent */
-/*exported setupFacetList */
+/*exported getFacetListContent, setupFacetList */
 
 // Useful function to delay callbacks, e.g. when using a keyup event
 // to detect when the user stops typing.

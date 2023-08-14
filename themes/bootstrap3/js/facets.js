@@ -1,4 +1,4 @@
-/*global VuFind */
+/*global VuFind, getFacetListContent */
 /*exported initFacetTree */
 function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
 {
