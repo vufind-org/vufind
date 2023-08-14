@@ -408,7 +408,7 @@ class Folio extends AbstractAPI implements
         ];
         $response = $this->makeRequest('GET', '/instance-storage/instances', $query);
         $instances = json_decode($response->getBody());
-        if (count($instances->instances) == 0) {
+        if (count($instances->instances ?? []) == 0) {
             throw new ILSException("Item Not Found");
         }
         return $instances->instances[0];
@@ -608,18 +608,18 @@ class Folio extends AbstractAPI implements
             array_map([$this, 'formatNote'], $holding->notes ?? [])
         );
         $hasHoldingNotes = !empty(implode($holdingNotes));
-        $holdingsStatements = array_map(
+        $holdingsStatements = array_values(array_filter(array_map(
             $textFormatter,
             $holding->holdingsStatements ?? []
-        );
-        $holdingsSupplements = array_map(
+        )));
+        $holdingsSupplements = array_values(array_filter(array_map(
             $textFormatter,
             $holding->holdingsStatementsForSupplements ?? []
-        );
-        $holdingsIndexes = array_map(
+        )));
+        $holdingsIndexes = array_values(array_filter(array_map(
             $textFormatter,
             $holding->holdingsStatementsForIndexes ?? []
-        );
+        )));
         $holdingCallNumber = $holding->callNumber ?? '';
         $holdingCallNumberPrefix = $holding->callNumberPrefix ?? '';
         return compact(
@@ -945,13 +945,12 @@ class Folio extends AbstractAPI implements
      * @param string $responseKey Key containing values to collect in response
      * @param string $interface   FOLIO api interface to call
      * @param array  $query       CQL query
+     * @param int    $limit       How many results to retrieve from FOLIO per call
      *
      * @return array
      */
-    protected function getPagedResults($responseKey, $interface, $query = [])
+    protected function getPagedResults($responseKey, $interface, $query = [], $limit = 1000)
     {
-        $count = 0;
-        $limit = 1000;
         $offset = 0;
 
         do {
@@ -966,19 +965,15 @@ class Folio extends AbstractAPI implements
                 $msg = $json->errors[0]->message ?? json_last_error_msg();
                 throw new ILSException("Error: '$msg' fetching '$responseKey'");
             }
-            $total = $json->totalRecords ?? 0;
-            $previousCount = $count;
+            $totalEstimate = $json->totalRecords ?? 0;
             foreach ($json->$responseKey ?? [] as $item) {
-                $count++;
-                if ($count % $limit == 0) {
-                    $offset += $limit;
-                }
                 yield $item ?? '';
             }
-            // Continue until the count reaches the total records
-            // found, if count does not increase, something has gone
-            // wrong. Stop so we don't loop forever.
-        } while ($count < $total && $previousCount != $count);
+            $offset += $limit;
+
+            // Continue until the current offset is greater than the totalRecords value returned
+            // from the API (which could be an estimate if more than 1000 results are returned).
+        } while ($offset <= $totalEstimate);
     }
 
     /**
@@ -1256,10 +1251,10 @@ class Folio extends AbstractAPI implements
      *
      * @param array $patron   Patron information returned by $this->patronLogin
      * @param array $holdInfo Optional array, only passed in when getting a list
-     * in the context of placing or editing a hold.  When placing a hold, it contains
-     * most of the same values passed to placeHold, minus the patron data.  When
+     * in the context of placing or editing a hold. When placing a hold, it contains
+     * most of the same values passed to placeHold, minus the patron data. When
      * editing a hold it contains all the hold information returned by getMyHolds.
-     * May be used to limit the pickup options or may be ignored.  The driver must
+     * May be used to limit the pickup options or may be ignored. The driver must
      * not add new options to the return array based on this data or other areas of
      * VuFind may behave incorrectly.
      *
@@ -1711,12 +1706,22 @@ class Folio extends AbstractAPI implements
     public function findReserves($course, $inst, $dept)
     {
         $retVal = [];
+        $query = [];
+
+        $includeSuppressed = $this->config['CourseReserves']['includeSuppressed'] ?? false;
+
+        if (!$includeSuppressed) {
+            $query = [
+                'query' => 'copiedItem.instanceDiscoverySuppress==false',
+            ];
+        }
 
         // Results can be paginated, so let's loop until we've gotten everything:
         foreach (
             $this->getPagedResults(
                 'reserves',
-                '/coursereserves/reserves'
+                '/coursereserves/reserves',
+                $query
             ) as $item
         ) {
             $idProperty = $this->getBibIdType() === 'hrid'

@@ -938,7 +938,7 @@ class Aleph extends AbstractBase implements
     /**
      * Renew My Items
      *
-     * Function for attempting to renew a patron's items.  The data in
+     * Function for attempting to renew a patron's items. The data in
      * $details['details'] is determined by getRenewDetails().
      *
      * @param array $details An array of data required for renewing items
@@ -1065,7 +1065,7 @@ class Aleph extends AbstractBase implements
         if ($holdDetails['delete']) {
             return $holdDetails['item_id'];
         } else {
-            return null;
+            return '';
         }
     }
 
@@ -1400,7 +1400,7 @@ class Aleph extends AbstractBase implements
      * @param array $holdInfo Contains most of the same values passed to
      * placeHold, minus the patron data.
      *
-     * @return int
+     * @return int|null
      */
     public function getHoldDefaultRequiredDate($patron, $holdInfo)
     {
@@ -1506,7 +1506,7 @@ class Aleph extends AbstractBase implements
      *
      * @param string $bar Barcode
      *
-     * @return string
+     * @return string|null
      */
     public function barcodeToID($bar)
     {
@@ -1567,7 +1567,7 @@ class Aleph extends AbstractBase implements
 
     /**
      * Helper method to determine whether or not a certain method can be
-     * called on this driver.  Required method for any smart drivers.
+     * called on this driver. Required method for any smart drivers.
      *
      * @param string $method The name of the called method.
      * @param array  $params Array of passed parameters
@@ -1627,10 +1627,10 @@ class Aleph extends AbstractBase implements
      *
      * @param array $patron   Patron information returned by the patronLogin method.
      * @param array $holdInfo Optional array, only passed in when getting a list
-     * in the context of placing or editing a hold.  When placing a hold, it contains
-     * most of the same values passed to placeHold, minus the patron data.  When
+     * in the context of placing or editing a hold. When placing a hold, it contains
+     * most of the same values passed to placeHold, minus the patron data. When
      * editing a hold it contains all the hold information returned by getMyHolds.
-     * May be used to limit the pickup options or may be ignored.  The driver must
+     * May be used to limit the pickup options or may be ignored. The driver must
      * not add new options to the return array based on this data or other areas of
      * VuFind may behave incorrectly.
      *
@@ -1673,7 +1673,7 @@ class Aleph extends AbstractBase implements
      * @param array $patron   Patron information returned by the patronLogin method.
      * @param array $holdInfo Optional array, only passed in when getting a list
      * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.  May be used to limit the pickup options
+     * placeHold, minus the patron data. May be used to limit the pickup options
      * or may be ignored.
      *
      * @return string       The default pickup location for the patron.

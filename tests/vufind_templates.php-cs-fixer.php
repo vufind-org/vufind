@@ -12,12 +12,10 @@ $rules = [
         'default' => 'single_space',
     ],
     'blank_line_after_opening_tag' => false,
-    'braces' => false, // disabled because we don't want to create inconsistent indentation, but useful to normalize control structure spacing
     'cast_spaces' => ['space' => 'none'],
     'class_attributes_separation' => ['elements' => ['method' => 'one', 'property' => 'one']],
     'concat_space' => ['spacing' => 'one'],
     'ereg_to_preg' => true,
-    'function_typehint_space' => true,
     'get_class_to_class_keyword' => true,
     'is_null' => true,
     'lowercase_cast' => true,
@@ -52,6 +50,7 @@ $rules = [
     'standardize_not_equals' => true,
     'statement_indentation' => false, // disabled because it messes up indentation of php tags
     'ternary_operator_spaces' => true,
+    'type_declaration_spaces' => true,
 ];
 
 $cacheDir = __DIR__ . '/../.php_cs_cache';

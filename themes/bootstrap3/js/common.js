@@ -329,7 +329,8 @@ var VuFind = (function VuFind() {
     updateCspNonce: updateCspNonce,
     getCurrentSearchId: getCurrentSearchId,
     setCurrentSearchId: setCurrentSearchId,
-    initResultScripts: initResultScripts
+    initResultScripts: initResultScripts,
+    setupQRCodeLinks: setupQRCodeLinks
   };
 })();
 
@@ -575,7 +576,10 @@ function setupAutocomplete() {
       success: function autocompleteJSON(json) {
         const highlighted = json.data.suggestions.map(
           (item) => ({
-            text: item.replace(query, `<b>${query}</b>`),
+            text: item.replaceAll("&", "&amp;")
+              .replaceAll("<", "&lt;")
+              .replaceAll(">", "&gt;")
+              .replaceAll(query, `<b>${query}</b>`),
             value: item,
           })
         );
@@ -732,4 +736,26 @@ $(function commonDocReady() {
   }
 
   setupIeSupport();
+});
+
+$(function searchFormResetHandler() {
+  const queryInput = $('#searchForm_lookfor');
+  const resetButton = $('#searchForm-reset');
+
+  let query = queryInput.val();
+  if (query !== '') {
+    resetButton.show();
+    queryInput.focus().val('').val(query);
+  }
+  queryInput.on('input', function onInput() {
+    if ($(this).val() === '') {
+      resetButton.hide();
+    } else {
+      resetButton.show();
+    }
+  });
+  resetButton.on('click', function onClick() {
+    queryInput.attr('value', '').focus();
+    resetButton.hide();
+  });
 });

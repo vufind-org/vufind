@@ -722,7 +722,7 @@ class Koha extends AbstractBase
             $row = $sqlStmt->fetch();
             if ($row) {
                 // NOTE: Here, 'cat_password' => $password is used, password is
-                // saved in a clear text as user provided.  If 'cat_password' =>
+                // saved in a clear text as user provided. If 'cat_password' =>
                 // $db_pwd was used, then password will be saved encrypted as in
                 // 'borrowers' table of 'koha' database
                 $patron = [

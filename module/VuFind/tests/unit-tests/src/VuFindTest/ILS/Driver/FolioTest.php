@@ -703,16 +703,13 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getHolding with HRID-based lookup
+     * Get expected result of get-holding fixture (shared by multiple tests).
      *
-     * @return void
+     * @return array
      */
-    public function testGetHoldingWithHridLookup(): void
+    protected function getExpectedGetHoldingResult(): array
     {
-        $driverConfig = $this->defaultDriverConfig;
-        $driverConfig['IDs']['type'] = 'hrid';
-        $this->createConnector("get-holding", $driverConfig);
-        $expected = [
+        return [
             [
                 'callnumber_prefix' => '',
                 'callnumber' => 'PS2394 .M643 1883',
@@ -737,7 +734,19 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                 'addLink' => true,
             ],
         ];
-        $this->assertEquals($expected, $this->driver->getHolding("foo"));
+    }
+
+    /**
+     * Test getHolding with HRID-based lookup
+     *
+     * @return void
+     */
+    public function testGetHoldingWithHridLookup(): void
+    {
+        $driverConfig = $this->defaultDriverConfig;
+        $driverConfig['IDs']['type'] = 'hrid';
+        $this->createConnector("get-holding", $driverConfig);
+        $this->assertEquals($this->getExpectedGetHoldingResult(), $this->driver->getHolding("foo"));
     }
 
     /**
@@ -752,34 +761,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
         $driverConfig = $this->defaultDriverConfig;
         $driverConfig['IDs']['type'] = 'hrid';
         $this->createConnector("get-holding", $driverConfig);
-        $expected = [
-            [
-                [
-                    'callnumber_prefix' => '',
-                    'callnumber' => 'PS2394 .M643 1883',
-                    'id' => 'foo',
-                    'item_id' => 'itemid',
-                    'holding_id' => 'holdingid',
-                    'number' => 1,
-                    'enumchron' => '',
-                    'barcode' => 'barcode-test',
-                    'status' => 'Available',
-                    'duedate' => '',
-                    'availability' => true,
-                    'is_holdable' => true,
-                    'holdings_notes' => null,
-                    'item_notes' => null,
-                    'summary' => ["foo", "bar baz"],
-                    'supplements' => [],
-                    'indexes' => [],
-                    'location' => 'Special Collections',
-                    'location_code' => 'DCOC',
-                    'reserve' => 'TODO',
-                    'addLink' => true,
-                ],
-            ],
-        ];
-        $this->assertEquals($expected, $this->driver->getStatuses(["foo"]));
+        $this->assertEquals([$this->getExpectedGetHoldingResult()], $this->driver->getStatuses(["foo"]));
     }
 
     /**
@@ -811,6 +793,44 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                 'summary' => [],
                 'supplements' => ['Fake supplement statement With a note!'],
                 'indexes' => [],
+                'location' => 'Special Collections',
+                'location_code' => 'DCOC',
+                'reserve' => 'TODO',
+                'addLink' => true,
+            ],
+        ];
+        $this->assertEquals($expected, $this->driver->getHolding("instanceid"));
+    }
+
+    /**
+     * Test getHolding filters empty holding statements appropriately.
+     *
+     * @return void
+     */
+    public function testGetHoldingFilteringOfEmptyHoldingStatements(): void
+    {
+        $driverConfig = $this->defaultDriverConfig;
+        $driverConfig['Holdings']['folio_sort'] = 'volume';
+        $this->createConnector("get-holding-empty-statements", $driverConfig);
+        $expected = [
+            [
+                'callnumber_prefix' => '',
+                'callnumber' => 'PS2394 .M643 1883',
+                'id' => 'instanceid',
+                'item_id' => 'itemid',
+                'holding_id' => 'holdingid',
+                'number' => 1,
+                'enumchron' => '',
+                'barcode' => 'barcode-test',
+                'status' => 'Available',
+                'duedate' => '',
+                'availability' => true,
+                'is_holdable' => true,
+                'holdings_notes' => ["Fake note"],
+                'item_notes' => null,
+                'summary' => ['summ1', 'summ2'],
+                'supplements' => ['supp1', 'supp2'],
+                'indexes' => ['ind1', 'ind2'],
                 'location' => 'Special Collections',
                 'location_code' => 'DCOC',
                 'reserve' => 'TODO',
@@ -915,5 +935,117 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             ],
         ];
         $this->assertEquals($expected, $this->driver->getHolding("instanceid"));
+    }
+
+    /**
+     * Test getPagedResults with less than the limit value returned
+     *
+     * @return void
+     */
+    public function testGetPagedResultsLessThanLimit(): void
+    {
+        $this->createConnector('get-my-holds-in_transit-limit');
+
+        // Passing a limit of 2
+        $result = $this->callMethod(
+            $this->driver,
+            'getPagedResults',
+            [
+                'requests',
+                '/request-storage/requests',
+                [
+                    'query' => '((requesterId == "foo" or proxyUserId == "foo") and status == Open*)',
+                ],
+                2,
+            ]
+        );
+        $result = iterator_to_array($result, false);
+
+        $this->assertCount(1, $result);
+    }
+
+    /**
+     * Test getPagedResults with greater than the limit value returned
+     *
+     * @return void
+     */
+    public function testGetPagedResultsGreaterThanLimit(): void
+    {
+        $this->createConnector('get-my-holds-in_transit-multiple');
+
+        // Passing a limit of 2
+        $result = $this->callMethod(
+            $this->driver,
+            'getPagedResults',
+            [
+                'requests',
+                '/request-storage/requests',
+                [
+                    'query' => '((requesterId == "foo" or proxyUserId == "foo") and status == Open*)',
+                ],
+                2,
+            ]
+        );
+        $result = iterator_to_array($result, false);
+
+        $this->assertCount(3, $result);
+    }
+
+    /**
+     * Test getPagedResults with results equal to the limit value returned
+     *
+     * @return void
+     */
+    public function testGetPagedResultsEqualToLimit(): void
+    {
+        $this->createConnector('get-my-holds-in_transit-two');
+
+        // Passing a limit of 2
+        $result = $this->callMethod(
+            $this->driver,
+            'getPagedResults',
+            [
+                'requests',
+                '/request-storage/requests',
+                [
+                    'query' => '((requesterId == "foo" or proxyUserId == "foo") and status == Open*)',
+                ],
+                2,
+            ]
+        );
+        $result = iterator_to_array($result, false);
+
+        $this->assertCount(2, $result);
+    }
+
+    /**
+     * Test getPagedResults with estimates being passed back from folio
+     * for the first response. This is different from
+     * testGetPagedResultsEqualToLimit since the totalRecords in the
+     * response from the API is inacurrate for the first response
+     * (i.e. just an estimate).
+     *
+     * @return void
+     */
+    public function testGetPagedResultsEstimatedTotal(): void
+    {
+        $this->createConnector('get-my-holds-in_transit-paginate-estimate');
+
+        // Passing a limit of 1
+        $result = $this->callMethod(
+            $this->driver,
+            'getPagedResults',
+            [
+                'requests',
+                '/request-storage/requests',
+                [
+                    'query' => '((requesterId == "foo" or proxyUserId == "foo") and status == Open*)',
+                ],
+                1,
+            ]
+        );
+        $result = iterator_to_array($result, false);
+
+        $this->assertCount(2, $result);
     }
 }
