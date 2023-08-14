@@ -17,8 +17,3 @@ if ($this->jsResults ?? false) {
     // page has one:
     $this->headScript()->appendFile('openurl.js');
 }
-// Load only if list view parameter is NOT full:
-if (($this->listViewOption ?? 'full') !== 'full') {
-    $this->headScript()->appendFile('record.js');
-    $this->headScript()->appendFile('embedded_record.js');
-}
