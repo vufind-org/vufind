@@ -1,0 +1,9 @@
+<?php
+  // Create a css class for results from the search class:
+  $searchClass = $searchClassCss = $this->params->getSearchClassId();
+  if (!ctype_upper($searchClassCss)) {
+    $searchClassCss = preg_replace('/([a-zA-Z])(?=[A-Z])/', '$1-', $searchClassCss);
+  }
+  $this->resultsClass = 'search-results-' . strtolower($searchClassCss);
+?>
+<?=$this->render('search/list-' . $this->params->getView() . '.phtml')?>
