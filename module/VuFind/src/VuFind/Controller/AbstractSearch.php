@@ -864,7 +864,10 @@ class AbstractSearch extends AbstractBase
         $params->initFromRequest($this->getRequest()->getQuery());
         // Get parameters
         $facet = $this->params()->fromQuery('facet');
+        $contains = $this->params()->fromQuery('contains', '');
         $page = (int)$this->params()->fromQuery('facetpage', 1);
+        $ajax = (int)$this->params()->fromQuery('ajax', 0);
+        $urlBase = $this->params()->fromQuery('urlBase', '');
         $options = $results->getOptions();
         $facetSortOptions = $options->getFacetSortOptions($facet);
         $sort = $this->params()->fromQuery('facetsort', null);
@@ -877,6 +880,9 @@ class AbstractSearch extends AbstractBase
             ->get($options->getFacetsIni());
         $limit = $config->Results_Settings->lightboxLimit ?? 50;
         $limit = $this->params()->fromQuery('facetlimit', $limit);
+        if (!empty($contains)) {
+            $params->setFacetContains($contains);
+        }
         $facets = $results->getPartialFieldFacets(
             [$facet],
             false,
@@ -888,22 +894,32 @@ class AbstractSearch extends AbstractBase
         $list = $facets[$facet]['data']['list'] ?? [];
         $facetLabel = $params->getFacetLabel($facet);
 
-        $view = $this->createViewModel(
-            [
-                'data' => $list,
-                'exclude' => intval($this->params()->fromQuery('facetexclude', 0)),
-                'facet' => $facet,
-                'facetLabel' => $facetLabel,
-                'operator' => $this->params()->fromQuery('facetop', 'AND'),
-                'page' => $page,
-                'results' => $results,
-                'anotherPage' => $facets[$facet]['more'] ?? '',
-                'sort' => $sort,
-                'sortOptions' => $facetSortOptions,
-                'baseUriExtra' => $this->params()->fromQuery('baseUriExtra'),
-            ]
-        );
-        $view->setTemplate('search/facet-list');
-        return $view;
+        $viewParams = [
+            'contains' => $contains,
+            'data' => $list,
+            'exclude' => intval($this->params()->fromQuery('facetexclude', 0)),
+            'facet' => $facet,
+            'facetLabel' => $facetLabel,
+            'operator' => $this->params()->fromQuery('facetop', 'AND'),
+            'page' => $page,
+            'results' => $results,
+            'anotherPage' => $facets[$facet]['more'] ?? '',
+            'sort' => $sort,
+            'sortOptions' => $facetSortOptions,
+            'baseUriExtra' => $this->params()->fromQuery('baseUriExtra'),
+        ];
+
+        if ($ajax == 0) {
+            $view = $this->createViewModel($viewParams);
+            $view->setTemplate('search/facet-list');
+            return $view;
+        } else {
+            $viewParams['active'] = $sort;
+            $viewParams['key'] = $sort;
+            $viewParams['urlBase'] = $urlBase;
+            $view = $this->createViewModel($viewParams);
+            $view->setTemplate('search/facet-list-content');
+            return $view;
+        }
     }
 }

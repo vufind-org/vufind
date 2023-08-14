@@ -9,12 +9,33 @@ function registerFacetListContentKeyupCallback() {
     clearTimeout(keyupCallbackTimeout);
     keyupCallbackTimeout = setTimeout(function onKeyupTimeout() {
       updateFacetListContent();
+      updateHrefContains();
     }, 500);
   });
 }
 
+function overrideHref(selector, overrideParams = {}) {
+  $(selector).each(function overrideHref() {
+    let dummyDomain = 'https://www.example.org'; // we need this since the URL class cannot parse relative URLs
+    let url = new URL(dummyDomain + VuFind.path + $(this).attr('href'));
+    Object.entries(overrideParams).forEach(([key, value]) => {
+      url.searchParams.set(key, value);
+    });
+    url = url.href;
+    url = url.replaceAll(dummyDomain, '');
+    $(this).attr('href', url);
+  });
+}
+
+function updateHrefContains() {
+    let overrideParams = { contains: $('.ajax_param[data-name="contains"]').val() };
+    overrideHref('.js-facet-sort', overrideParams);
+    overrideHref('.js-facet-next-page', overrideParams);
+    overrideHref('.js-facet-prev-page', overrideParams);
+}
+
 function getFacetListContent(overrideParams = {}) {
-  let url = VuFind.path + "/AJAX/JSON?q=sta&method=getFacetListContent";
+  let url = $('.ajax_param[data-name="urlBase"]').val();
 
   $('.ajax_param').each(function ajaxParamEach() {
     let key = $(this).data('name');
@@ -24,17 +45,20 @@ function getFacetListContent(overrideParams = {}) {
     }
     url += '&' + encodeURIComponent(key) + '=' + encodeURIComponent(val);
   });
+  url += '&ajax=1';
 
   return Promise.resolve($.ajax({
-    type: "GET",
-    url: url,
-    dataType: "json"
+    url: url
   }));
 }
 
 function updateFacetListContent() {
-  getFacetListContent().then(json => {
-    $('#facet-info-result').html(json.data.html);
+  getFacetListContent().then(html => {
+    let htmlList = '';
+    $(html).find('.full-facet-list').each(function itemEach() {
+        htmlList += $(this).prop('outerHTML');
+    });
+    $('#facet-info-result').html(htmlList);
     // This needs to be registered here as well so it works in a lightbox
     registerFacetListContentKeyupCallback();
   });

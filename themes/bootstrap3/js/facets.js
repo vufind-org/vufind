@@ -311,12 +311,12 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
       button.html(VuFind.translate('loading_ellipsis'));
 
       let overrideParams = {facetpage: page, layout: 'lightbox'};
-      getFacetListContent(overrideParams).then(json => {
-        let data = json.data.html;
-        let htmlDiv = $('<div>' + data + '</div>');
-        let list = htmlDiv.find('.js-facet-item');
-        button.before(list);
-        if (list.length && htmlDiv.find('.js-facet-next-page').length) {
+      getFacetListContent(overrideParams).then(data => {
+        $(data).find('.js-facet-item').each(function eachItem() {
+          button.before($(this).prop('outerHTML'));
+        });
+        let list = $(data).find('.js-facet-item');
+        if (list.length && $(data).find('.js-facet-next-page').length) {
           button.attr('data-page', page + 1);
           button.attr('href', button.attr('href').replace(/facetpage=\d+/, 'facetpage=' + (page + 1)));
           button.html(VuFind.translate('more_ellipsis'));
