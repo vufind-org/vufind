@@ -1,4 +1,6 @@
 /*global VuFind */
+/*exported getFacetListContent */
+/*exported setupFacetList */
 
 // Useful function to delay callbacks, e.g. when using a keyup event
 // to detect when the user stops typing.
@@ -15,7 +17,7 @@ function registerFacetListContentKeyupCallback() {
 }
 
 function overrideHref(selector, overrideParams = {}) {
-  $(selector).each(function overrideHref() {
+  $(selector).each(function overrideHrefEach() {
     let dummyDomain = 'https://www.example.org'; // we need this since the URL class cannot parse relative URLs
     let url = new URL(dummyDomain + VuFind.path + $(this).attr('href'));
     Object.entries(overrideParams).forEach(([key, value]) => {
@@ -28,10 +30,10 @@ function overrideHref(selector, overrideParams = {}) {
 }
 
 function updateHrefContains() {
-    let overrideParams = { contains: $('.ajax_param[data-name="contains"]').val() };
-    overrideHref('.js-facet-sort', overrideParams);
-    overrideHref('.js-facet-next-page', overrideParams);
-    overrideHref('.js-facet-prev-page', overrideParams);
+  let overrideParams = { contains: $('.ajax_param[data-name="contains"]').val() };
+  overrideHref('.js-facet-sort', overrideParams);
+  overrideHref('.js-facet-next-page', overrideParams);
+  overrideHref('.js-facet-prev-page', overrideParams);
 }
 
 function getFacetListContent(overrideParams = {}) {
@@ -56,7 +58,7 @@ function updateFacetListContent() {
   getFacetListContent().then(html => {
     let htmlList = '';
     $(html).find('.full-facet-list').each(function itemEach() {
-        htmlList += $(this).prop('outerHTML');
+      htmlList += $(this).prop('outerHTML');
     });
     $('#facet-info-result').html(htmlList);
     // This needs to be registered here as well so it works in a lightbox
