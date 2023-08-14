@@ -1,20 +1,6 @@
 /*global VuFind */
 /*exported getFacetListContent, setupFacetList */
 
-// Useful function to delay callbacks, e.g. when using a keyup event
-// to detect when the user stops typing.
-// See also: https://stackoverflow.com/questions/1909441/how-to-delay-the-keyup-handler-until-the-user-stops-typing
-var keyupCallbackTimeout = null;
-function registerFacetListContentKeyupCallback() {
-  $('.ajax_param[data-name="contains"]').on('keyup', function onKeyupChangeFacetList() {
-    clearTimeout(keyupCallbackTimeout);
-    keyupCallbackTimeout = setTimeout(function onKeyupTimeout() {
-      updateFacetListContent();
-      updateHrefContains();
-    }, 500);
-  });
-}
-
 function overrideHref(selector, overrideParams = {}) {
   $(selector).each(function overrideHrefEach() {
     let dummyDomain = 'https://www.example.org'; // we need this since the URL class cannot parse relative URLs
@@ -68,5 +54,19 @@ function updateFacetListContent() {
 function setupFacetList() {
   $('.ajax_param[data-name="contains"]').on('keyup', function onKeyupChangeFacetList() {
     registerFacetListContentKeyupCallback();
+  });
+}
+
+// Useful function to delay callbacks, e.g. when using a keyup event
+// to detect when the user stops typing.
+// See also: https://stackoverflow.com/questions/1909441/how-to-delay-the-keyup-handler-until-the-user-stops-typing
+var keyupCallbackTimeout = null;
+function registerFacetListContentKeyupCallback() {
+  $('.ajax_param[data-name="contains"]').on('keyup', function onKeyupChangeFacetList() {
+    clearTimeout(keyupCallbackTimeout);
+    keyupCallbackTimeout = setTimeout(function onKeyupTimeout() {
+      updateFacetListContent();
+      updateHrefContains();
+    }, 500);
   });
 }
