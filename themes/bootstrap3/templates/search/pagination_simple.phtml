@@ -4,7 +4,8 @@
       <li role="none">
         <a class="page-prev" href="<?=$this->results->getUrlQuery()->setPage($this->previous)?>">
           <span class="sr-only"><?=$this->transEsc('page_prev')?></span>
-          <?=$this->icon('page-prev') ?></a>
+          <?=$this->icon('page-prev') ?>
+        </a>
       </li>
     <?php endif; ?>
     <li class="pager-text">
@@ -20,7 +21,10 @@
     </li>
     <?php if (isset($this->next)): ?>
       <li role="none">
-        <a class="page-next" href="<?=$this->results->getUrlQuery()->setPage($this->next)?>"><span class="sr-only"><?=$this->transEsc('page_next')?></span><?=$this->icon('page-next') ?></a>
+        <a class="page-next" href="<?=$this->results->getUrlQuery()->setPage($this->next)?>">
+          <span class="sr-only"><?=$this->transEsc('page_next')?></span>
+          <?=$this->icon('page-next') ?>
+        </a>
       </li>
     <?php endif; ?>
   </ul>
