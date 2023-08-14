@@ -869,6 +869,7 @@ class AbstractSearch extends AbstractBase
         $ajax = (int)$this->params()->fromQuery('ajax', 0);
         $ajaxLightbox = (int)$this->params()->fromQuery('ajaxLightbox', null);
         $urlBase = $this->params()->fromQuery('urlBase', '');
+        $searchAction = $this->params()->fromQuery('searchAction', '');
         $options = $results->getOptions();
         $facetSortOptions = $options->getFacetSortOptions($facet);
         $sort = $this->params()->fromQuery('facetsort', null);
@@ -919,6 +920,7 @@ class AbstractSearch extends AbstractBase
             $viewParams['active'] = $sort;
             $viewParams['key'] = $sort;
             $viewParams['urlBase'] = $urlBase;
+            $viewParams['searchAction'] = $searchAction;
             $view = $this->createViewModel($viewParams);
             $view->setTemplate('search/facet-list-content');
             return $view;
