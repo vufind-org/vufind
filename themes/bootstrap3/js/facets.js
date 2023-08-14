@@ -1,5 +1,5 @@
-/*global VuFind, getFacetListContent */
-/*exported initFacetTree */
+/*global VuFind */
+/*exported initFacetTree, setupFacetList */
 
 function overrideHref(selector, overrideParams = {}) {
   $(selector).each(function overrideHrefEach() {
@@ -46,22 +46,19 @@ function updateFacetListContent() {
       htmlList += $(this).prop('outerHTML');
     });
     $('#facet-info-result').html(htmlList);
-    // This needs to be registered here as well so it works in a lightbox
-    registerFacetListContentKeyupCallback();
   });
 }
 
 function setupFacetList() {
   if ($.isReady) {
-    setupFacetList();
+    updateFacetListContent();
+    registerFacetListContentKeyupCallback();
   } else {
-    $(document).ready(function() {
-      setupFacetList();
+    $(document).ready(function ready() {
+      updateFacetListContent();
+      registerFacetListContentKeyupCallback();
     });
   }
-  $('.ajax_param[data-name="contains"]').on('keyup', function onKeyupChangeFacetList() {
-    registerFacetListContentKeyupCallback();
-  });
 }
 
 // Useful function to delay callbacks, e.g. when using a keyup event

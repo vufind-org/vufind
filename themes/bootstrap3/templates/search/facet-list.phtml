@@ -44,6 +44,7 @@
 <input class="ajax_param" data-name="facetpage" type="hidden" value="<?=$this->page?>">
 <input class="ajax_param" data-name="facetsort" type="hidden" value="<?=$this->sort?>">
 <input class="ajax_param" data-name="urlBase" type="hidden" value="<?=$urlBase?>">
+<input class="ajax_param" data-name="ajaxLightbox" type="hidden" value="<?=$this->ajaxLightbox ? intval($this->ajaxLightbox) : intval($this->inLightbox) ?>">
 
 
 <div id="facet-info-result" class="lightbox-scroll full-facets">
@@ -56,6 +57,5 @@
 </div>
 <button class="btn btn-default lightbox-only" data-dismiss="modal"><?=$this->translate('close') ?></button>
 
-<?php $this->inlineScript()->appendFile('facets.js'); ?>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, '(typeof VuFind.lightbox_facets !== "undefined") && VuFind.lightbox_facets.setup();', 'SET'); ?>
-<?=$this->inlineScript()->appendScript('updateFacetListContent();');?>
+<?php $this->headScript()->appendFile('facets.js'); ?>
+<?=$this->inlineScript()->appendScript('setupFacetList();');?>
