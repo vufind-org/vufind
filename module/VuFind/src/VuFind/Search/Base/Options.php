@@ -311,14 +311,14 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @var bool
      */
-    protected $loadResultsWithJs = true;
+    protected $loadResultsWithJs;
 
     /**
      * Top pagination control style (none, simple or full)
      *
      * @var string
      */
-    protected $topPaginatorStyle = 'simple';
+    protected $topPaginatorStyle;
 
     /**
      * Constructor
