@@ -90,14 +90,22 @@ class LoginToken implements \VuFind\I18n\Translator\TranslatorAwareInterface
     protected $sessionManager;
 
     /**
+     * View Renderer
+     *
+     * @var \Laminas\View\Renderer\RendererInterface
+     */
+    protected $viewRenderer = null;
+
+    /**
      * LoginToken constructor.
      *
-     * @param Config                $config          Configuration
-     * @param UserTable             $userTable       User table gateway
-     * @param LoginTokenTable       $loginTokenTable Login Token table gateway
-     * @param CookieManager         $cookieManager   Cookie manager
-     * @param SessionManager        $sessionManager  Session manager
-     * @param \VuFind\Mailer\Mailer $mailer          Mailer
+     * @param Config                                   $config          Configuration
+     * @param UserTable                                $userTable       User table gateway
+     * @param LoginTokenTable                          $loginTokenTable Login Token table gateway
+     * @param CookieManager                            $cookieManager   Cookie manager
+     * @param SessionManager                           $sessionManager  Session manager
+     * @param \VuFind\Mailer\Mailer                    $mailer          Mailer
+     * @param \Laminas\View\Renderer\RendererInterface $viewRenderer    View Renderer
      */
     public function __construct(
         \Laminas\Config\Config $config,
@@ -106,6 +114,7 @@ class LoginToken implements \VuFind\I18n\Translator\TranslatorAwareInterface
         \VuFind\Cookie\CookieManager $cookieManager,
         SessionManager $sessionManager,
         \VuFind\Mailer\Mailer $mailer,
+        \Laminas\View\Renderer\RendererInterface $viewRenderer,
     ) {
         $this->config = $config;
         $this->userTable = $userTable;
@@ -113,6 +122,7 @@ class LoginToken implements \VuFind\I18n\Translator\TranslatorAwareInterface
         $this->cookieManager = $cookieManager;
         $this->sessionManager = $sessionManager;
         $this->mailer = $mailer;
+        $this->viewRenderer = $viewRenderer;
     }
 
     /**
@@ -229,11 +239,15 @@ class LoginToken implements \VuFind\I18n\Translator\TranslatorAwareInterface
     public function sendLoginTokenWarningEmail(\VuFind\Db\Row\User $user)
     {
         if (!empty($user->email)) {
+            $message = $this->viewRenderer->render('Email/login-warning.phtml', ['title' => $this->config->Site->title]);
+            $subject = $this->config->Authentication->login_warning_email_subject
+                ?? 'login_warning_email_subject';
+
             $this->mailer->send(
                 $user->email,
-                $this->config->Site->email,
-                $this->translate('login_warning_email_subject'),
-                $this->translate('login_warning_email_message')
+                $this->config->Mail->default_from ?? $this->config->Site->email,
+                $this->translate($subject),
+                $message
             );
         }
     }

@@ -76,7 +76,8 @@ class LoginTokenFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
                 ->get('logintoken'),
             $container->get(\VuFind\Cookie\CookieManager::class),
             $container->get(\Laminas\Session\SessionManager::class),
-            $container->get(\VuFind\Mailer\Mailer::class)
+            $container->get(\VuFind\Mailer\Mailer::class),
+            $container->get('ViewRenderer')
         );
     }
 }
