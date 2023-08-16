@@ -140,7 +140,7 @@ class Backend extends AbstractBackend
     /**
      * Backend type
      *
-     * @var str
+     * @var string
      */
     protected $backendType = null;
 
