@@ -6,11 +6,6 @@
     '%%lookfor%%' => $this->escapeHtml($this->lookfor),
   ];
 
-  $showingResults = $this->translate(
-      isset($this->skipTotalCount) ? 'showing_results_html' : 'showing_results_of_html',
-      $transParams
-  );
-
   // Use simple format if search-heading is set, search type is not basic or we have a simple top paginator enabled:
   $topPaginator = $this->results ? $this->results->getOptions()->getTopPaginatorStyle() : '';
   if ($this->slot('search-heading')->isset() || $this->params->getSearchType() !== 'basic' || 'simple' === $topPaginator) {
