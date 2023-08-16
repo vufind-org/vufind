@@ -101,7 +101,7 @@
           JS;
 
       if (!empty($lightboxParent)) {
-        $lightboxParent = json_encode((string)$lightboxParent);
+        $lightboxParent = urlencode($lightboxParent);
         $appendScripts[] = <<<JS
                    VuFind.lightbox.parent = {$lightboxParent};
             JS;
