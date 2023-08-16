@@ -104,7 +104,7 @@ trait TranslatorAwareTrait
         // Figure out the text domain for the string:
         [$domain, $str] = $this->extractTextDomain($target);
 
-        if ($this->getTranslatorLocale() == "keys") {
+        if ($this->getTranslatorLocale() == "debug") {
             $targetString = $domain !== "default" ? "$domain::$str" : "$str";
             $keyValueToString = function ($key, $val) {
                 return "$key = $val";
