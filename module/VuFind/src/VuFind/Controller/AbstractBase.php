@@ -763,10 +763,9 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
             // followup URL. We'll use a redirect=0 GET flag to indicate this:
             if (!$checkRedirect || $this->params()->fromQuery('redirect', true)) {
                 if (null !== $lightboxParent && $this->getAuthManager()->getSessionInitiator($this->getServerUrl())) {
-                    $this->followup()->store([], $url);
                     $parentUrl = new \Laminas\Uri\Uri($lightboxParent);
                     $params = $parentUrl->getQueryAsArray();
-                    $params['lightboxChild'] = $this->getServerUrl();
+                    $params['lightboxChild'] = $url;
                     $parentUrl->setQuery($params);
                     return $parentUrl;
                 }
