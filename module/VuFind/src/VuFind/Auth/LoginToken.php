@@ -32,6 +32,7 @@ declare(strict_types=1);
 namespace VuFind\Auth;
 
 use Laminas\Session\SessionManager;
+use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\LoginToken as LoginTokenException;
 
 /**
@@ -168,6 +169,7 @@ class LoginToken implements \VuFind\I18n\Translator\TranslatorAwareInterface
      * @param string              $sessionId Session identifier
      * @param int                 $expires   Token expiration date
      *
+     * @throws AuthException
      * @return void
      */
     public function createToken(\VuFind\Db\Row\User $user, string $series = '', string $sessionId = '', $expires = 0)
@@ -181,8 +183,7 @@ class LoginToken implements \VuFind\I18n\Translator\TranslatorAwareInterface
             $browser = $userInfo['browser'];
             $platform = $userInfo['platform'];
         } catch (\Exception $e) {
-            // Problem with browscap.ini, continue without
-            // browser information
+            throw new AuthException("Problem with browscap.ini");
         }
         if ($expires === 0) {
             $lifetime = $this->config->Authentication->persistent_login_lifetime ?? 0;
