@@ -122,8 +122,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
         $page = $session->getPage();
 
         // No paginator unless configured:
-        $this->unFindCss($page, '.search-header .pagination');
-        $this->unFindCss($page, '.search-header .pagination-simple');
+        $this->unFindCss($page, '.pagination-top');
 
         // Enable pagination:
         $this->changeConfigs(
