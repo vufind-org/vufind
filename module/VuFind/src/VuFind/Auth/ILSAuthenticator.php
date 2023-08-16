@@ -171,12 +171,14 @@ class ILSAuthenticator
     /**
      * Send email authentication link
      *
-     * @param string $email Email address
-     * @param string $route Route for the login link
+     * @param string $email       Email address
+     * @param string $route       Route for the login link
+     * @param array  $routeParams Route parameters
+     * @param array  $urlParams   URL parameters
      *
      * @return void
      */
-    public function sendEmailLoginLink($email, $route)
+    public function sendEmailLoginLink($email, $route, $routeParams = [], $urlParams = [])
     {
         if (null === $this->emailAuthenticator) {
             throw new \Exception('Email authenticator not set');
@@ -187,8 +189,9 @@ class ILSAuthenticator
             $this->emailAuthenticator->sendAuthenticationLink(
                 $patron['email'],
                 $patron,
-                ['auth_method' => 'ILS'],
-                $route
+                ['auth_method' => 'ILS'] + $urlParams,
+                $route,
+                $routeParams
             );
         }
     }
