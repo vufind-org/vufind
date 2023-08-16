@@ -81,7 +81,7 @@ class Options extends \VuFind\Search\Base\Options
         }
         if (isset($searchSettings->General->limit_options)) {
             $this->limitOptions
-                = explode(",", $searchSettings->General->limit_options);
+                = explode(',', $searchSettings->General->limit_options);
         }
 
         // Load search preferences:

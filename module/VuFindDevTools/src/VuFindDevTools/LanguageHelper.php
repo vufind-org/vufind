@@ -286,16 +286,16 @@ class LanguageHelper
                 $progressLevel = 'danger';
             }
             $data[] = [
-                "lang" => $langCode,
-                "name" => $diffs['name'],
-                "langtitle" => $langCode . (($langCode != $diffs['name'])
-                    ? " (" . $diffs['name'] . ")" : ''),
-                "missing" => count($diffs['notInL2']),
-                "extra" => count($diffs['notInL1']),
-                "percent" => $diffs['l2Percent'],
-                "countfiles" => count($diffs['helpFiles']),
-                "files" => $diffs['helpFiles'],
-                "progresslevel" => $progressLevel,
+                'lang' => $langCode,
+                'name' => $diffs['name'],
+                'langtitle' => $langCode . (($langCode != $diffs['name'])
+                    ? ' (' . $diffs['name'] . ')' : ''),
+                'missing' => count($diffs['notInL2']),
+                'extra' => count($diffs['notInL1']),
+                'percent' => $diffs['l2Percent'],
+                'countfiles' => count($diffs['helpFiles']),
+                'files' => $diffs['helpFiles'],
+                'progresslevel' => $progressLevel,
             ];
         }
         return $data;

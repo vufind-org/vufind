@@ -94,7 +94,7 @@ class ObalkyKnihService implements
             || !isset($config->books_endpoint)
         ) {
             throw new \Exception(
-                "Configuration for ObalkyKnih.cz service is not valid"
+                'Configuration for ObalkyKnih.cz service is not valid'
             );
         }
         $this->baseUrls = $config->base_url;
@@ -177,7 +177,7 @@ class ObalkyKnihService implements
      */
     protected function getFromService(array $ids): ?\stdClass
     {
-        $param = "multi";
+        $param = 'multi';
         $query = [];
         $isbn = null;
         if (!empty($ids['isbns'])) {
@@ -212,7 +212,7 @@ class ObalkyKnihService implements
             $this->logWarning('All ObalkyKnih servers are down.');
             return null;
         }
-        $url .= $this->endpoints['books'] . "?";
+        $url .= $this->endpoints['books'] . '?';
         $url .= http_build_query([$param => json_encode([$query])]);
         $client = $this->getHttpClient($url);
         try {

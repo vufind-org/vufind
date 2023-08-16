@@ -125,7 +125,7 @@ class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
         $service->expects($this->once())
             ->method('get')
             ->with($testUrl)
-            ->willThrowException(new \Exception("Download failed (404): " . $testUrl));
+            ->willThrowException(new \Exception('Download failed (404): ' . $testUrl));
 
         // cacheManager
         $storage = $this->getMockBuilder(\Laminas\Cache\Storage\StorageInterface::class)

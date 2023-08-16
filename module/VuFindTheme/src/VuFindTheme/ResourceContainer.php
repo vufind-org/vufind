@@ -121,7 +121,7 @@ class ResourceContainer
         } elseif ($js === []) {
             return;
         } else {
-            throw new \Exception("Invalid JS entry format: " . print_r($js, true));
+            throw new \Exception('Invalid JS entry format: ' . print_r($js, true));
         }
     }
 

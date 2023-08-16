@@ -73,7 +73,7 @@ class NormalizeCommand extends AbstractCommand
             )->addArgument(
                 'target',
                 InputArgument::REQUIRED,
-                "a file or directory to normalize"
+                'a file or directory to normalize'
             );
     }
 

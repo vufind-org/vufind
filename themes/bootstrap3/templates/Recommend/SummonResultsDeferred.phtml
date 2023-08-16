@@ -4,7 +4,7 @@
     . "VuFind.loadHtml(\$('#SummonDeferredRecommend'), url);";
 ?>
 <div id="SummonDeferredRecommend">
-  <h3><?=$this->transEsc("Summon Results")?></h3>
+  <h3><?=$this->transEsc('Summon Results')?></h3>
   <p><?=$this->icon('spinner') ?> <?=$this->transEsc('loading_ellipsis')?></p>
   <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $loadJs, 'SET')?>
 </div>

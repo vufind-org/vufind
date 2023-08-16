@@ -124,7 +124,7 @@ class OpenLibrarySubjects implements
         if (isset($params[3])) {
             $this->subjectTypes = explode(',', $params[3]);
         } else {
-            $this->subjectTypes = ["topic"];
+            $this->subjectTypes = ['topic'];
         }
 
         // A 4th parameter is not specified in searches.ini, if it exists

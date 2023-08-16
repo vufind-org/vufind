@@ -73,7 +73,7 @@ class File extends AbstractBase
             (!file_exists($this->path) || !is_dir($this->path))
             && !mkdir($this->path)
         ) {
-            throw new \Exception("Cannot access session save path: " . $this->path);
+            throw new \Exception('Cannot access session save path: ' . $this->path);
         }
     }
 
@@ -133,7 +133,7 @@ class File extends AbstractBase
     #[\ReturnTypeWillChange]
     public function gc($maxlifetime)
     {
-        foreach (glob($this->path . "/sess_*") as $filename) {
+        foreach (glob($this->path . '/sess_*') as $filename) {
             if (filemtime($filename) + $maxlifetime < time()) {
                 unlink($filename);
             }
@@ -152,7 +152,7 @@ class File extends AbstractBase
     protected function saveSession($sessId, $data): bool
     {
         $sessFile = $this->path . '/sess_' . $sessId;
-        if ($handle = fopen($sessFile, "w")) {
+        if ($handle = fopen($sessFile, 'w')) {
             $return = false;
             // Lock the file for exclusive access to avoid issues with multiple
             // processes writing session simultaneously:
