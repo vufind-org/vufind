@@ -1,7 +1,7 @@
 /*global VuFind */
 
 VuFind.register('search', function search() {
-  let jsRecordListSelector = '.js-record-list';
+  let jsRecordListSelector = '.js-result-list';
   let paginationLinksSelector = '.js-pagination a,.js-pagination-simple a';
   let scrollElementSelector = '.search-stats';
   let searchStatsSelector = '.js-search-stats';

@@ -8,7 +8,7 @@
   $this->resultsClass = 'search-results-' . strtolower($searchClassCss);
   // Add any additional classes and attributes:
   if ($this->results->getOptions()->loadResultsWithJsEnabled()) {
-    $this->resultsClass .= ' js-record-list';
+    $this->resultsClass .= ' js-result-list';
     if ($this->resultsAttrs) {
       if (!($this->resultsAttrs instanceof \Laminas\View\HtmlAttributesSet)) {
         throw new \Exception('$this->resultsAttrs must be created with the htmlAttributes view helper');

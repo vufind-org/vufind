@@ -126,7 +126,7 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
      * @var array
      */
     protected $elements = [
-        '.js-record-list' => [
+        '.js-result-list' => [
             'method' => 'renderResults',
             'target' => 'outer',
         ],
