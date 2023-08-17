@@ -89,8 +89,8 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         $this->apiVersion = $apiVersion;
         if (empty($baseUrl)) {
             $this->host = ($this->apiVersion < 2)
-                ? "http://api.libguides.com/api_search.php?"
-                : "http://lgapi.libapps.com/widgets.php?";
+                ? 'http://api.libguides.com/api_search.php?'
+                : 'http://lgapi.libapps.com/widgets.php?';
         } else {
             // Ensure appropriate number of question marks:
             $this->host = rtrim($baseUrl, '?') . '?';

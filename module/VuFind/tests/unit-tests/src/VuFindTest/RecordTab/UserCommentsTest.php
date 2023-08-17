@@ -50,7 +50,7 @@ class UserCommentsTest extends \PHPUnit\Framework\TestCase
     public function testGetDescription(): void
     {
         $obj = new UserComments();
-        $this->assertSame("Comments", $obj->getDescription());
+        $this->assertSame('Comments', $obj->getDescription());
     }
 
     /**

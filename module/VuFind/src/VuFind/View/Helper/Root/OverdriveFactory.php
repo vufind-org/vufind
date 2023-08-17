@@ -78,7 +78,7 @@ class OverdriveFactory implements FactoryInterface
         $connector = null;
         $showMyContent = $config->Overdrive->showMyContent;
         $showAdmin = $config->Overdrive->showOverdriveAdminMenu;
-        if ($showAdmin || $showMyContent != "never") {
+        if ($showAdmin || $showMyContent != 'never') {
             $connector = $container->get(
                 \VuFind\DigitalContent\OverdriveConnector::class
             );

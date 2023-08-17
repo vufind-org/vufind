@@ -337,7 +337,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             ) ? $this->getDriver()->getConfig($function, $params) : false;
 
             // See if we have a corresponding check method to analyze the response:
-            $checkMethod = "checkMethod" . $function;
+            $checkMethod = 'checkMethod' . $function;
             if (!method_exists($this, $checkMethod)) {
                 return false;
             }
@@ -374,12 +374,12 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         // the full parameter expected by placeHold() but should contain the
         // necessary details for determining eligibility.
         if (
-            $this->getHoldsMode() != "none"
+            $this->getHoldsMode() != 'none'
             && $this->checkCapability('placeHold', [$params ?: []])
             && isset($functionConfig['HMACKeys'])
         ) {
-            $response = ['function' => "placeHold"];
-            $response['HMACKeys'] = explode(":", $functionConfig['HMACKeys']);
+            $response = ['function' => 'placeHold'];
+            $response['HMACKeys'] = explode(':', $functionConfig['HMACKeys']);
             if (isset($functionConfig['defaultRequiredDate'])) {
                 $response['defaultRequiredDate']
                     = $functionConfig['defaultRequiredDate'];
@@ -405,7 +405,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         } else {
             $id = $params['id'] ?? null;
             if ($this->checkCapability('getHoldLink', [$id, []])) {
-                $response = ['function' => "getHoldLink"];
+                $response = ['function' => 'getHoldLink'];
             }
         }
         return $response;
@@ -438,13 +438,13 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             && $this->config->cancel_holds_enabled == true
             && $this->checkCapability('cancelHolds', [$params ?: []])
         ) {
-            $response = ['function' => "cancelHolds"];
+            $response = ['function' => 'cancelHolds'];
         } elseif (
             isset($this->config->cancel_holds_enabled)
             && $this->config->cancel_holds_enabled == true
             && $this->checkCapability('getCancelHoldLink', [$params ?: []])
         ) {
-            $response = ['function' => "getCancelHoldLink"];
+            $response = ['function' => 'getCancelHoldLink'];
         }
         return $response;
     }
@@ -475,13 +475,13 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             && $this->config->renewals_enabled == true
             && $this->checkCapability('renewMyItems', [$params ?: []])
         ) {
-            $response = ['function' => "renewMyItems"];
+            $response = ['function' => 'renewMyItems'];
         } elseif (
             isset($this->config->renewals_enabled)
             && $this->config->renewals_enabled == true
             && $this->checkCapability('renewMyItemsLink', [$params ?: []])
         ) {
-            $response = ['function' => "renewMyItemsLink"];
+            $response = ['function' => 'renewMyItemsLink'];
         }
         return $response;
     }

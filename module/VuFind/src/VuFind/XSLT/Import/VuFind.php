@@ -203,7 +203,7 @@ class VuFind
     public static function getApertureCommand(
         $input,
         $output,
-        $method = "webcrawler"
+        $method = 'webcrawler'
     ) {
         // get the path to our sh/bat from the config
         $settings = static::getConfig('fulltext');
@@ -213,7 +213,7 @@ class VuFind
         $cmd = $settings->Aperture->webcrawler;
 
         // if we're using another method - substitute that into the path
-        $cmd = ($method != "webcrawler")
+        $cmd = ($method != 'webcrawler')
             ? str_replace('webcrawler', $method, $cmd) : $cmd;
 
         // return the full command
@@ -244,7 +244,7 @@ class VuFind
      *
      * @return string        text contents of file.
      */
-    public static function harvestWithAperture($url, $method = "webcrawler")
+    public static function harvestWithAperture($url, $method = 'webcrawler')
     {
         // Build a filename for temporary XML storage:
         $xmlFile = tempnam('/tmp', 'apt');
@@ -314,7 +314,7 @@ class VuFind
      *
      * @return string     text contents of file.
      */
-    public static function harvestWithTika($url, $arg = "--text")
+    public static function harvestWithTika($url, $arg = '--text')
     {
         // Build a filename for temporary XML storage:
         $outputFile = tempnam('/tmp', 'tika');
