@@ -610,9 +610,9 @@ class Backend extends AbstractBackend implements
             || strstr($error, 'couldn\'t find a browse index')
         ) {
             throw new RemoteErrorException(
-                "Alphabetic Browse index missing.  See " .
-                "https://vufind.org/wiki/indexing:alphabetical_heading_browse for " .
-                "details on generating the index.",
+                'Alphabetic Browse index missing.  See ' .
+                'https://vufind.org/wiki/indexing:alphabetical_heading_browse for ' .
+                'details on generating the index.',
                 $e->getCode(),
                 $e->getResponse(),
                 $e->getPrevious()

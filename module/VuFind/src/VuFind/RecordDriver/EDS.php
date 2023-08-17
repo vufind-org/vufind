@@ -510,7 +510,7 @@ class EDS extends DefaultRecord
             "/\b(https?):\/\/([-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|]*)\b/i",
             function ($matches) {
                 return "<a href='" . $matches[0] . "'>"
-                    . htmlentities($matches[0]) . "</a>";
+                    . htmlentities($matches[0]) . '</a>';
             },
             $string
         );
@@ -575,7 +575,7 @@ class EDS extends DefaultRecord
         ];
 
         //  The XML data is escaped, let's unescape html entities (e.g. &lt; => <)
-        $data = html_entity_decode($data, ENT_QUOTES, "utf-8");
+        $data = html_entity_decode($data, ENT_QUOTES, 'utf-8');
 
         // Start parsing the xml data
         if (!empty($data)) {

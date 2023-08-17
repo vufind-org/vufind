@@ -49,7 +49,7 @@
       if (!empty($summInCollection)): ?>
         <?php foreach ($summInCollection as $collId => $collText): ?>
           <div>
-            <b><?=$this->transEsc("in_collection_label")?></b>
+            <b><?=$this->transEsc('in_collection_label')?></b>
             <a class="collectionLinkText" href="<?=$this->url('collection', ['id' => $collId])?>?recordID=<?=urlencode($this->driver->getUniqueID())?>">
               <?=$this->escapeHtml($collText)?>
             </a>

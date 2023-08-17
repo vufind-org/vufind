@@ -65,8 +65,8 @@ class VersionsTest extends \PHPUnit\Framework\TestCase
         $obj->setRecordDriver($recordDriver);
         $translator = $this->getMockTranslator(
             [
-                "default" => [
-                    "other_versions_title" => "Count:%%count%%",
+                'default' => [
+                    'other_versions_title' => 'Count:%%count%%',
                 ],
             ]
         );

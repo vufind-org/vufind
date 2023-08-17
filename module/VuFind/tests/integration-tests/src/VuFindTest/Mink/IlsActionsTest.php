@@ -197,7 +197,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Test that control becomes active if we click a checkbox (but don't
         // actually cancel anything yet).
-        $this->clickCss($page, "#checkbox_testsample1");
+        $this->clickCss($page, '#checkbox_testsample1');
         $this->clickCss($page, '#cancelSelected');
         $this->clickButtonGroupLink($page, 'No');
         $this->assertEquals(
@@ -340,12 +340,12 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, 'input.btn.btn-primary');
 
         // Confirm that login form is disabled:
-        $this->unFindCss($page, "#profile_cat_username");
+        $this->unFindCss($page, '#profile_cat_username');
         $this->assertEquals(
-            "Connection to the library management system failed. "
-            . "Information related to your library account cannot be displayed. "
-            . "If the problem persists, please contact your library.",
-            $this->findCss($page, "div.alert-warning")->getText()
+            'Connection to the library management system failed. '
+            . 'Information related to your library account cannot be displayed. '
+            . 'If the problem persists, please contact your library.',
+            $this->findCss($page, 'div.alert-warning')->getText()
         );
 
         // Clean up the user account so we can sign up again in the next test:

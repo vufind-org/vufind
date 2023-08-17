@@ -84,11 +84,11 @@ class PubDateVisAjax implements RecommendInterface
 
         // Parse the additional settings:
         $params = explode(':', $settings);
-        if ($params[0] == "true" || $params[0] == "false") {
+        if ($params[0] == 'true' || $params[0] == 'false') {
             $this->zooming = $params[0];
             $this->dateFacets = array_slice($params, 1);
         } else {
-            $this->zooming = "false";
+            $this->zooming = 'false';
             $this->dateFacets = $params;
         }
     }

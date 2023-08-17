@@ -93,9 +93,9 @@
           </div>
         <?php elseif ($avail = $this->driver->getOverdriveAvailability()): ?>
           <div class="availability">
-            <div class='copies'><strong><?= $this->transEsc("od_avail_total")?></strong> <?=$avail->copiesOwned ?></div>
-            <div class='avail'><strong><?= $this->transEsc("od_avail_avail")?></strong> <?=$avail->copiesAvailable ?></div>
-            <div class='holds'><strong><?= $this->transEsc("od_avail_holds")?></strong> <?=$avail->numberOfHolds ?></div>
+            <div class='copies'><strong><?= $this->transEsc('od_avail_total')?></strong> <?=$avail->copiesOwned ?></div>
+            <div class='avail'><strong><?= $this->transEsc('od_avail_avail')?></strong> <?=$avail->copiesAvailable ?></div>
+            <div class='holds'><strong><?= $this->transEsc('od_avail_holds')?></strong> <?=$avail->numberOfHolds ?></div>
           </div>
         <?php endif; ?>
       </div>
@@ -159,7 +159,7 @@
         <?php endif; ?>
         <?php /* Saved lists */ ?>
         <div class="savedLists">
-          <strong><?=$this->transEsc("Saved in")?>:</strong>
+          <strong><?=$this->transEsc('Saved in')?>:</strong>
         </div>
       <?php endif; ?>
 

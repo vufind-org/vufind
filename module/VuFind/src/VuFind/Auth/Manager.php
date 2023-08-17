@@ -677,7 +677,7 @@ class Manager implements
         ) {
             if (!$this->csrf->isValid($request->getPost()->get('csrf'))) {
                 $this->getAuth()->resetState();
-                $this->logWarning("Invalid CSRF token passed to login");
+                $this->logWarning('Invalid CSRF token passed to login');
                 throw new AuthException('authentication_error_technical');
             } else {
                 // After successful token verification, clear list to shrink session:
@@ -793,7 +793,7 @@ class Manager implements
     {
         $auth = $this->getAuth();
         if (!$auth->supportsConnectingLibraryCard()) {
-            throw new \Exception("Connecting of library cards is not supported");
+            throw new \Exception('Connecting of library cards is not supported');
         }
         $auth->connectLibraryCard($request, $user);
     }

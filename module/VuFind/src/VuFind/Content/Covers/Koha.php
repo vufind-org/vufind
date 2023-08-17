@@ -87,7 +87,7 @@ class Koha extends \VuFind\Content\AbstractCover
         }
         $url = $this->url . '?';
         if (in_array($size, $this->thumbnailSizes)) {
-            $url .= "thumbnail=1&";
+            $url .= 'thumbnail=1&';
         }
         $url .= 'biblionumber=' . urlencode($ids['recordid']);
         return $url;
