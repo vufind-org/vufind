@@ -256,7 +256,7 @@ class Tags extends Gateway
                             ? 'tag' : new Expression('lower(tag)'),
                         'cnt' => new Expression(
                             'COUNT(DISTINCT(?))',
-                            ["rt.user_id"],
+                            ['rt.user_id'],
                             [Expression::TYPE_IDENTIFIER]
                         ),
                     ]

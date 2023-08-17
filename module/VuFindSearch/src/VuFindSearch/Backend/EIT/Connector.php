@@ -174,7 +174,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         $dbs = explode(',', $this->dbs);
         $dblist = '';
         foreach ($dbs as $db) {
-            $dblist .= "&db=" . $db;
+            $dblist .= '&db=' . $db;
         }
 
         $this->debug(
@@ -202,7 +202,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      */
     public function getRecord($id, ParamBag $params = null)
     {
-        $query = "AN " . $id;
+        $query = 'AN ' . $id;
         $params = $params ?: new ParamBag();
         $params->set('prof', $this->prof);
         $params->set('pwd', $this->pwd);

@@ -555,7 +555,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     public function getQrCode(
         $context,
         $extra = [],
-        $level = "L",
+        $level = 'L',
         $size = 3,
         $margin = 4
     ) {
@@ -564,8 +564,8 @@ class Record extends \Laminas\View\Helper\AbstractHelper
         }
 
         switch ($context) {
-            case "core":
-            case "results":
+            case 'core':
+            case 'results':
                 $key = 'showIn' . ucwords(strtolower($context));
                 break;
             default:
@@ -579,7 +579,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
             return false;
         }
 
-        $template = $context . "-qrcode.phtml";
+        $template = $context . '-qrcode.phtml';
 
         // Try to build text:
         $text = $this->renderTemplate(
@@ -587,7 +587,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
             $extra + ['driver' => $this->driver]
         );
         $qrcode = [
-            "text" => $text, 'level' => $level, 'size' => $size, 'margin' => $margin,
+            'text' => $text, 'level' => $level, 'size' => $size, 'margin' => $margin,
         ];
 
         $urlHelper = $this->getView()->plugin('url');

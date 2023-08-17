@@ -204,13 +204,13 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
 
         if ($availability) {
             // Extra items, check both:
-            $location = $this->findCss($page, ".result-body .fullLocation");
+            $location = $this->findCss($page, '.result-body .fullLocation');
             $this->assertEquals('Test Location', $location->getText());
-            $location = $this->findCss($page, ".result-body .fullLocation", null, 1);
+            $location = $this->findCss($page, '.result-body .fullLocation', null, 1);
             $this->assertEquals('Main Library', $location->getText());
         } else {
             // No extra items to care for:
-            $location = $this->findCss($page, ".result-body .fullLocation");
+            $location = $this->findCss($page, '.result-body .fullLocation');
             $this->assertEquals('Main Library', $location->getText());
         }
     }
@@ -377,7 +377,7 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
         $session = $this->getMinkSession();
         $session->visit(
             $this->getVuFindUrl() . '/Search/Results?lookfor='
-            . urlencode("id:(testsample1)")
+            . urlencode('id:(testsample1)')
         );
         $page = $session->getPage();
         $this->waitForPageLoad($page);

@@ -467,7 +467,7 @@ class InstallCommand extends Command
             . "changes.\nIf you do not plan to customize the code, you can "
             . "skip this step.\nIf you decide to use a custom module, the name "
             . "you choose will be used for\nthe module's directory name and its "
-            . "PHP namespace."
+            . 'PHP namespace.'
         );
         while (true) {
             $moduleInput = trim(
@@ -499,11 +499,11 @@ class InstallCommand extends Command
         $output->writeln(
             "\nWhen running multiple VuFind sites against a single installation, you"
             . " need\nto decide how to distinguish between instances. Choose an "
-            . "option:\n\n" . self::MULTISITE_DIR_BASED . ".) Directory-based "
+            . "option:\n\n" . self::MULTISITE_DIR_BASED . '.) Directory-based '
             . "(i.e. http://server/vufind1 vs. http://server/vufind2)\n"
             . self::MULTISITE_HOST_BASED
-            . ".) Host-based (i.e. http://vufind1.server vs. http://vufind2.server)"
-            . "\n\nor enter " . self::MULTISITE_NONE . " to disable multisite mode."
+            . '.) Host-based (i.e. http://vufind1.server vs. http://vufind2.server)'
+            . "\n\nor enter " . self::MULTISITE_NONE . ' to disable multisite mode.'
         );
         $legal = [
             self::MULTISITE_NONE,
@@ -519,7 +519,7 @@ class InstallCommand extends Command
             if (is_numeric($response) && in_array(intval($response), $legal)) {
                 return intval($response);
             }
-            $output->writeln("Invalid selection.");
+            $output->writeln('Invalid selection.');
         }
     }
 
@@ -633,7 +633,7 @@ class InstallCommand extends Command
         }
         if (!empty($this->module)) {
             $config = str_replace(
-                "#SetEnv VUFIND_LOCAL_MODULES VuFindLocalTemplate",
+                '#SetEnv VUFIND_LOCAL_MODULES VuFindLocalTemplate',
                 "SetEnv VUFIND_LOCAL_MODULES {$this->module}",
                 $config
             );
@@ -662,7 +662,7 @@ class InstallCommand extends Command
         }
 
         $target = $this->overrideDir . '/httpd-vufind.conf';
-        if (($msg = $this->backUpFile($output, $target, "Apache configuration")) !== true) {
+        if (($msg = $this->backUpFile($output, $target, 'Apache configuration')) !== true) {
             return $msg;
         }
         return $this->writeFileToDisk($target, $config)
@@ -699,7 +699,7 @@ class InstallCommand extends Command
     protected function buildUnixEnvironment($output)
     {
         $filename = $this->baseDir . '/env.sh';
-        if (($msg = $this->backUpFile($output, $filename, "Unix environment file")) !== true) {
+        if (($msg = $this->backUpFile($output, $filename, 'Unix environment file')) !== true) {
             return $msg;
         }
         $env = '';
@@ -721,7 +721,7 @@ class InstallCommand extends Command
     protected function buildWindowsConfig($output)
     {
         $filename = $this->baseDir . '/env.bat';
-        if (($msg = $this->backUpFile($output, $filename, "Windows environment file")) !== true) {
+        if (($msg = $this->backUpFile($output, $filename, 'Windows environment file')) !== true) {
             return $msg;
         }
         $batch = '';
@@ -892,20 +892,20 @@ class InstallCommand extends Command
         $this->getApacheLocation($output);
         if (!empty($this->host)) {
             $output->writeln(
-                "Since you are using a host-based multisite configuration, you will "
+                'Since you are using a host-based multisite configuration, you will '
                 . "also \nneed to do some virtual host configuration. See\n"
                 . "     http://httpd.apache.org/docs/2.4/vhosts/\n"
             );
         }
         if ('/' == $this->basePath) {
             $output->writeln(
-                "Since you are installing VuFind at the root of your domain, you "
+                'Since you are installing VuFind at the root of your domain, you '
                 . "will also\nneed to edit your Apache configuration to change "
                 . "DocumentRoot to:\n" . $this->baseDir . "/public\n"
             );
         }
         $output->writeln(
-            "Once the configuration is linked, restart Apache. You should now be "
+            'Once the configuration is linked, restart Apache. You should now be '
             . "able\nto access VuFind at http://localhost{$this->basePath}\n\nFor "
             . "proper use of command line tools, you should also ensure that your\n"
         );

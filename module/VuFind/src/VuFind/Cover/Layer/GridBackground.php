@@ -120,7 +120,7 @@ class GridBackground extends AbstractBackgroundLayer
             $u = $k % 2 ? $boxWidth : -$boxWidth;
             $v = $k / 2 < 1 ? $boxHeight : -$boxHeight;
             for ($i = 0; $i < 16; $i++) {
-                if ($bc[$i] == "1") {
+                if ($bc[$i] == '1') {
                     imagefilledrectangle(
                         $im,
                         $x,

@@ -167,10 +167,10 @@
               <?php else: ?>
                 <strong><?=$this->transEsc('Due Date')?>: <?=$this->escapeHtml($ilsDetails['duedate'])?><?php if (isset($ilsDetails['dueTime'])): ?> <?=$this->escapeHtml($ilsDetails['dueTime'])?><?php endif; ?></strong>
                 <?php if ($showStatus): ?>
-                  <?php if (isset($ilsDetails['dueStatus']) && $ilsDetails['dueStatus'] == "overdue"): ?>
-                    <div class="alert alert-danger"><?=$this->transEsc("renew_item_overdue")?></div>
-                  <?php elseif (isset($ilsDetails['dueStatus']) && $ilsDetails['dueStatus'] == "due"): ?>
-                    <div class="alert alert-info"><?=$this->transEsc("renew_item_due")?></div>
+                  <?php if (isset($ilsDetails['dueStatus']) && $ilsDetails['dueStatus'] == 'overdue'): ?>
+                    <div class="alert alert-danger"><?=$this->transEsc('renew_item_overdue')?></div>
+                  <?php elseif (isset($ilsDetails['dueStatus']) && $ilsDetails['dueStatus'] == 'due'): ?>
+                    <div class="alert alert-info"><?=$this->transEsc('renew_item_due')?></div>
                   <?php endif; ?>
                 <?php endif; ?>
               <?php endif; ?>
@@ -198,7 +198,7 @@
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-  <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'checkedout'])?>
+  <?=$this->context($this)->renderInContext('myresearch/menu.phtml', ['active' => 'checkedout'])?>
 </div>
 
 <?=$this->render('myresearch/notify-account-status.phtml', ['method' => 'checkedOut', 'accountStatus' => $this->accountStatus]); ?>

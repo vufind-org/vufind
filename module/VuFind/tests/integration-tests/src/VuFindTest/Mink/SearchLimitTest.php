@@ -64,7 +64,7 @@ class SearchLimitTest extends \VuFindTest\Integration\MinkTestCase
     protected function setUpLimitedSearch(
         string $limitParam,
         string $options = null,
-        string $default = "20"
+        string $default = '20'
     ): Element {
         $config = ['default_limit' => $default, 'limit_options' => $options];
         $this->changeConfigs(['searches' => ['General' => $config]]);
@@ -162,12 +162,12 @@ class SearchLimitTest extends \VuFindTest\Integration\MinkTestCase
     public function testCustomLimits(): void
     {
         // Test that non-default value gets selected:
-        $page = $this->setUpLimitedSearch("9", "3,6,9", "6");
+        $page = $this->setUpLimitedSearch('9', '3,6,9', '6');
         $this->assertResultSize($page, 9);
         $this->assertLimitControl($page, [3, 6, 9], 9);
 
         // Test that default is used for empty setting:
-        $page = $this->setUpLimitedSearch("", "3,6,9", "6");
+        $page = $this->setUpLimitedSearch('', '3,6,9', '6');
         $this->assertResultSize($page, 6);
         $this->assertLimitControl($page, [3, 6, 9], 6);
     }
@@ -182,14 +182,14 @@ class SearchLimitTest extends \VuFindTest\Integration\MinkTestCase
         // If we request 40 items when only 3/6/9 are supported and default is 6,
         // we should get 6 results. VuFind blocks limits that are higher than the
         // highest supported value.
-        $page = $this->setUpLimitedSearch("40", "3,6,9", "6");
+        $page = $this->setUpLimitedSearch('40', '3,6,9', '6');
         $this->assertResultSize($page, 6);
         $this->assertLimitControl($page, [3, 6, 9], 6);
 
         // If we request 4 items when only 3/6/9 are supported and default is 6,
         // we should get 4 results. VuFind allows non-standard limits that are lower
         // than the highest supported value.
-        $page = $this->setUpLimitedSearch("4", "3,6,9", "6");
+        $page = $this->setUpLimitedSearch('4', '3,6,9', '6');
         $this->assertResultSize($page, 4);
         $this->assertLimitControl($page, [3, 6, 9], 3);
     }
@@ -202,12 +202,12 @@ class SearchLimitTest extends \VuFindTest\Integration\MinkTestCase
     public function testNonNumericLimitValues(): void
     {
         // Characters at end of number should get ignored:
-        $page = $this->setUpLimitedSearch("9%27A=0", "3,6,9", "6");
+        $page = $this->setUpLimitedSearch('9%27A=0', '3,6,9', '6');
         $this->assertResultSize($page, 9);
         $this->assertLimitControl($page, [3, 6, 9], 9);
 
         // Entirely nonsensical limit should give default value:
-        $page = $this->setUpLimitedSearch("GARBAGE", "3,6,9", "6");
+        $page = $this->setUpLimitedSearch('GARBAGE', '3,6,9', '6');
         $this->assertResultSize($page, 6);
         $this->assertLimitControl($page, [3, 6, 9], 6);
     }

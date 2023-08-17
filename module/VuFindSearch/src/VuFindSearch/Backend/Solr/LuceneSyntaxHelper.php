@@ -126,7 +126,7 @@ class LuceneSyntaxHelper
     {
         $rangeReg = self::SOLR_RANGE_RE;
         if (!$this->caseSensitiveRanges) {
-            $rangeReg .= "i";
+            $rangeReg .= 'i';
         }
         return preg_match($rangeReg, $searchString) ? true : false;
     }
@@ -606,13 +606,13 @@ class LuceneSyntaxHelper
         if (
             $this->caseSensitiveBooleans === false
             || $this->caseSensitiveBooleans === 0
-            || $this->caseSensitiveBooleans === "0"
+            || $this->caseSensitiveBooleans === '0'
         ) {
             return $this->allBools;
         } elseif (
             $this->caseSensitiveBooleans === true
             || $this->caseSensitiveBooleans === 1
-            || $this->caseSensitiveBooleans === "1"
+            || $this->caseSensitiveBooleans === '1'
         ) {
             return [];
         }

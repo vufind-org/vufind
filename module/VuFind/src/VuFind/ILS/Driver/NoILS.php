@@ -137,7 +137,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
     public function getStatus($id)
     {
         $useStatus = $this->config['settings']['useStatus'] ?? 'none';
-        if ($useStatus == "custom") {
+        if ($useStatus == 'custom') {
             $status = $this->translate($this->config['Status']['status']);
             return [
                 [
@@ -156,7 +156,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
                     ),
                 ],
             ];
-        } elseif ($useStatus == "marc") {
+        } elseif ($useStatus == 'marc') {
             // Retrieve record from index:
             $recordDriver = $this->getSolrRecord($id);
             return $this->getFormattedMarcDetails($recordDriver, 'MarcStatus');
@@ -178,7 +178,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
     public function getStatuses($idList)
     {
         $useStatus = $this->config['settings']['useStatus'] ?? 'none';
-        if ($useStatus == "custom" || $useStatus == "marc") {
+        if ($useStatus == 'custom' || $useStatus == 'marc') {
             $status = [];
             foreach ($idList as $id) {
                 $status[] = $this->getStatus($id);
@@ -209,7 +209,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
     {
         $useHoldings = $this->config['settings']['useHoldings'] ?? 'none';
 
-        if ($useHoldings == "custom") {
+        if ($useHoldings == 'custom') {
             return [
                 [
                     'id' => $id,
@@ -234,7 +234,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
                     'summary' => $this->config['Holdings']['summary'] ?? [],
                 ],
             ];
-        } elseif ($useHoldings == "marc") {
+        } elseif ($useHoldings == 'marc') {
             // Retrieve record from index:
             $recordDriver = $this->getSolrRecord($id);
             return $this->getFormattedMarcDetails($recordDriver, 'MarcHoldings');

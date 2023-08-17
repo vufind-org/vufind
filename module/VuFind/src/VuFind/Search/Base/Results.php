@@ -520,7 +520,7 @@ abstract class Results
     protected function startQueryTimer()
     {
         // Get time before the query
-        $time = explode(" ", microtime());
+        $time = explode(' ', microtime());
         $this->queryStartTime = $time[1] + $time[0];
     }
 
@@ -532,7 +532,7 @@ abstract class Results
      */
     protected function stopQueryTimer()
     {
-        $time = explode(" ", microtime());
+        $time = explode(' ', microtime());
         $this->queryEndTime = $time[1] + $time[0];
         $this->queryTime = $this->queryEndTime - $this->queryStartTime;
     }

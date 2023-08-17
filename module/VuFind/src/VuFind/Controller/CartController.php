@@ -170,9 +170,9 @@ class CartController extends AbstractBase
             } else {
                 $addItems = $this->getCart()->addItems($ids);
                 if (!$addItems['success']) {
-                    $msg = $this->translate('bookbag_full_msg') . ". "
-                        . $addItems['notAdded'] . " "
-                        . $this->translate('items_already_in_bookbag') . ".";
+                    $msg = $this->translate('bookbag_full_msg') . '. '
+                        . $addItems['notAdded'] . ' '
+                        . $this->translate('items_already_in_bookbag') . '.';
                     $this->flashMessenger()->addMessage($msg, 'info');
                 }
             }
