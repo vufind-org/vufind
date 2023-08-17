@@ -444,6 +444,7 @@ $config = [
             'VuFind\Record\FallbackLoader\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Record\Loader' => 'VuFind\Record\LoaderFactory',
             'VuFind\Record\Router' => 'VuFind\Service\ServiceWithConfigIniFactory',
+            'VuFind\Record\VersionsHelper' => 'VuFind\Record\VersionsHelperFactory',
             'VuFind\RecordDriver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\RecordTab\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\RecordTab\TabManager' => 'VuFind\RecordTab\TabManagerFactory',
