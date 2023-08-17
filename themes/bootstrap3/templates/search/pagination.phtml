@@ -1,6 +1,15 @@
 <?php if ($this->pageCount): ?>
   <nav aria-label="<?=$this->transEscAttr('pagination_label')?>">
-    <ul class="pagination<?=$this->results->getOptions()->loadResultsWithJsEnabled() ? ' js-pagination' : ''?>">
+    <?php
+      $ulAttrs = $this->htmlAttributes(['class' => 'pagination']);
+      if ($className = $this->options['className'] ?? '') {
+        $ulAttrs->add('class', $className);
+      }
+      if ($this->results->getOptions()->loadResultsWithJsEnabled()) {
+        $ulAttrs->add('class', 'js-pagination');
+      }
+    ?>
+    <ul<?=$ulAttrs?>>
       <?php if (isset($this->previous)): ?>
         <?php if (!isset($this->options['disableFirst']) || !$this->options['disableFirst']): ?>
           <li role="none">
