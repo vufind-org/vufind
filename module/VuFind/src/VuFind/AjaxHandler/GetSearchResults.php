@@ -250,6 +250,14 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
      */
     protected function getElements(Params $params, Results $results): array
     {
+        if ($params->fromQuery('searchType', '') === 'versions') {
+            // Customize the URL helper to make sure it builds proper versions URLs
+            $results->getUrlQuery()
+                ->setDefaultParameter('id', $params->fromQuery('id'))
+                ->setDefaultParameter('keys', $params->fromQuery('keys'))
+                ->setSuppressQuery(true);
+        }
+
         $result = [];
         foreach ($this->elements as $selector => $element) {
             $html = call_user_func([$this, $element['method']], $params, $results);
