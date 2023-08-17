@@ -50,23 +50,16 @@ trait RecordVersionsSearchTrait
     {
         $versionsHelper
             = $this->serviceLocator->get(\VuFind\Record\VersionsHelper::class);
-        $driverAndKeys = $versionsHelper->getDriverAndWorkKeysFromParams(
+        $keyData = $versionsHelper->getIdDriverAndWorkKeysFromParams(
             $this->params()->fromQuery(),
             $this->searchClassId
         );
-        $record = $driverAndKeys['driver'];
-        if ($record instanceof \VuFind\RecordDriver\Missing) {
-            $record = null;
-        }
-
-        if (empty($driverAndKeys['keys'])) {
+        if (empty($keyData['keys'])) {
             return $this->forwardTo('Search', 'Home');
         }
 
         $query = $this->getRequest()->getQuery();
-        $query->lookfor = $versionsHelper->getSearchStringFromWorkKeys(
-            (array)$driverAndKeys['keys']
-        );
+        $query->lookfor = $versionsHelper->getSearchStringFromWorkKeys($keyData['keys']);
         $query->type = $versionsHelper->getWorkKeysSearchType();
 
         // Don't save to history -- history page doesn't handle correctly:
@@ -85,15 +78,15 @@ trait RecordVersionsSearchTrait
 
         $view = $this->getSearchResultsView($callback);
 
-        // Customize the URL helper to make sure it builds proper versions URLs
-        // (but only do this if we have access to a results object, which we
-        // won't in RSS mode):
         if (isset($view->results)) {
+            // Customize the URL helper to make sure it builds proper versions URLs
+            // (but only do this if we have access to a results object, which we
+            // won't in RSS mode):
             $view->results->getUrlQuery()
-                ->setDefaultParameter('id', $this->params()->fromQuery('id'))
-                ->setDefaultParameter('keys', $this->params()->fromQuery('keys'))
+                ->setDefaultParameter('id', $keyData['id'])
+                ->setDefaultParameter('keys', $keyData['keys'])
                 ->setSuppressQuery(true);
-            $view->driver = $record;
+            $view->driver = $keyData['driver'];
         }
 
         return $view;
