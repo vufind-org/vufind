@@ -275,7 +275,7 @@ class Backend extends AbstractBackend
                     break;
             }
         } catch (Exception $e) {
-            $this->debugPrint("Exception found: " . $e->getMessage());
+            $this->debugPrint('Exception found: ' . $e->getMessage());
             throw new BackendException($e->getMessage(), $e->getCode(), $e);
         }
         $collection = $this->createRecordCollection($response);

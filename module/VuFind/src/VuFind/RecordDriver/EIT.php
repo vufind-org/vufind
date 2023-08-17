@@ -438,7 +438,7 @@ class EIT extends DefaultRecord
     protected function getCoinsID()
     {
         // Added at Richard and Leslie's request, to facilitate ILL
-        return parent::getCoinsID() . ".ebsco";
+        return parent::getCoinsID() . '.ebsco';
     }
 
     /**

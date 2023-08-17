@@ -7,42 +7,42 @@ $rec_id = $this->driver->getUniqueID();
 $hold_url = $this->url('overdrive-hold');
 
 $this->previewOverride = false;
-$notification = "";
+$notification = '';
 $message = false;
-$alert_level = "";
+$alert_level = '';
 $button = false;
 $button2 = false;
 
 //if we didn't get availability, we can't show the proper action buttons
 if ($avail->code == 'od_code_login_for_avail') {
     $message = $this->transEsc('od_code_login_for_avail');
-    $alert_level = "info";
+    $alert_level = 'info';
 } elseif ($avail->code == 'od_account_noaccess') {
     $message = $this->transEsc('od_code_contentnotavail');
-    $alert_level = "info";
+    $alert_level = 'info';
 } elseif ($avail->data) {
     $checkedOut = $isOnHold = false;
     $checkedOutResult = $this->driver->isCheckedOut();
     if (!$checkedOutResult->status && $user) {
         if ($checkedOutResult->code == 'od_account_noaccess') {
-            $message = $this->translate("od_code_contentnotavail");
-            $alert_level = "warning";
+            $message = $this->translate('od_code_contentnotavail');
+            $alert_level = 'warning';
         } elseif ($checkedOutResult->code == 'od_account_problem') {
-            $link = "<a href=\"" . $this->url(
+            $link = '<a href="' . $this->url(
                 'overdrive-mycontent',
                 [],
                 ['query' => ['redirect' => 0]]
-            ) . "\">" . $this->transEsc("Your Account") . "</a>";
+            ) . '">' . $this->transEsc('Your Account') . '</a>';
             $message = $this->translate(
-                "od_account_problem",
-                ["%%message%%" => $message]
+                'od_account_problem',
+                ['%%message%%' => $message]
             );
-            $alert_level = "warning";
+            $alert_level = 'warning';
         } else {
             //if the result of the check is false and the user is logged in, that
             //probably means that there was a connection failure
-            $message = $this->transEsc("od_code_connection_failed");
-            $alert_level = "warning";
+            $message = $this->transEsc('od_code_connection_failed');
+            $alert_level = 'warning';
 
         }
     } else {
@@ -54,50 +54,50 @@ if ($avail->code == 'od_code_login_for_avail') {
         //this title is checked out
         if ($checkedOut) {
             $message = $this->transEsc(
-                "od_is_checkedout",
-                ["%%due_date%%" => $checkedOut->expires]
+                'od_is_checkedout',
+                ['%%due_date%%' => $checkedOut->expires]
             );
-            $alert_level = "info";
+            $alert_level = 'info';
 
             if ($checkedOut->isReturnable) {
                 //early return button
                 $button = new stdClass();
-                $button->class = "returnTitle";
+                $button->class = 'returnTitle';
                 $button->url = "$hold_url?od_id=$od_id&rec_id=$rec_id&action=returnTitleConfirm";
-                $button->icon = "overdrive-return";
+                $button->icon = 'overdrive-return';
                 $button->text = $this->transEsc('od_but_return');
             }
 
             //download button
             $button2 = new stdClass();
-            $button2->class = "getTitle";
+            $button2->class = 'getTitle';
             $button2->url = "$hold_url?od_id=$od_id&rec_id=$rec_id&action=getTitleConfirm";
-            $button2->icon = "overdrive-download";
+            $button2->icon = 'overdrive-download';
             $button2->text = $this->transEsc('od_but_gettitle');
         } elseif ($hold) {
             //this title is on hold
             $message = $this->transEsc('od_is_on_hold');
-            $alert_level = "info";
+            $alert_level = 'info';
 
             if ($hold->holdReadyForCheckout) {
                 $message .= $this->transEsc(
-                    "od_hold_now_avail",
-                    ["%%expireDate%%" => $hold->holdExpires]
+                    'od_hold_now_avail',
+                    ['%%expireDate%%' => $hold->holdExpires]
                 );
             } else {
                 $message .= $this->transEsc(
-                    "od_hold_queue",
+                    'od_hold_queue',
                     [
-                        "%%holdPosition%%" => $hold->holdListPosition,
-                        "%%numberOfHolds%%" => $hold->numberOfHolds,
+                        '%%holdPosition%%' => $hold->holdListPosition,
+                        '%%numberOfHolds%%' => $hold->numberOfHolds,
                     ]
                 );
             }
 
             $button = new stdClass();
-            $button->class = "cancelHold";
+            $button->class = 'cancelHold';
             $button->url = "$hold_url?od_id=$od_id&rec_id=$rec_id&action=cancelHoldConfirm";
-            $button->icon = "overdrive-cancel-hold";
+            $button->icon = 'overdrive-cancel-hold';
             $button->text = $this->transEsc('od_but_cancel_hold');
         } else {
             //user does not already have it on hold or checked out.
@@ -106,16 +106,16 @@ if ($avail->code == 'od_code_login_for_avail') {
             if ($avail->data->copiesAvailable) {
                 //Checkout button
                 $button = new stdClass();
-                $button->class = "checkout";
+                $button->class = 'checkout';
                 $button->url = "$hold_url?od_id=$od_id&rec_id=$rec_id&action=checkoutConfirm";
-                $button->icon = "overdrive-checkout";
+                $button->icon = 'overdrive-checkout';
                 $button->text = $this->transEsc('od_but_checkout');
             } else {
                 //Place a request button
                 $button = new stdClass();
-                $button->class = "placehold";
+                $button->class = 'placehold';
                 $button->url = "$hold_url?od_id=$od_id&rec_id=$rec_id&action=holdConfirm";
-                $button->icon = "overdrive-place-hold";
+                $button->icon = 'overdrive-place-hold';
                 $button->text = $this->transEsc('od_but_hold');
             }
         }  //end if checked out
@@ -156,9 +156,9 @@ if ($avail->code == 'od_code_login_for_avail') {
            <img  src=\"https://developerportaldev.blob.core.windows.net/media/Default/images/newLogos/OverDrive_Logo_42x42_rgb.jpg\">
          </div>
 
-         <div class=\"copies\"><strong>{$this->transEsc("od_avail_total")}</strong> {$avail->data->copiesOwned}</div>
-         <div class=\"avail\"><strong>{$this->transEsc("od_avail_avail")}</strong> {$avail->data->copiesAvailable}</div>
-         <div class=\"holds\"><strong>{$this->transEsc("od_avail_holds")}</strong> {$avail->data->numberOfHolds}</div>
+         <div class=\"copies\"><strong>{$this->transEsc('od_avail_total')}</strong> {$avail->data->copiesOwned}</div>
+         <div class=\"avail\"><strong>{$this->transEsc('od_avail_avail')}</strong> {$avail->data->copiesAvailable}</div>
+         <div class=\"holds\"><strong>{$this->transEsc('od_avail_holds')}</strong> {$avail->data->numberOfHolds}</div>
         </div>";
 
     $this->extraControls = $extraControls;

@@ -102,7 +102,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                 'facet_counts' => [
                     'facet_fields' => [
                         'dewey-raw' => [
-                            ["000", 100],
+                            ['000', 100],
                         ],
                     ],
                 ],

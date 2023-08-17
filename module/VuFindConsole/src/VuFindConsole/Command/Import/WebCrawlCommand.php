@@ -250,7 +250,7 @@ class WebCrawlCommand extends Command
             );
         }
         if ($error) {
-            $output->writeln("Error encountered during harvest.");
+            $output->writeln('Error encountered during harvest.');
         }
 
         // Skip Solr operations if we're in test mode.

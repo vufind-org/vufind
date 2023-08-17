@@ -51,7 +51,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         $this->connector
             = $sm->get(\VuFind\DigitalContent\OverdriveConnector::class);
         parent::__construct($sm);
-        $this->debug("ODRC constructed");
+        $this->debug('ODRC constructed');
     }
 
     /**
@@ -62,7 +62,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
      */
     public function mycontentAction()
     {
-        $this->debug("ODC mycontent action");
+        $this->debug('ODC mycontent action');
         // Force login
         if (!is_array($patron = $this->catalogLogin())) {
             return $patron;
@@ -76,11 +76,11 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
         $odAccessResult = $this->connector->getAccess();
 
         if (!($odAccessResult->status ?? false)) {
-            $this->debug("result:" . print_r($odAccessResult, true));
+            $this->debug('result:' . print_r($odAccessResult, true));
             $this->flashMessenger()->addErrorMessage(
                 $this->translate(
                     $odAccessResult->code ?? 'An error has occurred',
-                    ["%%message%%" => $odAccessResult->msg ?? '']
+                    ['%%message%%' => $odAccessResult->msg ?? '']
                 )
             );
             $checkoutsUnavailable = true;
@@ -150,12 +150,12 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
      */
     public function getStatusAction()
     {
-        $this->debug("ODC getStatus action");
+        $this->debug('ODC getStatus action');
         $ids = $this->params()->fromPost(
             'id',
             $this->params()->fromQuery('id', [])
         );
-        $this->debug("ODRC availability for :" . print_r($ids, true));
+        $this->debug('ODRC availability for :' . print_r($ids, true));
         $result = $this->connector->getAvailabilityBulk($ids);
         $view = $this->createViewModel(compact('ids', 'result'));
         $view->setTemplate('RecordDriver/SolrOverdrive/status-full');
@@ -176,12 +176,12 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
      */
     public function holdAction()
     {
-        $this->debug("ODC Hold action");
+        $this->debug('ODC Hold action');
 
         if (!is_array($patron = $this->catalogLogin())) {
             return $patron;
         }
-        $this->debug("patron: " . print_r($patron, true));
+        $this->debug('patron: ' . print_r($patron, true));
 
         $od_id = $this->params()->fromQuery('od_id');
         $rec_id = $this->params()->fromQuery('rec_id');
@@ -213,72 +213,72 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
             // was loaded.
             $avail = $driver->getOverdriveAvailability();
             if ($avail->copiesAvailable > 0) {
-                $action = "checkoutConfirm";
+                $action = 'checkoutConfirm';
             } else {
-                $action = "holdConfirm";
+                $action = 'holdConfirm';
             }
         }
         $result = null;
         $actionTitleCode = '';
-        if ($action == "checkoutConfirm") {
+        if ($action == 'checkoutConfirm') {
             $result = $this->connector->getResultObject();
             // Check to make sure they don't already have this checked out.
             // Shouldn't need to refresh.
             if ($checkout = $this->connector->getCheckout($od_id, false)) {
                 $result->status = false;
                 $result->data->checkout = $checkout;
-                $result->code = "OD_CODE_ALREADY_CHECKED_OUT";
+                $result->code = 'OD_CODE_ALREADY_CHECKED_OUT';
             } elseif ($hold = $this->connector->getHold($od_id, false)) {
                 $result->status = false;
                 $result->data->hold = $hold;
-                $result->code = "OD_CODE_ALREADY_ON_HOLD";
+                $result->code = 'OD_CODE_ALREADY_ON_HOLD';
             } else {
                 $result->status = true;
             }
-            $actionTitleCode = "od_checkout";
-        } elseif ($action == "holdConfirm") {
+            $actionTitleCode = 'od_checkout';
+        } elseif ($action == 'holdConfirm') {
             $result = $this->connector->getResultObject();
             // Check to make sure they don't already have this checked out.
             // Shouldn't need to refresh.
             if ($checkout = $this->connector->getCheckout($od_id, false)) {
                 $result->status = false;
                 $result->data->checkout = $checkout;
-                $result->code = "OD_CODE_ALREADY_CHECKED_OUT";
+                $result->code = 'OD_CODE_ALREADY_CHECKED_OUT';
                 $this->debug("title already checked out: $od_id");
             } elseif ($hold = $this->connector->getHold($od_id, false)) {
                 $result->status = false;
                 $result->data->hold = $hold;
-                $result->code = "OD_CODE_ALREADY_ON_HOLD";
+                $result->code = 'OD_CODE_ALREADY_ON_HOLD';
                 $this->debug("title already on hold: $od_id");
             } else {
                 $result->status = true;
             }
-            $actionTitleCode = "od_hold";
-        } elseif ($action == "cancelHoldConfirm") {
-            $actionTitleCode = "od_cancel_hold";
-        } elseif ($action == "returnTitleConfirm") {
-            $actionTitleCode = "od_early_return";
-        } elseif ($action == "getTitleConfirm") {
+            $actionTitleCode = 'od_hold';
+        } elseif ($action == 'cancelHoldConfirm') {
+            $actionTitleCode = 'od_cancel_hold';
+        } elseif ($action == 'returnTitleConfirm') {
+            $actionTitleCode = 'od_early_return';
+        } elseif ($action == 'getTitleConfirm') {
             // Get only formats that are available...
             $formats = $driver->getAvailableDigitalFormats();
-            $actionTitleCode = "od_get_title";
-        } elseif ($action == "doCheckout") {
-            $actionTitleCode = "od_checkout";
+            $actionTitleCode = 'od_get_title';
+        } elseif ($action == 'doCheckout') {
+            $actionTitleCode = 'od_checkout';
             $result = $this->connector->doOverdriveCheckout($od_id);
-        } elseif ($action == "placeHold") {
-            $actionTitleCode = "od_hold";
+        } elseif ($action == 'placeHold') {
+            $actionTitleCode = 'od_hold';
             $email = $this->params()->fromPost('email');
             $result = $this->connector->placeOverDriveHold($od_id, $email);
-        } elseif ($action == "cancelHold") {
-            $actionTitleCode = "od_cancel_hold";
+        } elseif ($action == 'cancelHold') {
+            $actionTitleCode = 'od_cancel_hold';
             $result = $this->connector->cancelHold($od_id);
-        } elseif ($action == "returnTitle") {
-            $actionTitleCode = "od_early_return";
+        } elseif ($action == 'returnTitle') {
+            $actionTitleCode = 'od_early_return';
             $result = $this->connector->returnResource($od_id);
-        } elseif ($action == "getTitle") {
-            $actionTitleCode = "od_get_title";
+        } elseif ($action == 'getTitle') {
+            $actionTitleCode = 'od_get_title';
             $this->debug(
-                "Get Title action. Getting downloadlink using" .
+                'Get Title action. Getting downloadlink using' .
                 $this->getServerUrl('overdrive-hold')
             );
             $result = $this->connector->getDownloadLink(

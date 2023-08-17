@@ -55,10 +55,10 @@ class ApiTest extends \VuFindTest\Integration\MinkTestCase
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/api');
         $page = $session->getPage();
-        $this->clickCss($page, "#operations-Record-get_record button");
-        $this->clickCss($page, "#operations-Record-get_record .try-out button");
+        $this->clickCss($page, '#operations-Record-get_record button');
+        $this->clickCss($page, '#operations-Record-get_record .try-out button');
         $this->findCss($page, '#operations-Record-get_record input[type="text"]')->setValue($id);
-        $this->clickCss($page, "#operations-Record-get_record .execute-wrapper button");
+        $this->clickCss($page, '#operations-Record-get_record .execute-wrapper button');
         return $page;
     }
 

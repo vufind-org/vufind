@@ -758,8 +758,13 @@ ${git_status}
       <fileset dir="${localdir}/config/vufind">
         <patternset>
           <include name="*.ini" />
-          <include name="*.yaml" />
+          <include name="*.ini.bak" />
           <include name="*.json" />
+          <include name="*.json.bak" />
+          <include name="*.key" />
+          <include name="*.key.bak" />
+          <include name="*.yaml" />
+          <include name="*.yaml.bak" />
         </patternset>
       </fileset>
     </delete>

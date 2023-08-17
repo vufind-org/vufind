@@ -65,7 +65,7 @@
           <?php if (!empty($summInCollection)): ?>
             <?php foreach ($summInCollection as $collId => $collText): ?>
               <div>
-                <b><?=$this->transEsc("in_collection_label")?></b>
+                <b><?=$this->transEsc('in_collection_label')?></b>
                 <a class="collectionLinkText" href="<?=$this->record($this->driver)->getLink('collection', $collId)?>">
                   <?=$this->escapeHtml($collText)?>
                 </a>
@@ -196,7 +196,7 @@
         <?php endif; ?>
         <?php /* Saved lists */ ?>
         <div class="savedLists">
-          <strong><?=$this->transEsc("Saved in")?>:</strong>
+          <strong><?=$this->transEsc('Saved in')?>:</strong>
         </div>
       <?php endif; ?>
 

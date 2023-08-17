@@ -24,7 +24,7 @@
         <?php endif; ?>
         <?php if (isset($item['item_notes'])): ?>
           <div class="item-notes">
-            <b><?=$this->transEsc("Item Notes")?>:</b>
+            <b><?=$this->transEsc('Item Notes')?>:</b>
             <ul>
               <?php foreach ($item['item_notes'] as $item_note): ?>
                 <li><?=$this->escapeHtml($item_note) ?></li>

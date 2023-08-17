@@ -682,7 +682,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         );
         $session->wait(
             $timeout,
-            "window.__documentIsReady === true"
+            'window.__documentIsReady === true'
         );
     }
 

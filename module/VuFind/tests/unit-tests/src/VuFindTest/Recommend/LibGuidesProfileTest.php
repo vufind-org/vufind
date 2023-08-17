@@ -92,7 +92,7 @@ class LibGuidesProfileTest extends \PHPUnit\Framework\TestCase
         $this->connector = $this->getMockBuilder(LibGuides::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $accountsFixture = $this->getFixture("libguides/api/accounts");
+        $accountsFixture = $this->getFixture('libguides/api/accounts');
         $accounts = json_decode(substr($accountsFixture, strpos($accountsFixture, '[')));
         $this->connector->method('getAccounts')->willReturn($accounts);
 
