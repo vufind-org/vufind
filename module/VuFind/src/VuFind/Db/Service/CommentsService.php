@@ -71,11 +71,11 @@ class CommentsService extends AbstractService implements \VuFind\Db\Service\Serv
         if (empty($resource)) {
             return [];
         }
-        $dql = "SELECT c, u.firstname, u.lastname "
-            . "FROM " . $this->getEntityClass(Comments::class) . " c "
-            . "LEFT JOIN c.user u "
-            . "WHERE c.resource = :resource "
-            . "ORDER BY c.created";
+        $dql = 'SELECT c, u.firstname, u.lastname '
+            . 'FROM ' . $this->getEntityClass(Comments::class) . ' c '
+            . 'LEFT JOIN c.user u '
+            . 'WHERE c.resource = :resource '
+            . 'ORDER BY c.created';
 
         $parameters = compact('resource');
         $query = $this->entityManager->createQuery($dql);
@@ -109,7 +109,7 @@ class CommentsService extends AbstractService implements \VuFind\Db\Service\Serv
         }
 
         $del = 'DELETE FROM ' . $this->getEntityClass(Comments::class) . ' c '
-        . "WHERE c.id = :id AND c.user = :user";
+        . 'WHERE c.id = :id AND c.user = :user';
         $parameters = compact('id', 'user');
         $query = $this->entityManager->createQuery($del);
         $query->setParameters($parameters);
@@ -127,7 +127,7 @@ class CommentsService extends AbstractService implements \VuFind\Db\Service\Serv
     public function deleteByUser($user)
     {
         $dql = 'DELETE FROM ' . $this->getEntityClass(Comments::class) . ' c '
-        . "WHERE c.user = :user";
+        . 'WHERE c.user = :user';
         $parameters = compact('user');
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
@@ -141,10 +141,10 @@ class CommentsService extends AbstractService implements \VuFind\Db\Service\Serv
      */
     public function getStatistics(): array
     {
-        $dql = "SELECT COUNT(DISTINCT(c.user)) AS users, "
-            . "COUNT(DISTINCT(c.resource)) AS resources, "
-            . "COUNT(c.id) AS total "
-            . "FROM " . $this->getEntityClass(Comments::class) . " c";
+        $dql = 'SELECT COUNT(DISTINCT(c.user)) AS users, '
+            . 'COUNT(DISTINCT(c.resource)) AS resources, '
+            . 'COUNT(c.id) AS total '
+            . 'FROM ' . $this->getEntityClass(Comments::class) . ' c';
         $query = $this->entityManager->createQuery($dql);
         $stats = current($query->getResult());
         return $stats;

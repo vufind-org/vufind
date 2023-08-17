@@ -2,12 +2,12 @@
 <?php if (count($recommend) > 0): ?>
   <ul class="list-group random <?=$this->recommend->getDisplayMode()?>">
     <li class="list-group-item title" data-toggle="collapse" data-target="#side-collapse-randomrecommend">
-      <?=$this->transEsc("random_recommendation_title")?>
+      <?=$this->transEsc('random_recommendation_title')?>
     </li>
     <div id="side-collapse-randomrecommend" class="collapse in">
     <?php foreach ($recommend as $driver): ?>
       <li class="list-group-item">
-        <?php if ($this->recommend->getDisplayMode() === "images" || $this->recommend->getDisplayMode() === "mixed"): ?>
+        <?php if ($this->recommend->getDisplayMode() === 'images' || $this->recommend->getDisplayMode() === 'mixed'): ?>
           <?php /* Display thumbnail if appropriate: */ ?>
           <?=$this->record($driver)->getCover('RandomRecommend', 'small:medium', $this->recordLinker()->getUrl($driver)); ?>
         <?php endif; ?>

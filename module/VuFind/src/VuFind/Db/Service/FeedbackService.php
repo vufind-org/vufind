@@ -87,27 +87,27 @@ class FeedbackService extends AbstractService
     ): Paginator {
         $dql = "SELECT f, CONCAT(u.firstname, ' ', u.lastname) AS user_name, "
             . "CONCAT(m.firstname, ' ', m.lastname) AS manager_name "
-            . "FROM " . $this->getEntityClass(Feedback::class) . " f "
-            . "LEFT JOIN f.user u "
-            . "LEFT JOIN f.updatedBy m";
+            . 'FROM ' . $this->getEntityClass(Feedback::class) . ' f '
+            . 'LEFT JOIN f.user u '
+            . 'LEFT JOIN f.updatedBy m';
         $parameters = $dqlWhere = [];
 
         if (null !== $formName) {
-            $dqlWhere[] = "f.formName = :formName";
+            $dqlWhere[] = 'f.formName = :formName';
             $parameters['formName'] = $formName;
         }
         if (null !== $siteUrl) {
-            $dqlWhere[] = "f.siteUrl = :siteUrl";
+            $dqlWhere[] = 'f.siteUrl = :siteUrl';
             $parameters['siteUrl'] = $siteUrl;
         }
         if (null !== $status) {
-            $dqlWhere[] = "f.status = :status";
+            $dqlWhere[] = 'f.status = :status';
             $parameters['status'] = $status;
         }
         if (!empty($dqlWhere)) {
             $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
         }
-        $dql .= " ORDER BY f.created DESC";
+        $dql .= ' ORDER BY f.created DESC';
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
 
@@ -150,9 +150,9 @@ class FeedbackService extends AbstractService
      */
     public function getColumn(string $column): array
     {
-        $dql = "SELECT f.id, f." . $this->mapField($column)
-            . " FROM " . $this->getEntityClass(Feedback::class) . " f "
-            . "ORDER BY f." . $this->mapField($column);
+        $dql = 'SELECT f.id, f.' . $this->mapField($column)
+            . ' FROM ' . $this->getEntityClass(Feedback::class) . ' f '
+            . 'ORDER BY f.' . $this->mapField($column);
         $query = $this->entityManager->createQuery($dql);
         return $query->getResult();
     }
@@ -169,9 +169,9 @@ class FeedbackService extends AbstractService
     public function updateColumn($column, $value, $id)
     {
         $parameters = [];
-        $dql = "UPDATE " . $this->getEntityClass(Feedback::class) . " f "
-            . "SET f." . $this->mapField($column) . " = :value "
-            . "WHERE f.id = :id";
+        $dql = 'UPDATE ' . $this->getEntityClass(Feedback::class) . ' f '
+            . 'SET f.' . $this->mapField($column) . ' = :value '
+            . 'WHERE f.id = :id';
         $parameters['value'] = $value;
         $parameters['id'] = $id;
         $query = $this->entityManager->createQuery($dql);

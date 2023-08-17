@@ -49,11 +49,11 @@ class UserResourceService extends AbstractService
      */
     public function getStatistics(): array
     {
-        $dql = "SELECT COUNT(DISTINCT(u.user)) AS users, "
-            . "COUNT(DISTINCT(u.list)) AS lists, "
-            . "COUNT(DISTINCT(u.resource)) AS resources, "
-            . "COUNT(u.id) AS total "
-            . "FROM " . $this->getEntityClass(UserResource::class) . " u";
+        $dql = 'SELECT COUNT(DISTINCT(u.user)) AS users, '
+            . 'COUNT(DISTINCT(u.list)) AS lists, '
+            . 'COUNT(DISTINCT(u.resource)) AS resources, '
+            . 'COUNT(u.id) AS total '
+            . 'FROM ' . $this->getEntityClass(UserResource::class) . ' u';
         $query = $this->entityManager->createQuery($dql);
         $stats = current($query->getResult());
         return $stats;

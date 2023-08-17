@@ -59,16 +59,16 @@ class UserCardService extends AbstractService implements LoggerAwareInterface, \
      */
     public function getLibraryCards($user, $id = null, $catUsername = null)
     {
-        $dql = "SELECT UC "
-        . "FROM " . $this->getEntityClass(UserCard::class) . " UC ";
-        $dqlWhere = ["UC.user = :user"];
+        $dql = 'SELECT UC '
+        . 'FROM ' . $this->getEntityClass(UserCard::class) . ' UC ';
+        $dqlWhere = ['UC.user = :user'];
         $parameters['user'] = $user;
         if (null !== $id) {
-            $dqlWhere[] = "UC.id = :id";
+            $dqlWhere[] = 'UC.id = :id';
             $parameters['id'] = $id;
         }
         if (null !== $catUsername) {
-            $dqlWhere[] = "UC.catUsername = :catUsername";
+            $dqlWhere[] = 'UC.catUsername = :catUsername';
             $parameters['catUsername'] = $catUsername;
         }
         $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);

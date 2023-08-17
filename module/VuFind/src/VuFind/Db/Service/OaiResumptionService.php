@@ -53,8 +53,8 @@ class OaiResumptionService extends AbstractService implements LoggerAwareInterfa
      */
     public function removeExpired(): void
     {
-        $dql = "DELETE FROM " . $this->getEntityClass(OaiResumption::class) . " O "
-            . "WHERE O.expires <= :now";
+        $dql = 'DELETE FROM ' . $this->getEntityClass(OaiResumption::class) . ' O '
+            . 'WHERE O.expires <= :now';
         $parameters['now'] = new \DateTime();
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
@@ -71,9 +71,9 @@ class OaiResumptionService extends AbstractService implements LoggerAwareInterfa
      */
     public function findToken($token): ?OaiResumption
     {
-        $dql = "SELECT O "
-        . "FROM " . $this->getEntityClass(OaiResumption::class) . " O "
-        . "WHERE O.id = :token";
+        $dql = 'SELECT O '
+        . 'FROM ' . $this->getEntityClass(OaiResumption::class) . ' O '
+        . 'WHERE O.id = :token';
         $parameters = compact('token');
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);

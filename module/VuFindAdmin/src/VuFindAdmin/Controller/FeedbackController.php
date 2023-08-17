@@ -178,7 +178,7 @@ class FeedbackController extends AbstractAdmin
             'data' => [
                 'confirm' => $newUrl,
                 'cancel' => $originUrl,
-                'title' => "confirm_delete_feedback",
+                'title' => 'confirm_delete_feedback',
                 'messages' => $this->getConfirmDeleteMessages(count($ids)),
                 'ids' => $ids,
                 'extras' => [
@@ -242,7 +242,7 @@ class FeedbackController extends AbstractAdmin
     {
         $newStatus = $this->getParam('new_status', true);
         $id = $this->getParam('id', true);
-        $success = $this->feedbackService->updateColumn("status", $newStatus, $id);
+        $success = $this->feedbackService->updateColumn('status', $newStatus, $id);
         if ($success) {
             $this->flashMessenger()->addMessage(
                 'feedback_status_update_success',
@@ -292,7 +292,7 @@ class FeedbackController extends AbstractAdmin
      */
     protected function convertFilter(?string $value): ?string
     {
-        return ("ALL" !== $value && null !== $value)
+        return ('ALL' !== $value && null !== $value)
             ? $value : null;
     }
 

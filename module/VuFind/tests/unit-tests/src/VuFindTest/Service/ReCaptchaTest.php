@@ -97,7 +97,7 @@ class ReCaptchaTest extends \PHPUnit\Framework\TestCase
      */
     public function testUnsupportedMethodProxying(): void
     {
-        $this->expectExceptionMessage("Unsupported method: notSupportedMethod");
+        $this->expectExceptionMessage('Unsupported method: notSupportedMethod');
         $service = new ReCaptcha(...$this->getTestParams());
         $service->notSupportedMethod('This does not work!');
     }

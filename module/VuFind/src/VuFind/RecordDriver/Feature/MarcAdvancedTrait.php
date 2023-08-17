@@ -192,21 +192,21 @@ trait MarcAdvancedTrait
 
         switch ($biblioLevel) {
             case 'M': // Monograph
-                return "Monograph";
+                return 'Monograph';
             case 'S': // Serial
-                return "Serial";
+                return 'Serial';
             case 'A': // Monograph Part
-                return "MonographPart";
+                return 'MonographPart';
             case 'B': // Serial Part
-                return "SerialPart";
+                return 'SerialPart';
             case 'C': // Collection
-                return "Collection";
+                return 'Collection';
             case 'D': // Collection Part
-                return "CollectionPart";
+                return 'CollectionPart';
             case 'I': // Integrating Resource
-                return "IntegratingResource";
+                return 'IntegratingResource';
             default:
-                return "Unknown";
+                return 'Unknown';
         }
     }
 
@@ -953,7 +953,7 @@ trait MarcAdvancedTrait
             }
 
             // Set up proper namespacing and extract just the <record> tag:
-            $xml->record->addAttribute('xmlns', "http://www.loc.gov/MARC21/slim");
+            $xml->record->addAttribute('xmlns', 'http://www.loc.gov/MARC21/slim');
             // There's a quirk in SimpleXML that strips the first namespace
             // declaration, hence the double xmlns: prefix:
             $xml->record->addAttribute(

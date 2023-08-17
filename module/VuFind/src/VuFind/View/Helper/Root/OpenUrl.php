@@ -191,7 +191,7 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
         // ini values 'true'/'false' are provided via ini reader as 1/0
         // only check embedAutoLoad for area if the current area passed checkContext
         if (
-            !($embedAutoLoad === "1" || $embedAutoLoad === "0")
+            !($embedAutoLoad === '1' || $embedAutoLoad === '0')
             && !empty($this->area)
         ) {
             // embedAutoLoad is neither true nor false, so check if it contains an

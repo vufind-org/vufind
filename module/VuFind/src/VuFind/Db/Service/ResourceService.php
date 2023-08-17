@@ -109,9 +109,9 @@ class ResourceService extends AbstractService implements \VuFind\Db\Service\Serv
         if (empty($id)) {
             throw new \Exception('Resource ID cannot be empty');
         }
-        $dql = "SELECT r "
-            . "FROM " . $this->getEntityClass(Resource::class) . " r "
-            . "WHERE r.recordId = :id AND r.source = :source";
+        $dql = 'SELECT r '
+            . 'FROM ' . $this->getEntityClass(Resource::class) . ' r '
+            . 'WHERE r.recordId = :id AND r.source = :source';
         $parameters['id'] = $id;
         $parameters['source'] = $source;
         $query = $this->entityManager->createQuery($dql);
@@ -227,7 +227,7 @@ class ResourceService extends AbstractService implements \VuFind\Db\Service\Serv
             $driver->tryMethod('getPrimaryAuthor') ?? '',
             0,
             255,
-            "UTF-8"
+            'UTF-8'
         );
         if (!empty($author)) {
             $resource->setAuthor($author);
@@ -274,8 +274,8 @@ class ResourceService extends AbstractService implements \VuFind\Db\Service\Serv
      */
     public function findMissingMetadata()
     {
-        $dql = "SELECT r "
-            . "FROM " . $this->getEntityClass(Resource::class) . " r "
+        $dql = 'SELECT r '
+            . 'FROM ' . $this->getEntityClass(Resource::class) . ' r '
             . "WHERE r.title = '' OR r.author IS NULL OR r.year IS NULL";
 
         $query = $this->entityManager->createQuery($dql);

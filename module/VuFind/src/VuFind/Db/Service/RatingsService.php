@@ -64,13 +64,13 @@ class RatingsService extends AbstractService implements \VuFind\Db\Service\Servi
                 'rating' => 0,
             ];
         }
-        $dql = "SELECT COUNT(r.id) AS count, AVG(r.rating) AS rating "
-            . "FROM " . $this->getEntityClass(Ratings::class) . " r ";
+        $dql = 'SELECT COUNT(r.id) AS count, AVG(r.rating) AS rating '
+            . 'FROM ' . $this->getEntityClass(Ratings::class) . ' r ';
 
-        $dqlWhere[] = "r.resource = :resource";
+        $dqlWhere[] = 'r.resource = :resource';
         $parameters['resource'] = $resource;
         if (null !== $userId) {
-            $dqlWhere[] = "r.user = :user";
+            $dqlWhere[] = 'r.user = :user';
             $parameters['user'] = $userId;
         }
         $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
@@ -113,10 +113,10 @@ class RatingsService extends AbstractService implements \VuFind\Db\Service\Servi
         if (empty($resource)) {
             return $result;
         }
-        $dql = "SELECT COUNT(r.id) AS count, r.rating AS rating "
-            . "FROM " . $this->getEntityClass(Ratings::class) . " r "
-            . "WHERE r.resource = :resource "
-            . "GROUP BY rating";
+        $dql = 'SELECT COUNT(r.id) AS count, r.rating AS rating '
+            . 'FROM ' . $this->getEntityClass(Ratings::class) . ' r '
+            . 'WHERE r.resource = :resource '
+            . 'GROUP BY rating';
 
         $parameters['resource'] = $resource;
 
@@ -157,7 +157,7 @@ class RatingsService extends AbstractService implements \VuFind\Db\Service\Servi
     public function deleteByUser($user): void
     {
         $dql = 'DELETE FROM ' . $this->getEntityClass(Ratings::class) . ' r '
-            . "WHERE r.user = :user";
+            . 'WHERE r.user = :user';
         $parameters['user'] = $user;
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
@@ -171,10 +171,10 @@ class RatingsService extends AbstractService implements \VuFind\Db\Service\Servi
      */
     public function getStatistics(): array
     {
-        $dql = "SELECT COUNT(DISTINCT(r.user)) AS users, "
-            . "COUNT(DISTINCT(r.resource)) AS resources, "
-            . "COUNT(r.id) AS total "
-            . "FROM " . $this->getEntityClass(Ratings::class) . " r";
+        $dql = 'SELECT COUNT(DISTINCT(r.user)) AS users, '
+            . 'COUNT(DISTINCT(r.resource)) AS resources, '
+            . 'COUNT(r.id) AS total '
+            . 'FROM ' . $this->getEntityClass(Ratings::class) . ' r';
         $query = $this->entityManager->createQuery($dql);
         $stats = current($query->getResult());
         return $stats;

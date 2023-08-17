@@ -158,7 +158,7 @@ class TagsController extends AbstractAdmin
     {
         $origin = $this->getParam('origin');
 
-        $action = ("list" == $origin) ? 'List' : 'Manage';
+        $action = ('list' == $origin) ? 'List' : 'Manage';
 
         $originUrl = $this->url()
             ->fromRoute('admin/tags', ['action' => $action]);
@@ -177,7 +177,7 @@ class TagsController extends AbstractAdmin
 
         // Delete All
         if (
-            "manage" == $origin
+            'manage' == $origin
             || null !== $this->getRequest()->getPost('deleteFilter')
             || null !== $this->getRequest()->getQuery('deleteFilter')
         ) {
@@ -297,7 +297,7 @@ class TagsController extends AbstractAdmin
             'data' => [
                 'confirm' => $newUrl,
                 'cancel' => $originUrl,
-                'title' => "confirm_delete_tags_brief",
+                'title' => 'confirm_delete_tags_brief',
                 'messages' => $this->getConfirmDeleteMessages($count),
                 'ids' => $ids,
                 'extras' => [
@@ -333,7 +333,7 @@ class TagsController extends AbstractAdmin
             'data' => [
                 'confirm' => $newUrl,
                 'cancel' => $originUrl,
-                'title' => "confirm_delete_tags_brief",
+                'title' => 'confirm_delete_tags_brief',
                 'messages' => $this->getConfirmDeleteMessages($count),
                 'extras' => [
                     'origin' => 'manage',
@@ -400,7 +400,7 @@ class TagsController extends AbstractAdmin
      */
     protected function convertFilter($value)
     {
-        return ("ALL" !== $value && "" !== $value && null !== $value)
+        return ('ALL' !== $value && '' !== $value && null !== $value)
             ? $value : null;
     }
 

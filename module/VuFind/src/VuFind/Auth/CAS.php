@@ -137,8 +137,8 @@ class CAS extends AbstractBase
 
         // Has the user configured attributes to use for populating the user table?
         $attribsToCheck = [
-            "cat_username", "cat_password", "email", "lastname", "firstname",
-            "college", "major", "home_library",
+            'cat_username', 'cat_password', 'email', 'lastname', 'firstname',
+            'college', 'major', 'home_library',
         ];
         $catPassword = null;
         foreach ($attribsToCheck as $attribute) {
@@ -255,14 +255,14 @@ class CAS extends AbstractBase
         // Now extract user attribute values:
         $cas = $this->getConfig()->CAS;
         foreach ($cas as $key => $value) {
-            if (preg_match("/userattribute_[0-9]{1,}/", $key)) {
+            if (preg_match('/userattribute_[0-9]{1,}/', $key)) {
                 $valueKey = 'userattribute_value_' . substr($key, 14);
                 $sortedUserAttributes[$value] = $cas->$valueKey ?? null;
 
                 // Throw an exception if attributes are missing/empty.
                 if (empty($sortedUserAttributes[$value])) {
                     throw new AuthException(
-                        "User attribute value of " . $value . " is missing!"
+                        'User attribute value of ' . $value . ' is missing!'
                     );
                 }
             }

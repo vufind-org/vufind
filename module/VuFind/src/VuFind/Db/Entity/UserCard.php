@@ -317,11 +317,11 @@ class UserCard implements EntityInterface
         return $this;
     }
 
-     /**
-      * Get saved time.
-      *
-      * @return DateTime
-      */
+    /**
+     * Get saved time.
+     *
+     * @return DateTime
+     */
     public function getSaved(): DateTime
     {
         return $this->saved;

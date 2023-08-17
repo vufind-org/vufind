@@ -92,9 +92,9 @@ class TagService extends AbstractService
      */
     public function getAnonymousCount(): int
     {
-        $dql = "SELECT COUNT(rt.id) AS total "
-            . "FROM " . $this->getEntityClass(ResourceTags::class) . " rt "
-            . "WHERE rt.user IS NULL";
+        $dql = 'SELECT COUNT(rt.id) AS total '
+            . 'FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
+            . 'WHERE rt.user IS NULL';
         $query = $this->entityManager->createQuery($dql);
         $stats = current($query->getResult());
         return $stats['total'];
@@ -139,15 +139,15 @@ class TagService extends AbstractService
         $dql = ' DELETE FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt ';
         $parameters = $dqlWhere = [];
         if (null !== $userId) {
-            $dqlWhere[] = "rt.user = :user";
+            $dqlWhere[] = 'rt.user = :user';
             $parameters['user'] = $userId;
         }
         if (null !== $resourceId) {
-            $dqlWhere[] = "rt.resource = :resource";
+            $dqlWhere[] = 'rt.resource = :resource';
             $parameters['resource'] = $resourceId;
         }
         if (null !== $tagId) {
-            $dqlWhere[] = "rt.tag = :tag";
+            $dqlWhere[] = 'rt.tag = :tag';
             $parameters['tag'] = $tagId;
         }
         if (!empty($dqlWhere)) {
@@ -187,22 +187,22 @@ class TagService extends AbstractService
             . 'LEFT JOIN rt.user u';
         $parameters = $dqlWhere = [];
         if (null !== $userId) {
-            $dqlWhere[] = "rt.user = :user";
+            $dqlWhere[] = 'rt.user = :user';
             $parameters['user'] = $userId;
         }
         if (null !== $resourceId) {
-            $dqlWhere[] = "r.id = :resource";
+            $dqlWhere[] = 'r.id = :resource';
             $parameters['resource'] = $resourceId;
         }
         if (null !== $tagId) {
-            $dqlWhere[] = "rt.tag = :tag";
+            $dqlWhere[] = 'rt.tag = :tag';
             $parameters['tag'] = $tagId;
         }
         if (!empty($dqlWhere)) {
             $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
         }
         $sanitizedOrder = $this->formatTagOrder(
-            (array)($order ?? ["username", "tag", "title"])
+            (array)($order ?? ['username', 'tag', 'title'])
         );
         $dql .= ' ORDER BY ' . implode(', ', $sanitizedOrder);
         $query = $this->entityManager->createQuery($dql);
@@ -232,29 +232,29 @@ class TagService extends AbstractService
         string $resourceId = null,
         string $tagId = null
     ): array {
-        $dql = "SELECT r.id AS resource_id, MAX(rt.tag) AS tag_id, "
-            . "MAX(rt.list) AS list_id, MAX(rt.user) AS user_id, MAX(rt.id) AS id, "
-            . "r.title AS title "
-            . "FROM " . $this->getEntityClass(ResourceTags::class) . " rt "
-            . "LEFT JOIN rt.resource r ";
+        $dql = 'SELECT r.id AS resource_id, MAX(rt.tag) AS tag_id, '
+            . 'MAX(rt.list) AS list_id, MAX(rt.user) AS user_id, MAX(rt.id) AS id, '
+            . 'r.title AS title '
+            . 'FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
+            . 'LEFT JOIN rt.resource r ';
         $parameters = $dqlWhere = [];
         if (null !== $userId) {
-            $dqlWhere[] = "rt.user = :user";
+            $dqlWhere[] = 'rt.user = :user';
             $parameters['user'] = $userId;
         }
         if (null !== $resourceId) {
-            $dqlWhere[] = "r.id = :resource";
+            $dqlWhere[] = 'r.id = :resource';
             $parameters['resource'] = $resourceId;
         }
         if (null !== $tagId) {
-            $dqlWhere[] = "rt.tag = :tag";
+            $dqlWhere[] = 'rt.tag = :tag';
             $parameters['tag'] = $tagId;
         }
         if (!empty($dqlWhere)) {
             $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
         }
-        $dql .= " GROUP BY resource_id, title"
-            . " ORDER BY title";
+        $dql .= ' GROUP BY resource_id, title'
+            . ' ORDER BY title';
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
         return $query->getResult();
@@ -274,33 +274,33 @@ class TagService extends AbstractService
         string $resourceId = null,
         string $tagId = null
     ): array {
-        $tagClause = $this->caseSensitive ? "t.tag" : "LOWER(t.tag)";
-        $dql = "SELECT MAX(r.id) AS resource_id, MAX(t.id) AS tag_id, "
-            . "MAX(l.id) AS list_id, MAX(u.id) AS user_id, MAX(rt.id) AS id, "
-            . $tagClause . " AS tag "
-            . "FROM " . $this->getEntityClass(ResourceTags::class) . " rt "
-            . "LEFT JOIN rt.resource r "
-            . "LEFT JOIN rt.tag t "
-            . "LEFT JOIN rt.list l "
-            . "LEFT JOIN rt.user u";
+        $tagClause = $this->caseSensitive ? 't.tag' : 'LOWER(t.tag)';
+        $dql = 'SELECT MAX(r.id) AS resource_id, MAX(t.id) AS tag_id, '
+            . 'MAX(l.id) AS list_id, MAX(u.id) AS user_id, MAX(rt.id) AS id, '
+            . $tagClause . ' AS tag '
+            . 'FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
+            . 'LEFT JOIN rt.resource r '
+            . 'LEFT JOIN rt.tag t '
+            . 'LEFT JOIN rt.list l '
+            . 'LEFT JOIN rt.user u';
         $parameters = $dqlWhere = [];
         if (null !== $userId) {
-            $dqlWhere[] = "u.id = :user";
+            $dqlWhere[] = 'u.id = :user';
             $parameters['user'] = $userId;
         }
         if (null !== $resourceId) {
-            $dqlWhere[] = "r.id = :resource";
+            $dqlWhere[] = 'r.id = :resource';
             $parameters['resource'] = $resourceId;
         }
         if (null !== $tagId) {
-            $dqlWhere[] = "t.id = :tag";
+            $dqlWhere[] = 't.id = :tag';
             $parameters['tag'] = $tagId;
         }
         if (!empty($dqlWhere)) {
             $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
         }
-        $dql .= " GROUP BY tag"
-            . " ORDER BY tag";
+        $dql .= ' GROUP BY tag'
+            . ' ORDER BY tag';
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
         return $query->getResult();
@@ -320,29 +320,29 @@ class TagService extends AbstractService
         string $resourceId = null,
         string $tagId = null
     ): array {
-        $dql = "SELECT MAX(rt.resource) AS resource_id, MAX(rt.tag) AS tag_id, "
-            . "MAX(rt.list) AS list_id, u.id AS user_id, MAX(rt.id) AS id, "
-            . "u.username AS username "
-            . "FROM " . $this->getEntityClass(ResourceTags::class) . " rt "
-            . "INNER JOIN rt.user u ";
+        $dql = 'SELECT MAX(rt.resource) AS resource_id, MAX(rt.tag) AS tag_id, '
+            . 'MAX(rt.list) AS list_id, u.id AS user_id, MAX(rt.id) AS id, '
+            . 'u.username AS username '
+            . 'FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
+            . 'INNER JOIN rt.user u ';
         $parameters = $dqlWhere = [];
         if (null !== $userId) {
-            $dqlWhere[] = "rt.user = :user";
+            $dqlWhere[] = 'rt.user = :user';
             $parameters['user'] = $userId;
         }
         if (null !== $resourceId) {
-            $dqlWhere[] = "rt.resource = :resource";
+            $dqlWhere[] = 'rt.resource = :resource';
             $parameters['resource'] = $resourceId;
         }
         if (null !== $tagId) {
-            $dqlWhere[] = "rt.tag = :tag";
+            $dqlWhere[] = 'rt.tag = :tag';
             $parameters['tag'] = $tagId;
         }
         if (!empty($dqlWhere)) {
             $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
         }
-        $dql .= " GROUP BY user_id, username"
-            . " ORDER BY username";
+        $dql .= ' GROUP BY user_id, username'
+            . ' ORDER BY username';
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
         return $query->getResult();
@@ -357,10 +357,10 @@ class TagService extends AbstractService
      */
     public function getStatistics(bool $extended = false): array
     {
-        $dql = "SELECT COUNT(DISTINCT(rt.user)) AS users, "
-            . "COUNT(DISTINCT(rt.resource)) AS resources, "
-            . "COUNT(rt.id) AS total "
-            . "FROM " . $this->getEntityClass(ResourceTags::class) . " rt";
+        $dql = 'SELECT COUNT(DISTINCT(rt.user)) AS users, '
+            . 'COUNT(DISTINCT(rt.resource)) AS resources, '
+            . 'COUNT(rt.id) AS total '
+            . 'FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt';
         $query = $this->entityManager->createQuery($dql);
         $stats = current($query->getResult());
         if ($extended) {

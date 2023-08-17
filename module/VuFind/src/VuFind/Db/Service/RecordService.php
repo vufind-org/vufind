@@ -58,9 +58,9 @@ class RecordService extends AbstractService implements LoggerAwareInterface
      */
     public function findRecord($id, $source)
     {
-        $dql = "SELECT r "
-            . "FROM " . $this->getEntityClass(Record::class) . " r "
-            . "WHERE r.recordId = :id AND r.source = :source";
+        $dql = 'SELECT r '
+            . 'FROM ' . $this->getEntityClass(Record::class) . ' r '
+            . 'WHERE r.recordId = :id AND r.source = :source';
         $parameters = compact('id', 'source');
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
@@ -82,9 +82,9 @@ class RecordService extends AbstractService implements LoggerAwareInterface
             return [];
         }
 
-        $dql = "SELECT r "
-            . "FROM " . $this->getEntityClass(Record::class) . " r "
-            . "WHERE r.recordId IN (:ids) AND r.source = :source";
+        $dql = 'SELECT r '
+            . 'FROM ' . $this->getEntityClass(Record::class) . ' r '
+            . 'WHERE r.recordId IN (:ids) AND r.source = :source';
         $parameters = compact('ids', 'source');
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
@@ -128,17 +128,17 @@ class RecordService extends AbstractService implements LoggerAwareInterface
      */
     public function cleanup()
     {
-        $dql = "SELECT r.id "
-            . "FROM " . $this->getEntityClass(Record::class) . " r "
-            . "JOIN " . $this->getEntityClass(Resource::class) . " re "
-            . "WITH r.recordId = re.recordId AND r.source = re.source "
-            . "LEFT JOIN " . $this->getEntityClass(UserResource::class) . " ur "
-            . "WITH re.id = ur.resource "
-            . "WHERE ur.id IS NULL";
+        $dql = 'SELECT r.id '
+            . 'FROM ' . $this->getEntityClass(Record::class) . ' r '
+            . 'JOIN ' . $this->getEntityClass(Resource::class) . ' re '
+            . 'WITH r.recordId = re.recordId AND r.source = re.source '
+            . 'LEFT JOIN ' . $this->getEntityClass(UserResource::class) . ' ur '
+            . 'WITH re.id = ur.resource '
+            . 'WHERE ur.id IS NULL';
         $query = $this->entityManager->createQuery($dql);
         $ids = $query->getResult();
-        $dql = "DELETE FROM " . $this->getEntityClass(Record::class) . " r "
-            . "WHERE r.id IN (:ids)";
+        $dql = 'DELETE FROM ' . $this->getEntityClass(Record::class) . ' r '
+            . 'WHERE r.id IN (:ids)';
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters(compact('ids'));
         $query->execute();
@@ -155,8 +155,8 @@ class RecordService extends AbstractService implements LoggerAwareInterface
      */
     public function deleteRecord($id, $source)
     {
-        $dql = "DELETE FROM " . $this->getEntityClass(Record::class) . " r "
-            . "WHERE r.recordId = :id AND r.source = :source";
+        $dql = 'DELETE FROM ' . $this->getEntityClass(Record::class) . ' r '
+            . 'WHERE r.recordId = :id AND r.source = :source';
         $parameters = compact('id', 'source');
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);

@@ -306,7 +306,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
     ) {
         // Load config:
         $dateArray = isset($checkHolds['defaultRequiredDate'])
-             ? explode(":", $checkHolds['defaultRequiredDate'])
+             ? explode(':', $checkHolds['defaultRequiredDate'])
              : [0, 1, 0];
 
         // Process special "driver" prefix and adjust default date

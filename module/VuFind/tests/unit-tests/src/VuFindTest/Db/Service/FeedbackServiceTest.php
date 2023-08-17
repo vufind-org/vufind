@@ -66,7 +66,7 @@ class FeedbackServiceTest extends \PHPUnit\Framework\TestCase
         $entityManager = $mocks['entityManager'];
         $feedbackService = $mocks['feedbackService'];
         $queryStmt = "SELECT f.id, f.status FROM VuFind\Db\Entity\Feedback f "
-            . "ORDER BY f.status";
+            . 'ORDER BY f.status';
         $query = $this->getMockBuilder(\Doctrine\ORM\AbstractQuery::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['getResult'])
@@ -116,7 +116,7 @@ class FeedbackServiceTest extends \PHPUnit\Framework\TestCase
         $entityManager = $mocks['entityManager'];
         $feedbackService = $mocks['feedbackService'];
         $queryStmt = "UPDATE VuFind\Db\Entity\Feedback f SET f.status "
-            . "= :value WHERE f.id = :id";
+            . '= :value WHERE f.id = :id';
 
         $query = $this->getMockBuilder(\Doctrine\ORM\AbstractQuery::class)
             ->disableOriginalConstructor()
@@ -161,8 +161,8 @@ class FeedbackServiceTest extends \PHPUnit\Framework\TestCase
         $queryStmt = "SELECT f, CONCAT(u.firstname, ' ', u.lastname) AS user_name, "
             . "CONCAT(m.firstname, ' ', m.lastname) AS manager_name FROM "
             . "VuFind\Db\Entity\Feedback f LEFT JOIN f.user u LEFT JOIN f.updatedBy m "
-            . "WHERE f.formName = :formName AND f.siteUrl = :siteUrl AND "
-            . "f.status = :status ORDER BY f.created DESC";
+            . 'WHERE f.formName = :formName AND f.siteUrl = :siteUrl AND '
+            . 'f.status = :status ORDER BY f.created DESC';
 
         $query = $this->getMockBuilder(\Doctrine\ORM\AbstractQuery::class)
             ->disableOriginalConstructor()

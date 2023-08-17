@@ -133,11 +133,11 @@ class ServerTest extends \PHPUnit\Framework\TestCase
             ->getMock();
     }
 
-     /**
-      * Get a mock resumption Service
-      *
-      * @return \VuFind\Db\Service\OaiResumptionService
-      */
+    /**
+     * Get a mock resumption Service
+     *
+     * @return \VuFind\Db\Service\OaiResumptionService
+     */
     protected function getMockResumptionService()
     {
         return $this->getMockBuilder(\VuFind\Db\Service\OaiResumptionService::class)
