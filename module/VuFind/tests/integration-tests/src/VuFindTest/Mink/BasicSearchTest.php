@@ -87,7 +87,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
 
         $session->visit($this->getVuFindUrl() . '/Search/Results');
         $this->assertStringContainsString(
-            "Showing 1 - 20 results",
+            'Showing 1 - 20 results',
             $this->findCss($page, '.search-stats')->getText()
         );
 
@@ -98,14 +98,14 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
         $secondPage->click();
         $this->waitForPageLoad($page);
         $this->assertStringContainsString(
-            "Showing 21 - 40 results",
+            'Showing 21 - 40 results',
             $this->findCss($page, '.search-stats')->getText()
         );
         // Prev page now present, click it:
         $this->clickCss($page, '.search-header .pagination-simple .page-prev');
         $this->waitForPageLoad($page);
         $this->assertStringContainsString(
-            "Showing 1 - 20 results",
+            'Showing 1 - 20 results',
             $this->findCss($page, '.search-stats')->getText()
         );
     }
@@ -137,7 +137,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
 
         $session->visit($this->getVuFindUrl() . '/Search/Results');
         $this->assertStringContainsString(
-            "Showing 1 - 20 results",
+            'Showing 1 - 20 results',
             $this->findCss($page, '.search-stats')->getText()
         );
 
@@ -147,7 +147,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
 
         $this->assertStringContainsString(
-            "Showing 21 - 40 results",
+            'Showing 21 - 40 results',
             $this->findCss($page, '.search-stats')->getText()
         );
         $this->assertEquals('2', $this->findCss($page, '.pagination-top li.active')->getText());
@@ -155,7 +155,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
         $firstPage = $this->findCss($page, '.pagination-top li');
         $firstPage->find('css', 'a')->click();
         $this->assertStringContainsString(
-            "Showing 1 - 20 results",
+            'Showing 1 - 20 results',
             $this->findCss($page, '.search-stats')->getText()
         );
         $this->assertEquals('1', $this->findCss($page, '.pagination-top li.active')->getText());
