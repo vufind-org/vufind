@@ -59,7 +59,7 @@ class ScssCompiler extends AbstractCssPreCompiler
         // Get files
         $files = $this->getAllFiles($theme);
         if (empty($files)) {
-            $this->logMessage("No SCSS in " . $theme);
+            $this->logMessage('No SCSS in ' . $theme);
             return;
         }
 

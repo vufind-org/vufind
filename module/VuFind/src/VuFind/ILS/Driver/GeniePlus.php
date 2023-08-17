@@ -179,12 +179,12 @@ class GeniePlus extends AbstractAPI
      * @return \Laminas\Http\Response
      */
     protected function callApiWithToken(
-        $method = "GET",
-        $path = "/",
+        $method = 'GET',
+        $path = '/',
         $params = [],
         $headers = []
     ) {
-        $headers[] = "Accept: application/json";
+        $headers[] = 'Accept: application/json';
         if (null === $this->token) {
             $this->renewAccessToken();
         }

@@ -97,8 +97,8 @@ class Writer
 
         // Reset some flags and prepare to rewrite the content:
         $settingSet = false;
-        $currentSection = "";
-        $this->content = "";
+        $currentSection = '';
+        $this->content = '';
 
         // Process one line at a time...
         foreach ($lines as $line) {
@@ -217,7 +217,7 @@ class Writer
             return 'true';
         } elseif ($e === false) {
             return 'false';
-        } elseif ($e == "") {
+        } elseif ($e == '') {
             return '';
         } else {
             return '"' . str_replace('"', '\"', $e) . '"';
@@ -253,7 +253,7 @@ class Writer
                 // omit them from the key names; any other index should be
                 // explicitly set:
                 $currentIndex = ($i === $autoIndex) ? '' : $i;
-                $retVal .= $key . '[' . $currentIndex . ']' . $tabStr . " = "
+                $retVal .= $key . '[' . $currentIndex . ']' . $tabStr . ' = '
                     . $this->buildContentValue($current) . "\n";
                 $autoIndex++;
             }
@@ -261,7 +261,7 @@ class Writer
         }
 
         // Standard case: value is not an array:
-        return $key . $tabStr . " = " . $this->buildContentValue($value);
+        return $key . $tabStr . ' = ' . $this->buildContentValue($value);
     }
 
     /**
@@ -301,12 +301,12 @@ class Writer
      */
     protected function buildContent($assoc_arr, $comments)
     {
-        $content = "";
+        $content = '';
         foreach ($assoc_arr as $key => $elem) {
             if (isset($comments['sections'][$key]['before'])) {
                 $content .= $comments['sections'][$key]['before'];
             }
-            $content .= "[" . $key . "]";
+            $content .= '[' . $key . ']';
             if (!empty($comments['sections'][$key]['inline'])) {
                 $content .= "\t" . $comments['sections'][$key]['inline'];
             }

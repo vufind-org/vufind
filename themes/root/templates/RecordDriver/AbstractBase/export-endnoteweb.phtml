@@ -4,30 +4,30 @@ $formats = $this->slot('endnoteweb-formats')->get($this->driver->tryMethod('getF
 if (is_array($formats)) {
     foreach ($formats as $format) {
         switch (strtolower($format)) {
-            case "book":
-                $format = "BOOK";
+            case 'book':
+                $format = 'BOOK';
                 break;
-            case "journal":
-            case "article":
-            case "journal article":
-                $format = "JOUR";
+            case 'journal':
+            case 'article':
+            case 'journal article':
+                $format = 'JOUR';
                 break;
-            case "thesis":
-            case "dissertation":
-                $format = "THES";
+            case 'thesis':
+            case 'dissertation':
+                $format = 'THES';
                 break;
-            case "book chapter":
-            case "conference proceeding":
+            case 'book chapter':
+            case 'conference proceeding':
                 // TODO: Find better codes for these; for now they'll drop through to "generic."
             default:
-                $format = "GEN";
+                $format = 'GEN';
         }
 
         echo "TY  - $format\n";
     }
 }
 
-$title = rtrim($this->driver->getTitle(), " /");
+$title = rtrim($this->driver->getTitle(), ' /');
 echo "T1  - $title\n";
 
 $series = $this->driver->tryMethod('getSeries');
@@ -84,10 +84,10 @@ if (is_array($pubPlaces) && is_array($pubDates) && is_array($pubNames)) {
     }
     for ($i = 0; $i < $total; $i++) {
         if (isset($pubPlaces[$i])) {
-            echo "PP  - " . rtrim(str_replace(['[', ']'], '', $pubPlaces[$i]), ': ') . "\n";
+            echo 'PP  - ' . rtrim(str_replace(['[', ']'], '', $pubPlaces[$i]), ': ') . "\n";
         }
         if (isset($pubNames[$i])) {
-            echo "PB  - " . rtrim($pubNames[$i], ", ") . "\n";
+            echo 'PB  - ' . rtrim($pubNames[$i], ', ') . "\n";
         }
         $date = trim($pubDates[$i], '[]. ');
         if (strlen($date) > 4) {
@@ -104,7 +104,7 @@ if (!empty($edition)) {
     echo "ED  - $edition\n";
 }
 
-echo "UL  - " . $this->serverUrl($this->recordLinker()->getUrl($this->driver)) . "\n";
+echo 'UL  - ' . $this->serverUrl($this->recordLinker()->getUrl($this->driver)) . "\n";
 
 $summary = $this->driver->tryMethod('getSummary');
 if (is_array($summary)) {

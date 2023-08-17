@@ -65,7 +65,7 @@ class VersionsTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $translator->expects($this->any())->method('translate')
             ->with($this->equalTo('other_versions_title'), $this->equalTo('default'))
-            ->will($this->returnValue("Count:%%count%%"));
+            ->will($this->returnValue('Count:%%count%%'));
         $obj->setTranslator($translator);
         $obj->getDescription();
         $this->assertEquals("Count:$count", $obj->getDescription());

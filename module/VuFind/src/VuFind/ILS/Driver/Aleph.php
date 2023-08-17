@@ -226,8 +226,8 @@ class Aleph extends AbstractBase implements
      *
      * @var string
      */
-    protected $queuePositionRegex = "/Waiting in position "
-        . "(?<position>[0-9]+) in queue;/";
+    protected $queuePositionRegex = '/Waiting in position '
+        . '(?<position>[0-9]+) in queue;/';
 
     /**
      * Constructor
@@ -439,10 +439,10 @@ class Aleph extends AbstractBase implements
         $url = $this->appendQueryString($url, $params);
         $result = $this->doHTTPRequest($url, $method, $body);
         $replyCode = (string)$result->{'reply-code'};
-        if ($replyCode != "0000") {
+        if ($replyCode != '0000') {
             $replyText = (string)$result->{'reply-text'};
             $this->logError(
-                "DLF request failed",
+                'DLF request failed',
                 [
                     'url' => $url, 'reply-code' => $replyCode,
                     'reply-message' => $replyText,
@@ -465,11 +465,11 @@ class Aleph extends AbstractBase implements
      */
     protected function appendQueryString($url, $params)
     {
-        $sep = (!str_contains($url, "?")) ? '?' : '&';
+        $sep = (!str_contains($url, '?')) ? '?' : '&';
         if ($params != null) {
             foreach ($params as $key => $value) {
-                $url .= $sep . $key . "=" . urlencode($value);
-                $sep = "&";
+                $url .= $sep . $key . '=' . urlencode($value);
+                $sep = '&';
             }
         }
         return $url;
@@ -543,7 +543,7 @@ class Aleph extends AbstractBase implements
         } else {
             throw new \Exception(
                 "Invalid record identifier '$id' "
-                . "without library base"
+                . 'without library base'
             );
         }
         return $result;
@@ -599,21 +599,21 @@ class Aleph extends AbstractBase implements
      */
     public function getStatusesX($bib, $ids)
     {
-        $doc_nums = "";
-        $sep = "";
+        $doc_nums = '';
+        $sep = '';
         foreach ($ids as $id) {
             $doc_nums .= $sep . $id;
-            $sep = ",";
+            $sep = ',';
         }
         $xml = $this->doXRequest(
-            "publish_avail",
+            'publish_avail',
             ['library' => $bib, 'doc_num' => $doc_nums],
             false
         );
         $holding = [];
         foreach ($xml->xpath('/publish-avail/OAI-PMH') as $rec) {
-            $identifier = $rec->xpath(".//identifier/text()");
-            $id = ((count($this->bib) > 1) ? $bib . "-" : "")
+            $identifier = $rec->xpath('.//identifier/text()');
+            $id = ((count($this->bib) > 1) ? $bib . '-' : '')
                 . substr($identifier[0], strrpos($identifier[0], ':') + 1);
             $temp = [];
             foreach ($rec->xpath(".//datafield[@tag='AVA']") as $datafield) {
@@ -762,11 +762,11 @@ class Aleph extends AbstractBase implements
             }
             $matches = [];
             $dueDateWithStatusRegEx
-                = "/([0-9]*\\/[a-zA-Z0-9]*\\/[0-9]*);([a-zA-Z ]*)/";
-            $dueDateRegEx = "/([0-9]*\\/[a-zA-Z0-9]*\\/[0-9]*)/";
+                = '/([0-9]*\\/[a-zA-Z0-9]*\\/[0-9]*);([a-zA-Z ]*)/';
+            $dueDateRegEx = '/([0-9]*\\/[a-zA-Z0-9]*\\/[0-9]*)/';
             if (preg_match($dueDateWithStatusRegEx, $status, $matches)) {
                 $duedate = $this->parseDate($matches[1]);
-                $requested = (trim($matches[2]) == "Requested");
+                $requested = (trim($matches[2]) == 'Requested');
             } elseif (preg_match($dueDateRegEx, $status, $matches)) {
                 $duedate = $this->parseDate($matches[1]);
             } else {
@@ -871,7 +871,7 @@ class Aleph extends AbstractBase implements
             $z13 = $item->z13;
             $z30 = $item->z30;
             $group = $item->xpath('@href');
-            $group = substr(strrchr($group[0], "/"), 1);
+            $group = substr(strrchr($group[0], '/'), 1);
             $renew = $item->xpath('@renew');
 
             $location = (string)$z36->{$prefix . 'pickup_location'};
@@ -899,7 +899,7 @@ class Aleph extends AbstractBase implements
                 'reqnum' => $reqnum,
                 'barcode' => $barcode,
                 'duedate' => $this->parseDate($due),
-                'renewable' => $renew[0] == "Y",
+                'renewable' => $renew[0] == 'Y',
             ];
             if ($history) {
                 $issued = (string)$z36->{$prefix . 'loan-date'};
@@ -999,7 +999,7 @@ class Aleph extends AbstractBase implements
             $delete = $item->xpath('@delete');
             $href = $item->xpath('@href');
             $item_id = substr($href[0], strrpos($href[0], '/') + 1);
-            $type = "hold";
+            $type = 'hold';
             $location = (string)$z37->{'z37-pickup-location'};
             $reqnum = (string)$z37->{'z37-doc-number'}
                 . (string)$z37->{'z37-item-sequence'}
@@ -1012,18 +1012,18 @@ class Aleph extends AbstractBase implements
             $isbn = (string)$z13->{'z13-isbn-issn'};
             $barcode = (string)$z30->{'z30-barcode'};
             // remove superfluous spaces in status
-            $status = preg_replace("/\s[\s]+/", " ", $item->status);
+            $status = preg_replace("/\s[\s]+/", ' ', $item->status);
             $position = null;
             // Extract position in the hold queue from item status
             if (preg_match($this->queuePositionRegex, $status, $matches)) {
                 $position = $matches['position'];
             }
-            if ($holddate == "00000000") {
+            if ($holddate == '00000000') {
                 $holddate = null;
             } else {
                 $holddate = $this->parseDate($holddate);
             }
-            $delete = ($delete[0] == "Y");
+            $delete = ($delete[0] == 'Y');
             // Secondary, Aleph-specific identifier that may be useful for
             // local customizations
             $adm_id = (string)$z30->{'z30-doc-number'};
@@ -1094,7 +1094,7 @@ class Aleph extends AbstractBase implements
                         'holds', $id,
                     ],
                     null,
-                    "DELETE"
+                    'DELETE'
                 );
                 $count++;
                 $items[$id] = ['success' => true, 'status' => 'cancel_hold_ok'];
@@ -1126,7 +1126,7 @@ class Aleph extends AbstractBase implements
 
         $xml = $this->doRestDLFRequest(
             ['patron', $user['id'], 'circulationActions', 'cash'],
-            ["view" => "full"]
+            ['view' => 'full']
         );
 
         foreach ($xml->xpath('//cash') as $item) {
@@ -1144,21 +1144,21 @@ class Aleph extends AbstractBase implements
             $cachetype = strtolower((string)($item->attributes()->type ?? ''));
             $mult = $cachetype == 'debit' ? -100 : 100;
             $amount
-                = (float)(preg_replace("/[\(\)]/", "", (string)$z31->{'z31-sum'}))
+                = (float)(preg_replace("/[\(\)]/", '', (string)$z31->{'z31-sum'}))
                 * $mult;
             $cashref = (string)$z31->{'z31-sequence'};
 
             $finesList["$cashref"]  = [
-                    "title"   => $title,
-                    "barcode" => $barcode,
-                    "amount" => $amount,
-                    "transactiondate" => $transactiondate,
-                    "transactiontype" => $transactiontype,
-                    "checkout" => $this->parseDate($checkout),
-                    "balance"  => $amount,
-                    "id"  => $id,
-                    "printLink" => "test",
-                    "fine" => $description,
+                    'title'   => $title,
+                    'barcode' => $barcode,
+                    'amount' => $amount,
+                    'transactiondate' => $transactiondate,
+                    'transactiontype' => $transactiontype,
+                    'checkout' => $this->parseDate($checkout),
+                    'balance'  => $amount,
+                    'id'  => $id,
+                    'printLink' => 'test',
+                    'fine' => $description,
             ];
         }
         ksort($finesList);
@@ -1200,7 +1200,7 @@ class Aleph extends AbstractBase implements
             $user['college'] = $this->useradm;
         }
         $xml = $this->doXRequest(
-            "bor-info",
+            'bor-info',
             [
                 'loans' => 'N', 'cash' => 'N', 'hold' => 'N',
                 'library' => $user['college'], 'bor_id' => $user['id'],
@@ -1218,14 +1218,14 @@ class Aleph extends AbstractBase implements
         $credit_sum = (string)$xml->z305->{'z305-sum'};
         $credit_sign = (string)$xml->z305->{'z305-credit-debit'};
         $name = (string)$xml->z303->{'z303-name'};
-        if (strstr($name, ",")) {
-            [$lastname, $firstname] = explode(",", $name);
+        if (strstr($name, ',')) {
+            [$lastname, $firstname] = explode(',', $name);
         } else {
             $lastname = $name;
-            $firstname = "";
+            $firstname = '';
         }
         if ($credit_sign == null) {
-            $credit_sign = "C";
+            $credit_sign = 'C';
         }
         $recordList = compact('firstname', 'lastname');
         if (isset($user['email'])) {
@@ -1269,18 +1269,18 @@ class Aleph extends AbstractBase implements
             }
         }
         $fullName = $profile['fullname'];
-        if (!str_contains($fullName, ",")) {
+        if (!str_contains($fullName, ',')) {
             $profile['lastname'] = $fullName;
-            $profile['firstname'] = "";
+            $profile['firstname'] = '';
         } else {
             [$profile['lastname'], $profile['firstname']]
-                = explode(",", $fullName);
+                = explode(',', $fullName);
         }
         $xml = $this->doRestDLFRequest(
             ['patron', $user['id'], 'patronStatus', 'registration']
         );
-        $status = $xml->xpath("//institution/z305-bor-status");
-        $expiry = $xml->xpath("//institution/z305-expiry-date");
+        $status = $xml->xpath('//institution/z305-bor-status');
+        $expiry = $xml->xpath('//institution/z305-expiry-date');
         $profile['expiration_date'] = $this->parseDate($expiry[0]);
         $profile['group'] = $status[0];
         return $profile;
@@ -1301,7 +1301,7 @@ class Aleph extends AbstractBase implements
     public function patronLogin($user, $password)
     {
         if ($password == null) {
-            $temp = ["id" => $user];
+            $temp = ['id' => $user];
             $temp['college'] = $this->useradm;
             return $this->getMyProfile($temp);
         }
@@ -1322,11 +1322,11 @@ class Aleph extends AbstractBase implements
         }
         $patron = [];
         $name = $xml->z303->{'z303-name'};
-        if (strstr($name, ",")) {
-            [$lastName, $firstName] = explode(",", $name);
+        if (strstr($name, ',')) {
+            [$lastName, $firstName] = explode(',', $name);
         } else {
             $lastName = $name;
-            $firstName = "";
+            $firstName = '';
         }
         $email_addr = $xml->z304->{'z304-email-address'};
         $id = $xml->z303->{'z303-id'};
@@ -1385,7 +1385,7 @@ class Aleph extends AbstractBase implements
         }
         $date = $xml->xpath('//last-interest-date/text()');
         $date = $date[0];
-        $date = "" . substr($date, 6, 2) . "." . substr($date, 4, 2) . "."
+        $date = '' . substr($date, 6, 2) . '.' . substr($date, 4, 2) . '.'
             . substr($date, 0, 4);
         return [
             'pickup-locations' => $locations, 'last-interest-date' => $date,
@@ -1485,7 +1485,7 @@ class Aleph extends AbstractBase implements
                     'hold',
                 ],
                 null,
-                "PUT",
+                'PUT',
                 $body
             );
         } catch (Aleph\RestfulException $exception) {
@@ -1516,23 +1516,23 @@ class Aleph extends AbstractBase implements
         foreach ($this->bib as $base) {
             try {
                 $xml = $this->doXRequest(
-                    "find",
-                    ["base" => $base, "request" => "BAR=$bar"],
+                    'find',
+                    ['base' => $base, 'request' => "BAR=$bar"],
                     false
                 );
-                $docs = (int)$xml->{"no_records"};
+                $docs = (int)$xml->{'no_records'};
                 if ($docs == 1) {
-                    $set = (string)$xml->{"set_number"};
+                    $set = (string)$xml->{'set_number'};
                     $result = $this->doXRequest(
-                        "present",
-                        ["set_number" => $set, "set_entry" => "1"],
+                        'present',
+                        ['set_number' => $set, 'set_entry' => '1'],
                         false
                     );
                     $id = $result->xpath('//doc_number/text()');
                     if (count($this->bib) == 1) {
                         return $id[0];
                     } else {
-                        return $base . "-" . $id[0];
+                        return $base . '-' . $id[0];
                     }
                 }
             } catch (\Exception $ex) {
@@ -1550,9 +1550,9 @@ class Aleph extends AbstractBase implements
      */
     public function parseDate($date)
     {
-        if ($date == null || $date == "") {
-            return "";
-        } elseif (preg_match("/^[0-9]{8}$/", $date) === 1) { // 20120725
+        if ($date == null || $date == '') {
+            return '';
+        } elseif (preg_match('/^[0-9]{8}$/', $date) === 1) { // 20120725
             return $this->dateConverter->convertToDisplayDate('Ynd', $date);
         } elseif (preg_match("/^[0-9]+\/[A-Za-z]{3}\/[0-9]{4}$/", $date) === 1) {
             // 13/jan/2012
@@ -1599,7 +1599,7 @@ class Aleph extends AbstractBase implements
      */
     public function getConfig($func, $params = [])
     {
-        if ($func == "Holds") {
+        if ($func == 'Holds') {
             $holdsConfig = $this->config['Holds'] ?? [];
             $defaults = [
                 'HMACKeys' => 'id:item_id',
@@ -1649,16 +1649,16 @@ class Aleph extends AbstractBase implements
             );
             foreach ($details['pickup-locations'] as $key => $value) {
                 $pickupLocations[] = [
-                    "locationID" => $key,
-                    "locationDisplay" => $value,
+                    'locationID' => $key,
+                    'locationDisplay' => $value,
                 ];
             }
         } else {
             $default = $this->getDefaultPickUpLocation($patron);
             if (!empty($default)) {
                 $pickupLocations[] = [
-                    "locationID" => $default,
-                    "locationDisplay" => $default,
+                    'locationID' => $default,
+                    'locationDisplay' => $default,
                 ];
             }
         }

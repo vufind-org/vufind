@@ -1203,7 +1203,7 @@ class BackendTest extends TestCase
             $params = [],
             $method = 'GET',
             $message = null,
-            $messageFormat = ""
+            $messageFormat = ''
         ) use ($fixture) {
             if ('' === $fixture) {
                 throw new BackendException('Simulated EDS failure');

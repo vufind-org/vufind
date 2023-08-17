@@ -14,7 +14,7 @@
 
 <form id="ILLRequestForm" name="placeILLRequest" class="form-ill-retrieval-request" method="post" data-clear-account-cache="illRequests">
   <?=$this->flashmessages()?>
-  <?php if (in_array("itemId", $this->extraFields)): ?>
+  <?php if (in_array('itemId', $this->extraFields)): ?>
     <div class="form-group">
       <label class="control-label"><?=$this->transEsc('ill_request_item')?>:</label>
       <select id="itemId" name="gatheredDetails[itemId]" class="form-control">
@@ -27,13 +27,13 @@
     </div>
   <?php endif; ?>
 
-  <?php if (in_array("pickUpLibrary", $this->extraFields) && !empty($this->pickupLibraries)): ?>
+  <?php if (in_array('pickUpLibrary', $this->extraFields) && !empty($this->pickupLibraries)): ?>
     <div class="form-group">
-      <label class="control-label"><?=$this->transEsc("ill_request_pick_up_library")?>:</label>
+      <label class="control-label"><?=$this->transEsc('ill_request_pick_up_library')?>:</label>
       <?php if (count($this->pickupLibraries) > 1): ?>
         <select id="pickupLibrary" name="gatheredDetails[pickUpLibrary]" class="form-control">
         <?php
-          if (isset($this->gatheredDetails['pickUpLibrary']) && $this->gatheredDetails['pickUpLibrary'] !== "") {
+          if (isset($this->gatheredDetails['pickUpLibrary']) && $this->gatheredDetails['pickUpLibrary'] !== '') {
               $selected = $this->gatheredDetails['pickUpLibrary'];
           } else {
               $selected = false;
@@ -53,30 +53,30 @@
     </div>
   <?php endif; ?>
 
-  <?php if (in_array("pickUpLibraryLocation", $this->extraFields)): ?>
+  <?php if (in_array('pickUpLibraryLocation', $this->extraFields)): ?>
     <div class="form-group">
       <label id="pickupLibraryLocationLabel" class="control-label">
         <span class="loading-icon"><?=$this->icon('spinner') ?></span>
-        <?=$this->transEsc("ill_request_pick_up_location")?>:
-        <noscript> (<?=$this->transEsc("Please enable JavaScript.")?>)</noscript>
+        <?=$this->transEsc('ill_request_pick_up_location')?>:
+        <noscript> (<?=$this->transEsc('Please enable JavaScript.')?>)</noscript>
       </label>
       <select id="pickupLibraryLocation" name="gatheredDetails[pickUpLibraryLocation]" class="form-control"></select>
     </div>
   <?php endif; ?>
 
-  <?php if (in_array("pickUpLocation", $this->extraFields)): ?>
+  <?php if (in_array('pickUpLocation', $this->extraFields)): ?>
     <?php if (count($this->pickup) > 1): ?>
       <div class="form-group">
         <?php
-          if (isset($this->gatheredDetails['pickUpLocation']) && $this->gatheredDetails['pickUpLocation'] !== "") {
+          if (isset($this->gatheredDetails['pickUpLocation']) && $this->gatheredDetails['pickUpLocation'] !== '') {
             $selected = $this->gatheredDetails['pickUpLocation'];
-          } elseif (isset($this->homeLibrary) && $this->homeLibrary !== "") {
+          } elseif (isset($this->homeLibrary) && $this->homeLibrary !== '') {
             $selected = $this->homeLibrary;
           } else {
             $selected = $this->defaultPickup;
           }
         ?>
-        <label class="control-label"><?=$this->transEsc("pick_up_location")?>:</label>
+        <label class="control-label"><?=$this->transEsc('pick_up_location')?>:</label>
         <select name="gatheredDetails[pickUpLocation]" class="form-control">
           <?php foreach ($this->pickup as $lib): ?>
             <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID']) ? ' selected="selected"' : ''?>>
@@ -90,17 +90,17 @@
     <?php endif; ?>
   <?php endif; ?>
 
-  <?php if (in_array("requiredByDate", $this->extraFields)): ?>
+  <?php if (in_array('requiredByDate', $this->extraFields)): ?>
     <div class="form-group">
-      <label class="control-label"><?=$this->transEsc("hold_required_by")?>:</label>
+      <label class="control-label"><?=$this->transEsc('hold_required_by')?>:</label>
       <input id="requiredByDate" type="text" name="gatheredDetails[requiredBy]" value="<?=(isset($this->gatheredDetails['requiredBy']) && !empty($this->gatheredDetails['requiredBy'])) ? $this->escapeHtmlAttr($this->gatheredDetails['requiredBy']) : $this->escapeHtmlAttr($this->defaultRequiredDate)?>" size="8" class="form-control">
       (<?=$this->dateTime()->getDisplayDateFormat()?>)
     </div>
   <?php endif; ?>
 
-  <?php if (in_array("comments", $this->extraFields)): ?>
+  <?php if (in_array('comments', $this->extraFields)): ?>
     <div class="form-group">
-      <label class="control-label"><?=$this->transEsc("Comments")?>:</label>
+      <label class="control-label"><?=$this->transEsc('Comments')?>:</label>
       <textarea rows="3" cols="20" name="gatheredDetails[comment]" class="form-control"><?=isset($this->gatheredDetails['comment']) ? $this->escapeHtml($this->gatheredDetails['comment']) : ''?></textarea>
     </div>
   <?php endif; ?>

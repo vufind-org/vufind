@@ -216,7 +216,7 @@ class Jop extends AbstractBase
     {
         // we need 'genre' but only the values
         // article or journal are allowed...
-        $downgraded[] = "genre=article";
+        $downgraded[] = 'genre=article';
 
         // prepare content for downgrading
         // resolver only accepts date formats YYYY, YYYY-MM, and YYYY-MM-DD
@@ -268,8 +268,8 @@ class Jop extends AbstractBase
     protected function getElectronicResults($state, $coverage, &$records, $xpath)
     {
         $results = $xpath->query(
-            "/OpenURLResponseXML/Full/ElectronicData/ResultList/Result[@state=" .
-            $state . "]"
+            '/OpenURLResponseXML/Full/ElectronicData/ResultList/Result[@state=' .
+            $state . ']'
         );
 
         /*
@@ -303,8 +303,8 @@ class Jop extends AbstractBase
             $record = [];
 
             // get title from XPath Element defined in $xpathTitleSelector
-            $titleXP = "/OpenURLResponseXML/Full/ElectronicData/ResultList/" .
-                "Result[@state={$state}][" . ($i + 1) . "]/" .
+            $titleXP = '/OpenURLResponseXML/Full/ElectronicData/ResultList/' .
+                "Result[@state={$state}][" . ($i + 1) . ']/' .
                 $this->xpathTitleSelector;
             $title = $xpath->query($titleXP, $result)->item(0);
             if (isset($title)) {
@@ -312,8 +312,8 @@ class Jop extends AbstractBase
             }
 
             // get additional coverage information
-            $additionalXP = "/OpenURLResponseXML/Full/ElectronicData/ResultList/" .
-                "Result[@state={$state}][" . ($i + 1) . "]/Additionals/Additional";
+            $additionalXP = '/OpenURLResponseXML/Full/ElectronicData/ResultList/' .
+                "Result[@state={$state}][" . ($i + 1) . ']/Additionals/Additional';
             $additionalType = ['nali', 'intervall', 'moving_wall'];
             $additionals = [];
             foreach ($additionalType as $type) {
@@ -325,18 +325,18 @@ class Jop extends AbstractBase
                 }
             }
             $record['coverage']
-                = !empty($additionals) ? implode("; ", $additionals) : $coverage;
+                = !empty($additionals) ? implode('; ', $additionals) : $coverage;
 
             $record['access'] = $state_access_mapping[$state];
 
             // try to find direct access URL
-            $accessUrlXP = "/OpenURLResponseXML/Full/ElectronicData/ResultList/" .
-                "Result[@state={$state}][" . ($i + 1) . "]/AccessURL";
+            $accessUrlXP = '/OpenURLResponseXML/Full/ElectronicData/ResultList/' .
+                "Result[@state={$state}][" . ($i + 1) . ']/AccessURL';
             $accessUrl = $xpath->query($accessUrlXP, $result)->item(0);
 
             // try to find journal URL as fallback for direct access URL
-            $journalUrlXP = "/OpenURLResponseXML/Full/ElectronicData/ResultList/" .
-                "Result[@state={$state}][" . ($i + 1) . "]/JournalURL";
+            $journalUrlXP = '/OpenURLResponseXML/Full/ElectronicData/ResultList/' .
+                "Result[@state={$state}][" . ($i + 1) . ']/JournalURL';
             $journalUrl = $xpath->query($journalUrlXP, $result)->item(0);
 
             // return direct access URL if available otherwise journal URL fallback
@@ -397,24 +397,24 @@ class Jop extends AbstractBase
             $record = [];
             $record['title'] = $coverage;
 
-            $resultXP = "/OpenURLResponseXML/Full/PrintData/ResultList/" .
-                "Result[@state={$state}][" . ($i + 1) . "]";
+            $resultXP = '/OpenURLResponseXML/Full/PrintData/ResultList/' .
+                "Result[@state={$state}][" . ($i + 1) . ']';
             $resultElements = [
                 'Title', 'Location', 'Signature', 'Period', 'Holding_comment',
             ];
             $elements = [];
             foreach ($resultElements as $element) {
-                $elem = $xpath->query($resultXP . "/" . $element, $result)->item(0);
+                $elem = $xpath->query($resultXP . '/' . $element, $result)->item(0);
                 if (isset($elem->nodeValue)) {
                     $elements[$element] = strip_tags($elem->nodeValue);
                 }
             }
             $record['coverage']
-                = !empty($elements) ? implode("; ", $elements) : $coverage;
+                = !empty($elements) ? implode('; ', $elements) : $coverage;
 
             $record['access'] = $state_access_mapping[$state];
 
-            $urlXP = "/OpenURLResponseXML/Full/PrintData/References/Reference/URL";
+            $urlXP = '/OpenURLResponseXML/Full/PrintData/References/Reference/URL';
             $url = $xpath->query($urlXP, $result)->item($i);
             if (isset($url->nodeValue)) {
                 $record['href'] = $url->nodeValue;

@@ -53,8 +53,8 @@
         // Deal with cart stuff:
         $cart = $this->cart();
         if ($cart->isActive()) {
-          $this->headScript()->appendFile("vendor/js.cookie.js");
-          $this->headScript()->appendFile("cart.js");
+          $this->headScript()->appendFile('vendor/js.cookie.js');
+          $this->headScript()->appendFile('cart.js');
           if ($domain = $cart->getCookieDomain()) {
             $appendScripts[] = 'VuFind.cart.setDomain("' . $domain . '");';
           }
@@ -73,13 +73,13 @@
       // Session keep-alive
       if ($this->keepAlive()) {
           $appendScripts[] = 'var keepAliveInterval = ' . $this->keepAlive() . ';';
-          $this->headScript()->appendFile("keep_alive.js");
+          $this->headScript()->appendFile('keep_alive.js');
       }
 
       // If account ajax is active, load script and add language strings
       $account = $this->auth()->getManager();
       if ($account->ajaxEnabled()) {
-        $this->headScript()->appendFile("account_ajax.js");
+        $this->headScript()->appendFile('account_ajax.js');
         if ($this->session()->put('reset_account_status', null)) {
           $this->headScript()->setAllowArbitraryAttributes(true);
           $this->headScript()->appendScript('VuFind.account.clearAllCaches();', 'text/javascript', ['data-lightbox-run' => 'always']);
@@ -102,7 +102,7 @@
       $this->headScript()->appendScript(implode("\n", $appendScripts));
 
       if ($this->config()->ajaxCoversEnabled()) {
-          $this->headScript()->appendFile("covers.js");
+          $this->headScript()->appendFile('covers.js');
       }
     ?>
     <?=$this->cookieConsent()->render()?>
