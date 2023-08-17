@@ -5,11 +5,10 @@ VuFind.register('search', function search() {
   let paginationLinksSelector = '.js-pagination a,.js-pagination-simple a';
   let scrollElementSelector = '.search-stats';
   let searchStatsSelector = '.js-search-stats';
-  let searchControlFormSelector = '.search-controls form';
-  let sortFormSelector = searchControlFormSelector + '.search-sort';
-  let sortFormLimitSelector = sortFormSelector + ' input[name=limit]';
-  let limitFormSelector = searchControlFormSelector + '.search-result-limit';
-  let limitFormSortSelector = searchControlFormSelector + ' input[name=sort]';
+  let searchFormSelector = 'form.searchForm';
+  let resultsControlFormSelector = '.search-controls form';
+  let sortFormSelector = resultsControlFormSelector + '.search-sort';
+  let limitFormSelector = resultsControlFormSelector + '.search-result-limit';
   let viewTypeSelector = '.view-buttons a';
 
   // Forward declaration
@@ -50,7 +49,7 @@ VuFind.register('search', function search() {
    * will cause a reload since page contents may change.
    */
   function initResultControls() {
-    document.querySelectorAll(searchControlFormSelector).forEach((form) => {
+    document.querySelectorAll(resultsControlFormSelector).forEach((form) => {
       if (!form.dataset.ajaxPagination) {
         form.dataset.ajaxPagination = true;
         form.querySelectorAll('.jumpMenu').forEach(jumpMenu => {
@@ -103,10 +102,11 @@ VuFind.register('search', function search() {
    *
    * @param {string} formSelector
    * @param {string} fieldName
-   * @param {?Element} field
    * @param {?string} value
    */
-  function handleHiddenField(formSelector, fieldName, field, value) {
+  function handleHiddenField(formSelector, fieldName, value) {
+    let form = document.querySelector(formSelector);
+    let field = form.querySelector("input[name=" + fieldName + "]");
     if (field) {
       if (value) {
         field.value = value;
@@ -114,7 +114,7 @@ VuFind.register('search', function search() {
         field.remove();
       }
     } else if (value) {
-      prependHiddenField(document.querySelector(formSelector), fieldName, value);
+      prependHiddenField(form, fieldName, value);
     }
   }
 
@@ -154,13 +154,15 @@ VuFind.register('search', function search() {
     const sort = params.get('sort');
     const limit = params.get('limit');
 
-    // Update hidden fields of forms:
-    const limitField = document.querySelector(sortFormLimitSelector);
-    handleHiddenField(sortFormSelector, 'limit', limitField, limit);
-    const sortField = document.querySelector(limitFormSortSelector);
-    handleHiddenField(limitFormSelector, 'sort', sortField, sort);
+    // Update hidden fields of the search form:
+    handleHiddenField(searchFormSelector, 'limit', limit);
+    handleHiddenField(searchFormSelector, 'sort', sort);
 
-    // Update currently selected values:
+    // Update hidden fields of search control forms:
+    handleHiddenField(sortFormSelector, 'limit', limit);
+    handleHiddenField(limitFormSelector, 'sort', sort);
+
+    // Update currently selected values (required for history traversal to show correct values):
     updateSelectValue(document.querySelector(sortFormSelector + ' select'), sort);
     updateSelectValue(document.querySelector(limitFormSelector + ' select'), limit);
 
