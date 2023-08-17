@@ -176,7 +176,7 @@ VuFind.register('lightbox', function Lightbox() {
       obj.url = parts[0].indexOf('?') < 0
         ? parts[0] + '?'
         : parts[0] + '&';
-      obj.url += '&lightboxParent=' + VuFind.lightbox.parent;
+      obj.url += '&lightboxParent=' + encodeURIComponent(VuFind.lightbox.parent);
       obj.url += parts.length < 2 ? '' : '#' + parts[1];
     }
     // Store original URL with the layout=lightbox parameter:
