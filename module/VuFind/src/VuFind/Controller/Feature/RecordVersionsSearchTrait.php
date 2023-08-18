@@ -48,30 +48,19 @@ trait RecordVersionsSearchTrait
      */
     public function versionsAction()
     {
-        $id = $this->params()->fromQuery('id');
-        $keys = $this->params()->fromQuery('keys');
-        $record = null;
-        if ($id) {
-            $loader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
-            $record = $loader->load($id, $this->searchClassId, true);
-            if ($record instanceof \VuFind\RecordDriver\Missing) {
-                $record = null;
-            } else {
-                $keys = $record->tryMethod('getWorkKeys');
-            }
-        }
-
-        if (empty($keys)) {
+        $versionsHelper
+            = $this->serviceLocator->get(\VuFind\Record\VersionsHelper::class);
+        $keyData = $versionsHelper->getIdDriverAndWorkKeysFromParams(
+            $this->params()->fromQuery(),
+            $this->searchClassId
+        );
+        if (empty($keyData['keys'])) {
             return $this->forwardTo('Search', 'Home');
         }
 
-        $mapFunc = function ($val) {
-            return '"' . addcslashes($val, '"') . '"';
-        };
-
         $query = $this->getRequest()->getQuery();
-        $query->lookfor = implode(' OR ', array_map($mapFunc, (array)$keys));
-        $query->type = 'WorkKeys';
+        $query->lookfor = $versionsHelper->getSearchStringFromWorkKeys($keyData['keys']);
+        $query->type = $versionsHelper->getWorkKeysSearchType();
 
         // Don't save to history -- history page doesn't handle correctly:
         $this->saveToHistory = false;
@@ -89,15 +78,15 @@ trait RecordVersionsSearchTrait
 
         $view = $this->getSearchResultsView($callback);
 
-        // Customize the URL helper to make sure it builds proper versions URLs
-        // (but only do this if we have access to a results object, which we
-        // won't in RSS mode):
         if (isset($view->results)) {
+            // Customize the URL helper to make sure it builds proper versions URLs
+            // (but only do this if we have access to a results object, which we
+            // won't in RSS mode):
             $view->results->getUrlQuery()
-                ->setDefaultParameter('id', $id)
-                ->setDefaultParameter('keys', $keys)
+                ->setDefaultParameter('id', $keyData['id'])
+                ->setDefaultParameter('keys', $keyData['keys'])
                 ->setSuppressQuery(true);
-            $view->driver = $record;
+            $view->driver = $keyData['driver'];
         }
 
         return $view;
