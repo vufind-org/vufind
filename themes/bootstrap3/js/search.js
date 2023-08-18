@@ -189,6 +189,16 @@ VuFind.register('search', function search() {
   }
 
   /**
+   * Scroll view port to results
+   *
+   * @param {string} _style Scroll behavior ('smooth' (default), 'instant' or 'auto')
+   */
+  function scrollToResults(_style) {
+    let style = typeof _style !== 'undefined' ? _style : 'smooth';
+    document.querySelector(scrollElementSelector).scrollIntoView({behavior: style});
+  }
+
+  /**
    * Show an error message
    *
    * @param {string} error
@@ -226,7 +236,7 @@ VuFind.register('search', function search() {
     loadingOverlay.setAttribute('role', 'status');
     loadingOverlay.innerHTML = VuFind.loading();
     recordList.prepend(loadingOverlay);
-    document.querySelector(scrollElementSelector).scrollIntoView({behavior: 'smooth'});
+    scrollToResults();
     const searchStats = document.querySelector(searchStatsSelector);
     const statsKey = searchStats.dataset.key;
 
@@ -300,6 +310,7 @@ VuFind.register('search', function search() {
   }
 
   return {
-    init: init
+    init: init,
+    scrollToResults
   };
 });
