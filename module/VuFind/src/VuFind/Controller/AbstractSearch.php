@@ -915,6 +915,7 @@ class AbstractSearch extends AbstractBase
             'urlBase' => $urlBase,
             'searchAction' => $searchAction
         ];
+        $viewParams['delegateParams'] = $viewParams;
 
         if ($ajax == 0) {
             $view = $this->createViewModel($viewParams);

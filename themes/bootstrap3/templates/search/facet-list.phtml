@@ -47,17 +47,24 @@
 <input class="ajax_param" data-name="searchAction" type="hidden" value="<?=$searchAction?>">
 <input class="ajax_param" data-name="ajaxLightbox" type="hidden" value="<?=$this->ajaxLightbox ? intval($this->ajaxLightbox) : intval($this->inLightbox) ?>">
 
+<?php $this->headScript()->appendFile('facets.js'); ?>
 
 <div id="facet-info-result" class="lightbox-scroll full-facets">
   <?php foreach ($this->sortOptions as $key => $sort): ?>
     <?php $active = $this->sort == $key; ?>
     <div class="full-facet-list facet-group<?php if(!$active): ?> hidden<?php endif; ?>" id="facet-list-<?=$this->escapeHtmlAttr($key) ?>">
       <!-- The content of this list will later be updated via AJAX, see facet-list-content.phtml -->
-      <?=$this->render('search/facet-list-content.phtml') ?>
+      <?php $params = $this->delegateParams; ?>
+      <?php $params['urlBase'] = $urlBase; ?>
+      <?php $params['searchAction'] = $searchAction; ?>
+      <?php $params['inLightbox'] = $this->inLightbox; ?>
+      <?=$this->render('search/facet-list-content.phtml', $params) ?>
     </div>
   <?php endforeach; ?>
 </div>
 <button class="btn btn-default lightbox-only" data-dismiss="modal"><?=$this->translate('close') ?></button>
 
-<?php $this->headScript()->appendFile('facets.js'); ?>
-<?=$this->inlineScript()->appendScript('setupFacetList();');?>
+<?php if ($this->inLightbox || $this->ajaxLightbox): ?>
+  <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, 'VuFind.lightbox_facets.setup();', 'SET')?>
+<?php endif; ?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, 'VuFind.facetList.setup();', 'SET')?>

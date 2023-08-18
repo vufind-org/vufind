@@ -1,78 +1,83 @@
 /*global VuFind */
 /*exported initFacetTree, setupFacetList */
 
-function overrideHref(selector, overrideParams = {}) {
-  $(selector).each(function overrideHrefEach() {
-    let dummyDomain = 'https://www.example.org'; // we need this since the URL class cannot parse relative URLs
-    let url = new URL(dummyDomain + VuFind.path + $(this).attr('href'));
-    Object.entries(overrideParams).forEach(([key, value]) => {
-      url.searchParams.set(key, value);
-    });
-    url = url.href;
-    url = url.replaceAll(dummyDomain, '');
-    $(this).attr('href', url);
-  });
-}
-
-function updateHrefContains() {
-  let overrideParams = { contains: $('.ajax_param[data-name="contains"]').val() };
-  overrideHref('.js-facet-sort', overrideParams);
-  overrideHref('.js-facet-next-page', overrideParams);
-  overrideHref('.js-facet-prev-page', overrideParams);
-}
-
-function getFacetListContent(overrideParams = {}) {
-  let url = $('.ajax_param[data-name="urlBase"]').val();
-
-  $('.ajax_param').each(function ajaxParamEach() {
-    let key = $(this).data('name');
-    let val = $(this).val();
-    if (key in overrideParams) {
-      val = overrideParams[key];
-    }
-    url += '&' + encodeURIComponent(key) + '=' + encodeURIComponent(val);
-  });
-  url += '&ajax=1';
-
-  return Promise.resolve($.ajax({
-    url: url
-  }));
-}
-
-function updateFacetListContent() {
-  getFacetListContent().then(html => {
-    let htmlList = '';
-    $(html).find('.full-facet-list').each(function itemEach() {
-      htmlList += $(this).prop('outerHTML');
-    });
-    $('#facet-info-result').html(htmlList);
-  });
-}
-
-function setupFacetList() {
-  if ($.isReady) {
-    registerFacetListContentKeyupCallback();
-  } else {
-    $(function ready() {
-      registerFacetListContentKeyupCallback();
+/* --- Facet List --- */
+VuFind.register('facetList', function FacetList() {
+  function overrideHref(selector, overrideParams = {}) {
+    $(selector).each(function overrideHrefEach() {
+      let dummyDomain = 'https://www.example.org'; // we need this since the URL class cannot parse relative URLs
+      let url = new URL(dummyDomain + VuFind.path + $(this).attr('href'));
+      Object.entries(overrideParams).forEach(([key, value]) => {
+        url.searchParams.set(key, value);
+      });
+      url = url.href;
+      url = url.replaceAll(dummyDomain, '');
+      $(this).attr('href', url);
     });
   }
-}
 
-// Useful function to delay callbacks, e.g. when using a keyup event
-// to detect when the user stops typing.
-// See also: https://stackoverflow.com/questions/1909441/how-to-delay-the-keyup-handler-until-the-user-stops-typing
-var keyupCallbackTimeout = null;
-function registerFacetListContentKeyupCallback() {
-  $('.ajax_param[data-name="contains"]').on('keyup', function onKeyupChangeFacetList() {
-    clearTimeout(keyupCallbackTimeout);
-    keyupCallbackTimeout = setTimeout(function onKeyupTimeout() {
-      updateFacetListContent();
+  function updateHrefContains() {
+    let overrideParams = { contains: $('.ajax_param[data-name="contains"]').val() };
+    overrideHref('.js-facet-sort', overrideParams);
+    overrideHref('.js-facet-next-page', overrideParams);
+    overrideHref('.js-facet-prev-page', overrideParams);
+  }
+
+  function getFacetListContent(overrideParams = {}) {
+    let url = $('.ajax_param[data-name="urlBase"]').val();
+
+    $('.ajax_param').each(function ajaxParamEach() {
+      let key = $(this).data('name');
+      let val = $(this).val();
+      if (key in overrideParams) {
+        val = overrideParams[key];
+      }
+      url += '&' + encodeURIComponent(key) + '=' + encodeURIComponent(val);
+    });
+    url += '&ajax=1';
+
+    return Promise.resolve($.ajax({
+      url: url
+    }));
+  }
+
+  function updateFacetListContent() {
+    getFacetListContent().then(html => {
+      let htmlList = '';
+      $(html).find('.full-facet-list').each(function itemEach() {
+        htmlList += $(this).prop('outerHTML');
+      });
+      $('#facet-info-result').html(htmlList);
       updateHrefContains();
-    }, 500);
-  });
-}
+      VuFind.lightbox_facets.setup();
+    });
+  }
 
+  function setup() {
+    if ($.isReady) {
+      registerFacetListContentKeyupCallback();
+    } else {
+      $(function ready() {
+        registerFacetListContentKeyupCallback();
+      });
+    }
+  }
+
+  // Useful function to delay callbacks, e.g. when using a keyup event
+  // to detect when the user stops typing.
+  // See also: https://stackoverflow.com/questions/1909441/how-to-delay-the-keyup-handler-until-the-user-stops-typing
+  var keyupCallbackTimeout = null;
+  function registerFacetListContentKeyupCallback() {
+    $('.ajax_param[data-name="contains"]').on('keyup', function onKeyupChangeFacetList() {
+      clearTimeout(keyupCallbackTimeout);
+      keyupCallbackTimeout = setTimeout(function onKeyupTimeout() {
+        updateFacetListContent();
+      }, 500);
+    });
+  }
+
+  return { setup: setup, getFacetListContent: getFacetListContent };
+});
 
 function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
 {
@@ -384,8 +389,8 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
       button.attr('disabled', 1);
       button.html(VuFind.translate('loading_ellipsis'));
 
-      let overrideParams = {facetpage: page, layout: 'lightbox'};
-      getFacetListContent(overrideParams).then(data => {
+      let overrideParams = {facetpage: page, layout: 'lightbox', ajax: 1};
+      VuFind.facetList.getFacetListContent(overrideParams).then(data => {
         $(data).find('.js-facet-item').each(function eachItem() {
           button.before($(this).prop('outerHTML'));
         });
