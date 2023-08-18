@@ -6,6 +6,7 @@
  * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
+ * Copyright (C) The National Library of Finland 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -37,6 +38,7 @@ use Behat\Mink\Element\Element;
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  * @retry    4
@@ -67,7 +69,7 @@ class SearchLimitTest extends \VuFindTest\Integration\MinkTestCase
         $config = ['default_limit' => $default, 'limit_options' => $options];
         $this->changeConfigs(['searches' => ['General' => $config]]);
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Results?limit=' . $limitParam);
+        $session->visit($this->getVuFindUrl() . "/Search/Results?filter[]=building%3A%22geo.mrc%22&limit=$limitParam");
         return $session->getPage();
     }
 
@@ -118,6 +120,24 @@ class SearchLimitTest extends \VuFindTest\Integration\MinkTestCase
     protected function assertNoLimitControl(Element $page)
     {
         $this->assertNull($page->find('css', $this->limitControlSelector));
+    }
+
+    /**
+     * Check that first and last record of the results are correct
+     *
+     * @param Element $page  Current page
+     * @param string  $first Expected first title
+     * @param string  $last  Expected last title
+     * @param int     $count Expected result count
+     *
+     * @return void
+     */
+    protected function assertResultTitles($page, string $first, string $last, int $count): void
+    {
+        $titles = $page->findAll('css', '.result a.title');
+        $this->assertCount($count, $titles);
+        $this->assertEquals($first, $titles[0]->getText());
+        $this->assertEquals($last, $titles[$count - 1]->getText());
     }
 
     /**
@@ -190,5 +210,30 @@ class SearchLimitTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->setUpLimitedSearch('GARBAGE', '3,6,9', '6');
         $this->assertResultSize($page, 6);
         $this->assertLimitControl($page, [3, 6, 9], 6);
+    }
+
+    /**
+     * Test the limit control
+     *
+     * @return void
+     */
+    public function testLimitChange(): void
+    {
+        $page = $this->setUpLimitedSearch('20', '20,40', '20');
+
+        // Check expected first and last record on first page:
+        $this->assertResultTitles($page, 'Test Publication 20001', 'Test Publication 20020', 20);
+
+        // Go to second page:
+        $this->clickCss($page, '.pagination li > a');
+        $this->assertResultTitles($page, 'Test Publication 20021', 'Test Publication 20040', 20);
+
+        // Change limit and verify:
+        $this->clickCss($page, $this->limitControlSelector . ' option', null, 1);
+        $this->waitForPageLoad($page);
+        // Check expected first and last record (page should be reset):
+        $this->assertResultTitles($page, 'Test Publication 20001', 'Test Publication 20040', 40);
+        // Check that url no longer contains the page parameter:
+        $this->assertStringNotContainsString('&page', $this->getCurrentQueryString());
     }
 }
