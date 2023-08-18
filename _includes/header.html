@@ -24,19 +24,23 @@
       <a href="https://github.com/vufind-org/vufind" class="hidden-lg">GitHub</a>
     </div>
     <!--
+    -->
     <div class="header-announcement">
       <p>
-        <a href="https://vufind.org/wiki/community:conferences:summit_2022">Join us for the virtual VuFind Summit 2022!</a>
-        September 7-8 from <abbr id="gmt-time" title="9/7/22, 9:00 AM local time">13:00-16:00 GMT</abbr>.
+        Join us at <a href="https://openlibraryfoundation.org/about/wolfcon/upcoming/">WOLFcon</a> for <a href="https://vufind.org/wiki/community:conferences:summit_2023">VuFind Summit 2023!</a>
+         August 22-24 from <abbr id="gmt-time">14:00-17:00 GMT</abbr>.
       </p>
     </div>
     <script>
+      const startTime = new Date(Date.UTC(2023, 8-1, 22, 14, 0, 0));
+      const endTime = new Date(Date.UTC(2023, 8-1, 22, 17, 0, 0));
+
       const formatter = new Intl.DateTimeFormat('default', { dateStyle: 'short', timeStyle: 'short' });
-      const startTime = new Date(Date.UTC(2022, 9-1, 7, 13, 0, 0));
       const localStartTime = formatter.format(startTime);
+      const localEndTime = formatter.format(endTime);
+
       document.getElementById("gmt-time")
-          .setAttribute("title", `${localStartTime} local time`);
+        .setAttribute("title", `Local Time: ${localStartTime} to ${localEndTime}`);
     </script>
-    -->
     <div class="body">
       <div class="container">
