@@ -106,6 +106,9 @@ VuFind.register('search', function search() {
    */
   function handleHiddenField(formSelector, fieldName, value) {
     let form = document.querySelector(formSelector);
+    if (!form) {
+      return;
+    }
     let field = form.querySelector("input[name=" + fieldName + "]");
     if (field) {
       if (value) {
