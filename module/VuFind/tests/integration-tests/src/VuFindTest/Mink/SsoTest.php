@@ -101,7 +101,7 @@ class SsoTest extends \VuFindTest\Integration\MinkTestCase
 
         // Check if save form is in lightbox
         $this->waitForPageLoad($page);
-        $this->assertLightboxTitle($page, "Add Journal of rational emotive therapy : to saved items");
+        $this->assertLightboxTitle($page, 'Add Journal of rational emotive therapy : to saved items');
 
         // Close lightbox
         $this->closeLightbox($page);

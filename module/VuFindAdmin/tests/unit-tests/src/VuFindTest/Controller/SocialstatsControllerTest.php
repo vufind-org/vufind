@@ -73,7 +73,7 @@ class SocialstatsControllerTest extends \PHPUnit\Framework\TestCase
             ->onlyMethods(['getEngine', 'setResolver', 'render'])->addMethods(['plugin'])->getMock();
         $viewRenderer->expects($this->once())->method('plugin')->withAnyParameters()
             ->will($this->returnValue(function ($input) {
-                return "url";
+                return 'url';
             }));
         $container->set('ViewRenderer', $viewRenderer);
 
