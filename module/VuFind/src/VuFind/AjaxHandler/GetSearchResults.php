@@ -285,7 +285,7 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
         [$baseAction] = explode('-', $results->getOptions()->getSearchAction());
         $templatePath = "$baseAction/results-list.phtml";
         if ('search' !== $baseAction && !$this->renderer->resolver($templatePath)) {
-            $templatePath = "search/results-list.phtml";
+            $templatePath = 'search/results-list.phtml';
         }
         $params = $results->getParams();
         $options = $results->getOptions();

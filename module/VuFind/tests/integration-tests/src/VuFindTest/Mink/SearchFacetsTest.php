@@ -72,7 +72,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         // Confirm that we have 9 results and no filters to begin with:
         $stats = $this->findCss($page, '.search-stats');
         $this->assertStringStartsWith(
-            "Showing 1 - 9 results of 9",
+            'Showing 1 - 9 results of 9',
             $stats->getText()
         );
         $items = $page->findAll('css', $this->activeFilterSelector);
@@ -87,7 +87,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $stats = $this->findCss($page, '.search-stats');
         $this->assertStringStartsWith(
-            "Showing 1 - 7 results of 7",
+            'Showing 1 - 7 results of 7',
             $stats->getText()
         );
         $items = $page->findAll('css', $this->activeFilterSelector);
