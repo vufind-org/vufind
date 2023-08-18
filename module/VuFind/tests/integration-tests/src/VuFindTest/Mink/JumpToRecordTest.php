@@ -49,7 +49,7 @@ class JumpToRecordTest extends \VuFindTest\Integration\MinkTestCase
     public function testJumpToFirst()
     {
         $this->changeConfigs(
-            ["config" => ["Record" => ["jump_to_single_search_result" => true]]]
+            ['config' => ['Record' => ['jump_to_single_search_result' => true]]]
         );
 
         $page = $this->performSearch('id:testbug2');

@@ -38,7 +38,7 @@
     <?php for ($i = 0; $i < $numGroups; $i++): ?>
       <input type="hidden" name="bool<?=$i?>[]" value="AND">
       <div class="primo adv-group" id="group<?=$i?>">
-        <label class="primo-adv-label" id="group<?=$i?>SearchHolder"><?=$this->transEsc("adv_search_label")?>:</label>
+        <label class="primo-adv-label" id="group<?=$i?>SearchHolder"><?=$this->transEsc('adv_search_label')?>:</label>
         <div class="search-container">
           <?php
             if (isset($groups[$i])) {
@@ -64,7 +64,7 @@
                   <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getOperator() == $searchVal) ? ' selected="selected"' : ''?>><?=$this->transEsc($searchDesc)?></option>
                 <?php endforeach; ?>
               </select>
-                <input id="search_lookfor<?=$i?>_<?=$j?>" type="text" value="<?=$currRow ? $this->escapeHtmlAttr($currRow->getString()) : ''?>" size="30" name="lookfor<?=$i?>[]" class="form-control primo-adv-input" aria-label="<?=$this->transEscAttr("search_terms")?>">
+                <input id="search_lookfor<?=$i?>_<?=$j?>" type="text" value="<?=$currRow ? $this->escapeHtmlAttr($currRow->getString()) : ''?>" size="30" name="lookfor<?=$i?>[]" class="form-control primo-adv-input" aria-label="<?=$this->transEscAttr('search_terms')?>">
             </div>
           <?php endfor; ?>
         </div>
@@ -74,7 +74,7 @@
     <?php if (!empty($lastSort)): ?>
       <input type="hidden" name="sort" value="<?=$this->escapeHtmlAttr($lastSort)?>">
     <?php endif; ?>
-    <input type="submit" class="btn btn-primary" name="submit" value="<?=$this->transEscAttr("Find")?>">
+    <input type="submit" class="btn btn-primary" name="submit" value="<?=$this->transEscAttr('Find')?>">
   </div>
 
   <div class="<?=$this->layoutClass('sidebar')?>">
@@ -82,12 +82,12 @@
       <input type="hidden" name="dfApplied" value="1">
     <?php endif ?>
     <?php if (!empty($searchFilters)): ?>
-      <h4><?=$this->transEsc("adv_search_filters")?></h4>
+      <h4><?=$this->transEsc('adv_search_filters')?></h4>
       <ul class="list-group">
         <li class="list-group-item">
           <div class="checkbox">
             <label>
-              <?=$this->transEsc("adv_search_select_all")?>
+              <?=$this->transEsc('adv_search_select_all')?>
               <input type="checkbox" checked="checked" class="checkbox-select-all">
             </label>
           </div>

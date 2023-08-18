@@ -181,7 +181,7 @@ class LoggerFactory implements FactoryInterface
         );
         $writer->setContentType('application/json');
         $formatter = new \Laminas\Log\Formatter\Simple(
-            "*%priorityName%*: %message%"
+            '*%priorityName%*: %message%'
         );
         $writer->setFormatter($formatter);
         $this->addWriters($logger, $writer, $filters);
@@ -216,7 +216,7 @@ class LoggerFactory implements FactoryInterface
         );
         $writer->setContentType('application/json');
         $formatter = new \Laminas\Log\Formatter\Simple(
-            "*%priorityName%*: %message%"
+            '*%priorityName%*: %message%'
         );
         $writer->setFormatter($formatter);
         $this->addWriters($logger, $writer, $filters);

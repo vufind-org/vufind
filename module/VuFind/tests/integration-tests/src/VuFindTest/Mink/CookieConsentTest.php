@@ -154,7 +154,7 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
             "window._paq[window._paq.length-1][0] === 'setCookieConsentGiven'"
         );
         $this->waitStatement('VuFind.cookie.isServiceAllowed("matomo")');
-        $this->waitStatement("window._paq.pop()");
+        $this->waitStatement('window._paq.pop()');
 
         // Open settings again and accept only essential cookies:
         $this->clickSettings($page);
@@ -164,7 +164,7 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
             "window._paq[window._paq.length-1][0] !== 'setCookieConsentGiven'"
         );
         $this->waitStatement('!VuFind.cookie.isServiceAllowed("matomo")');
-        $this->waitStatement("window._paq.pop()");
+        $this->waitStatement('window._paq.pop()');
 
         // Open settings again and accept all cookies:
         $this->clickSettings($page);

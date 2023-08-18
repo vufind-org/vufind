@@ -131,7 +131,7 @@ class AbstractSearch extends AbstractBase
         if (empty($search)) {
             // User is trying to view a saved search from another session
             // (deliberate or expired) or associated with another user.
-            throw new \Exception("Attempt to access invalid search ID");
+            throw new \Exception('Attempt to access invalid search ID');
         }
 
         // If we got this far, the user is allowed to view the search, so we can

@@ -672,7 +672,7 @@ class Loader extends \VuFind\ImageLoader
     protected function processImageURL($url, $cache = true)
     {
         // Check to see if url is a file path
-        if (substr($url, 0, 7) == "file://") {
+        if (substr($url, 0, 7) == 'file://') {
             $imagePath = substr($url, 7);
 
             // Display the image:
@@ -700,7 +700,7 @@ class Loader extends \VuFind\ImageLoader
 
             // Write image data to disk:
             if (!@file_put_contents($tempFile, $image)) {
-                throw new \Exception("Unable to write to image directory.");
+                throw new \Exception('Unable to write to image directory.');
             }
 
             // Move temporary file to final location:

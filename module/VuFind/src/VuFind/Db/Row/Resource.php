@@ -223,7 +223,7 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
             $driver->tryMethod('getSortTitle'),
             0,
             255,
-            "UTF-8"
+            'UTF-8'
         );
         if (empty($this->title)) {
             $this->title = $driver->getBreadcrumb();
@@ -234,7 +234,7 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
             $driver->tryMethod('getPrimaryAuthor'),
             0,
             255,
-            "UTF-8"
+            'UTF-8'
         );
         if (!empty($author)) {
             $this->author = $author;

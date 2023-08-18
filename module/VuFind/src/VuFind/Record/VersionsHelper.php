@@ -59,27 +59,29 @@ class VersionsHelper
     }
 
     /**
-     * Get record driver and work keys from query params
+     * Get record id, record driver (if available) and work keys from query params
      *
      * @param array  $params  Query params containing id and/or keys
      * @param string $backend Search backend ID
      *
-     * @return array with driver and keys
+     * @return array with id, driver and keys
      */
-    public function getDriverAndWorkKeysFromParams(
+    public function getIdDriverAndWorkKeysFromParams(
         array $params,
         string $backend
     ): array {
         $id = $params['id'] ?? null;
-        $keys = $params['keys'] ?? null;
+        $keys = (array)($params['keys'] ?? []);
         $driver = null;
         if ($id) {
             $driver = $this->recordLoader->load($id, $backend, true);
-            if (!($driver instanceof \VuFind\RecordDriver\Missing)) {
+            if ($driver instanceof \VuFind\RecordDriver\Missing) {
+                $driver = null;
+            } else {
                 $keys = $driver->tryMethod('getWorkKeys') ?? $keys;
             }
         }
-        return compact('driver', 'keys');
+        return compact('id', 'driver', 'keys');
     }
 
     /**
@@ -95,7 +97,7 @@ class VersionsHelper
             return '"' . addcslashes($val, '"') . '"';
         };
 
-        return implode(' OR ', array_map($mapFunc, (array)$keys));
+        return implode(' OR ', array_map($mapFunc, $keys));
     }
 
     /**

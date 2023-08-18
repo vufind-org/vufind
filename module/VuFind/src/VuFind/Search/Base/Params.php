@@ -443,7 +443,7 @@ class Params
         // to great lengths for compatibility.
         if (is_array($lookfor)) {
             if (count($lookfor) > 1) {
-                throw new \Exception("Unsupported search URL.");
+                throw new \Exception('Unsupported search URL.');
             }
             $lookfor = $lookfor[0];
         }

@@ -83,7 +83,7 @@ class Search extends Gateway
     {
         // Special case for PostgreSQL inserts -- we need to provide an extra
         // clue so that the database knows how to write bytea data correctly:
-        if ($this->adapter->getDriver()->getDatabasePlatformName() == "Postgresql") {
+        if ($this->adapter->getDriver()->getDatabasePlatformName() == 'Postgresql') {
             if (!is_object($this->featureSet)) {
                 $this->featureSet = new Feature\FeatureSet();
             }
