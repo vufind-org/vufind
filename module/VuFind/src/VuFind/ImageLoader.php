@@ -86,10 +86,10 @@ class ImageLoader implements \Laminas\Log\LoggerAwareInterface
      * @var array
      */
     protected $allowedFileExtensions = [
-        "gif" => "image/gif",
-        "jpeg" => "image/jpeg", "jpg" => "image/jpeg",
-        "png" => "image/png",
-        "tiff" => "image/tiff", "tif" => "image/tiff",
+        'gif' => 'image/gif',
+        'jpeg' => 'image/jpeg', 'jpg' => 'image/jpeg',
+        'png' => 'image/png',
+        'tiff' => 'image/tiff', 'tif' => 'image/tiff',
     ];
 
     /**

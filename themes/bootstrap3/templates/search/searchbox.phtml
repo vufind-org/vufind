@@ -45,11 +45,11 @@
   <div class="navbar-form navbar-left flip">
     <?php $tabs = $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $tabConfig['tabs'], 'showCounts' => false]); ?>
     <?php if (!empty($tabs)): ?><?=$tabs ?><div class="tab-content clearfix"><?php endif; ?>
-      <p class="adv_search_terms"><?=$this->transEsc("Your search terms")?>: "<strong><?=$this->escapeHtml($this->lookfor)?></strong>"</p>
+      <p class="adv_search_terms"><?=$this->transEsc('Your search terms')?>: "<strong><?=$this->escapeHtml($this->lookfor)?></strong>"</p>
       <p class="adv_search_links">
-        <a href="<?=$this->url($advSearch)?>?edit=<?=$this->escapeHtmlAttr($this->searchId)?>"><?=$this->transEsc("Edit this Advanced Search")?></a> |
-        <a href="<?=$this->url($advSearch, [], ['query' => $hiddenFilters])?>"><?=$this->transEsc("Start a new Advanced Search")?></a> |
-        <a href="<?=$this->url($searchHome, [], ['query' => $hiddenFilters])?>"><?=$this->transEsc("Start a new Basic Search")?></a>
+        <a href="<?=$this->url($advSearch)?>?edit=<?=$this->escapeHtmlAttr($this->searchId)?>"><?=$this->transEsc('Edit this Advanced Search')?></a> |
+        <a href="<?=$this->url($advSearch, [], ['query' => $hiddenFilters])?>"><?=$this->transEsc('Start a new Advanced Search')?></a> |
+        <a href="<?=$this->url($searchHome, [], ['query' => $hiddenFilters])?>"><?=$this->transEsc('Start a new Basic Search')?></a>
       </p>
       <?=
         $this->context($this)->renderInContext(
@@ -70,9 +70,12 @@
   <form id="searchForm" class="searchForm navbar-form navbar-left flip" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off">
     <?= $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $tabConfig['tabs'], 'showCounts' => $tabConfig['showCounts']]); ?>
     <?php $placeholder = $this->searchbox()->getPlaceholderText($tabConfig['selected']['id'] ?? null); ?>
-    <input id="searchForm_lookfor" class="searchForm_lookfor form-control search-query<?php if ($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete searcher:<?=$this->escapeHtmlAttr($this->searchClassId) ?><?=$this->searchbox()->autocompleteAutoSubmit($this->searchClassId) ? ' ac-auto-submit' : '' ?><?php endif ?>" type="search" name="lookfor" value="<?=$this->escapeHtmlAttr($this->lookfor)?>"<?php if ($placeholder): ?> placeholder="<?=$this->transEscAttr($placeholder) ?>"<?php endif ?> aria-label="<?=$this->transEscAttr("search_terms")?>">
+    <div class="searchForm-query">
+      <input id="searchForm_lookfor" class="searchForm_lookfor form-control search-query<?php if ($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete searcher:<?=$this->escapeHtmlAttr($this->searchClassId) ?><?=$this->searchbox()->autocompleteAutoSubmit($this->searchClassId) ? ' ac-auto-submit' : '' ?><?php endif ?>" type="search" name="lookfor" value="<?=$this->escapeHtmlAttr($this->lookfor)?>"<?php if ($placeholder): ?> placeholder="<?=$this->transEscAttr($placeholder) ?>"<?php endif ?> aria-label="<?=$this->transEscAttr('search_terms')?>">
+      <button id="searchForm-reset" class="searchForm-reset" type="reset" tabindex="-1" aria-label="<?=$this->transEsc('searchform_reset_button')?>"><?=$this->icon('ui-reset-search');?></button>
+    </div>
     <?php if ($handlerCount > 1): ?>
-      <select id="searchForm_type" class="searchForm_type form-control" name="type" data-native-menu="false" aria-label="<?=$this->transEscAttr("Search type")?>">
+      <select id="searchForm_type" class="searchForm_type form-control" name="type" data-native-menu="false" aria-label="<?=$this->transEscAttr('Search type')?>">
         <?php $currentGroup = $insideGroup = false; ?>
         <?php foreach ($handlers as $handler): ?>
           <?php
@@ -98,13 +101,13 @@
     <?php elseif ($handlerCount == 1): ?>
       <input type="hidden" name="type" value="<?=$this->escapeHtmlAttr($handlers[0]['value'])?>">
     <?php endif; ?>
-    <button type="submit" class="btn btn-primary"><?=$this->icon('search') ?> <?=$this->transEsc("Find")?></button>
+    <button type="submit" class="btn btn-primary"><?=$this->icon('search') ?> <?=$this->transEsc('Find')?></button>
     <?php if ($advSearch): ?>
       <?php
         $advSearchQuery = $results ? ['edit' => $results->getSearchId()] : $hiddenFilters;
         $advSearchLink = $this->url($advSearch, [], ['query' => $advSearchQuery]);
       ?>
-      <a href="<?=$advSearchLink?>" class="advanced-search-link btn btn-link" rel="nofollow"><?=$this->transEsc("Advanced")?></a>
+      <a href="<?=$advSearchLink?>" class="advanced-search-link btn btn-link" rel="nofollow"><?=$this->transEsc('Advanced')?></a>
     <?php endif; ?>
     <?php if ($geoUrl = $this->geocoords()->getSearchUrl($options)) : ?>
         <a href="<?=$geoUrl ?>" class="btn btn-link"><?=$this->transEsc('Geographic Search')?></a>
@@ -162,4 +165,3 @@
     );?>
   </form>
 <?php endif; ?>
-

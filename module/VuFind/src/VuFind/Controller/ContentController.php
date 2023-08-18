@@ -64,7 +64,7 @@ class ContentController extends AbstractBase
     public function contentAction()
     {
         $page = $this->params()->fromRoute('page');
-        $pathPrefix = "templates/content/";
+        $pathPrefix = 'templates/content/';
         $pageLocator = $this->serviceLocator
             ->get(\VuFind\Content\PageLocator::class);
         $data = $pageLocator->determineTemplateAndRenderer($pathPrefix, $page);

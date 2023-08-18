@@ -406,7 +406,8 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
                     $routeMatch = $this->getEvent()->getRouteMatch();
                     $routeName = $routeMatch ? $routeMatch->getMatchedRouteName()
                         : 'myresearch-profile';
-                    $ilsAuth->sendEmailLoginLink($username, $routeName);
+                    $routeParams = $routeMatch ? $routeMatch->getParams() : [];
+                    $ilsAuth->sendEmailLoginLink($username, $routeName, $routeParams, ['catalogLogin' => 'true']);
                     $this->flashMessenger()
                         ->addSuccessMessage('email_login_link_sent');
                 } else {

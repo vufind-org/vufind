@@ -45,7 +45,7 @@ class LocalFile extends \VuFind\Content\AbstractCover
      *
      * @var array
      */
-    protected $imageExtensions = ["gif", "jpg", "jpeg", "png", "tif", "tiff"];
+    protected $imageExtensions = ['gif', 'jpg', 'jpeg', 'png', 'tif', 'tiff'];
 
     /**
      * MIME types allowed to be loaded from disk.
@@ -53,7 +53,7 @@ class LocalFile extends \VuFind\Content\AbstractCover
      * @var array
      */
     protected $allowedMimeTypes = [
-        "image/gif", "image/jpeg", "image/png", "image/tiff",
+        'image/gif', 'image/jpeg', 'image/png', 'image/tiff',
     ];
 
     /**
@@ -89,7 +89,7 @@ class LocalFile extends \VuFind\Content\AbstractCover
         // Validate MIME type if we have a valid file path.
         if ($fileName && file_exists($fileName)) {
             if (in_array(mime_content_type($fileName), $this->allowedMimeTypes)) {
-                return "file://" . $fileName;
+                return 'file://' . $fileName;
             }
         }
         // If we got this far, we couldn't find a match.

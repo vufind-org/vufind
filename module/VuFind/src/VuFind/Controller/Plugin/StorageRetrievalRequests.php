@@ -113,7 +113,7 @@ class StorageRetrievalRequests extends AbstractRequestBase
 
         if (!empty($details)) {
             // Confirm?
-            if ($params->fromPost('confirm') === "0") {
+            if ($params->fromPost('confirm') === '0') {
                 $url = $this->getController()->url()
                     ->fromRoute('myresearch-storageretrievalrequests');
                 if ($params->fromPost('cancelAll') !== null) {
