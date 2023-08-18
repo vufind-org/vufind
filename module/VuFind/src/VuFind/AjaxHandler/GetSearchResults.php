@@ -321,6 +321,7 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
      * @param Params  $params   Request params
      * @param Results $results  Search results
      * @param string  $template Paginator template
+     * @param string  $ulClass  Additional class for the pagination container
      *
      * @return ?string
      */

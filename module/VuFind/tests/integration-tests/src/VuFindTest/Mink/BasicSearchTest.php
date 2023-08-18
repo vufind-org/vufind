@@ -63,6 +63,8 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Data provider for testDefaultTopPagination
+     *
+     * @return array
      */
     public function topPaginationProvider(): array
     {
@@ -74,6 +76,8 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test default top pagination
+     *
+     * @param bool $jsResults Whether to update search results with JS
      *
      * @dataProvider topPaginationProvider
      *
@@ -110,6 +114,8 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Test simple top pagination
+     *
+     * @param bool $jsResults Whether to update search results with JS
      *
      * @dataProvider topPaginationProvider
      *

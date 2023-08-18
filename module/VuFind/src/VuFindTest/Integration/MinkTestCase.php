@@ -590,10 +590,11 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Wait for a callback to return the expected value
      *
-     * @param mixed    $expected  Expected value
-     * @param callable $callback  Callback
-     * @param callable $assertion Assertion to make
-     * @param int      $timeout   Wait timeout (in ms)
+     * @param mixed    $expected    Expected value
+     * @param callable $callback    Callback used to get the results
+     * @param callable $compareFunc Callback used to compare the results
+     * @param callable $assertion   Assertion to make
+     * @param int      $timeout     Wait timeout (in ms)
      *
      * @return void
      */
@@ -620,9 +621,9 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Wait for a callback to return the expected value
      *
-     * @param mixed    $expected  Expected value
-     * @param callable $callback  Callback
-     * @param int      $timeout   Wait timeout (in ms)
+     * @param mixed    $expected Expected value
+     * @param callable $callback Callback
+     * @param int      $timeout  Wait timeout (in ms)
      *
      * @return void
      */
@@ -645,9 +646,9 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Wait for a callback to return a string containing the expected value
      *
-     * @param string   $expected  Expected value
-     * @param callable $callback  Callback
-     * @param int      $timeout   Wait timeout (in ms)
+     * @param string   $expected Expected value
+     * @param callable $callback Callback
+     * @param int      $timeout  Wait timeout (in ms)
      *
      * @return void
      */
