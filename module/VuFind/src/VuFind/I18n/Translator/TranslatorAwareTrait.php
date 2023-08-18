@@ -104,6 +104,19 @@ trait TranslatorAwareTrait
         // Figure out the text domain for the string:
         [$domain, $str] = $this->extractTextDomain($target);
 
+        if ($this->getTranslatorLocale() == 'debug') {
+            $targetString = $domain !== 'default' ? "$domain::$str" : $str;
+            $keyValueToString = function ($key, $val) {
+                return "$key = $val";
+            };
+            $tokenDetails = empty($tokens)
+                ? ''
+                : ' | [' .
+                implode(', ', array_map($keyValueToString, array_keys($tokens), array_values($tokens))) .
+                ']';
+            return "*$targetString$tokenDetails*";
+        }
+
         // Special case: deal with objects with a designated display value:
         if ($str instanceof \VuFind\I18n\TranslatableStringInterface) {
             if (!$str->isTranslatable()) {
