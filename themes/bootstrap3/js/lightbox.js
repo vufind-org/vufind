@@ -49,6 +49,18 @@ VuFind.register('lightbox', function Lightbox() {
     return document.dispatchEvent(event);
   }
 
+  function _addQueryParameters(url, params) {
+    let fragmentSplit = url.split('#');
+    let paramsSplit = fragmentSplit[0].split('?');
+    let searchParams = new URLSearchParams(paramsSplit.length > 1 ? paramsSplit[1] : "");
+    for ( const [key, value] of Object.entries(params)) {
+      searchParams.append(key, value);
+    }
+    let res = paramsSplit[0] + '?' + searchParams.toString();
+    res += fragmentSplit.length < 2 ? '' : '#' + fragmentSplit[1];
+    return res;
+  }
+
   // Public: Present an alert
   function showAlert(message, _type) {
     var type = _type || 'info';
@@ -157,27 +169,17 @@ VuFind.register('lightbox', function Lightbox() {
     }
     // Add lightbox GET parameter
     if (!obj.url.match(/layout=lightbox/)) {
-      let parts = obj.url.split('#');
-      obj.url = parts[0].indexOf('?') < 0
-        ? parts[0] + '?'
-        : parts[0] + '&';
-      obj.url += 'layout=lightbox';
+      obj.url = _addQueryParameters(obj.url, {'layout': 'lightbox'});
       // Set referrer to current url if it isn't already set:
       if (_currentUrl && !_lbReferrerUrl) {
         _lbReferrerUrl = _currentUrl;
       }
       if (_lbReferrerUrl) {
-        obj.url += '&lbreferer=' + encodeURIComponent(_lbReferrerUrl);
+        obj.url = _addQueryParameters(obj.url, {'lbreferer': _lbReferrerUrl});
       }
-      obj.url += parts.length < 2 ? '' : '#' + parts[1];
     }
     if (VuFind.lightbox.parent) {
-      let parts = obj.url.split('#');
-      obj.url = parts[0].indexOf('?') < 0
-        ? parts[0] + '?'
-        : parts[0] + '&';
-      obj.url += '&lightboxParent=' + encodeURIComponent(VuFind.lightbox.parent);
-      obj.url += parts.length < 2 ? '' : '#' + parts[1];
+      obj.url = _addQueryParameters(obj.url, {'lightboxParent': VuFind.lightbox.parent});
     }
     // Store original URL with the layout=lightbox parameter:
     if (_originalUrl === false) {
