@@ -52,7 +52,8 @@
   <?php foreach ($this->sortOptions as $key => $sort): ?>
     <?php $active = $this->sort == $key; ?>
     <div class="full-facet-list facet-group<?php if(!$active): ?> hidden<?php endif; ?>" id="facet-list-<?=$this->escapeHtmlAttr($key) ?>">
-      <!-- The content of this list will be generated dynamically, see facet-list-content.phtml -->
+      <!-- The content of this list will later be updated via AJAX, see facet-list-content.phtml -->
+      <?=$this->render('search/facet-list-content.phtml') ?>
     </div>
   <?php endforeach; ?>
 </div>

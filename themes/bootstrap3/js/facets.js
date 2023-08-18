@@ -51,11 +51,9 @@ function updateFacetListContent() {
 
 function setupFacetList() {
   if ($.isReady) {
-    updateFacetListContent();
     registerFacetListContentKeyupCallback();
   } else {
     $(function ready() {
-      updateFacetListContent();
       registerFacetListContentKeyupCallback();
     });
   }

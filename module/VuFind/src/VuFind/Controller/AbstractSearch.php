@@ -910,6 +910,10 @@ class AbstractSearch extends AbstractBase
             'sortOptions' => $facetSortOptions,
             'baseUriExtra' => $this->params()->fromQuery('baseUriExtra'),
             'ajaxLightbox' => $ajaxLightbox,
+            'active' => $sort,
+            'key' => $sort,
+            'urlBase' => $urlBase,
+            'searchAction' => $searchAction
         ];
 
         if ($ajax == 0) {
@@ -917,10 +921,6 @@ class AbstractSearch extends AbstractBase
             $view->setTemplate('search/facet-list');
             return $view;
         } else {
-            $viewParams['active'] = $sort;
-            $viewParams['key'] = $sort;
-            $viewParams['urlBase'] = $urlBase;
-            $viewParams['searchAction'] = $searchAction;
             $view = $this->createViewModel($viewParams);
             $view->setTemplate('search/facet-list-content');
             return $view;
