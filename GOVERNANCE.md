@@ -562,10 +562,11 @@ mailing list if they do not receive a review in a timely fashion.
 December 12, 2022: Added ® symbol to VuFind® references; added paragraph
 on Conflict of Interest policy and non-voting PMC guests.
 
-August 18, 2023: Clarified/broadened language related to the VuFind® Tech
-Mailing List. Adjusted language about announcement of new committers.
-Clarified the fact that the OLF Secretary must be a PMC member. Updated
-language about merging trivial pull requests to reflect GitHub policy.
+August 18, 2023: Added link to community support channels, instead of
+only mentioning the VuFind® Tech list. Expanded/updated language about
+procedure for notifying/announcing new committers. Clarified that the
+OLF Secretary must be a PMC member. Updated language about merging trivial
+pull requests to reflect GitHub policy.
 
 ## Acknowledgements
 
