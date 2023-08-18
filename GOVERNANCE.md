@@ -170,13 +170,14 @@ have been nominated, there will be a vote by the project management
 committee (PMC; see below). Committer voting is one of the few
 activities that takes place through private PMC communication. This is
 to allow PMC members to freely express their opinions about a nominee
-without causing embarrassment. The nominee will be directly notified by
-email of voting results, and is entitled to request an explanation of any
-'no' votes against them, regardless of the outcome of the vote. This
-explanation will be provided by the PMC Community Manager (see below)
-and will be anonymous and constructive in nature. New committers who pass
-the PMC vote are announced in the monthly
-[VuFind® newsletter](https://vufind.org/wiki/community:newsletter),
+without causing embarrassment.
+
+The nominee will be directly notified by email of voting results, and is
+entitled to request an explanation of any 'no' votes against them,
+regardless of the outcome of the vote. This explanation will be provided
+by the PMC Community Manager (see below) and will be anonymous and
+constructive in nature. New committers who pass the PMC vote are announced
+in the monthly [VuFind® newsletter](https://vufind.org/wiki/community:newsletter),
 which is shared through multiple communication channels.
 
 Nominees may decline their appointment as a committer. However, this is
