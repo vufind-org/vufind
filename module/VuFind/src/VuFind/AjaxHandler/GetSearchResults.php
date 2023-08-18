@@ -123,13 +123,12 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     /**
      * Elements to render for each search results page.
      *
+     * Note that results list is last so that we update most controls before hiding
+     * the loading indicator (in practice this only affects tests).
+     *
      * @var array
      */
     protected $elements = [
-        '.js-result-list' => [
-            'method' => 'renderResults',
-            'target' => 'outer',
-        ],
         '.js-pagination.pagination-top' => [
             'method' => 'renderPaginationTop',
             'target' => 'outer',
@@ -148,6 +147,10 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
             'attrs' => [
                 'aria-live' => 'polite',
             ],
+        ],
+        '.js-result-list' => [
+            'method' => 'renderResults',
+            'target' => 'outer',
         ],
     ];
 
