@@ -142,7 +142,7 @@ class SearchSortTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . "/Search/Results?lookfor=%22test publication%22&sort=$sortParam");
+        $session->visit($this->getVuFindUrl() . "/Search/Results?filter[]=building%3A%22geo.mrc%22&sort=$sortParam");
         return $session->getPage();
     }
 

@@ -69,7 +69,7 @@ class SearchLimitTest extends \VuFindTest\Integration\MinkTestCase
         $config = ['default_limit' => $default, 'limit_options' => $options];
         $this->changeConfigs(['searches' => ['General' => $config]]);
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Results?lookfor=%22test publication%22&limit=' . $limitParam);
+        $session->visit($this->getVuFindUrl() . "/Search/Results?filter[]=building%3A%22geo.mrc%22&limit=$limitParam");
         return $session->getPage();
     }
 
