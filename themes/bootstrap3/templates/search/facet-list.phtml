@@ -34,18 +34,13 @@
   </div>
 <?php endif; ?>
 
-<!-- Hopefully we can find a better way for passthrough of these variables -->
 <?php if (method_exists($this->results->getParams(), 'setFacetContains')): ?>
   <input class="ajax_param" data-name="contains" placeholder="<?=$this->transEscAttr('Filter')?>" class="form-control" type="text" value="<?=htmlspecialchars($this->contains)?>">
 <?php endif; ?>
-<input class="ajax_param" data-name="facet" type="hidden" value="<?=$this->facet?>">
-<input class="ajax_param" data-name="facetexclude" type="hidden" value="<?=$this->exclude?>">
-<input class="ajax_param" data-name="facetop" type="hidden" value="<?=$this->operator?>">
-<input class="ajax_param" data-name="facetpage" type="hidden" value="<?=$this->page?>">
-<input class="ajax_param" data-name="facetsort" type="hidden" value="<?=$this->sort?>">
-<input class="ajax_param" data-name="urlBase" type="hidden" value="<?=$urlBase?>">
-<input class="ajax_param" data-name="searchAction" type="hidden" value="<?=$searchAction?>">
-<input class="ajax_param" data-name="ajaxLightbox" type="hidden" value="<?=$this->ajaxLightbox ? intval($this->ajaxLightbox) : intval($this->inLightbox) ?>">
+<?php $ajaxParams = ['facet' => $this->facet, 'facetexclude' => $this->exclude, 'facetop' => $this->operator, 'facetpage' => $this->page, 'facetsort' => $this->sort, 'urlBase' => $urlBase, 'searchAction' => $searchAction, 'ajaxLightbox' => $this->ajaxLightbox ? intval($this->ajaxLightbox) : intval($this->inLightbox)]; ?>
+<?php foreach ($ajaxParams as $ajaxParamName => $ajaxParamValue): ?>
+  <input class="ajax_param" type="hidden" data-name="<?=$this->escapeHtmlAttr($ajaxParamName)?>" value="<?=$this->escapeHtmlAttr($ajaxParamValue)?>">
+<?php endforeach; ?>
 
 <?php $this->headScript()->appendFile('facets.js'); ?>
 
