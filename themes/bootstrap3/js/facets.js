@@ -27,7 +27,7 @@ VuFind.register('facetList', function FacetList() {
     let ajaxParams = $('.ajax_params').data('params');
     let url = ajaxParams.urlBase;
 
-    for (const [key, val] of Object.entries(ajaxParams)) {
+    for (let [key, val] of Object.entries(ajaxParams)) {
       if (key in overrideParams) {
         val = overrideParams[key];
       }
