@@ -34,11 +34,13 @@
   </div>
 <?php endif; ?>
 
-<?php if (method_exists($this->results->getParams(), 'setFacetContains')): ?>
-  <input class="ajax_param" data-name="contains" placeholder="<?=$this->transEscAttr('Filter')?>" class="form-control" type="text" value="<?=htmlspecialchars($this->contains)?>">
-<?php endif; ?>
-<?php $ajaxParams = ['facet' => $this->facet, 'facetexclude' => $this->exclude, 'facetop' => $this->operator, 'facetpage' => $this->page, 'facetsort' => $this->sort, 'urlBase' => $urlBase, 'searchAction' => $searchAction, 'ajaxLightbox' => $this->ajaxLightbox ? intval($this->ajaxLightbox) : intval($this->inLightbox)]; ?>
-<input class="ajax_params" type="hidden" data-params="<?=$this->htmlSafeJsonEncode($ajaxParams)?>">
+<form>
+  <?php if (method_exists($this->results->getParams(), 'setFacetContains')): ?>
+    <input class="ajax_param" data-name="contains" placeholder="<?=$this->transEscAttr('Filter')?>" class="form-control" type="text" value="<?=htmlspecialchars($this->contains)?>">
+  <?php endif; ?>
+  <?php $ajaxParams = ['facet' => $this->facet, 'facetexclude' => $this->exclude, 'facetop' => $this->operator, 'facetpage' => $this->page, 'facetsort' => $this->sort, 'urlBase' => $urlBase, 'searchAction' => $searchAction, 'ajaxLightbox' => $this->ajaxLightbox ? intval($this->ajaxLightbox) : intval($this->inLightbox)]; ?>
+  <input class="ajax_params" type="hidden" data-params="<?=$this->htmlSafeJsonEncode($ajaxParams)?>">
+</form>
 
 <?php $this->headScript()->appendFile('facets.js'); ?>
 
