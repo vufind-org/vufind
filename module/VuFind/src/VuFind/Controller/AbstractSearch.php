@@ -913,7 +913,7 @@ class AbstractSearch extends AbstractBase
             'active' => $sort,
             'key' => $sort,
             'urlBase' => $urlBase,
-            'searchAction' => $searchAction
+            'searchAction' => $searchAction,
         ];
         $viewParams['delegateParams'] = $viewParams;
 
