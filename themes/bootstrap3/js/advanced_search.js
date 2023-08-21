@@ -1,4 +1,5 @@
-/*exported VuFind, addGroup, addSearch, deleteGroup, deleteSearch */
+/*global VuFind */
+/*exported addGroup, addSearch, deleteGroup, deleteSearch */
 
 var nextGroup = 0;
 var groupLength = [];
