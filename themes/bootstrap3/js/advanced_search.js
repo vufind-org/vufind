@@ -1,4 +1,5 @@
-/*exported addGroup, addSearch, deleteGroup, deleteSearch */
+/*exported VuFind, addGroup, addSearch, deleteGroup, deleteSearch */
+
 var nextGroup = 0;
 var groupLength = [];
 var deleteGroup, deleteSearch;
@@ -86,7 +87,7 @@ deleteSearch = function _deleteSearch(group, sindex) {
 };
 
 function _renumberGroupLinkLabels() {
-  $('.adv-group-close').each(function (i, link) {
+  $('.adv-group-close').each(function deleteGroupLinkLabel(i, link) {
     $(link).attr(
       'aria-label',
       VuFind.translate('del_search_num', { '%%num%%': i + 1 })
