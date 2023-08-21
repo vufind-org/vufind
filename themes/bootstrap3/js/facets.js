@@ -1,5 +1,5 @@
 /*global VuFind */
-/*exported initFacetTree, setupFacetList */
+/*exported initFacetTree */
 
 /* --- Facet List --- */
 VuFind.register('facetList', function FacetList() {
@@ -23,7 +23,7 @@ VuFind.register('facetList', function FacetList() {
     overrideHref('.js-facet-prev-page', overrideParams);
   }
 
-  function getFacetListContent(overrideParams = {}) {
+  function getContent(overrideParams = {}) {
     let url = $('.ajax_param[data-name="urlBase"]').val();
 
     $('.ajax_param').each(function ajaxParamEach() {
@@ -41,8 +41,8 @@ VuFind.register('facetList', function FacetList() {
     }));
   }
 
-  function updateFacetListContent() {
-    getFacetListContent().then(html => {
+  function updateContent() {
+    getContent().then(html => {
       let htmlList = '';
       $(html).find('.full-facet-list').each(function itemEach() {
         htmlList += $(this).prop('outerHTML');
@@ -53,30 +53,30 @@ VuFind.register('facetList', function FacetList() {
     });
   }
 
-  function setup() {
-    if ($.isReady) {
-      registerFacetListContentKeyupCallback();
-    } else {
-      $(function ready() {
-        registerFacetListContentKeyupCallback();
-      });
-    }
-  }
-
   // Useful function to delay callbacks, e.g. when using a keyup event
   // to detect when the user stops typing.
   // See also: https://stackoverflow.com/questions/1909441/how-to-delay-the-keyup-handler-until-the-user-stops-typing
   var keyupCallbackTimeout = null;
-  function registerFacetListContentKeyupCallback() {
+  function registerContentKeyupCallback() {
     $('.ajax_param[data-name="contains"]').on('keyup', function onKeyupChangeFacetList() {
       clearTimeout(keyupCallbackTimeout);
       keyupCallbackTimeout = setTimeout(function onKeyupTimeout() {
-        updateFacetListContent();
+        updateContent();
       }, 500);
     });
   }
 
-  return { setup: setup, getFacetListContent: getFacetListContent };
+  function setup() {
+    if ($.isReady) {
+      registerContentKeyupCallback();
+    } else {
+      $(function ready() {
+        registerContentKeyupCallback();
+      });
+    }
+  }
+
+  return { setup: setup, getContent: getContent };
 });
 
 function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
@@ -390,7 +390,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
       button.html(VuFind.translate('loading_ellipsis'));
 
       let overrideParams = {facetpage: page, layout: 'lightbox', ajax: 1};
-      VuFind.facetList.getFacetListContent(overrideParams).then(data => {
+      VuFind.facetList.getContent(overrideParams).then(data => {
         $(data).find('.js-facet-item').each(function eachItem() {
           button.before($(this).prop('outerHTML'));
         });
