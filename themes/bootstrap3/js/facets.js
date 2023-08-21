@@ -24,16 +24,19 @@ VuFind.register('facetList', function FacetList() {
   }
 
   function getContent(overrideParams = {}) {
-    let url = $('.ajax_param[data-name="urlBase"]').val();
+    let ajaxParams = $('.ajax_params').data('params');
+    let url = ajaxParams.urlBase;
 
-    $('.ajax_param').each(function ajaxParamEach() {
-      let key = $(this).data('name');
-      let val = $(this).val();
+    for (const [key, val] of Object.entries(ajaxParams)) {
       if (key in overrideParams) {
         val = overrideParams[key];
       }
       url += '&' + encodeURIComponent(key) + '=' + encodeURIComponent(val);
-    });
+    }
+    let contains = $('.ajax_param[data-name="contains"]').val();
+    if (contains) {
+      url += '&contains=' + encodeURIComponent(contains);
+    }
     url += '&ajax=1';
 
     return Promise.resolve($.ajax({

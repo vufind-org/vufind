@@ -38,9 +38,7 @@
   <input class="ajax_param" data-name="contains" placeholder="<?=$this->transEscAttr('Filter')?>" class="form-control" type="text" value="<?=htmlspecialchars($this->contains)?>">
 <?php endif; ?>
 <?php $ajaxParams = ['facet' => $this->facet, 'facetexclude' => $this->exclude, 'facetop' => $this->operator, 'facetpage' => $this->page, 'facetsort' => $this->sort, 'urlBase' => $urlBase, 'searchAction' => $searchAction, 'ajaxLightbox' => $this->ajaxLightbox ? intval($this->ajaxLightbox) : intval($this->inLightbox)]; ?>
-<?php foreach ($ajaxParams as $ajaxParamName => $ajaxParamValue): ?>
-  <input class="ajax_param" type="hidden" data-name="<?=$this->escapeHtmlAttr($ajaxParamName)?>" value="<?=$this->escapeHtmlAttr($ajaxParamValue)?>">
-<?php endforeach; ?>
+<input class="ajax_params" type="hidden" data-params="<?=$this->htmlSafeJsonEncode($ajaxParams)?>">
 
 <?php $this->headScript()->appendFile('facets.js'); ?>
 
