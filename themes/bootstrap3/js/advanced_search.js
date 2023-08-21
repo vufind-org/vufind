@@ -85,6 +85,15 @@ deleteSearch = function _deleteSearch(group, sindex) {
   return false;
 };
 
+function _renumberGroupLinkLabels() {
+  $('.adv-group-close').each(function (i, link) {
+    $(link).attr(
+      'aria-label',
+      VuFind.translate('del_search_num', { '%%num%%': i + 1 })
+    );
+  });
+}
+
 function addGroup(_firstTerm, _firstField, _join, isUser = false) {
   var firstTerm = _firstTerm || '';
   var firstField = _firstField || '';
@@ -117,8 +126,11 @@ function addGroup(_firstTerm, _firstField, _join, isUser = false) {
   if (join.length > 0) {
     $newGroup.find('option[value="' + join + '"]').attr('selected', 1);
   }
+
   // Insert
   $('#groupPlaceHolder').before($newGroup);
+  _renumberGroupLinkLabels();
+
   // Populate
   groupLength[nextGroup] = 0;
   addSearch(nextGroup, {term: firstTerm, field: firstField}, isUser);
@@ -137,6 +149,8 @@ function addGroup(_firstTerm, _firstField, _join, isUser = false) {
 deleteGroup = function _deleteGroup(group) {
   // Find the group and remove it
   $("#group" + group).remove();
+  _renumberGroupLinkLabels();
+
   // If the last group was removed, add an empty group
   if ($('.adv-group').length === 0) {
     addGroup();
