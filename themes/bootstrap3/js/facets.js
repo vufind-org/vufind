@@ -2,9 +2,11 @@
 /*exported initFacetTree */
 function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, showCounts)
 {
+  // Build a UL
   var facetList = document.createElement("ul");
   facetList.className = "facet__list";
 
+  // Get Icons
   var toggleIcon = document.createElement("span");
   toggleIcon.innerHTML =
     VuFind.icon("truncate-more", "facet-tree__icon facet-tree__open") +
@@ -14,18 +16,13 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, showCoun
   leafHTML.innerHTML = VuFind.icon("format-file", "facet-tree__icon");
   var leafIcon = leafHTML.children[0];
 
+  // Elements
   for (var i = 0; i < data.length; i++) {
     var facet = data[i];
 
-    var hasChildren = typeof facet.children !== "undefined" && facet.children.length > 0;
-
-    // LI
-    var liEl = document.createElement("li");
-    liEl.className = "facet-tree";
-
-    if (facet.isApplied) {
-      liEl.classList.append("applied");
-    }
+    // Build the wrapper
+    var facetEl = document.createElement("span");
+    facetEl.className = "facet";
 
     // Link to the facet
     var linkEl = document.createElement("a");
@@ -67,9 +64,6 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, showCoun
       linkEl.append(badgeEl);
     }
 
-    // Build the container
-    var facetEl = document.createElement(hasChildren ? "summary" : "span");
-    facetEl.className = "facet";
     facetEl.append(linkEl);
 
     // Add the exclude link
@@ -83,14 +77,27 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, showCoun
       facetEl.append(excludeLink);
     }
 
+    // Containing LI
+    var liEl = document.createElement("li");
+    liEl.className = "facet-tree";
+    if (facet.isApplied) {
+      liEl.classList.append("applied");
+    }
+
     // Add child elements
-    if (hasChildren) {
+    if (
+      typeof facet.children !== "undefined" &&
+      facet.children.length > 0
+    ) {
+      facetEl.prepend(toggleIcon.cloneNode(true));
+
       var detailsEl = document.createElement("details");
       detailsEl.className = "facet-tree__details";
 
-      facetEl.classList.add("facet-tree__summary");
-      facetEl.prepend(toggleIcon.cloneNode(true));
-      detailsEl.append(facetEl);
+      var summaryEl = document.createElement("summary");
+      summaryEl.className = "facet-tree__summary";
+      summaryEl.append(facetEl);
+      detailsEl.append(summaryEl);
 
       var childList = buildFacetNodes(facet.children, currentPath, allowExclude, excludeTitle, showCounts);
       childList.classList.add("facet-tree__children");
