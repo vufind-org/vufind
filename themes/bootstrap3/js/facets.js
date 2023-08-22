@@ -1,57 +1,113 @@
 /*global VuFind */
 /*exported initFacetTree */
-function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
+function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, showCounts)
 {
-  var json = [];
-  var selected = VuFind.translate('Selected');
-  var separator = VuFind.translate('number_thousands_separator');
+  var facetList = document.createElement("ul");
+  facetList.className = "facet__list";
+
+  var toggleIcon = document.createElement("span");
+  toggleIcon.innerHTML =
+    VuFind.icon("truncate-more", "facet-tree__icon facet-tree__open") +
+    VuFind.icon("truncate-less", "facet-tree__icon facet-tree__close");
+
+  var leafHTML = document.createElement("span");
+  leafHTML.innerHTML = VuFind.icon("format-file", "facet-tree__icon");
+  var leafIcon = leafHTML.children[0];
 
   for (var i = 0; i < data.length; i++) {
     var facet = data[i];
 
-    var url = currentPath + facet.href;
-    var excludeUrl = currentPath + facet.exclude;
-    var item = document.createElement('span');
-    item.className = 'text';
+    var hasChildren = typeof facet.children !== "undefined" && facet.children.length > 0;
+
+    // LI
+    var liEl = document.createElement("li");
+    liEl.className = "facet-tree";
+
     if (facet.isApplied) {
-      item.className += ' applied';
-    }
-    item.setAttribute('title', facet.displayText);
-    if (facet.operator === 'OR') {
-      item.innerHTML = facet.isApplied ? VuFind.icon('facet-checked', { title: selected, class: 'icon-link__icon' }) : VuFind.icon('facet-unchecked', 'icon-link__icon');
-    }
-    var facetValue = document.createElement('span');
-    facetValue.className = 'facet-value icon-link__label';
-    facetValue.appendChild(document.createTextNode(facet.displayText));
-    item.appendChild(facetValue);
-
-    var children = null;
-    if (typeof facet.children !== 'undefined' && facet.children.length > 0) {
-      children = buildFacetNodes(facet.children, currentPath, allowExclude, excludeTitle, counts);
+      liEl.classList.append("applied");
     }
 
-    json.push({
-      text: item.outerHTML,
-      children: children,
-      state: {
-        opened: facet.hasAppliedChildren,
-        selected: facet.isApplied
-      },
-      a_attr: {
-        class: 'hierarchical-facet-anchor icon-link',
-        href: url
-      },
-      data: {
-        url: url.replace(/&amp;/g, '&'),
-        count: !facet.isApplied && counts && facet.count
-          ? facet.count.toString().replace(/\B(?=(\d{3})+\b)/g, separator) : null,
-        excludeUrl: allowExclude && !facet.isApplied ? excludeUrl : '',
-        excludeTitle: excludeTitle
-      }
-    });
+    // Link to the facet
+    var linkEl = document.createElement("a");
+    linkEl.className = "facet__link";
+    linkEl.setAttribute("href", currentPath + facet.href);
+    linkEl.setAttribute("title", facet.displayText);
+
+    // Display with an checkbox icon (or not)
+    if (facet.operator === "OR") {
+      var icon = document.createElement("span");
+      icon.className = "icon-link__icon";
+      icon.innerHTML = facet.isApplied
+        ? VuFind.icon("facet-checked", { title: VuFind.translate("Selected"), class: "icon-link__icon" })
+        : VuFind.icon("facet-unchecked", "icon-link__icon");
+
+      var iconLabel = document.createElement("span");
+      iconLabel.className = "facet-value icon-link__label";
+      iconLabel.innerText = facet.displayText;
+
+      var iconLink = document.createElement("span");
+      iconLink.className = "icon-link";
+      iconLink.append(icon, iconLabel);
+
+      linkEl.append(iconLink);
+    } else {
+      var textEl = document.createElement("span");
+      textEl.className = "text";
+      textEl.append(facet.displayText);
+
+      linkEl.append(textEl);
+    }
+
+    // Add a badge
+    if (showCounts) {
+      var badgeEl = document.createElement("span");
+      badgeEl.className = "badge";
+      badgeEl.innerText = facet.count.toLocaleString();
+
+      linkEl.append(badgeEl);
+    }
+
+    // Build the container
+    var facetEl = document.createElement(hasChildren ? "summary" : "span");
+    facetEl.className = "facet";
+    facetEl.append(linkEl);
+
+    // Add the exclude link
+    if (allowExclude) {
+      var excludeLink = document.createElement("a");
+      excludeLink.className = "facet__exclude";
+      excludeLink.innerHTML = VuFind.icon("facet-exclude");
+      excludeLink.setAttribute("href", currentPath + facet.exclude);
+      excludeLink.setAttribute("title", excludeTitle);
+
+      facetEl.append(excludeLink);
+    }
+
+    // Add child elements
+    if (hasChildren) {
+      var detailsEl = document.createElement("details");
+      detailsEl.className = "facet-tree__details";
+
+      facetEl.classList.add("facet-tree__summary");
+      facetEl.prepend(toggleIcon.cloneNode(true));
+      detailsEl.append(facetEl);
+
+      var childList = buildFacetNodes(facet.children, currentPath, allowExclude, excludeTitle, showCounts);
+      childList.classList.add("facet-tree__children");
+      detailsEl.append(childList);
+
+      liEl.append(detailsEl);
+    } else {
+      facetEl.classList.add("facet-tree__leaf");
+      facetEl.prepend(leafIcon.cloneNode(true));
+      liEl.append(facetEl);
+    }
+
+    // Append to the UL
+    facetList.append(liEl);
   }
 
-  return json;
+  return facetList;
 }
 
 function buildFacetTree(treeNode, facetData, inSidebar) {
@@ -62,8 +118,8 @@ function buildFacetTree(treeNode, facetData, inSidebar) {
   var allowExclude = treeNode.data('exclude');
   var excludeTitle = treeNode.data('exclude-title');
 
-  var results = buildFacetNodes(facetData, currentPath, allowExclude, excludeTitle, inSidebar);
-  treeNode.find('.loading-spinner').parent().remove();
+  var facetList = buildFacetNodes(facetData, currentPath, allowExclude, excludeTitle, inSidebar);
+
   if (inSidebar) {
     treeNode.on('loaded.jstree open_node.jstree', function treeNodeOpen(/*e, data*/) {
       treeNode.find('ul.jstree-container-ul > li.jstree-node').addClass('list-group-item');
@@ -76,12 +132,7 @@ function buildFacetTree(treeNode, facetData, inSidebar) {
     }
   }
 
-  treeNode.jstree({
-    'core': {
-      'data': results
-    },
-    'plugins': ['vufindFacet']
-  });
+  treeNode[0].replaceChildren(facetList);
 }
 
 function loadFacetTree(treeNode, inSidebar)

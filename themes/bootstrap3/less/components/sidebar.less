@@ -17,6 +17,35 @@
   & > .facet:first-child { border-top: 1px solid @list-group-border; }
 }
 
+.facet__link {
+  display: flex;
+  flex-grow: 1;
+  gap: inherit;
+}
+
+.facet__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.facet-tree__details {
+  width: 100%;
+
+  &[open] > .facet-tree__summary .facet-tree__open,
+  &:not([open]) > .facet-tree__summary .facet-tree__close {
+    display: none;
+  }
+}
+.facet-tree__summary,
+.facet-tree__leaf {
+  display: flex;
+  gap: 0.5rem;
+}
+.facet-tree__children {
+  padding-left: 1rem;
+}
+
 .facet,
 .facet-group .title,
 .facet-load-indicator,
