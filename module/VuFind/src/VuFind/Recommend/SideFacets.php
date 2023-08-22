@@ -29,10 +29,8 @@
 
 namespace VuFind\Recommend;
 
-use VuFind\Search\Solr\HierarchicalFacetHelper;
 use VuFind\Solr\Utils as SolrUtils;
 
-use function get_class;
 use function in_array;
 use function intval;
 use function is_array;
@@ -134,28 +132,6 @@ class SideFacets extends AbstractFacets
      * @var array
      */
     protected $hierarchicalFacetSortOptions = [];
-
-    /**
-     * Hierarchical facet helper
-     *
-     * @var HierarchicalFacetHelper
-     */
-    protected $hierarchicalFacetHelper;
-
-    /**
-     * Constructor
-     *
-     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
-     * @param HierarchicalFacetHelper      $facetHelper  Helper for handling
-     * hierarchical facets
-     */
-    public function __construct(
-        \VuFind\Config\PluginManager $configLoader,
-        HierarchicalFacetHelper $facetHelper = null
-    ) {
-        parent::__construct($configLoader);
-        $this->hierarchicalFacetHelper = $facetHelper;
-    }
 
     /**
      * Store the configuration of the recommendation module.
@@ -296,27 +272,7 @@ class SideFacets extends AbstractFacets
      */
     public function getFacetSet()
     {
-        $facetSet = $this->results->getFacetList($this->mainFacets);
-
-        foreach ($this->hierarchicalFacets as $hierarchicalFacet) {
-            if (isset($facetSet[$hierarchicalFacet])) {
-                if (!$this->hierarchicalFacetHelper) {
-                    throw new \Exception(
-                        get_class($this) . ': hierarchical facet helper unavailable'
-                    );
-                }
-
-                $facetArray = $this->hierarchicalFacetHelper->buildFacetArray(
-                    $hierarchicalFacet,
-                    $facetSet[$hierarchicalFacet]['list']
-                );
-                $facetSet[$hierarchicalFacet]['list'] = $this
-                    ->hierarchicalFacetHelper
-                    ->flattenFacetHierarchy($facetArray);
-            }
-        }
-
-        return $facetSet;
+        return $this->results->getFacetList($this->mainFacets);
     }
 
     /**

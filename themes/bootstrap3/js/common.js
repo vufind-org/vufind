@@ -83,17 +83,28 @@ var VuFind = (function VuFind() {
   };
 
   var initClickHandlers = function initClickHandlers() {
+    let checkClickHandlers = function (event, elem) {
+      if (elem.hasAttribute('data-click-callback')) {
+        return evalCallback(elem.dataset.clickCallback, event, {});
+      }
+      if (elem.hasAttribute('data-click-set-checked')) {
+        document.getElementById(elem.dataset.clickSetChecked).checked = true;
+        event.preventDefault();
+      }
+      if (elem.hasAttribute('data-toggle-aria-expanded')) {
+        elem.setAttribute('aria-expanded', elem.getAttribute('aria-expanded') === 'true' ? 'false' : 'true');
+        event.preventDefault();
+      }
+      // Check also parent node for spans (e.g. a button with icon)
+      if (!event.defaultPrevented && elem.localName === 'span' && elem.parentNode) {
+        checkClickHandlers(event, elem.parentNode);
+      }
+    };
+
     window.addEventListener(
       'click',
       function handleClick(event) {
-        let elem = event.target;
-        if (elem.hasAttribute('data-click-callback')) {
-          return evalCallback(elem.dataset.clickCallback, event, {});
-        }
-        if (elem.hasAttribute('data-click-set-checked')) {
-          document.getElementById(elem.dataset.clickSetChecked).checked = true;
-          event.preventDefault();
-        }
+        checkClickHandlers(event, event.target);
       }
     );
     window.addEventListener(

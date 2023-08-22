@@ -28,6 +28,26 @@ $thumbnail-width-large:  160px;
   padding-right: 1rem;
   list-style: none;
 }
+// Reset styling of hierarchical facets on the home page:
+.home-facet.facet-tree li {
+  line-height: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  .facet-tree__toggle-expanded {
+    line-height: inherit;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .facet {
+    padding: 0;
+    line-height: inherit;
+    .badge {
+      display: none;
+    }
+  }
+}
+
 @media (min-width: 768px) {
   .search-home-facets,
   .home-facet-container { display: flex; }
