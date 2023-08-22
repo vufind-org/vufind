@@ -2,10 +2,6 @@
 /*exported initFacetTree */
 function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, showCounts)
 {
-  // Build a UL
-  var facetList = document.createElement("ul");
-  facetList.className = "facet__list";
-
   // Get Icons
   var toggleIcon = document.createElement("span");
   toggleIcon.innerHTML =
@@ -16,40 +12,49 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, showCoun
   leafHTML.innerHTML = VuFind.icon("format-file", "facet-tree__icon");
   var leafIcon = leafHTML.children[0];
 
+  // Helper function to create elements
+  // #todo: abstract to VuFind.el?
+  function el(tagName, className = null) {
+    const node = document.createElement(tagName);
+
+    if (className !== null) {
+      node.className = className;
+    }
+
+    return node;
+  }
+
+  // Build a UL
+  var facetList = el("ul", "facet__list");
+
   // Elements
   for (var i = 0; i < data.length; i++) {
     var facet = data[i];
 
     // Build the wrapper
-    var facetEl = document.createElement("span");
-    facetEl.className = "facet";
+    var facetEl = el("span", "facet");
 
     // Link to the facet
-    var linkEl = document.createElement("a");
-    linkEl.className = "facet__link";
+    var linkEl = el("a", "facet__link");
     linkEl.setAttribute("href", currentPath + facet.href);
     linkEl.setAttribute("title", facet.displayText);
 
     // Display with an checkbox icon (or not)
     if (facet.operator === "OR") {
-      var icon = document.createElement("span");
-      icon.className = "icon-link__icon";
+      var icon = el("span", "icon-link__icon");
       icon.innerHTML = facet.isApplied
         ? VuFind.icon("facet-checked", { title: VuFind.translate("Selected"), class: "icon-link__icon" })
         : VuFind.icon("facet-unchecked", "icon-link__icon");
 
-      var iconLabel = document.createElement("span");
-      iconLabel.className = "facet-value icon-link__label";
+      var iconLabel = el("span", "facet-value icon-link__label");
       iconLabel.innerText = facet.displayText;
 
-      var iconLink = document.createElement("span");
-      iconLink.className = "icon-link";
+      var iconLink = el("span", "icon-link");
       iconLink.append(icon, iconLabel);
 
       linkEl.append(iconLink);
     } else {
-      var textEl = document.createElement("span");
-      textEl.className = "text";
+      var textEl = el("span", "text");
       textEl.append(facet.displayText);
 
       linkEl.append(textEl);
@@ -57,8 +62,7 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, showCoun
 
     // Add a badge
     if (showCounts) {
-      var badgeEl = document.createElement("span");
-      badgeEl.className = "badge";
+      var badgeEl = el("span", "badge");
       badgeEl.innerText = facet.count.toLocaleString();
 
       linkEl.append(badgeEl);
@@ -68,8 +72,7 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, showCoun
 
     // Add the exclude link
     if (allowExclude) {
-      var excludeLink = document.createElement("a");
-      excludeLink.className = "facet__exclude";
+      var excludeLink = el("a", "facet__exclude");
       excludeLink.innerHTML = VuFind.icon("facet-exclude");
       excludeLink.setAttribute("href", currentPath + facet.exclude);
       excludeLink.setAttribute("title", excludeTitle);
@@ -78,8 +81,7 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, showCoun
     }
 
     // Containing LI
-    var liEl = document.createElement("li");
-    liEl.className = "facet-tree";
+    var liEl = el("li", "facet-tree");
     if (facet.isApplied) {
       liEl.classList.append("applied");
     }
@@ -91,11 +93,9 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, showCoun
     ) {
       facetEl.prepend(toggleIcon.cloneNode(true));
 
-      var detailsEl = document.createElement("details");
-      detailsEl.className = "facet-tree__details";
+      var detailsEl = el("details", "facet-tree__details");
 
-      var summaryEl = document.createElement("summary");
-      summaryEl.className = "facet-tree__summary";
+      var summaryEl = el("summary", "facet-tree__summary");
       summaryEl.append(facetEl);
       detailsEl.append(summaryEl);
 
