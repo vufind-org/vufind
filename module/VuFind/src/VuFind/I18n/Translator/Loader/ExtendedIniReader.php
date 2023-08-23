@@ -62,8 +62,10 @@ class ExtendedIniReader
             foreach ($contents as $current) {
                 // Split the string on the equals sign, keeping a max of two chunks:
                 $parts = explode('=', $current, 2);
+                // Trim off outermost single quotes, if any, from keys (these are
+                // needed by Lokalise in some cases for keys with numeric values)
                 $key = preg_replace(
-                    '/^\"?(.*?)\"?$/',
+                    '/^\'?(.*?)\'?$/',
                     '$1',
                     trim($parts[0])
                 );
