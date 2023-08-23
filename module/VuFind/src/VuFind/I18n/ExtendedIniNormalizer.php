@@ -135,7 +135,8 @@ class ExtendedIniNormalizer
         // Format the lines:
         $output = '';
         foreach ($input as $key => $value) {
-            $output .= "$key = \"$value\"\n";
+            $normalizedKey = is_numeric($key) ? "'$key'" : $key;
+            $output .= "$normalizedKey = \"$value\"\n";
         }
         return trim($output) . "\n";
     }
