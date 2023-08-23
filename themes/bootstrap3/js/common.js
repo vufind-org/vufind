@@ -163,7 +163,7 @@ var VuFind = (function VuFind() {
           var sliceEnd = sliceStart;
           var value = _attrs[attr];
           var regex = new RegExp(` ${attr}=(['"])([^\\1]+?)\\1`);
-          var existing = html.match(regex);
+          var existing = mod.match(regex);
           if (existing) {
             sliceStart = existing.index;
             sliceEnd = sliceStart + existing[0].length;

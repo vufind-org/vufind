@@ -50,10 +50,10 @@ return [
      * Configuration for a single or multiple favicons.
      *
      * Can be a single string that is a path to an .ico icon relative to the theme image folder.
-     * 
+     *
      * For multiple favicons the value must be an array of arrays of attributes
      * that will be rendered as link elements.
-     * 
+     *
      * Example:
      *  [
      *      [
@@ -155,7 +155,10 @@ return [
             'external-link' => 'FontAwesome:link',
             'facet-applied' => 'FontAwesome:check',
             'facet-checked' => 'FontAwesome:check-square-o',
+            'facet-closed' => 'FontAwesome:caret-right',
             'facet-exclude' => 'FontAwesome:times',
+            'facet-noncollapsible' => 'FontAwesome:none',
+            'facet-opened' => 'FontAwesome:caret-down',
             'facet-unchecked' => 'FontAwesome:square-o',
             'feedback' => 'FontAwesome:envelope',
             'format-atlas' => 'FontAwesome:compass',

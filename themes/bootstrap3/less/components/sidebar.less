@@ -86,6 +86,9 @@
   color: #fff;
   background-color: #000;
 }
+.facet .text {
+  overflow: hidden;
+}
 
 .top-facets-contents {
   margin: 2px 0;
@@ -183,4 +186,75 @@ h3.facet-title {
 @media (min-width: 768px) {
   .author-facets { display: flex; }
   .author-list { flex: 0 1 100%; }
+}
+
+.facet-tree {
+  padding-left: 0;
+
+  .facet-tree__summary {
+    display: flex;
+    align-items: baseline;
+
+    .facet-tree__icon-container {
+      padding: 0.5rem;
+      width: 1.5rem;
+      min-width: 1.5rem;
+      line-height: 1.5rem;
+    }
+
+    .facet-tree__item-container {
+      // Leave space for the open/close icon (see above):
+      width: calc(100% - 1.5em);
+
+      .text {
+        // Leave space for the badge:
+        width: calc(100% - 1.5em);
+      }
+
+      &--exclude .text {
+        // Leave space for the badge and exclude link:
+        width: calc(100% - 3.0em);
+      }
+
+      .icon-link__label {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        display: inline;
+      }
+    }
+  }
+
+  details[open] > summary > .facet-tree__icon-container > .facet-tree__closed {
+      display: none;
+  }
+  details:not([open]) > summary > .facet-tree__icon-container > .facet-tree__opened {
+    display: none;
+  }
+
+  ul {
+    padding: 0;
+  }
+
+  li {
+    display: block;
+    position: relative;
+    padding-left: 0;
+
+    > details > summary > .facet-tree__icon-container:hover {
+      background-color: @list-group-hover-bg;
+    }
+
+    ul {
+      padding-left: 1rem;
+    }
+  }
+
+  .facet {
+    border: 0;
+  }
+
+  & > ul > li, .more-less-btn-wrapper {
+    border-bottom: 1px solid @list-group-border;
+  }
 }
