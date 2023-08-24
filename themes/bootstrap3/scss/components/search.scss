@@ -29,27 +29,21 @@ $thumbnail-width-large:  160px;
   list-style: none;
 }
 // Reset styling of hierarchical facets on the home page:
-.home-facet .facet-tree {
-  li {
-    border: none;
-  }
-
-  .facet-tree__summary {
+.home-facet.facet-tree li {
+  line-height: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  .facet-tree__toggle-open {
     line-height: inherit;
     padding-top: 0;
     padding-bottom: 0;
-    .facet-tree__icon-container {
-      line-height: inherit;
-      padding-top: 0;
-      padding-bottom: 0;
-    }
+  }
 
-    .facet {
-      padding: 0;
-      line-height: inherit;
-      .badge {
-        display: none;
-      }
+  .facet {
+    padding: 0;
+    line-height: inherit;
+    .badge {
+      display: none;
     }
   }
 }

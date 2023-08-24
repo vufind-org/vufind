@@ -191,15 +191,37 @@ h3.facet-title {
 .facet-tree {
   padding-left: 0;
 
-  .facet-tree__summary {
-    display: flex;
-    align-items: baseline;
+  ul {
+    padding: 0;
+  }
 
-    .facet-tree__icon-container {
-      padding: 0.5rem;
-      width: 1.5rem;
-      min-width: 1.5rem;
-      line-height: 1.5rem;
+  li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    // Ensure that there is enough room for a button focus outline:
+    padding-left: .2rem;
+
+    .facet-tree__toggle-open {
+      width: 1.4rem;
+      border: 0;
+      background: none;
+
+      &:hover {
+        background-color: $list-group-hover-bg;
+      }
+
+      &[aria-expanded=false] {
+        .facet-tree__opened {
+          display: none;
+        }
+        & ~ ul {
+          display: none;
+        }
+      }
+      &[aria-expanded=true] .facet-tree__closed {
+        display: none;
+      }
     }
 
     .facet-tree__item-container {
@@ -223,35 +245,16 @@ h3.facet-title {
         display: inline;
       }
     }
-  }
-
-  details[open] > summary > .facet-tree__icon-container > .facet-tree__closed {
-      display: none;
-  }
-  details:not([open]) > summary > .facet-tree__icon-container > .facet-tree__opened {
-    display: none;
-  }
-
-  ul {
-    padding: 0;
-  }
-
-  li {
-    display: block;
-    position: relative;
-    padding-left: 0;
-
-    > details > summary > .facet-tree__icon-container:hover {
-      background-color: $list-group-hover-bg;
-    }
 
     ul {
       padding-left: 1rem;
+      flex: 1;
     }
   }
 
   .facet {
     border: 0;
+    padding-left: .1rem;
   }
 
   & > ul > li, .more-less-btn-wrapper {

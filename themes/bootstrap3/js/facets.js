@@ -1,6 +1,6 @@
 /*global VuFind */
 /*exported initFacetTree */
-function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, showCounts)
+function buildFacetNodes(facetName, data, currentPath, allowExclude, excludeTitle, showCounts, nestingLevel)
 {
   // Helper function to create elements
   // #todo: abstract to VuFind.el?
@@ -23,6 +23,8 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, showCoun
 
     const hasChildren = typeof facet.children !== "undefined" && facet.children.length > 0;
 
+    const childUlId = 'facet_' + facetName + '_' + nestingLevel + '_' + i;
+
     // Create badge
     let badgeEl = null;
     if (showCounts && !facet.isApplied && facet.count) {
@@ -40,10 +42,10 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, showCoun
     }
 
     // Create facet text element
-    let orFacet = facet.operator === 'OR';
+    const orFacet = facet.operator === 'OR';
     let textEl;
     if (orFacet) {
-      let iconLabel = el("span", "facet-value icon-link__label");
+      const iconLabel = el("span", "facet-value icon-link__label");
       iconLabel.innerText = facet.displayText;
 
       textEl = el("span", "text");
@@ -57,13 +59,13 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, showCoun
     }
 
     // Create link element
-    let linkEl = el("a", (orFacet ? " icon-link" : ""));
+    const linkEl = el("a", (orFacet ? " icon-link" : ""));
     linkEl.setAttribute("href", currentPath + facet.href);
     linkEl.setAttribute("title", facet.displayText);
     linkEl.append(textEl);
 
     // Create facet element
-    let classes = "facet js-facet-item"
+    const classes = "facet js-facet-item"
       + (facet.isApplied ? " active" : "")
       + (orFacet ? " facetOR" : " facetAND");
     let facetEl;
@@ -83,42 +85,31 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, showCoun
       facetEl = linkEl;
     }
 
-    // Create toggle icons
-    let iconContainer = el("span", "facet-tree__icon-container");
-    iconContainer.innerHTML = hasChildren
-      ? VuFind.icon("facet-opened", "facet-tree__opened") + VuFind.icon("facet-closed", "facet-tree__closed")
-      : VuFind.icon("facet-noncollapsible", "facet-tree__noncollapsible");
+    // Create toggle button
+    const toggleButton = el("button", "facet-tree__toggle-open");
+    toggleButton.setAttribute('aria-expanded', facet.hasAppliedChildren ? 'true' : 'false');
+    toggleButton.setAttribute('aria-controls', childUlId);
+    toggleButton.setAttribute('data-toggle-aria-expanded', '');
 
     let itemContainerEl = el("span", "facet-tree__item-container" + (allowExclude ? " facet-tree__item-container--exclude" : ""));
     itemContainerEl.append(facetEl);
 
-    // Create detail/summary for nodes with children or a simple node for others
-    let liEl;
+    // Create an li node with or without children
+    const liEl = el("li");
     if (hasChildren) {
-      let iconEl = el("span", "facet-tree__icon-container");
-      iconEl.innerHTML = VuFind.icon("facet-opened", "facet-tree__opened") + VuFind.icon("facet-closed", "facet-tree__closed");
+      liEl.className = "facet-tree__parent";
 
-      let summaryEl = el("summary", "facet-tree__summary");
-      summaryEl.append(iconEl, itemContainerEl);
-      let childrenEl = buildFacetNodes(facet.children, currentPath, allowExclude, excludeTitle, showCounts);
+      toggleButton.innerHTML = VuFind.icon("facet-opened", "facet-tree__opened") + VuFind.icon("facet-closed", "facet-tree__closed");
 
-      let detailsEl = el("details");
-      if (facet.hasAppliedChildren ? {"open": ""} : "") {
-        detailsEl.open = true;
-      }
-      detailsEl.append(summaryEl, childrenEl);
+      const childrenEl = buildFacetNodes(facetName, facet.children, currentPath, allowExclude, excludeTitle, showCounts, nestingLevel + 1);
+      childrenEl.id = childUlId;
 
-      liEl = el("li", "facet-tree__parent");
-      liEl.append(detailsEl);
+      liEl.append(toggleButton, itemContainerEl, childrenEl);
     } else {
-      let iconEl = el("span", "facet-tree__icon-container");
-      iconEl.innerHTML = VuFind.icon("facet-noncollapsible", "facet-tree__noncollapsible");
+      toggleButton.innerHTML = VuFind.icon("facet-noncollapsible", "facet-tree__noncollapsible");
+      toggleButton.setAttribute('disabled', '');
 
-      let summaryEl = el("div", "facet-tree__summary");
-      summaryEl.append(iconEl, itemContainerEl);
-
-      liEl = el("li");
-      liEl.append(summaryEl);
+      liEl.append(toggleButton, itemContainerEl);
     }
 
     // Append to the UL
@@ -135,8 +126,9 @@ function buildFacetTree(treeNode, facetData, inSidebar) {
   var currentPath = treeNode.data('path');
   var allowExclude = treeNode.data('exclude');
   var excludeTitle = treeNode.data('exclude-title');
+  var facetName = treeNode.data('facet');
 
-  var facetList = buildFacetNodes(facetData, currentPath, allowExclude, excludeTitle, inSidebar);
+  var facetList = buildFacetNodes(facetName, facetData, currentPath, allowExclude, excludeTitle, inSidebar, 0);
 
   if (inSidebar) {
     treeNode.on('loaded.jstree open_node.jstree', function treeNodeOpen(/*e, data*/) {
