@@ -1,6 +1,6 @@
 /*global VuFind */
 /*exported initFacetTree */
-function buildFacetNodes(facetName, data, currentPath, allowExclude, excludeTitle, showCounts, nestingLevel)
+function buildFacetNodes(facetName, data, currentPath, allowExclude, excludeTitle, showCounts, counter)
 {
   // Helper function to create elements
   // #todo: abstract to VuFind.el?
@@ -22,8 +22,6 @@ function buildFacetNodes(facetName, data, currentPath, allowExclude, excludeTitl
     let facet = data[i];
 
     const hasChildren = typeof facet.children !== "undefined" && facet.children.length > 0;
-
-    const childUlId = 'facet_' + facetName + '_' + nestingLevel + '_' + i;
 
     // Create badge
     let badgeEl = null;
@@ -88,8 +86,8 @@ function buildFacetNodes(facetName, data, currentPath, allowExclude, excludeTitl
     // Create toggle button
     const toggleButton = el("button", "facet-tree__toggle-open");
     toggleButton.setAttribute('aria-expanded', facet.hasAppliedChildren ? 'true' : 'false');
-    toggleButton.setAttribute('aria-controls', childUlId);
     toggleButton.setAttribute('data-toggle-aria-expanded', '');
+    toggleButton.setAttribute('aria-label', VuFind.translate('more_info_toggle'));
 
     let itemContainerEl = el("span", "facet-tree__item-container" + (allowExclude ? " facet-tree__item-container--exclude" : ""));
     itemContainerEl.append(facetEl);
@@ -98,10 +96,12 @@ function buildFacetNodes(facetName, data, currentPath, allowExclude, excludeTitl
     const liEl = el("li");
     if (hasChildren) {
       liEl.className = "facet-tree__parent";
+      const childUlId = 'facet_' + facetName + '_' + (++counter.count);
 
+      toggleButton.setAttribute('aria-controls', childUlId);
       toggleButton.innerHTML = VuFind.icon("facet-opened", "facet-tree__opened") + VuFind.icon("facet-closed", "facet-tree__closed");
 
-      const childrenEl = buildFacetNodes(facetName, facet.children, currentPath, allowExclude, excludeTitle, showCounts, nestingLevel + 1);
+      const childrenEl = buildFacetNodes(facetName, facet.children, currentPath, allowExclude, excludeTitle, showCounts, counter);
       childrenEl.id = childUlId;
 
       liEl.append(toggleButton, itemContainerEl, childrenEl);
@@ -128,7 +128,7 @@ function buildFacetTree(treeNode, facetData, inSidebar) {
   var excludeTitle = treeNode.data('exclude-title');
   var facetName = treeNode.data('facet');
 
-  var facetList = buildFacetNodes(facetName, facetData, currentPath, allowExclude, excludeTitle, inSidebar, 0);
+  var facetList = buildFacetNodes(facetName, facetData, currentPath, allowExclude, excludeTitle, inSidebar, { count: 0 });
 
   if (inSidebar) {
     treeNode.on('loaded.jstree open_node.jstree', function treeNodeOpen(/*e, data*/) {
