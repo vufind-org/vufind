@@ -120,29 +120,20 @@ function buildFacetNodes(facetName, data, currentPath, allowExclude, excludeTitl
 }
 
 function buildFacetTree(treeNode, facetData, inSidebar) {
-  // Enable keyboard navigation also when a screen reader is active
-  treeNode.bind('select_node.jstree', VuFind.sideFacets.showLoadingOverlay);
-
   var currentPath = treeNode.data('path');
   var allowExclude = treeNode.data('exclude');
   var excludeTitle = treeNode.data('exclude-title');
   var facetName = treeNode.data('facet');
 
   var facetList = buildFacetNodes(facetName, facetData, currentPath, allowExclude, excludeTitle, inSidebar, { count: 0 });
+  treeNode[0].replaceChildren(facetList);
 
   if (inSidebar) {
-    treeNode.on('loaded.jstree open_node.jstree', function treeNodeOpen(/*e, data*/) {
-      treeNode.find('ul.jstree-container-ul > li.jstree-node').addClass('list-group-item');
-      treeNode.find('a.exclude').click(VuFind.sideFacets.showLoadingOverlay);
-    });
+    treeNode.find('a').click(VuFind.sideFacets.showLoadingOverlay);
     if (treeNode.parent().hasClass('truncate-hierarchy')) {
-      treeNode.on('loaded.jstree', function initHierarchyTruncate(/*e, data*/) {
-        VuFind.truncate.initTruncate(treeNode.parent(), '.list-group-item');
-      });
+      VuFind.truncate.initTruncate(treeNode.parent(), 'div > ul > li');
     }
   }
-
-  treeNode[0].replaceChildren(facetList);
 }
 
 function loadFacetTree(treeNode, inSidebar)
