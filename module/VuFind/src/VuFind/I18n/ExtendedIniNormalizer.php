@@ -113,7 +113,7 @@ class ExtendedIniNormalizer
     /**
      * Normalize an array of lines from a file and return the result as a string.
      *
-     * @param string[] $fileArray
+     * @param string[] $fileArray Array of lines to normalize
      *
      * @return string
      */
