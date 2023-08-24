@@ -31,7 +31,6 @@ namespace VuFindConsole\Command\Language;
 
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -209,7 +208,7 @@ class ImportLokaliseCommand extends AbstractCommand
         $sourceFiles = $this->collectSourceFiles($source);
         $targetFiles = $this->matchTargetFiles($source, $target, $sourceFiles);
         array_map([$this, 'importStrings'], $sourceFiles, $targetFiles);
-        $output->writeln("Import complete.");
+        $output->writeln('Import complete.');
         return 0;
     }
 }
