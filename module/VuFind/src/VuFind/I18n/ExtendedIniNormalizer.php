@@ -86,20 +86,43 @@ class ExtendedIniNormalizer
      */
     public function normalizeFileToString($file)
     {
-        $reader = new Translator\Loader\ExtendedIniReader();
+        // Safeguard to avoid messing up wrong ini files:
+        $fileArray = $this->loadFileIntoArray($file);
+        $this->checkFileFormat($fileArray, $file);
+        return $this->normalizeArray($fileArray);
+    }
 
-        // Reading and rewriting the file by itself will eliminate all comments;
-        // we should extract comments separately and then recombine the parts.
-        $fileArray = file($file);
+    /**
+     * Load a language file into an array of lines, stripping UTF-8 BOM if necessary.
+     *
+     * @param string $filename File to load
+     *
+     * @return array
+     */
+    public function loadFileIntoArray(string $filename): array
+    {
+        $fileArray = file($filename);
 
         // Strip off UTF-8 BOM if necessary.
         $bom = html_entity_decode('&#xFEFF;', ENT_NOQUOTES, 'UTF-8');
         $fileArray[0] = str_replace($bom, '', $fileArray[0]);
 
-        // Safeguard to avoid messing up wrong ini files:
-        $this->checkFileFormat($fileArray, $file);
+        return $fileArray;
+    }
 
+    /**
+     * Normalize an array of lines from a file and return the result as a string.
+     *
+     * @param string[] $fileArray
+     *
+     * @return string
+     */
+    public function normalizeArray(array $fileArray): string
+    {
+        // Reading and rewriting the file by itself will eliminate all comments;
+        // we should extract comments separately and then recombine the parts.
         $comments = $this->extractComments($fileArray);
+        $reader = new Translator\Loader\ExtendedIniReader();
         $strings = $this->formatAsString($reader->getTextDomain($fileArray, false));
         return $comments . $strings;
     }
