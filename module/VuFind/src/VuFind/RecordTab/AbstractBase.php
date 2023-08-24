@@ -111,6 +111,16 @@ abstract class AbstractBase implements
     }
 
     /**
+     * What CSS and JS dependencies does this tab have?
+     *
+     * @return array
+     */
+    public function getDependencies()
+    {
+        return [];
+    }
+
+    /**
      * Set the record driver
      *
      * @param \VuFind\RecordDriver\AbstractBase $driver Record driver

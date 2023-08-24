@@ -1,4 +1,4 @@
-/*global deparam, getUrlRoot, recaptchaOnLoad, resetCaptcha, syn_get_widget, userIsLoggedIn, VuFind, setupJumpMenus */
+/*global deparam, getUrlRoot, recaptchaOnLoad, resetCaptcha, syn_get_widget, userIsLoggedIn, VuFind, setupJumpMenus, setupCarousel */
 /*exported ajaxTagUpdate, recordDocReady, refreshTagListCallback, addRecordRating */
 
 /**
@@ -175,7 +175,7 @@ function handleAjaxTabLinks(_context) {
   });
 }
 
-function registerTabEvents() {
+function registerTabEvents($newTab) {
   // Logged in AJAX
   registerAjaxCommentRecord();
   // Render recaptcha
@@ -184,6 +184,10 @@ function registerTabEvents() {
   setUpCheckRequest();
 
   handleAjaxTabLinks();
+
+  if ($newTab) {
+    setupCarousels($newTab[0]);
+  }
 
   VuFind.lightbox.bind('.tab-pane.active');
 
@@ -224,7 +228,7 @@ ajaxLoadTab = function ajaxLoadTabReal($newTab, tabid, setHash, tabUrl) {
       } else {
         $newTab.html(VuFind.updateCspNonce(data));
       }
-      registerTabEvents();
+      registerTabEvents($newTab);
       if (typeof syn_get_widget === "function") {
         syn_get_widget();
       }

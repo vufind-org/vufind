@@ -1,21 +1,11 @@
 <h2><?=$this->transEsc('Similar Items')?></h2>
 <?php $similarRecords = $this->tab->getResults(); ?>
 <?php if (!empty($similarRecords)): ?>
-  <?php $perPage = 4 ?>
-  <div id="similar-items-carousel" class="carousel slide" data-ride="carousel">
-    <!-- Indicators -->
-    <ol class="carousel-indicators">
-      <li data-target="#similar-items-carousel" data-slide-to="0" class="active"></li>
-      <?php for($i = 1;$i < count($similarRecords) / $perPage;$i++): ?>
-        <li data-target="#similar-items-carousel" data-slide-to="<?=$i ?>"></li>
-      <?php endfor; ?>
-    </ol>
-
-    <!-- Wrapper for slides -->
-    <div class="carousel-inner">
-      <div class="item active">
+  <div id="similar-items-carousel" class="carousel splide" role="group" data-carousel aria-label="<?=$this->transEsc('Similar Items')?>">
+    <div class="splide__track">
+      <ul class="splide__list">
         <?php foreach ($similarRecords as $index => $data): ?>
-          <div class="carousel-item">
+          <li class="carousel-item splide__slide">
             <a class="hover-overlay record-cover-link" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($data))?>">
               <?=$this->record($data)->getCoverDetails('similar-items', 'large')['html']?>
               <div class="content">
@@ -38,44 +28,11 @@
                 <?php endif; ?>
               </div>
             </a>
-          </div>
-          <?php if (($index + 1) % $perPage == 0 && $index < count($similarRecords) - 1): ?>
-      </div>
-      <div class="item">
-          <?php endif; ?>
+          </li>
         <?php endforeach; ?>
-      </div>
+      </ul>
     </div>
-
-    <!-- Controls -->
-    <a class="left carousel-control" href="#similar-items-carousel" role="button" data-slide="prev">
-      <?=$this->icon('page-prev') ?>
-      <span class="sr-only"><?=$this->transEscAttr('Prev') ?></span>
-    </a>
-    <a class="right carousel-control" href="#similar-items-carousel" role="button" data-slide="next">
-      <span class="sr-only"><?=$this->transEscAttr('Next') ?></span>
-      <?=$this->icon('page-next') ?>
-    </a>
   </div>
 <?php else: ?>
   <p><?=$this->transEsc('Cannot find similar records')?></p>
 <?php endif; ?>
-<?php
-  $script = $this->config()->ajaxCoversEnabled() ? "loadCovers();\n" : "";
-  $script .= <<<JS
-      var normalizeHeightCount = $('#similar-items-carousel img').length;
-      function normalizeHeights() {
-        if (--normalizeHeightCount > 0) return;
-        var tallest = 0;
-        var items = $('#similar-items-carousel .hover-overlay');
-        items.each(function() { //add heights to array
-          if (tallest < $(this).height()) {
-            tallest = $(this).height();
-          }
-        });
-        items.css('min-height', (tallest+25) + 'px');
-      }
-      $('#similar-items-carousel img').on('load', normalizeHeights);
-      JS;
-?>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>

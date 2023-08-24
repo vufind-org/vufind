@@ -93,4 +93,17 @@ class SimilarItemsCarousel extends AbstractBase
         );
         return $this->searchService->invoke($command)->getResult();
     }
+
+    /**
+     * What CSS and JS dependencies does this tab have?
+     *
+     * @return array
+     */
+    public function getDependencies()
+    {
+        return [
+            'css' => ['vendor/splide.min.css'],
+            'js' => ['vendor/splide.min.js'],
+        ];
+    }
 }
