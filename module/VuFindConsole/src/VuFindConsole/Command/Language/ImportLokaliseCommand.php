@@ -92,7 +92,7 @@ class ImportLokaliseCommand extends AbstractCommand
             $next = "$dir/$file";
             if (is_dir($next)) {
                 $dirs = array_merge($dirs, $this->collectSourceFiles($next));
-            } elseif(str_ends_with($next, '.ini')) {
+            } elseif (str_ends_with($next, '.ini')) {
                 $dirs[] = $next;
             }
         }
