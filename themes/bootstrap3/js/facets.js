@@ -1,6 +1,6 @@
 /*global VuFind */
 /*exported initFacetTree */
-function buildFacetNodes(facetName, data, currentPath, allowExclude, excludeTitle, showCounts, counter)
+function buildFacetNodes(facetName, data, currentPath, allowExclude, excludeTitle, showCounts, counter, locale)
 {
   // Helper function to create elements
   // #todo: abstract to VuFind.el?
@@ -27,7 +27,7 @@ function buildFacetNodes(facetName, data, currentPath, allowExclude, excludeTitl
     let badgeEl = null;
     if (showCounts && !facet.isApplied && facet.count) {
       badgeEl = el("span", "badge");
-      badgeEl.innerText = facet.count.toLocaleString();
+      badgeEl.innerText = facet.count.toLocaleString(locale);
     }
 
     // Create exclude link
@@ -101,7 +101,7 @@ function buildFacetNodes(facetName, data, currentPath, allowExclude, excludeTitl
       toggleButton.setAttribute('aria-controls', childUlId);
       toggleButton.innerHTML = VuFind.icon("facet-opened", "facet-tree__opened") + VuFind.icon("facet-closed", "facet-tree__closed");
 
-      const childrenEl = buildFacetNodes(facetName, facet.children, currentPath, allowExclude, excludeTitle, showCounts, counter);
+      const childrenEl = buildFacetNodes(facetName, facet.children, currentPath, allowExclude, excludeTitle, showCounts, counter, locale);
       childrenEl.id = childUlId;
 
       liEl.append(toggleButton, itemContainerEl, childrenEl);
@@ -124,8 +124,12 @@ function buildFacetTree(treeNode, facetData, inSidebar) {
   var allowExclude = treeNode.data('exclude');
   var excludeTitle = treeNode.data('exclude-title');
   var facetName = treeNode.data('facet');
+  var locale = $('html').attr('lang');
+  if (locale) {
+    locale = locale.replace('_', '-');
+  }
 
-  var facetList = buildFacetNodes(facetName, facetData, currentPath, allowExclude, excludeTitle, inSidebar, { count: 0 });
+  var facetList = buildFacetNodes(facetName, facetData, currentPath, allowExclude, excludeTitle, inSidebar, { count: 0 }, locale);
   treeNode[0].replaceChildren(facetList);
 
   if (inSidebar) {
