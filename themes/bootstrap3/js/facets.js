@@ -87,7 +87,7 @@ function buildFacetNodes(facetName, data, currentPath, allowExclude, excludeTitl
     const toggleButton = el("button", "facet-tree__toggle-open");
     toggleButton.setAttribute('aria-expanded', facet.hasAppliedChildren ? 'true' : 'false');
     toggleButton.setAttribute('data-toggle-aria-expanded', '');
-    toggleButton.setAttribute('aria-label', VuFind.translate('more_info_toggle'));
+    toggleButton.setAttribute('aria-label', facet.displayText);
 
     let itemContainerEl = el("span", "facet-tree__item-container" + (allowExclude ? " facet-tree__item-container--exclude" : ""));
     itemContainerEl.append(facetEl);
