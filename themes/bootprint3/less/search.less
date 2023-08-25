@@ -68,6 +68,26 @@
     text-decoration: none;
     z-index: 5;
   }
+
+  .keyboard-selection {
+    button.dropdown-toggle {
+      color: @input-color;
+      background-color: white;
+
+      &:hover, &:focus {
+        color: white;
+        background-color: @brand-primary;
+      }
+    }
+
+    .btn-primary {
+      height: 20px;
+    }
+  }
+}
+
+.keyboard-box {
+  top: 44px;
 }
 
 .top-facets .facet a { vertical-align: middle; }

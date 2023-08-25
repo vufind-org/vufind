@@ -588,14 +588,17 @@ table.search-history-table {
     padding-right: 28px;
   }
 
-  #searchForm-reset {
+  #searchForm_controls {
     position: absolute;
-    display: none;
     right: 3px;
-    top: 3px;
+    top: 5px;
+    z-index: 4;
+    height: 2em;
+  }
+
+  #searchForm-reset {
     bottom: 0;
     width: 2em;
-    height: 2em;
     border: none;
     border-radius: 50%;
     background-color: @gray-lighter;

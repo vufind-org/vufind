@@ -1,9 +1,10 @@
 /*global VuFind */
-VuFind.register('keyboard', function Keyboard() {
+VuFind.register('searchbox_controls', function SearchboxControls() {
   let _KeyboardClass;
   let _KeyboardLayoutClass;
 
   let _textInput;
+  let _resetButton;
 
   let _enabled = false;
   let _keyboard;
@@ -32,6 +33,11 @@ VuFind.register('keyboard', function Keyboard() {
 
   function _onChange(input){
     _textInput.value = input;
+    if (_textInput.value === '') {
+      _resetButton.hide();
+    } else {
+      _resetButton.show();
+    }
     _keyboard.setInput(input);
   }
 
@@ -75,7 +81,7 @@ VuFind.register('keyboard', function Keyboard() {
         physicalKeyboardHighlight: true
       });
 
-    _keyboard.setInput(_textInput.value);
+    _onChange(_textInput.value);
 
     let layout = window.Cookies.get("keyboard");
     if (layout == null) {
@@ -88,6 +94,11 @@ VuFind.register('keyboard', function Keyboard() {
     _KeyboardClass = window.SimpleKeyboard.default;
     _KeyboardLayoutClass = window.SimpleKeyboardLayouts.default;
     _textInput = document.querySelector(".searchForm_lookfor");
+    _resetButton = $('#searchForm-reset');
+
+    _resetButton.on('click', function onClick() {
+      _onChange('');
+    });
 
     $('.keyboard-selection-item').on("click", function updateLayoutOnClick(){
       _updateKeyboardLayout($(this).data("value"));
@@ -105,13 +116,15 @@ VuFind.register('keyboard', function Keyboard() {
         !event.target.className.includes("searchForm_lookfor") &&
         !event.target.className.includes("hg-button") &&
         !event.target.className.includes("hg-row") &&
-        !event.target.className.includes("simple-keyboard")
+        !event.target.className.includes("simple-keyboard") &&
+        !event.target.className.includes("searchForm-reset") &&
+        !event.target.parentNode.className.includes("searchForm-reset")
       ) {
         _hideKeyboard();
       }
     });
     _textInput.addEventListener("input", (event) => {
-      _keyboard.setInput(event.target.value);
+      _onChange(event.target.value);
     });
 
     _initKeyboard();

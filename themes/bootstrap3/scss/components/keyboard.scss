@@ -1,14 +1,12 @@
 .keyboard-selection {
-  position: absolute;
-  right: 5px;
-  top: 7px;
-  z-index: 4;
+  display: inline-block;
+  padding-top: 2px;
 
-button.dropdown-toggle:hover,
-button.dropdown-toggle:focus {
-  border: none;
-  outline: none;
-}
+  button.dropdown-toggle:hover,
+  button.dropdown-toggle:focus {
+    border: none;
+    outline: none;
+  }
 
   > .dropdown-menu {
     min-width: 20px;
