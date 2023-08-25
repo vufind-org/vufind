@@ -482,7 +482,7 @@ class SierraRest extends AbstractBase implements
      */
     public function getStatus($id)
     {
-        return $this->getItemStatusesForBib($id, false);
+        return $this->getItemStatusesForBib($id, $this->config['Holdings']['check_holdings_in_results'] ?? true);
     }
 
     /**
@@ -499,7 +499,7 @@ class SierraRest extends AbstractBase implements
     {
         $items = [];
         foreach ($ids as $id) {
-            $items[] = $this->getItemStatusesForBib($id, false);
+            $items[] = $this->getStatus($id);
         }
         return $items;
     }
