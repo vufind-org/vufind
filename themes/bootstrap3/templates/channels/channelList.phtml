@@ -55,14 +55,26 @@
       </div>
     <?php endif; ?>
 
-    <div id="<?=$channelID ?>" class="channel" data-group="<?=$groupId ?>" data-link-json='<?=empty($channel['links']) ? '[]' : $this->htmlSafeJsonEncode($channel['links']) ?>'>
+    <?php
+      $channelSplideOptions = [
+        'perPage' => 6,
+        'breakpoints' => [
+          640 => [ 'perPage' => 3 ]
+        ],
+        'lazyLoad' => 'nearby'
+      ];
+    ?>
+    <div id="<?=$channelID ?>" class="channel splide"
+      data-carousel data-splide='<?=json_encode($channelSplideOptions) ?>'
+      data-group="<?=$groupId ?>" data-link-json='<?=empty($channel['links']) ? '[]' : $this->htmlSafeJsonEncode($channel['links']) ?>'
+    >
       <!-- Wrapper for slides -->
       <div class="splide__track">
         <ul class="splide__list">
           <?php foreach ($channel['contents'] as $index => $item): ?>
             <li class="splide__slide">
               <?php $url = empty($item['routeDetails']) ? $this->recordLinker()->getUrl("{$item['source']}|{$item['id']}") : $this->url($item['routeDetails']['route'], $item['routeDetails']['params']); ?>
-              <a href="<?=$this->escapeHtmlAttr($url)?>" class="channel-record slide hidden" data-record-id="<?=$this->escapeHtmlAttr($item['id']) ?>" data-record-source="<?=$item['source'] ?>" title="<?=$this->escapeHtml($item['title'])?>">
+              <a href="<?=$this->escapeHtmlAttr($url)?>" class="channel-record carousel-item hidden" data-record-id="<?=$this->escapeHtmlAttr($item['id']) ?>" data-record-source="<?=$item['source'] ?>" title="<?=$this->escapeHtml($item['title'])?>">
                 <div class="thumb">
                   <img <?=$index < 6 ? "src" : "src=\"#\" data-splide-lazy" ?>="<?=$this->escapeHtmlAttr($item['thumbnail'] ? $item['thumbnail'] : $this->url('cover-unavailable'))?>" alt="">
                 </div>

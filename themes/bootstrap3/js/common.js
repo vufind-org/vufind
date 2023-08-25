@@ -557,6 +557,7 @@ function setupCarousels(scope = document) {
   scope.querySelectorAll("[data-carousel]").forEach((carousel) => {
     const config = {
       autoHeight: true,
+      gap: "0.5em",
       perPage: 4,
       classes: {
         // Add classes for pagination.

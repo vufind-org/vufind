@@ -1,5 +1,12 @@
-.carousel {
+[data-carousel] {
   margin-block-end: 2rem;
+  background-color: @carousel-bg;
+  border-radius: @border-radius-base;
+
+  .carousel-item {
+    padding-inline: 0.25em;
+    padding-block: 1px;
+  }
 
   .carousel-pagination {
     bottom: -1.5em;
@@ -19,10 +26,12 @@
     }
   }
 
-  .splide__arrow--prev {
-    left: -3em;
-  }
-  .splide__arrow--next {
-    right: -3em;
+  @media (min-width: 850px) {
+    .splide__arrow--prev {
+      left: -3em;
+    }
+    .splide__arrow--next {
+      right: -3em;
+    }
   }
 }

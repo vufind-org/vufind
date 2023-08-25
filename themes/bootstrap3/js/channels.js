@@ -78,23 +78,6 @@ VuFind.register('channels', function Channels() {
   function setupChannelSlider(i, op) {
     $(op).find(".channel-record").removeClass("hidden");
 
-    const options = {
-      perPage: 6,
-      rewind: false,
-      direction: document.body.classList.contains("rtl") ? "rtl" : "ltr",
-      lazyLoad: true,
-      breakpoints: {
-        768: {
-          perPage: 3,
-        },
-        480: {
-          perPage: 1,
-        },
-      },
-    };
-
-    new Splide(op, options).mount();
-
     $(op).on('swipe', function channelDrag() {
       switchPopover(false);
     });

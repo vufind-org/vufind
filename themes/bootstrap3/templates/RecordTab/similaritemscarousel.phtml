@@ -5,8 +5,8 @@
     <div class="splide__track">
       <ul class="splide__list">
         <?php foreach ($similarRecords as $index => $data): ?>
-          <li class="carousel-item splide__slide">
-            <a class="hover-overlay record-cover-link" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($data))?>">
+          <li class="splide__slide">
+            <a class="record-cover-link hover-overlay carousel-item" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($data))?>">
               <?=$this->record($data)->getCoverDetails('similar-items', 'large')['html']?>
               <div class="content">
                 <?php
