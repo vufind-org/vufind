@@ -80,7 +80,7 @@
         <button id="searchForm-reset" class="searchForm-reset" type="button" tabindex="-1" aria-label="<?=$this->transEsc('searchform_reset_button')?>"><?=$this->icon('ui-reset-search');?></button>
         <?php if (!empty($keyboardLayouts)): ?>
           <?php
-          $this->headScript()->appendFile("vendor/js.cookie.js");
+          $this->headScript()->appendFile('vendor/js.cookie.js');
           $this->headScript()->appendFile('vendor/simple-keyboard/index.js');
           $this->headScript()->appendFile('vendor/simple-keyboard-layouts/index.js');
           $this->headLink()->appendStylesheet('vendor/simple-keyboard/index.css');
