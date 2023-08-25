@@ -38,7 +38,9 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
     } else {
       _resetButton.show();
     }
-    _keyboard.setInput(input);
+    if( typeof _keyboard !== 'undefined') {
+      _keyboard.setInput(input);
+    }
   }
 
   function _onKeyPress(button){
@@ -71,34 +73,8 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
   }
 
   function _initKeyboard(){
-    _keyboard = new _KeyboardClass(
-      {
-        onChange: input => _onChange(input),
-        onKeyPress: button => _onKeyPress(button),
-        display: _display,
-        syncInstanceInputs: true,
-        mergeDisplay: true,
-        physicalKeyboardHighlight: true
-      });
-
-    _onChange(_textInput.value);
-
-    let layout = window.Cookies.get("keyboard");
-    if (layout == null) {
-      layout = "none";
-    }
-    _updateKeyboardLayout(layout);
-  }
-
-  function init(){
     _KeyboardClass = window.SimpleKeyboard.default;
     _KeyboardLayoutClass = window.SimpleKeyboardLayouts.default;
-    _textInput = document.querySelector(".searchForm_lookfor");
-    _resetButton = $('#searchForm-reset');
-
-    _resetButton.on('click', function onClick() {
-      _onChange('');
-    });
 
     $('.keyboard-selection-item').on("click", function updateLayoutOnClick(){
       _updateKeyboardLayout($(this).data("value"));
@@ -123,11 +99,41 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
         _hideKeyboard();
       }
     });
+
+    _keyboard = new _KeyboardClass(
+      {
+        onChange: input => _onChange(input),
+        onKeyPress: button => _onKeyPress(button),
+        display: _display,
+        syncInstanceInputs: true,
+        mergeDisplay: true,
+        physicalKeyboardHighlight: true
+      });
+
+    _onChange(_textInput.value);
+
+    let layout = window.Cookies.get("keyboard");
+    if (layout == null) {
+      layout = "none";
+    }
+    _updateKeyboardLayout(layout);
+  }
+
+  function init(){
+    _textInput = document.querySelector(".searchForm_lookfor");
+    _resetButton = $('#searchForm-reset');
+
+    _resetButton.on('click', function onClick() {
+      _onChange('');
+    });
+
     _textInput.addEventListener("input", (event) => {
       _onChange(event.target.value);
     });
 
-    _initKeyboard();
+    if (typeof window.SimpleKeyboard !== 'undefined') {
+      _initKeyboard();
+    }
   }
 
   return {
