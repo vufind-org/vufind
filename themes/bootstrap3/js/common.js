@@ -554,20 +554,26 @@ function setupCarousels(scope = document) {
     return;
   }
 
-  scope.querySelectorAll("[data-carousel]").forEach((carousel) => {
-    const config = {
-      autoHeight: true,
-      gap: "0.5em",
-      perPage: 4,
-      classes: {
-        // Add classes for pagination.
-        pagination: "splide__pagination carousel-pagination", // container
-        page: "splide__pagination__page carousel-indicator", // each button
-      }
-    };
+  const config = {
+    autoHeight: true,
+    gap: "0.5em",
+    perPage: 4,
+    classes: {
+      // Add classes for pagination.
+      pagination: "splide__pagination carousel-pagination", // container
+      page: "splide__pagination__page carousel-indicator", // each button
+    }
+  };
 
-    new Splide(carousel, config).mount();
-  });
+  unwrapJQuery(scope)
+    .querySelectorAll("[data-carousel]")
+    .forEach((carousel) => {
+      if (carousel.classList.contains("is-initialized")) {
+        return;
+      }
+
+      new Splide(carousel, config).mount();
+    });
 }
 
 /**

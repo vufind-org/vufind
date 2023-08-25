@@ -1,4 +1,4 @@
-/*global getUrlRoot, Splide, VuFind */
+/*global VuFind, getUrlRoot, setupCarousels */
 VuFind.register('channels', function Channels() {
   function addLinkButtons(elem) {
     var links;
@@ -149,6 +149,7 @@ VuFind.register('channels', function Channels() {
           $dest.after($testEl);
           $testEl.find('.channel').each(setupChannelSlider);
           $testEl.find('.channel').each(bindChannelAddMenu);
+          setupCarousels($testEl);
         }
 
         if (list.children().length === 0) {
