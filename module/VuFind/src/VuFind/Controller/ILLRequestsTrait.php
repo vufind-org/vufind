@@ -93,7 +93,7 @@ trait ILLRequestsTrait
         // Send various values to the view so we can build the form:
 
         $extraFields = isset($checkRequests['extraFields'])
-            ? explode(":", $checkRequests['extraFields']) : [];
+            ? explode(':', $checkRequests['extraFields']) : [];
 
         // Process form submissions if necessary:
         if (null !== $this->params()->fromPost('placeILLRequest')) {
@@ -139,7 +139,7 @@ trait ILLRequestsTrait
             ->getDefaultRequiredDate($checkRequests);
         $defaultRequiredDate
             = $this->serviceLocator->get(\VuFind\Date\Converter::class)
-            ->convertToDisplayDate("U", $defaultRequiredDate);
+            ->convertToDisplayDate('U', $defaultRequiredDate);
 
         // Get pickup libraries
         $pickupLibraries = $catalog->getILLPickUpLibraries(

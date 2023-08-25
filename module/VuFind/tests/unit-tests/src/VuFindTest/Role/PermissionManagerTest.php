@@ -49,10 +49,10 @@ class PermissionManagerTest extends \PHPUnit\Framework\TestCase
      */
     protected $permissionConfig = [
         'permission.all' => [
-            'permission' => "everyone",
+            'permission' => 'everyone',
         ],
         'permission.nobody' => [
-            'permission' => "nobody",
+            'permission' => 'nobody',
         ],
         'permission.empty' => [
         ],

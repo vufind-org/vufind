@@ -93,14 +93,14 @@ class PathResolverFactory implements FactoryInterface
         while (!empty($currentDir)) {
             // check if the directory exists
             if (!($canonicalizedCurrentDir = realpath($currentDir))) {
-                trigger_error("Configured local directory does not exist: " . $currentDir, E_USER_WARNING);
+                trigger_error('Configured local directory does not exist: ' . $currentDir, E_USER_WARNING);
                 break;
             }
             $currentDir = $canonicalizedCurrentDir;
 
             // check if the current directory was already included in the stack to avoid infinite loops
             if (in_array($currentDir, array_column($localDirs, 'directory'))) {
-                trigger_error("Current directory was already included in the stack: " . $currentDir, E_USER_WARNING);
+                trigger_error('Current directory was already included in the stack: ' . $currentDir, E_USER_WARNING);
                 break;
             }
 

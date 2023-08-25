@@ -113,7 +113,7 @@ class ILLRequests extends AbstractRequestBase
 
         if (!empty($details)) {
             // Confirm?
-            if ($params->fromPost('confirm') === "0") {
+            if ($params->fromPost('confirm') === '0') {
                 $url = $this->getController()->url()
                     ->fromRoute('myresearch-illrequests');
                 if ($params->fromPost('cancelAll') !== null) {

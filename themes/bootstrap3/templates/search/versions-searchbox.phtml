@@ -16,9 +16,9 @@
 <?php $tabs = $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $tabConfig['tabs']]); ?>
 <?php if (!empty($tabs)): ?><?=$tabs ?><div class="tab-content clearfix"><?php endif; ?>
   <p class="adv_search_links">
-    <a href="<?=$this->url($searchHome) . $hiddenFilterParams?>"><?=$this->transEsc("Start a new Basic Search")?></a>
+    <a href="<?=$this->url($searchHome) . $hiddenFilterParams?>"><?=$this->transEsc('Start a new Basic Search')?></a>
     <?php if ($advSearch): ?>
-      | <a href="<?=$this->url($advSearch) . $hiddenFilterParams?>"><?=$this->transEsc("Start a new Advanced Search")?></a>
+      | <a href="<?=$this->url($advSearch) . $hiddenFilterParams?>"><?=$this->transEsc('Start a new Advanced Search')?></a>
     <?php endif; ?>
   </p>
 <?php if (!empty($tabs)): ?></div><?php endif; ?>

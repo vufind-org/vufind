@@ -676,7 +676,7 @@ class DefaultRecord extends AbstractBase
         // If there is a forward slash (/) in the string, remove it, and remove all
         // characters to the right of the forward slash.
         if (strpos($raw, '/') > 0) {
-            $tmpArray = explode("/", $raw);
+            $tmpArray = explode('/', $raw);
             $raw = $tmpArray[0];
         }
         /* If there is a hyphen in the string:
@@ -691,8 +691,8 @@ class DefaultRecord extends AbstractBase
         if (strpos($raw, '-') > 0) {
             // haven't checked for i. above. If they aren't all digits, there is
             // nothing that can be done, so might as well leave it.
-            $tmpArray = explode("-", $raw);
-            $raw = $tmpArray[0] . str_pad($tmpArray[1], 6, "0", STR_PAD_LEFT);
+            $tmpArray = explode('-', $raw);
+            $raw = $tmpArray[0] . str_pad($tmpArray[1], 6, '0', STR_PAD_LEFT);
         }
         return $raw;
     }
@@ -954,7 +954,7 @@ class DefaultRecord extends AbstractBase
                 $query[] = urlencode($key) . '=' . urlencode($sub);
             }
         }
-        return implode("&", $query);
+        return implode('&', $query);
     }
 
     /**

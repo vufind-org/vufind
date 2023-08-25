@@ -127,8 +127,8 @@ abstract class AbstractAPI extends AbstractBase implements
      * @throws ILSException
      */
     public function makeRequest(
-        $method = "GET",
-        $path = "/",
+        $method = 'GET',
+        $path = '/',
         $params = [],
         $headers = [],
         $allowedFailureCodes = []
@@ -161,8 +161,8 @@ abstract class AbstractAPI extends AbstractBase implements
         try {
             $response = $client->send();
         } catch (\Exception $e) {
-            $this->logError("Unexpected " . $e::class . ": " . (string)$e);
-            throw new ILSException("Error during send operation.");
+            $this->logError('Unexpected ' . $e::class . ': ' . (string)$e);
+            throw new ILSException('Error during send operation.');
         }
         $code = $response->getStatusCode();
         if (
@@ -173,7 +173,7 @@ abstract class AbstractAPI extends AbstractBase implements
                 "Unexpected error response; code: $code, body: "
                 . $response->getBody()
             );
-            throw new ILSException("Unexpected error code.");
+            throw new ILSException('Unexpected error code.');
         }
         if ($jsonLog = ($this->config['API']['json_log_file'] ?? false)) {
             if (APPLICATION_ENV !== 'development') {

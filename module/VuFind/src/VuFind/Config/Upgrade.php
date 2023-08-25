@@ -421,7 +421,7 @@ class Upgrade
         // same, we don't need to copy anything!
         if (
             file_exists($src) && file_exists($raw)
-            && md5(file_get_contents($src)) == md5(file_get_contents($raw))
+            && md5(file_get_contents($src)) === md5(file_get_contents($raw))
         ) {
             return;
         }
@@ -465,10 +465,10 @@ class Upgrade
                 unset($this->newConfigs['config.ini']['Site'][$setting]);
             } else {
                 $this->addWarning(
-                    "WARNING: This version of VuFind does not support "
+                    'WARNING: This version of VuFind does not support '
                     . "the {$theme} theme. Your config.ini [Site] {$setting} setting"
                     . " has been reset to the default: {$default}. You may need to "
-                    . "reimplement your custom theme."
+                    . 'reimplement your custom theme.'
                 );
                 $this->newConfigs['config.ini']['Site'][$setting] = $default;
             }
@@ -1351,13 +1351,13 @@ class Upgrade
     {
         $driver = $this->newConfigs['config.ini']['Catalog']['driver'] ?? '';
         if (empty($driver)) {
-            $this->addWarning("WARNING: Could not find ILS driver setting.");
+            $this->addWarning('WARNING: Could not find ILS driver setting.');
         } elseif ('Sample' == $driver) {
             // No configuration file for Sample driver
         } elseif (!file_exists($this->oldDir . '/' . $driver . '.ini')) {
             $this->addWarning(
                 "WARNING: Could not find {$driver}.ini file; "
-                . "check your ILS driver configuration."
+                . 'check your ILS driver configuration.'
             );
         } else {
             $this->saveUnmodifiedConfig($driver . '.ini');

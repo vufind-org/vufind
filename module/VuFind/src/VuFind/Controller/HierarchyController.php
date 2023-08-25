@@ -107,8 +107,8 @@ class HierarchyController extends AbstractBase
         $limitReached = ($limit > 0 && count($resultIDs) > $limit);
 
         $returnArray = [
-            "limitReached" => $limitReached,
-            "results" => array_slice($resultIDs, 0, $limit),
+            'limitReached' => $limitReached,
+            'results' => array_slice($resultIDs, 0, $limit),
         ];
         return $this->outputJSON(json_encode($returnArray));
     }
@@ -144,7 +144,7 @@ class HierarchyController extends AbstractBase
 
         // If we got this far, something went wrong:
         return $this->output(
-            "<error>" . $this->translate("hierarchy_tree_error") . "</error>"
+            '<error>' . $this->translate('hierarchy_tree_error') . '</error>'
         );
     }
 

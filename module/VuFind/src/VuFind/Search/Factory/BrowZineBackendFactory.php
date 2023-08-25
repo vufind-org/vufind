@@ -111,10 +111,10 @@ class BrowZineBackendFactory extends AbstractBackendFactory
     {
         // Validate configuration:
         if (empty($this->browzineConfig->General->access_token)) {
-            throw new \Exception("Missing access token in BrowZine.ini");
+            throw new \Exception('Missing access token in BrowZine.ini');
         }
         if (empty($this->browzineConfig->General->library_id)) {
-            throw new \Exception("Missing library ID in BrowZine.ini");
+            throw new \Exception('Missing library ID in BrowZine.ini');
         }
 
         // Create connector:

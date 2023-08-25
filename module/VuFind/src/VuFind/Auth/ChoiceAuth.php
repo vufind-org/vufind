@@ -105,8 +105,8 @@ class ChoiceAuth extends AbstractBase
             || !strlen($this->config->ChoiceAuth->choice_order)
         ) {
             throw new AuthException(
-                "One or more ChoiceAuth parameters are missing. " .
-                "Check your config.ini!"
+                'One or more ChoiceAuth parameters are missing. ' .
+                'Check your config.ini!'
             );
         }
     }

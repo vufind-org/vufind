@@ -293,7 +293,7 @@ class PAIA extends DAIA
             $items[] = ['item' => stripslashes($item)];
         }
         $patron = $cancelDetails['patron'];
-        $post_data = ["doc" => $items];
+        $post_data = ['doc' => $items];
 
         try {
             $array_response = $this->paiaPostAsArray(
@@ -373,10 +373,10 @@ class PAIA extends DAIA
         }
 
         $post_data = [
-            "patron"       => $details['patron']['cat_username'],
-            "username"     => $details['patron']['cat_username'],
-            "old_password" => $details['oldPassword'],
-            "new_password" => $details['newPassword'],
+            'patron'       => $details['patron']['cat_username'],
+            'username'     => $details['patron']['cat_username'],
+            'old_password' => $details['oldPassword'],
+            'new_password' => $details['newPassword'],
         ];
 
         try {
@@ -1135,7 +1135,7 @@ class PAIA extends DAIA
         $doc = [];
         $doc['item'] = stripslashes($item);
         if ($confirm = $this->getConfirmations($holdDetails)) {
-            $doc["confirm"] = $confirm;
+            $doc['confirm'] = $confirm;
         }
         $post_data = [];
         $post_data['doc'][] = $doc;
@@ -1241,7 +1241,7 @@ class PAIA extends DAIA
             $items[] = ['item' => stripslashes($item)];
         }
         $patron = $details['patron'];
-        $post_data = ["doc" => $items];
+        $post_data = ['doc' => $items];
 
         try {
             $array_response = $this->paiaPostAsArray(
@@ -1378,7 +1378,7 @@ class PAIA extends DAIA
             }
         } else {
             $this->debug(
-                "No documents found in PAIA response. Returning empty array."
+                'No documents found in PAIA response. Returning empty array.'
             );
         }
         return [];
@@ -1826,8 +1826,8 @@ class PAIA extends DAIA
         $post_data = [];
         switch ($this->grantType) {
             case 'password':
-                $post_data["username"] = $username;
-                $post_data["password"] = $password;
+                $post_data['username'] = $username;
+                $post_data['password'] = $password;
                 break;
             case 'client_credentials':
                 // client_credentials only works if we have client_credentials
@@ -1836,12 +1836,12 @@ class PAIA extends DAIA
                     isset($this->config['PAIA']['clientUsername'])
                     && isset($this->config['PAIA']['clientPassword'])
                 ) {
-                    $header_data["Authorization"] = 'Basic ' .
+                    $header_data['Authorization'] = 'Basic ' .
                         base64_encode(
                             $this->config['PAIA']['clientUsername'] . ':' .
                             $this->config['PAIA']['clientPassword']
                         );
-                    $post_data["patron"] = $username; // actual patron identifier
+                    $post_data['patron'] = $username; // actual patron identifier
                 } else {
                     throw new ILSException(
                         'Missing username and/or password for PAIA grant_type' .
@@ -1852,11 +1852,11 @@ class PAIA extends DAIA
         }
 
         // finalize post data
-        $post_data["grant_type"] = $this->grantType;
-        $post_data["scope"] = self::SCOPE_READ_PATRON . " " .
-                self::SCOPE_READ_FEES . " " .
-                self::SCOPE_READ_ITEMS . " " .
-                self::SCOPE_WRITE_ITEMS . " " .
+        $post_data['grant_type'] = $this->grantType;
+        $post_data['scope'] = self::SCOPE_READ_PATRON . ' ' .
+                self::SCOPE_READ_FEES . ' ' .
+                self::SCOPE_READ_ITEMS . ' ' .
+                self::SCOPE_WRITE_ITEMS . ' ' .
                 self::SCOPE_CHANGE_PASSWORD;
 
         // perform full PAIA auth and get patron info

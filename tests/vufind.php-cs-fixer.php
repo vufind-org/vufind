@@ -18,7 +18,6 @@ $rules = [
     'class_attributes_separation' => ['elements' => ['method' => 'one', 'property' => 'one']],
     'concat_space' => ['spacing' => 'one'],
     'ereg_to_preg' => true,
-    'function_typehint_space' => true,
     'get_class_to_class_keyword' => true,
     'is_null' => true,
     'linebreak_after_opening_tag' => true,
@@ -51,8 +50,10 @@ $rules = [
     'php_unit_method_casing' => true,
     'pow_to_exponentiation' => true,
     'single_line_after_imports' => true,
+    'single_quote' => true,
     'standardize_not_equals' => true,
     'ternary_operator_spaces' => true,
+    'type_declaration_spaces' => true,
 ];
 
 $cacheDir = __DIR__ . '/../.php_cs_cache';

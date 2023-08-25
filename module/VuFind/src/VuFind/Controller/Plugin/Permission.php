@@ -168,7 +168,7 @@ class Permission extends AbstractPlugin implements
                     if ($exception instanceof \Exception) {
                         throw $exception;
                     }
-                    $this->logError("Permission configuration problem.");
+                    $this->logError('Permission configuration problem.');
                     throw new \Exception("$exceptionClass is not an exception!");
                 default:
                     throw new ForbiddenException($exceptionDescription);
