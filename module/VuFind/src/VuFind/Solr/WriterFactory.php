@@ -68,11 +68,15 @@ class WriterFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $changeTracker = $container->get(\VuFind\Db\Table\PluginManager::class)
-            ->get('changetracker');
+        $servicePluginManager = $container->get(
+            \VuFind\Db\Service\PluginManager::class
+        );
+
         return new $requestedName(
             $container->get(\VuFindSearch\Service::class),
-            $changeTracker
+            $servicePluginManager->get(
+                \VuFind\Db\Service\ChangeTrackerService::class
+            )
         );
     }
 }

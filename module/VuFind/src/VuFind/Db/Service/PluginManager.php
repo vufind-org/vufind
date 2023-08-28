@@ -46,6 +46,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
+        'changetracker' => ChangeTrackerService::class,
         'comments' => CommentsService::class,
         'feedback' => FeedbackService::class,
         'oairesumption' => OaiResumptionService::class,
@@ -57,7 +58,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'tag' => TagService::class,
         'user' => UserService::class,
         'usercard' => UserCardService::class,
-        'userResource' => UserResourceService::class,
+        'userresource' => UserResourceService::class,
     ];
 
     /**
@@ -66,6 +67,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
+        ChangeTrackerService::class => AbstractServiceFactory::class,
         CommentsService::class => AbstractServiceFactory::class,
         FeedbackService::class => AbstractServiceFactory::class,
         OaiResumptionService::class => AbstractServiceFactory::class,

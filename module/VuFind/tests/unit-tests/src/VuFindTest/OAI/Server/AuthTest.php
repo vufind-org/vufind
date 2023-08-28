@@ -1,11 +1,11 @@
 <?php
 
 /**
- * OAI-PMH server unit test.
+ * OAI-PMH auth unit test.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,25 +22,25 @@
  *
  * @category Search
  * @package  Service
- * @author   David Maus <maus@hab.de>
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development
  */
 
 namespace VuFindTest\OAI;
 
-use VuFind\OAI\Server;
+use VuFind\OAI\Server\Auth;
 
 /**
- * OAI-PMH server unit test.
+ * OAI-PMH auth unit test.
  *
  * @category Search
  * @package  Service
- * @author   David Maus <maus@hab.de>
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development
  */
-class ServerTest extends \PHPUnit\Framework\TestCase
+class AuthTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test an empty input.
@@ -49,22 +49,22 @@ class ServerTest extends \PHPUnit\Framework\TestCase
      */
     public function testEmptyInput()
     {
-        $server = $this->getServer();
+        $auth = $this->getAUth();
         $this->assertTrue(
-            str_contains($server->getResponse(), '<error code="badVerb">Missing Verb Argument</error>')
+            str_contains($auth->getResponse(), '<error code="badVerb">Missing Verb Argument</error>')
         );
     }
 
     /**
-     * Get a server object.
+     * Get a auth object.
      *
      * @param array  $config  Server configuration
      * @param string $baseURL Server base URL
      * @param array  $params  Incoming query parameters
      *
-     * @return Server
+     * @return Auth
      */
-    protected function getServer(
+    protected function getAuth(
         $config = [],
         $baseURL = 'http://foo',
         $params = []
@@ -75,14 +75,14 @@ class ServerTest extends \PHPUnit\Framework\TestCase
             $config['Site']['email'] = 'fake@example.com';
         }
 
-        $server = new Server(
+        $auth = new Auth(
             $this->getMockResultsManager(),
             $this->getMockRecordLoader(),
             $this->getMockChangeTracker(),
             $this->getMockResumptionService()
         );
-        $server->setRecordFormatter($this->getMockRecordFormatter());
-        return $server;
+        $auth->setRecordFormatter($this->getMockRecordFormatter());
+        return $auth;
     }
 
     /**

@@ -111,4 +111,142 @@ class ChangeTracker implements EntityInterface
      * @ORM\Column(name="deleted", type="datetime", nullable=true)
      */
     protected $deleted;
+
+    /**
+     * Id setter
+     *
+     * @param string $id Id
+     *
+     * @return ChangeTracker
+     */
+    public function setId(string $id): ChangeTracker
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    /**
+     * Id getter
+     *
+     * @return string
+     */
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    /**
+     * Core setter
+     *
+     * @param string $core Core
+     *
+     * @return ChangeTracker
+     */
+    public function setCore(string $core): ChangeTracker
+    {
+        $this->core = $core;
+        return $this;
+    }
+
+    /**
+     * Core getter
+     *
+     * @return string
+     */
+    public function getCore(): string
+    {
+        return $this->core;
+    }
+
+    /**
+     * FirstIndexed setter.
+     *
+     * @param ?Datetime $dateTime Time first added to index.
+     *
+     * @return ChangeTracker
+     */
+    public function setFirstIndexed(?DateTime $dateTime): ChangeTracker
+    {
+        $this->firstIndexed = $dateTime;
+        return $this;
+    }
+
+    /**
+     * FirstIndexed Getter.
+     *
+     * @return ?Datetime
+     */
+    public function getFirstIndexed(): ?Datetime
+    {
+        return $this->firstIndexed;
+    }
+
+    /**
+     * LastIndexed setter.
+     *
+     * @param ?Datetime $dateTime Last time changed in index.
+     *
+     * @return ChangeTracker
+     */
+    public function setLastIndexed(?DateTime $dateTime): ChangeTracker
+    {
+        $this->lastIndexed = $dateTime;
+        return $this;
+    }
+
+    /**
+     * LastIndexed Getter.
+     *
+     * @return ?Datetime
+     */
+    public function getLastIndexed(): ?Datetime
+    {
+        return $this->lastIndexed;
+    }
+
+    /**
+     * LastRecordChange setter.
+     *
+     * @param ?Datetime $dateTime Last time original record was edited
+     *
+     * @return ChangeTracker
+     */
+    public function setLastRecordChange(?DateTime $dateTime): ChangeTracker
+    {
+        $this->lastRecordChange = $dateTime;
+        return $this;
+    }
+
+    /**
+     * LastRecordChange Getter.
+     *
+     * @return ?Datetime
+     */
+    public function getLastRecordChange(): ?Datetime
+    {
+        return $this->lastRecordChange;
+    }
+
+    /**
+     * Deleted setter.
+     *
+     * @param ?Datetime $dateTime Time record was removed from index
+     *
+     * @return ChangeTracker
+     */
+    public function setDeleted(?DateTime $dateTime): ChangeTracker
+    {
+        $this->deleted = $dateTime;
+        return $this;
+    }
+
+    /**
+     * Deleted Getter.
+     *
+     * @return ?Datetime
+     */
+    public function getDeleted(): ?Datetime
+    {
+        return $this->deleted;
+    }
 }

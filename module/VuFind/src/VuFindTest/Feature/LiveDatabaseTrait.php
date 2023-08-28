@@ -53,6 +53,13 @@ trait LiveDatabaseTrait
     public $hasLiveDatabaseTrait = true;
 
     /**
+     * Plugin manager for database services.
+     *
+     * @var \VuFind\Db\Service\PluginManager
+     */
+    protected $liveDatabaseServiceManager = null;
+
+    /**
      * Table manager connected to live database.
      *
      * @var \VuFind\Db\Table\PluginManager
@@ -151,6 +158,27 @@ trait LiveDatabaseTrait
     }
 
     /**
+     * Get a container with Doctrine dependencies included
+     *
+     * @return \VuFindTest\Container\MockContainer
+     */
+    public function getMockContainerWithDoctrineDependencies()
+    {
+        // Set up the bare minimum services to actually load real configs:
+        $config = $this->getMergedConfig();
+        $container = new \VuFindTest\Container\MockContainer($this);
+        $container->set('config', $config);
+        $configManager = new \VuFind\Config\PluginManager(
+            $container,
+            $config['vufind']['config_reader']
+        );
+        $container->set(\VuFind\Config\PluginManager::class, $configManager);
+        $this->addPathResolverToContainer($container);
+        $this->addDoctrineDependenciesToContainer($container);
+        return $container;
+    }
+
+    /**
      * Get a real, working table manager.
      *
      * @return \VuFind\Db\Table\PluginManager
@@ -158,17 +186,8 @@ trait LiveDatabaseTrait
     public function getLiveTableManager()
     {
         if (!$this->liveTableManager) {
-            // Set up the bare minimum services to actually load real configs:
-            $config = $this->getMergedConfig();
-            $container = new \VuFindTest\Container\MockContainer($this);
-            $container->set('config', $config);
-            $configManager = new \VuFind\Config\PluginManager(
-                $container,
-                $config['vufind']['config_reader']
-            );
-            $container->set(\VuFind\Config\PluginManager::class, $configManager);
-            $this->addPathResolverToContainer($container);
-            $this->addDoctrineDependenciesToContainer($container);
+            $container = $this->getMockContainerWithDoctrineDependencies();
+            $configManager = $container->get(\VuFind\Config\PluginManager::class);
             $adapterFactory = new \VuFind\Db\AdapterFactory(
                 $configManager->get('config')
             );
@@ -191,6 +210,32 @@ trait LiveDatabaseTrait
             );
         }
         return $this->liveTableManager;
+    }
+
+    /**
+     * Get a live database service manager.
+     *
+     * @return \VuFind\Db\Service\PluginManager
+     */
+    public function getLiveDatabaseServiceManager(): \VuFind\Db\Service\PluginManager
+    {
+        if (!$this->liveDatabaseServiceManager) {
+            $this->liveDatabaseServiceManager = $this->getMockContainerWithDoctrineDependencies()
+                ->get(\VuFind\Db\Service\PluginManager::class);
+        }
+        return $this->liveDatabaseServiceManager;
+    }
+
+    /**
+     * Get a database service.
+     *
+     * @param string $name Name of table to load
+     *
+     * @return object
+     */
+    public function getDatabaseService($name)
+    {
+        return $this->getLiveDatabaseServiceManager()->get($name);
     }
 
     /**

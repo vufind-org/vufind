@@ -32,6 +32,8 @@
 namespace VuFind\OAI;
 
 use SimpleXMLElement;
+use VuFind\Db\Entity\ChangeTracker;
+use VuFind\Db\Service\ChangeTrackerService;
 use VuFind\Db\Service\OaiResumptionService;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\SimpleXML;
@@ -157,11 +159,11 @@ class Server
     protected $recordLoader;
 
     /**
-     * Table manager
+     * Change tracker service object
      *
-     * @var \VuFind\Db\Table\PluginManager
+     * @var ChangeTrackerService
      */
-    protected $tableManager;
+    protected $tracker;
 
     /**
      * OaiResumption service object
@@ -237,18 +239,18 @@ class Server
      * @param \VuFind\Search\Results\PluginManager $results    Search manager for
      *                                                         retrieving records
      * @param \VuFind\Record\Loader                $loader     Record loader
-     * @param \VuFind\Db\Table\PluginManager       $tables     Table manager
+     * @param ChangeTrackerService                 $tracker    ChangeTracker Service
      * @param OaiResumptionService                 $oaiService OaiResumption service
      */
     public function __construct(
         \VuFind\Search\Results\PluginManager $results,
         \VuFind\Record\Loader $loader,
-        \VuFind\Db\Table\PluginManager $tables,
+        ChangeTrackerService $tracker,
         OaiResumptionService $oaiService
     ) {
         $this->resultsManager = $results;
         $this->recordLoader = $loader;
-        $this->tableManager = $tables;
+        $this->tracker = $tracker;
         $this->resumptionService = $oaiService;
     }
 
@@ -350,7 +352,7 @@ class Server
      * Assign necessary interface variables to display a deleted record.
      *
      * @param SimpleXMLElement $xml        XML to update
-     * @param array            $tracker    Array representing a change_tracker row
+     * @param ChangeTracker    $tracker    ChangeTracker row
      * @param bool             $headerOnly Only attach the header?
      *
      * @return void
@@ -363,8 +365,8 @@ class Server
         $record = $headerOnly ? $xml : $xml->addChild('record');
         $this->attachRecordHeader(
             $record,
-            $this->prefixID($tracker['id']),
-            date($this->iso8601, $this->normalizeDate($tracker['deleted'])),
+            $this->prefixID($tracker->getId()),
+            date($this->iso8601, $tracker->getDeleted()->getTimestamp()),
             [],
             'deleted'
         );
@@ -558,13 +560,13 @@ class Server
             }
         } else {
             // No record in index -- is this deleted?
-            $tracker = $this->tableManager->get('ChangeTracker');
-            $row = $tracker->retrieve(
+
+            $row = $this->tracker->retrieve(
                 $this->core,
                 $this->stripID($this->params['identifier'])
             );
-            if (!empty($row) && !empty($row->deleted)) {
-                $this->attachDeleted($xml, $row->toArray());
+            if (!empty($row) && !empty($row->getDeleted())) {
+                $this->attachDeleted($xml, $row);
             } else {
                 // Not deleted and not found in index -- error!
                 return $this->showError('idDoesNotExist', 'Unknown Record');
@@ -976,11 +978,10 @@ class Server
      */
     protected function listRecordsGetDeleted($from, $until, $currentCursor)
     {
-        $tracker = $this->tableManager->get('ChangeTracker');
-        return $tracker->retrieveDeleted(
+        return $this->tracker->retrieveDeleted(
             $this->core,
-            date('Y-m-d H:i:s', $from),
-            date('Y-m-d H:i:s', $until),
+            \DateTime::createFromFormat('U', $from, new \DateTimeZone('UTC')),
+            \DateTime::createFromFormat('U', $until, new \DateTimeZone('UTC')),
             $currentCursor,
             $this->pageSize
         );
@@ -996,11 +997,10 @@ class Server
      */
     protected function listRecordsGetDeletedCount($from, $until)
     {
-        $tracker = $this->tableManager->get('ChangeTracker');
-        return $tracker->retrieveDeletedCount(
+        return $this->tracker->retrieveDeletedCount(
             $this->core,
-            date('Y-m-d H:i:s', $from),
-            date('Y-m-d H:i:s', $until)
+            \DateTime::createFromFormat('U', $from, new \DateTimeZone('UTC')),
+            \DateTime::createFromFormat('U', $until, new \DateTimeZone('UTC'))
         );
     }
 

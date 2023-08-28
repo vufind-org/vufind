@@ -29,7 +29,7 @@
 
 namespace VuFind\Solr;
 
-use VuFind\Db\Table\ChangeTracker;
+use VuFind\Db\Service\ChangeTrackerService;
 use VuFindSearch\Backend\Solr\Command\WriteDocumentCommand;
 use VuFindSearch\Backend\Solr\Document\CommitDocument;
 use VuFindSearch\Backend\Solr\Document\DeleteDocument;
@@ -57,19 +57,19 @@ class Writer
     protected $searchService;
 
     /**
-     * Change tracker database table gateway
+     * Change tracker database service
      *
-     * @var ChangeTracker
+     * @var ChangeTrackerService
      */
     protected $changeTracker;
 
     /**
      * Constructor
      *
-     * @param Service       $service Search service
-     * @param ChangeTracker $tracker Change tracker database table gateway
+     * @param Service              $service Search service
+     * @param ChangeTrackerService $tracker Change tracker database service
      */
-    public function __construct(Service $service, ChangeTracker $tracker)
+    public function __construct(Service $service, ChangeTrackerService $tracker)
     {
         $this->searchService = $service;
         $this->changeTracker = $tracker;
