@@ -15,61 +15,61 @@ function buildFacetNodes(facetName, data, currentPath, allowExclude, excludeTitl
   }
 
   // Build a UL
-  let facetList = el("ul");
+  let facetList = el('ul');
 
   // Elements
   for (let i = 0; i < data.length; i++) {
     let facet = data[i];
 
-    const hasChildren = typeof facet.children !== "undefined" && facet.children.length > 0;
+    const hasChildren = typeof facet.children !== 'undefined' && facet.children.length > 0;
 
     // Create badge
     let badgeEl = null;
     if (showCounts && !facet.isApplied && facet.count) {
-      badgeEl = el("span", "badge");
+      badgeEl = el('span', 'badge');
       badgeEl.innerText = facet.count.toLocaleString(locale);
     }
 
     // Create exclude link
     let excludeEl = null;
     if (allowExclude && !facet.isApplied) {
-      excludeEl = el("a", "exclude");
-      excludeEl.innerHTML = VuFind.icon("facet-exclude");
-      excludeEl.setAttribute("href", currentPath + facet.exclude);
-      excludeEl.setAttribute("title", excludeTitle);
+      excludeEl = el('a', 'exclude');
+      excludeEl.innerHTML = VuFind.icon('facet-exclude');
+      excludeEl.setAttribute('href', currentPath + facet.exclude);
+      excludeEl.setAttribute('title', excludeTitle);
     }
 
     // Create facet text element
     const orFacet = facet.operator === 'OR';
     let textEl;
     if (orFacet) {
-      const iconLabel = el("span", "facet-value icon-link__label");
+      const iconLabel = el('span', 'facet-value icon-link__label');
       iconLabel.innerText = facet.displayText;
 
-      textEl = el("span", "text");
+      textEl = el('span', 'text');
       textEl.innerHTML = facet.isApplied
-        ? VuFind.icon("facet-checked", { title: VuFind.translate("Selected"), class: "icon-link__icon" })
-        : VuFind.icon("facet-unchecked", "icon-link__icon");
+        ? VuFind.icon('facet-checked', { title: VuFind.translate('Selected'), class: 'icon-link__icon' })
+        : VuFind.icon('facet-unchecked', 'icon-link__icon');
       textEl.append(iconLabel);
     } else {
-      textEl = el("span", "text");
+      textEl = el('span', 'text');
       textEl.append(facet.displayText);
     }
 
     // Create link element
-    const linkEl = el("a", (orFacet ? " icon-link" : ""));
-    linkEl.setAttribute("href", currentPath + facet.href);
-    linkEl.setAttribute("title", facet.displayText);
+    const linkEl = el('a', (orFacet ? ' icon-link' : ''));
+    linkEl.setAttribute('href', currentPath + facet.href);
+    linkEl.setAttribute('title', facet.displayText);
     linkEl.append(textEl);
 
     // Create facet element
-    const classes = "facet js-facet-item"
-      + (facet.isApplied ? " active" : "")
-      + (orFacet ? " facetOR" : " facetAND");
+    const classes = 'facet js-facet-item'
+      + (facet.isApplied ? ' active' : '')
+      + (orFacet ? ' facetOR' : ' facetAND');
     let facetEl;
     if (excludeEl) {
-      linkEl.className += " text";
-      facetEl = el("div", classes);
+      linkEl.className += ' text';
+      facetEl = el('div', classes);
       facetEl.append(linkEl);
       if (badgeEl) {
         facetEl.append(badgeEl);
@@ -79,34 +79,34 @@ function buildFacetNodes(facetName, data, currentPath, allowExclude, excludeTitl
       if (badgeEl) {
         linkEl.append(badgeEl);
       }
-      linkEl.className = classes + " " + linkEl.className;
+      linkEl.className = classes + ' ' + linkEl.className;
       facetEl = linkEl;
     }
 
     // Create toggle button
-    const toggleButton = el("button", "facet-tree__toggle-open");
+    const toggleButton = el('button', 'facet-tree__toggle-open');
     toggleButton.setAttribute('aria-expanded', facet.hasAppliedChildren ? 'true' : 'false');
     toggleButton.setAttribute('data-toggle-aria-expanded', '');
     toggleButton.setAttribute('aria-label', facet.displayText);
 
-    let itemContainerEl = el("span", "facet-tree__item-container" + (allowExclude ? " facet-tree__item-container--exclude" : ""));
+    let itemContainerEl = el('span', 'facet-tree__item-container' + (allowExclude ? ' facet-tree__item-container--exclude' : ''));
     itemContainerEl.append(facetEl);
 
     // Create an li node with or without children
-    const liEl = el("li");
+    const liEl = el('li');
     if (hasChildren) {
-      liEl.className = "facet-tree__parent";
+      liEl.className = 'facet-tree__parent';
       const childUlId = 'facet_' + facetName + '_' + (++counter.count);
 
       toggleButton.setAttribute('aria-controls', childUlId);
-      toggleButton.innerHTML = VuFind.icon("facet-opened", "facet-tree__opened") + VuFind.icon("facet-closed", "facet-tree__closed");
+      toggleButton.innerHTML = VuFind.icon('facet-opened', 'facet-tree__opened') + VuFind.icon('facet-closed', 'facet-tree__closed');
 
       const childrenEl = buildFacetNodes(facetName, facet.children, currentPath, allowExclude, excludeTitle, showCounts, counter, locale);
       childrenEl.id = childUlId;
 
       liEl.append(toggleButton, itemContainerEl, childrenEl);
     } else {
-      toggleButton.innerHTML = VuFind.icon("facet-noncollapsible", "facet-tree__noncollapsible");
+      toggleButton.innerHTML = VuFind.icon('facet-noncollapsible', 'facet-tree__noncollapsible');
       toggleButton.setAttribute('disabled', '');
 
       liEl.append(toggleButton, itemContainerEl);
