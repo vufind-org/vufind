@@ -28,7 +28,7 @@
   position: fixed;
   bottom: 250px;
   height: 0;
-  z-index: 4;
+  z-index: 60;
   width: 95%;
 
   @media (min-width: 768px) {
@@ -48,6 +48,8 @@
   display: none;
   position: absolute;
   z-index: 1;
+  background-color: #dddddd !important;
+
 
   .hg-functionBtn {
     font-weight: bold;
