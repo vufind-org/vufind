@@ -41,6 +41,7 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
     if( typeof _keyboard !== 'undefined') {
       _keyboard.setInput(input);
     }
+    _textInput.dispatchEvent(new Event('input'));
   }
 
   function _onKeyPress(button){
