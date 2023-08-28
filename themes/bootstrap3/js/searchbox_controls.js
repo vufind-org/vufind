@@ -38,7 +38,7 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
     } else {
       _resetButton.show();
     }
-    if( typeof _keyboard !== 'undefined') {
+    if ( typeof _keyboard !== 'undefined') {
       _keyboard.setInput(input);
     }
     _textInput.dispatchEvent(new Event('input'));
