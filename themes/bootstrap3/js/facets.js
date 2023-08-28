@@ -3,7 +3,6 @@
 function buildFacetNodes(facetName, data, currentPath, allowExclude, excludeTitle, showCounts, counter, locale)
 {
   // Helper function to create elements
-  // #todo: abstract to VuFind.el?
   function el(tagName, className = null) {
     const node = document.createElement(tagName);
 
