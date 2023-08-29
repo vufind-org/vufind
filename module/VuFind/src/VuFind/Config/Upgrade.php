@@ -421,7 +421,7 @@ class Upgrade
         // same, we don't need to copy anything!
         if (
             file_exists($src) && file_exists($raw)
-            && md5(file_get_contents($src)) == md5(file_get_contents($raw))
+            && md5(file_get_contents($src)) === md5(file_get_contents($raw))
         ) {
             return;
         }
