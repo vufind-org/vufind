@@ -31,7 +31,7 @@
   display: flex;
   align-items: center;
 
-  .text, .hierarchical-facet-anchor {
+  .text {
     display: flex;
     gap: 0.25rem;
     align-items: center;
@@ -202,7 +202,7 @@ h3.facet-title {
     // Ensure that there is enough room for a button focus outline:
     padding-left: .2rem;
 
-    .facet-tree__toggle-open {
+    .facet-tree__toggle-expanded {
       width: 1.4rem;
       border: 0;
       background: none;
@@ -212,14 +212,14 @@ h3.facet-title {
       }
 
       &[aria-expanded=false] {
-        .facet-tree__opened {
+        .facet-tree__collapse {
           display: none;
         }
         & ~ ul {
           display: none;
         }
       }
-      &[aria-expanded=true] .facet-tree__closed {
+      &[aria-expanded=true] .facet-tree__expand {
         display: none;
       }
     }

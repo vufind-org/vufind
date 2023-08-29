@@ -59,11 +59,11 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     protected $activeFilterLabelSelector = '.active-filters.hidden-xs .filters .filters-title';
 
     /**
-     * CSS selector for finding the first collapsed hierarchical facet
+     * CSS selector for finding the first hierarchical facet expand button
      *
      * @var string
      */
-    protected $facetExpandSelector = '.facet-tree .facet-tree__toggle-open .facet-tree__closed';
+    protected $facetExpandSelector = '.facet-tree .facet-tree__toggle-expanded .facet-tree__expand';
 
     /**
      * CSS selector for finding the first expanded hierarchical facet

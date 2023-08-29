@@ -83,7 +83,7 @@ function buildFacetNodes(facetName, data, currentPath, allowExclude, excludeTitl
     }
 
     // Create toggle button
-    const toggleButton = el('button', 'facet-tree__toggle-open');
+    const toggleButton = el('button', 'facet-tree__toggle-expanded');
     toggleButton.setAttribute('aria-expanded', facet.hasAppliedChildren ? 'true' : 'false');
     toggleButton.setAttribute('data-toggle-aria-expanded', '');
     toggleButton.setAttribute('aria-label', facet.displayText);
@@ -98,7 +98,7 @@ function buildFacetNodes(facetName, data, currentPath, allowExclude, excludeTitl
       const childUlId = 'facet_' + facetName + '_' + (++counter.count);
 
       toggleButton.setAttribute('aria-controls', childUlId);
-      toggleButton.innerHTML = VuFind.icon('facet-opened', 'facet-tree__opened') + VuFind.icon('facet-closed', 'facet-tree__closed');
+      toggleButton.innerHTML = VuFind.icon('facet-expand', 'facet-tree__expand') + VuFind.icon('facet-collapse', 'facet-tree__collapse');
 
       const childrenEl = buildFacetNodes(facetName, facet.children, currentPath, allowExclude, excludeTitle, showCounts, counter, locale);
       childrenEl.id = childUlId;
