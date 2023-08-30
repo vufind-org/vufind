@@ -65,8 +65,8 @@ class SimilarTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue(['fakeresponse']));
         $checkCommand = function ($command) {
             return $command::class === \VuFindSearch\Command\SimilarCommand::class
-                    && $command->getTargetIdentifier() === "Solr"
-                    && $command->getArguments()[0] === "fakeid";
+                    && $command->getTargetIdentifier() === 'Solr'
+                    && $command->getArguments()[0] === 'fakeid';
         };
         $service = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->getMock();

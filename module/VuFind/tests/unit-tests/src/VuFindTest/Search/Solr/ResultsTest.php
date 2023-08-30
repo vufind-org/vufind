@@ -31,7 +31,6 @@
 
 namespace VuFindTest\Search\Solr;
 
-use Laminas\I18n\Translator\TranslatorInterface;
 use VuFind\Config\PluginManager;
 use VuFind\I18n\TranslatableString;
 use VuFind\Record\Loader;
@@ -56,6 +55,7 @@ use VuFindSearch\Service as SearchService;
 class ResultsTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\TranslatorTrait;
 
     /**
      * Test CursorMark functionality.
@@ -76,16 +76,16 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
      */
     public function testFacetTranslations(): void
     {
-        $mockTranslator = $this->createMock(TranslatorInterface::class);
-        $mockTranslator->expects($this->exactly(2))
-            ->method('translate')
-            ->withConsecutive(
-                [$this->equalTo('000')],
-                [$this->equalTo('dewey_format_str')]
-            )->willReturnOnConsecutiveCalls(
-                'Computer science, information, general works',
-                '%%raw%% - %%translated%%'
-            );
+        $mockTranslator = $this->getMockTranslator(
+            [
+                'default' => [
+                    'dewey_format_str' => '%%raw%% - %%translated%%',
+                ],
+                'DDC23' => [
+                    '000' => 'Computer science, information, general works',
+                ],
+            ]
+        );
         $mockConfig = $this->createMock(PluginManager::class);
         $options = new Options($mockConfig);
         $options->setTranslator($mockTranslator);
@@ -102,7 +102,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                 'facet_counts' => [
                     'facet_fields' => [
                         'dewey-raw' => [
-                            ["000", 100],
+                            ['000', 100],
                         ],
                     ],
                 ],
@@ -120,8 +120,8 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         $results = $this->getResults($params, $searchService);
         $list = $results->getFacetList();
         $this->assertEquals(
-            $list['dewey-raw']['list'][0]['displayText'],
-            '000 - Computer science, information, general works'
+            '000 - Computer science, information, general works',
+            $list['dewey-raw']['list'][0]['displayText']
         );
     }
 

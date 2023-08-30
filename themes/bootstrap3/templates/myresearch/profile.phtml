@@ -89,7 +89,7 @@
     <p>
       <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->user]); ?>
     </p>
-    <table class="table table-striped">
+    <table class="table table-striped catalog-profile">
       <?=
         $this->renderArray(
             $arrTemplate,
@@ -116,5 +116,5 @@
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-  <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'profile'])?>
+  <?=$this->context($this)->renderInContext('myresearch/menu.phtml', ['active' => 'profile'])?>
 </div>

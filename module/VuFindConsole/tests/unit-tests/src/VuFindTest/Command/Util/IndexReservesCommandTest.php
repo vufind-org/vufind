@@ -216,7 +216,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester->execute([]);
         $this->assertEquals(1, $commandTester->getStatusCode());
         $this->assertEquals(
-            "Unable to load data. No data found for: "
+            'Unable to load data. No data found for: '
             . "instructors, courses, departments, reserves\n",
             $commandTester->getDisplay()
         );

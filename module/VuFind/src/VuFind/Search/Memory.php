@@ -228,7 +228,7 @@ class Memory
     }
 
     /**
-     * Retrieve last accessed search URL, if available.  Returns null if no URL
+     * Retrieve last accessed search URL, if available. Returns null if no URL
      * is available.
      *
      * @return string|null

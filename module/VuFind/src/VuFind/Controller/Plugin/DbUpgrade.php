@@ -346,10 +346,10 @@ class DbUpgrade extends AbstractPlugin
 
                 // Change column to appropriate character encoding:
                 $sql = "ALTER TABLE `$table` MODIFY `$column` " . $details['Type']
-                    . " COLLATE " . $newSettings['collation']
+                    . ' COLLATE ' . $newSettings['collation']
                     . (strtoupper($details['Null']) == 'NO' ? ' NOT NULL' : '')
                     . $currentDefault
-                    . ";";
+                    . ';';
                 $sqlcommands .= $this->query($sql, $logsql);
             }
             // Adjust table character set and collation:
@@ -824,7 +824,7 @@ class DbUpgrade extends AbstractPlugin
             }
         }
 
-        preg_match("/.* DEFAULT (.*)$/", $sql, $matches);
+        preg_match('/.* DEFAULT (.*)$/', $sql, $matches);
         $expectedDefault = $matches[1] ?? null;
         if (null !== $expectedDefault) {
             $expectedDefault = trim(rtrim($expectedDefault, ','), "'");
@@ -852,7 +852,7 @@ class DbUpgrade extends AbstractPlugin
 
     /**
      * Given a table column object, return true if the object's type matches the
-     * specified $type parameter.  Return false if there is a mismatch that will
+     * specified $type parameter. Return false if there is a mismatch that will
      * require table structure updates.
      *
      * @param \Laminas\Db\Metadata\Object\ColumnObject $column       Object to check

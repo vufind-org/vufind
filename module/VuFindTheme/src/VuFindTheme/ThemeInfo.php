@@ -336,7 +336,7 @@ class ThemeInfo
     }
 
     /**
-     * Search the themes for a particular file.  If it exists, return the
+     * Search the themes for a particular file. If it exists, return the
      * first matching theme name; otherwise, return null.
      *
      * @param string|array $relativePath Relative path (or array of paths) to

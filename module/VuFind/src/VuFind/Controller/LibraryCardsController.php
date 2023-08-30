@@ -302,8 +302,8 @@ class LibraryCardsController extends AbstractBase
                 && !$this->getAuthManager()->allowsUserIlsLogin()
             ) {
                 throw new \Exception(
-                    "Illegal configuration: "
-                    . "password-based library cards and disabled user login"
+                    'Illegal configuration: '
+                    . 'password-based library cards and disabled user login'
                 );
             }
             $catalog = $this->getILS();

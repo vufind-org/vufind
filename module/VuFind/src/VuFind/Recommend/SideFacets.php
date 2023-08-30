@@ -257,8 +257,12 @@ class SideFacets extends AbstractFacets
      */
     public function init($params, $request)
     {
+        $mainFacets = $this->mainFacets;
+        if ($request != null && ($enabledFacets = $request->get('enabledFacets', null)) !== null) {
+            $mainFacets = array_intersect_key($mainFacets, array_flip($enabledFacets));
+        }
         // Turn on side facets in the search results:
-        foreach ($this->mainFacets as $name => $desc) {
+        foreach ($mainFacets as $name => $desc) {
             $params->addFacet($name, $desc, in_array($name, $this->orFacets));
         }
         foreach ($this->checkboxFacets as $name => $desc) {

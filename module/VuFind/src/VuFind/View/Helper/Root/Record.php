@@ -168,7 +168,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Export the record in the requested format.  For legal values, see
+     * Export the record in the requested format. For legal values, see
      * the export helper's getFormatsForRecord() method.
      *
      * @param string $format Export format to display
@@ -182,7 +182,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get the CSS class used to properly render a format.  (Note that this may
+     * Get the CSS class used to properly render a format. (Note that this may
      * not be used by every theme).
      *
      * @param string $format Format text to convert into CSS class
@@ -555,7 +555,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     public function getQrCode(
         $context,
         $extra = [],
-        $level = "L",
+        $level = 'L',
         $size = 3,
         $margin = 4
     ) {
@@ -564,8 +564,8 @@ class Record extends \Laminas\View\Helper\AbstractHelper
         }
 
         switch ($context) {
-            case "core":
-            case "results":
+            case 'core':
+            case 'results':
                 $key = 'showIn' . ucwords(strtolower($context));
                 break;
             default:
@@ -579,7 +579,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
             return false;
         }
 
-        $template = $context . "-qrcode.phtml";
+        $template = $context . '-qrcode.phtml';
 
         // Try to build text:
         $text = $this->renderTemplate(
@@ -587,7 +587,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
             $extra + ['driver' => $this->driver]
         );
         $qrcode = [
-            "text" => $text, 'level' => $level, 'size' => $size, 'margin' => $margin,
+            'text' => $text, 'level' => $level, 'size' => $size, 'margin' => $margin,
         ];
 
         $urlHelper = $this->getView()->plugin('url');
@@ -614,7 +614,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get all URLs associated with the record.  Returns an array of strings.
+     * Get all URLs associated with the record. Returns an array of strings.
      *
      * @return array
      */
@@ -628,7 +628,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Get all the links associated with this record.  Returns an array of
+     * Get all the links associated with this record. Returns an array of
      * associative arrays each containing 'desc' and 'url' keys.
      *
      * @param bool $openUrlActive Is there an active OpenURL on the page?
@@ -682,7 +682,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
 
     /**
      * Get all the links associated with this record depending on the OpenURL setting
-     * replace_other_urls.  Returns an array of associative arrays each containing
+     * replace_other_urls. Returns an array of associative arrays each containing
      * 'desc' and 'url' keys.
      *
      * @return bool

@@ -6,7 +6,7 @@
       <div class="author-list">
       <?php foreach ($similarAuthors['list'] as $i => $author): ?>
         <?php if ($i == 5): ?>
-            <a href="<?=$this->url('author-search') . '?lookfor=' . urlencode($this->recommend->getSearchTerm()) ?>"><strong><?=$this->transEsc("see all") ?> <?=(isset($similarAuthors['count']) && $similarAuthors['count']) ? $similarAuthors['count'] : ''?> &raquo;</strong></a>
+            <a href="<?=$this->url('author-search') . '?lookfor=' . urlencode($this->recommend->getSearchTerm()) ?>"><strong><?=$this->transEsc('see all') ?> <?=(isset($similarAuthors['count']) && $similarAuthors['count']) ? $similarAuthors['count'] : ''?> &raquo;</strong></a>
           </div>
           <div class="author-list">
         <?php endif; ?>

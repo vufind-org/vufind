@@ -19,9 +19,11 @@
   <?php endif ?>
   <div class="media-body">
     <div class="resultItemLine1">
-      <?php if ($url): ?><a href="<?=$this->escapeHtmlAttr($url)?>" class="title"><?php endif; ?>
-        <?=$this->record($this->driver)->getTitleHtml()?>
-      <?php if ($url): ?></a><?php endif; ?>
+      <h2>
+        <?php if ($url): ?><a href="<?=$this->escapeHtmlAttr($url)?>" class="title"><?php endif; ?>
+          <?=$this->record($this->driver)->getTitleHtml()?>
+        <?php if ($url): ?></a><?php endif; ?>
+      </h2>
     </div>
     <?php if (($sjr = $this->driver->getSjrValue()) && ($issn = $this->driver->getCleanISSN())): ?>
       <div class="resultItemLine2">
