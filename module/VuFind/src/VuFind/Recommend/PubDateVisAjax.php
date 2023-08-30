@@ -84,11 +84,11 @@ class PubDateVisAjax implements RecommendInterface
 
         // Parse the additional settings:
         $params = explode(':', $settings);
-        if ($params[0] == "true" || $params[0] == "false") {
+        if ($params[0] == 'true' || $params[0] == 'false') {
             $this->zooming = $params[0];
             $this->dateFacets = array_slice($params, 1);
         } else {
-            $this->zooming = "false";
+            $this->zooming = 'false';
             $this->dateFacets = $params;
         }
     }
@@ -112,7 +112,7 @@ class PubDateVisAjax implements RecommendInterface
     }
 
     /**
-     * Called after the Search Results object has performed its main search.  This
+     * Called after the Search Results object has performed its main search. This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
      *

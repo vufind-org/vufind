@@ -672,7 +672,7 @@ class Loader extends \VuFind\ImageLoader
     protected function processImageURL($url, $cache = true)
     {
         // Check to see if url is a file path
-        if (substr($url, 0, 7) == "file://") {
+        if (substr($url, 0, 7) == 'file://') {
             $imagePath = substr($url, 7);
 
             // Display the image:
@@ -693,14 +693,14 @@ class Loader extends \VuFind\ImageLoader
             }
 
             // Figure out file paths -- $tempFile will be used to store the
-            // image for analysis.  $finalFile will be used for long-term storage if
+            // image for analysis. $finalFile will be used for long-term storage if
             // $cache is true or for temporary display purposes if $cache is false.
             $tempFile = str_replace('.jpg', uniqid(), $this->localFile);
             $finalFile = $cache ? $this->localFile : $tempFile . '.jpg';
 
             // Write image data to disk:
             if (!@file_put_contents($tempFile, $image)) {
-                throw new \Exception("Unable to write to image directory.");
+                throw new \Exception('Unable to write to image directory.');
             }
 
             // Move temporary file to final location:

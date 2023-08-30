@@ -408,8 +408,8 @@ class Folio extends AbstractAPI implements
         ];
         $response = $this->makeRequest('GET', '/instance-storage/instances', $query);
         $instances = json_decode($response->getBody());
-        if (count($instances->instances) == 0) {
-            throw new ILSException("Item Not Found");
+        if (count($instances->instances ?? []) == 0) {
+            throw new ILSException('Item Not Found');
         }
         return $instances->instances[0];
     }
@@ -471,7 +471,7 @@ class Folio extends AbstractAPI implements
         $excludeLocs = (array)($this->config['Holds']['excludeHoldLocations'] ?? []);
 
         // Exclude checking by regex match
-        if (trim(strtolower($mode)) == "regex") {
+        if (trim(strtolower($mode)) == 'regex') {
             foreach ($excludeLocs as $pattern) {
                 $match = @preg_match($pattern, $locationName);
                 // Invalid regex, skip this pattern
@@ -608,18 +608,18 @@ class Folio extends AbstractAPI implements
             array_map([$this, 'formatNote'], $holding->notes ?? [])
         );
         $hasHoldingNotes = !empty(implode($holdingNotes));
-        $holdingsStatements = array_map(
+        $holdingsStatements = array_values(array_filter(array_map(
             $textFormatter,
             $holding->holdingsStatements ?? []
-        );
-        $holdingsSupplements = array_map(
+        )));
+        $holdingsSupplements = array_values(array_filter(array_map(
             $textFormatter,
             $holding->holdingsStatementsForSupplements ?? []
-        );
-        $holdingsIndexes = array_map(
+        )));
+        $holdingsIndexes = array_values(array_filter(array_map(
             $textFormatter,
             $holding->holdingsStatementsForIndexes ?? []
-        );
+        )));
         $holdingCallNumber = $holding->callNumber ?? '';
         $holdingCallNumberPrefix = $holding->callNumberPrefix ?? '';
         return compact(
@@ -945,13 +945,12 @@ class Folio extends AbstractAPI implements
      * @param string $responseKey Key containing values to collect in response
      * @param string $interface   FOLIO api interface to call
      * @param array  $query       CQL query
+     * @param int    $limit       How many results to retrieve from FOLIO per call
      *
      * @return array
      */
-    protected function getPagedResults($responseKey, $interface, $query = [])
+    protected function getPagedResults($responseKey, $interface, $query = [], $limit = 1000)
     {
-        $count = 0;
-        $limit = 1000;
         $offset = 0;
 
         do {
@@ -966,19 +965,15 @@ class Folio extends AbstractAPI implements
                 $msg = $json->errors[0]->message ?? json_last_error_msg();
                 throw new ILSException("Error: '$msg' fetching '$responseKey'");
             }
-            $total = $json->totalRecords ?? 0;
-            $previousCount = $count;
+            $totalEstimate = $json->totalRecords ?? 0;
             foreach ($json->$responseKey ?? [] as $item) {
-                $count++;
-                if ($count % $limit == 0) {
-                    $offset += $limit;
-                }
                 yield $item ?? '';
             }
-            // Continue until the count reaches the total records
-            // found, if count does not increase, something has gone
-            // wrong. Stop so we don't loop forever.
-        } while ($count < $total && $previousCount != $count);
+            $offset += $limit;
+
+            // Continue until the current offset is greater than the totalRecords value returned
+            // from the API (which could be an estimate if more than 1000 results are returned).
+        } while ($offset <= $totalEstimate);
     }
 
     /**
@@ -1069,7 +1064,7 @@ class Folio extends AbstractAPI implements
         $profile = $this->getUserById($patron['id']);
         $expiration = isset($profile->expirationDate)
             ? $this->dateConverter->convertToDisplayDate(
-                "Y-m-d H:i",
+                'Y-m-d H:i',
                 $profile->expirationDate
             )
             : null;
@@ -1216,11 +1211,11 @@ class Folio extends AbstractAPI implements
                     $renewal = [
                         'success' => true,
                         'new_date' => $this->dateConverter->convertToDisplayDate(
-                            "Y-m-d H:i",
+                            'Y-m-d H:i',
                             $json->dueDate
                         ),
                         'new_time' => $this->dateConverter->convertToDisplayTime(
-                            "Y-m-d H:i",
+                            'Y-m-d H:i',
                             $json->dueDate
                         ),
                         'item_id' => $json->itemId,
@@ -1240,7 +1235,7 @@ class Folio extends AbstractAPI implements
                 );
                 $renewal = [
                     'success' => false,
-                    'sysMessage' => "Renewal Failed",
+                    'sysMessage' => 'Renewal Failed',
                 ];
             }
             $renewalResults['details'][$loanId] = $renewal;
@@ -1256,10 +1251,10 @@ class Folio extends AbstractAPI implements
      *
      * @param array $patron   Patron information returned by $this->patronLogin
      * @param array $holdInfo Optional array, only passed in when getting a list
-     * in the context of placing or editing a hold.  When placing a hold, it contains
-     * most of the same values passed to placeHold, minus the patron data.  When
+     * in the context of placing or editing a hold. When placing a hold, it contains
+     * most of the same values passed to placeHold, minus the patron data. When
      * editing a hold it contains all the hold information returned by getMyHolds.
-     * May be used to limit the pickup options or may be ignored.  The driver must
+     * May be used to limit the pickup options or may be ignored. The driver must
      * not add new options to the return array based on this data or other areas of
      * VuFind may behave incorrectly.
      *
@@ -1341,27 +1336,27 @@ class Folio extends AbstractAPI implements
             ) as $hold
         ) {
             $requestDate = $this->dateConverter->convertToDisplayDate(
-                "Y-m-d H:i",
+                'Y-m-d H:i',
                 $hold->requestDate
             );
             // Set expire date if it was included in the response
             $expireDate = isset($hold->requestExpirationDate)
                 ? $this->dateConverter->convertToDisplayDate(
-                    "Y-m-d H:i",
+                    'Y-m-d H:i',
                     $hold->requestExpirationDate
                 )
                 : null;
             // Set lastPickup Date if provided, format to j M Y
             $lastPickup = isset($hold->holdShelfExpirationDate)
                 ? $this->dateConverter->convertToDisplayDate(
-                    "Y-m-d H:i",
+                    'Y-m-d H:i',
                     $hold->holdShelfExpirationDate
                 )
                 : null;
             $currentHold = [
                 'type' => $hold->requestType,
                 'create' => $requestDate,
-                'expire' => $expireDate ?? "",
+                'expire' => $expireDate ?? '',
                 'id' => $this->getBibId(
                     $hold->instanceId,
                     $hold->holdingsRecordId,
@@ -1533,7 +1528,7 @@ class Folio extends AbstractAPI implements
                 $request_json->requesterId != $patron['id']
                 && ($request_json->proxyUserId ?? null) != $patron['id']
             ) {
-                throw new ILSException("Invalid Request");
+                throw new ILSException('Invalid Request');
             }
             // Change status to Closed and add cancellationID
             $request_json->status = 'Closed - Cancelled';
@@ -1795,7 +1790,7 @@ class Folio extends AbstractAPI implements
                 'status' => $fine->paymentStatus->name,
                 'type' => $fine->feeFineType,
                 'title' => $title,
-                'createdate' => date_format($date, "j M Y"),
+                'createdate' => date_format($date, 'j M Y'),
             ];
         }
         return $fines;

@@ -140,7 +140,7 @@ class Backend extends AbstractBackend
     /**
      * Backend type
      *
-     * @var str
+     * @var string
      */
     protected $backendType = null;
 
@@ -275,7 +275,7 @@ class Backend extends AbstractBackend
                     break;
             }
         } catch (Exception $e) {
-            $this->debugPrint("Exception found: " . $e->getMessage());
+            $this->debugPrint('Exception found: ' . $e->getMessage());
             throw new BackendException($e->getMessage(), $e->getCode(), $e);
         }
         $collection = $this->createRecordCollection($response);
@@ -509,7 +509,7 @@ class Backend extends AbstractBackend
             );
 
             // Check to see if the token expiration time is greater than the current
-            // time.  If the token is expired or within 5 minutes of expiring,
+            // time. If the token is expired or within 5 minutes of expiring,
             // generate a new one.
             if (!empty($currentToken) && (time() <= ($expirationTime - (60 * 5)))) {
                 return $currentToken;
@@ -557,7 +557,7 @@ class Backend extends AbstractBackend
             $expirationTime = $autocompleteData['expiration'] ?? 0;
 
             // Check to see if the token expiration time is greater than the current
-            // time.  If the token is expired or within 5 minutes of expiring,
+            // time. If the token is expired or within 5 minutes of expiring,
             // generate a new one.
             if (!empty($currentToken) && (time() <= ($expirationTime - (60 * 5)))) {
                 return $autocompleteData;
@@ -764,7 +764,7 @@ class Backend extends AbstractBackend
     }
 
     /**
-     * Set the EBSCO backend type.  Backend/EDS is used for both EDS and EPF.
+     * Set the EBSCO backend type. Backend/EDS is used for both EDS and EPF.
      *
      * @param str $backendType 'EDS' or 'EPF'
      *

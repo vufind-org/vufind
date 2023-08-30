@@ -324,7 +324,7 @@ abstract class Results
 
     /**
      * Abstract support method for performAndProcessSearch -- perform a search based
-     * on the parameters passed to the object.  This method is responsible for
+     * on the parameters passed to the object. This method is responsible for
      * filling in all of the key class properties: results, resultTotal, etc.
      *
      * @return void
@@ -464,7 +464,7 @@ abstract class Results
     public function isSavedSearch()
     {
         // This data is not available until \VuFind\Db\Table\Search::saveSearch()
-        // is called...  blow up if somebody tries to get data that is not yet
+        // is called... blow up if somebody tries to get data that is not yet
         // available.
         if (null === $this->savedSearch) {
             throw new \Exception(
@@ -484,7 +484,7 @@ abstract class Results
     public function getNotificationFrequency(): int
     {
         // This data is not available until \VuFind\Db\Table\Search::saveSearch()
-        // is called...  blow up if somebody tries to get data that is not yet
+        // is called... blow up if somebody tries to get data that is not yet
         // available.
         if (null === $this->notificationFrequency) {
             throw new \Exception(
@@ -512,7 +512,7 @@ abstract class Results
     }
 
     /**
-     * Start the timer to figure out how long a query takes.  Complements
+     * Start the timer to figure out how long a query takes. Complements
      * stopQueryTimer().
      *
      * @return void
@@ -520,19 +520,19 @@ abstract class Results
     protected function startQueryTimer()
     {
         // Get time before the query
-        $time = explode(" ", microtime());
+        $time = explode(' ', microtime());
         $this->queryStartTime = $time[1] + $time[0];
     }
 
     /**
-     * End the timer to figure out how long a query takes.  Complements
+     * End the timer to figure out how long a query takes. Complements
      * startQueryTimer().
      *
      * @return void
      */
     protected function stopQueryTimer()
     {
-        $time = explode(" ", microtime());
+        $time = explode(' ', microtime());
         $this->queryEndTime = $time[1] + $time[0];
         $this->queryTime = $this->queryEndTime - $this->queryStartTime;
     }

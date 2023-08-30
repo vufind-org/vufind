@@ -219,6 +219,19 @@ header .container.navbar { margin-bottom: 0; }
   padding-bottom: .25rem;
 }
 
+.result-body,
+.media-body {
+  h2 {
+    font-size: unset;
+    line-height: $line-height-base;
+    margin: 0;
+
+    .authors {
+      display: block;
+    }
+  }
+}
+
 .btn-bookbag-toggle,
 .result-links a {
   line-height: 1.5;
@@ -305,14 +318,22 @@ body.rtl {
   float: left;
   width: 50%;
 
-  .grid-body { flex: 1; }
+  .grid-body {
+    flex: 1;
+    h2 {
+      font-size: inherit;
+      line-height: $line-height-base;
+      margin: 0;
+
+      .title {
+        display: inline-block;
+        font-weight: bold;
+      }
+    }
+  }
   .grid-checkbox {
     flex: 0 0 30px;
     min-width: 0;
-  }
-  .title {
-    display: inline-block;
-    font-weight: bold;
   }
   .label,
   .format {
@@ -545,6 +566,32 @@ table.search-history-table {
   tbody > tr > td { vertical-align: middle; }
   .history_time {
     width: 20%;
+  }
+}
+
+.searchForm-query {
+  position: relative;
+  display: inline-block;
+
+  #searchForm_lookfor {
+    padding-right: 28px;
+  }
+
+  #searchForm-reset {
+    position: absolute;
+    display: none;
+    right: 3px;
+    top: 3px;
+    bottom: 0;
+    width: 2em;
+    height: 2em;
+    border: none;
+    border-radius: 50%;
+    background-color: $gray-lighter;
+    margin: 0;
+    padding: 2px;
+    font-size: 1em;
+    cursor: pointer;
   }
 }
 

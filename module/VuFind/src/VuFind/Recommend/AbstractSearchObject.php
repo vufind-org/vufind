@@ -1,11 +1,12 @@
 <?php
 
 /**
- * WorldCatIdentities Recommendations Module
+ * Abstract SearchObject Recommendations Module (needs to be extended to use
+ * a particular search object).
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010-2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -29,13 +30,11 @@
 
 namespace VuFind\Recommend;
 
-use VuFind\Connection\WorldCatUtils;
-use VuFindSearch\Query\Query;
+use VuFind\Search\SearchRunner;
 
 /**
- * WorldCatIdentities Recommendations Module
- *
- * This class provides recommendations by using the WorldCat Terminologies API.
+ * Abstract SearchObject Recommendations Module (needs to be extended to use
+ * a particular search object).
  *
  * @category VuFind
  * @package  Recommendations
@@ -43,37 +42,44 @@ use VuFindSearch\Query\Query;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class WorldCatIdentities implements RecommendInterface
+abstract class AbstractSearchObject implements RecommendInterface
 {
     /**
-     * Search results object
+     * Results object
      *
      * @var \VuFind\Search\Base\Results
      */
-    protected $searchObject;
+    protected $results;
 
     /**
-     * Configuration settings
+     * Number of results to show
      *
-     * @var array
+     * @var int
      */
-    protected $settings;
+    protected $limit;
 
     /**
-     * WorldCat utilities wrapper object.
+     * Name of request parameter to use for search query
      *
-     * @var WorldCatUtils
+     * @var string
      */
-    protected $worldCatUtils;
+    protected $requestParam;
+
+    /**
+     * Search runner
+     *
+     * @var SearchRunner
+     */
+    protected $runner;
 
     /**
      * Constructor
      *
-     * @param WorldCatUtils $wcu WorldCat utilities object
+     * @param SearchRunner $runner Search runner
      */
-    public function __construct(WorldCatUtils $wcu)
+    public function __construct(SearchRunner $runner)
     {
-        $this->worldCatUtils = $wcu;
+        $this->runner = $runner;
     }
 
     /**
@@ -85,8 +91,11 @@ class WorldCatIdentities implements RecommendInterface
      */
     public function setConfig($settings)
     {
-        // Save the basic parameters:
-        $this->settings = $settings;
+        $settings = explode(':', $settings);
+        $this->requestParam = empty($settings[0]) ? 'lookfor' : $settings[0];
+        $this->limit
+            = (isset($settings[1]) && is_numeric($settings[1]) && $settings[1] > 0)
+            ? intval($settings[1]) : 5;
     }
 
     /**
@@ -104,11 +113,38 @@ class WorldCatIdentities implements RecommendInterface
      */
     public function init($params, $request)
     {
-        // No action needed.
+        // See if we can determine the label for the current search type; first
+        // check for an override in the GET parameters, then look at the incoming
+        // params object....
+        $typeLabel = $request->get('typeLabel');
+        $type = $request->get('type');
+        if (empty($typeLabel) && !empty($type)) {
+            $typeLabel = $params->getOptions()->getLabelForBasicHandler($type);
+        }
+
+        // Extract a search query:
+        $lookfor = $request->get($this->requestParam);
+        if (empty($lookfor) && is_object($params)) {
+            $lookfor = $params->getQuery()->getAllTerms();
+        }
+
+        // Set up the callback to initialize the parameters:
+        $limit = $this->limit;
+        $callback = function ($runner, $params) use ($lookfor, $limit, $typeLabel) {
+            $params->setLimit($limit);
+            $params->setBasicSearch(
+                $lookfor,
+                $params->getOptions()->getHandlerForLabel($typeLabel)
+            );
+        };
+
+        // Perform the search:
+        $this->results
+            = $this->runner->run([], $this->getSearchClassId(), $callback);
     }
 
     /**
-     * Called after the Search Results object has performed its main search.  This
+     * Called after the Search Results object has performed its main search. This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
      *
@@ -118,21 +154,23 @@ class WorldCatIdentities implements RecommendInterface
      */
     public function process($results)
     {
-        $this->searchObject = $results;
+        // No action needed.
     }
 
     /**
-     * Get identities related to the query.
+     * Get search results.
      *
-     * @return array
+     * @return \VuFind\Search\Base\Results
      */
-    public function getIdentities()
+    public function getResults()
     {
-        // Extract the first search term from the search object:
-        $search = $this->searchObject->getParams()->getQuery();
-        $lookfor = ($search instanceof Query) ? $search->getString() : '';
-
-        // Get terminology information:
-        return $this->worldCatUtils->getRelatedIdentities($lookfor);
+        return $this->results;
     }
+
+    /**
+     * Get the search class ID to use for building search objects.
+     *
+     * @return string
+     */
+    abstract protected function getSearchClassId();
 }

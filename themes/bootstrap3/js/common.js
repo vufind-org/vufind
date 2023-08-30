@@ -527,7 +527,10 @@ function setupAutocomplete() {
       success: function autocompleteJSON(json) {
         const highlighted = json.data.suggestions.map(
           (item) => ({
-            text: item.replace(query, `<b>${query}</b>`),
+            text: item.replaceAll("&", "&amp;")
+              .replaceAll("<", "&lt;")
+              .replaceAll(">", "&gt;")
+              .replaceAll(query, `<b>${query}</b>`),
             value: item,
           })
         );
@@ -614,16 +617,6 @@ function keyboardShortcuts() {
         }
       }
     });
-  }
-}
-
-function setupIeSupport() {
-  // Disable Bootstrap modal focus enforce on IE since it breaks Recaptcha.
-  // Cannot use conditional comments since IE 11 doesn't support them but still has
-  // the issue
-  var ua = window.navigator.userAgent;
-  if (ua.indexOf('MSIE') || ua.indexOf('Trident/')) {
-    $.fn.modal.Constructor.prototype.enforceFocus = function emptyEnforceFocus() { };
   }
 }
 
@@ -722,6 +715,26 @@ $(function commonDocReady() {
   if (url.indexOf('?print=') !== -1 || url.indexOf('&print=') !== -1) {
     $("link[media='print']").attr("media", "all");
   }
+});
 
-  setupIeSupport();
+$(function searchFormResetHandler() {
+  const queryInput = $('#searchForm_lookfor');
+  const resetButton = $('#searchForm-reset');
+
+  let query = queryInput.val();
+  if (query !== '') {
+    resetButton.show();
+    queryInput.focus().val('').val(query);
+  }
+  queryInput.on('input', function onInput() {
+    if ($(this).val() === '') {
+      resetButton.hide();
+    } else {
+      resetButton.show();
+    }
+  });
+  resetButton.on('click', function onClick() {
+    queryInput.attr('value', '').focus();
+    resetButton.hide();
+  });
 });

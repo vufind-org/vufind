@@ -915,12 +915,12 @@ class Alma extends AbstractBase implements
             $created = (string)$fee->creation_time;
             $checkout = (string)$fee->status_time;
             $fineList[] = [
-                "title"    => (string)($fee->title ?? ''),
-                "amount"   => round(floatval($fee->original_amount) * 100),
-                "balance"  => round(floatval($fee->balance) * 100),
-                "createdate" => $this->parseDate($created, true),
-                "checkout" => $this->parseDate($checkout, true),
-                "fine"     => $this->getTranslatableString($fee->type),
+                'title'    => (string)($fee->title ?? ''),
+                'amount'   => round(floatval($fee->original_amount) * 100),
+                'balance'  => round(floatval($fee->balance) * 100),
+                'createdate' => $this->parseDate($created, true),
+                'checkout' => $this->parseDate($checkout, true),
+                'fine'     => $this->getTranslatableString($fee->type),
             ];
         }
         return $fineList;
@@ -1591,10 +1591,10 @@ class Alma extends AbstractBase implements
      * @param array $patron      Patron information returned by the patronLogin
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
-     * in the context of placing or editing a hold.  When placing a hold, it contains
-     * most of the same values passed to placeHold, minus the patron data.  When
+     * in the context of placing or editing a hold. When placing a hold, it contains
+     * most of the same values passed to placeHold, minus the patron data. When
      * editing a hold it contains all the hold information returned by getMyHolds.
-     * May be used to limit the pickup options or may be ignored.  The driver must
+     * May be used to limit the pickup options or may be ignored. The driver must
      * not add new options to the return array based on this data or other areas of
      * VuFind may behave incorrectly.
      *
@@ -1681,14 +1681,14 @@ class Alma extends AbstractBase implements
             $date = substr($date, 0, -1);
         }
 
-        $compactDate = "/^[0-9]{8}$/"; // e. g. 20120725
+        $compactDate = '/^[0-9]{8}$/'; // e. g. 20120725
         $euroName = "/^[0-9]+\/[A-Za-z]{3}\/[0-9]{4}$/"; // e. g. 13/jan/2012
         $euro = "/^[0-9]+\/[0-9]+\/[0-9]{4}$/"; // e. g. 13/7/2012
         $euroPad = "/^[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{2,4}$/"; // e. g. 13/07/2012
-        $datestamp = "/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/"; // e. g. 2012-07-13
-        $timestamp = "/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$/";
+        $datestamp = '/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/'; // e. g. 2012-07-13
+        $timestamp = '/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$/';
         $timestampMs
-            = "/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}Z$/";
+            = '/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}Z$/';
         // e. g. 2017-07-09T18:00:00
 
         if ($date == null || $date == '') {
@@ -1734,7 +1734,7 @@ class Alma extends AbstractBase implements
 
     /**
      * Helper method to determine whether or not a certain method can be
-     * called on this driver.  Required method for any smart drivers.
+     * called on this driver. Required method for any smart drivers.
      *
      * @param string $method The name of the called method.
      * @param array  $params Array of passed parameters

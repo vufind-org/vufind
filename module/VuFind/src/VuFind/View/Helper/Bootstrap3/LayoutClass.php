@@ -64,7 +64,7 @@ class LayoutClass extends \VuFind\View\Helper\AbstractLayoutClass
                     : 'sidebar right hidden-print';
             case 'offcanvas-row':
                 if (!$this->offcanvas) {
-                    return "";
+                    return '';
                 }
                 return $this->sidebarOnLeft
                     ? 'offcanvas offcanvas-left'

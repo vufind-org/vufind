@@ -414,7 +414,7 @@ class XCNCIP2 extends AbstractBase implements
                 "Cannot load pickup locations file: {$pickupLocationsFile}."
             );
         }
-        if (($handle = fopen($pickupLocationsFile, "r")) !== false) {
+        if (($handle = fopen($pickupLocationsFile, 'r')) !== false) {
             while (($data = fgetcsv($handle)) !== false) {
                 $agencyId = $data[0] . '|' . $data[1];
                 $this->pickupLocations[$agencyId] = [
@@ -1164,7 +1164,7 @@ class XCNCIP2 extends AbstractBase implements
                 );
                 // Hack to account for bibs from other non-local institutions
                 // temporarily until consortial functionality is enabled.
-                $bibId = !empty($bibId) ? (string)$bibId[0] : "1";
+                $bibId = !empty($bibId) ? (string)$bibId[0] : '1';
             }
             if ($itemAgencyId === null && isset($itemResponse)) {
                 $itemAgencyId = $itemResponse->xpath(
@@ -1622,7 +1622,7 @@ class XCNCIP2 extends AbstractBase implements
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
      * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.  May be used to limit the pickup options
+     * placeHold, minus the patron data. May be used to limit the pickup options
      * or may be ignored.
      *
      * @return string A location ID
@@ -1691,10 +1691,10 @@ class XCNCIP2 extends AbstractBase implements
      * @param array $patron      Patron information returned by the patronLogin
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
-     * in the context of placing or editing a hold.  When placing a hold, it contains
-     * most of the same values passed to placeHold, minus the patron data.  When
+     * in the context of placing or editing a hold. When placing a hold, it contains
+     * most of the same values passed to placeHold, minus the patron data. When
      * editing a hold it contains all the hold information returned by getMyHolds.
-     * May be used to limit the pickup options or may be ignored.  The driver must
+     * May be used to limit the pickup options or may be ignored. The driver must
      * not add new options to the return array based on this data or other areas of
      * VuFind may behave incorrectly.
      *
@@ -1773,7 +1773,7 @@ class XCNCIP2 extends AbstractBase implements
     public function getRenewDetails($checkOutDetails)
     {
         return $checkOutDetails['item_agency_id'] .
-            "|" . $checkOutDetails['item_id'];
+            '|' . $checkOutDetails['item_id'];
     }
 
     /**
@@ -1817,7 +1817,7 @@ class XCNCIP2 extends AbstractBase implements
         $requestType = $details['holdtype'] ?? $type;
         $pickUpLocation = null;
         if (isset($details['pickUpLocation'])) {
-            [, $pickUpLocation] = explode("|", $details['pickUpLocation']);
+            [, $pickUpLocation] = explode('|', $details['pickUpLocation']);
         }
 
         $convertedDate = $this->dateConverter->convertFromDisplayDate(
@@ -1835,7 +1835,7 @@ class XCNCIP2 extends AbstractBase implements
             $details['patron']['patronAgencyId'],
             $details['item_agency_id'],
             $requestType,
-            "Item",
+            'Item',
             $lastInterestDateStr,
             $pickUpLocation,
             $username
@@ -1903,7 +1903,7 @@ class XCNCIP2 extends AbstractBase implements
         ];
 
         foreach ($details as $detail) {
-            [$itemAgencyId, $requestId, $itemId] = explode("|", $detail);
+            [$itemAgencyId, $requestId, $itemId] = explode('|', $detail);
             $request = $this->getCancelRequest(
                 $username,
                 $password,
@@ -1969,8 +1969,8 @@ class XCNCIP2 extends AbstractBase implements
             return '';
         }
         return $details['item_agency_id'] .
-            "|" . $details['requestId'] .
-            "|" . $details['item_id'];
+            '|' . $details['requestId'] .
+            '|' . $details['item_id'];
     }
 
     /**
@@ -1978,7 +1978,7 @@ class XCNCIP2 extends AbstractBase implements
      *
      * This function returns the item id and recall id as a string
      * separated by a pipe, which is then submitted as form data in Hold.php. This
-     * value is then extracted by the CancelHolds function.  item id is used as the
+     * value is then extracted by the CancelHolds function. Item id is used as the
      * array key in the response.
      *
      * @param array $holdDetails A single hold array from getMyHolds
@@ -2033,7 +2033,7 @@ class XCNCIP2 extends AbstractBase implements
     /**
      * Renew My Items
      *
-     * Function for attempting to renew a patron's items.  The data in
+     * Function for attempting to renew a patron's items. The data in
      * $renewDetails['details'] is determined by getRenewDetails().
      *
      * @param array $renewDetails An array of data required for renewing items
@@ -2046,10 +2046,10 @@ class XCNCIP2 extends AbstractBase implements
         $details = [];
         $username = $renewDetails['patron']['cat_username'];
         foreach ($renewDetails['details'] as $detail) {
-            [$agencyId, $itemId] = explode("|", $detail);
+            [$agencyId, $itemId] = explode('|', $detail);
             $failureReturn = [
-                "success" => false,
-                "item_id" => $itemId,
+                'success' => false,
+                'item_id' => $itemId,
             ];
             if ($this->disableRenewals) {
                 $details[$itemId] = $failureReturn;
@@ -2075,10 +2075,10 @@ class XCNCIP2 extends AbstractBase implements
 
             if ($dueDate !== '') {
                 $details[$itemId] = [
-                    "success" => true,
-                    "new_date" => $dueDate,
-                    "new_time" => $dueTime,
-                    "item_id" => $itemId,
+                    'success' => true,
+                    'new_date' => $dueDate,
+                    'new_time' => $dueTime,
+                    'item_id' => $itemId,
                 ];
             } else {
                 $details[$itemId] = $failureReturn;

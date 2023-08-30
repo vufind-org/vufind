@@ -129,7 +129,7 @@ abstract class AbstractBase implements HandlerInterface
      * session_destroy() and takes the session id as its only parameter.
      *
      * IMPORTANT:  The functionality defined in this method is global to all session
-     *             mechanisms.  If you override this method, be sure to still call
+     *             mechanisms. If you override this method, be sure to still call
      *             parent::destroy() in addition to any new behavior.
      *
      * @param string $sessId The session ID to destroy

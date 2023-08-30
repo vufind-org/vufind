@@ -1,0 +1,66 @@
+<?php $this->headLink()->appendStylesheet('EDS.css'); ?>
+<?php
+    $items = $this->driver->getItems('core');
+    $accessLevel = $this->driver->getAccessLevel();
+    $coverDetails = $this->record($this->driver)->getCoverDetails('core', 'medium');
+    $cover = $coverDetails['html'];
+?>
+<div class="media" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
+  <div class="media-left medium img-col">
+    <?php if ($cover): ?>
+      <?=$cover?>
+    <?php endif; ?>
+
+    <div class="external-links">
+      <?php $pLink = $this->driver->getPLink();
+          if ($pLink): ?>
+        <span>
+          <a href="<?=$this->escapeHtmlAttr($pLink)?>">
+            <?=$this->transEsc('View in EDS')?>
+          </a>
+        </span><br>
+      <?php endif; ?>
+    </div>
+  </div>
+  <div class="media-body info-col">
+    <h1 property="name"><?=$this->driver->getTitle()?></h1>
+
+    <?php if ($this->driver->getExtraDetail('cached_record') && !$this->translationEmpty('cached_record_warning')): ?>
+      <div class="alert alert-warning">
+        <?=$this->transEsc('cached_record_warning')?>
+      </div>
+    <?php endif; ?>
+
+    <table class="table table-striped">
+      <caption class="sr-only"><?=$this->transEsc('Bibliographic Details')?></caption>
+      <?php foreach ($items as $key => $item): ?>
+        <?php if (!empty($item['Data'])): ?>
+        <tr>
+          <th><?=empty($item['Label']) ? '' : $this->transEsc($item['Label']) . ':'?></th>
+          <td class="record__biblio-value"><?=$this->driver->linkUrls($item['Data'])?></td>
+        </tr>
+        <?php endif; ?>
+      <?php endforeach; ?>
+
+      <?php $holdings = $this->driver->getFullTextHoldings();
+      if (isset($holdings) && !empty($holdings)): ?>
+        <tr>
+          <th><?=$this->transEsc('Linked Full Text') . ':'?></th>
+          <td>
+            <ul>
+              <?php
+                foreach($holdings as $holding):
+                  if (!empty($holding)): ?>
+                    <li>
+                      <a href="<?=$this->escapeHtmlAttr($holding['URL'])?>"><?=$this->escapeHtml($holding['Name'])?></a>
+                      <?=$this->escapeHtml($holding['CoverageStatement'])?>
+                    </li>
+                  <?php endif;
+                endforeach; ?>
+            </ul>
+          </td>
+        </tr>
+      <?php endif; ?>
+    </table>
+  </div>
+</div>

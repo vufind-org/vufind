@@ -105,7 +105,7 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
                 InputOption::VALUE_REQUIRED,
                 'provides a template showing where important values can be found '
                 . "within the file.\nThe template is a comma-separated list of "
-                . "values.  Choose from:\n"
+                . "values. Choose from:\n"
                 . "BIB_ID     - bibliographic ID\n"
                 . "COURSE     - course name\n"
                 . "DEPARTMENT - department name\n"
@@ -180,8 +180,8 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
      * @param array|string $files     Array of files to load (or single filename).
      * @param string       $delimiter Delimiter used by file(s).
      * @param string       $template  Template showing field positions within
-     * file(s).  Comma-separated list containing BIB_ID, INSTRUCTOR, COURSE,
-     * DEPARTMENT and/or SKIP.  Default = BIB_ID,COURSE,INSTRUCTOR,DEPARTMENT
+     * file(s). Comma-separated list containing BIB_ID, INSTRUCTOR, COURSE,
+     * DEPARTMENT and/or SKIP. Default = BIB_ID,COURSE,INSTRUCTOR,DEPARTMENT
      *
      * @return CsvReader
      */

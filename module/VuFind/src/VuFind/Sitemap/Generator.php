@@ -241,7 +241,7 @@ class Generator
      */
     protected function getTime()
     {
-        $time = explode(" ", microtime());
+        $time = explode(' ', microtime());
         return $time[1] + $time[0];
     }
 
@@ -298,7 +298,7 @@ class Generator
             $plugin = $this->getPlugin($pluginName);
             $sitemapName = $plugin->getSitemapName();
             $msgName = empty($sitemapName)
-                ? "core sitemap" : "sitemap '$sitemapName'";
+                ? 'core sitemap' : "sitemap '$sitemapName'";
             $this->verboseMsg(
                 "Generating $msgName with '$pluginName'"
             );
