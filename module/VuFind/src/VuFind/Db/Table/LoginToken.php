@@ -123,7 +123,7 @@ class LoginToken extends Gateway
         } elseif ($row) {
             // Matching series and user id found, but token does not match
             // throw exception
-            throw new LoginTokenException("Token does not match");
+            throw new LoginTokenException('Token does not match');
         }
         return false;
     }
