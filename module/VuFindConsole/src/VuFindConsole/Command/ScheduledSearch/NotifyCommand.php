@@ -341,7 +341,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
         // is missing.
         $language = $this->localeSettings->getDefaultLocale();
         $allLanguages = array_keys($this->localeSettings->getEnabledLocales());
-        if ($userLang != '' && in_array($userLang, $allLanguages)) {
+        if ($userLang != '' && \in_array($userLang, $allLanguages)) {
             $language = $userLang;
         }
         $this->translator->setLocale($language);
@@ -461,7 +461,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
             'info' => [
                 'baseUrl' => $viewBaseUrl,
                 'description' => $params->getDisplayQuery(),
-                'recordCount' => count($newRecords),
+                'recordCount' => \count($newRecords),
                 'url' => $searchUrl,
                 'unsubscribeUrl' => $unsubscribeUrl,
                 'checkboxFilters' => array_filter(
@@ -523,7 +523,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
     {
         $todayTime = new \DateTime();
         $scheduled = $this->searchTable->getScheduledSearches();
-        $this->msg(sprintf('Processing %d searches', count($scheduled)));
+        $this->msg(sprintf('Processing %d searches', \count($scheduled)));
         foreach ($scheduled as $s) {
             $lastTime = new \DateTime($s->last_notification_sent);
             if (

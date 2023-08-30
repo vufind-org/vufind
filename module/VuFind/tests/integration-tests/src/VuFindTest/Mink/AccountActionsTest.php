@@ -271,7 +271,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
             $page,
             '#home_library option',
             null,
-            count($expectedChoices)
+            \count($expectedChoices)
         );
 
         // Change the default and verify:

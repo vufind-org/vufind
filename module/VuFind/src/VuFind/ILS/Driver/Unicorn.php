@@ -313,7 +313,7 @@ class Unicorn extends AbstractBase implements
         $lines = ($marc_marker_pos !== false)
             ? substr($response, 0, $marc_marker_pos) : '';
         $marc = ($marc_marker_pos !== false)
-            ? substr($response, $marc_marker_pos + strlen($marc_marker)) : '';
+            ? substr($response, $marc_marker_pos + \strlen($marc_marker)) : '';
 
         // Initialize item holdings the ones received in MARC holding
         // records
@@ -611,8 +611,8 @@ class Unicorn extends AbstractBase implements
             // the amount and balance are in cents, so we need to turn them into
             // dollars if configured
             if (!$this->config['Catalog']['leaveFinesAmountsInCents']) {
-                $amount = (floatval($amount) / 100.00);
-                $balance = (floatval($balance) / 100.00);
+                $amount = (\floatval($amount) / 100.00);
+                $balance = (\floatval($balance) / 100.00);
             }
 
             $date_billed = $this->parseDateTime($date_billed);
@@ -735,7 +735,7 @@ class Unicorn extends AbstractBase implements
 
         // if there are more than 1 lines, then there is at least 1 failure
         $failures = [];
-        if (count($lines) > 1) {
+        if (\count($lines) > 1) {
             // extract the failed IDs.
             foreach ($lines as $line) {
                 // error lines start with '**'
@@ -749,7 +749,7 @@ class Unicorn extends AbstractBase implements
         $count = 0;
         $items = [];
         foreach ($details as $holdKey) {
-            if (in_array($holdKey, $failures)) {
+            if (\in_array($holdKey, $failures)) {
                 $items[$holdKey] = [
                     'success' => false, 'status' => 'hold_cancel_fail',
                 ];
@@ -1022,7 +1022,7 @@ class Unicorn extends AbstractBase implements
             $rescount++;
         }
 
-        $results = array_slice($items, ($page - 1) * $limit, ($page * $limit) - 1);
+        $results = \array_slice($items, ($page - 1) * $limit, ($page * $limit) - 1);
         return ['count' => $rescount, 'results' => $results];
     }
 
@@ -1248,11 +1248,11 @@ class Unicorn extends AbstractBase implements
      */
     protected function parseDateTime($date)
     {
-        if (strlen($date) >= 8) {
+        if (\strlen($date) >= 8) {
             // format is MM/DD/YYYY HH:MI so it can be passed to strtotime
             $formatted_date = substr($date, 4, 2) . '/' . substr($date, 6, 2) .
                     '/' . substr($date, 0, 4);
-            if (strlen($date) > 8) {
+            if (\strlen($date) > 8) {
                 $formatted_date .= ' ' . substr($date, 8, 2) . ':' .
                 substr($date, 10);
             }
@@ -1370,9 +1370,9 @@ class Unicorn extends AbstractBase implements
         // Digits to use to build a combined index with linking number
         // and sequence number.
         // PS: Does this make this implementation year-3K safe?
-        $link_digits = floor(strlen((string)PHP_INT_MAX) / 2);
+        $link_digits = floor(\strlen((string)PHP_INT_MAX) / 2);
 
-        $data863 = array_key_exists(0, $textuals) ? [] : $record->getFields('863');
+        $data863 = \array_key_exists(0, $textuals) ? [] : $record->getFields('863');
         foreach ($data863 as $field) {
             $linking_field = $record->getSubfield($field, '8');
 
@@ -1382,7 +1382,7 @@ class Unicorn extends AbstractBase implements
             }
 
             $linking = explode('.', $linking_field);
-            if (1 < count($linking)) {
+            if (1 < \count($linking)) {
                 $sequence = explode('\\', $linking[1]);
                 // Lets ignore the link type, as we only care for \x
                 $sequence = $sequence[0];
@@ -1391,7 +1391,7 @@ class Unicorn extends AbstractBase implements
             }
             $linking = $linking[0];
 
-            if (array_key_exists((int)$linking, $textuals)) {
+            if (\array_key_exists((int)$linking, $textuals)) {
                 // Skip coded holdings overridden by textual
                 // holdings
                 continue;

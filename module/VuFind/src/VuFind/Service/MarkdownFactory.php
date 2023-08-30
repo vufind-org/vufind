@@ -300,7 +300,7 @@ class MarkdownFactory implements FactoryInterface
             $attributesArray = [];
             foreach ($attributes as $attribute) {
                 $parts = array_map('trim', explode(':', $attribute));
-                if (2 === count($parts)) {
+                if (2 === \count($parts)) {
                     $attributesArray[$parts[0]] = $parts[1];
                 }
             }

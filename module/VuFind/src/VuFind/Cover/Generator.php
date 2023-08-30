@@ -136,7 +136,7 @@ class Generator
 
         // Determine final dimensions:
         $parts = explode('x', strtolower($settings['size']));
-        if (count($parts) < 2) {
+        if (\count($parts) < 2) {
             $settings['width'] = $settings['height'] = $parts[0];
         } else {
             [$settings['width'], $settings['height']] = $parts;

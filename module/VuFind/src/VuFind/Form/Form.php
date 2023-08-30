@@ -411,7 +411,7 @@ class Form extends \Laminas\Form\Form implements
             $value = $requestParams[$el['name']] ?? null;
             $valueLabel = null;
 
-            if (in_array($type, ['radio', 'select'])) {
+            if (\in_array($type, ['radio', 'select'])) {
                 $option = null;
                 if (isset($el['options'])) {
                     $option = $el['options'][$value] ?? null;
@@ -530,7 +530,7 @@ class Form extends \Laminas\Form\Form implements
                 $fieldValidators[] = $validators['email'];
             }
 
-            if (in_array($el['type'], ['checkbox', 'radio', 'select'])) {
+            if (\in_array($el['type'], ['checkbox', 'radio', 'select'])) {
                 // Add InArray validator from element object instance
                 $elementObject = $elementObjects[$el['name']];
                 $elementSpec = $elementObject->getInputSpecification();
@@ -668,7 +668,7 @@ class Form extends \Laminas\Form\Form implements
             }
 
             if (
-                in_array($element['type'], ['checkbox', 'radio'])
+                \in_array($element['type'], ['checkbox', 'radio'])
                 && !isset($element['group'])
             ) {
                 $element['group'] = $element['name'];
@@ -677,7 +677,7 @@ class Form extends \Laminas\Form\Form implements
             $element['label'] = $el['label'] ?? '';
 
             $elementType = $element['type'];
-            if (in_array($elementType, ['checkbox', 'radio', 'select'])) {
+            if (\in_array($elementType, ['checkbox', 'radio', 'select'])) {
                 if ($options = $this->getElementOptions($el)) {
                     $element['options'] = $options;
                 } elseif ($optionGroups = $this->getElementOptionGroups($el)) {
@@ -687,11 +687,11 @@ class Form extends \Laminas\Form\Form implements
 
             $settings = [];
             foreach ($el['settings'] ?? [] as $setting) {
-                if (!is_array($setting)) {
+                if (!\is_array($setting)) {
                     continue;
                 }
                 // Allow both [key => value] and [key, value]:
-                if (count($setting) !== 2) {
+                if (\count($setting) !== 2) {
                     reset($setting);
                     $settingId = trim(key($setting));
                     $settingVal = trim(current($setting));
@@ -714,7 +714,7 @@ class Form extends \Laminas\Form\Form implements
 
             // Add default field size settings for fields that don't define them:
             if (
-                in_array($elementType, ['text', 'url', 'email'])
+                \in_array($elementType, ['text', 'url', 'email'])
                 && !isset($element['settings']['size'])
             ) {
                 $element['settings']['size'] = 50;
@@ -1175,8 +1175,8 @@ class Form extends \Laminas\Form\Form implements
         $prefill = array_filter(
             $prefill,
             function ($key) use ($prefillFields) {
-                return in_array($key, $prefillFields)
-                    && !in_array($key, $this->getProtectedFieldNames());
+                return \in_array($key, $prefillFields)
+                    && !\in_array($key, $this->getProtectedFieldNames());
             },
             ARRAY_FILTER_USE_KEY
         );

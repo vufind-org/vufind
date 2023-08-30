@@ -63,7 +63,7 @@ class RecordsController extends AbstractSearch
         // If there is exactly one record, send the user directly there:
         $ids = $this->params()->fromQuery('id', []);
         $print = $this->params()->fromQuery('print');
-        if (count($ids) == 1) {
+        if (\count($ids) == 1) {
             $details = $this->getRecordRouter()->getTabRouteDetails($ids[0]);
             $target = $this->url()->fromRoute($details['route'], $details['params']);
             // forward print param, if necessary:

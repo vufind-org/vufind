@@ -78,15 +78,15 @@ class Translator
         $this->charset = $configArray['util']['charset'];
         $this->table15 = $this->parsetable(
             $configArray['util']['tab15'],
-            get_class($this) . '::tab15Callback'
+            \get_class($this) . '::tab15Callback'
         );
         $this->table40 = $this->parsetable(
             $configArray['util']['tab40'],
-            get_class($this) . '::tab40Callback'
+            \get_class($this) . '::tab40Callback'
         );
         $this->table_sub_library = $this->parsetable(
             $configArray['util']['tab_sub_library'],
-            get_class($this) . '::tabSubLibraryCallback'
+            \get_class($this) . '::tabSubLibraryCallback'
         );
     }
 
@@ -115,7 +115,7 @@ class Translator
                 $line = str_pad($line, 80);
                 $matches = '';
                 if (preg_match($rgxp, $line, $matches)) {
-                    call_user_func_array(
+                    \call_user_func_array(
                         $callback,
                         [$matches, &$result, $this->charset]
                     );

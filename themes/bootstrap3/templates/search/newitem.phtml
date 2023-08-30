@@ -24,7 +24,7 @@
       <?php endforeach; ?>
     </div>
   </div>
-  <?php if (is_array($this->fundList) && !empty($this->fundList)): ?>
+  <?php if (\is_array($this->fundList) && !empty($this->fundList)): ?>
     <div class="form-group">
       <label class="control-label" for="newitem_department"><?=$this->transEsc('Department')?>:</label>
       <select id="newitem_department" name="department" size="10" class="form-control">

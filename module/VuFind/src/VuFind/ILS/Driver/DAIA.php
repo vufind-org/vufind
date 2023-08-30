@@ -335,7 +335,7 @@ class DAIA extends AbstractBase implements
         }
 
         // only query DAIA service if we have some ids left
-        if (count($ids) > 0) {
+        if (\count($ids) > 0) {
             try {
                 if ($this->multiQuery) {
                     // perform one DAIA query with multiple URIs
@@ -512,7 +512,7 @@ class DAIA extends AbstractBase implements
                     2,
                     null
                 ); // workaround to avoid notices if encoding is not set in header
-                if (!in_array(trim($responseMediaType), $contentTypesResponse)) {
+                if (!\in_array(trim($responseMediaType), $contentTypesResponse)) {
                     throw new ILSException(
                         'DAIA-ResponseFormat not supported. Received: ' .
                         $responseMediaType . ' - ' .
@@ -575,7 +575,7 @@ class DAIA extends AbstractBase implements
      */
     protected function parseDaiaDoc($id, $daiaDoc)
     {
-        if (is_array($daiaDoc)) {
+        if (\is_array($daiaDoc)) {
             return $this->parseDaiaArray($id, $daiaDoc);
         } else {
             throw new ILSException(
@@ -611,7 +611,7 @@ class DAIA extends AbstractBase implements
             $docs = json_decode($daiaResponse, true);
         }
 
-        if (count($docs)) {
+        if (\count($docs)) {
             // check for error messages and write those to log
             if (isset($docs['message'])) {
                 $this->logMessages($docs['message'], 'document');
@@ -669,11 +669,11 @@ class DAIA extends AbstractBase implements
                     $prepare($node);
                 } else {
                     if (
-                        ($domNode->hasAttributes() && strlen($domNode->nodeValue))
-                        || (in_array(
+                        ($domNode->hasAttributes() && \strlen($domNode->nodeValue))
+                        || (\in_array(
                             $domNode->nodeName,
                             ['storage', 'limitation', 'department', 'institution']
-                        ) && strlen($domNode->nodeValue))
+                        ) && \strlen($domNode->nodeValue))
                     ) {
                         if (trim($node->textContent)) {
                             $domNode->setAttribute('content', $node->textContent);
@@ -694,7 +694,7 @@ class DAIA extends AbstractBase implements
         // merge @attributes fields in parent array
         $merge = function ($array) use (&$merge) {
             foreach ($array as $key => $value) {
-                if (is_array($value)) {
+                if (\is_array($value)) {
                     $value = $merge($value);
                 }
                 if ($key === '@attributes') {
@@ -715,11 +715,11 @@ class DAIA extends AbstractBase implements
                 'message',
             ];
             foreach ($array as $key => $value) {
-                if (is_array($value)) {
+                if (\is_array($value)) {
                     $value = $restructure($value);
                 }
                 if (
-                    in_array($key, $elements, true)
+                    \in_array($key, $elements, true)
                     && !isset($array[$key][0])
                 ) {
                     unset($array[$key]);
@@ -760,7 +760,7 @@ class DAIA extends AbstractBase implements
             $this->logMessages($daiaArray['message'], 'document');
         }
         // if one or more items exist, iterate and build result-item
-        if (isset($daiaArray['item']) && is_array($daiaArray['item'])) {
+        if (isset($daiaArray['item']) && \is_array($daiaArray['item'])) {
             $number = 0;
             foreach ($daiaArray['item'] as $item) {
                 $result_item = [];
@@ -825,14 +825,14 @@ class DAIA extends AbstractBase implements
             foreach ($item['available'] as $available) {
                 if (
                     isset($available['service'])
-                    && in_array($available['service'], ['loan', 'presentation'])
+                    && \in_array($available['service'], ['loan', 'presentation'])
                 ) {
                     $services['available'][] = $available['service'];
                 }
                 // attribute service can be set once or not
                 if (
                     isset($available['service'])
-                    && in_array(
+                    && \in_array(
                         $available['service'],
                         ['loan', 'presentation', 'openaccess']
                     )
@@ -873,14 +873,14 @@ class DAIA extends AbstractBase implements
             foreach ($item['unavailable'] as $unavailable) {
                 if (
                     isset($unavailable['service'])
-                    && in_array($unavailable['service'], ['loan', 'presentation'])
+                    && \in_array($unavailable['service'], ['loan', 'presentation'])
                 ) {
                     $services['unavailable'][] = $unavailable['service'];
                 }
                 // attribute service can be set once or not
                 if (
                     isset($unavailable['service'])
-                    && in_array(
+                    && \in_array(
                         $unavailable['service'],
                         ['loan', 'presentation', 'openaccess']
                     )
@@ -1015,7 +1015,7 @@ class DAIA extends AbstractBase implements
             foreach ($item['available'] as $available) {
                 if (
                     isset($available['service'])
-                    && in_array($available['service'], ['loan', 'presentation'])
+                    && \in_array($available['service'], ['loan', 'presentation'])
                 ) {
                     $services['available'][] = $available['service'];
                 }
@@ -1026,7 +1026,7 @@ class DAIA extends AbstractBase implements
             foreach ($item['unavailable'] as $unavailable) {
                 if (
                     isset($unavailable['service'])
-                    && in_array($unavailable['service'], ['loan', 'presentation'])
+                    && \in_array($unavailable['service'], ['loan', 'presentation'])
                 ) {
                     $services['unavailable'][] = $unavailable['service'];
                     // attribute href is used to determine whether item is recallable
@@ -1038,7 +1038,7 @@ class DAIA extends AbstractBase implements
 
         // Check if we have at least one service unavailable and a href field is set
         // (either as flag or as actual value for the next action).
-        return $href && count(
+        return $href && \count(
             array_diff($services['unavailable'], $services['available'])
         );
     }
@@ -1061,7 +1061,7 @@ class DAIA extends AbstractBase implements
             foreach ($item['available'] as $available) {
                 if (
                     isset($available['service'])
-                    && in_array($available['service'], ['loan', 'presentation'])
+                    && \in_array($available['service'], ['loan', 'presentation'])
                 ) {
                     $services['available'][] = $available['service'];
                     // attribute href is used to determine whether item is
@@ -1075,7 +1075,7 @@ class DAIA extends AbstractBase implements
             foreach ($item['unavailable'] as $unavailable) {
                 if (
                     isset($unavailable['service'])
-                    && in_array($unavailable['service'], ['loan', 'presentation'])
+                    && \in_array($unavailable['service'], ['loan', 'presentation'])
                 ) {
                     $services['unavailable'][] = $unavailable['service'];
                 }
@@ -1084,7 +1084,7 @@ class DAIA extends AbstractBase implements
 
         // Check if we have at least one service unavailable and a href field is set
         // (either as flag or as actual value for the next action).
-        return $href && count(
+        return $href && \count(
             array_diff($services['available'], $services['unavailable'])
         );
     }
@@ -1316,7 +1316,7 @@ class DAIA extends AbstractBase implements
             foreach ($services['available'] as $service) {
                 if (
                     !isset($services['unavailable'])
-                    || !in_array($service, $services['unavailable'])
+                    || !\in_array($service, $services['unavailable'])
                 ) {
                     $availableServices[] = $service;
                 }

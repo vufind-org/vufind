@@ -60,7 +60,7 @@ class LocaleDetectorFactoryTest extends \PHPUnit\Framework\TestCase
     protected function getStrategyClasses()
     {
         $factory = new LocaleDetectorFactory();
-        $strategies = $this->callMethod($factory, 'getStrategies', func_get_args());
+        $strategies = $this->callMethod($factory, 'getStrategies', \func_get_args());
         return array_map('get_class', iterator_to_array($strategies));
     }
 

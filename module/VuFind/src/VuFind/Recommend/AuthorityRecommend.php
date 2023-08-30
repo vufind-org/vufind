@@ -129,10 +129,10 @@ class AuthorityRecommend implements RecommendInterface
     public function setConfig($settings)
     {
         $params = explode(':', $settings);
-        for ($i = 0; $i < count($params); $i += 2) {
+        for ($i = 0; $i < \count($params); $i += 2) {
             if (isset($params[$i + 1])) {
                 if ($params[$i] == '__resultlimit__') {
-                    $this->resultLimit = intval($params[$i + 1]);
+                    $this->resultLimit = \intval($params[$i + 1]);
                 } elseif ($params[$i] == '__mode__') {
                     $this->mode = strtolower($params[$i + 1]);
                 } elseif ($params[$i] == '__header__') {

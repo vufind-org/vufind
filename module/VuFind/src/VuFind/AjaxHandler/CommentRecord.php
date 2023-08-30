@@ -186,7 +186,7 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
         ) {
             $driver->addOrUpdateRating(
                 $this->user->id,
-                '' === $rating ? null : intval($rating)
+                '' === $rating ? null : \intval($rating)
             );
         }
 

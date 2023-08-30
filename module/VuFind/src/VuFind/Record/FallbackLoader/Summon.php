@@ -63,7 +63,7 @@ class Summon extends AbstractFallbackLoader
         $resource = $this->table->findResource($id, 'Summon');
         if ($resource && ($extra = json_decode($resource->extra_metadata, true))) {
             $bookmark = $extra['bookmark'] ?? '';
-            if (strlen($bookmark) > 0) {
+            if (\strlen($bookmark) > 0) {
                 $params = new ParamBag(
                     ['summonIdType' => Connector::IDENTIFIER_BOOKMARK]
                 );

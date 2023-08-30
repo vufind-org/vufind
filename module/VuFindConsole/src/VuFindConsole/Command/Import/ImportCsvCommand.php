@@ -133,7 +133,7 @@ class ImportCsvCommand extends Command
             }
         } catch (\Exception $e) {
             $output->writeln('Fatal error: ' . $e->getMessage());
-            if (is_callable([$e, 'getPrevious']) && $e = $e->getPrevious()) {
+            if (\is_callable([$e, 'getPrevious']) && $e = $e->getPrevious()) {
                 while ($e) {
                     $output->writeln('Previous exception: ' . $e->getMessage());
                     $e = $e->getPrevious();

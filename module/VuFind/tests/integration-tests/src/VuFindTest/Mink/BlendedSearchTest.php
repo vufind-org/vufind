@@ -150,10 +150,10 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $text = $this->findCss($page, '.search-stats strong')->getText();
         [$start, $limit] = explode(' - ', $text);
         $offset = (($queryParams['page'] ?? 1) - 1) * 20;
-        $this->assertEquals(1 + $offset, intval($start));
-        $this->assertEquals(20 + $offset, intval($limit));
+        $this->assertEquals(1 + $offset, \intval($start));
+        $this->assertEquals(20 + $offset, \intval($limit));
 
-        for ($i = 0; $i < count($expectedLabels); $i++) {
+        for ($i = 0; $i < \count($expectedLabels); $i++) {
             $this->assertEquals(
                 $expectedLabels[$i],
                 $this->findCss($page, '.result span.label-source', null, $i)

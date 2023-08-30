@@ -23,8 +23,8 @@
   <?php if (!empty($this->categoryList)): ?>
     <div class="browse-list<?php if (!empty($this->secondaryList) || !empty($this->resultList)): ?> hidden-xs<?php endif ?>" id="list2">
       <?php foreach ($this->categoryList as $findby => $category): ?>
-        <a href="<?=$BROWSE_BASE ?>?findby=<?=urlencode($findby) ?>&amp;query_field=<?=urlencode($this->browse()->getSolrField($findby, $this->currentAction)) ?>" class="browse-item<?php if (!is_string($category)): ?> with-badge<?php endif; ?><?php if ($this->findby == $findby): ?> active<?php endif; ?>">
-          <?php if (is_string($category)): ?>
+        <a href="<?=$BROWSE_BASE ?>?findby=<?=urlencode($findby) ?>&amp;query_field=<?=urlencode($this->browse()->getSolrField($findby, $this->currentAction)) ?>" class="browse-item<?php if (!\is_string($category)): ?> with-badge<?php endif; ?><?php if ($this->findby == $findby): ?> active<?php endif; ?>">
+          <?php if (\is_string($category)): ?>
             <?=$this->transEsc($category)?>
             <span class="pull-right flip"><?=$this->icon('more', ['title' => $this->translate('more')]) ?></span>
           <?php else: ?>

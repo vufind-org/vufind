@@ -82,7 +82,7 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
     {
         $configBaseDir = implode(
             '/',
-            array_slice(explode('/', realpath($this->csvFixtureDir)), -5)
+            \array_slice(explode('/', realpath($this->csvFixtureDir)), -5)
         );
         return new Importer($this->container, compact('configBaseDir'));
     }

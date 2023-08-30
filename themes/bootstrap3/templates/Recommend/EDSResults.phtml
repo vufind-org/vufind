@@ -19,7 +19,7 @@
           <?php if (!empty($summAuthors)): ?>
           <span class="small">
             <?=$this->transEsc('by')?>
-            <a href="<?=$this->record($driver)->getLink('author', $this->highlight($summAuthors[0], null, true, false))?>"><?=$this->highlight($summAuthors[0])?></a><?php if (count($summAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?>
+            <a href="<?=$this->record($driver)->getLink('author', $this->highlight($summAuthors[0], null, true, false))?>"><?=$this->highlight($summAuthors[0])?></a><?php if (\count($summAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?>
           </span>
           <?php endif; ?>
         </span>

@@ -117,11 +117,11 @@ class ShortlinkController extends AbstractBase
                 $threshRegEx = '"^threshold:(\d+)$"i';
                 if (preg_match($threshRegEx, $this->redirectMethod, $hits)) {
                     $threshold = $hits[1];
-                    $method = (strlen($url) > $threshold) ? 'Html' : 'Http';
+                    $method = (\strlen($url) > $threshold) ? 'Html' : 'Http';
                 } else {
                     $method = ucwords($this->redirectMethod);
                 }
-                if (!is_callable([$this, 'redirectVia' . $method])) {
+                if (!\is_callable([$this, 'redirectVia' . $method])) {
                     throw new \VuFind\Exception\BadConfig(
                         'Invalid redirect method: ' . $method
                     );

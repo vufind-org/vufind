@@ -182,10 +182,10 @@ class InstallController extends AbstractBase
                 throw new \Exception('Cannot write config to disk.');
             }
         } catch (\Exception $e) {
-            $view->configDir = dirname($config);
+            $view->configDir = \dirname($config);
             if (
-                function_exists('posix_getpwuid')
-                && function_exists('posix_geteuid')
+                \function_exists('posix_getpwuid')
+                && \function_exists('posix_geteuid')
             ) {
                 $processUser = posix_getpwuid(posix_geteuid());
                 $view->runningUser = $processUser['name'];
@@ -219,7 +219,7 @@ class InstallController extends AbstractBase
         $cache = $this->serviceLocator->get(\VuFind\Cache\Manager::class);
         $view = $this->createViewModel();
         $view->cacheDir = $cache->getCacheDir();
-        if (function_exists('posix_getpwuid') && function_exists('posix_geteuid')) {
+        if (\function_exists('posix_getpwuid') && \function_exists('posix_geteuid')) {
             $processUser = posix_getpwuid(posix_geteuid());
             $view->runningUser = $processUser['name'];
         }
@@ -256,7 +256,7 @@ class InstallController extends AbstractBase
     {
         // PHP_VERSION_ID was introduced in 5.2.7; if it's missing, we have a
         // problem.
-        if (!defined('PHP_VERSION_ID')) {
+        if (!\defined('PHP_VERSION_ID')) {
             return false;
         }
 
@@ -272,10 +272,10 @@ class InstallController extends AbstractBase
     protected function checkDependencies()
     {
         $requiredFunctionsExist
-            = function_exists('mb_substr') && is_callable('imagecreatefromstring')
-              && function_exists('openssl_encrypt')
+            = \function_exists('mb_substr') && \is_callable('imagecreatefromstring')
+              && \function_exists('openssl_encrypt')
               && class_exists('XSLTProcessor')
-              && defined('SODIUM_LIBRARY_VERSION');
+              && \defined('SODIUM_LIBRARY_VERSION');
 
         return [
             'title' => 'Dependencies',
@@ -303,7 +303,7 @@ class InstallController extends AbstractBase
         }
 
         // Is the mbstring library missing?
-        if (!function_exists('mb_substr')) {
+        if (!\function_exists('mb_substr')) {
             $msg
                 = 'Your PHP installation appears to be missing the mbstring plug-in.'
                 . ' For better language support, it is recommended that you add'
@@ -315,7 +315,7 @@ class InstallController extends AbstractBase
         }
 
         // Is the GD library missing?
-        if (!is_callable('imagecreatefromstring')) {
+        if (!\is_callable('imagecreatefromstring')) {
             $msg
                 = 'Your PHP installation appears to be missing the GD plug-in. '
                 . 'For better graphics support, it is recommended that you add this.'
@@ -327,7 +327,7 @@ class InstallController extends AbstractBase
         }
 
         // Is the openssl library missing?
-        if (!function_exists('openssl_encrypt')) {
+        if (!\function_exists('openssl_encrypt')) {
             $msg
                 = 'Your PHP installation appears to be missing the openssl plug-in.'
                 . ' For better security support, it is recommended that you add'
@@ -350,7 +350,7 @@ class InstallController extends AbstractBase
         }
 
         // Is the sodium extension missing?
-        if (!defined('SODIUM_LIBRARY_VERSION')) {
+        if (!\defined('SODIUM_LIBRARY_VERSION')) {
             $msg
                 = 'Your PHP installation appears to be missing the sodium plug-in.'
                 . ' For details on how to do this, see '
@@ -449,7 +449,7 @@ class InstallController extends AbstractBase
                         $statements = explode(';', $sql);
                         foreach ($statements as $current) {
                             // Skip empty sections:
-                            if (strlen(trim($current)) == 0) {
+                            if (\strlen(trim($current)) == 0) {
                                 continue;
                             }
                             $db->query($current, $db::QUERY_MODE_EXECUTE);
@@ -558,7 +558,7 @@ class InstallController extends AbstractBase
     protected function checkILS()
     {
         $config = $this->getConfig();
-        if (in_array($config->Catalog->driver, ['Sample', 'Demo'])) {
+        if (\in_array($config->Catalog->driver, ['Sample', 'Demo'])) {
             $status = false;
         } else {
             $status = 'ils-offline' !== $this->getILS()->getOfflineMode(true);
@@ -597,7 +597,7 @@ class InstallController extends AbstractBase
         // or if we need to warn the user that they have selected a fake driver:
         $config = $this->getConfig();
         $view = $this->createViewModel();
-        if (in_array($config->Catalog->driver, ['Sample', 'Demo'])) {
+        if (\in_array($config->Catalog->driver, ['Sample', 'Demo'])) {
             $view->demo = true;
             // Get a list of available drivers:
             $dir
@@ -608,7 +608,7 @@ class InstallController extends AbstractBase
             ];
             while ($line = readdir($dir)) {
                 if (
-                    stristr($line, '.php') && !in_array($line, $excludeList)
+                    stristr($line, '.php') && !\in_array($line, $excludeList)
                     && substr($line, 0, 8) !== 'Abstract'
                     && substr($line, -11) !== 'Factory.php'
                     && substr($line, -9) !== 'Trait.php'
@@ -761,7 +761,7 @@ class InstallController extends AbstractBase
 
         // If we don't need to prompt the user, or if they confirmed, do the fix:
         $rows = $this->getTable('user')->getInsecureRows();
-        if (count($rows) == 0 || $userConfirmation == 'Yes') {
+        if (\count($rows) == 0 || $userConfirmation == 'Yes') {
             return $this->forwardTo('Install', 'performsecurityfix');
         }
 
@@ -798,7 +798,7 @@ class InstallController extends AbstractBase
         // Now we want to loop through the database and update passwords (if
         // necessary).
         $rows = $this->getTable('user')->getInsecureRows();
-        if (count($rows) > 0) {
+        if (\count($rows) > 0) {
             // If we got this far, the user POSTed their confirmation -- go ahead
             // with the fix:
             $bcrypt = new Bcrypt();
@@ -813,7 +813,7 @@ class InstallController extends AbstractBase
                     $row->save();
                 }
             }
-            $msg = count($rows) . ' user row(s) encrypted.';
+            $msg = \count($rows) . ' user row(s) encrypted.';
             $this->flashMessenger()->addMessage($msg, 'info');
         }
         return $this->redirect()->toRoute('install-home');
@@ -919,7 +919,7 @@ class InstallController extends AbstractBase
         if (!$writer->save()) {
             return $this->forwardTo('Install', 'fixbasicconfig');
         }
-        return $this->createViewModel(['configDir' => dirname($config)]);
+        return $this->createViewModel(['configDir' => \dirname($config)]);
     }
 
     /**

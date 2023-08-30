@@ -53,7 +53,7 @@ trait LanguageInitializerTrait
         $base = APPLICATION_PATH;
         $local = LOCAL_OVERRIDE_DIR;
         $languagePathParts = ["$base/languages"];
-        if (strlen($local) > 0) {
+        if (\strlen($local) > 0) {
             $languagePathParts[] = "$local/languages";
         }
         $languagePathParts[] = "$base/themes/*/languages";

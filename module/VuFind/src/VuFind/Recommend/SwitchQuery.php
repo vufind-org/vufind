@@ -174,7 +174,7 @@ class SwitchQuery implements RecommendInterface
         foreach ($methods as $method) {
             if (substr($method, 0, 5) == 'check') {
                 $currentCheck = strtolower(substr($method, 5));
-                if (!in_array($currentCheck, $this->skipChecks)) {
+                if (!\in_array($currentCheck, $this->skipChecks)) {
                     if ($result = $this->$method($query)) {
                         $this->suggestions['switchquery_' . $currentCheck] = $result;
                     }
@@ -307,7 +307,7 @@ class SwitchQuery implements RecommendInterface
             return false;
         }
         $query = trim($query);
-        return (strlen($query) > 1) ? substr($query, 0, -1) : false;
+        return (\strlen($query) > 1) ? substr($query, 0, -1) : false;
     }
 
     /**

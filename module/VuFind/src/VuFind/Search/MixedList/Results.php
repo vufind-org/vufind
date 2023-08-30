@@ -66,6 +66,6 @@ class Results extends BaseResults
     {
         $recordsToRequest = $this->getParams()->getRecordsToRequest();
         $this->results = $this->recordLoader->loadBatch($recordsToRequest);
-        $this->resultTotal = count($this->results);
+        $this->resultTotal = \count($this->results);
     }
 }

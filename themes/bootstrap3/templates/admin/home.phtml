@@ -10,7 +10,7 @@
 ?>
 <div class="<?=$this->layoutClass('mainbody')?>">
   <h2><?=$this->transEsc('VuFind Administration')?></h2>
-  <?php $cores = is_object($this->xml) ? $this->xml->xpath('/response/lst[@name="status"]/lst') : []; ?>
+  <?php $cores = \is_object($this->xml) ? $this->xml->xpath('/response/lst[@name="status"]/lst') : []; ?>
   <?php foreach ($cores as $core): ?>
     <?php $coreName = (string)$core['name']; ?>
     <?php $coreLabel = $coreLabels[$coreName] ?? ucwords($coreName) . ' Index'; ?>

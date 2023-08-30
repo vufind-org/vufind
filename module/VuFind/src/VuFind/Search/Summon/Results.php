@@ -157,7 +157,7 @@ class Results extends \VuFind\Search\Base\Results
 
         // Loop through the facets returned by Summon.
         $facetResult = [];
-        if (is_array($this->responseFacets)) {
+        if (\is_array($this->responseFacets)) {
             foreach ($this->responseFacets as $current) {
                 // The "displayName" value is actually the name of the field on
                 // Summon's side -- we'll probably need to translate this to a
@@ -222,7 +222,7 @@ class Results extends \VuFind\Search\Base\Results
 
         // Should we translate values for the current facet?
         $field = $current['displayName'];
-        $translate = in_array(
+        $translate = \in_array(
             $field,
             $this->getOptions()->getTranslatedFacets()
         );
@@ -250,7 +250,7 @@ class Results extends \VuFind\Search\Base\Results
             if (isset($filterList[$orField])) {
                 $itemsToCheck += $filterList[$orField];
             }
-            $isApplied = in_array($facetDetails['value'], $itemsToCheck);
+            $isApplied = \in_array($facetDetails['value'], $itemsToCheck);
 
             // Inject "applied" value into Summon results:
             $current['counts'][$facetIndex]['isApplied'] = $isApplied;
@@ -401,7 +401,7 @@ class Results extends \VuFind\Search\Base\Results
         $facets = $collection->getFacets();
         $ret = [];
         foreach ($facets as $data) {
-            if (in_array($data['displayName'], $facetfields)) {
+            if (\in_array($data['displayName'], $facetfields)) {
                 $formatted = $this->formatFacetData($data);
                 $list = $formatted['counts'];
                 $ret[$data['displayName']] = [

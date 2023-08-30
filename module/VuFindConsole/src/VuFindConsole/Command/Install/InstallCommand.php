@@ -443,7 +443,7 @@ class InstallCommand extends Command
             'VuFind', 'VuFindAdmin', 'VuFindConsole', 'VuFindDevTools',
             'VuFindLocalTemplate', 'VuFindSearch', 'VuFindTest', 'VuFindTheme',
         ];
-        if (in_array($module, $illegalModules)) {
+        if (\in_array($module, $illegalModules)) {
             return "{$module} is a reserved module name; please try another.";
         } elseif (empty($module) || preg_match($regex, $module)) {
             return true;
@@ -516,8 +516,8 @@ class InstallCommand extends Command
                 $output,
                 "\nWhich option do you want? "
             );
-            if (is_numeric($response) && in_array(intval($response), $legal)) {
-                return intval($response);
+            if (is_numeric($response) && \in_array(\intval($response), $legal)) {
+                return \intval($response);
             }
             $output->writeln('Invalid selection.');
         }

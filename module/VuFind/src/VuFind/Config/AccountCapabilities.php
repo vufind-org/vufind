@@ -102,7 +102,7 @@ class AccountCapabilities
             $setting = 'disabled';
         }
         $legal = ['enabled', 'disabled', 'public_only', 'private_only'];
-        if (!in_array($setting, $legal)) {
+        if (!\in_array($setting, $legal)) {
             $setting = 'enabled';
         }
         return $setting;

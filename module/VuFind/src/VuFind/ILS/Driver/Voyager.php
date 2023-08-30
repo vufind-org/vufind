@@ -244,7 +244,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
         // Pick the first entry by default, then see if we can find a better match:
         $status = $statusArray[0];
         $rank = $this->getStatusRanking($status);
-        for ($x = 1; $x < count($statusArray); $x++) {
+        for ($x = 1; $x < \count($statusArray); $x++) {
             $thisRank = $this->getStatusRanking($statusArray[$x]);
             if ($thisRank < $rank) {
                 $status = $statusArray[$x];
@@ -331,7 +331,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
 
         // If we found other statuses or if we failed to find "Not Charged,"
         // the item is not available!
-        $available = (count($otherStatuses) == 0 && $notCharged);
+        $available = (\count($otherStatuses) == 0 && $notCharged);
 
         return ['available' => $available, 'otherStatuses' => $otherStatuses];
     }
@@ -493,7 +493,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
                     'sort_seq' => $row['SORT_SEQ'] ?? PHP_INT_MAX,
                 ];
             } else {
-                $statusFound = in_array(
+                $statusFound = \in_array(
                     $row['STATUS'],
                     $data[$rowId]['status_array']
                 );
@@ -524,13 +524,13 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
 
             // If we found other statuses, we should override the display value
             // appropriately:
-            if (count($availability['otherStatuses']) > 0) {
+            if (\count($availability['otherStatuses']) > 0) {
                 $current['status']
                     = $this->pickStatus($availability['otherStatuses']);
             }
             $current['availability'] = $availability['available'];
             $current['use_unknown_message']
-                = in_array('No information available', $current['status_array']);
+                = \in_array('No information available', $current['status_array']);
 
             $status[] = $current;
         }
@@ -608,7 +608,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
     public function getStatuses($idList)
     {
         $status = [];
-        if (is_array($idList)) {
+        if (\is_array($idList)) {
             foreach ($idList as $id) {
                 $status[] = $this->getStatus($id);
             }
@@ -784,7 +784,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
                 }
 
                 // If we've encountered a new status code, we should track it:
-                if (!in_array($row['STATUS'], $record['STATUS_ARRAY'])) {
+                if (!\in_array($row['STATUS'], $record['STATUS_ARRAY'])) {
                     $record['STATUS_ARRAY'][] = $row['STATUS'];
                 }
 
@@ -862,7 +862,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
      */
     protected function getMFHDData(MarcReader $record, $fieldSpecs)
     {
-        if (!is_array($fieldSpecs)) {
+        if (!\is_array($fieldSpecs)) {
             $fieldSpecs = explode(':', $fieldSpecs);
         }
         $results = '';
@@ -888,7 +888,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
                             if (!$results) {
                                 $results = $line;
                             } else {
-                                if (!is_array($results)) {
+                                if (!\is_array($results)) {
                                     $results = [$results];
                                 }
                                 $results[] = $line;
@@ -1007,7 +1007,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
             'callnumber' => $sqlRow['CALLNUMBER'],
             'barcode' => $sqlRow['ITEM_BARCODE'],
             'use_unknown_message' =>
-                in_array('No information available', $sqlRow['STATUS_ARRAY']),
+                \in_array('No information available', $sqlRow['STATUS_ARRAY']),
             'item_sort_seq' => $sqlRow['ITEM_SEQUENCE_NUMBER'],
             'sort_seq' => $sqlRow['SORT_SEQ'] ?? PHP_INT_MAX,
         ];
@@ -1084,7 +1084,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
 
                 // If we found other statuses, we should override the display value
                 // appropriately:
-                if (count($availability['otherStatuses']) > 0) {
+                if (\count($availability['otherStatuses']) > 0) {
                     $row['STATUS']
                         = $this->pickStatus($availability['otherStatuses']);
                 }
@@ -1478,12 +1478,12 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
             'renew' => $sqlRow['RENEWAL_COUNT'],
             'renewLimit' => $sqlRow['RENEWAL_LIMIT'],
             'message' =>
-                $this->pickTransactionStatus(explode(chr(9), $sqlRow['STATUS'])),
+                $this->pickTransactionStatus(explode(\chr(9), $sqlRow['STATUS'])),
         ];
         // Display due time only if loan interval is not in days if configured
         if (
             empty($this->displayDueTimeIntervals)
-            || in_array($sqlRow['LOAN_INTERVAL'], $this->displayDueTimeIntervals)
+            || \in_array($sqlRow['LOAN_INTERVAL'], $this->displayDueTimeIntervals)
         ) {
             $transaction['dueTime'] = $dueTime;
         }
@@ -2209,12 +2209,12 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
         $rawIncludeList = $this->config['Funds']['include_list']
             ?? $this->config['Funds']['whitelist'] // deprecated terminology
             ?? null;
-        $include = is_array($rawIncludeList)
+        $include = \is_array($rawIncludeList)
             ? array_map('strtolower', $rawIncludeList) : false;
         $rawExcludeList = $this->config['Funds']['exclude_list']
             ?? $this->config['Funds']['blacklist'] // deprecated terminology
             ?? null;
-        $exclude = is_array($rawExcludeList)
+        $exclude = \is_array($rawExcludeList)
             ? array_map('strtolower', $rawExcludeList) : false;
 
         // Retrieve the data from Voyager; if we're limiting to a parent fund, we
@@ -2233,8 +2233,8 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
                 // Process inclusion/exclusion lists to skip illegal values:
                 if (
-                    (is_array($exclude) && in_array($row['NAME'], $exclude))
-                    || (is_array($include) && !in_array($row['NAME'], $include))
+                    (\is_array($exclude) && \in_array($row['NAME'], $exclude))
+                    || (\is_array($include) && !\in_array($row['NAME'], $include))
                 ) {
                     continue;
                 }
@@ -2500,7 +2500,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
         // Oracle does not support the SQL LIMIT clause before version 12, so
         // instead we need to provide an optimizer hint, which requires us to
         // ensure that $limit is a valid integer.
-        $intLimit = intval($limit);
+        $intLimit = \intval($limit);
         $safeLimit = $intLimit < 1 ? 30 : $intLimit;
 
         $sql = "select /*+ FIRST_ROWS($safeLimit) */ BIB_MFHD.BIB_ID, "
@@ -2520,7 +2520,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
         try {
             $sqlStmt = $this->executeSQL($sql, [':maxage' => $maxage]);
             while (
-                count($recordList) < $limit
+                \count($recordList) < $limit
                 && $row = $sqlStmt->fetch(PDO::FETCH_ASSOC)
             ) {
                 $recordList[] = ['id' => $row['BIB_ID']];
@@ -2549,7 +2549,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
         // Oracle does not support the SQL LIMIT clause before version 12, so
         // instead we need to provide an optimizer hint, which requires us to
         // ensure that $limit is a valid integer.
-        $intLimit = intval($limit);
+        $intLimit = \intval($limit);
         $safeLimit = $intLimit < 1 ? 30 : $intLimit;
 
         $sql = "select /*+ FIRST_ROWS($safeLimit) */ BIB_MFHD.BIB_ID, "
@@ -2572,7 +2572,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
         try {
             $sqlStmt = $this->executeSQL($sql, [':maxage' => $maxage]);
             while (
-                count($recordList) < $limit
+                \count($recordList) < $limit
                 && $row = $sqlStmt->fetch(PDO::FETCH_ASSOC)
             ) {
                 $recordList[] = ['id' => $row['BIB_ID']];
@@ -2619,7 +2619,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
      */
     protected function executeSQL($sql, $bind = [])
     {
-        if (is_array($sql)) {
+        if (\is_array($sql)) {
             $bind = $sql['bind'];
             $sql = $sql['string'];
         }

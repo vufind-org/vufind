@@ -112,7 +112,7 @@ class RecommendTest extends \VuFindTest\Unit\AjaxHandlerTest
         $testRequestInitialization = function ($request) {
             // exactly one parameter: mod = foo
             return $request->get('mod') === 'foo'
-                && count($request) === 1;
+                && \count($request) === 1;
         };
         $results->getParams()->expects($this->once())
             ->method('initFromRequest')

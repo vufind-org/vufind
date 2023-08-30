@@ -100,8 +100,8 @@ class Loader extends \VuFind\ImageLoader
         // do some math to try to map old PHPQRCode-style settings to new
         // Endroid\QrCode equivalents. When the size setting is 30 or higher,
         // treat 'size' and 'margin' as literal pixel sizes.
-        $size = intval($params['size']);
-        $margin = intval($params['margin']);
+        $size = \intval($params['size']);
+        $margin = \intval($params['margin']);
         $level = $this->mapErrorLevel($params['level']);
         if ($size < 30) {
             // In the old system, the margin was multiplied by the size....
@@ -111,7 +111,7 @@ class Loader extends \VuFind\ImageLoader
             // length of the text and the quality level. This is probably not the
             // smartest way to do this, but it seems good enough for VuFind's
             // limited needs.
-            $sizeIncrement = ceil(ceil(sqrt(strlen($text))) / 10);
+            $sizeIncrement = ceil(ceil(sqrt(\strlen($text))) / 10);
             if ($level instanceof ErrorCorrectionLevelHigh) {
                 $sizeIncrement *= 38;
             } elseif ($level instanceof ErrorCorrectionLevelQuartile) {
@@ -168,7 +168,7 @@ class Loader extends \VuFind\ImageLoader
      */
     protected function fetchQRCode($text, $size, $margin, $level)
     {
-        if (strlen(trim($text)) == 0) {
+        if (\strlen(trim($text)) == 0) {
             return false;
         }
 

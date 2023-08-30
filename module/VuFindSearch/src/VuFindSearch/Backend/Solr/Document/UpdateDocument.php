@@ -89,7 +89,7 @@ class UpdateDocument implements DocumentInterface
                 $writer->writeAttribute($name, $value);
             }
             foreach ($record->getFields() as $name => $values) {
-                $values = is_array($values) ? $values : [$values];
+                $values = \is_array($values) ? $values : [$values];
                 foreach ($values as $value) {
                     $writer->startElement('field');
                     $writer->writeAttribute('name', $name);

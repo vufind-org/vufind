@@ -76,7 +76,7 @@ class UserIpReaderFactory implements \Laminas\ServiceManager\Factory\FactoryInte
         return new $requestedName(
             $container->get('Request')->getServer(),
             $allowForwardedIps,
-            is_object($ipFilter) ? $ipFilter->toArray() : (array)$ipFilter
+            \is_object($ipFilter) ? $ipFilter->toArray() : (array)$ipFilter
         );
     }
 }

@@ -116,7 +116,7 @@ class CsvReader
      */
     public function __construct($files, $delimiter = ',', $template = null)
     {
-        $this->files = is_array($files) ? $files : [$files];
+        $this->files = \is_array($files) ? $files : [$files];
         $this->delimiter = $delimiter;
 
         // Provide default template if none passed in:
@@ -162,7 +162,7 @@ class CsvReader
         while ($line = fgetcsv($fh, 0, $this->delimiter)) {
             $lineNo++;
 
-            if (count($line) < count($this->template)) {
+            if (\count($line) < \count($this->template)) {
                 $this->errors .= "Skipping incomplete row: $fn, line $lineNo\n";
                 continue;
             }

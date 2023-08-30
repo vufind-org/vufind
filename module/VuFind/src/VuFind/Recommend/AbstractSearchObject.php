@@ -95,7 +95,7 @@ abstract class AbstractSearchObject implements RecommendInterface
         $this->requestParam = empty($settings[0]) ? 'lookfor' : $settings[0];
         $this->limit
             = (isset($settings[1]) && is_numeric($settings[1]) && $settings[1] > 0)
-            ? intval($settings[1]) : 5;
+            ? \intval($settings[1]) : 5;
     }
 
     /**
@@ -124,7 +124,7 @@ abstract class AbstractSearchObject implements RecommendInterface
 
         // Extract a search query:
         $lookfor = $request->get($this->requestParam);
-        if (empty($lookfor) && is_object($params)) {
+        if (empty($lookfor) && \is_object($params)) {
             $lookfor = $params->getQuery()->getAllTerms();
         }
 

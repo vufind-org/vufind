@@ -533,7 +533,7 @@ class SearchHandler
                     $this->munge($clausearray, $mungeValues, $internalJoin) .
                     ')';
                 // ...and add a weight if we have one
-                $weight = intval($sw[1] ?? 0);
+                $weight = \intval($sw[1] ?? 0);
                 if ($weight > 0) {
                     $sstring .= '^' . $weight;
                 }
@@ -547,7 +547,7 @@ class SearchHandler
                     $sstring = $field . ':(' . $mungeValues[$spec[0]] . ')';
                     // Add the weight if we have one. Yes, I know, it's redundant
                     // code.
-                    $weight = intval($spec[1] ?? 0);
+                    $weight = \intval($spec[1] ?? 0);
                     if ($weight > 0) {
                         $sstring .= '^' . $weight;
                     }
@@ -574,10 +574,10 @@ class SearchHandler
         // never be found in user input (ASCII 26, "substitute"). Next use a regex
         // to split on whitespace and quoted phrases. Finally, swap the "substitute"
         // characters back to escaped quotes. This allows for a simpler regex.
-        $string = str_replace('\\"', chr(26), $string);
+        $string = str_replace('\\"', \chr(26), $string);
         preg_match_all('/[^\s"]+|"([^"]*)"/', $string, $phrases);
         $callback = function ($str) {
-            return str_replace(chr(26), '\\"', $str);
+            return str_replace(\chr(26), '\\"', $str);
         };
         $phrases = array_map($callback, $phrases[0]);
 
@@ -588,7 +588,7 @@ class SearchHandler
         while (current($phrases) !== false) {
             $token[] = current($phrases);
             $next    = next($phrases);
-            if (in_array($next, self::$booleanOperators)) {
+            if (\in_array($next, self::$booleanOperators)) {
                 $token[] = $next;
                 if (next($phrases) === false) {
                     $tokens[] = implode(' ', $token);

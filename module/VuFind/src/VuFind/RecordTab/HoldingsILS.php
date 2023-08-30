@@ -106,7 +106,7 @@ class HoldingsILS extends AbstractBase
     {
         $callNos = [];
         foreach ($items as $item) {
-            if (isset($item['callnumber']) && strlen($item['callnumber']) > 0) {
+            if (isset($item['callnumber']) && \strlen($item['callnumber']) > 0) {
                 $callNos[] = $item['callnumber'];
             }
         }
@@ -132,7 +132,7 @@ class HoldingsILS extends AbstractBase
 
         $callNos = [];
         foreach ($items as $item) {
-            if (strlen($item['callnumber'] ?? '') > 0) {
+            if (\strlen($item['callnumber'] ?? '') > 0) {
                 $prefix = $item['callnumber_prefix'] ?? '';
                 $callnumber = $item['callnumber'];
                 $display = $prefix ? $prefix . ' ' . $callnumber : $callnumber;

@@ -1,5 +1,5 @@
 <div class="tagList<?=$loggedin ? ' loggedin' : ''?>">
-  <?php if (count($tagList) > 0): ?>
+  <?php if (\count($tagList) > 0): ?>
     <?php foreach ($tagList as $tag): ?>
       <?php $is_me = isset($tag['is_me']) && null !== $tag['is_me'] ? $tag['is_me'] : false; ?>
       <div class="tag<?=$is_me ? ' selected' : ''?>">

@@ -347,16 +347,16 @@ class Loader extends \VuFind\ImageLoader
         $this->hasLoadedUnavailable = false;
         // Load settings from legacy function parameters if they are not passed
         // in as an array:
-        $settings = is_array($settings)
+        $settings = \is_array($settings)
             ? $settings
-            : $this->getImageSettingsFromLegacyArgs(func_get_args());
+            : $this->getImageSettingsFromLegacyArgs(\func_get_args());
 
         // Store sanitized versions of some parameters for future reference:
         $this->storeSanitizedSettings($settings);
 
         // Display a fail image unless our parameters pass inspection and we
         // are able to display an ISBN or content-type-based image.
-        if (!in_array($this->size, $this->validSizes)) {
+        if (!\in_array($this->size, $this->validSizes)) {
             $this->loadUnavailable();
         } elseif (
             !$this->fetchFromAPI()
@@ -449,28 +449,28 @@ class Loader extends \VuFind\ImageLoader
             $ids['isbn'] = $this->isbns[0];
             $ids['isbns'] = $this->isbns;
         }
-        if ($this->issn && strlen($this->issn) == 8) {
+        if ($this->issn && \strlen($this->issn) == 8) {
             $ids['issn'] = $this->issn;
         }
-        if ($this->oclc && strlen($this->oclc) > 0) {
+        if ($this->oclc && \strlen($this->oclc) > 0) {
             $ids['oclc'] = $this->oclc;
         }
-        if ($this->upc && strlen($this->upc) > 0) {
+        if ($this->upc && \strlen($this->upc) > 0) {
             $ids['upc'] = $this->upc;
         }
-        if ($this->nbn && strlen($this->nbn) > 0) {
+        if ($this->nbn && \strlen($this->nbn) > 0) {
             $ids['nbn'] = $this->nbn;
         }
         if ($this->ismn && $this->ismn->isValid()) {
             $ids['ismn'] = $this->ismn;
         }
-        if ($this->uuid && strlen($this->uuid) > 0) {
+        if ($this->uuid && \strlen($this->uuid) > 0) {
             $ids['uuid'] = $this->uuid;
         }
-        if ($this->recordid && strlen($this->recordid) > 0) {
+        if ($this->recordid && \strlen($this->recordid) > 0) {
             $ids['recordid'] = $this->recordid;
         }
-        if ($this->source && strlen($this->source) > 0) {
+        if ($this->source && \strlen($this->source) > 0) {
             $ids['source'] = $this->source;
         }
         return $ids;
@@ -579,7 +579,7 @@ class Loader extends \VuFind\ImageLoader
     protected function convertNonJpeg($imageData, $jpeg)
     {
         // We can't proceed if we don't have image conversion functions:
-        if (!is_callable('imagecreatefromstring')) {
+        if (!\is_callable('imagecreatefromstring')) {
             return false;
         }
 
@@ -653,7 +653,7 @@ class Loader extends \VuFind\ImageLoader
             } else {
                 $conf = array_map('trim', explode(',', $conf));
                 $source = strtolower($source);
-                $cache = in_array($source, $conf);
+                $cache = \in_array($source, $conf);
             }
         } else {
             $cache = false;

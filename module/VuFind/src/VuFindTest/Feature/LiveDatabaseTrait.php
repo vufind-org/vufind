@@ -148,7 +148,7 @@ trait LiveDatabaseTrait
         ];
         foreach ($checks as $check) {
             $table = $test->getTable($check['table']);
-            if (count($table->select()) > 0) {
+            if (\count($table->select()) > 0) {
                 self::fail(
                     "Test cannot run with pre-existing {$check['name']} in database!"
                 );

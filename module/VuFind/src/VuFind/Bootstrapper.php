@@ -295,7 +295,7 @@ class Bootstrapper
         $callback = function ($event) {
             if ($this->container->has(\VuFind\Log\Logger::class)) {
                 $log = $this->container->get(\VuFind\Log\Logger::class);
-                if (is_callable([$log, 'logException'])) {
+                if (\is_callable([$log, 'logException'])) {
                     $exception = $event->getParam('exception');
                     // Console request does not include server,
                     // so use a dummy in that case.

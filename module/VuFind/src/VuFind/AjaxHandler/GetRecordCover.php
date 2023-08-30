@@ -118,7 +118,7 @@ class GetRecordCover extends AbstractBase implements AjaxHandlerInterface
         $recordId = $params->fromQuery('recordId');
         $recordSource = $params->fromQuery('source', DEFAULT_SEARCH_BACKEND);
         $size = $params->fromQuery('size', 'small');
-        if (!in_array($size, ['small', 'medium', 'large'])) {
+        if (!\in_array($size, ['small', 'medium', 'large'])) {
             $size = 'small';
         }
         $record = $this->recordLoader->load($recordId, $recordSource, true);

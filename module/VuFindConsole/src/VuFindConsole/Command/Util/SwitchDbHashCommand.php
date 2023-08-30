@@ -215,7 +215,7 @@ class SwitchDbHashCommand extends Command
                 $select->where->isNotNull('cat_username');
             }
         );
-        $output->writeln("\tConverting hashes for " . count($users) . ' user(s).');
+        $output->writeln("\tConverting hashes for " . \count($users) . ' user(s).');
         foreach ($users as $row) {
             $pass = null;
             if ($oldhash != 'none' && $row['cat_pass_enc'] ?? null !== null) {

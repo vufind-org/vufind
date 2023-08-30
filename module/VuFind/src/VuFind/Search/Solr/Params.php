@@ -153,7 +153,7 @@ class Params extends \VuFind\Search\Base\Params
         }
         if (
             isset($config->Results_Settings->sorted_by_index)
-            && count($config->Results_Settings->sorted_by_index) > 0
+            && \count($config->Results_Settings->sorted_by_index) > 0
         ) {
             $this->setIndexSortedFacets(
                 $config->Results_Settings->sorted_by_index->toArray()
@@ -272,7 +272,7 @@ class Params extends \VuFind\Search\Base\Params
     {
         // Special case -- did we get a list of IDs instead of a standard query?
         $ids = $request->get('overrideIds', null);
-        if (is_array($ids)) {
+        if (\is_array($ids)) {
             $this->setQueryIDs($ids);
         } else {
             // Use standard initialization:
@@ -493,7 +493,7 @@ class Params extends \VuFind\Search\Base\Params
                 );
                 $fields[] = $field;
             } else {
-                if (!in_array($field, $fields)) {
+                if (!\in_array($field, $fields)) {
                     $normalized[] = sprintf(
                         '%s %s',
                         $field,
@@ -647,7 +647,7 @@ class Params extends \VuFind\Search\Base\Params
             ) {
                 $filter['displayText'] = $matches[1] . '-' . $matches[2];
             }
-        } elseif ($this->facetHelper && in_array($field, $hierarchicalFacets)) {
+        } elseif ($this->facetHelper && \in_array($field, $hierarchicalFacets)) {
             // Display hierarchical facet levels nicely
             $separator = $hierarchicalFacetSeparators[$field] ?? '/';
             if (!$translate) {

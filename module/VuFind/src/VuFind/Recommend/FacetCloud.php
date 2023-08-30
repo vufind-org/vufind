@@ -50,7 +50,7 @@ class FacetCloud extends ExpandFacets
     public function getFacetLimit()
     {
         $params = $this->searchObject->getParams();
-        $settings = is_callable([$params, 'getFacetSettings'])
+        $settings = \is_callable([$params, 'getFacetSettings'])
             ? $params->getFacetSettings() : [];
 
         // Figure out the facet limit -- if available, we can use this to display

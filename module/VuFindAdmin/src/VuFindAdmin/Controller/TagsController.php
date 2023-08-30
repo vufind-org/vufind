@@ -158,7 +158,7 @@ class TagsController extends AbstractAdmin
                 ? $this->params()->fromPost('ids')
                 : $this->params()->fromPost('idsAll');
 
-            if (!is_array($ids) || empty($ids)) {
+            if (!\is_array($ids) || empty($ids)) {
                 $this->flashMessenger()->addMessage('bulk_noitems_advice', 'error');
                 return $this->redirect()->toUrl($originUrl);
             }
@@ -196,29 +196,29 @@ class TagsController extends AbstractAdmin
         // Default all messages to "All"; we'll make them more specific as needed:
         $userMsg = $tagMsg = $resourceMsg = $this->translate('All');
 
-        $userId = intval($this->getParam('user_id'));
+        $userId = \intval($this->getParam('user_id'));
         if ($userId) {
             $user = $this->getTable('user')->select(['id' => $userId])->current();
-            if (!is_object($user)) {
+            if (!\is_object($user)) {
                 throw new \Exception("Unexpected error retrieving user $userId");
             }
             $userMsg = "{$user->username} ({$user->id})";
         }
 
-        $tagId = intval($this->getParam('tag_id'));
+        $tagId = \intval($this->getParam('tag_id'));
         if ($tagId) {
             $tag = $this->getTable('tags')->select(['id' => $tagId])->current();
-            if (!is_object($tag)) {
+            if (!\is_object($tag)) {
                 throw new \Exception("Unexpected error retrieving tag $tagId");
             }
             $tagMsg = "{$tag->tag} ({$tag->id})";
         }
 
-        $resourceId = intval($this->getParam('resource_id'));
+        $resourceId = \intval($this->getParam('resource_id'));
         if ($resourceId) {
             $resource = $this->getTable('resource')
                 ->select(['id' => $resourceId])->current();
-            if (!is_object($resource)) {
+            if (!\is_object($resource)) {
                 throw new \Exception(
                     "Unexpected error retrieving resource $resourceId"
                 );
@@ -257,7 +257,7 @@ class TagsController extends AbstractAdmin
      */
     protected function confirmTagsDelete($ids, $originUrl, $newUrl)
     {
-        $count = count($ids);
+        $count = \count($ids);
 
         $data = [
             'data' => [

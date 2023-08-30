@@ -363,7 +363,7 @@ class User extends RowGateway implements
     public function formatTagString($tags)
     {
         $tagStr = '';
-        if (count($tags) > 0) {
+        if (\count($tags) > 0) {
             foreach ($tags as $tag) {
                 if (strstr($tag->tag, ' ')) {
                     $tagStr .= "\"$tag->tag\" ";

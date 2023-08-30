@@ -108,7 +108,7 @@ class SolrReserves extends SolrDefault
     public function getItemCount()
     {
         return isset($this->fields['bib_id'])
-            ? count($this->fields['bib_id']) : 0;
+            ? \count($this->fields['bib_id']) : 0;
     }
 
     /**

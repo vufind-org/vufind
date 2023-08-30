@@ -112,7 +112,7 @@ abstract class Base
      */
     public function __construct($settings = [])
     {
-        if (is_array($settings)) {
+        if (\is_array($settings)) {
             foreach ($settings as $key => $value) {
                 switch ($key) {
                     case 'api_url':
@@ -318,7 +318,7 @@ abstract class Base
     protected function parseAutocomplete($msg)
     {
         $result = [];
-        if (isset($msg['terms']) && is_array($msg['terms'])) {
+        if (isset($msg['terms']) && \is_array($msg['terms'])) {
             foreach ($msg['terms'] as $value) {
                 $result[] = $value['term'];
             }
@@ -406,9 +406,9 @@ abstract class Base
     protected function createQSFromArray($params)
     {
         $queryParameters = [];
-        if (null != $params && is_array($params)) {
+        if (null != $params && \is_array($params)) {
             foreach ($params as $key => $value) {
-                if (is_array($value)) {
+                if (\is_array($value)) {
                     $parameterName = $key;
                     if (SearchRequestModel::isParameterIndexed($parameterName)) {
                         $parameterName = SearchRequestModel::getIndexedParameterName(

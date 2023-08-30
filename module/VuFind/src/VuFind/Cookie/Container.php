@@ -77,8 +77,8 @@ class Container
     {
         $retVal = [];
         foreach ($this->manager->getCookies() as $key => $value) {
-            if (substr($key, 0, strlen($this->groupName)) == $this->groupName) {
-                $retVal[substr($key, strlen($this->groupName))] = $value;
+            if (substr($key, 0, \strlen($this->groupName)) == $this->groupName) {
+                $retVal[substr($key, \strlen($this->groupName))] = $value;
             }
         }
         return $retVal;

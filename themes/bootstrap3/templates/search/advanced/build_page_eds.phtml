@@ -10,7 +10,7 @@ $(document).ready(function() {
   $('#advSearchForm .no-js').remove();
   $('#groupJoin').remove();
   // Build page
-  <?php if (isset($this->searchDetails) && is_object($this->searchDetails)): ?>
+  <?php if (isset($this->searchDetails) && \is_object($this->searchDetails)): ?>
     <?php foreach ($this->searchDetails->getQueries() as $searchGroup): ?>
       <?php $i = 0; ?>
       <?php foreach ($searchGroup->getQueries() as $search): ?>

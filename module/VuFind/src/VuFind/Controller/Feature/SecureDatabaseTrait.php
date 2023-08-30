@@ -70,7 +70,7 @@ trait SecureDatabaseTrait
         if ($status) {
             try {
                 $rows = $this->getTable('user')->getInsecureRows();
-                $status = (count($rows) == 0);
+                $status = (\count($rows) == 0);
             } catch (\Exception $e) {
                 // Any exception means we have a problem!
                 $status = false;

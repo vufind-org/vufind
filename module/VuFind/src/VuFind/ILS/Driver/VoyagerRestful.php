@@ -274,7 +274,7 @@ class VoyagerRestful extends Voyager implements
 
         $this->requestGroupsEnabled
             = isset($this->config['Holds']['extraHoldFields'])
-            && in_array(
+            && \in_array(
                 'requestGroup',
                 explode(':', $this->config['Holds']['extraHoldFields'])
             );
@@ -357,7 +357,7 @@ class VoyagerRestful extends Voyager implements
                 = explode(':', $this->config['Holds']['valid_hold_statuses']);
 
             foreach ($statusArray as $status) {
-                if (!in_array($status, $valid_hold_statuses_array)) {
+                if (!\in_array($status, $valid_hold_statuses_array)) {
                     $is_holdable = false;
                 }
             }
@@ -378,13 +378,13 @@ class VoyagerRestful extends Voyager implements
     {
         if (isset($this->config['Holds']['borrowable'])) {
             $borrowable = explode(':', $this->config['Holds']['borrowable']);
-            if (!in_array($itemTypeID, $borrowable)) {
+            if (!\in_array($itemTypeID, $borrowable)) {
                 return false;
             }
         }
         if (isset($this->config['Holds']['non_borrowable'])) {
             $nonBorrowable = explode(':', $this->config['Holds']['non_borrowable']);
-            if (in_array($itemTypeID, $nonBorrowable)) {
+            if (\in_array($itemTypeID, $nonBorrowable)) {
                 return false;
             }
         }
@@ -422,7 +422,7 @@ class VoyagerRestful extends Voyager implements
             $type = $holdingsRow['TEMP_ITEM_TYPE_ID']
                 ? $holdingsRow['TEMP_ITEM_TYPE_ID']
                 : $holdingsRow['ITEM_TYPE_ID'];
-            return in_array($type, $validTypes);
+            return \in_array($type, $validTypes);
         }
         return true;
     }
@@ -752,7 +752,7 @@ class VoyagerRestful extends Voyager implements
         // bother doing any more work. If it's not set at all, default to
         // alphabetical order.
         $orderSetting = $this->config['Holds']['pickUpLocationOrder'] ?? 'default';
-        if (count($pickResponse) > 1 && !empty($orderSetting)) {
+        if (\count($pickResponse) > 1 && !empty($orderSetting)) {
             $locationOrder = $orderSetting === 'default'
                 ? [] : array_flip(explode(':', $orderSetting));
             $sortFunction = function ($a, $b) use ($locationOrder) {
@@ -1177,7 +1177,7 @@ class VoyagerRestful extends Voyager implements
         $ignored = array_map('trim', explode(',', $ignoredConfig));
         $blockReason = [];
         foreach ($borrowBlocks as $borrowBlock) {
-            if (!in_array((string)$borrowBlock->blockCode, $ignored)) {
+            if (!\in_array((string)$borrowBlock->blockCode, $ignored)) {
                 $blockReason[] = (string)$borrowBlock->blockReason;
             }
         }
@@ -2037,7 +2037,7 @@ class VoyagerRestful extends Voyager implements
             }
             if (
                 !isset($holdDetails['requestGroupId'])
-                || !in_array($holdDetails['requestGroupId'], $disabledGroups)
+                || !\in_array($holdDetails['requestGroupId'], $disabledGroups)
             ) {
                 $available = $this->itemsAvailable(
                     $bibId,
@@ -2770,7 +2770,7 @@ class VoyagerRestful extends Voyager implements
             $this->putCachedData($cacheId, false);
             return false;
         }
-        $requestCount = count(
+        $requestCount = \count(
             $response->xpath("//req:requestIdentifier[@requestCode='UB']")
         );
         if ($requestCount == 0) {
@@ -3456,6 +3456,6 @@ class VoyagerRestful extends Voyager implements
         if ($method == 'changePassword') {
             return isset($this->config['changePassword']);
         }
-        return is_callable([$this, $method]);
+        return \is_callable([$this, $method]);
     }
 }

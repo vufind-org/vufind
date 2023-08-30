@@ -419,7 +419,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     protected function getSolrBaseUrls(): array
     {
         $urls = $this->getIndexConfig('url', []);
-        return is_object($urls) ? $urls->toArray() : (array)$urls;
+        return \is_object($urls) ? $urls->toArray() : (array)$urls;
     }
 
     /**
@@ -436,7 +436,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
             },
             $this->getSolrBaseUrls()
         );
-        return count($urls) === 1 ? $urls[0] : $urls;
+        return \count($urls) === 1 ? $urls[0] : $urls;
     }
 
     /**

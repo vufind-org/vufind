@@ -79,7 +79,7 @@ class CollectionsController extends AbstractBase implements
         $collections = $this->getCollectionsFromTitle(
             $this->params()->fromQuery('title')
         );
-        if (count($collections) != 1) {
+        if (\count($collections) != 1) {
             return $this->createViewModel(['collections' => $collections]);
         }
         return $this->redirect()
@@ -209,15 +209,15 @@ class CollectionsController extends AbstractBase implements
         if ($key < 0) {
             $key = 0;
         }
-        if ($key >= count($result)) {
-            $key = count($result) - 1;
+        if ($key >= \count($result)) {
+            $key = \count($result) - 1;
         }
 
         // Begin building view model:
         $view = $this->createViewModel();
 
         // Only display next/previous page links when applicable:
-        if (count($result) > $key + $limit) {
+        if (\count($result) > $key + $limit) {
             $view->nextpage = $page + 1;
         }
         if ($key > 0) {
@@ -225,10 +225,10 @@ class CollectionsController extends AbstractBase implements
         }
 
         // Select just the records to display
-        $result = array_slice(
+        $result = \array_slice(
             $result,
             $key,
-            count($result) > $key + $limit ? $limit : null
+            \count($result) > $key + $limit ? $limit : null
         );
 
         // Send other relevant values to the template:
@@ -266,7 +266,7 @@ class CollectionsController extends AbstractBase implements
             // element that needs to be moved into the sorted version of the
             // array:
             if (isset($result[$i]['placeholder'])) {
-                $key = count($sorted);
+                $key = \count($sorted);
             } else {
                 $sorted[] = $result[$i];
                 unset($result[$i]); //clear this out of memory

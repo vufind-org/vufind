@@ -97,6 +97,6 @@ class TermsIdFetcher extends AbstractIdFetcher
         // Only include the next offset if we have a non-empty set:
         return empty($ids)
             ? compact('ids')
-            : ['ids' => $ids, 'nextOffset' => $ids[count($ids) - 1]];
+            : ['ids' => $ids, 'nextOffset' => $ids[\count($ids) - 1]];
     }
 }

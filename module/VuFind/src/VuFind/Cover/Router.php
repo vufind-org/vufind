@@ -100,7 +100,7 @@ class Router implements \Laminas\Log\LoggerAwareInterface
         // getMetadata could return null or false, that is the reason we are
         // respecting the returned value - in case it is not empty array to be on
         // safe side and not return bad type here
-        return $metadata['url'] ?? (!is_array($metadata) ? $metadata : false);
+        return $metadata['url'] ?? (!\is_array($metadata) ? $metadata : false);
     }
 
     /**
@@ -135,7 +135,7 @@ class Router implements \Laminas\Log\LoggerAwareInterface
         }
 
         // Array? It's parameters to send to the cover generator:
-        if (is_array($thumb)) {
+        if (\is_array($thumb)) {
             if (!$resolveDynamic) {
                 return null;
             }
@@ -144,7 +144,7 @@ class Router implements \Laminas\Log\LoggerAwareInterface
             return ['url' => $thumb];
         }
 
-        $settings = is_array($thumb) ? array_merge($thumb, ['size' => $size])
+        $settings = \is_array($thumb) ? array_merge($thumb, ['size' => $size])
             : ['size' => $size];
         $handlers = $this->coverLoader->getHandlers();
         $ids = $this->coverLoader->getIdentifiersForSettings($settings);
@@ -153,7 +153,7 @@ class Router implements \Laminas\Log\LoggerAwareInterface
                 = $handler['handler']->getMandatoryBacklinkLocations();
             if (!empty($backlinkLocations) && !$ajax) {
                 $this->logWarning(
-                    'Cover provider ' . get_class($handler['handler'])
+                    'Cover provider ' . \get_class($handler['handler'])
                     . ' needs ajaxcovers setting to be on'
                 );
                 continue;
@@ -175,7 +175,7 @@ class Router implements \Laminas\Log\LoggerAwareInterface
             } catch (\Exception $e) {
                 $this->debug(
                     $e::class . ' during processing of '
-                    . get_class($handler['handler']) . ': ' . $e->getMessage()
+                    . \get_class($handler['handler']) . ': ' . $e->getMessage()
                 );
             }
         }

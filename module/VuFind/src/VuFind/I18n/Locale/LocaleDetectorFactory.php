@@ -73,7 +73,7 @@ class LocaleDetectorFactory implements DelegatorFactoryInterface
         callable $callback,
         array $options = null
     ) {
-        $detector = call_user_func($callback);
+        $detector = \call_user_func($callback);
         $settings = $container->get(LocaleSettings::class);
         $detector->setDefault($settings->getDefaultLocale());
         $detector->setSupported(array_keys($settings->getEnabledLocales()));

@@ -223,7 +223,7 @@ abstract class AbstractBase implements
     public function create($request)
     {
         throw new AuthException(
-            'Account creation not supported by ' . get_class($this)
+            'Account creation not supported by ' . \get_class($this)
         );
     }
 
@@ -240,7 +240,7 @@ abstract class AbstractBase implements
     public function updatePassword($request)
     {
         throw new AuthException(
-            'Account password updating not supported by ' . get_class($this)
+            'Account password updating not supported by ' . \get_class($this)
         );
     }
 
@@ -335,7 +335,7 @@ abstract class AbstractBase implements
          * others         => null (any hint should be defined by the password_hint or
          *                   username_hint setting)
          */
-        return (in_array($pattern, ['numeric', 'alphanumeric']))
+        return (\in_array($pattern, ['numeric', 'alphanumeric']))
             ? $type . '_only_' . $pattern : null;
     }
 

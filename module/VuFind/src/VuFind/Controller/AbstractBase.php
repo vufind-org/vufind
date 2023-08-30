@@ -124,7 +124,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
         if ($this->accessPermission) {
             $response = $this->permission()
                 ->check($this->accessPermission, $this->accessDeniedBehavior);
-            if (is_object($response)) {
+            if (\is_object($response)) {
                 $e->setResponse($response);
             }
         }
@@ -223,7 +223,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
         $view->editableSubject = isset($config->Mail->user_editable_subjects)
             && $config->Mail->user_editable_subjects;
         $view->maxRecipients = isset($config->Mail->maximum_recipients)
-            ? intval($config->Mail->maximum_recipients) : 1;
+            ? \intval($config->Mail->maximum_recipients) : 1;
         $user = $this->getUser();
 
         // Send parameters back to view so form can be re-populated:

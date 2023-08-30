@@ -138,7 +138,7 @@ class MultiAuth extends AbstractBase
         }
         if (
             isset($config->MultiAuth->filters)
-            && strlen($config->MultiAuth->filters)
+            && \strlen($config->MultiAuth->filters)
         ) {
             $this->filters = array_map(
                 'trim',
@@ -190,7 +190,7 @@ class MultiAuth extends AbstractBase
             $parts = explode(':', $filter);
             $property = trim($parts[0]);
             if (isset($this->$property)) {
-                $this->$property = call_user_func(trim($parts[1]), $this->$property);
+                $this->$property = \call_user_func(trim($parts[1]), $this->$property);
             }
         }
     }

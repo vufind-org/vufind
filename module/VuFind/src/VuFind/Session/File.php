@@ -63,7 +63,7 @@ class File extends AbstractBase
         if (isset($config->file_save_path)) {
             $this->path = $config->file_save_path;
         } else {
-            $tempdir = function_exists('sys_get_temp_dir')
+            $tempdir = \function_exists('sys_get_temp_dir')
                 ? sys_get_temp_dir() : DIRECTORY_SEPARATOR . 'tmp';
             $this->path = $tempdir . DIRECTORY_SEPARATOR . 'vufind_sessions';
         }
@@ -160,7 +160,7 @@ class File extends AbstractBase
                 $return = fwrite($handle, $data);
                 // Make sure that there's no trailing data by truncating the file to
                 // the correct length:
-                ftruncate($handle, strlen($data));
+                ftruncate($handle, \strlen($data));
                 fflush($handle);
                 flock($handle, LOCK_UN);
             }

@@ -107,9 +107,9 @@ abstract class AbstractAPI extends AbstractBase implements
         if ($allowedFailureCodes === true) {    // "allow everything" case
             return true;
         }
-        return is_string($allowedFailureCodes)
+        return \is_string($allowedFailureCodes)
             ? preg_match($allowedFailureCodes, (string)$code)
-            : in_array($code, (array)$allowedFailureCodes);
+            : \in_array($code, (array)$allowedFailureCodes);
     }
 
     /**
@@ -152,7 +152,7 @@ abstract class AbstractAPI extends AbstractBase implements
         if ($method == 'GET') {
             $client->setParameterGet($params);
         } else {
-            if (is_string($params)) {
+            if (\is_string($params)) {
                 $client->getRequest()->setContent($params);
             } else {
                 $client->setParameterPost($params);

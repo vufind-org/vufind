@@ -297,7 +297,7 @@ class OverdriveConnector implements
     {
         $result = $this->getResultObject();
         $loginRequired = false;
-        if (count($overDriveIds) < 1) {
+        if (\count($overDriveIds) < 1) {
             $this->logWarning('no overdrive content ID was passed in.');
             return false;
         }
@@ -728,7 +728,7 @@ class OverdriveConnector implements
                 $availableFormats = $field->options;
             }
         }
-        if (!in_array($format, $availableFormats)) {
+        if (!\in_array($format, $availableFormats)) {
             $result->msg
                 = "Could not lock in Overdrive resourceID [$overDriveId]:" .
                 " This format ($format) doesn't appear to be available " .
@@ -855,7 +855,7 @@ class OverdriveConnector implements
     public function getMetadata($overDriveIds = [])
     {
         $metadata = [];
-        if (!$overDriveIds || count($overDriveIds) < 1) {
+        if (!$overDriveIds || \count($overDriveIds) < 1) {
             $this->logWarning('no overdrive content IDs were passed in.');
             return [];
         }

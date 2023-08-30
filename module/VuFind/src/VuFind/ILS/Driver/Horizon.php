@@ -160,19 +160,19 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             $arrayValues = array_map('strtolower', explode(',', $statuses));
 
             //set the variables based on what we find in the config file
-            if (in_array(strtolower('available:1'), $arrayValues)) {
+            if (\in_array(strtolower('available:1'), $arrayValues)) {
                 $available = 1;
             }
-            if (in_array(strtolower('available:0'), $arrayValues)) {
+            if (\in_array(strtolower('available:0'), $arrayValues)) {
                 $available = 0;
             }
-            if (in_array(strtolower('reserve:N'), $arrayValues)) {
+            if (\in_array(strtolower('reserve:N'), $arrayValues)) {
                 $reserve  = 'N';
             }
-            if (in_array(strtolower('reserve:Y'), $arrayValues)) {
+            if (\in_array(strtolower('reserve:Y'), $arrayValues)) {
                 $reserve  = 'Y';
             }
-            if (in_array(strtolower('duedate:0'), $arrayValues)) {
+            if (\in_array(strtolower('duedate:0'), $arrayValues)) {
                 $duedate  = '';
             }
         } else {
@@ -1087,7 +1087,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
                     $results[] = $row['bib#'];
                 }
 
-                $retVal = ['count' => count($results), 'results' => []];
+                $retVal = ['count' => \count($results), 'results' => []];
                 foreach ($results as $result) {
                     $retVal['results'][] = ['id' => $result];
                 }
@@ -1134,9 +1134,9 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
 
         $versionOK = true;
 
-        for ($i = 0; $i < count($foundVersionParts); $i++) {
-            $required = intval($requiredVersionParts[$i]);
-            $found    = intval($foundVersionParts[$i]);
+        for ($i = 0; $i < \count($foundVersionParts); $i++) {
+            $required = \intval($requiredVersionParts[$i]);
+            $found    = \intval($foundVersionParts[$i]);
 
             if ($found > $required) {
                 // If found is greater than required stop checking

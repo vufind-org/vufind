@@ -248,7 +248,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
         $loader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
         $results = [];
         try {
-            if (is_array($request['id'])) {
+            if (\is_array($request['id'])) {
                 $results = $loader->loadBatchForSource(
                     $request['id'],
                     $this->searchClassId
@@ -266,7 +266,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
         }
 
         $response = [
-            'resultCount' => count($results),
+            'resultCount' => \count($results),
         ];
         $requestedFields = $this->getFieldList($request);
         if ($records = $this->recordFormatter->format($results, $requestedFields)) {
@@ -433,7 +433,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
     {
         $fieldList = [];
         if (isset($request['field'])) {
-            if (!empty($request['field']) && is_array($request['field'])) {
+            if (!empty($request['field']) && \is_array($request['field'])) {
                 $fieldList = $request['field'];
             }
         } else {

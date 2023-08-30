@@ -508,7 +508,7 @@ class Koha extends AbstractBase
             $this->throwAsIlsException($e);
         }
 
-        return count($blocks) ? $blocks : false;
+        return \count($blocks) ? $blocks : false;
     }
 
     /**

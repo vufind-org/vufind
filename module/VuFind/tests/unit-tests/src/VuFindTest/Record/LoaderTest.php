@@ -414,7 +414,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $collection = $this->getMockBuilder(\VuFindSearch\Response\RecordCollectionInterface::class)
             ->getMock();
         $collection->expects($this->any())->method('getRecords')->will($this->returnValue($records));
-        $collection->expects($this->any())->method('count')->will($this->returnValue(count($records)));
+        $collection->expects($this->any())->method('count')->will($this->returnValue(\count($records)));
         return $collection;
     }
 }

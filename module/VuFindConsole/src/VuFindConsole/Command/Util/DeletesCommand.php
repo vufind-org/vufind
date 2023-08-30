@@ -103,7 +103,7 @@ class DeletesCommand extends AbstractSolrCommand
     {
         $ids = [];
         foreach (array_map('trim', file($filename)) as $id) {
-            if (strlen($id)) {
+            if (\strlen($id)) {
                 $ids[] = $id;
             }
         }
@@ -184,7 +184,7 @@ class DeletesCommand extends AbstractSolrCommand
         // Delete, Commit and Optimize if necessary:
         if (!empty($ids)) {
             $output->writeln(
-                'Attempting to delete ' . count($ids) . ' record(s): '
+                'Attempting to delete ' . \count($ids) . ' record(s): '
                 . implode(', ', $ids),
                 OutputInterface::VERBOSITY_VERBOSE
             );

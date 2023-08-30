@@ -150,7 +150,7 @@ class MultiAuthTest extends \PHPUnit\Framework\TestCase
         );
 
         $config = $this->getAuthConfig();
-        $config->MultiAuth->method_order = get_class($this) . ',Database';
+        $config->MultiAuth->method_order = \get_class($this) . ',Database';
 
         $request = $this->getLoginRequest();
         $this->getAuthObject($config)->authenticate($request);

@@ -60,7 +60,7 @@ trait AlphaBrowseTrait
         $service = $this->serviceLocator->get(\VuFindSearch\Service::class);
         $command = new AlphabeticBrowseCommand(
             $this->alphabrowseBackend,
-            ...func_get_args()
+            ...\func_get_args()
         );
         return $service->invoke($command)->getResult();
     }

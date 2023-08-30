@@ -81,7 +81,7 @@ class DefaultText extends AbstractTextLayer
         $lineCount = 0;
         $i = 0;
         while (
-            $i < count($words)
+            $i < \count($words)
             && $lineCount < $settings->maxTitleLines - 1
         ) {
             $pline = $line;
@@ -122,7 +122,7 @@ class DefaultText extends AbstractTextLayer
             $titleBorderColor
         );
         // Add ellipses if we've truncated
-        if ($i < count($words) - 1) {
+        if ($i < \count($words) - 1) {
             $this->drawText(
                 $im,
                 $settings,

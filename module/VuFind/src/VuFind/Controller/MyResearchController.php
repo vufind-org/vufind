@@ -645,7 +645,7 @@ class MyResearchController extends AbstractBase
         $allowHomeLibrary = $config->Account->set_home_library ?? true;
 
         $patron = $this->catalogLogin();
-        if (is_array($patron)) {
+        if (\is_array($patron)) {
             // Process home library parameter (if present and allowed):
             $homeLibrary = $this->params()->fromPost('home_library');
             if ($allowHomeLibrary && null !== $homeLibrary) {
@@ -746,7 +746,7 @@ class MyResearchController extends AbstractBase
     {
         // Check permission:
         $response = $this->permission()->check('feature.Favorites', false);
-        if (is_object($response)) {
+        if (\is_object($response)) {
             return $response;
         }
 
@@ -777,7 +777,7 @@ class MyResearchController extends AbstractBase
         $ids = null === $this->params()->fromPost('selectAll')
             ? $this->params()->fromPost('ids')
             : $this->params()->fromPost('idsAll');
-        if (!is_array($ids) || empty($ids)) {
+        if (!\is_array($ids) || empty($ids)) {
             $this->flashMessenger()->addMessage('bulk_noitems_advice', 'error');
             return $this->redirect()->toUrl($newUrl);
         }
@@ -950,7 +950,7 @@ class MyResearchController extends AbstractBase
         $userLists = $user->getLists();
         $lists = [];
         foreach ($userLists as $userList) {
-            if (!in_array($userList->id, $containingLists)) {
+            if (!\in_array($userList->id, $containingLists)) {
                 $lists[$userList->id] = $userList->title;
             }
         }
@@ -1280,7 +1280,7 @@ class MyResearchController extends AbstractBase
     public function storageRetrievalRequestsAction()
     {
         // Stop now if the user does not have valid catalog credentials available:
-        if (!is_array($patron = $this->catalogLogin())) {
+        if (!\is_array($patron = $this->catalogLogin())) {
             return $patron;
         }
 
@@ -1300,7 +1300,7 @@ class MyResearchController extends AbstractBase
             )
             : [];
         // If we need to confirm
-        if (!is_array($view->cancelResults)) {
+        if (!\is_array($view->cancelResults)) {
             return $view->cancelResults;
         }
 
@@ -1353,7 +1353,7 @@ class MyResearchController extends AbstractBase
     public function illRequestsAction()
     {
         // Stop now if the user does not have valid catalog credentials available:
-        if (!is_array($patron = $this->catalogLogin())) {
+        if (!\is_array($patron = $this->catalogLogin())) {
             return $patron;
         }
 
@@ -1373,7 +1373,7 @@ class MyResearchController extends AbstractBase
             )
             : [];
         // If we need to confirm
-        if (!is_array($view->cancelResults)) {
+        if (!\is_array($view->cancelResults)) {
             return $view->cancelResults;
         }
 
@@ -1418,7 +1418,7 @@ class MyResearchController extends AbstractBase
     public function checkedoutAction()
     {
         // Stop now if the user does not have valid catalog credentials available:
-        if (!is_array($patron = $this->catalogLogin())) {
+        if (!\is_array($patron = $this->catalogLogin())) {
             return $patron;
         }
 
@@ -1547,7 +1547,7 @@ class MyResearchController extends AbstractBase
     public function finesAction()
     {
         // Stop now if the user does not have valid catalog credentials available:
-        if (!is_array($patron = $this->catalogLogin())) {
+        if (!\is_array($patron = $this->catalogLogin())) {
             return $patron;
         }
 
@@ -2095,7 +2095,7 @@ class MyResearchController extends AbstractBase
      */
     protected function getHashAge($hash)
     {
-        return intval(substr($hash, -10));
+        return \intval(substr($hash, -10));
     }
 
     /**

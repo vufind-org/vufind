@@ -129,8 +129,8 @@ class CreateHierarchyTreesCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $skips = $input->getOption('skip') ?? [];
-        $skipJson = $input->getOption('skip-json') || in_array('j', $skips);
-        $skipXml = $input->getOption('skip-xml') || in_array('x', $skips);
+        $skipJson = $input->getOption('skip-json') || \in_array('j', $skips);
+        $skipXml = $input->getOption('skip-xml') || \in_array('x', $skips);
         $backendId = $input->getArgument('backend');
         $hierarchies = $this->resultsManager->get($backendId)
             ->getFullFieldFacets(['hierarchy_top_id']);
@@ -177,7 +177,7 @@ class CreateHierarchyTreesCommand extends Command
             }
         }
         $output->writeln(
-            count($hierarchies['hierarchy_top_id']['data']['list']) . ' files'
+            \count($hierarchies['hierarchy_top_id']['data']['list']) . ' files'
         );
 
         return 0;

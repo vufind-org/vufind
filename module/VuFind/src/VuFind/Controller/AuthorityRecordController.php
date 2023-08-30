@@ -65,7 +65,7 @@ class AuthorityRecordController extends AbstractRecord
     {
         // Apply template for simplified authority record display:
         $result = parent::homeAction();
-        if (is_callable([$result, 'setTemplate'])) {
+        if (\is_callable([$result, 'setTemplate'])) {
             $result->setTemplate('authority/record');
         }
         return $result;

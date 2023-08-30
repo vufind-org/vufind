@@ -83,13 +83,13 @@ class CartController extends AbstractBase
      */
     protected function getCartActionFromRequest($default = 'Home')
     {
-        if (strlen($this->params()->fromPost('email', '')) > 0) {
+        if (\strlen($this->params()->fromPost('email', '')) > 0) {
             return 'Email';
-        } elseif (strlen($this->params()->fromPost('print', '')) > 0) {
+        } elseif (\strlen($this->params()->fromPost('print', '')) > 0) {
             return 'PrintCart';
-        } elseif (strlen($this->params()->fromPost('saveCart', '')) > 0) {
+        } elseif (\strlen($this->params()->fromPost('saveCart', '')) > 0) {
             return 'Save';
-        } elseif (strlen($this->params()->fromPost('export', '')) > 0) {
+        } elseif (\strlen($this->params()->fromPost('export', '')) > 0) {
             return 'Export';
         }
         // Check if the user is in the midst of a login process; if not,
@@ -110,7 +110,7 @@ class CartController extends AbstractBase
         // ignore that!
         $referer = $this->getRequest()->getServer()->get('HTTP_REFERER');
         $bulk = $this->url()->fromRoute('cart-searchresultsbulk');
-        if (substr($referer, -strlen($bulk)) != $bulk) {
+        if (substr($referer, -\strlen($bulk)) != $bulk) {
             $this->session->url = $referer;
         }
 
@@ -156,15 +156,15 @@ class CartController extends AbstractBase
             : $this->params()->fromPost('idsAll');
 
         // Add items if necessary:
-        if (strlen($this->params()->fromPost('empty', '')) > 0) {
+        if (\strlen($this->params()->fromPost('empty', '')) > 0) {
             $this->getCart()->emptyCart();
-        } elseif (strlen($this->params()->fromPost('delete', '')) > 0) {
+        } elseif (\strlen($this->params()->fromPost('delete', '')) > 0) {
             if (empty($ids)) {
                 return $this->redirectToSource('error', 'bulk_noitems_advice');
             } else {
                 $this->getCart()->removeItems($ids);
             }
-        } elseif (strlen($this->params()->fromPost('add', '')) > 0) {
+        } elseif (\strlen($this->params()->fromPost('add', '')) > 0) {
             if (empty($ids)) {
                 return $this->redirectToSource('error', 'bulk_noitems_advice');
             } else {
@@ -203,16 +203,16 @@ class CartController extends AbstractBase
 
         // Now forward to the requested controller/action:
         $controller = 'Cart';   // assume Cart unless overridden below.
-        if (strlen($this->params()->fromPost('email', '')) > 0) {
+        if (\strlen($this->params()->fromPost('email', '')) > 0) {
             $action = 'Email';
-        } elseif (strlen($this->params()->fromPost('print', '')) > 0) {
+        } elseif (\strlen($this->params()->fromPost('print', '')) > 0) {
             $action = 'PrintCart';
-        } elseif (strlen($this->params()->fromPost('delete', '')) > 0) {
+        } elseif (\strlen($this->params()->fromPost('delete', '')) > 0) {
             $controller = 'MyResearch';
             $action = 'Delete';
-        } elseif (strlen($this->params()->fromPost('add', '')) > 0) {
+        } elseif (\strlen($this->params()->fromPost('add', '')) > 0) {
             $action = 'Home';
-        } elseif (strlen($this->params()->fromPost('export', '')) > 0) {
+        } elseif (\strlen($this->params()->fromPost('export', '')) > 0) {
             $action = 'Export';
         } else {
             $action = $this->followup()->retrieveAndClear('cartAction', null);
@@ -236,10 +236,10 @@ class CartController extends AbstractBase
             : $this->params()->fromPost('idsAll');
 
         // Retrieve follow-up information if necessary:
-        if (!is_array($ids) || empty($ids)) {
+        if (!\is_array($ids) || empty($ids)) {
             $ids = $this->followup()->retrieveAndClear('cartIds');
         }
-        if (!is_array($ids) || empty($ids)) {
+        if (!\is_array($ids) || empty($ids)) {
             return $this->redirectToSource('error', 'bulk_noitems_advice');
         }
 
@@ -307,7 +307,7 @@ class CartController extends AbstractBase
         $ids = null === $this->params()->fromPost('selectAll')
             ? $this->params()->fromPost('ids')
             : $this->params()->fromPost('idsAll');
-        if (!is_array($ids) || empty($ids)) {
+        if (!\is_array($ids) || empty($ids)) {
             return $this->redirectToSource('error', 'bulk_noitems_advice');
         }
         $callback = function ($i) {
@@ -339,7 +339,7 @@ class CartController extends AbstractBase
         $ids = null === $this->params()->fromPost('selectAll')
             ? $this->params()->fromPost('ids')
             : $this->params()->fromPost('idsAll');
-        if (!is_array($ids) || empty($ids)) {
+        if (!\is_array($ids) || empty($ids)) {
             return $this->redirectToSource('error', 'bulk_noitems_advice');
         }
 
@@ -412,7 +412,7 @@ class CartController extends AbstractBase
         $format = $this->params()->fromQuery('f');
 
         // Make sure we have IDs to export:
-        if (!is_array($ids) || empty($ids)) {
+        if (!\is_array($ids) || empty($ids)) {
             return $this->redirectToSource('error', 'bulk_noitems_advice');
         }
 
@@ -450,10 +450,10 @@ class CartController extends AbstractBase
         $ids = null === $this->params()->fromPost('selectAll')
             ? $this->params()->fromPost('ids', $this->params()->fromQuery('ids'))
             : $this->params()->fromPost('idsAll');
-        if (!is_array($ids) || empty($ids)) {
+        if (!\is_array($ids) || empty($ids)) {
             $ids = $this->followup()->retrieveAndClear('cartIds');
         }
-        if (!is_array($ids) || empty($ids)) {
+        if (!\is_array($ids) || empty($ids)) {
             return $this->redirectToSource('error', 'bulk_noitems_advice');
         }
 

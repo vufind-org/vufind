@@ -466,7 +466,7 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
         } catch (PDOException $e) {
             $this->throwAsIlsException($e);
         }
-        return ['count' => count($transList), 'records' => $transList];
+        return ['count' => \count($transList), 'records' => $transList];
     }
 
     /**

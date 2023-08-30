@@ -187,7 +187,7 @@ class EdsController extends AbstractSearch
                     $searchObject->getParams()->removeFilter($expandFilt);
                 }
             } else {
-                if (in_array($key, $defaultExpanders)) {
+                if (\in_array($key, $defaultExpanders)) {
                     $availableExpanders[$key]['selected'] = true;
                 }
             }

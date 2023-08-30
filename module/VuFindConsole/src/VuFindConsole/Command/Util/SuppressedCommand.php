@@ -112,7 +112,7 @@ class SuppressedCommand extends AbstractSolrAndIlsCommand
         }
 
         // Validate result:
-        if (!is_array($result)) {
+        if (!\is_array($result)) {
             $output->writeln('Could not obtain suppressed record list from ILS.');
             return 1;
         } elseif (empty($result)) {

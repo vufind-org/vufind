@@ -277,10 +277,10 @@ class Params
      */
     public function __clone()
     {
-        if (is_object($this->options)) {
+        if (\is_object($this->options)) {
             $this->options = clone $this->options;
         }
-        if (is_object($this->query)) {
+        if (\is_object($this->query)) {
             $this->query = clone $this->query;
         }
     }
@@ -331,14 +331,14 @@ class Params
     {
         $legalShards = array_keys($this->getOptions()->getShards());
         $requestShards = $request->get('shard', []);
-        if (!is_array($requestShards)) {
+        if (!\is_array($requestShards)) {
             $requestShards = [$requestShards];
         }
 
         // If a shard selection list is found as an incoming parameter,
         // we should save valid values for future reference:
         foreach ($requestShards as $current) {
-            if (in_array($current, $legalShards)) {
+            if (\in_array($current, $legalShards)) {
                 $this->selectedShards[] = $current;
             }
         }
@@ -362,7 +362,7 @@ class Params
     {
         // Check for a limit parameter in the url.
         $defaultLimit = $this->getOptions()->getDefaultLimit();
-        if (($limit = intval($request->get('limit'))) != $defaultLimit) {
+        if (($limit = \intval($request->get('limit'))) != $defaultLimit) {
             // make sure the url parameter is a valid limit -- either
             // one of the explicitly allowed values, or at least smaller
             // than the largest allowed. (This leniency is useful in
@@ -371,7 +371,7 @@ class Params
             // the user's ability to select a reduced list size).
             $legalOptions = $this->getOptions()->getLimitOptions();
             if (
-                in_array($limit, $legalOptions)
+                \in_array($limit, $legalOptions)
                 || ($limit > 0 && $limit < max($legalOptions))
             ) {
                 $this->limit = $limit;
@@ -398,7 +398,7 @@ class Params
      */
     protected function initPage($request)
     {
-        $this->page = intval($request->get('page'));
+        $this->page = \intval($request->get('page'));
         if ($this->page < 1) {
             $this->page = 1;
         }
@@ -441,8 +441,8 @@ class Params
         // Search URL. If there's only one parameter, we can flatten it,
         // but otherwise we should treat it as an error -- no point in going
         // to great lengths for compatibility.
-        if (is_array($lookfor)) {
-            if (count($lookfor) > 1) {
+        if (\is_array($lookfor)) {
+            if (\count($lookfor) > 1) {
                 throw new \Exception('Unsupported search URL.');
             }
             $lookfor = $lookfor[0];
@@ -450,7 +450,7 @@ class Params
 
         // Flatten type arrays for backward compatibility:
         $handler = $request->get('type');
-        if (is_array($handler)) {
+        if (\is_array($handler)) {
             $handler = $handler[0];
         }
 
@@ -578,12 +578,12 @@ class Params
         if ($view == 'rss') {
             // RSS is a special case that does not require config validation
             $this->setView('rss');
-        } elseif (!empty($view) && in_array($view, $validViews)) {
+        } elseif (!empty($view) && \in_array($view, $validViews)) {
             // make sure the url parameter is a valid view
             $this->setView($view);
         } elseif (
             !empty($this->lastView)
-            && in_array($this->lastView, $validViews)
+            && \in_array($this->lastView, $validViews)
         ) {
             // if there is nothing in the URL, see if we had a previous value
             // injected based on session information.
@@ -678,7 +678,7 @@ class Params
 
         // Validate and assign the sort value:
         $valid = array_keys($this->getOptions()->getSortOptions());
-        if (!empty($sort) && in_array($sort, $valid)) {
+        if (!empty($sort) && \in_array($sort, $valid)) {
             $this->sort = $sort;
         } else {
             $this->sort = $this->getDefaultSort();
@@ -770,7 +770,7 @@ class Params
         // Split the string and assign the parts to $field and $value
         $temp = explode(':', $filter, 2);
         $field = array_shift($temp);
-        $value = count($temp) > 0 ? $temp[0] : '';
+        $value = \count($temp) > 0 ? $temp[0] : '';
 
         // Remove quotes from the value if there are any
         if (substr($value, 0, 1) == '"') {
@@ -797,7 +797,7 @@ class Params
     {
         [$field, $value] = $this->parseFilter($filter);
         $prefix = substr($field, 0, 1);
-        if (in_array($prefix, ['-', '~'])) {
+        if (\in_array($prefix, ['-', '~'])) {
             $field = substr($field, 1);
         } else {
             $prefix = '';
@@ -848,7 +848,7 @@ class Params
         foreach ($this->getAliasesForFacetField($field) as $current) {
             if (
                 isset($this->filterList[$current])
-                && in_array($value, $this->filterList[$current])
+                && \in_array($value, $this->filterList[$current])
             ) {
                 return true;
             }
@@ -983,7 +983,7 @@ class Params
      */
     public function getFacetOperator($field)
     {
-        return in_array($field, $this->orFacets) ? 'OR' : 'AND';
+        return \in_array($field, $this->orFacets) ? 'OR' : 'AND';
     }
 
     /**
@@ -1091,13 +1091,13 @@ class Params
         // Loop through all the current filter fields
         foreach ($this->filterList as $field => $values) {
             [$operator, $field] = $this->parseOperatorAndFieldName($field);
-            $translate = in_array($field, $translatedFacets);
+            $translate = \in_array($field, $translatedFacets);
             // and each value currently used for that field
             foreach ($values as $value) {
                 // Add to the list unless it's in the list of fields to skip:
                 if (
                     !isset($skipList[$field])
-                    || !in_array($value, $skipList[$field])
+                    || !\in_array($value, $skipList[$field])
                 ) {
                     $facetLabel = $this->getFacetLabel($field, $value);
                     $list[$facetLabel][] = $this->formatFilterListEntry(
@@ -1252,7 +1252,7 @@ class Params
                 // If the current filter is not on the include list, skip it (but
                 // accept everything if the include list is null).
                 if (
-                    ($include !== null && !in_array($facet['filter'], $include))
+                    ($include !== null && !\in_array($facet['filter'], $include))
                     && !($includeDynamic && $facet['dynamic'])
                 ) {
                     continue;
@@ -1328,9 +1328,9 @@ class Params
         $year = ($year && preg_match('/\d{2,4}/', $year)) ? $year : '*';
 
         // Pad to four digits:
-        if (strlen($year) == 2) {
+        if (\strlen($year) == 2) {
             $year = '19' . $year;
-        } elseif (strlen($year) == 3) {
+        } elseif (\strlen($year) == 3) {
             $year = '0' . $year;
         }
 
@@ -1370,7 +1370,7 @@ class Params
         // it's a string by default so this will kick it into interpreting it as a
         // number
         $num = $num + 0;
-        return $num = !is_float($num) && !is_int($num) ? '*' : $num;
+        return $num = !\is_float($num) && !\is_int($num) ? '*' : $num;
     }
 
     /**
@@ -1424,22 +1424,22 @@ class Params
     ) {
         $rangeFacets = $request->get($requestParam);
         if (!empty($rangeFacets)) {
-            $ranges = is_array($rangeFacets) ? $rangeFacets : [$rangeFacets];
+            $ranges = \is_array($rangeFacets) ? $rangeFacets : [$rangeFacets];
             foreach ($ranges as $range) {
                 // Load start and end of range:
                 $from = $request->get($range . 'from');
                 $to = $request->get($range . 'to');
 
                 // Apply filtering/validation if necessary:
-                if (is_callable($valueFilter)) {
-                    $from = call_user_func($valueFilter, $from);
-                    $to = call_user_func($valueFilter, $to);
+                if (\is_callable($valueFilter)) {
+                    $from = \call_user_func($valueFilter, $from);
+                    $to = \call_user_func($valueFilter, $to);
                 }
 
                 // Build filter only if necessary:
                 if (!empty($range) && ($from != '*' || $to != '*')) {
-                    $rangeFacet = is_callable($filterGenerator)
-                        ? call_user_func($filterGenerator, $range, $from, $to)
+                    $rangeFacet = \is_callable($filterGenerator)
+                        ? \call_user_func($filterGenerator, $range, $from, $to)
                         : $this->buildGenericRangeFilter($range, $from, $to, false);
                     $this->addFilter($rangeFacet);
                 }
@@ -1580,7 +1580,7 @@ class Params
         // Handle standard filters:
         $filter = $request->get('filter');
         if (!empty($filter)) {
-            if (is_array($filter)) {
+            if (\is_array($filter)) {
                 foreach ($filter as $current) {
                     $this->addFilter($current);
                 }
@@ -1618,7 +1618,7 @@ class Params
     protected function initHiddenFilters($request)
     {
         $hiddenFilters = $request->get('hiddenFilters');
-        if (!empty($hiddenFilters) && is_array($hiddenFilters)) {
+        if (!empty($hiddenFilters) && \is_array($hiddenFilters)) {
             foreach ($hiddenFilters as $current) {
                 $this->addHiddenFilter($current);
             }
@@ -1661,7 +1661,7 @@ class Params
 
         if (
             isset($this->hiddenFilters[$field])
-            && in_array($value, $this->hiddenFilters[$field])
+            && \in_array($value, $this->hiddenFilters[$field])
         ) {
             return true;
         }
@@ -1833,7 +1833,7 @@ class Params
     public function setQueryIDs($ids)
     {
         // This needs to be defined in child classes:
-        throw new \Exception(get_class($this) . ' does not support setQueryIDs().');
+        throw new \Exception(\get_class($this) . ' does not support setQueryIDs().');
     }
 
     /**
@@ -1935,7 +1935,7 @@ class Params
         }
         foreach ($config->$facetList as $key => $value) {
             $useOr = (isset($orFields[0]) && $orFields[0] == '*')
-                || in_array($key, $orFields);
+                || \in_array($key, $orFields);
             $this->addFacet($key, $value, $useOr);
         }
 

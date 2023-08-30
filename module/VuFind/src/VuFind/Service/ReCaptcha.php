@@ -54,7 +54,7 @@ class ReCaptcha
      */
     public function __construct()
     {
-        $this->recaptcha = new LaminasReCaptcha(...func_get_args());
+        $this->recaptcha = new LaminasReCaptcha(...\func_get_args());
     }
 
     /**
@@ -67,7 +67,7 @@ class ReCaptcha
      */
     public function __call($method, $args)
     {
-        if (is_callable([$this->recaptcha, $method])) {
+        if (\is_callable([$this->recaptcha, $method])) {
             return $this->recaptcha->$method(...$args);
         }
         throw new \Exception("Unsupported method: $method");

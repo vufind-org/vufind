@@ -1,7 +1,7 @@
 <?=$this->translate('New results found for search') ?>:
   <?=empty($info['description']) ? $this->translate('history_empty_search') : $this->escapeHtml($info['description'])?>
 
-<?php if (count($info['checkboxFilters']) || count($info['filters'])): ?>
+<?php if (\count($info['checkboxFilters']) || \count($info['filters'])): ?>
 
 <?=$this->translate('history_limits') ?>:
 <?php foreach ($info['checkboxFilters'] as $checkbox): ?>

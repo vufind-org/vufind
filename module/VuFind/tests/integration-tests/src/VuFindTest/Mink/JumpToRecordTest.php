@@ -76,7 +76,7 @@ class JumpToRecordTest extends \VuFindTest\Integration\MinkTestCase
             substr(
                 $this->findCss($page, '.search-stats')->getText(),
                 0,
-                strlen($expected)
+                \strlen($expected)
             )
         );
     }

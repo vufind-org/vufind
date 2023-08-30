@@ -56,7 +56,7 @@ class VuFindGeo
      */
     protected static function logError($msg)
     {
-        call_user_func(static::$logMethod, $msg);
+        \call_user_func(static::$logMethod, $msg);
     }
 
     /**
@@ -72,7 +72,7 @@ class VuFindGeo
         $parsed = [];
         foreach ($parts as $part) {
             $chunks = array_map('trim', explode('=', $part, 2));
-            if (count($chunks) == 2) {
+            if (\count($chunks) == 2) {
                 [$key, $value] = $chunks;
                 $parsed[$key] = $value;
             }

@@ -206,7 +206,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
             $listener->attach($runner->getEventManager()->getSharedManager());
 
             $params->setLimit(0);
-            if (is_callable([$params, 'setHierarchicalFacetLimit'])) {
+            if (\is_callable([$params, 'setHierarchicalFacetLimit'])) {
                 $params->setHierarchicalFacetLimit(-1);
             }
             $options = $params->getOptions();
@@ -249,7 +249,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
             if (strpos($facet, ':')) {
                 $response[$facet]['checkboxCount']
                     = $this->getCheckboxFacetCount($facet, $results);
-            } elseif (in_array($facet, $hierarchicalFacets)) {
+            } elseif (\in_array($facet, $hierarchicalFacets)) {
                 $response[$facet]['list'] = $this->getHierarchicalFacetData(
                     $facet,
                     $hierarchicalFacetSortOptions,

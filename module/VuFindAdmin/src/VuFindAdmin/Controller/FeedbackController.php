@@ -115,7 +115,7 @@ class FeedbackController extends AbstractAdmin
             ? $this->getParam('ids', true)
             : $this->getParam('idsAll', true);
 
-        if (!is_array($ids) || empty($ids)) {
+        if (!\is_array($ids) || empty($ids)) {
             $this->flashMessenger()->addMessage('bulk_noitems_advice', 'error');
             return $this->redirect()->toUrl($originUrl);
         }
@@ -153,7 +153,7 @@ class FeedbackController extends AbstractAdmin
                 'confirm' => $newUrl,
                 'cancel' => $originUrl,
                 'title' => 'confirm_delete_feedback',
-                'messages' => $this->getConfirmDeleteMessages(count($ids)),
+                'messages' => $this->getConfirmDeleteMessages(\count($ids)),
                 'ids' => $ids,
                 'extras' => [
                     'form_name' => $this->getParam('form_name', true),

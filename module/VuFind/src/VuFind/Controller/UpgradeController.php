@@ -225,7 +225,7 @@ class UpgradeController extends AbstractBase
      */
     public function fixconfigAction()
     {
-        $localConfig = dirname($this->getForcedLocalConfigPath('config.ini'));
+        $localConfig = \dirname($this->getForcedLocalConfigPath('config.ini'));
         $confDir = $this->cookie->oldVersion < 2
             ? $this->cookie->sourceDir . '/web/conf'
             : $localConfig;
@@ -233,7 +233,7 @@ class UpgradeController extends AbstractBase
             $this->cookie->oldVersion,
             $this->cookie->newVersion,
             $confDir,
-            dirname($this->getBaseConfigFilePath('config.ini')),
+            \dirname($this->getBaseConfigFilePath('config.ini')),
             $localConfig
         );
         try {
@@ -312,10 +312,10 @@ class UpgradeController extends AbstractBase
         $resource = $this->getTable('resource');
         $resourceWhere = ['source' => 'VuFind'];
         $resourceRows = $resource->select($resourceWhere);
-        if (count($resourceRows) > 0) {
+        if (\count($resourceRows) > 0) {
             $resource->update(['source' => 'Solr'], $resourceWhere);
             $this->session->warnings->append(
-                'Converted ' . count($resourceRows)
+                'Converted ' . \count($resourceRows)
                 . ' legacy "VuFind" source value(s) in resource table'
             );
         }
@@ -332,7 +332,7 @@ class UpgradeController extends AbstractBase
         $search = $this->getTable('search');
         $searchWhere = ['checksum' => null, 'saved' => 1];
         $searchRows = $search->select($searchWhere);
-        if (count($searchRows) > 0) {
+        if (\count($searchRows) > 0) {
             foreach ($searchRows as $searchRow) {
                 $searchObj = $searchRow->getSearchObject()->deminify($manager);
                 $url = $searchObj->getUrlQuery()->getParams();
@@ -341,7 +341,7 @@ class UpgradeController extends AbstractBase
                 $searchRow->save();
             }
             $this->session->warnings->append(
-                'Added checksum to ' . count($searchRows) . ' rows in search table'
+                'Added checksum to ' . \count($searchRows) . ' rows in search table'
             );
         }
     }
@@ -546,7 +546,7 @@ class UpgradeController extends AbstractBase
                 $platform = $adapter->getDriver()->getDatabasePlatformName();
                 if (strtolower($platform) == 'mysql') {
                     $upgradeResult = $this->upgradeMySQL($adapter);
-                    if (!is_string($upgradeResult)) {
+                    if (!\is_string($upgradeResult)) {
                         return $upgradeResult;
                     }
                     $this->session->sql = $upgradeResult;
@@ -571,7 +571,7 @@ class UpgradeController extends AbstractBase
                 return $this->redirect()->toRoute('upgrade-fixanonymoustags');
             }
             $dupeTags = $this->getTable('Tags')->getDuplicates();
-            if (count($dupeTags) > 0 && !isset($this->cookie->skipDupeTags)) {
+            if (\count($dupeTags) > 0 && !isset($this->cookie->skipDupeTags)) {
                 return $this->redirect()->toRoute('upgrade-fixduplicatetags');
             }
 
@@ -688,7 +688,7 @@ class UpgradeController extends AbstractBase
     public function fixanonymoustagsAction()
     {
         // Handle skip action:
-        if (strlen($this->params()->fromPost('skip', '')) > 0) {
+        if (\strlen($this->params()->fromPost('skip', '')) > 0) {
             $this->cookie->skipAnonymousTags = true;
             return $this->forwardTo('Upgrade', 'FixDatabase');
         }
@@ -702,7 +702,7 @@ class UpgradeController extends AbstractBase
             } else {
                 $userTable = $this->getTable('User');
                 $user = $userTable->getByUsername($user, false);
-                if (empty($user) || !is_object($user) || !isset($user->id)) {
+                if (empty($user) || !\is_object($user) || !isset($user->id)) {
                     $this->flashMessenger()
                         ->addMessage("User {$user} not found.", 'error');
                 } else {
@@ -731,7 +731,7 @@ class UpgradeController extends AbstractBase
     public function fixduplicatetagsAction()
     {
         // Handle skip action:
-        if (strlen($this->params()->fromPost('skip', '')) > 0) {
+        if (\strlen($this->params()->fromPost('skip', '')) > 0) {
             $this->cookie->skipDupeTags = true;
             return $this->forwardTo('Upgrade', 'FixDatabase');
         }
@@ -754,7 +754,7 @@ class UpgradeController extends AbstractBase
     public function fixmetadataAction()
     {
         // User requested skipping this step?  No need to do further work:
-        if (strlen($this->params()->fromPost('skip', '')) > 0) {
+        if (\strlen($this->params()->fromPost('skip', '')) > 0) {
             $this->cookie->metadataOkay = true;
             return $this->forwardTo('Upgrade', 'Home');
         }
@@ -767,7 +767,7 @@ class UpgradeController extends AbstractBase
         $problems = $table->findMissingMetadata();
 
         // No problems?  We're done here!
-        if (count($problems) == 0) {
+        if (\count($problems) == 0) {
             $this->cookie->metadataOkay = true;
             return $this->forwardTo('Upgrade', 'Home');
         }
@@ -831,7 +831,7 @@ class UpgradeController extends AbstractBase
     {
         $skip = $this->params()->fromPost('skip', []);
         foreach (['config', 'database', 'metadata'] as $action) {
-            $this->cookie->{$action . 'Okay'} = in_array($action, (array)$skip);
+            $this->cookie->{$action . 'Okay'} = \in_array($action, (array)$skip);
         }
     }
 
@@ -948,7 +948,7 @@ class UpgradeController extends AbstractBase
         return $this->createViewModel(
             [
                 'configDir'
-                    => dirname($this->getForcedLocalConfigPath('config.ini')),
+                    => \dirname($this->getForcedLocalConfigPath('config.ini')),
                 'importDir' => LOCAL_OVERRIDE_DIR . '/import',
                 'oldVersion' => $this->cookie->oldVersion,
             ]
@@ -994,9 +994,9 @@ class UpgradeController extends AbstractBase
                 );
             }
 
-            if (count($results) > 0) {
+            if (\count($results) > 0) {
                 $this->session->warnings->append(
-                    'Added hash value(s) to ' . count($results) . ' short links.'
+                    'Added hash value(s) to ' . \count($results) . ' short links.'
                 );
             }
         } catch (Exception $e) {

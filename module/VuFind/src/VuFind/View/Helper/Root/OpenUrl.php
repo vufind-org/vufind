@@ -196,7 +196,7 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
         ) {
             // embedAutoLoad is neither true nor false, so check if it contains an
             // area string defining where exactly to use autoloading
-            $embedAutoLoad = in_array(
+            $embedAutoLoad = \in_array(
                 strtolower($this->area),
                 array_map(
                     'trim',
@@ -323,7 +323,7 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
     {
         // special case if no rules are defined at all assume that any record is
         // valid for openUrls
-        if (!isset($this->openUrlRules) || count($this->openUrlRules) < 1) {
+        if (!isset($this->openUrlRules) || \count($this->openUrlRules) < 1) {
             return true;
         }
         foreach ($this->openUrlRules as $rules) {
@@ -349,7 +349,7 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
     {
         if (isset($resolverDriverRules['exclude'])) {
             // No exclusion rules mean no exclusions -- return false
-            return count($resolverDriverRules['exclude'])
+            return \count($resolverDriverRules['exclude'])
                 ? $this->checkRules($resolverDriverRules['exclude']) : false;
         }
         return false;
@@ -367,7 +367,7 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
     {
         if (isset($resolverDriverRules['include'])) {
             // No inclusion rules mean include everything -- return true
-            return count($resolverDriverRules['include'])
+            return \count($resolverDriverRules['include'])
                 ? $this->checkRules($resolverDriverRules['include']) : true;
         }
         return false;
@@ -401,12 +401,12 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
     {
         $ruleMatchCounter = 0;
         foreach ($rules as $key => $value) {
-            if (is_callable([$this->recordDriver, $key])) {
+            if (\is_callable([$this->recordDriver, $key])) {
                 $value = (array)$value;
                 $recordValue = (array)$this->recordDriver->$key();
 
                 // wildcard present
-                if (in_array('*', $value)) {
+                if (\in_array('*', $value)) {
                     // Strip the wildcard out of the value list; what is left
                     // is the set of values that MUST be found in the record.
                     // If we subtract the record values from the required values
@@ -414,16 +414,16 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
                     // as long as SOME non-empty value was provided.
                     $requiredValues = array_diff($value, ['*']);
                     if (
-                        !count(array_diff($requiredValues, $recordValue))
+                        !\count(array_diff($requiredValues, $recordValue))
                         && $this->hasNonEmptyValue($recordValue)
                     ) {
                         $ruleMatchCounter++;
                     }
                 } else {
-                    $valueCount = count($value);
+                    $valueCount = \count($value);
                     if (
-                        $valueCount == count($recordValue)
-                        && $valueCount == count(
+                        $valueCount == \count($recordValue)
+                        && $valueCount == \count(
                             array_intersect($value, $recordValue)
                         )
                     ) {
@@ -434,7 +434,7 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
         }
 
         // Did all the rules match?
-        return $ruleMatchCounter == count($rules);
+        return $ruleMatchCounter == \count($rules);
     }
 
     /**

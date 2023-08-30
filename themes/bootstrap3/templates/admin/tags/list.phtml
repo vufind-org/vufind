@@ -56,7 +56,7 @@
     </div>
   </form>
 
-  <?php if (count($this->results) > 0):?>
+  <?php if (\count($this->results) > 0):?>
     <form action="<?= $this->url('admin/tags', ['action' => 'Delete'])?>" method="post">
       <input type="hidden" name="user_id" value="<?=$this->escapeHtmlAttr($this->params['user_id'] ?? '') ?>">
       <input type="hidden" name="tag_id" value="<?=$this->escapeHtmlAttr($this->params['tag_id'] ?? '') ?>">

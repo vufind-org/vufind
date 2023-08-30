@@ -80,7 +80,7 @@ class InjectTemplateListener extends \Laminas\Mvc\View\Http\InjectTemplateListen
     {
         foreach ($this->prefixes as $prefix) {
             if (str_starts_with($name, $prefix)) {
-                return strtolower(substr($name, strlen($prefix)));
+                return strtolower(substr($name, \strlen($prefix)));
             }
         }
         return strtolower($name);

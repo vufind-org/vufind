@@ -94,7 +94,7 @@ class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
         return function ($command) use ($expectedCursorMark) {
             $this->assertEquals(
                 [$this->uniqueKey, $expectedCursorMark, $this->countPerPage],
-                array_slice($command->getArguments(), 0, 3)
+                \array_slice($command->getArguments(), 0, 3)
             );
             $this->assertInstanceOf(TermsCommand::class, $command);
             return true;

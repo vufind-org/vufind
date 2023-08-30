@@ -21,7 +21,7 @@
     // we will also need to render the basic default template. If we
     // do NOT support non-JS browsers, we should instead display an error
     // message.
-    $isHierarchical = in_array($facet, $hierarchicalFacets);
+    $isHierarchical = \in_array($facet, $hierarchicalFacets);
     $noJsSupport = $this->config()->nonJavascriptSupportEnabled();
   ?>
   <?php if ($isHierarchical): // do we need hierarchical JS display? ?>

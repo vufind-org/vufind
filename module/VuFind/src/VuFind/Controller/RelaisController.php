@@ -55,7 +55,7 @@ class RelaisController extends AbstractBase
         }
 
         // Stop now if the user does not have valid catalog credentials available:
-        if (!is_array($patron = $this->catalogLogin())) {
+        if (!\is_array($patron = $this->catalogLogin())) {
             return $patron;
         }
 
@@ -95,7 +95,7 @@ class RelaisController extends AbstractBase
     public function requestAction()
     {
         // Stop now if the user does not have valid catalog credentials available:
-        if (!is_array($patron = $this->catalogLogin())) {
+        if (!\is_array($patron = $this->catalogLogin())) {
             return $patron;
         }
         return $this->createViewModel(

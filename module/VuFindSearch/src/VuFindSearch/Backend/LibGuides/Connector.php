@@ -120,7 +120,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         try {
             $result = $this->call(http_build_query($args));
             $result['documents']
-                = array_slice($result['documents'], $offset, $limit);
+                = \array_slice($result['documents'], $offset, $limit);
         } catch (\Exception $e) {
             if ($returnErr) {
                 $this->debug($e->getMessage());
@@ -177,7 +177,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     protected function process($data)
     {
         // make sure data exists
-        if (strlen($data) == 0) {
+        if (\strlen($data) == 0) {
             throw new \Exception('LibGuides did not return any data');
         }
 
@@ -195,7 +195,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         }
 
         $results = [
-            'recordCount' => count($items),
+            'recordCount' => \count($items),
             'documents' => $items,
         ];
 

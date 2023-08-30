@@ -50,7 +50,7 @@ trait HoldsTrait
         $driver = $this->loadRecord();
 
         // Stop now if the user does not have valid catalog credentials available:
-        if (!is_array($patron = $this->catalogLogin())) {
+        if (!\is_array($patron = $this->catalogLogin())) {
             return $patron;
         }
 
@@ -80,9 +80,9 @@ trait HoldsTrait
             $gatheredDetails,
             $patron
         );
-        if ((is_array($validRequest) && !$validRequest['valid']) || !$validRequest) {
+        if ((\is_array($validRequest) && !$validRequest['valid']) || !$validRequest) {
             $this->flashMessenger()->addErrorMessage(
-                is_array($validRequest)
+                \is_array($validRequest)
                     ? $validRequest['status'] : 'hold_error_blocked'
             );
             return $this->redirectToRecord('#top');
@@ -100,16 +100,16 @@ trait HoldsTrait
         $extraHoldFields = isset($checkHolds['extraHoldFields'])
             ? explode(':', $checkHolds['extraHoldFields']) : [];
 
-        $requestGroupNeeded = in_array('requestGroup', $extraHoldFields)
+        $requestGroupNeeded = \in_array('requestGroup', $extraHoldFields)
             && !empty($requestGroups)
             && (empty($gatheredDetails['level'])
                 || ($gatheredDetails['level'] != 'copy'
-                    || count($requestGroups) > 1));
+                    || \count($requestGroups) > 1));
 
         $pickupDetails = $gatheredDetails;
         if (
             !$requestGroupNeeded && !empty($requestGroups)
-            && count($requestGroups) == 1
+            && \count($requestGroups) == 1
         ) {
             // Request group selection is not required, but we have a single request
             // group, so make sure pickup locations match with the group
@@ -119,7 +119,7 @@ trait HoldsTrait
 
         // Check that there are pick up locations to choose from if the field is
         // required:
-        if (in_array('pickUpLocation', $extraHoldFields) && !$pickup) {
+        if (\in_array('pickUpLocation', $extraHoldFields) && !$pickup) {
             $this->flashMessenger()
                 ->addErrorMessage('No pickup locations available');
             return $this->redirectToRecord('#top');
@@ -127,7 +127,7 @@ trait HoldsTrait
 
         $proxiedUsers = [];
         if (
-            in_array('proxiedUsers', $extraHoldFields)
+            \in_array('proxiedUsers', $extraHoldFields)
             && $catalog->checkCapability(
                 'getProxiedUsers',
                 [$driver->getUniqueID(), $patron, $gatheredDetails]

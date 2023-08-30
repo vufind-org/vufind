@@ -24,7 +24,7 @@
         $this->searchClassId,
         $this->searchIndex ?? null
     );
-    $handlerCount = count($handlers);
+    $handlerCount = \count($handlers);
     $basicSearch = $this->searchbox()->combinedHandlersActive() ? 'combined-searchbox' : $options->getSearchAction();
     $searchHome = $options->getSearchHomeAction();
     $advSearch = $options->getAdvancedSearchAction();
@@ -34,8 +34,8 @@
         $filterList = $params->getFilterList(true);
         $checkboxFilters = $params->getCheckboxFacets();
     } else {
-        $filterList = is_array($this->filterList) ? $this->filterList : [];
-        $checkboxFilters = is_array($this->checkboxFilters) ? $this->checkboxFilters : [];
+        $filterList = \is_array($this->filterList) ? $this->filterList : [];
+        $checkboxFilters = \is_array($this->checkboxFilters) ? $this->checkboxFilters : [];
     }
     $filterDetails = $this->searchbox()->getFilterDetails($filterList, $checkboxFilters);
     $showFilters = $filterDetails && ($results || $options->getRetainFilterSetting());
@@ -120,7 +120,7 @@
       ?>
       <br>
       <?php foreach ($shards as $shard => $val): ?>
-        <?php $isSelected = empty($selectedShards) || in_array($shard, $selectedShards); ?>
+        <?php $isSelected = empty($selectedShards) || \in_array($shard, $selectedShards); ?>
           <input type="checkbox" <?=$isSelected ? 'checked="checked" ' : ''?>name="shard[]" value='<?=$this->escapeHtmlAttr($shard)?>'> <?=$this->transEsc($shard)?>
       <?php endforeach; ?>
     <?php endif; ?>

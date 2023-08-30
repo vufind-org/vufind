@@ -149,7 +149,7 @@
   <?=$this->paginationControl($paginator, 'Sliding', 'Helpers/pagination.phtml', ['page' => $holdings['page']])?>
 <?php endif; ?>
 <?php $history = $this->driver->getRealTimeHistory(); ?>
-<?php if (is_array($history) && !empty($history)): ?>
+<?php if (\is_array($history) && !empty($history)): ?>
   <h3><?=$this->transEsc('Most Recent Received Issues')?></h3>
   <table class="table table-striped">
     <?php foreach ($history as $row): ?>

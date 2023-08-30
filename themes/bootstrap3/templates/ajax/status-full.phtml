@@ -41,7 +41,7 @@
             <?php
               if ($item['reserve'] === 'Y') {
                 $status = 'On Reserve';
-              } elseif (is_int($item['availability']) && !empty($item['status'])) {
+              } elseif (\is_int($item['availability']) && !empty($item['status'])) {
                 $status = $item['status'];
               } else {
                 $status = 'Available';
@@ -53,7 +53,7 @@
       </td>
     </tr>
   <?php endforeach; ?>
-<?php if (count($this->statusItems) > 5): ?>
-  <tr><td colspan="3"><a href="<?=$this->url('record', ['id' => $this->statusItems[0]['id']], ['query' => ['sid' => $this->searchId]])?>"><?=count($this->statusItems) - 5?> <?=$this->transEsc('more_ellipsis')?></a></td></tr>
+<?php if (\count($this->statusItems) > 5): ?>
+  <tr><td colspan="3"><a href="<?=$this->url('record', ['id' => $this->statusItems[0]['id']], ['query' => ['sid' => $this->searchId]])?>"><?=\count($this->statusItems) - 5?> <?=$this->transEsc('more_ellipsis')?></a></td></tr>
 <?php endif; ?>
 </table>

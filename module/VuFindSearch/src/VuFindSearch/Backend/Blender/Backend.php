@@ -123,10 +123,10 @@ class Backend extends AbstractBackend
         $this->setEventManager($events);
 
         $boostMax = isset($this->config->Blending->initialResults)
-            ? count($this->config->Blending->initialResults->toArray())
+            ? \count($this->config->Blending->initialResults->toArray())
             : 0;
         $this->blendLimit = max(20, $boostMax);
-        $this->blockSize = intval($this->config->Blending->blockSize ?? 10);
+        $this->blockSize = \intval($this->config->Blending->blockSize ?? 10);
         $this->adaptiveBlockSizes
             = isset($this->config->Blending->adaptiveBlockSizes)
             ? $this->config->Blending->adaptiveBlockSizes->toArray()
@@ -319,7 +319,7 @@ class Backend extends AbstractBackend
         }
 
         // Fetch records
-        $backendCount = count($availableBackendIds);
+        $backendCount = \count($availableBackendIds);
         for (; $pos < $limit; $pos++) {
             $currentBlock = floor($pos / $blockSize);
             $backendAtPos = $availableBackendIds[$currentBlock % $backendCount];
@@ -494,13 +494,13 @@ class Backend extends AbstractBackend
     {
         foreach ($this->adaptiveBlockSizes as $size) {
             $parts = explode(':', $size, 2);
-            $blockSize = intval($parts[1] ?? 0);
+            $blockSize = \intval($parts[1] ?? 0);
             if ($blockSize === 0) {
                 throw new \Exception("Invalid adaptive block size: $size");
             }
             $rangeParts = explode('-', $parts[0]);
-            $from = intval($rangeParts[0]);
-            $to = intval($rangeParts[1] ?? 0);
+            $from = \intval($rangeParts[0]);
+            $to = \intval($rangeParts[1] ?? 0);
             if ($from > $to) {
                 throw new \Exception("Invalid adaptive block size: $size");
             }

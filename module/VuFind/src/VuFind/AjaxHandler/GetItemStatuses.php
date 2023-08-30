@@ -133,7 +133,7 @@ class GetItemStatuses extends AbstractBase implements
 
         $filtered = [];
         foreach ($record as $current) {
-            if (!in_array($current['location'] ?? null, $hideHoldings)) {
+            if (!\in_array($current['location'] ?? null, $hideHoldings)) {
                 $filtered[] = $current;
             }
         }
@@ -176,12 +176,12 @@ class GetItemStatuses extends AbstractBase implements
 
         // If there is only one value in the list, or if we're in "first" mode,
         // send back the first list value:
-        if ($mode == 'first' || count($list) == 1) {
+        if ($mode == 'first' || \count($list) == 1) {
             if ($transPrefix) {
                 return $this->translateWithPrefix($transPrefix, $list[0]);
             }
             return $list[0];
-        } elseif (count($list) == 0) {
+        } elseif (\count($list) == 0) {
             // Empty list?  Return a blank string:
             return '';
         } elseif ($mode == 'all') {
@@ -208,7 +208,7 @@ class GetItemStatuses extends AbstractBase implements
      */
     protected function getCallnumberHandler($list = null, $displaySetting = null)
     {
-        if ($displaySetting == 'msg' && count($list) > 1) {
+        if ($displaySetting == 'msg' && \count($list) > 1) {
             return false;
         }
         return $this->config->Item_Status->callnumber_handler ?? false;
@@ -233,7 +233,7 @@ class GetItemStatuses extends AbstractBase implements
         // Do we need to deal with a preferred service?
         $preferred = isset($this->config->Item_Status->preferred_service)
             ? $normalize($this->config->Item_Status->preferred_service) : false;
-        if (false !== $preferred && in_array($preferred, $services)) {
+        if (false !== $preferred && \in_array($preferred, $services)) {
             $services = [$preferred];
         }
 
@@ -564,7 +564,7 @@ class GetItemStatuses extends AbstractBase implements
             }
         }
 
-        if (!is_array($results)) {
+        if (!\is_array($results)) {
             // If getStatuses returned garbage, let's turn it into an empty array
             // to avoid triggering a notice in the foreach loop below.
             $results = [];
@@ -597,7 +597,7 @@ class GetItemStatuses extends AbstractBase implements
             $record = $this->filterSuppressedLocations($record);
 
             // Skip empty records:
-            if (count($record)) {
+            if (\count($record)) {
                 // Check for errors
                 if (!empty($record[0]['error'])) {
                     $current = $this

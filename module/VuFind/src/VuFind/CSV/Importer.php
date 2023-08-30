@@ -101,7 +101,7 @@ class Importer
                 $config
             );
             // If we have finished a batch, write it now and start the next one:
-            if (count($data) === $batchSize) {
+            if (\count($data) === $batchSize) {
                 $output .= $this->writeData($data, $index, $testMode);
                 $data = [];
             }

@@ -92,7 +92,7 @@ class MaintenanceController extends AbstractAdmin
         } else {
             $code = $output = null;
             exec($details['command'], $output, $code);
-            $successCode = intval($details['successCode'] ?? 0);
+            $successCode = \intval($details['successCode'] ?? 0);
             if ($code !== $successCode) {
                 $this->flashMessenger()->addErrorMessage(
                     "Command failed; expected $successCode but received $code"
@@ -172,7 +172,7 @@ class MaintenanceController extends AbstractAdmin
      */
     protected function expire($table, $successString, $failString, $minAge = 2)
     {
-        $daysOld = intval($this->params()->fromQuery('daysOld', $minAge));
+        $daysOld = \intval($this->params()->fromQuery('daysOld', $minAge));
         if ($daysOld < $minAge) {
             $this->flashMessenger()->addErrorMessage(
                 str_replace(

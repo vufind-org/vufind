@@ -54,7 +54,7 @@ class MakeLink extends \Laminas\View\Helper\AbstractHelper
     protected function mergeAttributes($href, $attrs, $options)
     {
         // If $attrs is not an object, interpret as class name
-        if (!is_array($attrs)) {
+        if (!\is_array($attrs)) {
             $attrs = !empty($attrs) ? ['class' => $attrs] : [];
         }
 

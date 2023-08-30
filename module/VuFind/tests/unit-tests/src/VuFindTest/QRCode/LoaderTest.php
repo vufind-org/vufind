@@ -81,7 +81,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $loader = $this->getLoader();
         $loader->loadQRCode('');
         $this->assertEquals('image/gif', $loader->getContentType());
-        $this->assertEquals('483', strlen($loader->getImage()));
+        $this->assertEquals('483', \strlen($loader->getImage()));
     }
 
     /**
@@ -94,7 +94,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $loader = $this->getLoader();
         $loader->loadQRCode('foofoofoofoofoofoofoofoofoofoofoofoo', ['size' => 1]);
         $this->assertEquals('image/gif', $loader->getContentType());
-        $this->assertEquals('483', strlen($loader->getImage()));
+        $this->assertEquals('483', \strlen($loader->getImage()));
     }
 
     /**

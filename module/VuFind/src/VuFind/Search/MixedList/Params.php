@@ -74,7 +74,7 @@ class Params extends \VuFind\Search\Base\Params
     protected function setRecordIdsFromFilter($filterValue)
     {
         $this->recordsToRequest = explode("\t", $filterValue);
-        $this->setLimit(count($this->recordsToRequest));
+        $this->setLimit(\count($this->recordsToRequest));
     }
 
     /**
@@ -122,7 +122,7 @@ class Params extends \VuFind\Search\Base\Params
     {
         return $this->translate(
             'result_count',
-            ['%%count%%' => count($this->recordsToRequest)]
+            ['%%count%%' => \count($this->recordsToRequest)]
         );
     }
 

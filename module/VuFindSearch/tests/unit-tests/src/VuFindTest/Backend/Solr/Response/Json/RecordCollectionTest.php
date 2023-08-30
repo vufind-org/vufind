@@ -205,9 +205,9 @@ class RecordCollectionTest extends TestCase
         $coll->shuffle();
         $final = $coll->getRecords();
         $this->assertCount(3, $final);
-        $this->assertTrue(in_array($r1, $final));
-        $this->assertTrue(in_array($r2, $final));
-        $this->assertTrue(in_array($r3, $final));
+        $this->assertTrue(\in_array($r1, $final));
+        $this->assertTrue(\in_array($r2, $final));
+        $this->assertTrue(\in_array($r3, $final));
     }
 
     /**

@@ -15,7 +15,7 @@
   // Determine whether the only filters applied are the default ones; this controls
   // when we display or hide the reset button:
   $defaultFilters = $options->getDefaultFilters();
-  $onlyDefaultsApplied = count($defaultFilters) == $filterCount;
+  $onlyDefaultsApplied = \count($defaultFilters) == $filterCount;
   foreach ($defaultFilters as $currentDefault) {
     if (!$params->hasFilter($currentDefault)) {
       $onlyDefaultsApplied = false;
@@ -53,12 +53,12 @@
   <?php foreach ($filterList as $field => $data): ?>
     <div class="title-value-pair">
       <span class="filters-title"><?=$this->transEsc($field)?>:</span>
-      <?php if (count($data) > 3): ?>
+      <?php if (\count($data) > 3): ?>
         <div class="search-filter-dropdown dropdown">
           <?php $dropdown = true; ?>
           <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $field); ?>
           <button id="dropdown-toggle-<?=$safeId?>" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-            <?=$this->transEsc('filter_toggle_entries', ['%%count%%' => count($data)])?>
+            <?=$this->transEsc('filter_toggle_entries', ['%%count%%' => \count($data)])?>
           </button>
           <ul class="dropdown-menu" role="menu" aria-labelledby="dropdown-toggle-<?=$safeId?>">
       <?php else: ?>

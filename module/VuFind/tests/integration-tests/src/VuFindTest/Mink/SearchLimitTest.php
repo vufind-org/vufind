@@ -85,7 +85,7 @@ class SearchLimitTest extends \VuFindTest\Integration\MinkTestCase
     {
         $text = $this->findCss($page, '.search-stats strong')->getText();
         [, $actualSize] = explode(' - ', $text);
-        $this->assertEquals($size, intval($actualSize));
+        $this->assertEquals($size, \intval($actualSize));
     }
 
     /**
@@ -104,7 +104,7 @@ class SearchLimitTest extends \VuFindTest\Integration\MinkTestCase
         $optionElements
             = $page->findAll('css', $this->limitControlSelector . ' option');
         $callback = function (Element $element): string {
-            return intval($element->getText());
+            return \intval($element->getText());
         };
         $actualOptions = array_map($callback, $optionElements);
         $this->assertEquals($options, $actualOptions);

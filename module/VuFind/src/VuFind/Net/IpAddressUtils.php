@@ -54,18 +54,18 @@ class IpAddressUtils
     {
         // The check for AF_INET6 allows fallback to IPv4 only if necessary.
         // Hopefully that's not necessary.
-        if (!str_contains($ip, ':') || !defined('AF_INET6')) {
+        if (!str_contains($ip, ':') || !\defined('AF_INET6')) {
             // IPv4 address
 
             // Append parts until complete
             $addr = explode('.', $ip);
-            for ($i = count($addr); $i < 4; $i++) {
+            for ($i = \count($addr); $i < 4; $i++) {
                 $addr[] = $end ? 255 : 0;
             }
 
             // Get rid of leading zeros etc.
             $ip = implode('.', array_map('intval', $addr));
-            if (!defined('AF_INET6')) {
+            if (!\defined('AF_INET6')) {
                 return inet_pton($ip);
             }
             $ip = "::$ip";

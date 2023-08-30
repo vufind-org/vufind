@@ -155,9 +155,9 @@ class UrlQueryHelper
                             // with each other; let's backfill empty op values
                             // if there aren't enough in place already.
                             $expectedOps
-                                = count($this->urlParams['lookfor' . $i]) - 1;
+                                = \count($this->urlParams['lookfor' . $i]) - 1;
                             while (
-                                count($this->urlParams['op' . $i] ?? [])
+                                \count($this->urlParams['op' . $i] ?? [])
                                 < $expectedOps
                             ) {
                                 $this->urlParams['op' . $i][] = '';
@@ -379,13 +379,13 @@ class UrlQueryHelper
         // Simplistic explode/trim behavior if no callback is provided:
         if (
             !isset($this->config['parseFilterCallback'])
-            || !is_callable($this->config['parseFilterCallback'])
+            || !\is_callable($this->config['parseFilterCallback'])
         ) {
             $parts = explode(':', $filter, 2);
             $parts[1] = trim($parts[1], '"');
             return $parts;
         }
-        return call_user_func($this->config['parseFilterCallback'], $filter);
+        return \call_user_func($this->config['parseFilterCallback'], $filter);
     }
 
     /**
@@ -401,11 +401,11 @@ class UrlQueryHelper
         // If no callback is provided, aliases are unsupported:
         if (
             !isset($this->config['getAliasesForFacetFieldCallback'])
-            || !is_callable($this->config['getAliasesForFacetFieldCallback'])
+            || !\is_callable($this->config['getAliasesForFacetFieldCallback'])
         ) {
             return [$field];
         }
-        return call_user_func(
+        return \call_user_func(
             $this->config['getAliasesForFacetFieldCallback'],
             $field
         );
@@ -435,12 +435,12 @@ class UrlQueryHelper
 
         // Remove the filter:
         $newFilter = [];
-        if (isset($params['filter']) && is_array($params['filter'])) {
+        if (isset($params['filter']) && \is_array($params['filter'])) {
             foreach ($params['filter'] as $current) {
                 [$currentField, $currentValue]
                     = $this->parseFilter($current);
                 if (
-                    !in_array($currentField, $fieldAliases)
+                    !\in_array($currentField, $fieldAliases)
                     || $currentValue != $value
                 ) {
                     $newFilter[] = $current;
@@ -584,7 +584,7 @@ class UrlQueryHelper
     {
         $retVal = '';
         foreach ($this->urlParams as $paramName => $paramValue) {
-            if (is_array($paramValue)) {
+            if (\is_array($paramValue)) {
                 foreach ($paramValue as $paramValue2) {
                     if (!$this->filtered($paramName, $paramValue2, $filter)) {
                         $retVal .= '<input type="hidden" name="' .
@@ -618,7 +618,7 @@ class UrlQueryHelper
     {
         $parts = [];
         foreach ($a as $key => $value) {
-            if (is_array($value)) {
+            if (\is_array($value)) {
                 foreach ($value as $current) {
                     $parts[] = urlencode($key . '[]') . '=' . urlencode($current);
                 }

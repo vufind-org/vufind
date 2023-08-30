@@ -65,7 +65,7 @@ class EuropeanaResultsDeferred extends AbstractSearchObjectDeferred
     {
         // Collect the best possible search term(s):
         $this->lookfor = $request->get('lookfor', '');
-        if (empty($this->lookfor) && is_object($params)) {
+        if (empty($this->lookfor) && \is_object($params)) {
             $this->lookfor = $params->getQuery()->getAllTerms();
         }
         $this->lookfor = trim($this->lookfor);

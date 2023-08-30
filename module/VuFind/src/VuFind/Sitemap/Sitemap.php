@@ -83,7 +83,7 @@ class Sitemap extends AbstractFile
      */
     protected function getEntry($url)
     {
-        if (is_array($url)) {
+        if (\is_array($url)) {
             $link = $url['url'];
             $languages = $url['languages'] ?? [];
             $frequency = $url['frequency'] ?? '';

@@ -108,7 +108,7 @@ class Captcha extends \Laminas\View\Helper\AbstractHelper
      */
     public function html(bool $useCaptcha = true, bool $wrapHtml = true): string
     {
-        if (count($this->captchas) == 0 || !$useCaptcha) {
+        if (\count($this->captchas) == 0 || !$useCaptcha) {
             return '';
         }
 
@@ -140,7 +140,7 @@ class Captcha extends \Laminas\View\Helper\AbstractHelper
      */
     protected function active(): bool
     {
-        return count($this->captchas) > 0
+        return \count($this->captchas) > 0
             && isset($this->config->Captcha->forms);
     }
 }

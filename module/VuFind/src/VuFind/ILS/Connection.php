@@ -191,7 +191,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      */
     public function getDriverClass()
     {
-        return get_class($this->getDriver(false));
+        return \get_class($this->getDriver(false));
     }
 
     /**
@@ -311,7 +311,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         // Determine config file name based on class name:
         $parts = explode('\\', $this->getDriverClass());
         $config = $this->configReader->get(end($parts));
-        return is_object($config) ? $config->toArray() : [];
+        return \is_object($config) ? $config->toArray() : [];
     }
 
     /**
@@ -401,7 +401,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
                 $response['consortium'] = $functionConfig['consortium'];
             }
             $response['pickUpLocationCheckLimit']
-                = intval($functionConfig['pickUpLocationCheckLimit'] ?? 0);
+                = \intval($functionConfig['pickUpLocationCheckLimit'] ?? 0);
         } else {
             $id = $params['id'] ?? null;
             if ($this->checkCapability('getHoldLink', [$id, []])) {
@@ -780,7 +780,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      */
     protected function getHelpText($helpText)
     {
-        if (is_array($helpText)) {
+        if (\is_array($helpText)) {
             $lang = $this->getTranslatorLocale();
             return $helpText[$lang] ?? $helpText['*'] ?? '';
         }
@@ -808,7 +808,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             }
         } catch (\Exception $e) {
             if ($this->failOverToNoILS($e)) {
-                return call_user_func_array([$this, __METHOD__], func_get_args());
+                return \call_user_func_array([$this, __METHOD__], \func_get_args());
             }
             throw $e;
         }
@@ -846,7 +846,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             }
         } catch (\Exception $e) {
             if ($this->failOverToNoILS($e)) {
-                return call_user_func_array([$this, __METHOD__], func_get_args());
+                return \call_user_func_array([$this, __METHOD__], \func_get_args());
             }
             throw $e;
         }
@@ -880,7 +880,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             }
         } catch (\Exception $e) {
             if ($this->failOverToNoILS($e)) {
-                return call_user_func_array([$this, __METHOD__], func_get_args());
+                return \call_user_func_array([$this, __METHOD__], \func_get_args());
             }
             throw $e;
         }
@@ -964,7 +964,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
                 ? $this->getDriver()->hasHoldings($id) : true;
         } catch (\Exception $e) {
             if ($this->failOverToNoILS($e)) {
-                return call_user_func_array([$this, __METHOD__], func_get_args());
+                return \call_user_func_array([$this, __METHOD__], \func_get_args());
             }
             throw $e;
         }
@@ -985,7 +985,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
                 ? $this->getDriver()->loginIsHidden() : false;
         } catch (\Exception $e) {
             if ($this->failOverToNoILS($e)) {
-                return call_user_func_array([$this, __METHOD__], func_get_args());
+                return \call_user_func_array([$this, __METHOD__], \func_get_args());
             }
             throw $e;
         }
@@ -1012,7 +1012,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             $driverToCheck = $this->getDriver($this->hasNoILSFailover());
 
             // First check that the function is callable:
-            if (is_callable([$driverToCheck, $method])) {
+            if (\is_callable([$driverToCheck, $method])) {
                 // At least drivers implementing the __call() magic method must also
                 // implement supportsMethod() to verify that the method is actually
                 // usable:
@@ -1083,7 +1083,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         // Support also older driver return value:
         if (!isset($result['count'])) {
             $result = [
-                'count' => count($result),
+                'count' => \count($result),
                 'records' => $result,
             ];
         }
@@ -1129,13 +1129,13 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         // Return all the necessary details:
         if (!isset($holdings['holdings'])) {
             $holdings = [
-                'total' => count($holdings),
+                'total' => \count($holdings),
                 'holdings' => $holdings,
                 'electronic_holdings' => [],
             ];
         } else {
             if (!isset($holdings['total'])) {
-                $holdings['total'] = count($holdings['holdings']);
+                $holdings['total'] = \count($holdings['holdings']);
             }
             if (!isset($holdings['electronic_holdings'])) {
                 $holdings['electronic_holdings'] = [];
@@ -1161,14 +1161,14 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     {
         try {
             if ($this->checkCapability($methodName, $params)) {
-                return call_user_func_array(
+                return \call_user_func_array(
                     [$this->getDriver(), $methodName],
                     $params
                 );
             }
         } catch (\Exception $e) {
             if ($this->failOverToNoILS($e)) {
-                return call_user_func_array([$this, __METHOD__], func_get_args());
+                return \call_user_func_array([$this, __METHOD__], \func_get_args());
             }
             throw $e;
         }

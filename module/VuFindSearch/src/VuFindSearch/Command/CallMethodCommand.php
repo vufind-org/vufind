@@ -132,7 +132,7 @@ abstract class CallMethodCommand extends AbstractBase
             $backend->resetExtraRequestDetails();
         }
         $this->finalizeExecution(
-            call_user_func([$backend, $this->method], ...$args)
+            \call_user_func([$backend, $this->method], ...$args)
         );
         if ($backend instanceof ExtraRequestDetailsInterface) {
             $this->extraRequestDetails = $backend->getExtraRequestDetails();

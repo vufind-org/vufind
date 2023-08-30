@@ -50,7 +50,7 @@ class Scopus
     protected static function isNameAbbreviation(string $text): bool
     {
         // A single character is very likely an abbreviation:
-        if (strlen($text) === 1) {
+        if (\strlen($text) === 1) {
             return true;
         }
         // A set of initials, possibly hyphen or space separated, is very likely

@@ -226,7 +226,7 @@ class ImageLoader implements \Laminas\Log\LoggerAwareInterface
     {
         $parts = explode('.', $filename);
         $fileExtension = strtolower(end($parts));
-        if (!array_key_exists($fileExtension, $this->allowedFileExtensions)) {
+        if (!\array_key_exists($fileExtension, $this->allowedFileExtensions)) {
             throw new \Exception(
                 "Illegal file-extension '$fileExtension' for image '$filename'"
             );

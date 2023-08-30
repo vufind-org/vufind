@@ -1,8 +1,8 @@
 <?php
-  $tabConfig = is_object($this->params)
+  $tabConfig = \is_object($this->params)
     ? $this->searchTabs()->getTabConfigForParams($this->params) : [];
 ?>
-<?php if (count($tabConfig) > 0): ?>
+<?php if (\count($tabConfig) > 0): ?>
   <div class="alert alert-info">
     <?=$this->transEsc('nohit_change_tab', ['%%activeTab%%' => $this->translate($this->recommend->getActiveTab($tabConfig)['label'])])?>
     <ul>

@@ -85,7 +85,7 @@ class HoldsController extends AbstractBase
     public function listAction()
     {
         // Stop now if the user does not have valid catalog credentials available:
-        if (!is_array($patron = $this->catalogLogin())) {
+        if (!\is_array($patron = $this->catalogLogin())) {
             return $patron;
         }
 
@@ -98,7 +98,7 @@ class HoldsController extends AbstractBase
         $view->cancelResults = $cancelStatus
             ? $this->holds()->cancelHolds($catalog, $patron) : [];
         // If we need to confirm
-        if (!is_array($view->cancelResults)) {
+        if (!\is_array($view->cancelResults)) {
             return $view->cancelResults;
         }
 
@@ -195,7 +195,7 @@ class HoldsController extends AbstractBase
     public function editAction()
     {
         // Stop now if the user does not have valid catalog credentials available:
-        if (!is_array($patron = $this->catalogLogin())) {
+        if (!\is_array($patron = $this->catalogLogin())) {
             return $patron;
         }
 
@@ -314,7 +314,7 @@ class HoldsController extends AbstractBase
         $pickupLocations = [];
         $differences = false;
         foreach ($holds as $hold) {
-            if (in_array((string)($hold['updateDetails'] ?? ''), $selectedIds)) {
+            if (\in_array((string)($hold['updateDetails'] ?? ''), $selectedIds)) {
                 try {
                     $locations = $catalog->getPickUpLocations($patron, $hold);
                     if (!$pickupLocations) {
@@ -323,7 +323,7 @@ class HoldsController extends AbstractBase
                         $ids1 = array_column($pickupLocations, 'locationID');
                         $ids2 = array_column($locations, 'locationID');
                         if (
-                            count($ids1) !== count($ids2) || array_diff($ids1, $ids2)
+                            \count($ids1) !== \count($ids2) || array_diff($ids1, $ids2)
                         ) {
                             $differences = true;
                             // Find out any common pickup locations:
@@ -335,7 +335,7 @@ class HoldsController extends AbstractBase
                             $pickupLocations = array_filter(
                                 $pickupLocations,
                                 function ($location) use ($common) {
-                                    return in_array(
+                                    return \in_array(
                                         $location['locationID'],
                                         $common
                                     );
@@ -398,7 +398,7 @@ class HoldsController extends AbstractBase
                 $holdConfig['updateFields']
             );
         }
-        if (in_array('frozenThrough', $holdConfig['updateFields'])) {
+        if (\in_array('frozenThrough', $holdConfig['updateFields'])) {
             $frozenThroughValidationResults = $this->holds()->validateFrozenThrough(
                 $gatheredDetails['frozenThrough'] ?? null,
                 $holdConfig['updateFields']

@@ -107,6 +107,6 @@ abstract class AbstractContentFactory implements \Laminas\ServiceManager\Factory
             return true;
         }
         $hide = array_map('trim', array_map('strtolower', explode(',', $setting)));
-        return in_array(strtolower($this->tabName), $hide);
+        return \in_array(strtolower($this->tabName), $hide);
     }
 }

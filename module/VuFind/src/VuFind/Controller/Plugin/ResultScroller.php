@@ -174,7 +174,7 @@ class ResultScroller extends AbstractPlugin
     protected function ensureRoomInSessionStorage(): void
     {
         // Evict oldest entry if storage is full:
-        while (count($this->session->s) >= static::LAST_SEARCH_LIMIT) {
+        while (\count($this->session->s) >= static::LAST_SEARCH_LIMIT) {
             $oldest = null;
             $oldestTime = null;
             foreach ($this->session->s as $id => $search) {
@@ -232,7 +232,7 @@ class ResultScroller extends AbstractPlugin
         // record is the last record on the previous page
         if (!empty($this->data->prevIds)) {
             $retVal['previousRecord']
-                = $this->data->prevIds[count($this->data->prevIds) - 1];
+                = $this->data->prevIds[\count($this->data->prevIds) - 1];
         }
 
         // if it is not the last record on the current page, then
@@ -272,7 +272,7 @@ class ResultScroller extends AbstractPlugin
 
         // if there is something on the next page, then the next
         // record is the first record on the next page
-        if (is_array($this->data->nextIds) && count($this->data->nextIds) > 0) {
+        if (\is_array($this->data->nextIds) && \count($this->data->nextIds) > 0) {
             $retVal['nextRecord'] = $this->data->nextIds[0];
         }
 
@@ -356,8 +356,8 @@ class ResultScroller extends AbstractPlugin
 
         // now we can set the previous/next record
         $retVal['previousRecord']
-            = $this->data->prevIds[count($this->data->prevIds) - 1];
-        if ($pos < count($this->data->currIds) - 1) {
+            = $this->data->prevIds[\count($this->data->prevIds) - 1];
+        if ($pos < \count($this->data->currIds) - 1) {
             $retVal['nextRecord'] = $this->data->currIds[$pos + 1];
         }
 
@@ -438,11 +438,11 @@ class ResultScroller extends AbstractPlugin
 
         // now we can set the previous/next record
         $retVal['nextRecord'] = null;
-        if (count($this->data->currIds) > 1) {
-            $pos = count($this->data->currIds) - 2;
+        if (\count($this->data->currIds) > 1) {
+            $pos = \count($this->data->currIds) - 2;
             $retVal['previousRecord'] = $this->data->currIds[$pos];
-        } elseif (count($this->data->prevIds) > 0) {
-            $prevPos = count($this->data->prevIds) - 1;
+        } elseif (\count($this->data->prevIds) > 0) {
+            $prevPos = \count($this->data->prevIds) - 1;
             $retVal['previousRecord'] = $this->data->prevIds[$prevPos];
         }
 
@@ -564,7 +564,7 @@ class ResultScroller extends AbstractPlugin
         $id = $driver->getSourceIdentifier() . '|' . $driver->getUniqueId();
 
         // find where this record is in the current result page
-        $pos = is_array($this->data->currIds)
+        $pos = \is_array($this->data->currIds)
             ? array_search($id, $this->data->currIds)
             : false;
         if ($pos !== false) {
@@ -574,7 +574,7 @@ class ResultScroller extends AbstractPlugin
                 = ($this->data->page - 1) * $this->data->limit + $pos + 1;
 
             // count how many records in the current result page
-            $count = count($this->data->currIds);
+            $count = \count($this->data->currIds);
             if ($pos > 0 && $pos < $count - 1) {
                 // the current record is somewhere in the middle of the current
                 // page, ie: not first or last
@@ -592,7 +592,7 @@ class ResultScroller extends AbstractPlugin
             // if there is something on the previous page
             if (!empty($this->data->prevIds)) {
                 // check if current record is on the previous page
-                $pos = is_array($this->data->prevIds)
+                $pos = \is_array($this->data->prevIds)
                     ? array_search($id, $this->data->prevIds) : false;
                 if ($pos !== false) {
                     return $this
@@ -602,7 +602,7 @@ class ResultScroller extends AbstractPlugin
             // if there is something on the next page
             if (!empty($this->data->nextIds)) {
                 // check if current record is on the next page
-                $pos = is_array($this->data->nextIds)
+                $pos = \is_array($this->data->nextIds)
                     ? array_search($id, $this->data->nextIds) : false;
                 if ($pos !== false) {
                     return $this->scrollToNextPage($retVal, $lastSearch, $pos);

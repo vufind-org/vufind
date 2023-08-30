@@ -90,7 +90,7 @@ class ImageFactoryTest extends \PHPUnit\Framework\TestCase
              */
             public function __construct()
             {
-                $this->constructorArgs = func_get_args();
+                $this->constructorArgs = \func_get_args();
             }
         };
         $result = $factory($container, $fakeImage::class);

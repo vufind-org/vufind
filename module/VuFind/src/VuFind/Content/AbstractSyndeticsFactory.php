@@ -76,7 +76,7 @@ class AbstractSyndeticsFactory implements FactoryInterface
         // mode.
         $plus = substr($requestedName, -4) === 'Plus';
         $className = $plus
-            ? substr($requestedName, 0, strlen($requestedName) - 4) : $requestedName;
+            ? substr($requestedName, 0, \strlen($requestedName) - 4) : $requestedName;
 
         return new $className(
             isset($config->Syndetics->use_ssl) && $config->Syndetics->use_ssl,

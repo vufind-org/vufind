@@ -229,7 +229,7 @@ class Alma extends AbstractBase implements
             );
             $this->throwAsIlsException($e);
         }
-        if ($result->isSuccess() || in_array($statusCode, $allowedErrors)) {
+        if ($result->isSuccess() || \in_array($statusCode, $allowedErrors)) {
             if (!$xml && $result->isServerError()) {
                 $error = 'XML is not valid or HTTP error, URL: ' . $url .
                     ', HTTP status code: ' . $statusCode;
@@ -422,7 +422,7 @@ class Alma extends AbstractBase implements
 
         // Fetch also digital and/or electronic inventory if configured
         $types = $this->getInventoryTypes();
-        if (in_array('d_avail', $types) || in_array('e_avail', $types)) {
+        if (\in_array('d_avail', $types) || \in_array('e_avail', $types)) {
             // No need for physical items
             $key = array_search('p_avail', $types);
             if (false !== $key) {
@@ -467,7 +467,7 @@ class Alma extends AbstractBase implements
             $requestOptions = $this->makeRequest($requestOptionsPath);
         } elseif ('title' === $level) {
             $hmac = explode(':', $this->config['Holds']['HMACKeys'] ?? '');
-            if (!in_array('level', $hmac) || !in_array('description', $hmac)) {
+            if (!\in_array('level', $hmac) || !\in_array('description', $hmac)) {
                 return false;
             }
             // Call the request-options API for the logged-in user
@@ -916,8 +916,8 @@ class Alma extends AbstractBase implements
             $checkout = (string)$fee->status_time;
             $fineList[] = [
                 'title'    => (string)($fee->title ?? ''),
-                'amount'   => round(floatval($fee->original_amount) * 100),
-                'balance'  => round(floatval($fee->balance) * 100),
+                'amount'   => round(\floatval($fee->original_amount) * 100),
+                'balance'  => round(\floatval($fee->balance) * 100),
                 'createdate' => $this->parseDate($created, true),
                 'checkout' => $this->parseDate($checkout, true),
                 'fine'     => $this->getTranslatableString($fee->type),
@@ -1133,7 +1133,7 @@ class Alma extends AbstractBase implements
             ['request_type' => 'MOVE']
         );
         $holdList = [];
-        for ($i = 0; $i < count($xml->user_requests); $i++) {
+        for ($i = 0; $i < \count($xml->user_requests); $i++) {
             $request = $xml->user_requests[$i];
             if (
                 !isset($request->item_policy)
@@ -1174,7 +1174,7 @@ class Alma extends AbstractBase implements
             ['request_type' => 'MOVE']
         );
         $holdList = [];
-        for ($i = 0; $i < count($xml->user_requests); $i++) {
+        for ($i = 0; $i < \count($xml->user_requests); $i++) {
             $request = $xml->user_requests[$i];
             if (
                 !isset($request->item_policy)
@@ -1746,7 +1746,7 @@ class Alma extends AbstractBase implements
      */
     public function supportsMethod($method, $params)
     {
-        return is_callable([$this, $method]);
+        return \is_callable([$this, $method]);
     }
 
     /**

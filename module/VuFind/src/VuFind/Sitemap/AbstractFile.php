@@ -117,7 +117,7 @@ abstract class AbstractFile
     public function write($file)
     {
         // if a subfolder was specified that does not exist, make one
-        $dirname = dirname($file);
+        $dirname = \dirname($file);
         if (!is_dir($dirname)) {
             mkdir($dirname, 0755, true);
         }
@@ -141,7 +141,7 @@ abstract class AbstractFile
      */
     public function getCount(): int
     {
-        return count($this->urls);
+        return \count($this->urls);
     }
 
     /**

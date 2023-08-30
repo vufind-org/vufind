@@ -752,7 +752,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 'errors' => true,
             ]
         );
-        if (!in_array($result['code'], [200, 202, 204])) {
+        if (!\in_array($result['code'], [200, 202, 204])) {
             return  [
                 'success' => false,
                 'status' => 'An error has occurred',
@@ -912,7 +912,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         $itemId = $holdDetails['item_id'] ?? false;
         $requestId = $holdDetails['reqnum'] ?? false;
         $requestType
-            = array_key_exists('StorageRetrievalRequest', $holdDetails ?? [])
+            = \array_key_exists('StorageRetrievalRequest', $holdDetails ?? [])
                 ? 'StorageRetrievalRequests' : 'Holds';
         $included = null;
         if ($bibId && 'Holds' === $requestType) {
@@ -968,8 +968,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             $code = $library['library_id'];
             if (
                 (null === $included && !$library['pickup_location'])
-                || in_array($code, $excluded)
-                || (null !== $included && !in_array($code, $included))
+                || \in_array($code, $excluded)
+                || (null !== $included && !\in_array($code, $included))
             ) {
                 continue;
             }
@@ -983,7 +983,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         // bother doing any more work. If it's not set at all, default to
         // alphabetical order.
         $orderSetting = $this->config['Holds']['pickUpLocationOrder'] ?? 'default';
-        if (count($locations) > 1 && !empty($orderSetting)) {
+        if (\count($locations) > 1 && !empty($orderSetting)) {
             $locationOrder = $orderSetting === 'default'
                 ? [] : array_flip(explode(':', $orderSetting));
             $sortFunction = function ($a, $b) use ($locationOrder) {
@@ -1686,7 +1686,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         if ($method == 'changePassword') {
             return isset($this->config['changePassword']);
         }
-        return is_callable([$this, $method]);
+        return \is_callable([$this, $method]);
     }
 
     /**
@@ -1764,13 +1764,13 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         $apiUrl = $this->config['Catalog']['host'] . '/';
 
         // Handle the simple case of just a path in $request
-        if (is_string($request) || !isset($request['path'])) {
+        if (\is_string($request) || !isset($request['path'])) {
             $request = [
                 'path' => $request,
             ];
         }
 
-        if (is_array($request['path'])) {
+        if (\is_array($request['path'])) {
             $apiUrl .= implode('/', array_map('urlencode', $request['path']));
         } else {
             $apiUrl .= $request['path'];
@@ -2025,7 +2025,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 // Check for a mapping method for the unavailability reason:
                 if ($methodName = ($this->itemStatusMappingMethods[$code] ?? '')) {
                     $statuses[]
-                        = call_user_func([$this, $methodName], $code, $data, $item);
+                        = \call_user_func([$this, $methodName], $code, $data, $item);
                 } else {
                     if (!empty($data['code'])) {
                         $statuses[] = $data['code'];
@@ -2114,7 +2114,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected function getStatusCodeItemTransfer($code, $data, $item)
     {
-        $onHold = array_key_exists(
+        $onHold = \array_key_exists(
             'Item::Held',
             $item['availability']['notes'] ?? []
         );
@@ -2195,7 +2195,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         // Pick the first entry by default, then see if we can find a better match:
         $status = $statusArray[0];
         $rank = $this->getStatusRanking($status);
-        for ($x = 1; $x < count($statusArray); $x++) {
+        for ($x = 1; $x < \count($statusArray); $x++) {
             if ($this->getStatusRanking($statusArray[$x]) < $rank) {
                 $status = $statusArray[$x];
             }
@@ -2614,7 +2614,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 $message = $this->mapRenewalBlockReason(
                     $entry['renewability_blocks']
                 );
-                $permanent = in_array(
+                $permanent = \in_array(
                     $entry['renewability_blocks'],
                     $this->permanentRenewalBlocks
                 );
@@ -2651,7 +2651,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         }
 
         return [
-            'count' => $result['headers']['X-Total-Count'] ?? count($transactions),
+            'count' => $result['headers']['X-Total-Count'] ?? \count($transactions),
             $arrayKey => $transactions,
         ];
     }

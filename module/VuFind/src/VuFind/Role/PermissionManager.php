@@ -103,8 +103,8 @@ class PermissionManager
                 return true;
             }
             if (
-                is_array($value['permission'])
-                && in_array($context, $value['permission'])
+                \is_array($value['permission'])
+                && \in_array($context, $value['permission'])
             ) {
                 return true;
             }

@@ -329,7 +329,7 @@ class LoggerFactory implements FactoryInterface
         $this->addWriters(
             $logger,
             $writer,
-            'debug-' . (is_int($debug) ? $debug : '5')
+            'debug-' . (\is_int($debug) ? $debug : '5')
         );
     }
 
@@ -349,7 +349,7 @@ class LoggerFactory implements FactoryInterface
      */
     protected function addWriters(Logger $logger, WriterInterface $writer, $filters)
     {
-        if (!is_array($filters)) {
+        if (!\is_array($filters)) {
             $filters = explode(',', $filters);
         }
 

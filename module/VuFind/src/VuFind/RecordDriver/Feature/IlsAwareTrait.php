@@ -100,7 +100,7 @@ trait IlsAwareTrait
     protected function hasILS()
     {
         return null !== $this->ils
-            && in_array($this->getSourceIdentifier(), $this->ilsBackends);
+            && \in_array($this->getSourceIdentifier(), $this->ilsBackends);
     }
 
     /**

@@ -217,7 +217,7 @@ class Solr extends AbstractBase
                 break;
             }
             $records = array_merge($records, $results->response->docs);
-            if (count($records) >= $rows) {
+            if (\count($records) >= $rows) {
                 break;
             }
             $prevCursorMark = $cursorMark;

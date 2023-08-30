@@ -59,7 +59,7 @@ abstract class AbstractBase
      */
     public function getId(): string
     {
-        return preg_replace('"^.*\\\\"', '', get_class($this));
+        return preg_replace('"^.*\\\\"', '', \get_class($this));
     }
 
     /**

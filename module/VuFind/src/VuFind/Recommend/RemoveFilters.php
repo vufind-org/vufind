@@ -99,7 +99,7 @@ class RemoveFilters implements RecommendInterface
     {
         $filters = $results->getParams()->getFilterList(false);
         foreach ($filters as $filter) {
-            $this->activeFacetsCount += count($filter);
+            $this->activeFacetsCount += \count($filter);
         }
         $this->results = $results;
     }

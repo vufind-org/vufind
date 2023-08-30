@@ -223,16 +223,16 @@ class DPLATerms implements RecommendInterface
             $desc = 'sourceResource.description';
             foreach ($body->docs as $i => $doc) {
                 $results[$i] = [
-                    'title' => is_array($doc->$title)
+                    'title' => \is_array($doc->$title)
                         ? current($doc->$title)
                         : $doc->$title,
-                    'provider' => is_array($doc->dataProvider)
+                    'provider' => \is_array($doc->dataProvider)
                         ? current($doc->dataProvider)
                         : $doc->dataProvider,
                     'link' => 'http://dp.la/item/' . $doc->id,
                 ];
                 if (isset($doc->$desc)) {
-                    $results[$i]['desc'] = is_array($doc->$desc)
+                    $results[$i]['desc'] = \is_array($doc->$desc)
                         ? current($doc->$desc)
                         : $doc->$desc;
                 }

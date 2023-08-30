@@ -123,7 +123,7 @@ class SearchRunner
         // Format the request object:
         $request = $rawRequest instanceof Parameters
             ? $rawRequest
-            : new Parameters(is_array($rawRequest) ? $rawRequest : []);
+            : new Parameters(\is_array($rawRequest) ? $rawRequest : []);
 
         // Set up the search:
         $results = $this->resultsManager->get($searchClassId);
@@ -131,7 +131,7 @@ class SearchRunner
         $params->setLastView($lastView);
         $params->initFromRequest($request);
 
-        if (is_callable($setupCallback)) {
+        if (\is_callable($setupCallback)) {
             $setupCallback($this, $params, $runningSearchId);
         }
 

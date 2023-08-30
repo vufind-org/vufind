@@ -1,7 +1,7 @@
 <?php $holdings = $this->tab->getHoldings(); ?>
 <?php if (isset($holdings->diagnostic->message)): ?>
   <p><?=$this->escapeHtml($holdings->diagnostic->message)?></p>
-<?php elseif ($holdings && count($holdings) > 0): ?>
+<?php elseif ($holdings && \count($holdings) > 0): ?>
   <h3><?=$this->transEsc('Holdings at Other Libraries')?></h3>
   <table class="table table-striped">
     <?php foreach ($holdings as $holding): ?>

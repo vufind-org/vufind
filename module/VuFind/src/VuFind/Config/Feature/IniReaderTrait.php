@@ -61,7 +61,7 @@ trait IniReaderTrait
             // we have (i.e. in WorldCat.ini search options) will get parsed in
             // unexpected ways.
             $this->iniReader = new IniReader();
-            $this->iniReader->setNestSeparator(chr(0));
+            $this->iniReader->setNestSeparator(\chr(0));
         }
         return $this->iniReader;
     }

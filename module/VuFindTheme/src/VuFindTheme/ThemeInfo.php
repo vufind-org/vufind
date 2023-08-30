@@ -221,12 +221,12 @@ class ThemeInfo
      */
     protected function isStringKeyedArray($op)
     {
-        if (!is_array($op)) {
+        if (!\is_array($op)) {
             return false;
         }
 
         reset($op);
-        return is_string(key($op));
+        return \is_string(key($op));
     }
 
     /**
@@ -246,7 +246,7 @@ class ThemeInfo
         }
 
         // Early escape for string, number, etc. values
-        if (!is_array($children) && !is_array($parent)) {
+        if (!\is_array($children) && !\is_array($parent)) {
             return $children;
         }
 
@@ -257,17 +257,17 @@ class ThemeInfo
             }
 
             foreach ($parent as $key => $val) {
-                if (!array_key_exists($key, $children)) {
+                if (!\array_key_exists($key, $children)) {
                     // capture missing string keys
                     $children[$key] = $val;
                 } elseif ($this->isStringKeyedArray($val)) {
                     // recurse
                     $children[$key]
                         = $this->mergeWithoutOverride($children[$key], $val);
-                } elseif (is_array($val)) {
+                } elseif (\is_array($val)) {
                     // capture unique or missing array items
                     $children[$key] = array_merge($val, (array)$children[$key]);
-                } elseif (is_array($children[$key])) {
+                } elseif (\is_array($children[$key])) {
                     // string -> array
                     $children[$key] = array_merge((array)$val, $children[$key]);
                 }
@@ -351,7 +351,7 @@ class ThemeInfo
     public function findContainingTheme($relativePath, $returnType = false)
     {
         $basePath = $this->getBaseDir();
-        $allPaths = is_array($relativePath)
+        $allPaths = \is_array($relativePath)
             ? $relativePath : [$relativePath];
 
         $currentTheme = $this->getTheme();
@@ -421,7 +421,7 @@ class ThemeInfo
                     if (filetype($file) === 'dir') {
                         continue;
                     }
-                    $relativeFile = substr($file, strlen($themePath));
+                    $relativeFile = substr($file, \strlen($themePath));
                     $results[$relativeFile] = [
                         'theme' => $theme,
                         'file' => $file,

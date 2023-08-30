@@ -138,7 +138,7 @@ class ContentPagesTest extends \PHPUnit\Framework\TestCase
         // Callback to ensure that ContentPages is passing expected
         // parameters, and to convert them into a format we can test:
         $callback = function () {
-            [$params, $options] = func_get_args();
+            [$params, $options] = \func_get_args();
             $this->assertEquals(['page'], array_keys($params));
             $this->assertEquals(['name'], array_keys($options));
             return $options['name'] . '/' . $params['page'];

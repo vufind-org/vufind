@@ -328,7 +328,7 @@ class XCNCIP2 extends AbstractBase implements
             }
         } else {
             $this->consortium = false;
-            if (is_array($this->config['Catalog']['agency'])) {
+            if (\is_array($this->config['Catalog']['agency'])) {
                 $this->agency[$this->config['Catalog']['agency'][0]] = 1;
             } else {
                 $this->agency[$this->config['Catalog']['agency']] = 1;
@@ -506,7 +506,7 @@ class XCNCIP2 extends AbstractBase implements
 
         if (
             !$result->isSuccess()
-            && !in_array(
+            && !\in_array(
                 $result->getStatusCode(),
                 $this->otherAcceptedHttpStatusCodes
             )
@@ -883,7 +883,7 @@ class XCNCIP2 extends AbstractBase implements
             $resumption = $response->xpath(
                 'ns1:LookupItemSetResponse/ns1:NextItemToken'
             );
-            $resumption = count($resumption) > 0 ? (string)$resumption[0] : null;
+            $resumption = \count($resumption) > 0 ? (string)$resumption[0] : null;
         } while (!empty($resumption));
         return $status;
     }
@@ -921,7 +921,7 @@ class XCNCIP2 extends AbstractBase implements
                 if (preg_match('/\(([^\)]+)\)\s*(.+)/', $id, $matches)) {
                     $matchedAgency = $matches[1];
                     $matchedId = $matches[2];
-                    if (array_key_exists($matchedAgency, $this->agency)) {
+                    if (\array_key_exists($matchedAgency, $this->agency)) {
                         $agencyList[] = $matchedAgency;
                         $idList[] = $matchedId;
                     }
@@ -2557,7 +2557,7 @@ class XCNCIP2 extends AbstractBase implements
      */
     protected function getHoldType(string $status)
     {
-        return in_array(strtolower($status), $this->availableStatuses)
+        return \in_array(strtolower($status), $this->availableStatuses)
             ? 'Hold' : 'Recall';
     }
 
@@ -2570,7 +2570,7 @@ class XCNCIP2 extends AbstractBase implements
      */
     protected function isAvailable(string $status)
     {
-        return in_array(strtolower($status), $this->availableStatuses);
+        return \in_array(strtolower($status), $this->availableStatuses);
     }
 
     /**
@@ -2582,7 +2582,7 @@ class XCNCIP2 extends AbstractBase implements
      */
     protected function isRequestCancelled(string $status)
     {
-        return !in_array(strtolower($status), $this->activeRequestStatuses);
+        return !\in_array(strtolower($status), $this->activeRequestStatuses);
     }
 
     /**
@@ -2597,7 +2597,7 @@ class XCNCIP2 extends AbstractBase implements
     {
         $requestType = $request->xpath('ns1:RequestType');
         $requestType = (string)$requestType[0];
-        return in_array(strtolower($requestType), $types);
+        return \in_array(strtolower($requestType), $types);
     }
 
     /**
@@ -2614,7 +2614,7 @@ class XCNCIP2 extends AbstractBase implements
         );
         foreach ($restrictions as $restriction) {
             $restStr = strtolower((string)$restriction);
-            if (in_array($restStr, $this->notHoldableRestriction)) {
+            if (\in_array($restStr, $this->notHoldableRestriction)) {
                 return false;
             }
         }
@@ -2623,7 +2623,7 @@ class XCNCIP2 extends AbstractBase implements
         );
         foreach ($statuses as $status) {
             $statusStr = strtolower((string)$status);
-            if (in_array($statusStr, $this->notHoldableStatuses)) {
+            if (\in_array($statusStr, $this->notHoldableStatuses)) {
                 return false;
             }
         }
@@ -2648,7 +2648,7 @@ class XCNCIP2 extends AbstractBase implements
             $agency = $keys[0];
         }
 
-        return is_array($agency) ? $agency[0] : $agency;
+        return \is_array($agency) ? $agency[0] : $agency;
     }
 
     /**

@@ -11,7 +11,7 @@
             'showing_results_of_html',
             [
               '%%start%%' => 1,
-              '%%end%%' => count($results),
+              '%%end%%' => \count($results),
               '%%total%%' => $this->localizedNumber($results->getTotal()),
             ]
         );

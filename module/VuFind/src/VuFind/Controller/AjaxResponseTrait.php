@@ -81,7 +81,7 @@ trait AjaxResponseTrait
                 $output = ['data' => $data];
                 if (
                     'development' == APPLICATION_ENV
-                    && count(self::$php_errors) > 0
+                    && \count(self::$php_errors) > 0
                 ) {
                     $output['php_errors'] = self::$php_errors;
                 }

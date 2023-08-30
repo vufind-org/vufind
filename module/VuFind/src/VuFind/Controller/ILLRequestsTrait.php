@@ -50,7 +50,7 @@ trait ILLRequestsTrait
         $driver = $this->loadRecord();
 
         // Stop now if the user does not have valid catalog credentials available:
-        if (!is_array($patron = $this->catalogLogin())) {
+        if (!\is_array($patron = $this->catalogLogin())) {
             return $patron;
         }
 
@@ -82,9 +82,9 @@ trait ILLRequestsTrait
             $gatheredDetails,
             $patron
         );
-        if ((is_array($validRequest) && !$validRequest['valid']) || !$validRequest) {
+        if ((\is_array($validRequest) && !$validRequest['valid']) || !$validRequest) {
             $this->flashMessenger()->addErrorMessage(
-                is_array($validRequest)
+                \is_array($validRequest)
                     ? $validRequest['status'] : 'ill_request_error_blocked'
             );
             return $this->redirectToRecord('#top');
@@ -155,7 +155,7 @@ trait ILLRequestsTrait
 
         // Check that there are pick up locations to choose from if the field is
         // required:
-        if (in_array('pickUpLocation', $extraFields) && !$pickupLocations) {
+        if (\in_array('pickUpLocation', $extraFields) && !$pickupLocations) {
             $this->flashMessenger()
                 ->addErrorMessage('No pickup locations available');
             return $this->redirectToRecord('#top');

@@ -105,7 +105,7 @@ class AbstractTokenRepository
         if ($token instanceof RefreshTokenEntityInterface) {
             $accessToken = $token->getAccessToken();
             $userId = $accessToken->getUserIdentifier();
-        } elseif (is_callable([$token, 'getUserIdentifier'])) {
+        } elseif (\is_callable([$token, 'getUserIdentifier'])) {
             $userId = $token->getUserIdentifier();
         }
         if ($userId) {

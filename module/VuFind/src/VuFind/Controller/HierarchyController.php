@@ -104,11 +104,11 @@ class HierarchyController extends AbstractBase
         $resultIDs = isset($facets['id']['data']['list'])
             ? array_map($callback, $facets['id']['data']['list']) : [];
 
-        $limitReached = ($limit > 0 && count($resultIDs) > $limit);
+        $limitReached = ($limit > 0 && \count($resultIDs) > $limit);
 
         $returnArray = [
             'limitReached' => $limitReached,
-            'results' => array_slice($resultIDs, 0, $limit),
+            'results' => \array_slice($resultIDs, 0, $limit),
         ];
         return $this->outputJSON(json_encode($returnArray));
     }

@@ -64,7 +64,7 @@ class Guardian extends \VuFind\Content\AbstractBase
 
         // Only add api-key if one has been provided in config.ini. If no key is
         // provided, a link to the Guardian can still be shown.
-        if (strlen($key) > 0) {
+        if (\strlen($key) > 0) {
             $url = $url . '&api-key=' . $key;
         }
 
@@ -106,7 +106,7 @@ class Guardian extends \VuFind\Content\AbstractBase
                     // Only return Content if the body tag contains a usable review
                     $redist = 'Redistribution rights for this field are unavailable';
                     if (
-                        (strlen($review['fields']['body']) > 0)
+                        (\strlen($review['fields']['body']) > 0)
                         && (!strstr($review['fields']['body'], $redist))
                     ) {
                         $result[$i]['Content'] = $review['fields']['body'];

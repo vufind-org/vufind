@@ -195,7 +195,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
             }
             if ($format->identifiers) {
                 foreach ($format->identifiers as $id) {
-                    if (in_array($id->type, ['ISBN', 'ASIN'])) {
+                    if (\in_array($id->type, ['ISBN', 'ASIN'])) {
                         $tmpresults[$id->type] = $id->value;
                     }
                 }

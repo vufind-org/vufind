@@ -117,7 +117,7 @@ abstract class AbstractCommand extends Command
     protected function extractTextDomain($raw)
     {
         $parts = explode('::', $raw, 2);
-        return count($parts) > 1 ? $parts : ['default', $raw];
+        return \count($parts) > 1 ? $parts : ['default', $raw];
     }
 
     /**
@@ -180,7 +180,7 @@ abstract class AbstractCommand extends Command
         while ($file = $dir->read()) {
             // Only process .ini files, and ignore native.ini special case file:
             if (substr($file, -4) == '.ini' && $file !== 'native.ini') {
-                if (is_callable($statusCallback)) {
+                if (\is_callable($statusCallback)) {
                     $statusCallback("Processing $file...");
                 }
                 $callback($dir->path . '/' . $file);

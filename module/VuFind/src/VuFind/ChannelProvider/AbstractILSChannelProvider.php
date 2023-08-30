@@ -184,6 +184,6 @@ abstract class AbstractILSChannelProvider extends AbstractChannelProvider implem
             'providerId' => $this->providerId,
             'contents' => $this->summarizeRecordDrivers($records),
         ];
-        return (count($retVal['contents']) > 0) ? [$retVal] : [];
+        return (\count($retVal['contents']) > 0) ? [$retVal] : [];
     }
 }

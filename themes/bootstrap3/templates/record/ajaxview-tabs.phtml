@@ -49,8 +49,8 @@
         $tab_classes[] = 'noajax';
       }
     ?>
-    <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
-      <a id="<?=$this->escapeHtmlAttr(strtolower($tab))?>_<?=$idSuffixEsc?>" class="list-tab-toggle" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, $tab))?>#tabnav" data-toggle="tab" data-target="#<?=strtolower($tab)?>_<?=$idSuffixEsc?>-content"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>><?=$this->transEsc($desc)?></a>
+    <li<?=\count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
+      <a id="<?=$this->escapeHtmlAttr(strtolower($tab))?>_<?=$idSuffixEsc?>" class="list-tab-toggle" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, $tab))?>#tabnav" data-toggle="tab" data-target="#<?=strtolower($tab)?>_<?=$idSuffixEsc?>-content"<?php if ($obj->supportsAjax() && \in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>><?=$this->transEsc($desc)?></a>
     </li>
   <?php endforeach; ?>
 </ul>

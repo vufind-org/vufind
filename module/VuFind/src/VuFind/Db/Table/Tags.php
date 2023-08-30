@@ -96,7 +96,7 @@ class Tags extends Gateway
             }
         };
         $result = $this->select($callback);
-        if (count($result) == 0 && $create) {
+        if (\count($result) == 0 && $create) {
             $row = $this->createRow();
             $row->tag = $cs ? $tag : mb_strtolower($tag, 'UTF8');
             $row->save();
@@ -476,7 +476,7 @@ class Tags extends Gateway
                 'tags.id = resource_tags.tag_id',
                 []
             );
-            if (is_callable($extra_where)) {
+            if (\is_callable($extra_where)) {
                 $extra_where($select);
             }
             $select->group(['tags.id', 'tags.tag']);
@@ -615,7 +615,7 @@ class Tags extends Gateway
     {
         // Make sure this really is a duplicate.
         $result = $this->getByText($tag, false, false);
-        if (count($result) < 2) {
+        if (\count($result) < 2) {
             return;
         }
 

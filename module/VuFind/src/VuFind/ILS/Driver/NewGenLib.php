@@ -99,7 +99,7 @@ class NewGenLib extends AbstractBase
     public function getHolding($RecordID, array $patron = null, array $options = [])
     {
         $holding = $this->getItemStatus($RecordID);
-        for ($i = 0; $i < count($holding); $i++) {
+        for ($i = 0; $i < \count($holding); $i++) {
             // add extra data
             $duedateql = 'select due_date from cir_transaction where ' .
                 "accession_number='" . $holding[$i]['number'] .
@@ -403,11 +403,11 @@ class NewGenLib extends AbstractBase
     public function getStatus($RecordID)
     {
         $status = $this->getItemStatus($RecordID);
-        if (!is_array($status)) {
+        if (!\is_array($status)) {
             return $status;
         }
         // remove not needed entries within the items within the result array
-        for ($i = 0; $i < count($status); $i++) {
+        for ($i = 0; $i < \count($status); $i++) {
             unset($status[$i]['number']);
             unset($status[$i]['barcode']);
             unset($status[$i]['library_id']);
@@ -522,7 +522,7 @@ class NewGenLib extends AbstractBase
             $id = $row['cataloguerecordid'] . '_' . $row['owner_library_id'];
             $results[] = $id;
         }
-        $retVal = ['count' => count($results), 'results' => []];
+        $retVal = ['count' => \count($results), 'results' => []];
         foreach ($results as $result) {
             $retVal['results'][] = ['id' => $result];
         }

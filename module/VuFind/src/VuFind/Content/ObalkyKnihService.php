@@ -90,7 +90,7 @@ class ObalkyKnihService implements
     public function __construct(\Laminas\Config\Config $config)
     {
         if (
-            !isset($config->base_url) || count($config->base_url) < 1
+            !isset($config->base_url) || \count($config->base_url) < 1
             || !isset($config->books_endpoint)
         ) {
             throw new \Exception(

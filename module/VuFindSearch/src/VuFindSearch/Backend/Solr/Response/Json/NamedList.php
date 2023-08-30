@@ -96,7 +96,7 @@ class NamedList implements Countable, Iterator
      */
     public function count(): int
     {
-        return count($this->list);
+        return \count($this->list);
     }
 
     /// Iterator
@@ -140,7 +140,7 @@ class NamedList implements Countable, Iterator
      */
     public function valid(): bool
     {
-        return is_array($this->current);
+        return \is_array($this->current);
     }
 
     /**
@@ -177,7 +177,7 @@ class NamedList implements Countable, Iterator
     {
         $newList = [];
         foreach ($this->list as $current) {
-            if (!in_array($current[0], $keys)) {
+            if (!\in_array($current[0], $keys)) {
                 $newList[] = $current;
             }
         }

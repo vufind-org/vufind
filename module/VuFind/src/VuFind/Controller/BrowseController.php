@@ -161,13 +161,13 @@ class BrowseController extends AbstractBase implements
         foreach ($activeOptions as $option) {
             switch ($option) {
                 case 'dewey':
-                    $deweyLabel = in_array('lcc', $activeOptions)
+                    $deweyLabel = \in_array('lcc', $activeOptions)
                         ? 'browse_dewey' : 'Call Number';
                     $browseOptions[] = $this
                         ->buildBrowseOption('Dewey', $deweyLabel);
                     break;
                 case 'lcc':
-                    $lccLabel = in_array('dewey', $activeOptions)
+                    $lccLabel = \in_array('dewey', $activeOptions)
                         ? 'browse_lcc' : 'Call Number';
                     $browseOptions[] = $this->buildBrowseOption('LCC', $lccLabel);
                     break;
@@ -348,7 +348,7 @@ class BrowseController extends AbstractBase implements
                             ];
                         }
                     }
-                    $view->resultList = array_slice(
+                    $view->resultList = \array_slice(
                         $tagList,
                         0,
                         $this->config->Browse->result_limit

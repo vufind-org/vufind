@@ -61,7 +61,7 @@ class IlsAwareDelegatorFactory implements DelegatorFactoryInterface
         callable $callback,
         array $options = null
     ) {
-        $driver = call_user_func($callback);
+        $driver = \call_user_func($callback);
 
         // Attach the ILS if at least one backend supports it:
         $ilsBackends = $this->getIlsBackends($container);
@@ -88,7 +88,7 @@ class IlsAwareDelegatorFactory implements DelegatorFactoryInterface
     {
         // Get a list of ILS-compatible backends.
         static $ilsBackends = null;
-        if (!is_array($ilsBackends)) {
+        if (!\is_array($ilsBackends)) {
             $config = $container->get(\VuFind\Config\PluginManager::class)
                 ->get('config');
             $settings = isset($config->Catalog) ? $config->Catalog->toArray() : [];

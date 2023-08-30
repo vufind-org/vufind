@@ -57,7 +57,7 @@ class PrintArrayHtml extends AbstractHelper
     {
         $makeTag = $this->getView()->plugin('makeTag');
         $html = '';
-        if (is_array($entry)) {
+        if (\is_array($entry)) {
             $isList = $this->isArrayList($entry);
             $isFlat = $this->isArrayFlat($entry);
             foreach ($entry as $key => $value) {
@@ -68,11 +68,11 @@ class PrintArrayHtml extends AbstractHelper
 
                 $nextIndentLevel = $indentLevel;
                 // Indent first line unless we're continuing from hyphen
-                $nextIndentFirst = ($isFlat || !$isList || !is_array($value))
+                $nextIndentFirst = ($isFlat || !$isList || !\is_array($value))
                                    && !$valueIsSingleKeyList;
                 if (!$isFlat || !$isList) {
                     // Increase indent if entering new array
-                    $nextIndentLevel = is_array($value) ? $indentLevel + 2 : 0;
+                    $nextIndentLevel = \is_array($value) ? $indentLevel + 2 : 0;
                 }
                 if (!$isFlat && $isList && !$valueIsSingleKeyList) {
                     // Integer keyed arrays use a hyphen list unless they're flat
@@ -80,7 +80,7 @@ class PrintArrayHtml extends AbstractHelper
                 } elseif (!$isList) {
                     $html .= $makeTag('span', $key . ':', ['class' => 'term'])
                              . (
-                                 (is_array($value) && !$valueIsSingleKeyList)
+                                 (\is_array($value) && !$valueIsSingleKeyList)
                                  ? "<br>\n" : ' '
                              );
                 }
@@ -104,7 +104,7 @@ class PrintArrayHtml extends AbstractHelper
      */
     protected function isArrayList($var)
     {
-        if (!is_array($var)) {
+        if (!\is_array($var)) {
             return false;
         }
         $i = 0;
@@ -125,11 +125,11 @@ class PrintArrayHtml extends AbstractHelper
      */
     protected function isArrayFlat($var)
     {
-        if (!is_array($var)) {
+        if (!\is_array($var)) {
             return false;
         }
         foreach ($var as $val) {
-            if (is_array($val)) {
+            if (\is_array($val)) {
                 return false;
             }
         }
@@ -148,6 +148,6 @@ class PrintArrayHtml extends AbstractHelper
     {
         return $this->isArrayList($var)
                && $this->isArrayFlat($var)
-               && count($var) == 1;
+               && \count($var) == 1;
     }
 }

@@ -290,7 +290,7 @@ class CAS extends AbstractBase
             ) {
                 $casauth->setDebug($cas->log);
             }
-            $protocol = constant($cas->protocol ?? 'SAML_VERSION_1_1');
+            $protocol = \constant($cas->protocol ?? 'SAML_VERSION_1_1');
             $casauth->client(
                 $protocol,
                 $cas->server,

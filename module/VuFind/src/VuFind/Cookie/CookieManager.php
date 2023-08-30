@@ -260,7 +260,7 @@ class CookieManager
             $sameSite = $this->sameSite;
         }
         // Simple case: flat value.
-        if (!is_array($value)) {
+        if (!\is_array($value)) {
             return $this->proxySetCookie(
                 $key,
                 $value,
@@ -329,7 +329,7 @@ class CookieManager
     public function clear($key)
     {
         $value = $this->get($key);
-        if (is_array($value)) {
+        if (\is_array($value)) {
             $success = true;
             foreach (array_keys($value) as $i) {
                 if (!$this->clear($key . '[' . $i . ']')) {

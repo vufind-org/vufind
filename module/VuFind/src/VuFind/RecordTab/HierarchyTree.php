@@ -106,7 +106,7 @@ class HierarchyTree extends AbstractBase
         $hierarchySetting = ($request = $this->getRequest())
             ? $request->getPost('hierarchy', $request->getQuery('hierarchy', false))
             : false;
-        if (count($treeList) == 1 || !$hierarchySetting) {
+        if (\count($treeList) == 1 || !$hierarchySetting) {
             $keys = array_keys($treeList);
             return $keys[0];
         } else {
@@ -143,7 +143,7 @@ class HierarchyTree extends AbstractBase
         $hierarchyDriver = $recordDriver->tryMethod('getHierarchyDriver');
 
         // We need a driver to proceed:
-        if (is_object($hierarchyDriver)) {
+        if (\is_object($hierarchyDriver)) {
             // No setting, or true setting -- use default setting:
             $settings = $hierarchyDriver->getTreeSettings();
             if (
@@ -177,7 +177,7 @@ class HierarchyTree extends AbstractBase
         $id ??= $this->getActiveTree();
         $recordDriver = $this->getRecordDriver();
         $hierarchyDriver = $recordDriver->tryMethod('getHierarchyDriver');
-        if (is_object($hierarchyDriver)) {
+        if (\is_object($hierarchyDriver)) {
             $tree = $hierarchyDriver->render($recordDriver, $context, 'List', $id);
             return str_replace(
                 '%%%%VUFIND-BASE-URL%%%%',

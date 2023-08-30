@@ -87,7 +87,7 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
         if (isset($view->results) && $view->results) {
             $params = $view->results->getParams();
             $view->query = $params->getQuery();
-            if (is_callable([$params, 'getBackendParameters'])) {
+            if (\is_callable([$params, 'getBackendParameters'])) {
                 $view->backendParams = $params->getBackendParameters()
                     ->getArrayCopy();
             }

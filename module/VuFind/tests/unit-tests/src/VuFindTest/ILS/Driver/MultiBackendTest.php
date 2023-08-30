@@ -2644,13 +2644,13 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         $return2
     ) {
         $voyager = $this->getMockILS('Voyager', ['init', $function]);
-        call_user_func_array(
+        \call_user_func_array(
             [$voyager->expects($times1)->method($function), 'with'],
             $params
         )->will($this->returnValue($return1));
 
         $voyager2 = $this->getMockILS('Voyager2', ['init', $function]);
-        call_user_func_array(
+        \call_user_func_array(
             [$voyager2->expects($times2)->method($function), 'with'],
             $params
         )->will($this->returnValue($return2));
@@ -2721,10 +2721,10 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()->getMock();
         // MultiBackend should always ask for a driver just once, so exactly can be
         // used here:
-        $sm->expects(null !== $count ? $count : $this->exactly(count($driverMap)))
+        $sm->expects(null !== $count ? $count : $this->exactly(\count($driverMap)))
             ->method('get')
             ->with(
-                call_user_func_array([$this, 'logicalOr'], array_keys($driverMap))
+                \call_user_func_array([$this, 'logicalOr'], array_keys($driverMap))
             )
             ->will(
                 $this->returnCallback(
@@ -2858,7 +2858,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
     protected function getMockILS($type, $methods = null)
     {
         $mock = null;
-        if ($methods && in_array('supportsMethod', $methods)) {
+        if ($methods && \in_array('supportsMethod', $methods)) {
             $mock = $this
                 ->getMockBuilder(__NAMESPACE__ . '\\MultiBackendTest\\' . $type . 'NoSupportMock')
                 ->onlyMethods($methods)
@@ -2872,7 +2872,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
                 ->setConstructorArgs([new \VuFind\Date\Converter()])
                 ->getMock();
         }
-        if ($methods && in_array('init', $methods)) {
+        if ($methods && \in_array('init', $methods)) {
             $mock->expects($this->any())
                 ->method('init')
                 ->will($this->returnValue(null));

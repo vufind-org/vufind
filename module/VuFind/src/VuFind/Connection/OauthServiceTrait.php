@@ -170,7 +170,7 @@ trait OauthServiceTrait
     protected function oauthServiceTraitLog($level, $msg)
     {
         if (method_exists($this, 'log')) {
-            $this->log(...func_get_args());
+            $this->log(...\func_get_args());
         }
     }
 }

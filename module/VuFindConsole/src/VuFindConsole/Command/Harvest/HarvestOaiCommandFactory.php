@@ -54,7 +54,7 @@ class HarvestOaiCommandFactory implements FactoryInterface
     protected function getHarvestRoot()
     {
         // Get the base VuFind path:
-        $home = strlen(LOCAL_OVERRIDE_DIR) > 0
+        $home = \strlen(LOCAL_OVERRIDE_DIR) > 0
             ? LOCAL_OVERRIDE_DIR
             : realpath(APPLICATION_PATH . '/..');
 

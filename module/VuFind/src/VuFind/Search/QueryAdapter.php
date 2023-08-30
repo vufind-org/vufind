@@ -58,7 +58,7 @@ abstract class QueryAdapter
     public static function deminify(array $search)
     {
         // Use array_key_exists since null is also valid
-        if (array_key_exists('l', $search)) {
+        if (\array_key_exists('l', $search)) {
             $handler = $search['i'] ?? $search['f'];
             return new Query(
                 $search['l'],
@@ -131,7 +131,7 @@ abstract class QueryAdapter
                     if ($group instanceof Query) {
                         // Build this group individually as a basic search
                         $thisGroup[]
-                            = call_user_func($showName, $group->getHandler()) . ':'
+                            = \call_user_func($showName, $group->getHandler()) . ':'
                             . $group->getString();
                     } else {
                         throw new \Exception('Unexpected ' . $group::class);
@@ -139,7 +139,7 @@ abstract class QueryAdapter
                 }
                 // Is this an exclusion (NOT) group or a normal group?
                 $str = implode(
-                    ' ' . call_user_func($translate, $search->getOperator())
+                    ' ' . \call_user_func($translate, $search->getOperator())
                     . ' ',
                     $thisGroup
                 );
@@ -154,13 +154,13 @@ abstract class QueryAdapter
         }
 
         // Base 'advanced' query
-        $operator = call_user_func($translate, $query->getOperator());
+        $operator = \call_user_func($translate, $query->getOperator());
         $output = '(' . implode(') ' . $operator . ' (', $groups) . ')';
 
         // Concatenate exclusion after that
-        if (count($excludes) > 0) {
-            $output .= ' ' . call_user_func($translate, 'NOT') . ' (('
-                . implode(') ' . call_user_func($translate, 'OR') . ' (', $excludes)
+        if (\count($excludes) > 0) {
+            $output .= ' ' . \call_user_func($translate, 'NOT') . ' (('
+                . implode(') ' . \call_user_func($translate, 'OR') . ' (', $excludes)
                 . '))';
         }
 
@@ -190,7 +190,7 @@ abstract class QueryAdapter
             $value = (array)$value;
 
             // Loop through each term inside the group
-            for ($i = 0; $i < count($value); $i++) {
+            for ($i = 0; $i < \count($value); $i++) {
                 // Ignore advanced search fields with no lookup
                 if ($value[$i] != '') {
                     // Use default fields if not set
@@ -208,13 +208,13 @@ abstract class QueryAdapter
             }
 
             // Make sure we aren't adding groups that had no terms
-            if (count($group) > 0) {
+            if (\count($group) > 0) {
                 // Add the completed group to the list
                 $groups[] = new QueryGroup($lastBool, $group);
             }
         }
 
-        return (count($groups) > 0)
+        return (\count($groups) > 0)
             ? new QueryGroup($request->get('join', 'AND'), $groups)
             : new Query();
     }

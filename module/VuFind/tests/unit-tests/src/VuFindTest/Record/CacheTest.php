@@ -238,7 +238,7 @@ class CacheTest extends \PHPUnit\Framework\TestCase
             $results = [];
             foreach ($this->recordTable as $row) {
                 if (
-                    in_array($row['record_id'], $ids)
+                    \in_array($row['record_id'], $ids)
                     && $row['source'] == $source
                 ) {
                     $results[] = $row;

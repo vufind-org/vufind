@@ -99,7 +99,7 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
             $linker->createLink(
                 $this->id,
                 $tag->id,
-                is_object($user) ? $user->id : null,
+                \is_object($user) ? $user->id : null,
                 $list_id
             );
         }
@@ -242,7 +242,7 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
 
         // Try to find a year; if not available, just leave the default null:
         $dates = $driver->tryMethod('getPublicationDates');
-        if (isset($dates[0]) && strlen($dates[0]) > 4) {
+        if (isset($dates[0]) && \strlen($dates[0]) > 4) {
             try {
                 $year = $converter->convertFromDisplayDate('Y', $dates[0]);
             } catch (DateException $e) {
@@ -253,7 +253,7 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
             $year = $dates[0] ?? '';
         }
         if (!empty($year)) {
-            $this->year = intval($year);
+            $this->year = \intval($year);
         }
 
         if ($extra = $driver->tryMethod('getExtraResourceMetadata')) {

@@ -157,7 +157,7 @@ class Importer
 
         // Register PHP functions, if specified:
         if (isset($options['General']['php_function'])) {
-            $functions = is_array($options['General']['php_function'])
+            $functions = \is_array($options['General']['php_function'])
                 ? $options['General']['php_function']
                 : [$options['General']['php_function']];
             foreach ($functions as $function) {
@@ -167,7 +167,7 @@ class Importer
 
         // Register custom classes, if specified:
         if (isset($options['General']['custom_class'])) {
-            $classes = is_array($options['General']['custom_class'])
+            $classes = \is_array($options['General']['custom_class'])
                 ? $options['General']['custom_class']
                 : [$options['General']['custom_class']];
             $truncate = $options['General']['truncate_custom_class'] ?? true;

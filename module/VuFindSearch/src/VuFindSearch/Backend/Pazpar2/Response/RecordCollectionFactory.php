@@ -72,7 +72,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
             $recordFactory = function ($i) {
                 return new Record($i);
             };
-        } elseif (!is_callable($recordFactory)) {
+        } elseif (!\is_callable($recordFactory)) {
             throw new InvalidArgumentException('Record factory must be callable.');
         }
         $this->recordFactory = $recordFactory;
@@ -93,7 +93,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
             $response['offset']
         );
         foreach ($response['records'] as $doc) {
-            $collection->add(call_user_func($this->recordFactory, $doc), false);
+            $collection->add(\call_user_func($this->recordFactory, $doc), false);
         }
         return $collection;
     }

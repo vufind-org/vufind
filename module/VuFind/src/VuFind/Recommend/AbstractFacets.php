@@ -105,7 +105,7 @@ abstract class AbstractFacets implements RecommendInterface
      */
     public function excludeAllowed($field)
     {
-        return in_array($field, $this->excludableFacets);
+        return \in_array($field, $this->excludableFacets);
     }
 
     /**
@@ -117,7 +117,7 @@ abstract class AbstractFacets implements RecommendInterface
      */
     public function getFacetOperator($field)
     {
-        return in_array($field, $this->orFacets) ? 'OR' : 'AND';
+        return \in_array($field, $this->orFacets) ? 'OR' : 'AND';
     }
 
     /**

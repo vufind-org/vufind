@@ -80,7 +80,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
     {
         $loader = $this->getLoader();
         $this->assertEquals('image/gif', $loader->getContentType());
-        $this->assertEquals('368', strlen($loader->getImage()));
+        $this->assertEquals('368', \strlen($loader->getImage()));
     }
 
     /**
@@ -93,7 +93,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
     public function testDefaultLoadingForImage()
     {
         $loader = $this->getLoader();
-        $this->assertEquals('368', strlen($loader->getImage()));
+        $this->assertEquals('368', \strlen($loader->getImage()));
         $this->assertEquals('image/gif', $loader->getContentType());
     }
 
@@ -111,7 +111,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         // We expect the loader to complain about the bad filename and load the default image:
         $loader->expects($this->once())->method('debug')->with($this->equalTo("Cannot access '$badfile'"));
         $loader->loadUnavailable();
-        $this->assertEquals('368', strlen($loader->getImage()));
+        $this->assertEquals('368', \strlen($loader->getImage()));
     }
 
     /**
@@ -130,7 +130,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
             . $this->testTheme . '/' . $badfile . "'";
         $loader->expects($this->once())->method('debug')->with($this->equalTo($expected));
         $loader->loadUnavailable();
-        $this->assertEquals('368', strlen($loader->getImage()));
+        $this->assertEquals('368', \strlen($loader->getImage()));
     }
 
     /**

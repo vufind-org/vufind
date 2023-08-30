@@ -88,17 +88,17 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
      */
     public function factory($response)
     {
-        if (!is_array($response)) {
+        if (!\is_array($response)) {
             throw new InvalidArgumentException(
                 sprintf(
                     'Unexpected type of value: Expected array, got %s',
-                    gettype($response)
+                    \gettype($response)
                 )
             );
         }
         $collection = new $this->collectionClass($response);
         foreach ($response['response']['docs'] ?? [] as $doc) {
-            $collection->add(call_user_func($this->recordFactory, $doc), false);
+            $collection->add(\call_user_func($this->recordFactory, $doc), false);
         }
         return $collection;
     }

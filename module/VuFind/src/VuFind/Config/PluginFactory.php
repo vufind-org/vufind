@@ -69,7 +69,7 @@ class PluginFactory implements AbstractFactoryInterface
             $configs[]
                 = new Config($this->getIniReader()->fromFile($filename), true);
 
-            $i = count($configs) - 1;
+            $i = \count($configs) - 1;
             if (isset($configs[$i]->Parent_Config->path)) {
                 $filename = $configs[$i]->Parent_Config->path;
             } elseif (isset($configs[$i]->Parent_Config->relative_path)) {
@@ -112,7 +112,7 @@ class PluginFactory implements AbstractFactoryInterface
                     continue;
                 }
                 if (
-                    in_array($section, $overrideSections)
+                    \in_array($section, $overrideSections)
                     || !isset($config->$section)
                 ) {
                     $config->$section = $child->$section;
@@ -123,8 +123,8 @@ class PluginFactory implements AbstractFactoryInterface
                         // section is not configured as an override section we try to
                         // merge the key[] values instead of overwriting them.
                         if (
-                            is_object($config->$section->$key)
-                            && is_object($child->$section->$key)
+                            \is_object($config->$section->$key)
+                            && \is_object($child->$section->$key)
                             && $mergeArraySettings
                         ) {
                             $config->$section->$key = array_merge(

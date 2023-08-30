@@ -155,7 +155,7 @@ class Session extends Gateway
     {
         $callback = function ($select) use ($sess_maxlifetime) {
             $select->where
-                ->lessThan('last_used', time() - intval($sess_maxlifetime));
+                ->lessThan('last_used', time() - \intval($sess_maxlifetime));
         };
         $this->delete($callback);
     }

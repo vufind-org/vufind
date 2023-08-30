@@ -165,7 +165,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
             // httpService doesn't explicitly support PUT, so add this:
             if ($http_method == 'PUT') {
-                $http_headers[] = 'Content-Length: ' . strlen($json_data);
+                $http_headers[] = 'Content-Length: ' . \strlen($json_data);
             }
             $client->setHeaders($http_headers);
             $client->setMethod($http_method);
@@ -191,8 +191,8 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     public function formatJSONTime($jsontime)
     {
         preg_match('/Date\((\d+)\-(\d){2}(\d){2}\)/', $jsontime, $matches);
-        if (count($matches) > 0) {
-            $matchestmp = intval($matches[1] / 1000);
+        if (\count($matches) > 0) {
+            $matchestmp = \intval($matches[1] / 1000);
             $date = date('n-j-Y', $matchestmp);
         } else {
             $date = 'n/a';
@@ -400,7 +400,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         // all activations are for now(), for now.
         // microtime is msec or sec?? seems to have changed
-        $activationdate = '/Date(' . intval(microtime(true) * 1000) . ')/';
+        $activationdate = '/Date(' . \intval(microtime(true) * 1000) . ')/';
         if (empty($holdDetails['barcode'])) {
             $holdDetails['barcode'] = '';
         }

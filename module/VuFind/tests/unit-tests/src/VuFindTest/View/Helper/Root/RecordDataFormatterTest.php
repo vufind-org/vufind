@@ -266,7 +266,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
                     ],
                     [
                         'label' => 'Multi Count',
-                        'values' => count($data),
+                        'values' => \count($data),
                     ],
                 ];
             },

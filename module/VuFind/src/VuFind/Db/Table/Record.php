@@ -169,6 +169,6 @@ class Record extends Gateway
             $this->delete(['id' => $result['id']]);
         }
 
-        return count($results);
+        return \count($results);
     }
 }

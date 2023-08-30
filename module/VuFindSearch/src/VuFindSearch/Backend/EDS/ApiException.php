@@ -55,7 +55,7 @@ class ApiException extends \VuFindSearch\Backend\Exception\BackendException
      */
     public function __construct($apiErrorMessage)
     {
-        if (is_array($apiErrorMessage)) {
+        if (\is_array($apiErrorMessage)) {
             $this->setApiError($apiErrorMessage);
             parent::__construct($this->apiErrorDetails['Description'] ?? '');
         } else {
@@ -85,8 +85,8 @@ class ApiException extends \VuFindSearch\Backend\Exception\BackendException
             $this->apiErrorDetails['DetailedDescription']
                 = $message['DetailedErrorDescription'];
         } elseif (
-            is_array($message['errors'] ?? null)
-            && count($message['errors']) > 0
+            \is_array($message['errors'] ?? null)
+            && \count($message['errors']) > 0
         ) {
             // Array of errors
             $this->apiErrorDetails['ErrorCode'] = $message['errors'][0]['code'];

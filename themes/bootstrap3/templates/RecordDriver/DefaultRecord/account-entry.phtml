@@ -19,11 +19,11 @@
   <?php if (!empty($listAuthors)): ?>
     <span class="authors">
       <?=$this->transEsc('by')?>:
-      <a href="<?=$this->record($driver)->getLink('author', $listAuthors[0])?>"><?=$this->escapeHtml($listAuthors[0])?></a><?php if (count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?><br>
+      <a href="<?=$this->record($driver)->getLink('author', $listAuthors[0])?>"><?=$this->escapeHtml($listAuthors[0])?></a><?php if (\count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?><br>
     </span>
   <?php endif; ?>
 </h2>
-<?php if (count($driver->getFormats()) > 0): ?>
+<?php if (\count($driver->getFormats()) > 0): ?>
   <?=$this->record($driver)->getFormatList() ?>
   <br>
 <?php endif; ?>

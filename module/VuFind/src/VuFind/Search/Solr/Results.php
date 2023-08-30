@@ -381,8 +381,8 @@ class Results extends \VuFind\Search\Base\Results
             // Detect next page and crop results if necessary
             $more = false;
             if (
-                isset($page) && count($value['list']) > 0
-                && count($value['list']) == $limit + 1
+                isset($page) && \count($value['list']) > 0
+                && \count($value['list']) == $limit + 1
             ) {
                 $more = true;
                 array_pop($value['list']);

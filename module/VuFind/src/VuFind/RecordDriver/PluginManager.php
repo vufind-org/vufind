@@ -134,10 +134,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 
         // Add an initializer for setting up hierarchies
         $initializer = function ($sm, $instance) {
-            $hasHierarchyType = is_callable([$instance, 'getHierarchyType']);
+            $hasHierarchyType = \is_callable([$instance, 'getHierarchyType']);
             if (
                 $hasHierarchyType
-                && is_callable([$instance, 'setHierarchyDriverManager'])
+                && \is_callable([$instance, 'setHierarchyDriverManager'])
             ) {
                 if ($sm && $sm->has(\VuFind\Hierarchy\Driver\PluginManager::class)) {
                     $instance->setHierarchyDriverManager(

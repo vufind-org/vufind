@@ -113,7 +113,7 @@ class VuFindWorkKeys
             );
             if (
                 empty($normalizedTitle)                          // skip empties
-                || in_array($normalizedTitle, $normalizedTitles) // avoid dupes
+                || \in_array($normalizedTitle, $normalizedTitles) // avoid dupes
             ) {
                 continue;
             }

@@ -214,7 +214,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
      */
     public function getISBNs()
     {
-        if (isset($this->fields['ISBN']) && is_array($this->fields['ISBN'])) {
+        if (isset($this->fields['ISBN']) && \is_array($this->fields['ISBN'])) {
             return $this->fields['ISBN'];
         }
         return [];
@@ -333,7 +333,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
     {
         if (
             isset($this->fields['PublicationDate_xml'])
-            && is_array($this->fields['PublicationDate_xml'])
+            && \is_array($this->fields['PublicationDate_xml'])
         ) {
             $dates = [];
             $converter = $this->getDateConverter();
@@ -376,7 +376,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
     {
         $authors = [];
         if (isset($this->fields['Author_xml'])) {
-            for ($i = 0; $i < count($this->fields['Author_xml']); $i++) {
+            for ($i = 0; $i < \count($this->fields['Author_xml']); $i++) {
                 if (isset($this->fields['Author_xml'][$i]['fullname'])) {
                     $authors[] = $this->fields['Author_xml'][$i]['fullname'];
                 }
@@ -515,7 +515,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
             ];
         }
         $retVal = [];
-        if (isset($this->fields['url']) && is_array($this->fields['url'])) {
+        if (isset($this->fields['url']) && \is_array($this->fields['url'])) {
             foreach ($this->fields['url'] as $desc => $url) {
                 $retVal[] = ['url' => $url, 'desc' => $desc];
             }
@@ -593,7 +593,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
         } elseif (
             isset($this->fields['PageCount'])
             && $this->fields['PageCount'] > 1
-            && intval($this->fields['StartPage'][0]) > 0
+            && \intval($this->fields['StartPage'][0]) > 0
         ) {
             return $this->fields['StartPage'][0] + $this->fields['PageCount'][0] - 1;
         }
@@ -616,7 +616,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
         }
         $no = $this->getContainerIssue();
         if (!empty($no)) {
-            if (strlen($str) > 0) {
+            if (\strlen($str) > 0) {
                 $str .= '; ';
             }
             $str .= $this->translate('citation_issue_abbrev')
@@ -624,7 +624,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
         }
         $start = $this->getContainerStartPage();
         if (!empty($start)) {
-            if (strlen($str) > 0) {
+            if (\strlen($str) > 0) {
                 $str .= '; ';
             }
             $end = $this->getContainerEndPage();

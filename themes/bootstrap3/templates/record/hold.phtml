@@ -16,14 +16,14 @@
   <?=$this->flashmessages()?>
   <label class="control-label"><?=$this->transEsc('Title')?></label>
   <p class="form-control-static"><?=$this->driver->getBreadcrumb() ?></p>
-  <?php if (in_array('comments', $this->extraHoldFields)): ?>
+  <?php if (\in_array('comments', $this->extraHoldFields)): ?>
     <div class="form-group hold-comment">
       <label class="control-label"><?=$this->transEsc('Comments')?>:</label>
       <textarea rows="3" cols="20" name="gatheredDetails[comment]" class="form-control"><?=isset($this->gatheredDetails['comment']) ? $this->escapeHtml($this->gatheredDetails['comment']) : ''?></textarea>
     </div>
   <?php endif; ?>
 
-  <?php if (in_array('startDate', $this->extraHoldFields)): ?>
+  <?php if (\in_array('startDate', $this->extraHoldFields)): ?>
     <div class="form-group hold-start-date">
       <label class="control-label"><?=$this->transEsc('hold_start_date')?>:</label>
       <input id="startDate" type="text" name="gatheredDetails[startDate]" value="<?=!empty($this->gatheredDetails['startDate']) ? $this->escapeHtmlAttr($this->gatheredDetails['startDate']) : $this->escapeHtmlAttr($this->defaultStartDate)?>" size="10" class="form-control">
@@ -31,9 +31,9 @@
     </div>
   <?php endif; ?>
 
-  <?php if (in_array('requiredByDate', $this->extraHoldFields) || in_array('requiredByDateOptional', $this->extraHoldFields)): ?>
+  <?php if (\in_array('requiredByDate', $this->extraHoldFields) || \in_array('requiredByDateOptional', $this->extraHoldFields)): ?>
     <div class="form-group hold-required-by">
-      <label class="control-label"><?=$this->transEsc(in_array('requiredByDateOptional', $this->extraHoldFields) ? 'hold_required_by_optional' : 'hold_required_by')?>:</label>
+      <label class="control-label"><?=$this->transEsc(\in_array('requiredByDateOptional', $this->extraHoldFields) ? 'hold_required_by_optional' : 'hold_required_by')?>:</label>
       <input id="requiredByDate" type="text" name="gatheredDetails[requiredBy]" value="<?=!empty($this->gatheredDetails['requiredBy']) ? $this->escapeHtmlAttr($this->gatheredDetails['requiredBy']) : $this->escapeHtmlAttr($this->defaultRequiredDate)?>" size="10" class="form-control">
       (<?=$this->dateTime()->getDisplayDateFormat()?>)
     </div>
@@ -64,7 +64,7 @@
     </div>
   <?php endif; ?>
 
-  <?php if (in_array('pickUpLocation', $this->extraHoldFields)): ?>
+  <?php if (\in_array('pickUpLocation', $this->extraHoldFields)): ?>
     <?php
       // Empty string as home library means that default pick up location should be
       // used. null means that there should be no default
@@ -83,7 +83,7 @@
     <?php if ($this->requestGroupNeeded): ?>
       <div class="form-group hold-pickup-location">
         <label id="pickUpLocationLabel" class="control-label"><?=$this->icon('spinner', 'loading-icon hidden')?> <?=$this->transEsc('pick_up_location')?>:
-          <?php if (in_array('requestGroup', $this->extraHoldFields)): ?>
+          <?php if (\in_array('requestGroup', $this->extraHoldFields)): ?>
             <noscript> (<?=$this->transEsc('Please enable JavaScript.')?>)</noscript>
           <?php endif; ?>
         </label>
@@ -99,7 +99,7 @@
       <div class="form-group hold-pickup-location">
         <label class="control-label"><?=$this->transEsc('pick_up_location')?>:</label>
         <select id="pickUpLocation" name="gatheredDetails[pickUpLocation]" class="form-control">
-          <?php if ($selected === false && count($this->pickup) > 1): ?>
+          <?php if ($selected === false && \count($this->pickup) > 1): ?>
             <option value="" selected="selected">
               <?=$this->transEsc('select_pickup_location')?>
             </option>

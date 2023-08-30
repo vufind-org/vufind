@@ -62,7 +62,7 @@ class GetQueryBuilderCommand extends AbstractBase
     public function execute(BackendInterface $backend): CommandInterface
     {
         $this->validateBackend($backend);
-        $result = is_callable([$backend, 'getQueryBuilder'])
+        $result = \is_callable([$backend, 'getQueryBuilder'])
             ? $backend->getQueryBuilder() : null;
         return $this->finalizeExecution($result);
     }

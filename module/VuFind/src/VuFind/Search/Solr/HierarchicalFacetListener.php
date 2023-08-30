@@ -209,7 +209,7 @@ class HierarchicalFacetListener
                 if (!isset($fields[$facetName])) {
                     continue;
                 }
-                if (is_array($fields[$facetName])) {
+                if (\is_array($fields[$facetName])) {
                     $allLevels = ($this->displayStyles[$facetName] ?? '') === 'full';
                     foreach ($fields[$facetName] as &$value) {
                         // Include a translation for each value only if we don't
@@ -255,7 +255,7 @@ class HierarchicalFacetListener
             ? $this->displayStyles[$facet] == 'full'
             : false;
         $separator = $this->separators[$facet] ?? '/';
-        $domain = in_array($facet, $this->translatedFacets)
+        $domain = \in_array($facet, $this->translatedFacets)
             ? ($this->translatedFacetsTextDomains[$facet] ?? 'default')
             : false;
         $value = $this->facetHelper

@@ -116,7 +116,7 @@ class Alma extends AbstractBase
             $filtered = $this->getKeyWithId($service, 'Filtered');
             if ('true' === $filtered) {
                 $reason = $this->getKeyWithId($service, 'Filter reason');
-                if (!in_array($reason, $this->ignoredFilterReasons)) {
+                if (!\in_array($reason, $this->ignoredFilterReasons)) {
                     continue;
                 }
             }

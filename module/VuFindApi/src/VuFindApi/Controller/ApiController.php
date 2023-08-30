@@ -61,7 +61,7 @@ class ApiController extends \VuFind\Controller\AbstractBase
      */
     public function addApi($controller)
     {
-        if (!in_array($controller, $this->apiControllers)) {
+        if (!\in_array($controller, $this->apiControllers)) {
             $this->apiControllers[] = $controller;
         }
     }

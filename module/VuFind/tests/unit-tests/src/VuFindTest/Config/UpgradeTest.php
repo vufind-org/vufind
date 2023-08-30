@@ -130,7 +130,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             $results['searches.ini']['General']['default_top_recommend']
         );
         $this->assertTrue(
-            in_array(
+            \in_array(
                 'SpellingSuggestions',
                 $results['searches.ini']['General']['default_noresults_recommend']
             )
@@ -156,7 +156,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             $results['Summon.ini']['General']['default_top_recommend']
         );
         $this->assertTrue(
-            in_array(
+            \in_array(
                 'SpellingSuggestions',
                 $results['Summon.ini']['General']['default_noresults_recommend']
             )
@@ -417,21 +417,21 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $upgrader->run();
         $warnings = $upgrader->getWarnings();
         $this->assertTrue(
-            in_array(
+            \in_array(
                 'The [GoogleSearch] section of config.ini is no '
                 . 'longer supported due to changes in Google APIs.',
                 $warnings
             )
         );
         $this->assertTrue(
-            in_array(
+            \in_array(
                 'The [GoogleAnalytics] universal setting is off. See config.ini '
                 . 'for important information on how to upgrade your Analytics.',
                 $warnings
             )
         );
         $this->assertTrue(
-            in_array(
+            \in_array(
                 'Google Maps is no longer a supported Content/recordMap option;'
                 . ' please review your config.ini.',
                 $warnings
@@ -455,7 +455,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $upgrader->run();
         $warnings = $upgrader->getWarnings();
         $this->assertTrue(
-            in_array(
+            \in_array(
                 'The [WorldCat] LimitCodes setting never had any effect and has been'
                 . ' removed.',
                 $warnings
@@ -541,7 +541,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $upgrader->run();
         $warnings = $upgrader->getWarnings();
         $this->assertTrue(
-            in_array(
+            \in_array(
                 'WARNING: You have Amazon content enabled, but VuFind no longer sup'
                 . 'ports it. You should remove Amazon references from config.ini.',
                 $warnings
@@ -560,7 +560,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $upgrader->run();
         $warnings = $upgrader->getWarnings();
         $this->assertTrue(
-            in_array(
+            \in_array(
                 'WARNING: You have Amazon content enabled, but VuFind no longer sup'
                 . 'ports it. You should remove Amazon references from config.ini.',
                 $warnings

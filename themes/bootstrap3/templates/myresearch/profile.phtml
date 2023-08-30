@@ -30,11 +30,11 @@
       );
     ?>
     <?php /* this section renders under two distinct circumstances; see if/else below: */ ?>
-    <?php if (count($this->pickup ?? []) > 1 || !empty($this->preferredLibraryDisplay)): ?>
+    <?php if (\count($this->pickup ?? []) > 1 || !empty($this->preferredLibraryDisplay)): ?>
       <tr>
         <th><?=$this->transEsc('Preferred Library')?>:</th>
         <td>
-          <?php if (count($this->pickup ?? []) > 1): // case 1: set home library allowed ?>
+          <?php if (\count($this->pickup ?? []) > 1): // case 1: set home library allowed ?>
             <?php
               // Use ' ** ' for null ()
               $selected = $this->profile['home_library'] ?? ' ** ';
@@ -84,7 +84,7 @@
     <?php endif; ?>
   </div>
 
-  <?php if (is_array($this->profile)): ?>
+  <?php if (\is_array($this->profile)): ?>
     <h3><?=$this->transEsc('Library Catalog Profile')?></h3>
     <p>
       <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->user]); ?>

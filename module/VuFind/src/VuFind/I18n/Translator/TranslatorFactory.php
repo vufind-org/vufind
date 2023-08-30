@@ -73,7 +73,7 @@ class TranslatorFactory implements DelegatorFactoryInterface
         array $options = null
     ) {
         $translator = $callback();
-        if (!extension_loaded('intl')) {
+        if (!\extension_loaded('intl')) {
             error_log(
                 'Translation broken due to missing PHP intl extension.'
             );

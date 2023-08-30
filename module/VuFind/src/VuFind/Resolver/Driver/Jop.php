@@ -245,7 +245,7 @@ class Jop extends AbstractBase
             if (isset($value) && $value !== '') {
                 if (isset($map[$key])) {
                     $downgraded[] = "{$map[$key]}=$value";
-                } elseif (in_array($key, $map)) {
+                } elseif (\in_array($key, $map)) {
                     $downgraded[] = "$key=$value";
                 }
             }

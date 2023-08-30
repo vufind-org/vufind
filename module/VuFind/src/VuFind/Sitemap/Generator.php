@@ -184,8 +184,8 @@ class Generator
      */
     protected function verboseMsg($msg)
     {
-        if (is_callable($this->verbose)) {
-            call_user_func($this->verbose, $msg);
+        if (\is_callable($this->verbose)) {
+            \call_user_func($this->verbose, $msg);
         }
     }
 
@@ -318,7 +318,7 @@ class Generator
                     $sitemap->clear();
                     $count = 1;
                 }
-                $dataToAdd = (($languages || $frequency) && is_string($url))
+                $dataToAdd = (($languages || $frequency) && \is_string($url))
                     ? compact('url', 'languages', 'frequency') : $url;
                 $sitemap->addUrl($dataToAdd);
             }
@@ -498,7 +498,7 @@ class Generator
                 $result[$sitemapLocale] = $locale;
                 // If the fallback language is not enabled in VuFind, add the
                 // locale-specific language as the fallback:
-                if (!in_array($langPart, $locales)) {
+                if (!\in_array($langPart, $locales)) {
                     $result[$langPart] = $locale;
                 }
             }

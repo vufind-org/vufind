@@ -213,7 +213,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         $lookin  = 'any';
         $lookfor = '';
 
-        if (is_array($terms)) {
+        if (\is_array($terms)) {
             foreach ($terms as $thisTerm) {
                 //set the index to search
                 switch ($thisTerm['index']) {
@@ -241,7 +241,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
                 $lookfor = preg_replace('/,/', '+', $thisTerm['lookfor']);
 
                 //set precision
-                if (array_key_exists('op', $thisTerm) && !empty($thisTerm['op'])) {
+                if (\array_key_exists('op', $thisTerm) && !empty($thisTerm['op'])) {
                     $precision = $thisTerm['op'];
                 }
 
@@ -250,7 +250,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         }
 
         // continue only if lookfor is not an empty string
-        if (strlen($lookfor) > 0) {
+        if (\strlen($lookfor) > 0) {
             // It's a giant nested thing!  This is because we really have to
             // have a query to send to primo or it hates us
 
@@ -403,7 +403,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     protected function process($data, $params = [])
     {
         // make sure data exists
-        if (strlen($data) == 0) {
+        if (\strlen($data) == 0) {
             throw new \Exception('Primo did not return any data');
         }
 
@@ -483,13 +483,13 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             // creators
             $creator
                 = trim((string)$prefix->PrimoNMBib->record->display->creator);
-            if (strlen($creator) > 0) {
+            if (\strlen($creator) > 0) {
                 $item['creator'] = array_map('trim', explode(';', $creator));
             }
             // subjects
             $subject
                 = trim((string)$prefix->PrimoNMBib->record->display->subject);
-            if (strlen($subject) > 0) {
+            if (\strlen($subject) > 0) {
                 $item['subjects'] = explode(';', $subject);
             }
             $item['ispartof']
@@ -535,12 +535,12 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             $item['container_start_page'] = (string)$addata->spage;
             $item['container_end_page'] = (string)$addata->epage;
             foreach ($addata->eissn as $eissn) {
-                if (!in_array((string)$eissn, $item['issn'])) {
+                if (!\in_array((string)$eissn, $item['issn'])) {
                     $item['issn'][] = (string)$eissn;
                 }
             }
             foreach ($addata->issn as $issn) {
-                if (!in_array((string)$issn, $item['issn'])) {
+                if (!\in_array((string)$issn, $item['issn'])) {
                     $item['issn'][] = (string)$issn;
                 }
             }
@@ -552,8 +552,8 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             // (We could convert dash-less ISSNs to dashed ones, but try to stay
             // true to the metadata)
             $callback = function ($issn) use ($item) {
-                return strlen($issn) != 8
-                    || !in_array(
+                return \strlen($issn) != 8
+                    || !\in_array(
                         substr($issn, 0, 4) . '-' . substr($issn, 4),
                         $item['issn']
                     );
@@ -690,7 +690,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             $qs[] = "institution=$inst_code";
             $qs[] = 'onCampus=' . ($onCampus ? 'true' : 'false');
             $qs[] = 'indx=1';
-            $qs[] = 'bulkSize=' . count($recordIds);
+            $qs[] = 'bulkSize=' . \count($recordIds);
             $qs[] = 'loc=adaptor,primo_central_multiple_fe';
             // pcAvailability=true is needed for records, which
             // are NOT in the PrimoCentral Holdingsfile.
@@ -786,7 +786,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             }
             // Unset reference:
             unset($value);
-            $record[$field] = is_array($fieldData) ? $values : $values[0];
+            $record[$field] = \is_array($fieldData) ? $values : $values[0];
 
             if ($highlight) {
                 $record['highlightDetails'] = $hilightDetails;

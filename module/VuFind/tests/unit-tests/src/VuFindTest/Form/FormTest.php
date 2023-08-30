@@ -82,7 +82,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals(
             'Laminas\InputFilter\InputFilter',
-            get_class($form->getInputFilter())
+            \get_class($form->getInputFilter())
         );
         $this->assertCount(0, $form->getSecondaryHandlers());
     }
@@ -239,7 +239,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals(
             'Laminas\InputFilter\InputFilter',
-            get_class($form->getInputFilter())
+            \get_class($form->getInputFilter())
         );
 
         // Validators: Required field problems

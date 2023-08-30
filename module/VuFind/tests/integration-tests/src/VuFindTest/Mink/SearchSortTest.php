@@ -108,7 +108,7 @@ class SearchSortTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertResultTitles($page, 'Test Publication 20021', 'Test Publication 20040');
 
         // Change sort to title reversed (last option) and verify:
-        $this->clickCss($page, $this->sortControlSelector . ' option', null, count($this->defaultSortOptions) + 1);
+        $this->clickCss($page, $this->sortControlSelector . ' option', null, \count($this->defaultSortOptions) + 1);
         $this->waitForPageLoad($page);
         // Check current sort:
         $this->assertSortControl($page, 'title desc');

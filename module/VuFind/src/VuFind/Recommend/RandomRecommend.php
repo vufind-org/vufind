@@ -152,7 +152,7 @@ class RandomRecommend implements RecommendInterface
         }
 
         // all other params are filters and their values respectively
-        for ($i = 5; $i < count($settings); $i += 2) {
+        for ($i = 5; $i < \count($settings); $i += 2) {
             if (isset($settings[$i + 1])) {
                 $this->filters[] = $settings[$i] . ':' . $settings[$i + 1];
             }
@@ -214,7 +214,7 @@ class RandomRecommend implements RecommendInterface
      */
     public function getResults()
     {
-        if (count($this->results) < $this->minimum) {
+        if (\count($this->results) < $this->minimum) {
             return [];
         }
         return $this->results;

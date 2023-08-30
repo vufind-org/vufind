@@ -62,7 +62,7 @@ class Base62
      */
     public function encode($base10Number)
     {
-        $binaryNumber = intval($base10Number);
+        $binaryNumber = \intval($base10Number);
         if ($binaryNumber === 0) {
             throw new Exception('not a base10 number: "' . $base10Number . '"');
         }
@@ -90,7 +90,7 @@ class Base62
     public function decode($base62Number)
     {
         $binaryNumber = 0;
-        for ($i = 0; $i < strlen($base62Number); ++$i) {
+        for ($i = 0; $i < \strlen($base62Number); ++$i) {
             $digit = $base62Number[$i];
             $strpos = strpos(self::BASE62_ALPHABET, $digit);
             if ($strpos === false) {

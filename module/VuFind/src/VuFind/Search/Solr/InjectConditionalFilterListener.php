@@ -139,7 +139,7 @@ class InjectConditionalFilterListener
 
         $params = $event->getParam('command')->getSearchParameters();
         $fq = $params->get('fq');
-        if (!is_array($fq)) {
+        if (!\is_array($fq)) {
             $fq = [];
         }
         $new_fq = array_merge($fq, $this->filterList);

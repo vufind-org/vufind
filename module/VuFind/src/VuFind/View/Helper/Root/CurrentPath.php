@@ -53,6 +53,6 @@ class CurrentPath extends AbstractHelper
         $base = rtrim($serverUrlHelper(), '/');
         $full = $serverUrlHelper(true);
         $parts = explode('?', $full);
-        return substr($parts[0], strlen($base));
+        return substr($parts[0], \strlen($base));
     }
 }

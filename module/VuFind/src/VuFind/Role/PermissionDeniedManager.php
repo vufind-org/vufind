@@ -196,7 +196,7 @@ class PermissionDeniedManager
         $params = [];
         while ($param = array_shift($parts)) {
             $paramParts = explode('=', $param, 2);
-            if (count($paramParts) == 2) {
+            if (\count($paramParts) == 2) {
                 $params[$paramParts[0]] = $paramParts[1];
             } else {
                 $params[] = $paramParts[0];

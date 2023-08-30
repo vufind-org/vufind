@@ -429,7 +429,7 @@ class Oracle
             // For building the sql
             $columns[]      = $column;
             // Dates are special
-            if (count($tmp) > 0 && null !== $datum) {
+            if (\count($tmp) > 0 && null !== $datum) {
                 $values[] = "TO_DATE(:$column, '" . implode(':', $tmp) . "')";
             } else {
                 $values[] = ":$column";
@@ -582,11 +582,11 @@ class Oracle
                 $output .=
                     substr($this->lastError['sqltext'], $this->lastError['offset']) .
                     "<br />\n";
-                if (count($this->lastErrorFields) > 0) {
+                if (\count($this->lastErrorFields) > 0) {
                     $output .= "=============<br />\n";
                     $output .= "Bind Variables:<br />\n";
                     foreach ($this->lastErrorFields as $k => $l) {
-                        if (is_array($l)) {
+                        if (\is_array($l)) {
                             $output .= "$k => (" . implode(', ', $l) . ")<br />\n";
                         } else {
                             $output .= "$k => $l<br />\n";

@@ -22,7 +22,7 @@
        <div class="authors">
          <?=$this->transEsc('by')?>:
          <?=$this->escapeHtml($listAuthors[0])?>
-          <?php if (count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?>
+          <?php if (\count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?>
        </div>
      <?php endif; ?>
  </div>

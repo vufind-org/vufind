@@ -72,7 +72,7 @@ class MultiILS extends ILS
         }
 
         // Check that the target is valid:
-        if (!in_array($target, $this->getLoginTargets())) {
+        if (!\in_array($target, $this->getLoginTargets())) {
             throw new AuthException('authentication_error_admin');
         }
 

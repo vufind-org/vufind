@@ -81,7 +81,7 @@ class LoggerTest extends \PHPUnit\Framework\TestCase
                 && str_contains($a[5], 'args:')
                 && str_contains($a[5], 'class =')
                 && str_contains($a[5], 'function =')
-                && count($a) == 5;
+                && \count($a) == 5;
         };
         $mockIpReader = $this->getMockBuilder(\VuFind\Net\UserIpReader::class)
             ->disableOriginalConstructor()

@@ -86,15 +86,15 @@ class QueryAdapter extends \VuFind\Search\QueryAdapter
             if ($search instanceof QueryGroup) {
                 // Process each search group. There should only be 1 with EDS queries
                 $groupQueries = $search->getQueries();
-                for ($i = 0; $i < count($groupQueries); $i++) {
+                for ($i = 0; $i < \count($groupQueries); $i++) {
                     $group = $groupQueries[$i];
                     if ($group instanceof Query) {
                         // Build this group individually as a basic search
                         $queryOperator = $group->getOperator();
                         $op = (null != $queryOperator && 0 != $i) ?
-                            call_user_func($translate, $queryOperator) . ' ' : '';
+                            \call_user_func($translate, $queryOperator) . ' ' : '';
                         $all[] = $op
-                            . call_user_func($showName, $group->getHandler()) . ':'
+                            . \call_user_func($showName, $group->getHandler()) . ':'
                             . $group->getString();
                     } else {
                         throw new \Exception('Unexpected ' . $group::class);

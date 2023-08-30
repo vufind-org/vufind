@@ -66,7 +66,7 @@ class PipelineInjectorFactory implements FactoryInterface
                 $parts = array_map('trim', explode(':', $setting));
                 if (APPLICATION_ENV === $parts[0]) {
                     return $parts[1];
-                } elseif (count($parts) == 1) {
+                } elseif (\count($parts) == 1) {
                     $default = $parts[0];
                 } elseif ($parts[0] === '*') {
                     $default = $parts[1];

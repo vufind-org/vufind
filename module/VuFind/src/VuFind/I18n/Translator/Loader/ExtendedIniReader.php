@@ -57,8 +57,8 @@ class ExtendedIniReader
         $data = new TextDomain();
 
         // Manually parse the language file:
-        $contents = is_array($input) ? $input : file($input);
-        if (is_array($contents)) {
+        $contents = \is_array($input) ? $input : file($input);
+        if (\is_array($contents)) {
             foreach ($contents as $current) {
                 // Split the string on the equals sign, keeping a max of two chunks:
                 $parts = explode('=', $current, 2);

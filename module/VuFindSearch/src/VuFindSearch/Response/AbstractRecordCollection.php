@@ -111,7 +111,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      */
     public function slice(int $offset, int $limit): void
     {
-        $this->records = array_slice(
+        $this->records = \array_slice(
             $this->records,
             $offset,
             $limit
@@ -211,7 +211,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      */
     public function has(RecordInterface $record)
     {
-        return in_array($record, $this->records, true);
+        return \in_array($record, $this->records, true);
     }
 
     /**
@@ -293,6 +293,6 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      */
     public function count(): int
     {
-        return count($this->records);
+        return \count($this->records);
     }
 }

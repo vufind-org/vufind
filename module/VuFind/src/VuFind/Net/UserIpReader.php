@@ -115,7 +115,7 @@ class UserIpReader
                 // in place of specific indexes, because the filtering above may have
                 // left non-consecutive keys in place.
                 $finalBehavior = strtolower(rtrim($behavior, ':'));
-                $partCount = count($parts);
+                $partCount = \count($parts);
                 if ($finalBehavior === 'first' && $partCount > 0) {
                     return array_shift($parts);
                 } elseif ($finalBehavior === 'last' && $partCount > 0) {

@@ -150,7 +150,7 @@ class ContentPages extends AbstractGeneratorPlugin
         // non-language specific array
         foreach ($files as $fileInfo) {
             if (
-                in_array($fileInfo['relativeFile'], $this->excludedFiles)
+                \in_array($fileInfo['relativeFile'], $this->excludedFiles)
             ) {
                 continue;
             }
@@ -159,7 +159,7 @@ class ContentPages extends AbstractGeneratorPlugin
             $p = strrpos($baseName, '_');
             if ($p > 0) {
                 $fileLanguage = substr($baseName, $p + 1);
-                if (in_array($fileLanguage, $languages)) {
+                if (\in_array($fileLanguage, $languages)) {
                     $baseName = substr($baseName, 0, $p);
                 }
             }

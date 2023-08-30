@@ -170,7 +170,7 @@ class NormalizedSearch
         // Deminify the other search:
         $searchToCheck = $otherSearch->deminify($this->resultsManager);
         // Check if classes and URLs match:
-        return $searchToCheck::class === get_class($this->raw)
+        return $searchToCheck::class === \get_class($this->raw)
             && $this->url === $searchToCheck->getUrlQuery()->getParams();
     }
 }

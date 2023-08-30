@@ -223,7 +223,7 @@ class QueryBuilder implements QueryBuilderInterface
         }
         $searchTypes = $this->getSearchTypes($query);
         foreach ($conditions as $condition) {
-            if (!is_array($condition)) {
+            if (!\is_array($condition)) {
                 continue;
             }
             $values = reset($condition);
@@ -314,7 +314,7 @@ class QueryBuilder implements QueryBuilderInterface
         // Account for possibility of comma OR space delimiters:
         $fields = array_map('trim', preg_split('/[, ]/', $this->fieldsToHighlight));
         // Wildcard in field list? Return filter as-is; otherwise, use intersection.
-        $list = in_array('*', $fields) ? $filter : array_intersect($fields, $filter);
+        $list = \in_array('*', $fields) ? $filter : array_intersect($fields, $filter);
         return implode(',', $list);
     }
 
@@ -417,7 +417,7 @@ class QueryBuilder implements QueryBuilderInterface
             if (isset($this->exactSpecs[$handler])) {
                 $searchString = trim($searchString);
                 if (
-                    strlen($searchString) > 1
+                    \strlen($searchString) > 1
                     && substr($searchString, 0, 1) == '"'
                     && substr($searchString, -1, 1) == '"'
                 ) {

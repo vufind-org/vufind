@@ -95,7 +95,7 @@ class EDS extends DefaultRecord
             return '';
         }
         $parts = explode(':', $title, 2);
-        return count($parts) > 1 ? trim(array_pop($parts)) : '';
+        return \count($parts) > 1 ? trim(array_pop($parts)) : '';
     }
 
     /**
@@ -223,8 +223,8 @@ class EDS extends DefaultRecord
             $badLabels = (array)($currentConfig['excludeLabel'] ?? []);
             $badGroups = (array)($currentConfig['excludeGroup'] ?? []);
             if (
-                in_array($item['Label'], $badLabels)
-                || in_array($item['Group'], $badGroups)
+                \in_array($item['Label'], $badLabels)
+                || \in_array($item['Group'], $badGroups)
             ) {
                 return true;
             }
@@ -314,7 +314,7 @@ class EDS extends DefaultRecord
     protected function hasEbookAvailable(array $types)
     {
         foreach ($this->fields['FullText']['Links'] ?? [] as $link) {
-            if (in_array($link['Type'] ?? '', $types)) {
+            if (\in_array($link['Type'] ?? '', $types)) {
                 return true;
             }
         }
@@ -363,7 +363,7 @@ class EDS extends DefaultRecord
         foreach ($this->fields['FullText']['Links'] ?? [] as $link) {
             if (
                 !empty($link['Type']) && !empty($link['Url'])
-                && in_array($link['Type'], $types)
+                && \in_array($link['Type'], $types)
             ) {
                 return $link['Url'];
             }
@@ -594,7 +594,7 @@ class EDS extends DefaultRecord
             // Parse searchLinks
             if (!empty($group)) {
                 $group = strtolower($group);
-                if (in_array($group, $allowed_searchlink_groups)) {
+                if (\in_array($group, $allowed_searchlink_groups)) {
                     $type = strtoupper($group);
                     $link_xml = '/<searchLink fieldCode="([^\"]*)" '
                         . 'term="(%22[^\"]*%22)">/';
@@ -636,7 +636,7 @@ class EDS extends DefaultRecord
     protected function replaceBRWithCommas($data, $group)
     {
         $groupsToReplace = ['au','su'];
-        if (in_array($group, $groupsToReplace)) {
+        if (\in_array($group, $groupsToReplace)) {
             $br = '/<br \/>/';
             $comma = ', ';
             return preg_replace($br, $comma, $data);
@@ -697,7 +697,7 @@ class EDS extends DefaultRecord
         $ids = [];
         foreach ($raw as $data) {
             $type = strtolower($data['Type'] ?? '');
-            if (isset($data['Value']) && in_array($type, $filter)) {
+            if (isset($data['Value']) && \in_array($type, $filter)) {
                 $ids[] = $data['Value'];
             }
         }
@@ -733,7 +733,7 @@ class EDS extends DefaultRecord
     {
         // If there is no source, we don't want to identify a container
         // (in this situation, it is likely redundant data):
-        if (count($this->extractEbscoDataFromItems('Source')) === 0) {
+        if (\count($this->extractEbscoDataFromItems('Source')) === 0) {
             return '';
         }
         $data = $this->extractEbscoDataFromRecordInfo(
@@ -941,7 +941,7 @@ class EDS extends DefaultRecord
             $placeParts = explode('.', $place);
             $shortPlace = array_pop($placeParts);
             $details[] = new Response\PublicationDetails(
-                strlen($shortPlace) > 5 ? $shortPlace : $place,
+                \strlen($shortPlace) > 5 ? $shortPlace : $place,
                 $pub,
                 $date
             );
@@ -964,7 +964,7 @@ class EDS extends DefaultRecord
         foreach ($selectors as $selector) {
             [$method, $params] = explode(':', $selector, 2);
             $fullMethod = 'extractEbscoDataFrom' . ucwords($method);
-            if (!is_callable([$this, $fullMethod])) {
+            if (!\is_callable([$this, $fullMethod])) {
                 throw new \Exception('Undefined method: ' . $fullMethod);
             }
             $result = $this->$fullMethod($params);
@@ -1028,6 +1028,6 @@ class EDS extends DefaultRecord
                     : $this->recurseIntoRecordInfo($data[$key], $path);
             }
         }
-        return count($values) == 1 ? $values[0] : $values;
+        return \count($values) == 1 ? $values[0] : $values;
     }
 }

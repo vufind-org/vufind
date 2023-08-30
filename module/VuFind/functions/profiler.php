@@ -40,10 +40,10 @@ function enableVuFindProfiling($profilerBaseUrl)
 {
     $profilerEnableFunc = false;
     $profilerDisableFunc = false;
-    if (extension_loaded('xhprof')) {
+    if (\extension_loaded('xhprof')) {
         $profilerEnableFunc = 'xhprof_enable';
         $profilerDisableFunc = 'xhprof_disable';
-    } elseif (extension_loaded('tideways_xhprof')) {
+    } elseif (\extension_loaded('tideways_xhprof')) {
         $profilerEnableFunc = 'tideways_xhprof_enable';
         $profilerDisableFunc = 'tideways_xhprof_disable';
     }
@@ -66,7 +66,7 @@ function enableVuFindProfiling($profilerBaseUrl)
             $profilerDisableFunc
         ) {
             $xhprofData = $profilerDisableFunc();
-            $dir = ini_get('xhprof.output_dir');
+            $dir = \ini_get('xhprof.output_dir');
             if (empty($dir)) {
                 $dir = sys_get_temp_dir();
             }

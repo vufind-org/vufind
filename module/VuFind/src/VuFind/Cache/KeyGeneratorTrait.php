@@ -53,7 +53,7 @@ trait KeyGeneratorTrait
     protected function getCacheKey($suffix = null)
     {
         // Build the raw key combining the calling classname with an optional suffix
-        $key = get_class($this) . (!empty($suffix) ? '_' . $suffix : '');
+        $key = \get_class($this) . (!empty($suffix) ? '_' . $suffix : '');
 
         // Test the build key
         if (

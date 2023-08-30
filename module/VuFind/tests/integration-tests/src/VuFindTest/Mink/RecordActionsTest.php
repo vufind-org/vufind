@@ -248,7 +248,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         foreach ($tags as $t) {
             $link = $t->find('css', 'button');
             if ($link) {
-                $sum += intval($link->getText());
+                $sum += \intval($link->getText());
             }
         }
         $this->assertEquals(3, $sum);
@@ -299,7 +299,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
             substr(
                 $this->findCss($page, '.search-stats')->getText(),
                 0,
-                strlen($expected)
+                \strlen($expected)
             )
         );
     }
@@ -652,7 +652,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
             [1, '80'],
             function () use ($page, $checked) {
                 $inputs = $page->findAll('css', $checked);
-                return [count($inputs), $inputs ? $inputs[0]->getValue() : null];
+                return [\count($inputs), $inputs ? $inputs[0]->getValue() : null];
             }
         );
         if ($allowRemove) {
@@ -665,7 +665,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
                 [1, '70'],
                 function () use ($page, $checked) {
                     $inputs = $page->findAll('css', $checked);
-                    return [count($inputs), $inputs ? $inputs[0]->getValue() : null];
+                    return [\count($inputs), $inputs ? $inputs[0]->getValue() : null];
                 }
             );
         } else {

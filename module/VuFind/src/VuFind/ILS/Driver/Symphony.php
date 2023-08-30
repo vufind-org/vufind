@@ -313,7 +313,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
             $password = $options['password'] ?? null;
         } elseif (
             isset($options['WebServices']['login'])
-            && !in_array(
+            && !\in_array(
                 $operation,
                 ['isRestrictedAccess', 'license', 'loginUser', 'version']
             )
@@ -457,15 +457,15 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      */
     protected function lookupTitleInfo($ids)
     {
-        $ids = is_array($ids) ? $ids : [$ids];
+        $ids = \is_array($ids) ? $ids : [$ids];
 
         // SymWS ignores invalid titleIDs instead of rejecting them, so
         // checking ahead of time for obviously invalid titleIDs is a useful
         // sanity check (which has a good chance of catching, for example,
         // the use of something other than catkeys as record IDs).
         $invalid = preg_grep('/^[1-9][0-9]*$/', $ids, PREG_GREP_INVERT);
-        if (count($invalid) > 0) {
-            $titleIDs = count($invalid) == 1 ? 'titleID' : 'titleIDs';
+        if (\count($invalid) > 0) {
+            $titleIDs = \count($invalid) == 1 ? 'titleID' : 'titleIDs';
             $msg = "Invalid $titleIDs: " . implode(', ', $invalid);
             throw new ILSException($msg);
         }
@@ -481,7 +481,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
 
         // If the driver is configured to populate holdings_text_fields
         // with MFHD, also request MARC holdings information from SymWS.
-        if (count(array_filter($this->config['MarcHoldings'])) > 0) {
+        if (\count(array_filter($this->config['MarcHoldings'])) > 0) {
             $params['includeMarcHoldings'] = 'true';
             // With neither marcEntryFilter nor marcEntryID, or with
             // marcEntryFilter NONE, SymWS won't return MarcHoldingsInfo,
@@ -493,7 +493,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
 
         // If only one library is being exclusively included,
         // filtering can be done within Web Services.
-        if (count($this->config['LibraryFilter']['include_only']) == 1) {
+        if (\count($this->config['LibraryFilter']['include_only']) == 1) {
             $params['libraryFilter']
                 = $this->config['LibraryFilter']['include_only'][0];
         }
@@ -511,11 +511,11 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     protected function libraryIsFilteredOut($libraryID)
     {
         $notIncluded = !empty($this->config['LibraryFilter']['include_only'])
-            && !in_array(
+            && !\in_array(
                 $libraryID,
                 $this->config['LibraryFilter']['include_only']
             );
-        $excluded = in_array(
+        $excluded = \in_array(
             $libraryID,
             $this->config['LibraryFilter']['exclude']
         );
@@ -542,7 +542,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     ) {
         $items = [];
 
-        $callInfos = is_array($callInfos) ? $callInfos : [$callInfos];
+        $callInfos = \is_array($callInfos) ? $callInfos : [$callInfos];
 
         foreach ($callInfos as $callInfo) {
             $libraryID = $callInfo->libraryID;
@@ -560,7 +560,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
             // the assumption that items are being listed in order.
             $copyNumber = 0;
 
-            $itemInfos = is_array($callInfo->ItemInfo)
+            $itemInfos = \is_array($callInfo->ItemInfo)
                 ? $callInfo->ItemInfo
                 : [$callInfo->ItemInfo];
             foreach ($itemInfos as $itemInfo) {
@@ -619,7 +619,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                      * it is insufficient to provide just the location
                      * description as the "location."
                      */
-                    if (count($this->config['LibraryFilter']['include_only']) != 1) {
+                    if (\count($this->config['LibraryFilter']['include_only']) != 1) {
                         $location = "$library - $location";
                     }
                 }
@@ -725,7 +725,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     {
         $items = [];
 
-        $boundwithLinkInfos = is_array($boundwithLinkInfos)
+        $boundwithLinkInfos = \is_array($boundwithLinkInfos)
             ? $boundwithLinkInfos
             : [$boundwithLinkInfos];
 
@@ -747,12 +747,12 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
             $resp          = $this->lookupTitleInfo($parent_ckey);
             $is_holdable   = $resp->TitleInfo->TitleAvailabilityInfo->holdable;
 
-            $callInfos = is_array($resp->TitleInfo->CallInfo)
+            $callInfos = \is_array($resp->TitleInfo->CallInfo)
                 ? $resp->TitleInfo->CallInfo
                 : [$resp->TitleInfo->CallInfo];
 
             foreach ($callInfos as $callInfo) {
-                $itemInfos = is_array($callInfo->ItemInfo)
+                $itemInfos = \is_array($callInfo->ItemInfo)
                     ? $callInfo->ItemInfo
                     : [$callInfo->ItemInfo];
                 foreach ($itemInfos as $itemInfo) {
@@ -785,7 +785,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     {
         $items = [];
 
-        $titleOrderInfos = is_array($titleOrderInfos)
+        $titleOrderInfos = \is_array($titleOrderInfos)
             ? $titleOrderInfos : [$titleOrderInfos];
 
         foreach ($titleOrderInfos as $titleOrderInfo) {
@@ -795,7 +795,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
              * limited to a specified list of library names. */
             if (
                 isset($this->config['holdings']['include_libraries'])
-                && !in_array(
+                && !\in_array(
                     $library_id,
                     $this->config['holdings']['include_libraries']
                 )
@@ -807,7 +807,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
              * from returned holdings information. */
             if (
                 isset($this->config['holdings']['exclude_libraries'])
-                && in_array(
+                && \in_array(
                     $library_id,
                     $this->config['holdings']['exclude_libraries']
                 )
@@ -860,7 +860,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     protected function parseMarcHoldingsInfo($marcHoldingsInfos, $titleID)
     {
         $items = [];
-        $marcHoldingsInfos = is_array($marcHoldingsInfos)
+        $marcHoldingsInfos = \is_array($marcHoldingsInfos)
             ? $marcHoldingsInfos
             : [$marcHoldingsInfos];
 
@@ -870,14 +870,14 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                 continue;
             }
 
-            $marcEntryInfos = is_array($marcHoldingsInfo->MarcEntryInfo)
+            $marcEntryInfos = \is_array($marcHoldingsInfo->MarcEntryInfo)
                 ? $marcHoldingsInfo->MarcEntryInfo
                 : [$marcHoldingsInfo->MarcEntryInfo];
             $item = [];
 
             foreach ($marcEntryInfos as $marcEntryInfo) {
                 foreach ($this->config['MarcHoldings'] as $textfield => $spec) {
-                    if (in_array($marcEntryInfo->entryID, $spec)) {
+                    if (\in_array($marcEntryInfo->entryID, $spec)) {
                         $item[$textfield][] = $marcEntryInfo->text;
                     }
                 }
@@ -918,7 +918,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
          * CallInfo elements, which contain zero or more ItemInfo elements.
          */
         $response   = $this->lookupTitleInfo($ids);
-        $titleInfos = is_array($response->TitleInfo)
+        $titleInfos = \is_array($response->TitleInfo)
             ? $response->TitleInfo
             : [$response->TitleInfo];
 
@@ -1140,7 +1140,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
         foreach ($addrinfo_check_order as $n) {
             $AddressNInfo = "Address{$n}Info";
             if (isset($resp->patronAddressInfo->$AddressNInfo)) {
-                $addrinfos = is_array($resp->patronAddressInfo->$AddressNInfo)
+                $addrinfos = \is_array($resp->patronAddressInfo->$AddressNInfo)
                     ? $resp->patronAddressInfo->$AddressNInfo
                     : [$resp->patronAddressInfo->$AddressNInfo];
                 foreach ($addrinfos as $addrinfo) {
@@ -1270,7 +1270,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
 
             if (isset($result->patronCheckoutInfo)) {
                 $transactions = $result->patronCheckoutInfo;
-                $transactions = !is_array($transactions) ? [$transactions] :
+                $transactions = !\is_array($transactions) ? [$transactions] :
                     $transactions;
 
                 foreach ($transactions as $transaction) {
@@ -1333,7 +1333,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
             }
 
             $holds = $result->patronHoldInfo;
-            $holds = !is_array($holds) ? [$holds] : $holds;
+            $holds = !\is_array($holds) ? [$holds] : $holds;
 
             foreach ($holds as $hold) {
                 $holdList[] = [
@@ -1388,7 +1388,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
 
             if (isset($result->feeInfo)) {
                 $fees = $result->feeInfo;
-                $fees = !is_array($fees) ? [$fees] : $fees;
+                $fees = !\is_array($fees) ? [$fees] : $fees;
 
                 foreach ($fees as $fee) {
                     $fineList[] = [

@@ -86,7 +86,7 @@ class LintMarcCommand extends Command
             $field001 = $record->getField('001') ?: 'undefined';
             $output->writeln("Checking record $i (001 = $field001)...");
             $warnings = $linter->checkRecord($record);
-            if (count($warnings) > 0) {
+            if (\count($warnings) > 0) {
                 $output->writeln('Warnings: ' . implode("\n", $warnings));
             }
         }

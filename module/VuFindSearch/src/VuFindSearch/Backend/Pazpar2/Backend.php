@@ -167,7 +167,7 @@ class Backend extends AbstractBackend
         $hits = $response->hit ?? [];
         $collection = $this->createRecordCollection(
             $hits,
-            intval($response->merged),
+            \intval($response->merged),
             $offset
         );
         $this->injectSourceIdentifier($collection);

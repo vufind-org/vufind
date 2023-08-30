@@ -83,13 +83,13 @@ class Memcache extends AbstractBase
         $clientClass = $config->memcache_client ?? 'Memcache';
 
         // Create/validate client object:
-        if (!in_array($clientClass, ['Memcache', 'Memcached'])) {
+        if (!\in_array($clientClass, ['Memcache', 'Memcached'])) {
             throw new \Exception("Unsupported Memcache client: $clientClass");
         }
         $this->connection = $client ?? new $clientClass();
         if (!($this->connection instanceof $clientClass)) {
             throw new \Exception(
-                'Unexpected Memcache client class: ' . get_class($this->connection)
+                'Unexpected Memcache client class: ' . \get_class($this->connection)
             );
         }
 

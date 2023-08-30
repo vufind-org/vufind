@@ -121,7 +121,7 @@ class Random extends AbstractChannelProvider implements TranslatorAwareInterface
     {
         $randomParams = $this->paramManager->get($driver->getSourceIdentifier());
         $channel = $this->buildChannelFromParams($randomParams);
-        return (count($channel['contents']) > 0) ? [$channel] : [];
+        return (\count($channel['contents']) > 0) ? [$channel] : [];
     }
 
     /**
@@ -144,7 +144,7 @@ class Random extends AbstractChannelProvider implements TranslatorAwareInterface
             $randomParams = clone $params;
         }
         $channel = $this->buildChannelFromParams($randomParams);
-        return (count($channel['contents']) > 0) ? [$channel] : [];
+        return (\count($channel['contents']) > 0) ? [$channel] : [];
     }
 
     /**

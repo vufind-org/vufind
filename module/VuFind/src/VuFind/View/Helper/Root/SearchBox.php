@@ -116,7 +116,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
 
         // Complex case -- combined handlers:
         $settings = $this->getCombinedHandlerConfig($activeSearchClass);
-        $typeCount = count($settings['type']);
+        $typeCount = \count($settings['type']);
         for ($i = 0; $i < $typeCount; $i++) {
             $type = $settings['type'][$i];
             $target = $settings['target'][$i];
@@ -195,7 +195,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
         $results = [];
         foreach ($filterList as $field => $data) {
             foreach ($data as $value) {
-                $results[] = is_array($value)
+                $results[] = \is_array($value)
                     ? $this->getOperatorCharacter($value['operator'] ?? '')
                     . $value['field'] . ':"' . $value['value'] . '"'
                     : "$field:\"$value\"";
@@ -211,8 +211,8 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
                 = preg_match($regex, $current['filter'], $match)
                 ? "{$match[1]}:\"{$match[2]}\"" : $current['filter'];
             if (
-                $current['selected'] && !in_array($normalized, $results)
-                && !in_array($current['filter'], $results)
+                $current['selected'] && !\in_array($normalized, $results)
+                && !\in_array($current['filter'], $results)
             ) {
                 $results[] = $current['filter'];
             }
@@ -276,7 +276,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
             }
         }
         foreach ($filterList as $filter) {
-            $result += count($filter);
+            $result += \count($filter);
         }
         return $result;
     }
@@ -317,22 +317,22 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
             if (empty($settings)) {
                 throw new \Exception('CombinedHandlers configuration missing.');
             }
-            $typeCount = count($settings['type']);
+            $typeCount = \count($settings['type']);
             if (
-                $typeCount != count($settings['target'])
-                || $typeCount != count($settings['label'])
+                $typeCount != \count($settings['target'])
+                || $typeCount != \count($settings['label'])
             ) {
                 throw new \Exception('CombinedHandlers configuration incomplete.');
             }
 
             // Fill in missing group settings, if necessary:
-            if (count($settings['group'] ?? []) < $typeCount) {
+            if (\count($settings['group'] ?? []) < $typeCount) {
                 $settings['group'] = array_fill(0, $typeCount, false);
             }
 
             // Add configuration for the current search class if it is not already
             // present:
-            if (!in_array($activeSearchClass, $settings['target'])) {
+            if (!\in_array($activeSearchClass, $settings['target'])) {
                 $settings['type'][] = 'VuFind';
                 $settings['target'][] = $activeSearchClass;
                 $settings['label'][] = $activeSearchClass;
@@ -389,7 +389,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
         $backupSelectedIndex = false;
         $addedBrowseHandlers = false;
         $settings = $this->getCombinedHandlerConfig($activeSearchClass);
-        $typeCount = count($settings['type']);
+        $typeCount = \count($settings['type']);
         for ($i = 0; $i < $typeCount; $i++) {
             $type = $settings['type'][$i];
             $target = $settings['target'][$i];
@@ -412,7 +412,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
                         $backupSelectedIndex === false
                         && $target == $activeSearchClass
                     ) {
-                        $backupSelectedIndex = count($handlers);
+                        $backupSelectedIndex = \count($handlers);
                     }
                     // Depending on whether or not the current section has a label,
                     // we'll either want to override the first label and indent

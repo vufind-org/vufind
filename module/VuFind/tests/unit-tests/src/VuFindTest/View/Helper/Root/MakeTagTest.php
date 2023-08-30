@@ -178,7 +178,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTest
 
         $this->assertEquals(
             $expected,
-            call_user_func_array([$helper, '__invoke'], $params)
+            \call_user_func_array([$helper, '__invoke'], $params)
         );
     }
 

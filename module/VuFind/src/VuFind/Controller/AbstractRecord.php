@@ -171,7 +171,7 @@ class AbstractRecord extends AbstractBase
                 $driver->isRatingAllowed()
                 && '0' !== ($rating = $this->params()->fromPost('rating', '0'))
             ) {
-                $driver->addOrUpdateRating($user->id, intval($rating));
+                $driver->addOrUpdateRating($user->id, \intval($rating));
             }
 
             $this->flashMessenger()->addMessage('add_comment_success', 'success');
@@ -304,7 +304,7 @@ class AbstractRecord extends AbstractBase
             }
             $driver->addOrUpdateRating(
                 $user->id,
-                '' === $rating ? null : intval($rating)
+                '' === $rating ? null : \intval($rating)
             );
             $this->flashMessenger()->addSuccessMessage('rating_add_success');
             if ($this->inLightbox()) {
@@ -436,7 +436,7 @@ class AbstractRecord extends AbstractBase
 
         // Check permission:
         $response = $this->permission()->check('feature.Favorites', false);
-        if (is_object($response)) {
+        if (\is_object($response)) {
             return $response;
         }
 
@@ -485,7 +485,7 @@ class AbstractRecord extends AbstractBase
         foreach ($user->getLists() as $list) {
             // Assign list to appropriate array based on whether or not we found
             // it earlier in the list of lists containing the selected record.
-            if (in_array($list->id, $listIds)) {
+            if (\in_array($list->id, $listIds)) {
                 $containingLists[] = $list->toArray();
             } else {
                 $nonContainingLists[] = $list->toArray();
@@ -750,7 +750,7 @@ class AbstractRecord extends AbstractBase
         // when determining record ID, we check both the route match (the most
         // common scenario) and the GET parameters (a fallback used by some
         // legacy routes).
-        if ($force || !is_object($this->driver)) {
+        if ($force || !\is_object($this->driver)) {
             $recordLoader = $this->getRecordLoader();
             $cacheContext = $this->getRequest()->getQuery()->get('cacheContext');
             if (isset($cacheContext)) {
@@ -894,7 +894,7 @@ class AbstractRecord extends AbstractBase
             return $this->forceLogin(null);
         } elseif (
             $this->params()->fromQuery('catalogLogin', 'false') == 'true'
-            && !is_array($patron = $this->catalogLogin())
+            && !\is_array($patron = $this->catalogLogin())
         ) {
             return $patron;
         }

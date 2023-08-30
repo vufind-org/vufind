@@ -105,7 +105,7 @@ class DeleteCommand extends AbstractCommand
             $out = '';
             $found = false;
             foreach ($lines as $line) {
-                if (substr($line, 0, strlen($target)) !== $target) {
+                if (substr($line, 0, \strlen($target)) !== $target) {
                     $out .= $line;
                 } else {
                     $found = true;

@@ -182,7 +182,7 @@ class YamlReader
             // First try parent as absolute path, then as relative:
             $defaultParent = file_exists($results['@parent_yaml'])
                 ? $results['@parent_yaml']
-                : dirname($file) . '/' . $results['@parent_yaml'];
+                : \dirname($file) . '/' . $results['@parent_yaml'];
             if (!file_exists($defaultParent)) {
                 $defaultParent = null;
                 error_log('Cannot find parent file: ' . $results['@parent_yaml']);
@@ -205,7 +205,7 @@ class YamlReader
             foreach ($mergedSections as $path) {
                 $parentElem
                     = $this->getArrayElemRefByPath($parentSections, $path);
-                if (is_array($parentElem)) {
+                if (\is_array($parentElem)) {
                     $resultElemRef
                         = &$this->getArrayElemRefByPath($results, $path, true);
                     $resultElemRef
@@ -242,7 +242,7 @@ class YamlReader
     ) {
         $result = &$arr;
         foreach ($path as $pathPart) {
-            if (!array_key_exists($pathPart, $result)) {
+            if (!\array_key_exists($pathPart, $result)) {
                 if (!$create) {
                     return null;
                 }

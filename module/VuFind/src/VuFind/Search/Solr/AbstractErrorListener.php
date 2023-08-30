@@ -94,7 +94,7 @@ abstract class AbstractErrorListener
      */
     public function listenForBackend(string $backend)
     {
-        return in_array($backend, $this->backends);
+        return \in_array($backend, $this->backends);
     }
 
     /**

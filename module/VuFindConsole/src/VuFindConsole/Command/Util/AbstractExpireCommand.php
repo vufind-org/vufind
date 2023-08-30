@@ -155,7 +155,7 @@ class AbstractExpireCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         // Collect arguments/options:
-        $daysOld = floatval($input->getArgument('age'));
+        $daysOld = \floatval($input->getArgument('age'));
         $batchSize = $input->getOption('batch');
         $sleepTime = $input->getOption('sleep');
 

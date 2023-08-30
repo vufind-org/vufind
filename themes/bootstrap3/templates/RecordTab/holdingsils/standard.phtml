@@ -27,7 +27,7 @@
                 $schemaAvailEsc = 'http://schema.org/LimitedAvailability';
               } else {
                 $statusClassEsc = 'text-success';
-                $status = is_int($holding['availability']) && !empty($holding['status']) ? $holding['status'] : 'Available';
+                $status = \is_int($holding['availability']) && !empty($holding['status']) ? $holding['status'] : 'Available';
                 $schemaAvailEsc = 'http://schema.org/InStock';
               }
             ?>

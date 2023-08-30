@@ -226,7 +226,7 @@ class Export
             if (isset($this->exportConfig->$format->requiredMethods)) {
                 foreach ($this->exportConfig->$format->requiredMethods as $method) {
                     // If a required method is missing, give up now:
-                    if (!is_callable([$driver, $method])) {
+                    if (!\is_callable([$driver, $method])) {
                         return false;
                     }
                 }
@@ -259,7 +259,7 @@ class Export
         $formats = [];
         foreach (array_keys($this->exportConfig->toArray()) as $format) {
             if (
-                in_array($format, $active)
+                \in_array($format, $active)
                 && $this->recordSupportsFormat($driver, $format)
             ) {
                 $formats[] = $format;

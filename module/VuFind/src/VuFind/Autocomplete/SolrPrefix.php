@@ -113,7 +113,7 @@ class SolrPrefix implements AutocompleteInterface
      */
     public function getSuggestions($query)
     {
-        if (!is_object($this->searchObject)) {
+        if (!\is_object($this->searchObject)) {
             throw new \Exception('Please set configuration first.');
         }
 

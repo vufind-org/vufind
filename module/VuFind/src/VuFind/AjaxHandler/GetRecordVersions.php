@@ -123,14 +123,14 @@ class GetRecordVersions extends \VuFind\AjaxHandler\AbstractBase
         $source = $params->fromPost('source') ?: $params->fromQuery('source');
         $searchId = $params->fromPost('sid') ?: $params->fromQuery('sid');
 
-        if (!is_array($id)) {
+        if (!\is_array($id)) {
             return $this->formatResponse(
                 $this->getVersionsLinkForRecord($id, $source, $searchId)
             );
         }
 
         $htmlByRecord = [];
-        for ($i = 0; $i < count($id); $i++) {
+        for ($i = 0; $i < \count($id); $i++) {
             $key = $source[$i] . '|' . $id[$i];
 
             $htmlByRecord[$key] = $this->getVersionsLinkForRecord(

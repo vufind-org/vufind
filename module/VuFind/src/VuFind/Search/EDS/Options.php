@@ -171,7 +171,7 @@ class Options extends \VuFind\Search\Base\Options
         ];
         // If we get the API info as a callback, defer until it's actually needed to
         // avoid calling the API:
-        if (is_callable($apiInfo)) {
+        if (\is_callable($apiInfo)) {
             $this->apiInfo = null;
             $this->apiInfoCallback = $apiInfo;
         } else {
@@ -182,7 +182,7 @@ class Options extends \VuFind\Search\Base\Options
         $facetConf = $configLoader->get($this->facetsIni);
         if (
             isset($facetConf->Advanced_Facet_Settings->translated_facets)
-            && count($facetConf->Advanced_Facet_Settings->translated_facets) > 0
+            && \count($facetConf->Advanced_Facet_Settings->translated_facets) > 0
         ) {
             $this->setTranslatedFacets(
                 $facetConf->Advanced_Facet_Settings->translated_facets->toArray()
@@ -311,7 +311,7 @@ class Options extends \VuFind\Search\Base\Options
     public function getEdsView()
     {
         $viewArr = explode('|', $this->getApiProperty('defaultView'));
-        return (1 < count($viewArr)) ? $viewArr[1] : $this->defaultView;
+        return (1 < \count($viewArr)) ? $viewArr[1] : $this->defaultView;
     }
 
     /**

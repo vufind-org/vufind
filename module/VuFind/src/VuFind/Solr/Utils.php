@@ -126,11 +126,11 @@ class Utils
         [$date] = explode('&', $date);
 
         // Default to January 1 if no month/day present:
-        if (strlen($date) < 5) {
+        if (\strlen($date) < 5) {
             $month = $day = '01';
         } else {
             // If we have year + month, parse that out:
-            if (strlen($date) < 8) {
+            if (\strlen($date) < 8) {
                 $day = '01';
                 if (preg_match('/^[0-9]{4}-([0-9]{1,2})/', $date, $matches)) {
                     $month = str_pad($matches[1], 2, '0', STR_PAD_LEFT);

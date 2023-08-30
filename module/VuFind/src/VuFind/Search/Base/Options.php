@@ -487,12 +487,12 @@ abstract class Options implements TranslatorAwareInterface
      */
     public function setLimitOptions($options)
     {
-        if (is_array($options) && !empty($options)) {
+        if (\is_array($options) && !empty($options)) {
             $this->limitOptions = $options;
 
             // If the current default limit is no longer legal, pick the
             // first option in the array as the new default:
-            if (!in_array($this->defaultLimit, $this->limitOptions)) {
+            if (!\in_array($this->defaultLimit, $this->limitOptions)) {
                 $this->defaultLimit = $this->limitOptions[0];
             }
         }
@@ -621,7 +621,7 @@ abstract class Options implements TranslatorAwareInterface
             $defaultDelimiter = $this->getDefaultFacetDelimiter();
             foreach ($this->delimitedFacets as $current) {
                 $parts = explode('|', $current, 2);
-                if (count($parts) == 2) {
+                if (\count($parts) == 2) {
                     $this->processedDelimitedFacets[$parts[0]] = $parts[1];
                 } else {
                     $this->processedDelimitedFacets[$parts[0]] = $defaultDelimiter;
@@ -941,7 +941,7 @@ abstract class Options implements TranslatorAwareInterface
      */
     public function getVisibleSearchResultLimit()
     {
-        return intval($this->resultLimit);
+        return \intval($this->resultLimit);
     }
 
     /**
@@ -1031,12 +1031,12 @@ abstract class Options implements TranslatorAwareInterface
     public function getSearchClassId()
     {
         // Parse identifier out of class name of format VuFind\Search\[id]\Options:
-        $className = get_class($this);
+        $className = \get_class($this);
         $class = explode('\\', $className);
 
         // Special case: if there's an unexpected number of parts, we may be testing
         // with a mock object; if so, that's okay, but anything else is unexpected.
-        if (count($class) !== 4) {
+        if (\count($class) !== 4) {
             if ('Mock_' === substr($className, 0, 5)) {
                 return 'Mock';
             }

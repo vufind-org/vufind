@@ -206,7 +206,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         if ($params) {
             $query = ['version=' . $this->sruVersion];
             foreach ($params as $function => $value) {
-                if (is_array($value)) {
+                if (\is_array($value)) {
                     foreach ($value as $additional) {
                         $additional = urlencode($additional);
                         $query[] = "$function=$additional";

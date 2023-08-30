@@ -204,7 +204,7 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
             $this->getTagFilters(),
             $this->getParams()->getSort()
         );
-        $this->resultTotal = count($rawResults);
+        $this->resultTotal = \count($rawResults);
 
         // Apply offset and limit if necessary!
         $limit = $this->getParams()->getLimit();

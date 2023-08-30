@@ -266,7 +266,7 @@ class ILS extends AbstractBase
                 throw new \Exception('Email authenticator not set');
             }
             if ($patron) {
-                $class = get_class($this);
+                $class = \get_class($this);
                 if ($p = strrpos($class, '\\')) {
                     $class = substr($class, $p + 1);
                 }

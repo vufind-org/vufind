@@ -409,7 +409,7 @@ class Backend extends AbstractBackend
             'query', 'facets', 'filters', 'groupFilters', 'rangeFilters', 'limiters',
         ];
         foreach ($params as $key => $param) {
-            $options[$key] = in_array($key, $arraySettings)
+            $options[$key] = \in_array($key, $arraySettings)
                 ? $param : $param[0];
         }
         return new SearchRequestModel($options);

@@ -147,7 +147,7 @@ abstract class AbstractBase implements \VuFind\I18n\HasSorterInterface
             $parentIDs = $fields->hierarchy_parent_id;
             $sequences = $fields->hierarchy_sequence;
 
-            if (count($parentIDs) > count($sequences)) {
+            if (\count($parentIDs) > \count($sequences)) {
                 if ($this->validateHierarchySequences) {
                     throw new \Exception('Fields hierarchy_parent_id and hierarchy_sequence have different lengths.');
                 } else {
@@ -175,11 +175,11 @@ abstract class AbstractBase implements \VuFind\I18n\HasSorterInterface
         $retVal = [];
         if (
             isset($fields->title_in_hierarchy)
-            && is_array($fields->title_in_hierarchy)
+            && \is_array($fields->title_in_hierarchy)
         ) {
             $titles = $fields->title_in_hierarchy;
             $parentIDs = (array)($fields->hierarchy_parent_id ?? []);
-            if (count($titles) === count($parentIDs)) {
+            if (\count($titles) === \count($parentIDs)) {
                 foreach ($parentIDs as $key => $val) {
                     $retVal[$val] = $titles[$key];
                 }
@@ -206,7 +206,7 @@ abstract class AbstractBase implements \VuFind\I18n\HasSorterInterface
                 return isset($fields->is_hierarchy_id);
             case 'Top':
                 return isset($fields->is_hierarchy_id)
-                    && in_array($fields->is_hierarchy_id, $fields->hierarchy_top_id);
+                    && \in_array($fields->is_hierarchy_id, $fields->hierarchy_top_id);
             default:
                 // Default to not be a collection level record
                 return false;

@@ -128,8 +128,8 @@ class Solr implements AutocompleteInterface
         $this->sortField = (isset($params[2]) && !empty($params[2])) ?
             $params[2] : null;
         $this->filters = [];
-        if (count($params) > 3) {
-            for ($x = 3; $x < count($params); $x += 2) {
+        if (\count($params) > 3) {
+            for ($x = 3; $x < \count($params); $x += 2) {
                 if (isset($params[$x + 1])) {
                     $this->filters[] = $params[$x] . ':' . $params[$x + 1];
                 }
@@ -193,7 +193,7 @@ class Solr implements AutocompleteInterface
     public function getSuggestions($query)
     {
         $results = null;
-        if (!is_object($this->searchObject)) {
+        if (!\is_object($this->searchObject)) {
             throw new \Exception('Please set configuration first.');
         }
 
@@ -275,7 +275,7 @@ class Solr implements AutocompleteInterface
         $bestMatch = false;
 
         // Different processing for arrays vs. non-arrays:
-        if (is_array($value) && !empty($value)) {
+        if (\is_array($value) && !empty($value)) {
             // Do any of the values within this multi-valued array match the
             // query?  Try to find the closest available match.
             foreach ($value as $next) {

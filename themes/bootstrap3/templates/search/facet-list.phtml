@@ -23,7 +23,7 @@
   $this->headTitle($this->translate('facet_list_for', ['%%field%%' => $this->facetLabel]));
 ?>
 <h2><?=$this->transEsc($this->facetLabel) ?></h2>
-<?php if (count($this->sortOptions) > 1): ?>
+<?php if (\count($this->sortOptions) > 1): ?>
   <div class="full-facet-sort-options">
     <label><?=$this->translate('Sort') ?></label>
     <div class="btn-group">
@@ -39,7 +39,7 @@
     <div class="full-facet-list facet-group<?php if (!$active): ?> hidden<?php endif; ?>" id="facet-list-<?=$this->escapeHtmlAttr($key) ?>">
       <?php if ($active): ?>
         <?php if ($this->page > 1): ?>
-          <a href="<?=$urlBase . '&amp;facetpage=' . ($this->page - 1) . '&amp;facetsort=' . urlencode($this->sort) ?>" class="facet js-facet-prev-page" data-page="<?=($this->page + 1) ?>" data-sort="<?=$this->sort ?>" data-limit="<?=count($this->data) ?>" data-lightbox-ignore><?=$this->translate('prev_ellipsis') ?></a>
+          <a href="<?=$urlBase . '&amp;facetpage=' . ($this->page - 1) . '&amp;facetsort=' . urlencode($this->sort) ?>" class="facet js-facet-prev-page" data-page="<?=($this->page + 1) ?>" data-sort="<?=$this->sort ?>" data-limit="<?=\count($this->data) ?>" data-lightbox-ignore><?=$this->translate('prev_ellipsis') ?></a>
         <?php endif; ?>
         <?php foreach ($this->data as $item): ?>
           <?=$this->render('Recommend/SideFacets/single-facet.phtml', [

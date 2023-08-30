@@ -104,6 +104,6 @@ class DateTime extends \Laminas\View\Helper\AbstractHelper
      */
     public function __call($methodName, $params)
     {
-        return call_user_func_array([$this->converter, $methodName], $params);
+        return \call_user_func_array([$this->converter, $methodName], $params);
     }
 }

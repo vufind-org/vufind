@@ -86,7 +86,7 @@ class Mailer extends AbstractBase
 
         // If found, use carriers from SMS configuration; otherwise, fall back to the
         // default list of US carriers.
-        if (isset($config->Carriers) && count($config->Carriers) > 0) {
+        if (isset($config->Carriers) && \count($config->Carriers) > 0) {
             $this->carriers = [];
             foreach ($config->Carriers as $id => $settings) {
                 [$domain, $name] = explode(':', $settings, 2);
@@ -136,7 +136,7 @@ class Mailer extends AbstractBase
     public function text($provider, $to, $from, $message)
     {
         $knownCarriers = array_keys($this->carriers);
-        if (empty($provider) || !in_array($provider, $knownCarriers)) {
+        if (empty($provider) || !\in_array($provider, $knownCarriers)) {
             throw new SMSException(
                 'Unknown Carrier',
                 SMSException::ERROR_UNKNOWN_CARRIER

@@ -98,7 +98,7 @@ abstract class AbstractBase implements MetadataVocabularyInterface
             foreach ((array)$genFields as $genericField) {
                 $genericValues = $genericData[$genericField] ?? [];
                 if ($genericValues) {
-                    if (!is_array($genericValues)) {
+                    if (!\is_array($genericValues)) {
                         $genericValues = [$genericValues];
                     }
                     foreach ($genericValues as $genericValue) {

@@ -57,8 +57,8 @@ abstract class AbstractBase implements
      */
     protected function getIsbn10($isbnObj)
     {
-        $isbn = is_object($isbnObj) ? $isbnObj->get10() : false;
-        return (!$isbn && is_object($isbnObj)) ? $isbnObj->get13() : $isbn;
+        $isbn = \is_object($isbnObj) ? $isbnObj->get10() : false;
+        return (!$isbn && \is_object($isbnObj)) ? $isbnObj->get13() : $isbn;
     }
 
     /**

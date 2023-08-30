@@ -69,7 +69,7 @@ trait VerbosityTrait
     protected function applyVerbosity(array $event)
     {
         // Apply verbosity filter:
-        if (is_array($event['message'])) {
+        if (\is_array($event['message'])) {
             $event['message'] = $event['message'][$this->verbosity];
         }
         return $event;

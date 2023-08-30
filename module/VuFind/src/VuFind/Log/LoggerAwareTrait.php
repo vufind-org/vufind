@@ -102,7 +102,7 @@ trait LoggerAwareTrait
     ) {
         if ($this->logger) {
             if ($prependClass) {
-                $message = get_class($this) . ': ' . $message;
+                $message = \get_class($this) . ': ' . $message;
             }
             $this->logger->$level($message, $context);
         }

@@ -57,7 +57,7 @@ class PrivateUser extends User
      */
     public function __get($name)
     {
-        return array_key_exists($name, $this->data) ? parent::__get($name) : null;
+        return \array_key_exists($name, $this->data) ? parent::__get($name) : null;
     }
 
     /**

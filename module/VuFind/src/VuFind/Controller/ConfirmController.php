@@ -56,7 +56,7 @@ class ConfirmController extends AbstractBase
         // Assign Flash Messages
         if (isset($data['messages'])) {
             foreach ($data['messages'] as $message) {
-                $flash = (true === is_array($message))
+                $flash = (true === \is_array($message))
                     ? [
                         'msg' => $message['msg'],
                         'tokens' => $message['tokens'] ?? [],

@@ -2,7 +2,7 @@
   // Set up some convenience variables:
   $id = $this->driver->getUniqueId();
   $source = $this->driver->getSourceIdentifier();
-  if (isset($this->list) && is_object($this->list)) {
+  if (isset($this->list) && \is_object($this->list)) {
     $list_id = $this->list->id;
     $user_id = $this->list->user_id;
   } else {
@@ -50,7 +50,7 @@
               <?php if (!empty($summAuthors)): ?>
                 <span class="authors">
                   <?=$this->transEsc('by')?>
-                  <?php $authorCount = count($summAuthors); ?>
+                  <?php $authorCount = \count($summAuthors); ?>
                   <?php foreach ($summAuthors as $i => $summAuthor): ?>
                     <a href="<?=$this->record($this->driver)->getLink('author', $summAuthor)?>"><?=$this->escapeHtml($summAuthor)?></a><?=($i + 1 < $authorCount ? ';' : '') ?>
                   <?php endforeach; ?>
@@ -109,7 +109,7 @@
                 'tag'
             ) : [];
           ?>
-          <?php if (count($listTags) > 0): ?>
+          <?php if (\count($listTags) > 0): ?>
             <strong><?=$this->transEsc('Your Tags')?>:</strong>
             <?php foreach ($listTags as $tag): ?>
               <a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet('tags', $tag->tag)?>"><?=$this->escapeHtml($tag->tag)?></a>
@@ -117,19 +117,19 @@
             <br>
           <?php endif; ?>
           <?php $listNotes = $this->driver->getListNotes($list_id, $user_id); ?>
-          <?php if (count($listNotes) > 0): ?>
+          <?php if (\count($listNotes) > 0): ?>
             <strong><?=$this->transEsc('Notes')?>:</strong>
-            <?php if (count($listNotes) > 1): ?><br><?php endif; ?>
+            <?php if (\count($listNotes) > 1): ?><br><?php endif; ?>
             <?php foreach ($listNotes as $note): ?>
               <?=$this->escapeHtml($note)?><br>
             <?php endforeach; ?>
           <?php endif; ?>
 
-          <?php if (count($this->lists ?? []) > 0): ?>
+          <?php if (\count($this->lists ?? []) > 0): ?>
               <strong><?=$this->transEsc('Saved in')?>:</strong>
               <?php $i = 0; ?>
               <?php foreach ($this->lists as $current): ?>
-                <a href="<?=$this->url('userList', ['id' => $current->id])?>"><?=$this->escapeHtml($current->title)?></a><?php if ($i++ < count($this->lists) - 1): ?>,<?php endif; ?>
+                <a href="<?=$this->url('userList', ['id' => $current->id])?>"><?=$this->escapeHtml($current->title)?></a><?php if ($i++ < \count($this->lists) - 1): ?>,<?php endif; ?>
               <?php endforeach; ?>
               <br>
           <?php endif; ?>
@@ -176,7 +176,7 @@
               <?=$doi->renderTemplate()?>
             <?php endif; ?>
 
-            <?php $urls = is_array($urls) ? $urls : []; ?>
+            <?php $urls = \is_array($urls) ? $urls : []; ?>
             <?php if (!$this->driver->isCollection()): ?>
               <?php foreach ($urls as $current): ?>
                 <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext icon-link" target="new">

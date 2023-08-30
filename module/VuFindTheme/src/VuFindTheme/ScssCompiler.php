@@ -97,8 +97,8 @@ class ScssCompiler extends AbstractCssPreCompiler
 
             $start = microtime(true);
             $finalFile = $finalOutDir . str_replace('.scss', '.css', $file) . '.css';
-            if (!is_dir(dirname($finalFile))) {
-                mkdir(dirname($finalFile));
+            if (!is_dir(\dirname($finalFile))) {
+                mkdir(\dirname($finalFile));
             }
             file_put_contents(
                 $finalOutDir . str_replace('.scss', '.css', $file),

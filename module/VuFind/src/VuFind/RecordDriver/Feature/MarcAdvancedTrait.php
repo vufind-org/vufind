@@ -335,7 +335,7 @@ trait MarcAdvancedTrait
         $fieldsNames = isset($this->mainConfig->Record->marc_links)
             ? array_map('trim', explode(',', $this->mainConfig->Record->marc_links))
             : [];
-        return in_array('785', $fieldsNames) ? [] : parent::getNewerTitles();
+        return \in_array('785', $fieldsNames) ? [] : parent::getNewerTitles();
     }
 
     /**
@@ -379,7 +379,7 @@ trait MarcAdvancedTrait
         $fieldsNames = isset($this->mainConfig->Record->marc_links)
             ? array_map('trim', explode(',', $this->mainConfig->Record->marc_links))
             : [];
-        return in_array('780', $fieldsNames) ? [] : parent::getPreviousTitles();
+        return \in_array('780', $fieldsNames) ? [] : parent::getPreviousTitles();
     }
 
     /**
@@ -677,7 +677,7 @@ trait MarcAdvancedTrait
 
                 // Get data for field
                 $tmp = $this->getFieldData($field);
-                if (is_array($tmp)) {
+                if (\is_array($tmp)) {
                     $retVal[] = $tmp;
                 }
             }
@@ -715,12 +715,12 @@ trait MarcAdvancedTrait
         $value = $field['tag'];
         switch ($value) {
             case '780':
-                if (in_array($relationshipIndicator, range('0', '7'))) {
+                if (\in_array($relationshipIndicator, range('0', '7'))) {
                     $value .= '_' . $relationshipIndicator;
                 }
                 break;
             case '785':
-                if (in_array($relationshipIndicator, range('0', '8'))) {
+                if (\in_array($relationshipIndicator, range('0', '8'))) {
                     $value .= '_' . $relationshipIndicator;
                 }
                 break;
@@ -861,7 +861,7 @@ trait MarcAdvancedTrait
             str_split($details['params'] ?? 'a'),
             true
         );
-        return count($result) > 0 ? (string)$result[0] : '';
+        return \count($result) > 0 ? (string)$result[0] : '';
     }
 
     /**

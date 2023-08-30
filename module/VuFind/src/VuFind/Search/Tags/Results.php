@@ -107,7 +107,7 @@ class Results extends BaseResults
         );
 
         // How many results were there?
-        $this->resultTotal = count($rawResults);
+        $this->resultTotal = \count($rawResults);
 
         // Apply offset and limit if necessary!
         $limit = $this->getParams()->getLimit();

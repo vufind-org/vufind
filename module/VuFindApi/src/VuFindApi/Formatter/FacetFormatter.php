@@ -118,7 +118,7 @@ class FacetFormatter extends BaseFormatter
             }
 
             foreach ($value as $key => $item) {
-                if (!in_array($key, $fields)) {
+                if (!\in_array($key, $fields)) {
                     continue;
                 }
                 if ($key == 'children') {

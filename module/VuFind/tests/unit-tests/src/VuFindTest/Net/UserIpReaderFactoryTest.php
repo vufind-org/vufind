@@ -89,7 +89,7 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
              */
             public function __construct()
             {
-                $args = func_get_args();
+                $args = \func_get_args();
                 $this->args = $args;
                 parent::__construct(
                     ...(empty($args) ? [new Parameters([])] : $args)

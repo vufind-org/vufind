@@ -535,10 +535,10 @@ class Aleph extends AbstractBase implements
         if (str_contains($id, self::RECORD_ID_BASE_SEPARATOR)) {
             $result = explode(self::RECORD_ID_BASE_SEPARATOR, $id);
             $base = $result[0];
-            if (!in_array($base, $this->bib)) {
+            if (!\in_array($base, $this->bib)) {
                 throw new \Exception("Unknown library base '$base'");
             }
-        } elseif (count($this->bib) == 1) {
+        } elseif (\count($this->bib) == 1) {
             $result = [$this->bib[0], $id];
         } else {
             throw new \Exception(
@@ -613,7 +613,7 @@ class Aleph extends AbstractBase implements
         $holding = [];
         foreach ($xml->xpath('/publish-avail/OAI-PMH') as $rec) {
             $identifier = $rec->xpath('.//identifier/text()');
-            $id = ((count($this->bib) > 1) ? $bib . '-' : '')
+            $id = ((\count($this->bib) > 1) ? $bib . '-' : '')
                 . substr($identifier[0], strrpos($identifier[0], ':') + 1);
             $temp = [];
             foreach ($rec->xpath(".//datafield[@tag='AVA']") as $datafield) {
@@ -750,7 +750,7 @@ class Aleph extends AbstractBase implements
             $duedate = '';
             $addLink = false;
             $status = (string)$item->{'status'};
-            if (in_array($status, $this->available_statuses)) {
+            if (\in_array($status, $this->available_statuses)) {
                 $availability = true;
             }
             if ($item_status['request'] == 'Y' && $availability == false) {
@@ -842,7 +842,7 @@ class Aleph extends AbstractBase implements
         }
 
         // total count without details is fast
-        $totalCount = count(
+        $totalCount = \count(
             $this->doRestDLFRequest(
                 ['patron', $userId, 'circulationActions', 'loans'],
                 $alephParams
@@ -1334,7 +1334,7 @@ class Aleph extends AbstractBase implements
         // Default the college to the useradm library and overwrite it if the
         // home_lib exists
         $patron['college'] = $this->useradm;
-        if (($home_lib != '') && (array_key_exists("$home_lib", $this->sublibadm))) {
+        if (($home_lib != '') && (\array_key_exists("$home_lib", $this->sublibadm))) {
             if ($this->sublibadm["$home_lib"] != '') {
                 $patron['college'] = $this->sublibadm["$home_lib"];
             }
@@ -1450,7 +1450,7 @@ class Aleph extends AbstractBase implements
             $pickupLocation = $this->getDefaultPickUpLocation($patron, $details);
         }
         $comment = $details['comment'];
-        if (strlen($comment) <= 50) {
+        if (\strlen($comment) <= 50) {
             $comment1 = $comment;
             $comment2 = null;
         } else {
@@ -1529,7 +1529,7 @@ class Aleph extends AbstractBase implements
                         false
                     );
                     $id = $result->xpath('//doc_number/text()');
-                    if (count($this->bib) == 1) {
+                    if (\count($this->bib) == 1) {
                         return $id[0];
                     } else {
                         return $base . '-' . $id[0];
@@ -1583,7 +1583,7 @@ class Aleph extends AbstractBase implements
         if ($method == 'getMyTransactionHistory') {
             return !empty($this->config['TransactionHistory']['enabled']);
         }
-        return is_callable([$this, $method]);
+        return \is_callable([$this, $method]);
     }
 
     /**
@@ -1689,7 +1689,7 @@ class Aleph extends AbstractBase implements
             $pickupLocations = $details['pickup-locations'];
             if (isset($this->preferredPickUpLocations)) {
                 foreach (array_keys($details['pickup-locations']) as $locationID) {
-                    if (in_array($locationID, $this->preferredPickUpLocations)) {
+                    if (\in_array($locationID, $this->preferredPickUpLocations)) {
                         return $locationID;
                     }
                 }

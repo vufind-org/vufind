@@ -160,7 +160,7 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
                     || $currentValueCount >= $this->maxValuesToSuggestPerField;
                 $channel = $this
                     ->buildChannelFromFacet($results, $field, $current, $tokenOnly);
-                if ($tokenOnly || count($channel['contents']) > 0) {
+                if ($tokenOnly || \count($channel['contents']) > 0) {
                     $channels[] = $channel;
                     $currentValueCount++;
                 }
@@ -204,7 +204,7 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
                         $current,
                         $tokenOnly
                     );
-                    if ($tokenOnly || count($channel['contents']) > 0) {
+                    if ($tokenOnly || \count($channel['contents']) > 0) {
                         $channels[] = $channel;
                         $currentValueCount++;
                     }
@@ -298,7 +298,7 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
     protected function buildChannelFromToken(Results $results, $token)
     {
         $parts = explode('|', $token, 2);
-        if (count($parts) < 2) {
+        if (\count($parts) < 2) {
             return [];
         }
         return $this->buildChannel($results, $parts[1], $parts[0]);

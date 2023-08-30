@@ -146,7 +146,7 @@ trait MockContainerTrait
     {
         $id = $this->mockAliases[$rawId] ?? $rawId;
         // Assume every service exists unless explicitly disabled
-        return !in_array($id, $this->disabled);
+        return !\in_array($id, $this->disabled);
     }
 
     /**

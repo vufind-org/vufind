@@ -106,7 +106,7 @@ class Renewals extends AbstractPlugin
         $flashMsg = $this->getController()->flashMessenger();
 
         // If there is actually something to renew, attempt the renewal action:
-        if (is_array($ids) && !empty($ids)) {
+        if (\is_array($ids) && !empty($ids)) {
             if (null !== $csrfValidator) {
                 if (!$csrfValidator->isValid($request->get('csrf'))) {
                     $flashMsg->addErrorMessage('csrf_validation_failed');
@@ -124,7 +124,7 @@ class Renewals extends AbstractPlugin
                 // Assign Blocks to the Template
                 if (
                     isset($renewResult['blocks'])
-                    && is_array($renewResult['blocks'])
+                    && \is_array($renewResult['blocks'])
                 ) {
                     foreach ($renewResult['blocks'] as $block) {
                         $flashMsg->addMessage($block, 'info');

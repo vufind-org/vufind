@@ -114,7 +114,7 @@ class Post extends \Laminas\Log\Writer\AbstractWriter
     protected function doWrite(array $event)
     {
         // Apply verbosity filter:
-        if (is_array($event['message'])) {
+        if (\is_array($event['message'])) {
             $event['message'] = $event['message'][$this->verbosity];
         }
 

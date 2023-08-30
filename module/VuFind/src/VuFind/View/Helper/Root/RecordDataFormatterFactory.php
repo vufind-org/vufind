@@ -114,7 +114,7 @@ class RecordDataFormatterFactory implements FactoryInterface
             $final = [];
             foreach ($data as $type => $values) {
                 $final[] = [
-                    'label' => $labels[$type][count($values) == 1 ? 0 : 1],
+                    'label' => $labels[$type][\count($values) == 1 ? 0 : 1],
                     'values' => [$type => $values],
                     'options' => [
                         'pos' => $options['pos'] + $order[$type],

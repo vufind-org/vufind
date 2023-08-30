@@ -62,7 +62,7 @@ class Demo implements DoiLinkerInterface
     {
         $response = [];
         foreach ($doiArray as $doi) {
-            $icon = $this->icons[rand(0, count($this->icons) - 1)];
+            $icon = $this->icons[rand(0, \count($this->icons) - 1)];
             $response[$doi][] = [
                 'link' => 'https://vufind.org',
                 'label' => "Demonstrating DOI link for $doi with icon "

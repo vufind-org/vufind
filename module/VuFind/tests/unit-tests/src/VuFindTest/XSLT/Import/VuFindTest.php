@@ -110,7 +110,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
      */
     public function testStripBadChars()
     {
-        $this->assertEquals('f oo', VuFind::stripBadChars('f' . chr(8) . 'oo'));
+        $this->assertEquals('f oo', VuFind::stripBadChars('f' . \chr(8) . 'oo'));
     }
 
     /**

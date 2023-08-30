@@ -76,7 +76,7 @@ class GeneratorTools
     protected function getPluginManagerForNamespace($classParts, $namespace)
     {
         $classParts[0] = $namespace;
-        $classParts[count($classParts) - 1] = 'PluginManager';
+        $classParts[\count($classParts) - 1] = 'PluginManager';
         return implode('\\', $classParts);
     }
 
@@ -92,7 +92,7 @@ class GeneratorTools
         $handle = opendir($moduleDir);
         $results = [];
         while ($line = readdir($handle)) {
-            if (substr($line, 0, 6) === 'VuFind' && strlen($line) > 6) {
+            if (substr($line, 0, 6) === 'VuFind' && \strlen($line) > 6) {
                 $results[] = $line;
             }
         }
@@ -529,14 +529,14 @@ class GeneratorTools
     public function extendService($source, $target)
     {
         $parts = explode('/', $source);
-        $partCount = count($parts);
+        $partCount = \count($parts);
         if ($partCount < 3) {
             throw new \Exception('Config path too short.');
         }
         $sourceType = $parts[$partCount - 2];
 
         $supportedTypes = ['factories', 'invokables'];
-        if (!in_array($sourceType, $supportedTypes)) {
+        if (!\in_array($sourceType, $supportedTypes)) {
             throw new \Exception(
                 'Unsupported service type; supported values: '
                 . implode(', ', $supportedTypes)
@@ -583,10 +583,10 @@ class GeneratorTools
         // Make sure we can figure out how to handle the factory; it should
         // either be a [controller, method] array or a "controller::method"
         // string; anything else will cause a problem.
-        $parts = is_string($factory) ? explode('::', $factory) : $factory;
+        $parts = \is_string($factory) ? explode('::', $factory) : $factory;
         if (
-            !is_array($parts) || count($parts) != 2 || !class_exists($parts[0])
-            || !is_callable($parts)
+            !\is_array($parts) || \count($parts) != 2 || !class_exists($parts[0])
+            || !\is_callable($parts)
         ) {
             throw new \Exception('Unexpected factory configuration format.');
         }
@@ -659,7 +659,7 @@ class GeneratorTools
         $regex = '/new\s+([\w\\\\]*)\s*\(/m';
         preg_match_all($regex, $body, $matches);
         $classNames = $matches[1];
-        $count = count($classNames);
+        $count = \count($classNames);
         if ($count != 1) {
             throw new \Exception("Found $count class names; expected 1.");
         }
@@ -691,7 +691,7 @@ class GeneratorTools
         // Determine the name of the new class by exploding the old class and
         // replacing the namespace:
         $parts = explode('\\', trim($class, '\\'));
-        if (count($parts) < 2) {
+        if (\count($parts) < 2) {
             throw new \Exception('Expected a namespaced class; found ' . $class);
         }
         $parts[0] = $module;
@@ -719,7 +719,7 @@ class GeneratorTools
         $callback = null
     ) {
         $generator = new ClassGenerator($class, null, null, $parent, $interfaces);
-        if (is_callable($callback)) {
+        if (\is_callable($callback)) {
             $callback($generator);
         }
         $this->writeClass($generator, $module);
@@ -894,7 +894,7 @@ class GeneratorTools
         $current = & $config;
         $finalStep = array_pop($path);
         foreach ($path as $step) {
-            if (!is_array($current)) {
+            if (!\is_array($current)) {
                 throw new \Exception('Unexpected non-array: ' . $current);
             }
             if (!isset($current[$step])) {
@@ -902,7 +902,7 @@ class GeneratorTools
             }
             $current = & $current[$step];
         }
-        if (!is_array($current)) {
+        if (!\is_array($current)) {
             throw new \Exception('Unexpected non-array: ' . $current);
         }
         $current[$finalStep] = $setting;

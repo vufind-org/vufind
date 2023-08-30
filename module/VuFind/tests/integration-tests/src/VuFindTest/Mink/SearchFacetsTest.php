@@ -112,12 +112,12 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertCount($limit, $items);
         $excludes = $page
             ->findAll('css', '#modal #facet-list-count .exclude');
-        $this->assertEquals($exclusionActive ? $limit : 0, count($excludes));
+        $this->assertEquals($exclusionActive ? $limit : 0, \count($excludes));
         // more
         $this->clickCss($page, '#modal .js-facet-next-page');
         $this->waitForPageLoad($page);
         $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
-        $this->assertEquals($limit * 2, count($items));
+        $this->assertEquals($limit * 2, \count($items));
         $excludeControl = $exclusionActive ? 'Exclude matching results ' : '';
         $this->assertEquals(
             'Weird IDs 9 results 9 ' . $excludeControl
@@ -133,7 +133,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $excludes = $page
             ->findAll('css', '#modal #facet-list-count .exclude');
-        $this->assertEquals($exclusionActive ? $limit * 2 : 0, count($excludes));
+        $this->assertEquals($exclusionActive ? $limit * 2 : 0, \count($excludes));
 
         // sort by title
         $this->clickCss($page, '[data-sort="index"]');
@@ -150,12 +150,12 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $excludes = $page
             ->findAll('css', '#modal #facet-list-index .exclude');
-        $this->assertEquals($exclusionActive ? $limit : 0, count($excludes));
+        $this->assertEquals($exclusionActive ? $limit : 0, \count($excludes));
         // sort by index again
         $this->clickCss($page, '[data-sort="count"]');
         $this->waitForPageLoad($page);
         $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
-        $this->assertEquals($limit * 2, count($items)); // maintain number of items
+        $this->assertEquals($limit * 2, \count($items)); // maintain number of items
         // When exclusion is active, the result count is outside of the link tag:
         $expectedLinkText = $exclusionActive ? 'Weird IDs' : 'Weird IDs 9 results 9';
         $weirdIDs = $this->findAndAssertLink(

@@ -191,7 +191,7 @@ class Writer
         $handler = 'update',
         $params = null
     ) {
-        $command = new WriteDocumentCommand(...func_get_args());
+        $command = new WriteDocumentCommand(...\func_get_args());
         return $this->searchService->invoke($command)->getResult();
     }
 }

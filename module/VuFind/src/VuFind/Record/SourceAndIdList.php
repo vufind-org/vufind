@@ -72,7 +72,7 @@ class SourceAndIdList
         // record in the final return array:
         foreach ($ids as $i => $details) {
             // Convert source|id string to array if necessary:
-            if (!is_array($details)) {
+            if (!\is_array($details)) {
                 $parts = explode('|', $details, 2);
                 $ids[$i] = $details = [
                     'source' => $parts[0], 'id' => $parts[1],

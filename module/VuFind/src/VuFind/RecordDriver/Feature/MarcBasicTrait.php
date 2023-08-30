@@ -156,7 +156,7 @@ trait MarcBasicTrait
         $retVal = [];
         $field = $this->getMarcReader()->getField('008');
         if ($field) {
-            if (strlen($field) >= 38) {
+            if (\strlen($field) >= 38) {
                 $retVal[] = substr($field, 35, 3);
             }
         }

@@ -1017,7 +1017,7 @@ class SierraRest extends AbstractBase implements
         if ($this->apiVersion >= 6) {
             $fields .= ',notNeededAfterDate';
         }
-        $freezeEnabled = in_array(
+        $freezeEnabled = \in_array(
             'frozen',
             explode(':', $this->config['Holds']['updateFields'] ?? '')
         );
@@ -1067,9 +1067,9 @@ class SierraRest extends AbstractBase implements
                 $publicationYear = $bib['publishYear'] ?? '';
             }
             $available
-                = in_array($entry['status']['code'], $this->holdAvailableCodes);
+                = \in_array($entry['status']['code'], $this->holdAvailableCodes);
             $inTransit
-                = in_array($entry['status']['code'], $this->holdInTransitCodes);
+                = \in_array($entry['status']['code'], $this->holdInTransitCodes);
             if ($entry['priority'] >= $entry['priorityQueueLength']) {
                 // This can happen, no idea why
                 $position = $entry['priorityQueueLength'] . ' / '
@@ -1204,9 +1204,9 @@ class SierraRest extends AbstractBase implements
                 $patron
             );
             $available
-                = in_array($hold['status']['code'], $this->holdAvailableCodes);
+                = \in_array($hold['status']['code'], $this->holdAvailableCodes);
             $inTransit
-                = in_array($hold['status']['code'], $this->holdInTransitCodes);
+                = \in_array($hold['status']['code'], $this->holdInTransitCodes);
 
             // Check if we can do the requested changes:
             $updateFields = [];
@@ -1377,13 +1377,13 @@ class SierraRest extends AbstractBase implements
         $level = $data['level'] ?? 'copy';
         if ('title' === $level) {
             $fields = ['bibLevel'];
-            if (in_array('order', $this->titleHoldRules)) {
+            if (\in_array('order', $this->titleHoldRules)) {
                 $fields[] = 'orders';
             }
             $bib = $this->getBibRecord($id, $fields, $patron);
             if (
                 !isset($bib['bibLevel']['code'])
-                || !in_array($bib['bibLevel']['code'], $this->titleHoldBibLevels)
+                || !\in_array($bib['bibLevel']['code'], $this->titleHoldBibLevels)
             ) {
                 return false;
             }
@@ -1566,7 +1566,7 @@ class SierraRest extends AbstractBase implements
         }
 
         $newPIN = preg_replace('/[^\d]/', '', trim($details['newPassword']));
-        if (strlen($newPIN) != 4) {
+        if (\strlen($newPIN) != 4) {
             return [
                 'success' => false, 'status' => 'password_error_invalid',
             ];
@@ -1654,7 +1654,7 @@ class SierraRest extends AbstractBase implements
             return !empty($this->config['TransactionHistory']['enabled'])
                 && $this->apiVersion >= 6;
         }
-        return is_callable([$this, $method]);
+        return \is_callable([$this, $method]);
     }
 
     /**
@@ -1746,10 +1746,10 @@ class SierraRest extends AbstractBase implements
             return false;
         };
 
-        $args = func_get_args();
+        $args = \func_get_args();
         return $this->callWithRetry(
             function () use ($args) {
-                return call_user_func_array([$this, 'requestCallback'], $args);
+                return \call_user_func_array([$this, 'requestCallback'], $args);
             },
             $statusCallback,
             [
@@ -1807,7 +1807,7 @@ class SierraRest extends AbstractBase implements
         if ($method == 'GET') {
             $client->setParameterGet($params);
         } else {
-            if (is_string($params)) {
+            if (\is_string($params)) {
                 $client->getRequest()->setContent($params);
             } else {
                 $client->setParameterPost($params);
@@ -1820,7 +1820,7 @@ class SierraRest extends AbstractBase implements
             'Authorization',
             "Bearer {$this->sessionCache->accessToken}"
         );
-        if (is_string($params)) {
+        if (\is_string($params)) {
             $headers->addHeaderLine('Content-Type', 'application/json');
         }
 
@@ -2078,7 +2078,7 @@ class SierraRest extends AbstractBase implements
         $redirectCount = 0;
         while ($response->isRedirect() && ++$redirectCount < 10) {
             $location = $response->getHeaders()->get('Location')->getUri();
-            if (strncmp($location, $redirectUri, strlen($redirectUri)) === 0) {
+            if (strncmp($location, $redirectUri, \strlen($redirectUri)) === 0) {
                 // Don't try to parse the URI since Sierra creates it wrong if
                 // the redirect_uri sent to it already contains a question mark.
                 if (!preg_match('/code=([^&\?]+)/', $location, $matches)) {
@@ -2155,7 +2155,7 @@ class SierraRest extends AbstractBase implements
                 [$bib], // wrap $bib in array to conform to expected format
                 $this->config['CallNumber']['bib_fields']
             );
-        return is_array($result) ? reset($result) : $result;
+        return \is_array($result) ? reset($result) : $result;
     }
 
     /**
@@ -2256,7 +2256,7 @@ class SierraRest extends AbstractBase implements
             if (isset($item['fixedFields'][static::ITEM_OPAC_MESSAGE_FIELD])) {
                 $opacMsg = $item['fixedFields'][static::ITEM_OPAC_MESSAGE_FIELD];
                 $trimmedMsg = trim($opacMsg['value']);
-                if (strlen($trimmedMsg) && $trimmedMsg != '-') {
+                if (\strlen($trimmedMsg) && $trimmedMsg != '-') {
                     $notes[] = $this->translateOpacMessage(
                         trim($opacMsg['value'])
                     );
@@ -2452,7 +2452,7 @@ class SierraRest extends AbstractBase implements
      */
     protected function extractFieldsFromApiData($response, $fieldSpecs)
     {
-        if (!is_array($fieldSpecs)) {
+        if (!\is_array($fieldSpecs)) {
             $fieldSpecs = explode(':', $fieldSpecs);
         }
         $result = [];
@@ -2679,19 +2679,19 @@ class SierraRest extends AbstractBase implements
         if (null === $this->itemHoldBibLevels) {
             // No item hold bib levels defined; allow only bib level NOT allowed
             // for title hold for back-compatibility:
-            if (in_array($bibLevel, $this->titleHoldBibLevels)) {
+            if (\in_array($bibLevel, $this->titleHoldBibLevels)) {
                 return false;
             }
         } else {
             // Bib level needs to be allowed for item level holds:
-            if (!in_array($bibLevel, $this->itemHoldBibLevels)) {
+            if (!\in_array($bibLevel, $this->itemHoldBibLevels)) {
                 return false;
             }
         }
 
         if (!empty($this->validHoldStatuses)) {
             [$status] = $this->getItemStatus($item);
-            if (!in_array($status, $this->validHoldStatuses)) {
+            if (!\in_array($status, $this->validHoldStatuses)) {
                 return false;
             }
         }
@@ -2700,7 +2700,7 @@ class SierraRest extends AbstractBase implements
             && isset($item['fixedFields'][static::ITEM_ICODE2_FIELD])
         ) {
             $code = $item['fixedFields'][static::ITEM_ICODE2_FIELD]['value'];
-            if (in_array($code, $this->itemHoldExcludedItemCodes)) {
+            if (\in_array($code, $this->itemHoldExcludedItemCodes)) {
                 return false;
             }
         }
@@ -2709,7 +2709,7 @@ class SierraRest extends AbstractBase implements
             && isset($item['fixedFields'][static::ITEM_ITYPE_FIELD])
         ) {
             $code = $item['fixedFields'][static::ITEM_ITYPE_FIELD]['value'];
-            if (in_array($code, $this->itemHoldExcludedItemTypes)) {
+            if (\in_array($code, $this->itemHoldExcludedItemTypes)) {
                 return false;
             }
         }
@@ -2982,7 +2982,7 @@ class SierraRest extends AbstractBase implements
     {
         // If the .b prefix is found, strip it and the trailing checksum:
         return substr($id, 0, 2) === '.b'
-            ? substr($id, 2, strlen($id) - 3) : $id;
+            ? substr($id, 2, \strlen($id) - 3) : $id;
     }
 
     /**
@@ -3003,9 +3003,9 @@ class SierraRest extends AbstractBase implements
         // If we got this far, we need to generate a check digit:
         $multiplier = 2;
         $sum = 0;
-        for ($x = strlen($id) - 1; $x >= 0; $x--) {
+        for ($x = \strlen($id) - 1; $x >= 0; $x--) {
             $current = substr($id, $x, 1);
-            $sum += $multiplier * intval($current);
+            $sum += $multiplier * \intval($current);
             $multiplier++;
         }
         $checksum = $sum % 11;
@@ -3127,8 +3127,8 @@ class SierraRest extends AbstractBase implements
         ?string $password
     ): ?array {
         // If the validation field is a valid, supported value, perform validation:
-        if (in_array($validationField, ['email', 'name'])) {
-            return in_array($password, $patron[$validationField . 's'] ?? [])
+        if (\in_array($validationField, ['email', 'name'])) {
+            return \in_array($password, $patron[$validationField . 's'] ?? [])
                 ? $patron : null;
         }
         // Throw an exception if we got an unexpected configuration:
@@ -3298,18 +3298,18 @@ class SierraRest extends AbstractBase implements
         }
 
         if (
-            in_array('order', $this->titleHoldRules)
+            \in_array('order', $this->titleHoldRules)
             && !empty($bib['orders'])
         ) {
             return true;
         }
 
-        if (in_array('item', $this->titleHoldRules)) {
+        if (\in_array('item', $this->titleHoldRules)) {
             $items = $this->getItemsForBibRecord($bib['id'], null, $patron);
             foreach ($items as $item) {
                 if (!empty($this->titleHoldValidHoldStatuses)) {
                     [$status] = $this->getItemStatus($item);
-                    if (!in_array($status, $this->titleHoldValidHoldStatuses)) {
+                    if (!\in_array($status, $this->titleHoldValidHoldStatuses)) {
                         continue;
                     }
                 }
@@ -3318,7 +3318,7 @@ class SierraRest extends AbstractBase implements
                     && isset($item['fixedFields'][static::ITEM_ICODE2_FIELD])
                 ) {
                     $code = $item['fixedFields'][static::ITEM_ICODE2_FIELD]['value'];
-                    if (in_array($code, $this->titleHoldExcludedItemCodes)) {
+                    if (\in_array($code, $this->titleHoldExcludedItemCodes)) {
                         continue;
                     }
                 }
@@ -3327,7 +3327,7 @@ class SierraRest extends AbstractBase implements
                     && isset($item['fixedFields'][static::ITEM_ITYPE_FIELD])
                 ) {
                     $code = $item['fixedFields'][static::ITEM_ITYPE_FIELD]['value'];
-                    if (in_array($code, $this->titleHoldExcludedItemTypes)) {
+                    if (\in_array($code, $this->titleHoldExcludedItemTypes)) {
                         continue;
                     }
                 }

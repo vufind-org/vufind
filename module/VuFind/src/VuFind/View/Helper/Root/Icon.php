@@ -150,7 +150,7 @@ class Icon extends AbstractHelper
         // Special case: aliases:
         if ($set === 'Alias') {
             $aliasTrail[] = $name;
-            if (in_array($icon, $aliasTrail)) {
+            if (\in_array($icon, $aliasTrail)) {
                 throw new \Exception("Circular icon alias detected: $icon!");
             }
             return $this->mapIcon($icon, $aliasTrail);
@@ -213,7 +213,7 @@ class Icon extends AbstractHelper
     public function __invoke(string $name, $attrs = []): string
     {
         // Class name shortcut
-        if (is_string($attrs)) {
+        if (\is_string($attrs)) {
             $attrs = ['class' => $attrs];
         }
 

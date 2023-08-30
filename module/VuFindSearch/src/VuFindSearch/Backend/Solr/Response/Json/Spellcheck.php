@@ -80,7 +80,7 @@ class Spellcheck implements IteratorAggregate, Countable
         // from Solr 6.5 on the array is associative.
         $list = isset($spellcheck[0]) ? new NamedList($spellcheck) : $spellcheck;
         foreach ($list as $term => $info) {
-            if (is_array($info)) {
+            if (\is_array($info)) {
                 $this->terms->offsetSet($term, $info);
             }
         }
@@ -173,9 +173,9 @@ class Spellcheck implements IteratorAggregate, Countable
         }
 
         $qTerm = preg_quote($term, '/');
-        $length = strlen($term);
+        $length = \strlen($term);
         foreach (array_keys((array)$this->terms) as $key) {
-            if ($length > strlen($key)) {
+            if ($length > \strlen($key)) {
                 return false;
             }
             if (strstr($key, $term) && preg_match("/\b$qTerm\b/u", $key)) {
@@ -201,6 +201,6 @@ class Spellcheck implements IteratorAggregate, Countable
      */
     public function compareTermLength($a, $b)
     {
-        return strlen($b) - strlen($a);
+        return \strlen($b) - \strlen($a);
     }
 }

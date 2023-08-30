@@ -73,7 +73,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
             $recordFactory = function ($i) {
                 return new Record($i);
             };
-        } elseif (!is_callable($recordFactory)) {
+        } elseif (!\is_callable($recordFactory)) {
             throw new InvalidArgumentException('Record factory must be callable.');
         }
         $this->recordFactory = $recordFactory;
@@ -89,17 +89,17 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
      */
     public function factory($response)
     {
-        if (!is_array($response)) {
+        if (!\is_array($response)) {
             throw new InvalidArgumentException(
                 sprintf(
                     'Unexpected type of value: Expected array, got %s',
-                    gettype($response)
+                    \gettype($response)
                 )
             );
         }
         $collection = new $this->collectionClass($response);
         foreach ($response['data'] as $doc) {
-            $collection->add(call_user_func($this->recordFactory, $doc), false);
+            $collection->add(\call_user_func($this->recordFactory, $doc), false);
         }
         return $collection;
     }

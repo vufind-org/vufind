@@ -70,7 +70,7 @@ class SecureDelegatorFactory implements DelegatorFactoryInterface
          *
          * @var HandlerInterface $handler
          */
-        $handler = call_user_func($callback);
+        $handler = \call_user_func($callback);
         $config = $container->get(\VuFind\Config\PluginManager::class);
         $secure = $config->get('config')->Session->secure ?? false;
         return $secure ? $this->delegate($container, $handler) : $handler;
