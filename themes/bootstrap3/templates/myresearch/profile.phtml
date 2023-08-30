@@ -87,7 +87,7 @@
   <?php $user = $this->auth()->isLoggedIn(); ?>
   <?php if ($this->auth()->getManager()->supportsPersistentLogin($user)): ?>
     <div class="myresearch-profile-header">
-      <h3><?= $this->transEsc("Saved logins") ?></h3>
+      <h3><?=$this->transEsc('Saved logins')?></h3>
     </div>
     <?php $tokens = $user->getLoginTokens($user->id); ?>
     <?php if (count($tokens) === 0): ?>
@@ -98,7 +98,7 @@
           <tr>
             <th scope="col" class="login_token_browser"> <?=$this->transEsc('Platform')?> / <?=$this->transEsc('Browser')?></th>
             <th scope="col" class="login_token_last_login"><?=$this->transEsc('Last Login')?>:</th>
-            <th scope="col" class="login_token_delete"><?=$this->transEsc("Delete")?></th>
+            <th scope="col" class="login_token_delete"><?=$this->transEsc('Delete')?></th>
           </tr>
         </thead>
         <tbody>
