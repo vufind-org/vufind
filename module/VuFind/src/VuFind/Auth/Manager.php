@@ -200,8 +200,9 @@ class Manager implements
      */
     protected function makeAuth($method)
     {
+        $legalAuthList = array_map('strtolower', $this->legalAuthOptions);
         // If an illegal option was passed in, don't allow the object to load:
-        if (!in_array($method, $this->legalAuthOptions)) {
+        if (!in_array(strtolower($method), $legalAuthList)) {
             throw new \Exception("Illegal authentication method: $method");
         }
         $auth = $this->pluginManager->get($method);
@@ -287,9 +288,7 @@ class Manager implements
     public function supportsPersistentLogin($user = null)
     {
         if (!empty($this->config->Authentication->persistent_login)) {
-            if ($user) {
-                $method = $user->auth_method;
-            } elseif ($this->getAuth() instanceof ChoiceAuth) {
+            if ($this->getAuth() instanceof ChoiceAuth) {
                 $method = $this->getAuth()->getSelectedAuthOption();
             } else {
                 $method = $this->getAuthMethod();
@@ -557,6 +556,7 @@ class Manager implements
                 $this->currentUser = $results;
             } elseif ($this->cookieManager->get('loginToken')) {
                 if ($user = $this->loginToken->tokenLogin($this->sessionManager->getId())) {
+                    $this->setAuthMethod($user->auth_method);
                     $this->updateUser($user);
                     $this->updateSession($user);
                 }

@@ -240,7 +240,9 @@ class LoginToken implements \VuFind\I18n\Translator\TranslatorAwareInterface
     public function sendLoginTokenWarningEmail(\VuFind\Db\Row\User $user)
     {
         if (!empty($user->email)) {
-            $message = $this->viewRenderer->render('Email/login-warning.phtml', ['title' => $this->config->Site->title]);
+            $message = $this->viewRenderer->render(
+                'Email/login-warning.phtml', ['title' => $this->config->Site->title]
+            );
             $subject = $this->config->Authentication->login_warning_email_subject
                 ?? 'login_warning_email_subject';
 
