@@ -825,6 +825,10 @@ class DefaultRecord extends AbstractBase
         if (count($publishers) > 0) {
             $params['rft.pub'] = $publishers[0];
         }
+        $placesOfPublication = $this->getPlacesOfPublication();
+        if (count($placesOfPublication) > 0) {
+            $params['rft.place'] = $placesOfPublication[0];
+        }
         $params['rft.edition'] = $this->getEdition();
         $params['rft.isbn'] = (string)$this->getCleanISBN();
         return $params;
