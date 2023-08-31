@@ -18,7 +18,6 @@ $rules = [
     'ereg_to_preg' => true,
     'get_class_to_class_keyword' => true,
     'global_namespace_import' => [
-        'import_constants' => null,
         'import_functions' => true,
         'import_classes' => null,
     ],
@@ -52,7 +51,10 @@ $rules = [
     'no_useless_return' => true,
     'no_whitespace_in_blank_line' => true,
     'non_printable_character' => true,
-    'ordered_imports' => true,
+    'ordered_imports' => [
+        'imports_order' => ['class', 'function', 'const'],
+        'sort_algorithm' => 'alpha',
+    ],
     'phpdoc_no_access' => true,
     'pow_to_exponentiation' => true,
     'single_line_after_imports' => true,
