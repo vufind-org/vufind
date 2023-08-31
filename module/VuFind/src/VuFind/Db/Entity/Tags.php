@@ -67,4 +67,14 @@ class Tags implements EntityInterface
      * @ORM\Column(name="tag", type="string", length=64, nullable=false)
      */
     protected $tag = '';
+
+    /**
+     * Id getter
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 }

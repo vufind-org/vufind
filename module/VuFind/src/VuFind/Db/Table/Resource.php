@@ -45,8 +45,10 @@ use VuFind\Record\Loader;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Resource extends Gateway
+class Resource extends Gateway implements \VuFind\Db\Service\ServiceAwareInterface
 {
+    use \VuFind\Db\Service\ServiceAwareTrait;
+
     /**
      * Date converter
      *
@@ -170,10 +172,8 @@ class Resource extends Gateway
         $offset = 0,
         $limit = null
     ) {
-        // Set up base query:
-        $obj = & $this;
         return $this->select(
-            function ($s) use ($user, $list, $tags, $sort, $offset, $limit, $obj) {
+            function ($s) use ($user, $list, $tags, $sort, $offset, $limit) {
                 $s->columns(
                     [
                         new Expression(
@@ -204,14 +204,12 @@ class Resource extends Gateway
 
                 // Adjust for tags if necessary:
                 if (!empty($tags)) {
-                    $linkingTable = $obj->getDbTable('ResourceTags');
+                    $linkingTable = $this->getDbService(\VuFind\Db\Service\TagService::class);
                     foreach ($tags as $tag) {
                         $matches = $linkingTable
-                            ->getResourcesForTag($tag, $user, $list)->toArray();
-                        $getId = function ($i) {
-                            return $i['resource_id'];
-                        };
-                        $s->where->in('resource.id', array_map($getId, $matches));
+                            ->getResourcesForTag($tag, $user, $list);
+
+                        $s->where->in('resource.id', $matches);
                     }
                 }
 
@@ -246,11 +244,16 @@ class Resource extends Gateway
             if ($newResource = $this->findResource($newId, $source, false)) {
                 // Special case: merge new ID and old ID:
                 foreach (['comments', 'userresource', 'resourcetags'] as $table) {
-                    $tableObjects[$table] = $this->getDbTable($table);
-                    $tableObjects[$table]->update(
-                        ['resource_id' => $newResource->id],
-                        ['resource_id' => $resource->id]
-                    );
+                    if ($table == 'resourcetags') {
+                        $tableObjects[$table] = $this->getDbService(\VuFind\Db\Service\TagService::class);
+                        $tableObjects[$table]->update($newResource->id, $resource->id);
+                    } else {
+                        $tableObjects[$table] = $this->getDbTable($table);
+                        $tableObjects[$table]->update(
+                            ['resource_id' => $newResource->id],
+                            ['resource_id' => $resource->id]
+                        );
+                    }
                 }
                 $resource->delete();
             } else {

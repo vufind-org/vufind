@@ -619,8 +619,8 @@ class User extends RowGateway implements
             $list = $table->getExisting($current->id);
             $list->delete($this, true);
         }
-        $resourceTags = $this->getDbTable('ResourceTags');
-        $resourceTags->destroyResourceLinks(null, $this->id);
+        $tagService = $this->getDbService(\VuFind\Db\Service\TagService::class);
+        $tagService->destroyResourceLinks(null, $this->id);
         if ($removeComments) {
             $comments = $this->getDbService(
                 \VuFind\Db\Service\CommentsService::class

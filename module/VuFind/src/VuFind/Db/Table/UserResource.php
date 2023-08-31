@@ -43,8 +43,10 @@ use VuFind\Db\Row\RowGateway;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class UserResource extends Gateway
+class UserResource extends Gateway implements \VuFind\Db\Service\ServiceAwareInterface
 {
+    use \VuFind\Db\Service\ServiceAwareTrait;
+
     /**
      * Constructor
      *
@@ -170,7 +172,7 @@ class UserResource extends Gateway
         // Remove any tags associated with the links we are removing; we don't
         // want to leave orphaned tags in the resource_tags table after we have
         // cleared out favorites in user_resource!
-        $resourceTags = $this->getDbTable('ResourceTags');
+        $resourceTags = $this->getDbService(\VuFind\Db\Service\TagService::class);
         $resourceTags->destroyResourceLinks($resource_id, $user_id, $list_id);
 
         // Now build the where clause to figure out which rows to remove:

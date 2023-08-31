@@ -44,8 +44,10 @@ use VuFind\Db\Row\RowGateway;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Tags extends Gateway
+class Tags extends Gateway implements \VuFind\Db\Service\ServiceAwareInterface
 {
+    use \VuFind\Db\Service\ServiceAwareTrait;
+
     /**
      * Are tags case sensitive?
      *
@@ -584,11 +586,12 @@ class Tags extends Gateway
             return;
         }
         $table = $this->getDbTable('ResourceTags');
+        $tagService = $this->getDbService(\VuFind\Db\Service\TagService::class);
         $result = $table->select(['tag_id' => $source]);
 
         foreach ($result as $current) {
             // Move the link to the target ID:
-            $table->createLink(
+            $tagService->createLink(
                 $current->resource_id,
                 $target,
                 $current->user_id,

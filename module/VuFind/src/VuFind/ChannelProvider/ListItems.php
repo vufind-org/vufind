@@ -91,11 +91,11 @@ class ListItems extends AbstractChannelProvider
     protected $userList;
 
     /**
-     * UserList table
+     * Tag database service
      *
-     * @var \VuFind\Db\Table\UserList
+     * @var \VuFind\Db\Service\TagService
      */
-    protected $resourceTags;
+    protected $tagService;
 
     /**
      * Results manager
@@ -115,7 +115,7 @@ class ListItems extends AbstractChannelProvider
      * Constructor
      *
      * @param \VuFind\Db\Table\UserList            $userList       UserList table
-     * @param \VuFind\Db\Table\ResourceTags        $resourceTags   ResourceTags table
+     * @param \VuFind\Db\Service\TagService        $tagService     Tag database service
      * @param Url                                  $url            URL helper
      * @param \VuFind\Search\Results\PluginManager $resultsManager Results manager
      * @param array                                $options        Settings
@@ -123,13 +123,13 @@ class ListItems extends AbstractChannelProvider
      */
     public function __construct(
         \VuFind\Db\Table\UserList $userList,
-        \VuFind\Db\Table\ResourceTags $resourceTags,
+        \VuFind\Db\Service\TagService $tagService,
         Url $url,
         \VuFind\Search\Results\PluginManager $resultsManager,
         array $options = []
     ) {
         $this->userList = $userList;
-        $this->resourceTags = $resourceTags;
+        $this->tagService = $tagService;
         $this->url = $url;
         $this->resultsManager = $resultsManager;
         $this->setOptions($options);
@@ -280,7 +280,7 @@ class ListItems extends AbstractChannelProvider
     protected function getListsByTagAndId()
     {
         // Get public lists by search criteria
-        $lists = $this->resourceTags->getListsForTag(
+        $lists = $this->tagService->getListsForTag(
             $this->tags,
             $this->ids,
             true,
@@ -289,9 +289,9 @@ class ListItems extends AbstractChannelProvider
 
         // Format result set into an array:
         $result = $resultIds = [];
-        if ($lists->count()) {
+        if (count($lists)) {
             foreach ($lists as $list) {
-                $resultIds[] = $list->list_id;
+                $resultIds[] = $list[0];
             }
 
             $callback = function ($select) use ($resultIds) {

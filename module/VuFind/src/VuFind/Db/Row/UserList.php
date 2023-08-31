@@ -50,9 +50,12 @@ use VuFind\Tags;
  * @property string $created
  * @property bool   $public
  */
-class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface
+class UserList extends RowGateway implements
+    \VuFind\Db\Table\DbTableAwareInterface,
+    \VuFind\Db\Service\ServiceAwareInterface
 {
     use \VuFind\Db\Table\DbTableAwareTrait;
+    use \VuFind\Db\Service\ServiceAwareTrait;
 
     /**
      * Session container for last list information.
@@ -146,7 +149,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
         $this->save($user);
 
         if (null !== ($tags = $request->get('tags'))) {
-            $linker = $this->getDbTable('resourcetags');
+            $linker = $this->getDbService(\VuFind\Db\Service\TagService::class);
             $linker->destroyListLinks($this->id, $user->id);
             foreach ($this->tagParser->parse($tags) as $tag) {
                 $this->addListTag($tag, $user);
@@ -298,7 +301,7 @@ class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
         $userResource->destroyLinks(null, $this->user_id, $this->id);
 
         // Remove resource_tags rows for list tags:
-        $linker = $this->getDbTable('resourcetags');
+        $linker = $this->getDbService(\VuFind\Db\Service\TagService::class);
         $linker->destroyListLinks($this->id, $user->id);
 
         // Remove the list itself:

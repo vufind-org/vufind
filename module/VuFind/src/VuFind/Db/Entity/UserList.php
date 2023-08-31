@@ -113,4 +113,14 @@ class UserList implements EntityInterface
      * )})
      */
     protected $user;
+
+    /**
+     * Id getter
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 }
