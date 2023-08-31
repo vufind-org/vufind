@@ -204,10 +204,10 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
         $config = $this->defaultDriverConfig;
         $config['Holdings'] = [
             'locationTypeItemStatus' => [
-                'AVAIL' => "Always There:available",
-                'ORDER' => "Order Only", // availability determined by other attributes
-                'STAFF' => "Staff Use:uncertain",
-                'UNAVAIL' => "Newer There:unavailable",
+                'AVAIL' => 'Always There:available',
+                'ORDER' => 'Order Only', // availability determined by other attributes
+                'STAFF' => 'Staff Use:uncertain',
+                'UNAVAIL' => 'Newer There:unavailable',
             ],
         ];
         $this->createConnector('get-holding-with-mappings', $config);

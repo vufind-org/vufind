@@ -119,13 +119,13 @@ class SearchHandlerTest extends TestCase
             'CustomMunge' => [
                 'callnumber_exact' => [
                     ['uppercase'],
-                    ['preg_replace', '/[ "]/', ""],
-                    ['preg_replace', '/\*+$/', ""],
+                    ['preg_replace', '/[ "]/', ''],
+                    ['preg_replace', '/\*+$/', ''],
                 ],
                 'callnumber_fuzzy' => [
                     ['uppercase'],
-                    ['preg_replace', '/[ "]/', ""],
-                    ['preg_replace', '/\*+$/', ""],
+                    ['preg_replace', '/[ "]/', ''],
+                    ['preg_replace', '/\*+$/', ''],
                     ['append', '*'],
                 ],
             ],
@@ -159,8 +159,8 @@ class SearchHandlerTest extends TestCase
         $spec = [
             'DismaxMunge' => [
                 ['uppercase'],
-                ['preg_replace', '/[ "]/', ""],
-                ['preg_replace', '/\*+$/', ""],
+                ['preg_replace', '/[ "]/', ''],
+                ['preg_replace', '/\*+$/', ''],
             ],
             'DismaxFields' => ['callnumber'],
             'DismaxHandler' => 'dismax',

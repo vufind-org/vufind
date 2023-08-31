@@ -46,6 +46,7 @@
   <property name="solr_startup_sleep" value="0" />
   <property name="solr_additional_jvm_options" value="-Dlog4j2.formatMsgNoLookups=true" />
   <property name="solr_version" value="9.1.1" />
+  <property name="solr_port" value="8983" />
   <property name="skip_phpdoc" value="false" />
   <property name="phpdoc_version" value="3.3.1" />
   <property name="html_validator" value="" /><!-- set to base address of NU Validator (e.g. http://localhost:8888/) for HTML validation during Mink tests -->
@@ -188,7 +189,7 @@
 
   <!-- Run Sass build, error if it fails -->
   <target name="checkSassBuild">
-    <exec command="npm run build:scss" checkreturn="true" passthru="true" />
+    <exec command="npm run check:scss" checkreturn="true" passthru="true" />
   </target>
 
   <!-- Run LessToSass, error if there are uncommitted changes (used by continuous integration) -->
@@ -260,7 +261,7 @@
         <property name="paramCoverageDir" value="" />
       </else>
     </if>
-    <exec dir="${srcdir}/module/VuFind/tests" command="XDEBUG_MODE=coverage VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} ${phpunit_html_validation_params} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${localdir} VUFIND_URL=${vufindurl} ${paramCoverageDir} ${phpunit_command} --log-junit ${builddir}/reports/phpunit.xml --coverage-php ${coveragedir}/tmp/unit.cov ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+    <exec dir="${srcdir}/module/VuFind/tests" command="XDEBUG_MODE=coverage VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} ${phpunit_html_validation_params} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${localdir} VUFIND_URL=${vufindurl} SOLR_PORT=${solr_port} ${paramCoverageDir} ${phpunit_command} --log-junit ${builddir}/reports/phpunit.xml --coverage-php ${coveragedir}/tmp/unit.cov ${phpunit_extra_params}" passthru="true" checkreturn="true" />
 
     <!-- Produce coverage reports -->
     <exec command="${srcdir}/vendor/bin/phpcov merge --clover ${coveragedir}/clover.xml --html ${coveragedir} ${coveragedir}/tmp" passthru="true" checkreturn="true" />
@@ -280,12 +281,12 @@
 
   <!-- PHPUnit without logging output -->
   <target name="phpunitfast" description="Run tests">
-    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} ${phpunit_html_validation_params} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${localdir} VUFIND_URL=${vufindurl} ${phpunit_command} ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} ${phpunit_html_validation_params} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${localdir} VUFIND_URL=${vufindurl} SOLR_PORT=${solr_port} ${phpunit_command} ${phpunit_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
   <!-- PHPUnit without logging output, stopping at first error or failure -->
   <target name="phpunitfaster" description="Run tests until first failure">
-    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} ${phpunit_html_validation_params} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${localdir} VUFIND_URL=${vufindurl} ${phpunit_command} --stop-on-failure ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} ${phpunit_html_validation_params} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${localdir} VUFIND_URL=${vufindurl} SOLR_PORT=${solr_port} ${phpunit_command} --stop-on-failure ${phpunit_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
   <target name="installsolr" description="Install Solr">
@@ -388,12 +389,24 @@
 
   <!-- Install and Activate VuFind -->
   <target name="startup" description="install and activate demo">
-    <property name="solr_pid_file" value="${localdir}/solr-8983.pid" />
+    <property name="solr_pid_file" value="${localdir}/solr-${solr_port}.pid" />
     <!-- fail if the system is already running -->
     <if>
       <available file="${solr_pid_file}" />
       <then>
         <fail>Solr PID file (${solr_pid_file}) detected. Is the system already running?</fail>
+      </then>
+    </if>
+    <if>
+      <available file="${srcdir}/env.bat" />
+      <then>
+        <fail>Environment file (env.bat) detected. Is the system already running?</fail>
+      </then>
+    </if>
+    <if>
+      <available file="${srcdir}/env.sh" />
+      <then>
+        <fail>Environment file (env.sh) detected. Is the system already running?</fail>
       </then>
     </if>
 
@@ -472,7 +485,7 @@
 
     <!-- Generate basic configuration -->
     <php expression="end(explode('/', '${vufindurl}'))" returnProperty="basepath" />
-    <exec command="php ${srcdir}/install.php --basepath=/${basepath} --non-interactive" passthru="true" checkreturn="true" />
+    <exec command="php ${srcdir}/install.php --basepath=/${basepath} --non-interactive --solr-port=${solr_port}" passthru="true" checkreturn="true" />
 
     <!-- Update config.ini to activate DB connection, exception logging and test mode -->
     <if>
@@ -491,6 +504,15 @@
           <regexp pattern="mysql://root@localhost/vufind" replace="${db_connection_string}" />
           <regexp pattern=";file\s+= /var/log/vufind.log:alert,error,notice,debug" replace="file = ${srcdir}/vufind-exception.log:alert-5,error-5" />
           <regexp pattern="(\[System\]\s+)" replace="\1runningTestSuite=1" />
+          <regexp pattern="(url\s+= http://localhost):8983/solr" replace="\1:${solr_port}/solr" />
+        </replaceregexp>
+      </filterchain>
+    </copy>
+
+    <copy file="${srcdir}/config/vufind/Search2.ini" tofile="${localdir}/config/vufind/Search2.ini">
+      <filterchain>
+        <replaceregexp>
+          <regexp pattern="(url\s+= http://localhost):8983/solr" replace="\1:${solr_port}/solr" />
         </replaceregexp>
       </filterchain>
     </copy>
@@ -550,7 +572,7 @@
   <!-- Set up Solr -->
   <target name="setup_solr">
     <!-- Start Solr using restart in case of old PID files -->
-    <exec command="SOLR_PID_DIR=${localdir} VUFIND_HOME=${srcdir} SOLR_ADDITIONAL_JVM_OPTIONS=${solr_additional_jvm_options} ${srcdir}/solr.sh restart" passthru="true" checkreturn="true" />
+    <exec command="SOLR_PID_DIR=${localdir} VUFIND_HOME=${srcdir} SOLR_ADDITIONAL_JVM_OPTIONS=${solr_additional_jvm_options} SOLR_PORT=${solr_port} ${srcdir}/solr.sh restart" passthru="true" checkreturn="true" />
     <!-- fail if Solr did not start up successfully: -->
     <if>
       <not><available file="${solr_pid_file}" /></not>
@@ -634,7 +656,7 @@ ${git_status}
     </if>
 
     <!-- stop Solr -->
-    <exec command="SOLR_PID_DIR=${localdir} VUFIND_HOME=${srcdir} SOLR_ADDITIONAL_JVM_OPTIONS=${solr_additional_jvm_options} ${srcdir}/solr.sh stop" passthru="true" />
+    <exec command="SOLR_PID_DIR=${localdir} VUFIND_HOME=${srcdir} SOLR_ADDITIONAL_JVM_OPTIONS=${solr_additional_jvm_options} SOLR_PORT=${solr_port} ${srcdir}/solr.sh stop" passthru="true" />
 
     <!-- run extra cleanup action, if any -->
     <if>
@@ -655,6 +677,18 @@ ${git_status}
     </if>
 
     <!-- delete the configuration, sample index, logs and cache data -->
+    <if>
+      <available file="${srcdir}/env.bat" />
+      <then>
+        <delete file="${srcdir}/env.bat" failonerror="true" />
+      </then>
+    </if>
+    <if>
+      <available file="${srcdir}/env.sh" />
+      <then>
+        <delete file="${srcdir}/env.sh" failonerror="true" />
+      </then>
+    </if>
     <if>
       <available file="${srcdir}/import/solrmarc.log" />
       <then>
@@ -699,7 +733,7 @@ ${git_status}
 
   <!-- Reset database and configuration of the demo setup -->
   <target name="reset_setup" description="reset configuration and database of demo">
-    <property name="solr_pid_file" value="${localdir}/solr-8983.pid" />
+    <property name="solr_pid_file" value="${localdir}/solr-${solr_port}.pid" />
     <!-- fail if the system is not already running -->
     <if>
       <not><available file="${solr_pid_file}" /></not>
@@ -712,8 +746,13 @@ ${git_status}
       <fileset dir="${localdir}/config/vufind">
         <patternset>
           <include name="*.ini" />
-          <include name="*.yaml" />
+          <include name="*.ini.bak" />
           <include name="*.json" />
+          <include name="*.json.bak" />
+          <include name="*.key" />
+          <include name="*.key.bak" />
+          <include name="*.yaml" />
+          <include name="*.yaml.bak" />
         </patternset>
       </fileset>
     </delete>
@@ -727,6 +766,10 @@ ${git_status}
         <include name="*" />
       </fileset>
     </delete>
+    <delete file="${srcdir}/env.bat" />
+    <delete file="${srcdir}/env.sh" />
+    <delete file="${localdir}/import/import.properties" />
+    <delete file="${localdir}/import/import_auth.properties" />
 
     <phingcall target="configure_install" />
     <phingcall target="setup_database" />

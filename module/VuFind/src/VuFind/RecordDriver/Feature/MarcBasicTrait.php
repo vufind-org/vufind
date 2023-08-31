@@ -55,7 +55,7 @@ trait MarcBasicTrait
             $this->getFieldArray('773', ['z'])
         );
         foreach ($isbn as $key => $num) {
-            $isbn[$key] = str_replace("-", "", $num);
+            $isbn[$key] = str_replace('-', '', $num);
         }
         $isbn = array_unique($isbn);
         return $isbn;

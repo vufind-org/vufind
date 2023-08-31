@@ -283,7 +283,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @var string
      */
-    protected $listviewOption = "full";
+    protected $listviewOption = 'full';
 
     /**
      * Configuration loader

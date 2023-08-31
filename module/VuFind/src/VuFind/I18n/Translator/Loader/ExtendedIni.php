@@ -117,6 +117,10 @@ class ExtendedIni implements FileLoaderInterface
      */
     public function load($locale, $filename)
     {
+        if ($locale == 'debug') {
+            return null;
+        }
+
         // Reset the loaded files list:
         $this->resetLoadedFiles();
 

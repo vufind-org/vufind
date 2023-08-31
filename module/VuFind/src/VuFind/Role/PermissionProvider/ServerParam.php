@@ -102,10 +102,10 @@ class ServerParam implements
         foreach ((array)$options as $option) {
             $this->debug("getPermissions: option '{$option}'");
             if (!$this->checkServerParam($option)) {
-                $this->debug("getPermissions: result = false");
+                $this->debug('getPermissions: result = false');
                 return [];
             }
-            $this->debug("getPermissions: result = true");
+            $this->debug('getPermissions: result = true');
         }
         return ['guest', 'loggedin'];
     }

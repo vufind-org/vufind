@@ -65,8 +65,8 @@ class AlmaTest extends \PHPUnit\Framework\TestCase
             'url' => "http://na01.alma.exlibrisgroup.com/view/uresolver/TR_INTEGRATION_INST/openurl'
                 . '?debug=true&u.ignore_date_coverage=true&rft.mms_id=9942811800561'
                 . '&rfr_id=info:sid/primo.exlibrisgroup.com&svc_dat=CTO",
-            'rfr_id' => "vufind.svn.sourceforge.net",
-            'resolver' => "alma",
+            'rfr_id' => 'vufind.svn.sourceforge.net',
+            'resolver' => 'alma',
             'window_settings' => "toolbar=no,location=no,directories=no,buttons=no,status=no,menubar=no,'
                 . 'scrollbars=yes,resizable=yes,width=550,height=600",
             'show_in_results' => false,
@@ -191,7 +191,7 @@ class AlmaTest extends \PHPUnit\Framework\TestCase
     public function testParseLinks()
     {
         $conn = $this->createConnector('alma.xml');
-        $openUrl = "url_ver=Z39.88-2004&ctx_ver=Z39.88-2004";
+        $openUrl = 'url_ver=Z39.88-2004&ctx_ver=Z39.88-2004';
         $result = $conn->parseLinks($conn->fetchLinks($openUrl));
         $this->assertEquals($this->getExpectedParsedLinks(), $result);
     }
@@ -204,7 +204,7 @@ class AlmaTest extends \PHPUnit\Framework\TestCase
     public function testParseLinksWithoutIgnoredFiltering()
     {
         $conn = $this->createConnector('alma.xml', ['ignoredFilterReasons' => '']);
-        $openUrl = "url_ver=Z39.88-2004&ctx_ver=Z39.88-2004";
+        $openUrl = 'url_ver=Z39.88-2004&ctx_ver=Z39.88-2004';
         $result = $conn->parseLinks($conn->fetchLinks($openUrl));
         $this->assertEquals($this->getExpectedParsedLinks(true), $result);
     }
@@ -228,7 +228,7 @@ class AlmaTest extends \PHPUnit\Framework\TestCase
             );
             $adapter->setResponse($responseObj);
         }
-        $_SERVER['REMOTE_ADDR'] = "127.0.0.1";
+        $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 
         $client = new \Laminas\Http\Client();
         $client->setAdapter($adapter);

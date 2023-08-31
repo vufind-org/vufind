@@ -117,10 +117,10 @@ class QueryBuilder
                 }
                 // Is this an exclusion (NOT) group or a normal group?
                 if ($params->isNegated()) {
-                    $excludes[] = implode(" OR ", $thisGroup);
+                    $excludes[] = implode(' OR ', $thisGroup);
                 } else {
                     $groups[]
-                        = implode(" " . $params->getOperator() . " ", $thisGroup);
+                        = implode(' ' . $params->getOperator() . ' ', $thisGroup);
                 }
             } else {
                 // Basic Search
@@ -132,11 +132,11 @@ class QueryBuilder
         $queryStr = '';
         if (count($groups) > 0) {
             $queryStr
-                .= "(" . implode(") " . $query->getOperator() . " (", $groups) . ")";
+                .= '(' . implode(') ' . $query->getOperator() . ' (', $groups) . ')';
         }
         // and concatenate exclusion after that
         if (count($excludes) > 0) {
-            $queryStr .= " NOT ((" . implode(") OR (", $excludes) . "))";
+            $queryStr .= ' NOT ((' . implode(') OR (', $excludes) . '))';
         }
 
         return $queryStr;

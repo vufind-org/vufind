@@ -1150,11 +1150,11 @@ class Server
      */
     protected function isBadDate($from, $until)
     {
-        $dt = \DateTime::createFromFormat("Y-m-d", substr($until, 0, 10));
+        $dt = \DateTime::createFromFormat('Y-m-d', substr($until, 0, 10));
         if ($dt === false || array_sum($dt->getLastErrors())) {
             return true;
         }
-        $dt = \DateTime::createFromFormat("Y-m-d", substr($from, 0, 10));
+        $dt = \DateTime::createFromFormat('Y-m-d', substr($from, 0, 10));
         if ($dt === false || array_sum($dt->getLastErrors())) {
             return true;
         }

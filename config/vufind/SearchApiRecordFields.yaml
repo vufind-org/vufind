@@ -15,11 +15,9 @@ authors:
   vufind.method: getDeduplicatedAuthors
   vufind.default: true
   description: >-
-    Deduplicated author information including main, corporate and secondary
+    Deduplicated author information including primary, corporate and secondary
     authors
-  type: array
-  items:
-    $ref: '#/components/schemas/Authors'
+  $ref: '#/components/schemas/Authors'
 awards:
   vufind.method: getAwards
   description: Award notes
