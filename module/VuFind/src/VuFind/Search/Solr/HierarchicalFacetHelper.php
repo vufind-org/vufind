@@ -30,6 +30,7 @@
 namespace VuFind\Search\Solr;
 
 use function array_slice;
+
 use function count;
 use function is_string;
 

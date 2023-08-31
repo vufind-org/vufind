@@ -33,6 +33,7 @@
 namespace VuFind\ILS\Driver;
 
 use function chr;
+
 use function count;
 use function in_array;
 use function intval;

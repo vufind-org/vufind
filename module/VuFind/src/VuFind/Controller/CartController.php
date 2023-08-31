@@ -32,6 +32,7 @@ namespace VuFind\Controller;
 use function is_array;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
+
 use Laminas\Session\Container;
 
 use function strlen;

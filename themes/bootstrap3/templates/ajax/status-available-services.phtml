@@ -4,7 +4,7 @@ $defaultServiceStatusMessage = 'HoldingStatus::services_available_html';
 
 // generate serviceStatusMessage
 $serviceStatusMessage =
-    \count($services) == 1
+    count($services) == 1
         ? $this->transEsc('HoldingStatus::service_available_' . $services[0], [], $defaultServiceStatusMessage)
         : $defaultServiceStatusMessage;
 

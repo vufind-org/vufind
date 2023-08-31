@@ -30,6 +30,7 @@
 namespace VuFind\ILS\Driver;
 
 use function count;
+
 use function floatval;
 use function in_array;
 use function is_callable;

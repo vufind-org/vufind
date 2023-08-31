@@ -21,7 +21,7 @@ $modules = [
     'VuFindAdmin',
     'VuFindApi',
 ];
-if (!\extension_loaded('intl')) {
+if (!extension_loaded('intl')) {
     // Disable SlmLocale module if intl extension is missing:
     $modules = array_diff($modules, ['SlmLocale']);
 }
@@ -62,7 +62,7 @@ if (!is_dir($cacheDir)) {
 }
 $cacheHash = md5(
     APPLICATION_ENV
-    . (\defined('VUFIND_LOCAL_DIR') ? VUFIND_LOCAL_DIR : '')
+    . (defined('VUFIND_LOCAL_DIR') ? VUFIND_LOCAL_DIR : '')
     . implode(',', $modules)
 );
 $cacheDir .= '/' . $cacheHash;

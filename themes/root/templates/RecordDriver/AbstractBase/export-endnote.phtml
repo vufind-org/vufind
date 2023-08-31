@@ -1,7 +1,7 @@
 <?php
 // A driver-specific template may pass in format overrides; check for these before going to the driver itself:
 $formats = $this->slot('endnote-formats')->get($this->driver->tryMethod('getFormats'));
-if (\is_array($formats) && !empty($formats)) {
+if (is_array($formats) && !empty($formats)) {
     foreach ($formats as $format) {
         echo "%0 $format\n";
     }
@@ -21,10 +21,10 @@ foreach ($this->driver->tryMethod('getSecondaryAuthors', [], []) as $current) {
 $pubPlaces = $this->driver->tryMethod('getPlacesOfPublication');
 $pubDates = $this->driver->tryMethod('getPublicationDates');
 $pubNames = $this->driver->tryMethod('getPublishers');
-if (\is_array($pubPlaces) && \is_array($pubDates) && \is_array($pubNames)) {
-    $total = min(\count($pubPlaces), \count($pubDates), \count($pubNames));
+if (is_array($pubPlaces) && is_array($pubDates) && is_array($pubNames)) {
+    $total = min(count($pubPlaces), count($pubDates), count($pubNames));
     // if we have pub dates but no other details, we still want to export the year:
-    if ($total == 0 && \count($pubDates) > 0) {
+    if ($total == 0 && count($pubDates) > 0) {
         $total = 1;
     }
     for ($i = 0; $i < $total; $i++) {
@@ -32,7 +32,7 @@ if (\is_array($pubPlaces) && \is_array($pubDates) && \is_array($pubNames)) {
             echo '%I ' . rtrim($pubNames[$i], ', ') . "\n";
         }
         $date = trim($pubDates[$i], '[]. ');
-        if (\strlen($date) > 4) {
+        if (strlen($date) > 4) {
             $date = $this->dateTime()->extractYear($date);
         }
         if ($date) {
@@ -45,28 +45,28 @@ if (\is_array($pubPlaces) && \is_array($pubDates) && \is_array($pubNames)) {
 }
 
 $languages = $this->driver->tryMethod('getLanguages');
-if (\is_array($languages)) {
+if (is_array($languages)) {
     foreach ($languages as $lang) {
         echo "%G $lang\n";
     }
 }
 
 $series = $this->driver->tryMethod('getSeries');
-if (\is_array($series)) {
+if (is_array($series)) {
     foreach ($series as $current) {
-        echo '%B ' . (\is_array($current) ? $current['name'] : $current) . "\n";
+        echo '%B ' . (is_array($current) ? $current['name'] : $current) . "\n";
     }
 }
 
 $isbns = $this->driver->tryMethod('getISBNs');
-if (\is_array($isbns)) {
+if (is_array($isbns)) {
     foreach ($isbns as $isbn) {
         echo "%@ $isbn\n";
     }
 }
 
 $issns = $this->driver->tryMethod('getISSNs');
-if (\is_array($issns)) {
+if (is_array($issns)) {
     foreach ($issns as $issn) {
         echo "%@ $issn\n";
     }

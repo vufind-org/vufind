@@ -20,7 +20,7 @@
     <input type="hidden" name="selectedIDS[]" value="<?=$this->escapeHtmlAttr($id)?>">
   <?php endforeach; ?>
 
-  <?php if (\in_array('frozen', $this->fields)): ?>
+  <?php if (in_array('frozen', $this->fields)): ?>
     <div class="form-group hold-frozen">
       <label for="frozen" class="control-label"><?=$this->transEsc('hold_edit_frozen')?>:</label>
       <select id="frozen" name="gatheredDetails[frozen]" class="form-control">
@@ -30,7 +30,7 @@
         <option value="0"<?=$current === '0' ? ' selected' : ''?>><?=$this->transEsc('hold_edit_frozen_unset')?></option>
       </select>
     </div>
-    <?php if (\in_array('frozenThrough', $this->fields)): ?>
+    <?php if (in_array('frozenThrough', $this->fields)): ?>
       <div class="form-group hold-frozen-through">
         <label for="frozen_through" class="control-label"><?=$this->transEsc('hold_edit_frozen_through')?>:</label>
         <input id="frozen_through" type="text" name="gatheredDetails[frozenThrough]" value="<?=$this->escapeHtmlAttr($this->gatheredDetails['frozenThrough'] ?? '')?>" size="10" class="form-control">
@@ -39,7 +39,7 @@
     <?php endif; ?>
   <?php endif; ?>
 
-  <?php if (\in_array('startDate', $this->fields)): ?>
+  <?php if (in_array('startDate', $this->fields)): ?>
     <div class="form-group hold-start-date">
       <label for="start_date" class="control-label"><?=$this->transEsc('hold_start_date')?>:</label>
       <input id="start_date" type="text" name="gatheredDetails[startDate]" value="<?=$this->escapeHtmlAttr($this->gatheredDetails['startDate'] ?? '')?>" size="10" class="form-control">
@@ -47,7 +47,7 @@
     </div>
   <?php endif; ?>
 
-  <?php if (\in_array('requiredByDate', $this->fields)): ?>
+  <?php if (in_array('requiredByDate', $this->fields)): ?>
     <div class="form-group hold-required-by">
       <label for="required_by_date" class="control-label"><?=$this->transEsc('hold_required_by')?>:</label>
       <input id="required_by_date" type="text" name="gatheredDetails[requiredBy]" value="<?=$this->escapeHtmlAttr($this->gatheredDetails['requiredBy'] ?? '')?>" size="10" class="form-control">
@@ -55,7 +55,7 @@
     </div>
   <?php endif; ?>
 
-  <?php if (\in_array('pickUpLocation', $this->fields)): ?>
+  <?php if (in_array('pickUpLocation', $this->fields)): ?>
     <?php if ($this->conflictingPickupLocations): ?>
       <div class="form-group hold-pickup-location">
         <label class="control-label"><?=$this->transEsc('pick_up_location')?>:</label><br>

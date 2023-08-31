@@ -36,6 +36,7 @@ use function is_string;
 
 use Laminas\Feed\Writer\Feed;
 use Laminas\Feed\Writer\Writer as FeedWriter;
+
 use Laminas\View\Helper\AbstractHelper;
 use Psr\Container\ContainerInterface;
 

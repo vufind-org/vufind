@@ -30,6 +30,7 @@
 namespace VuFind\Db\Table;
 
 use function count;
+
 use function is_callable;
 
 use Laminas\Db\Adapter\Adapter;

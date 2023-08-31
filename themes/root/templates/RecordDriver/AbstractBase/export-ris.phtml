@@ -1,7 +1,7 @@
 <?php
 // TODO: fold this logic into record driver methods at some point:
 $marc = $this->driver->tryMethod('getMarcReader');
-if (\is_object($marc)) {
+if (is_object($marc)) {
     $marcPhdField = $marc->getField('502');
     $marcProceedingsField = $marc->getField('711');
 } else {
@@ -13,9 +13,9 @@ if ($marcProceedingsField) {
     $format = 'CONF';
 } elseif ($marcPhdField) {
     $format = 'THES';
-} elseif (!empty($journalTitle) || (\is_array($formats) && \in_array('Article', $formats))) {
+} elseif (!empty($journalTitle) || (is_array($formats) && in_array('Article', $formats))) {
     $format = 'JOUR';
-} elseif (\is_array($formats) && \in_array('Journal', $formats)) {
+} elseif (is_array($formats) && in_array('Journal', $formats)) {
     $format = 'JFULL';
 } else {
     $format = 'BOOK';
@@ -57,9 +57,9 @@ if (!empty($journalTitle)) {
 }
 
 $series = $this->driver->tryMethod('getSeries');
-if (\is_array($series)) {
+if (is_array($series)) {
     foreach ($series as $current) {
-        echo 'T3  - ' . (\is_array($current) ? $current['name'] : $current) . "\r\n";
+        echo 'T3  - ' . (is_array($current) ? $current['name'] : $current) . "\r\n";
     }
 }
 
@@ -74,10 +74,10 @@ foreach ($this->driver->tryMethod('getSecondaryAuthors', [], []) as $current) {
 $pubPlaces = $this->driver->tryMethod('getPlacesOfPublication');
 $pubDates = $this->driver->tryMethod('getPublicationDates');
 $pubNames = $this->driver->tryMethod('getPublishers');
-if (\is_array($pubPlaces) && \is_array($pubDates) && \is_array($pubNames)) {
-    $total = min(\count($pubPlaces), \count($pubDates), \count($pubNames));
+if (is_array($pubPlaces) && is_array($pubDates) && is_array($pubNames)) {
+    $total = min(count($pubPlaces), count($pubDates), count($pubNames));
     // if we have pub dates but no other details, we still want to export the year:
-    if ($total == 0 && \count($pubDates) > 0) {
+    if ($total == 0 && count($pubDates) > 0) {
         $total = 1;
     }
     for ($i = 0; $i < $total; $i++) {
@@ -88,7 +88,7 @@ if (\is_array($pubPlaces) && \is_array($pubDates) && \is_array($pubNames)) {
             echo 'PB  - ' . rtrim($pubNames[$i], ', ') . "\r\n";
         }
         $date = trim($pubDates[$i], '[]. ');
-        if (\strlen($date) > 4) {
+        if (strlen($date) > 4) {
             $date = $this->dateTime()->extractYear($date);
         }
         if ($date) {
@@ -98,21 +98,21 @@ if (\is_array($pubPlaces) && \is_array($pubDates) && \is_array($pubNames)) {
 }
 
 $languages = $this->driver->tryMethod('getLanguages');
-if (\is_array($languages)) {
+if (is_array($languages)) {
     foreach ($languages as $lang) {
         echo 'LA  - ' . "$lang\r\n";
     }
 }
 
 $genres = $this->driver->tryMethod('getGenres');
-if (\is_array($genres)) {
+if (is_array($genres)) {
     foreach ($genres as $genre) {
         echo 'M3  - ' . "$genre\r\n";
     }
 }
 
 $topics = $this->driver->tryMethod('getTopics');
-if (\is_array($topics)) {
+if (is_array($topics)) {
     foreach ($topics as $topic) {
         echo 'KW  - ' . "$topic\r\n";
     }
@@ -124,14 +124,14 @@ if (!empty($start_page)) {
 }
 
 $isbns = $this->driver->tryMethod('getISBNs');
-if (\is_array($isbns)) {
+if (is_array($isbns)) {
     foreach ($isbns as $isbn) {
         echo 'SN  - ' . "$isbn\r\n";
     }
 }
 
 $issns = $this->driver->tryMethod('getISSNs');
-if (\is_array($issns)) {
+if (is_array($issns)) {
     foreach ($issns as $issn) {
         echo 'SN  - ' . "$issn\r\n";
     }
@@ -143,7 +143,7 @@ if (!empty($edition)) {
 }
 
 $notes = $this->driver->tryMethod('getGeneralNotes');
-if (\is_array($notes)) {
+if (is_array($notes)) {
     foreach ($notes as $note) {
         echo 'N1  - ' . "$note\r\n";
     }

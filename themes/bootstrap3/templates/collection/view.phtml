@@ -50,7 +50,7 @@
     <?=$this->flashmessages()?>
     <?=$this->record($this->driver)->getCollectionMetadata()?>
 
-    <?php if (\count($this->tabs) > 0): ?>
+    <?php if (count($this->tabs) > 0): ?>
       <a id="tabnav"></a>
       <div class="record-tabs">
         <ul class="nav nav-tabs" role="tablist">
@@ -73,7 +73,7 @@
                 $tabClasses[] = 'noajax';
               }
             ?>
-            <li class="<?=implode(' ', $tabClasses)?>" role="tab" data-tab="<?=$this->escapeHtmlAttr($tabName)?>"<?php if ($obj->supportsAjax() && \in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>>
+            <li class="<?=implode(' ', $tabClasses)?>" role="tab" data-tab="<?=$this->escapeHtmlAttr($tabName)?>"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>>
               <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, $tab))?>#tabnav" data-lightbox-ignore>
                 <?=$this->transEsc($desc)?>
               </a>

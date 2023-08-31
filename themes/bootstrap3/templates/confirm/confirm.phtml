@@ -8,7 +8,7 @@
     <form class="pull-left" action="<?=$this->escapeHtmlAttr($this->confirm)?>" method="post" data-lightbox-onclose="VuFind.refreshPage">
       <?php if (isset($this->extras)): ?>
         <?php foreach ($this->extras as $extra => $value): ?>
-          <?php if (\is_array($value)): ?>
+          <?php if (is_array($value)): ?>
             <?php foreach ($value as $current): ?>
               <input type="hidden" name="<?=$this->escapeHtmlAttr($extra) ?>[]" value="<?=$this->escapeHtmlAttr($current) ?>">
             <?php endforeach; ?>

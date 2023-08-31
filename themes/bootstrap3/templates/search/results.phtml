@@ -98,7 +98,7 @@
       <?=$this->recommend($current, 'top', $index)?>
     <?php endforeach; ?>
     <?php foreach ($this->results->getRecommendations('noresults') as $index => $current): ?>
-      <?php if (!\in_array($current, $top)): ?>
+      <?php if (!in_array($current, $top)): ?>
         <?=$this->recommend($current, 'noresults', $index)?>
       <?php endif; ?>
     <?php endforeach; ?>

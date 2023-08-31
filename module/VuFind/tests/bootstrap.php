@@ -52,7 +52,7 @@ if (file_exists('vendor/autoload.php')) {
 }
 
 // Make sure local config dir exists:
-if (!\defined('LOCAL_OVERRIDE_DIR')) {
+if (!defined('LOCAL_OVERRIDE_DIR')) {
     throw new \Exception('LOCAL_OVERRIDE_DIR must be defined');
 }
 if (!file_exists(LOCAL_OVERRIDE_DIR)) {

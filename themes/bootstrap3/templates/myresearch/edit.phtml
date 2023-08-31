@@ -52,7 +52,7 @@
       <?php endforeach; ?>
     </div>
   <?php endif; ?>
-  <?php if (\count($this->lists) > 0): ?>
+  <?php if (count($this->lists) > 0): ?>
     <hr>
     <div class="form-group">
       <select name="addToList" class="form-control">
@@ -63,7 +63,7 @@
       </select>
     </div>
   <?php endif; ?>
-  <?php if (!empty($this->savedData) || \count($this->lists) > 0): ?>
+  <?php if (!empty($this->savedData) || count($this->lists) > 0): ?>
     <div class="form-group">
       <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEscAttr('Save') ?>">
     </div>

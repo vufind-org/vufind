@@ -30,8 +30,10 @@
 namespace VuFind\Controller;
 
 use function count;
+
 use function defined;
 use function dirname;
+
 use function function_exists;
 use function in_array;
 use function is_callable;

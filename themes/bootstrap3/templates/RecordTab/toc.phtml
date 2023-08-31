@@ -13,7 +13,7 @@
 <?php if (!empty($toc)): ?>
   <strong><?=$this->transEsc('Table of Contents')?>: </strong>
   <?php foreach ($toc as $provider => $content): ?>
-    <?php if (!\is_array($content)): // treat non-array content as raw HTML ?>
+    <?php if (!is_array($content)): // treat non-array content as raw HTML ?>
       <?=$content?>
     <?php else: ?>
       <ul class="toc">

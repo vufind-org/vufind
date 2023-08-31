@@ -5,7 +5,7 @@
     // Grab review data:
     $reviews = $this->tab->getContent();
 ?>
-<?php if (\count($reviews) > 0): ?>
+<?php if (count($reviews) > 0): ?>
   <?php foreach ($reviews as $provider => $list): ?>
     <?php foreach ($list as $review): ?>
       <?php if (!empty($review['Summary'])): ?>

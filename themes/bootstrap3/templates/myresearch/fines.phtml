@@ -28,7 +28,7 @@
       foreach ($this->fines as $record) {
           if (empty($record['title'])) {
               $title = $this->transEsc('not_applicable');
-          } elseif (!\is_object($record['driver'] ?? null)) {
+          } elseif (!is_object($record['driver'] ?? null)) {
               $title = $this->escapeHtml(trim($record['title'], '/:'));
           } else {
               $title = '<a href="'
@@ -51,7 +51,7 @@
       foreach ($tableData as $column => $values) {
           $empty = true;
           foreach ($values as $value) {
-              if (\strlen($value) > 0) {
+              if (strlen($value) > 0) {
                   $empty = false;
                   break;
               }
@@ -63,7 +63,7 @@
 
       // Create the final list of columns and count of rows:
       $columns = array_keys($tableData);
-      $rowCount = \count($this->fines);
+      $rowCount = count($this->fines);
     ?>
     <table class="table table-striped">
       <caption class="sr-only"><?=$this->transEsc('Your Fines')?></caption>
@@ -89,7 +89,7 @@
       </tbody>
       <tfoot>
         <tr>
-          <th colspan="<?=\count($columns) - 1?>" scope="row"><?=$this->transEsc('Total Balance Due')?></th>
+          <th colspan="<?=count($columns) - 1?>" scope="row"><?=$this->transEsc('Total Balance Due')?></th>
           <td style="font-weight:bold"><?=$this->safeMoneyFormat($totalDue / 100.00) ?></td>
         </tr>
       </tfoot>

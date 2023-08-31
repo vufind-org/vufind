@@ -32,6 +32,7 @@ declare(strict_types=1);
 namespace VuFindAdmin\Controller;
 
 use function count;
+
 use function is_array;
 
 use Laminas\Db\Sql\Select;

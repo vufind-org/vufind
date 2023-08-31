@@ -29,6 +29,7 @@
 namespace VuFind\ILS\Driver;
 
 use function count;
+
 use function intval;
 use function strlen;
 

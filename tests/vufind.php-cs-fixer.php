@@ -30,7 +30,10 @@ $rules = [
     'magic_constant_casing' => true,
     'modernize_strpos' => true,
     'native_function_casing' => true,
-    'native_function_invocation' => true,
+    'native_function_invocation' => [
+        'strict' => true,
+        'scope' => 'namespaced',
+    ],
     'no_alias_functions' => true,
     'no_blank_lines_after_class_opening' => true,
     'no_empty_comment' => true,

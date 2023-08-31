@@ -42,7 +42,7 @@
                     // maintain previous behavior and default
                     if (!$link_options && !$tab_options) {
                         $options = 'link:full,partial';
-                        if (\is_string($this->config->Content->GoogleOptions ?? null)) {
+                        if (is_string($this->config->Content->GoogleOptions ?? null)) {
                             $options = 'link:' . strtolower(
                                 str_replace(
                                     ' ',

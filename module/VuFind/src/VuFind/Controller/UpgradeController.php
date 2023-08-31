@@ -35,6 +35,7 @@ use ArrayObject;
 use Composer\Semver\Comparator;
 
 use function count;
+
 use function dirname;
 
 use Exception;
@@ -44,6 +45,7 @@ use function is_object;
 use function is_string;
 
 use Laminas\Crypt\BlockCipher;
+
 use Laminas\Crypt\Symmetric\Openssl;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Mvc\MvcEvent;

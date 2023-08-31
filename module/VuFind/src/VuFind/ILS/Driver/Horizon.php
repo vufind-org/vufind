@@ -31,6 +31,7 @@
 namespace VuFind\ILS\Driver;
 
 use function count;
+
 use function in_array;
 use function intval;
 

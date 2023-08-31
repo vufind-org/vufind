@@ -15,7 +15,7 @@
         </li>
       <?php endif; ?>
 
-      <?php if (\count($this->pagesInRange) > 1): ?>
+      <?php if (count($this->pagesInRange) > 1): ?>
         <?php foreach ($this->pagesInRange as $page): ?>
           <?php if ($page != $this->current): ?>
             <li role="none">

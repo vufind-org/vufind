@@ -1,7 +1,7 @@
 <?php
 // Convert Primo format to RefWorks format:
 $formats = $this->driver->tryMethod('getFormats');
-if (\is_array($formats) && !empty($formats[0])) {
+if (is_array($formats) && !empty($formats[0])) {
     $format = $formats[0];
 } else {
     $format = $formats;

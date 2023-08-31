@@ -30,6 +30,7 @@
 namespace VuFind\Search\Base;
 
 use function call_user_func_array;
+
 use function count;
 use function func_get_args;
 use function get_class;

@@ -30,10 +30,12 @@
 namespace VuFind\ILS\Driver;
 
 use function array_key_exists;
+
 use function count;
 
 use DateTime;
 use DateTimeZone;
+
 use Exception;
 
 use function in_array;

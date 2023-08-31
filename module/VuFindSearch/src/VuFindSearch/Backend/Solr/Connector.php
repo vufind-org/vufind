@@ -36,6 +36,7 @@ use function count;
 use function is_callable;
 
 use Laminas\Http\Client\Adapter\Exception\TimeoutException;
+
 use Laminas\Http\Client as HttpClient;
 use Laminas\Http\Request;
 use Laminas\Uri\Http;

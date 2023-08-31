@@ -30,6 +30,7 @@
 namespace VuFind\ILS\Driver;
 
 use function count;
+
 use function is_array;
 
 use PDO;

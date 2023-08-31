@@ -122,13 +122,13 @@
               <?php endif; ?>
 
               <?php if (isset($ilsDetails['processed']) && $ilsDetails['processed']): ?>
-                <div class="text-success"><?=$this->transEsc('storage_retrieval_request_processed') . (\is_string($ilsDetails['processed']) ? ': ' . $ilsDetails['processed'] : '') ?></div>
+                <div class="text-success"><?=$this->transEsc('storage_retrieval_request_processed') . (is_string($ilsDetails['processed']) ? ': ' . $ilsDetails['processed'] : '') ?></div>
               <?php endif; ?>
               <?php if (isset($ilsDetails['available']) && $ilsDetails['available']): ?>
                 <div class="text-success"><?=$this->transEsc('storage_retrieval_request_available') ?></div>
               <?php endif; ?>
               <?php if (isset($ilsDetails['canceled']) && $ilsDetails['canceled']): ?>
-                <div class="text-success"><?=$this->transEsc('storage_retrieval_request_canceled') . (\is_string($ilsDetails['canceled']) ? ': ' . $ilsDetails['canceled'] : '') ?></div>
+                <div class="text-success"><?=$this->transEsc('storage_retrieval_request_canceled') . (is_string($ilsDetails['canceled']) ? ': ' . $ilsDetails['canceled'] : '') ?></div>
               <?php endif; ?>
               <?php if (isset($ilsDetails['cancel_link'])): ?>
                 <p><a href="<?=$this->escapeHtmlAttr($ilsDetails['cancel_link']) ?>"><?=$this->transEsc('storage_retrieval_request_cancel') ?></a></p>

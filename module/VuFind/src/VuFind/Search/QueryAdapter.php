@@ -30,6 +30,7 @@
 namespace VuFind\Search;
 
 use function array_key_exists;
+
 use function call_user_func;
 use function count;
 

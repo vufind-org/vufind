@@ -23,7 +23,7 @@
         </a>
         <?php $authors = $data->getPrimaryAuthors(); ?>
         <?php if (!empty($authors)): ?>
-          <br><?=$this->transEsc('by')?>: <?=$this->escapeHtml($authors[0]);?><?php if (\count($authors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?>
+          <br><?=$this->transEsc('by')?>: <?=$this->escapeHtml($authors[0]);?><?php if (count($authors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?>
         <?php endif; ?>
         <?php $pubDates = $data->getPublicationDates(); ?>
         <?php if (!empty($pubDates)): ?>

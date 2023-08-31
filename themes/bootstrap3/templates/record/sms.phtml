@@ -26,7 +26,7 @@
     <input id="sms_to" type="tel" name="to" value="<?=$this->escapeHtmlAttr($this->to)?>" placeholder="<?=$this->transEscAttr('sms_phone_number')?>" class="form-control">
     <div class="help-block with-errors"></div>
   </div>
-  <?php if (\is_array($this->carriers) && \count($this->carriers) > 1): ?>
+  <?php if (is_array($this->carriers) && count($this->carriers) > 1): ?>
     <div class="form-group">
       <label class="control-label" for="sms_provider"><?=$this->transEsc('Provider')?>:</label>
       <select id="sms_provider" name="provider" class="form-control">
@@ -37,7 +37,7 @@
       </select>
     </div>
   <?php else: ?>
-    <?php $keys = \is_array($this->carriers) ? array_keys($this->carriers) : []; ?>
+    <?php $keys = is_array($this->carriers) ? array_keys($this->carriers) : []; ?>
     <input type="hidden" name="provider" value="<?=$this->escapeHtmlAttr($keys[0] ?? '')?>">
   <?php endif; ?>
   <?=$this->captcha()->html($this->useCaptcha) ?>

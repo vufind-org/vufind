@@ -30,6 +30,7 @@
 namespace VuFindDevTools;
 
 use function count;
+
 use function in_array;
 
 use Laminas\I18n\Translator\TextDomain;

@@ -1,7 +1,7 @@
 <?php
 // A driver-specific template may pass in format overrides; check for these before going to the driver itself:
 $formats = $this->slot('refworks-formats')->get($this->driver->tryMethod('getFormats'));
-if (\is_array($formats) && !empty($formats)) {
+if (is_array($formats) && !empty($formats)) {
     foreach ($formats as $format) {
         echo "RT $format\n";
     }
@@ -13,9 +13,9 @@ $title = rtrim($this->driver->getTitle(), ' /');
 echo "T1 $title\n";
 
 $series = $this->driver->tryMethod('getSeries');
-if (\is_array($series)) {
+if (is_array($series)) {
     foreach ($series as $current) {
-        echo 'T2 ' . (\is_array($current) ? $current['name'] : $current) . "\n";
+        echo 'T2 ' . (is_array($current) ? $current['name'] : $current) . "\n";
     }
 }
 
@@ -49,7 +49,7 @@ foreach ($this->driver->tryMethod('getSecondaryAuthors', [], []) as $current) {
 }
 
 $languages = $this->driver->tryMethod('getLanguages');
-if (\is_array($languages)) {
+if (is_array($languages)) {
     foreach ($languages as $lang) {
         echo "LA $lang\n";
     }
@@ -58,10 +58,10 @@ if (\is_array($languages)) {
 $pubPlaces = $this->driver->tryMethod('getPlacesOfPublication');
 $pubDates = $this->driver->tryMethod('getPublicationDates');
 $pubNames = $this->driver->tryMethod('getPublishers');
-if (\is_array($pubPlaces) && \is_array($pubDates) && \is_array($pubNames)) {
-    $total = min(\count($pubPlaces), \count($pubDates), \count($pubNames));
+if (is_array($pubPlaces) && is_array($pubDates) && is_array($pubNames)) {
+    $total = min(count($pubPlaces), count($pubDates), count($pubNames));
     // if we have pub dates but no other details, we still want to export the year:
-    if ($total == 0 && \count($pubDates) > 0) {
+    if ($total == 0 && count($pubDates) > 0) {
         $total = 1;
     }
     for ($i = 0; $i < $total; $i++) {
@@ -72,7 +72,7 @@ if (\is_array($pubPlaces) && \is_array($pubDates) && \is_array($pubNames)) {
             echo 'PB ' . rtrim($pubNames[$i], ', ') . "\n";
         }
         $date = trim($pubDates[$i], '[]. ');
-        if (\strlen($date) > 4) {
+        if (strlen($date) > 4) {
             $date = $this->dateTime()->extractYear($date);
         }
         if ($date) {
@@ -89,7 +89,7 @@ if (!empty($edition)) {
 echo 'UL ' . $this->serverUrl($this->recordLinker()->getUrl($this->driver)) . "\n";
 
 $summary = $this->driver->tryMethod('getSummary');
-if (\is_array($summary)) {
+if (is_array($summary)) {
     foreach ($summary as $current) {
         echo "AB $current\n";
     }
@@ -97,7 +97,7 @@ if (\is_array($summary)) {
 
 // Try to find a page count in the physical description:
 $physical = $this->driver->tryMethod('getPhysicalDescriptions');
-if (\is_array($physical)) {
+if (is_array($physical)) {
     foreach ($physical as $current) {
         if (preg_match('/([0-9]+)\s*p/', $current, $matches)) {
             echo "OP {$matches[1]}\n";
@@ -107,7 +107,7 @@ if (\is_array($physical)) {
 }
 
 $notes = $this->driver->tryMethod('getGeneralNotes');
-if (\is_array($notes)) {
+if (is_array($notes)) {
     foreach ($notes as $note) {
         echo "NO $note\n";
     }
@@ -119,16 +119,16 @@ if (!empty($callNo)) {
 }
 
 $isbns = $this->driver->tryMethod('getISBNs');
-if (\is_array($isbns)) {
+if (is_array($isbns)) {
     foreach ($isbns as $isbn) {
         echo "SN $isbn\n";
     }
 }
 
 $subjects = $this->driver->tryMethod('getAllSubjectHeadings');
-if (\is_array($subjects)) {
+if (is_array($subjects)) {
     foreach ($subjects as $subject) {
-        $subject = \is_array($subject) ? implode(' : ', $subject) : $subject;
+        $subject = is_array($subject) ? implode(' : ', $subject) : $subject;
         echo "K1 $subject\n";
     }
 }

@@ -39,6 +39,7 @@ use function count;
 use DOMDocument;
 
 use function in_array;
+
 use function is_array;
 
 use Laminas\Log\LoggerAwareInterface as LoggerAwareInterface;

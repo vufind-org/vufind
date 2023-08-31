@@ -32,7 +32,7 @@
 <?php
   $checkboxFilters = $this->recommend->getCheckboxFacetSet();
   $hasVisibleCheckboxes = false;
-  if (\count($checkboxFilters) > 0) {
+  if (count($checkboxFilters) > 0) {
     foreach ($checkboxFilters as $current) {
       if ($results->getResultTotal() > 0 || $current['alwaysVisible']) {
         $hasVisibleCheckboxes = true;
@@ -56,7 +56,7 @@
 <?php $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions() ?>
 <?php if (!empty($sideFacetSet) && $results->getResultTotal() > 0): ?>
   <?php foreach ($sideFacetSet as $title => $cluster): ?>
-    <?php $collapsed = \in_array($title, $collapsedFacets); ?>
+    <?php $collapsed = in_array($title, $collapsedFacets); ?>
     <?php // Data-title attribute is for analytics use.  Do not remove. ?>
     <div class="facet-group" id="side-panel-<?=$this->escapeHtmlAttr($title) ?>" data-title="<?=$this->escapeHtmlAttr($cluster['label']) ?>">
       <h3 class="facet-title">
@@ -65,7 +65,7 @@
           <?=$this->icon('collapse', 'facet-title-icon') ?>
         </button>
       </h3>
-      <div id="side-collapse-<?=$this->escapeHtmlAttr($title) ?>" role="listbox" aria-expanded="<?=$collapsed ? 'false' : 'true'?>" class="collapse<?php if (!$collapsed): ?> in<?php endif ?>"<?php if (\in_array($title, $forceUncollapsedFacets)): ?> data-force-in="1"<?php endif ?>>
+      <div id="side-collapse-<?=$this->escapeHtmlAttr($title) ?>" role="listbox" aria-expanded="<?=$collapsed ? 'false' : 'true'?>" class="collapse<?php if (!$collapsed): ?> in<?php endif ?>"<?php if (in_array($title, $forceUncollapsedFacets)): ?> data-force-in="1"<?php endif ?>>
         <?=
           $this->context($this)->renderInContext(
               'Recommend/SideFacets/facet.phtml',

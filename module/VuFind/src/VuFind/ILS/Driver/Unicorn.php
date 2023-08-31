@@ -29,6 +29,7 @@
 namespace VuFind\ILS\Driver;
 
 use function array_key_exists;
+
 use function array_slice;
 use function count;
 use function floatval;

@@ -26,7 +26,7 @@
           <?php if (!empty($summAuthors)): ?>
             <br>
             <span class="small"><?=$this->transEsc('By')?></span>
-            <a class="small date" href="<?=$this->record($driver)->getLink('author', $this->highlight($summAuthors[0], null, true, false))?>"><?=$this->highlight($summAuthors[0])?></a><?php if (\count($summAuthors) > 1): ?><span class="small">, <?=$this->transEsc('more_authors_abbrev')?></span><?php endif; ?>
+            <a class="small date" href="<?=$this->record($driver)->getLink('author', $this->highlight($summAuthors[0], null, true, false))?>"><?=$this->highlight($summAuthors[0])?></a><?php if (count($summAuthors) > 1): ?><span class="small">, <?=$this->transEsc('more_authors_abbrev')?></span><?php endif; ?>
           <?php endif; ?>
         <?php endif; ?>
       </li>

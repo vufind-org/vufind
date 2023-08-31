@@ -32,7 +32,9 @@
 namespace VuFind\OAI;
 
 use function count;
+
 use function in_array;
+
 use function intval;
 
 use SimpleXMLElement;

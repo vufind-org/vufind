@@ -6,7 +6,7 @@
     <!-- Indicators -->
     <ol class="carousel-indicators">
       <li data-target="#similar-items-carousel" data-slide-to="0" class="active"></li>
-      <?php for($i = 1;$i < \count($similarRecords) / $perPage;$i++): ?>
+      <?php for($i = 1;$i < count($similarRecords) / $perPage;$i++): ?>
         <li data-target="#similar-items-carousel" data-slide-to="<?=$i ?>"></li>
       <?php endfor; ?>
     </ol>
@@ -30,7 +30,7 @@
                 <b><?=$this->escapeHtml($data->getTitle())?></b>
                 <?php $authors = $data->getPrimaryAuthors(); ?>
                 <?php if (!empty($authors)): ?>
-                  <br><?=$this->transEsc('by')?>: <?=$this->escapeHtml($authors[0]);?><?php if (\count($authors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?>
+                  <br><?=$this->transEsc('by')?>: <?=$this->escapeHtml($authors[0]);?><?php if (count($authors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?>
                 <?php endif; ?>
                 <?php $pubDates = $data->getPublicationDates(); ?>
                 <?php if (!empty($pubDates)): ?>
@@ -39,7 +39,7 @@
               </div>
             </a>
           </div>
-          <?php if (($index + 1) % $perPage == 0 && $index < \count($similarRecords) - 1): ?>
+          <?php if (($index + 1) % $perPage == 0 && $index < count($similarRecords) - 1): ?>
       </div>
       <div class="item">
           <?php endif; ?>

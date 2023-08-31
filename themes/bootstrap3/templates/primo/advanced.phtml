@@ -9,7 +9,7 @@
     $this->layout()->breadcrumbs = '<li class="active">' . $this->transEsc('Advanced Search') . '</li>';
 
     // Set up saved search details:
-    if (isset($this->saved) && \is_object($this->saved)) {
+    if (isset($this->saved) && is_object($this->saved)) {
         $searchDetails = $this->saved->getParams()->getQuery();
         if ($searchDetails instanceof \VuFindSearch\Query\Query) {
             // Not an advanced query -- ignore it.
@@ -29,7 +29,7 @@
     <h3><?=$this->transEsc('Advanced Search')?></h3>
     <?php /* fallback to a fixed set of search groups/fields if JavaScript is turned off */ ?>
     <?php if ($groups !== false) {
-        $numGroups = \count($groups);
+        $numGroups = count($groups);
       }
       if (!isset($numGroups) || $numGroups < 3) {
         $numGroups = 1;
@@ -43,7 +43,7 @@
           <?php
             if (isset($groups[$i])) {
               $currentGroup = $groups[$i]->getQueries();
-              $numRows = \count($currentGroup);
+              $numRows = count($currentGroup);
             } else {
               $currentGroup = false;
             }

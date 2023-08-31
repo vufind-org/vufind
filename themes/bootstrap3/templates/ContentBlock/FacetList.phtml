@@ -9,7 +9,7 @@
   <div class="search-home-facets">
     <?php foreach ($facetList as $field => $details): ?>
       <?php $labelHeading = $this->transEsc('home_browse_by_facet', ['%%facet%%' => $this->translate($details['label'])]); ?>
-      <?php if ($isHierarchy = \in_array($field, $hierarchicalFacets ?? [])):
+      <?php if ($isHierarchy = in_array($field, $hierarchicalFacets ?? [])):
           $this->headScript()->appendFile('vendor/jsTree/jstree.min.js');
           $this->headScript()->appendFile('jstree-vufind-facet-plugin.js');
           $this->headScript()->appendFile('facets.js');
@@ -56,7 +56,7 @@
                   ? $this->url('collections-home') : $this->url($advSearch);
 
                 // Convenience variable:
-                $currentListLength = \count($sortedList);
+                $currentListLength = count($sortedList);
                 $i = 0;
               ?>
               <?php foreach ($sortedList as $url => $value): ?>

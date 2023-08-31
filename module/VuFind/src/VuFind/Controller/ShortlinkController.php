@@ -32,6 +32,7 @@ namespace VuFind\Controller;
 use function is_callable;
 
 use Laminas\Config\Config;
+
 use Laminas\ServiceManager\ServiceLocatorInterface;
 
 use function strlen;

@@ -32,6 +32,7 @@
 namespace VuFind\Controller\Plugin;
 
 use function count;
+
 use function is_array;
 
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;

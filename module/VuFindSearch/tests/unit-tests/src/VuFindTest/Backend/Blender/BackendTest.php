@@ -30,6 +30,7 @@
 namespace VuFindTest\Backend\Blender;
 
 use function array_slice;
+
 use function count;
 use function in_array;
 

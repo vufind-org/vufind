@@ -97,10 +97,10 @@
       $max = !empty($current['values'][1]) ? max($future, $current['values'][1]) : $future;
       $low = !empty($current['values'][0]) ? $current['values'][0] : $min;
       $high = !empty($current['values'][1]) ? $current['values'][1] : $max;
-      $min = \intval($min);
-      $max = \intval($max);
-      $low = \intval($low);
-      $high = \intval($high);
+      $min = intval($min);
+      $max = intval($max);
+      $low = intval($low);
+      $high = intval($high);
       $init = !empty($current['values'][0]) ? 'fillTexts()' : '';
       $script = <<<JS
           $(document).ready(function() {

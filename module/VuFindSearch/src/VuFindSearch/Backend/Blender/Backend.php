@@ -30,6 +30,7 @@
 namespace VuFindSearch\Backend\Blender;
 
 use function count;
+
 use function intval;
 
 use Laminas\EventManager\EventInterface;

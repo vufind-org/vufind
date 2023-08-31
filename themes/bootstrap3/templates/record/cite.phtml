@@ -14,7 +14,7 @@
     $citations[$format] = $helper->getCitation($format);
   }
 ?>
-<?php if (\count($citations) == 0): ?>
+<?php if (count($citations) == 0): ?>
   <?=$this->transEsc('No citations are available for this record')?>
 <?php else: ?>
   <?php foreach ($citations as $format => $citation): ?>

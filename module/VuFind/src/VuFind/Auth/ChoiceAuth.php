@@ -30,7 +30,9 @@
 namespace VuFind\Auth;
 
 use function call_user_func_array;
+
 use function func_get_args;
+
 use function in_array;
 use function is_callable;
 

@@ -11,7 +11,7 @@
   $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc('Advanced') . '</li>';
 
   // Set up saved search details:
-  if (isset($this->saved) && \is_object($this->saved)) {
+  if (isset($this->saved) && is_object($this->saved)) {
     $searchDetails = $this->saved->getParams()->getQuery();
     if ($searchDetails instanceof \VuFindSearch\Query\Query) {
         // Not an advanced query -- ignore it.
@@ -49,7 +49,7 @@
   $setSearchGroups = [];
   $setGroupCount = 0;
   $setQueries = [];
-  if (isset($searchDetails) && \is_object($searchDetails)) {
+  if (isset($searchDetails) && is_object($searchDetails)) {
     foreach ($searchDetails->getQueries() as $group => $searchGroup) {
       $setSearchGroups[$group] = $searchGroup->isNegated() ? 'NOT' : $searchGroup->getOperator();
       if ($setGroupCount < $group) {
@@ -104,7 +104,7 @@
             <div id="group<?=$group ?>" class="adv-group">
               <div class="adv-group-terms">
                 <label class="adv-group-label"><?=$this->transEsc('adv_search_label')?>:</label>
-                <?php for($search = 0; $search < 3 || (isset($setQueries[$group]) && $search < \count($setQueries[$group])); $search++): ?>
+                <?php for($search = 0; $search < 3 || (isset($setQueries[$group]) && $search < count($setQueries[$group])); $search++): ?>
                   <?php if ($group == 0 && $search == 0): ?>
                     <div id="new_search_template">
                   <?php endif; ?>

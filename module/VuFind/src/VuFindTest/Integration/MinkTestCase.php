@@ -34,6 +34,7 @@ use Behat\Mink\Element\Element;
 use DMore\ChromeDriver\ChromeDriver;
 
 use function floatval;
+
 use function in_array;
 use function intval;
 
