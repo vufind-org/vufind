@@ -696,6 +696,7 @@ $(function searchFormResetHandler() {
   if (query !== '') {
     resetButton.show();
     queryInput.focus().val('').val(query);
+    queryInput[0].ac.hide();
   }
   queryInput.on('input', function onInput() {
     if ($(this).val() === '') {
@@ -706,6 +707,7 @@ $(function searchFormResetHandler() {
   });
   resetButton.on('click', function onClick() {
     queryInput.attr('value', '').focus();
+    queryInput[0].ac.hide(); // not sure why AC is using previous value
     resetButton.hide();
   });
 });

@@ -1,4 +1,4 @@
-/* https://github.com/vufind-org/autocomplete.js (v2.1.7) (2023-06-21) */
+/* https://github.com/vufind-org/autocomplete.js (v2.1.8) (2023-08-31) */
 function Autocomplete(_settings) {
   const _DEFAULTS = {
     delay: 250,
@@ -73,6 +73,7 @@ function Autocomplete(_settings) {
     list.classList.remove("open");
     _currentIndex = -1;
     lastInput = false;
+    lastCB = false;
   }
 
   function _selectItem(item, input) {
@@ -252,6 +253,7 @@ function Autocomplete(_settings) {
     if (!input) {
       return false;
     }
+
     if (typeof handler === "undefined") {
       throw new Error(
         "Autocomplete needs handler to return items based on a query: function(query, callback) {}"
@@ -291,7 +293,14 @@ function Autocomplete(_settings) {
     input.setAttribute("spellcheck", "false");    // ^
 
     // Activation / De-activation
-    input.addEventListener("focus", (_) => _search(handler, input), false);
+    if (input.getAttribute("autofocus") !== null) {
+      // ignore the first autofocus
+      input.addEventListener("focus", () => {
+        input.addEventListener("focus", () => _search(handler, input));
+      }, { once: true });
+    } else {
+      input.addEventListener("focus", () => _search(handler, input));
+    }
     input.addEventListener("blur", _hide, false);
 
     // Input typing
@@ -322,6 +331,11 @@ function Autocomplete(_settings) {
       (event) => _keydown(handler, input, event),
       false
     );
+
+    input.ac = {
+      show: _show,
+      hide: _hide,
+    }
 
     return input;
   };
