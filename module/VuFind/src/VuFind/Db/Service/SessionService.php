@@ -34,6 +34,8 @@ use VuFind\Db\Entity\Session;
 use VuFind\Exception\SessionExpired as SessionExpiredException;
 use VuFind\Log\LoggerAwareTrait;
 
+use function intval;
+
 /**
  * Database service for Session.
  *

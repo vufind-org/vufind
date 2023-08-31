@@ -34,8 +34,6 @@ namespace VuFind\Db\Table;
 use Laminas\Db\Adapter\Adapter;
 use VuFind\Db\Row\RowGateway;
 
-use function intval;
-
 /**
  * Table Definition for session
  *

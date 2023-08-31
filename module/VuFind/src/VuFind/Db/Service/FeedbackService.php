@@ -32,6 +32,9 @@ namespace VuFind\Db\Service;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use VuFind\Db\Entity\Feedback;
 
+use function count;
+use function intval;
+
 /**
  * Database service for feedback.
  *

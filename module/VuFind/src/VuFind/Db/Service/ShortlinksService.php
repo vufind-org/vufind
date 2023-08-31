@@ -34,6 +34,8 @@ use Laminas\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\Shortlinks;
 use VuFind\Log\LoggerAwareTrait;
 
+use function count;
+
 /**
  * Database service for shortlinks.
  *

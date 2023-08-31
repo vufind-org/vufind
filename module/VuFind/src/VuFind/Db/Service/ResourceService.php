@@ -39,6 +39,10 @@ use VuFind\Exception\LoginRequired as LoginRequiredException;
 use VuFind\Log\LoggerAwareTrait;
 use VuFind\Record\Loader;
 
+use function intval;
+use function is_int;
+use function strlen;
+
 /**
  * Database service for resource.
  *

@@ -31,6 +31,8 @@ namespace VuFind\Db\Service;
 
 use VuFind\Db\Entity\Comments;
 
+use function is_int;
+
 /**
  * Database service for Comments.
  *

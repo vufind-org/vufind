@@ -34,6 +34,8 @@ use VuFind\Db\Entity\User;
 use VuFind\Db\Entity\UserCard;
 use VuFind\Log\LoggerAwareTrait;
 
+use function is_int;
+
 /**
  * Database service for UserCard.
  *

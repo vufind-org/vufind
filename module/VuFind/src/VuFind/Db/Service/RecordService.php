@@ -35,6 +35,8 @@ use VuFind\Db\Entity\Resource;
 use VuFind\Db\Entity\UserResource;
 use VuFind\Log\LoggerAwareTrait;
 
+use function count;
+
 /**
  * Database service for Records.
  *

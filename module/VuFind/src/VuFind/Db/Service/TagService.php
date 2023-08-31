@@ -34,6 +34,9 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 use VuFind\Db\Entity\PluginManager as EntityPluginManager;
 use VuFind\Db\Entity\ResourceTags;
 
+use function count;
+use function in_array;
+
 /**
  * Database service for tags.
  *
