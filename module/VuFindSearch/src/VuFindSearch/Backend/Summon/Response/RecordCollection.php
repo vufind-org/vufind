@@ -29,6 +29,8 @@
 
 namespace VuFindSearch\Backend\Summon\Response;
 
+use function is_array;
+
 use VuFindSearch\Response\AbstractRecordCollection;
 
 /**
@@ -96,7 +98,7 @@ class RecordCollection extends AbstractRecordCollection
      */
     public function getSpellcheck()
     {
-        return \is_array($this->response['didYouMeanSuggestions'] ?? null)
+        return is_array($this->response['didYouMeanSuggestions'] ?? null)
             ? $this->response['didYouMeanSuggestions'] : [];
     }
 

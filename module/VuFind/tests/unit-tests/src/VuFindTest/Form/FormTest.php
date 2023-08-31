@@ -30,6 +30,8 @@
 
 namespace VuFindTest\Form;
 
+use function get_class;
+
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Config\YamlReader;
 use VuFind\Form\Form;
@@ -82,7 +84,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals(
             'Laminas\InputFilter\InputFilter',
-            \get_class($form->getInputFilter())
+            get_class($form->getInputFilter())
         );
         $this->assertCount(0, $form->getSecondaryHandlers());
     }
@@ -239,7 +241,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals(
             'Laminas\InputFilter\InputFilter',
-            \get_class($form->getInputFilter())
+            get_class($form->getInputFilter())
         );
 
         // Validators: Required field problems

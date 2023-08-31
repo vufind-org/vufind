@@ -29,6 +29,9 @@
 
 namespace VuFind\Db\Table;
 
+use function count;
+use function is_object;
+
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\TableGateway\AbstractTableGateway;
 use Laminas\Db\TableGateway\Feature;
@@ -94,7 +97,7 @@ class Gateway extends AbstractTableGateway
         if ($this->adapter->getDriver()->getDatabasePlatformName() == 'Postgresql') {
             $maps = $cfg['vufind']['pgsql_seq_mapping'] ?? null;
             if (isset($maps[$this->table])) {
-                if (!\is_object($this->featureSet)) {
+                if (!is_object($this->featureSet)) {
                     $this->featureSet = new Feature\FeatureSet();
                 }
                 $this->featureSet->addFeature(
@@ -129,7 +132,7 @@ class Gateway extends AbstractTableGateway
             );
             if ($feature) {
                 $key = $obj->getPrimaryKeyColumn();
-                if (\count($key) != 1) {
+                if (count($key) != 1) {
                     throw new \Exception('Unexpected number of key columns.');
                 }
                 $col = $key[0];

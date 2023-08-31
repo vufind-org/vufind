@@ -29,6 +29,8 @@
 
 namespace VuFind\Search\Solr;
 
+use function is_array;
+
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use VuFindSearch\Service;
@@ -90,7 +92,7 @@ class FilterFieldConversionListener
     {
         $params = $event->getParam('command')->getSearchParameters();
         $fq = $params->get('fq');
-        if (\is_array($fq) && !empty($fq)) {
+        if (is_array($fq) && !empty($fq)) {
             // regex lookahead to ignore strings inside quotes:
             $lookahead = '(?=(?:[^\"]*+\"[^\"]*+\")*+[^\"]*+$)';
             $new_fq = [];

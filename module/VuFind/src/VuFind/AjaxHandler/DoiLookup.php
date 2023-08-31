@@ -29,6 +29,8 @@
 
 namespace VuFind\AjaxHandler;
 
+use function count;
+
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\View\Renderer\RendererInterface;
 use VuFind\DoiLinker\PluginManager;
@@ -142,7 +144,7 @@ class DoiLookup extends AbstractBase
                 // can short circuit out of here.
                 if (
                     $this->multiMode !== 'merge'
-                    && \count(array_diff($dois, array_keys($response))) == 0
+                    && count(array_diff($dois, array_keys($response))) == 0
                 ) {
                     break;
                 }

@@ -30,6 +30,8 @@
 
 namespace VuFind\Controller\Feature;
 
+use function is_callable;
+
 /**
  * VuFind Action Feature Trait - Record Versions Search
  *
@@ -77,9 +79,9 @@ trait RecordVersionsSearchTrait
         $this->saveToHistory = false;
 
         $callback = function ($runner, $params, $searchId) {
-            $defaultCallback = \is_callable([$this, 'getSearchSetupCallback'])
+            $defaultCallback = is_callable([$this, 'getSearchSetupCallback'])
                 ? $this->getSearchSetupCallback() : null;
-            if (\is_callable($defaultCallback)) {
+            if (is_callable($defaultCallback)) {
                 $defaultCallback($runner, $params, $searchId);
             }
             $options = $params->getOptions();

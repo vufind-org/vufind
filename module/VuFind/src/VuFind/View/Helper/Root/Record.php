@@ -29,6 +29,10 @@
 
 namespace VuFind\View\Helper\Root;
 
+use function get_class;
+use function in_array;
+use function is_callable;
+
 use VuFind\Cover\Router as CoverRouter;
 
 /**
@@ -109,7 +113,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     public function renderTemplate($name, $context = null, $throw = true)
     {
         $template = 'RecordDriver/%s/' . $name;
-        $className = \get_class($this->driver);
+        $className = get_class($this->driver);
         return $this->renderClassTemplate(
             $template,
             $className,
@@ -288,11 +292,11 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     public function getPreviewIds()
     {
         // Extract identifiers from record driver if it supports appropriate methods:
-        $isbn = \is_callable([$this->driver, 'getCleanISBN'])
+        $isbn = is_callable([$this->driver, 'getCleanISBN'])
             ? $this->driver->getCleanISBN() : '';
-        $lccn = \is_callable([$this->driver, 'getLCCN'])
+        $lccn = is_callable([$this->driver, 'getLCCN'])
             ? $this->driver->getLCCN() : '';
-        $oclc = \is_callable([$this->driver, 'getOCLC'])
+        $oclc = is_callable([$this->driver, 'getOCLC'])
             ? $this->driver->getOCLC() : [];
 
         // Turn identifiers into class names to communicate with jQuery logic:
@@ -461,8 +465,8 @@ class Record extends \Laminas\View\Helper\AbstractHelper
                     explode(',', $this->config->Content->linkPreviewsToCovers)
                 ) : ['*'];
         }
-        return \in_array('*', $previewContexts)
-            || \in_array($context, $previewContexts);
+        return in_array('*', $previewContexts)
+            || in_array($context, $previewContexts);
     }
 
     /**

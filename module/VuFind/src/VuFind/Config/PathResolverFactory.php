@@ -29,12 +29,18 @@
 
 namespace VuFind\Config;
 
+use function defined;
+use function in_array;
+
 use Laminas\Config\Config;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+
+use function strlen;
+
 use VuFind\Config\Feature\IniReaderTrait;
 
 /**
@@ -87,8 +93,8 @@ class PathResolverFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $localDirs = [];
-        $currentDir = \defined('LOCAL_OVERRIDE_DIR')
-            && \strlen(trim(LOCAL_OVERRIDE_DIR)) > 0
+        $currentDir = defined('LOCAL_OVERRIDE_DIR')
+            && strlen(trim(LOCAL_OVERRIDE_DIR)) > 0
             ? LOCAL_OVERRIDE_DIR : '';
         while (!empty($currentDir)) {
             // check if the directory exists
@@ -99,7 +105,7 @@ class PathResolverFactory implements FactoryInterface
             $currentDir = $canonicalizedCurrentDir;
 
             // check if the current directory was already included in the stack to avoid infinite loops
-            if (\in_array($currentDir, array_column($localDirs, 'directory'))) {
+            if (in_array($currentDir, array_column($localDirs, 'directory'))) {
                 trigger_error('Current directory was already included in the stack: ' . $currentDir, E_USER_WARNING);
                 break;
             }

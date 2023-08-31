@@ -29,6 +29,9 @@
 
 namespace VuFind\Search;
 
+use function gettype;
+use function is_object;
+
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
@@ -99,11 +102,11 @@ class BackendManager
     public function get($name)
     {
         $backend = $this->registry->get($name);
-        if (!\is_object($backend)) {
+        if (!is_object($backend)) {
             throw new UnexpectedValueException(
                 sprintf(
                     'Expected backend registry to return object, got %s',
-                    \gettype($backend)
+                    gettype($backend)
                 )
             );
         }

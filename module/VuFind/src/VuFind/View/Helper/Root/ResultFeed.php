@@ -30,10 +30,17 @@
 namespace VuFind\View\Helper\Root;
 
 use DateTime;
+
+use function is_array;
+use function is_string;
+
 use Laminas\Feed\Writer\Feed;
 use Laminas\Feed\Writer\Writer as FeedWriter;
 use Laminas\View\Helper\AbstractHelper;
 use Psr\Container\ContainerInterface;
+
+use function strlen;
+
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
@@ -230,7 +237,7 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
             if (preg_match($regex, $date, $matches)) {
                 // If the full string is longer than the match, see if we can use
                 // DateTime to format it to something more useful:
-                if (\strlen($date) > \strlen($matches[0])) {
+                if (strlen($date) > strlen($matches[0])) {
                     try {
                         $formatter = new DateTime($date);
                         return $formatter->format('Y-m-d');
@@ -270,7 +277,7 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
             // No route defined? See if we can get a URL out of the driver.
             // Useful for web results, among other things.
             $url = $record->tryMethod('getUrl');
-            if (empty($url) || !\is_string($url)) {
+            if (empty($url) || !is_string($url)) {
                 throw new \Exception('Cannot find URL for record.');
             }
         }
@@ -284,7 +291,7 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
             $entry->addAuthor(['name' => $author]);
         }
         $formats = $record->tryMethod('getFormats');
-        if (\is_array($formats)) {
+        if (is_array($formats)) {
             foreach ($formats as $format) {
                 $entry->addDCFormat($this->translate($format));
             }

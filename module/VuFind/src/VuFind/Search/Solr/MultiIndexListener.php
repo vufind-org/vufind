@@ -29,6 +29,9 @@
 
 namespace VuFind\Search\Solr;
 
+use function in_array;
+use function is_array;
+
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use VuFindSearch\Backend\BackendInterface;
@@ -124,7 +127,7 @@ class MultiIndexListener
         if ($command->getTargetIdentifier() === $this->backend->getIdentifier()) {
             $params = $command->getSearchParameters();
             $allShardsContexts = ['retrieve', 'retrieveBatch'];
-            if (\in_array($command->getContext(), $allShardsContexts)) {
+            if (in_array($command->getContext(), $allShardsContexts)) {
                 // If we're retrieving by id(s), we should pull all shards to be
                 // sure we find the right record(s).
                 $params->set('shards', implode(',', $this->shards));
@@ -138,7 +141,7 @@ class MultiIndexListener
                 $shards = $params->get('shards');
                 $shards = explode(
                     ',',
-                    implode(',', (\is_array($shards) ? $shards : []))
+                    implode(',', (is_array($shards) ? $shards : []))
                 );
                 $fields = $this->getFields($shards);
                 $specs  = $this->getSearchSpecs($fields);
@@ -165,7 +168,7 @@ class MultiIndexListener
         foreach ($this->stripfields as $name => $strip) {
             if (isset($this->shards[$name])) {
                 $uri = $this->shards[$name];
-                if (\in_array($uri, $shards)) {
+                if (in_array($uri, $shards)) {
                     $fields = array_merge($fields, $strip);
                 }
             }
@@ -225,7 +228,7 @@ class MultiIndexListener
                 $group = [];
                 $type  = reset($rule);
                 while (next($rule) !== false) {
-                    if (!\in_array(key($rule), $fields)) {
+                    if (!in_array(key($rule), $fields)) {
                         $group[key($rule)] = current($rule);
                     }
                 }
@@ -234,7 +237,7 @@ class MultiIndexListener
                     $stripped[$field] = $group;
                 }
             } else {
-                if (!\in_array($field, $fields, true)) {
+                if (!in_array($field, $fields, true)) {
                     $stripped[$field] = $rule;
                 }
             }

@@ -33,6 +33,9 @@
 
 namespace VuFindSearch\Backend\Solr;
 
+use function count;
+use function in_array;
+
 /**
  * Lucene query syntax helper class.
  *
@@ -244,7 +247,7 @@ class LuceneSyntaxHelper
         }
 
         // Special extra case for NOT:
-        if (\in_array('NOT', $bools)) {
+        if (in_array('NOT', $bools)) {
             $regs[] = "/\(NOT\s+{$lookahead}/i";
             $replace[] = '(NOT ';
         }
@@ -352,7 +355,7 @@ class LuceneSyntaxHelper
         // If there are some Boolean operators that are not in the list
         // of operators that need to be auto-capitalized, then some of
         // the operators will exhibit case-sensitive behavior.
-        return \count($this->allBools) > \count($this->getBoolsToCap());
+        return count($this->allBools) > count($this->getBoolsToCap());
     }
 
     /**
@@ -712,7 +715,7 @@ class LuceneSyntaxHelper
         $result = '';
         $this->processQueryString(
             function (string $ch, bool $quoted, bool $esc) use ($needles, &$result) {
-                if ($quoted || $esc || !\in_array($ch, $needles)) {
+                if ($quoted || $esc || !in_array($ch, $needles)) {
                     $result .= $ch;
                 }
             },

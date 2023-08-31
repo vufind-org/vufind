@@ -29,6 +29,10 @@
 
 namespace VuFind\Search\Solr;
 
+use function array_slice;
+use function count;
+use function is_string;
+
 use VuFind\I18n\HasSorterInterface;
 use VuFind\I18n\HasSorterTrait;
 use VuFind\I18n\TranslatableString;
@@ -73,7 +77,7 @@ class HierarchicalFacetHelper implements
         // we should set the flag accordingly (boolean values of $order are
         // supported for backward compatibility).
         $topLevel = $order ?? 'count';
-        if (\is_string($topLevel)) {
+        if (is_string($topLevel)) {
             switch (strtolower(trim($topLevel))) {
                 case 'top':
                     $topLevel = true;
@@ -212,7 +216,7 @@ class HierarchicalFacetHelper implements
     ) {
         $originalText = $displayText;
         $parts = explode('/', $displayText);
-        if (\count($parts) > 1 && is_numeric($parts[0])) {
+        if (count($parts) > 1 && is_numeric($parts[0])) {
             if (!$allLevels && isset($parts[$parts[0] + 1])) {
                 $displayText = $parts[$parts[0] + 1];
             } else {
@@ -246,12 +250,12 @@ class HierarchicalFacetHelper implements
     public function getFilterStringParts($filter)
     {
         $parts = explode('/', $filter);
-        if (\count($parts) <= 1 || !is_numeric($parts[0])) {
+        if (count($parts) <= 1 || !is_numeric($parts[0])) {
             return [new TranslatableString($filter, $filter)];
         }
         $result = [];
         for ($level = 0; $level <= $parts[0]; $level++) {
-            $str = $level . '/' . implode('/', \array_slice($parts, 1, $level + 1))
+            $str = $level . '/' . implode('/', array_slice($parts, 1, $level + 1))
                 . '/';
             $result[] = new TranslatableString($str, $parts[$level + 1]);
         }
@@ -276,13 +280,13 @@ class HierarchicalFacetHelper implements
             // Not a properly formatted hierarchical facet value
             return true;
         }
-        $path = implode('/', \array_slice($parts, 0, $level + 1));
+        $path = implode('/', array_slice($parts, 0, $level + 1));
         foreach ($facetList as $current) {
             $parts = explode('/', $current);
             $currentLevel = array_shift($parts);
             if (is_numeric($currentLevel) && $currentLevel > $level) {
                 // Check if parent is same
-                if ($path === implode('/', \array_slice($parts, 0, $level + 1))) {
+                if ($path === implode('/', array_slice($parts, 0, $level + 1))) {
                     return false;
                 }
             }
@@ -340,7 +344,7 @@ class HierarchicalFacetHelper implements
         if ($level > 0) {
             $parent = ($level - 1) . '/' . implode(
                 '/',
-                \array_slice(
+                array_slice(
                     explode('/', $value),
                     0,
                     $level

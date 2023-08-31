@@ -29,6 +29,8 @@
 
 namespace VuFindTest\Backend\Solr\Json\Response;
 
+use function in_array;
+
 use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
 use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
@@ -205,9 +207,9 @@ class RecordCollectionTest extends TestCase
         $coll->shuffle();
         $final = $coll->getRecords();
         $this->assertCount(3, $final);
-        $this->assertTrue(\in_array($r1, $final));
-        $this->assertTrue(\in_array($r2, $final));
-        $this->assertTrue(\in_array($r3, $final));
+        $this->assertTrue(in_array($r1, $final));
+        $this->assertTrue(in_array($r2, $final));
+        $this->assertTrue(in_array($r3, $final));
     }
 
     /**

@@ -31,6 +31,9 @@
 
 namespace VuFind\Resolver\Driver;
 
+use function chr;
+use function count;
+
 use DOMDocument;
 use Laminas\Dom\DOMXPath;
 
@@ -252,7 +255,7 @@ class Redi extends AbstractBase
      */
     protected function postProcessing()
     {
-        for ($i = 0; $i < \count($this->links); $i++) {
+        for ($i = 0; $i < count($this->links); $i++) {
             if (isset($this->links[$i]['title'])) {
                 $this->links[$i]['title'] = $this
                     ->removeDoubleAngleQuotationMarks($this->links[$i]['title']);
@@ -274,7 +277,7 @@ class Redi extends AbstractBase
     protected function removeDoubleAngleQuotationMarks($string)
     {
         return str_replace(
-            ['»', \chr(194) . \chr(160)],
+            ['»', chr(194) . chr(160)],
             ['', ''],
             $string
         ); // hack to replace \u00a0

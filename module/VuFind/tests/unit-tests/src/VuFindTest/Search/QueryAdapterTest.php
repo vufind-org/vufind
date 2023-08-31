@@ -29,6 +29,8 @@
 
 namespace VuFindTest\Search;
 
+use function count;
+
 use VuFind\Search\QueryAdapter;
 use VuFindSearch\Query\Query;
 
@@ -84,7 +86,7 @@ class QueryAdapterTest extends \PHPUnit\Framework\TestCase
             return $carry + (isset($item['o']) ? 1 : 0);
         };
         $this->assertEquals(
-            \count($minified[0]['g']),
+            count($minified[0]['g']),
             array_reduce($minified[0]['g'], $callback, 0)
         );
 

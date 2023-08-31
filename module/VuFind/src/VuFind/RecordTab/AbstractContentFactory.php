@@ -29,6 +29,8 @@
 
 namespace VuFind\RecordTab;
 
+use function in_array;
+
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
@@ -107,6 +109,6 @@ abstract class AbstractContentFactory implements \Laminas\ServiceManager\Factory
             return true;
         }
         $hide = array_map('trim', array_map('strtolower', explode(',', $setting)));
-        return \in_array(strtolower($this->tabName), $hide);
+        return in_array(strtolower($this->tabName), $hide);
     }
 }

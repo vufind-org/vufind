@@ -29,6 +29,9 @@
 
 namespace VuFind\View\Helper\Root;
 
+use function intval;
+use function is_array;
+
 use VuFind\RecordDriver\AbstractBase as RecordDriverBase;
 use VuFind\Search\Base\Results;
 
@@ -309,7 +312,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
         $children = $current->getChildren();
         if (isset($children[0])) {
             $results = $children[0]->getVariable('combinedResults');
-            if (\is_array($results)) {
+            if (is_array($results)) {
                 return $results;
             }
         }
@@ -388,7 +391,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
     {
         $id = $recordDriver->getUniqueID();
         $formats = $recordDriver->tryMethod('getFormats');
-        if (\is_array($formats)) {
+        if (is_array($formats)) {
             $formats = implode(',', $formats);
         }
         $formats = $formats;
@@ -402,7 +405,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
             $title = '-';
         }
         $institutions = $recordDriver->tryMethod('getInstitutions');
-        if (\is_array($institutions)) {
+        if (is_array($institutions)) {
             $institutions = implode(',', $institutions);
         }
         $institutions = $institutions;
@@ -564,7 +567,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
         $dimensions = [];
         foreach ($customData as $key => $value) {
             if (!empty($this->customDimensions[$key])) {
-                $dimensionId = 'dimension' . \intval($this->customDimensions[$key]);
+                $dimensionId = 'dimension' . intval($this->customDimensions[$key]);
                 $dimensions[$dimensionId] = $value;
             }
         }

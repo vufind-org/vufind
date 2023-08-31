@@ -30,6 +30,9 @@
 
 namespace VuFind\Recommend;
 
+use function intval;
+use function is_object;
+
 use VuFind\Connection\OpenLibrary;
 use VuFind\Solr\Utils as SolrUtils;
 
@@ -114,7 +117,7 @@ class OpenLibrarySubjects implements
         $params = explode(':', $settings);
         $this->requestParam = empty($params[0]) ? 'lookfor' : $params[0];
         $this->limit = isset($params[1]) && is_numeric($params[1]) && $params[1] > 0
-            ? \intval($params[1]) : 5;
+            ? intval($params[1]) : 5;
         $this->pubFilter = (!isset($params[2]) || empty($params[2])) ?
             'publishDate' : $params[2];
         if (strtolower(trim($this->pubFilter)) == 'false') {
@@ -217,7 +220,7 @@ class OpenLibrarySubjects implements
         $to = $request->get($field . 'to');
         if (null !== $from && null !== $to) {
             $range = ['from' => $from, 'to' => $to];
-        } elseif (\is_object($params)) {
+        } elseif (is_object($params)) {
             $currentFilters = $params->getRawFilters();
             if (isset($currentFilters[$field][0])) {
                 $range = SolrUtils::parseRange($currentFilters[$field][0]);

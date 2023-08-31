@@ -29,6 +29,8 @@
 
 namespace VuFind\Role\PermissionProvider;
 
+use function count;
+
 use LmcRbacMvc\Service\AuthorizationService;
 
 /**
@@ -83,7 +85,7 @@ class User implements
         // which user attribute has to match which pattern to get permissions?
         foreach ((array)$options as $option) {
             $parts = explode(' ', $option, 2);
-            if (\count($parts) < 2) {
+            if (count($parts) < 2) {
                 $this->logError("configuration option '{$option}' invalid");
                 return [];
             } else {

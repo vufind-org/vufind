@@ -29,6 +29,10 @@
 
 namespace VuFindTheme;
 
+use function count;
+use function in_array;
+use function is_array;
+
 /**
  * VuFind Theme Public Resource Handler (for CSS, JS, etc.)
  *
@@ -92,7 +96,7 @@ class ResourceContainer
      */
     public function addCss($css)
     {
-        if (!\is_array($css) && !is_a($css, 'Traversable')) {
+        if (!is_array($css) && !is_a($css, 'Traversable')) {
             $css = [$css];
         }
         foreach ($css as $current) {
@@ -112,7 +116,7 @@ class ResourceContainer
      */
     public function addJs($js)
     {
-        if ((!\is_array($js) && !is_a($js, 'Traversable')) || isset($js['file'])) {
+        if ((!is_array($js) && !is_a($js, 'Traversable')) || isset($js['file'])) {
             $this->addJsEntry($js);
         } elseif (isset($js[0])) {
             foreach ($js as $current) {
@@ -135,7 +139,7 @@ class ResourceContainer
      */
     protected function addJsEntry($jsEntry)
     {
-        if (!\is_array($jsEntry)) {
+        if (!is_array($jsEntry)) {
             $this->addJsStringEntry($jsEntry);
         } else {
             $this->addJsArrayEntry($jsEntry);
@@ -152,7 +156,7 @@ class ResourceContainer
     protected function addJsStringEntry($jsEntry)
     {
         $parts = $this->parseSetting($jsEntry);
-        if (\count($parts) == 1) {
+        if (count($parts) == 1) {
             $jsEntry = ['file' => $jsEntry];
         } else {
             $jsEntry = [
@@ -402,7 +406,7 @@ class ResourceContainer
         }
         [$fileName, ] = explode('.', $file);
         $lessFile = $fileName . '.less';
-        return \in_array($lessFile, $this->less, true);
+        return in_array($lessFile, $this->less, true);
     }
 
     /**

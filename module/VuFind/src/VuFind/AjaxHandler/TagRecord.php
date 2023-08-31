@@ -30,6 +30,9 @@
 namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
+
+use function strlen;
+
 use VuFind\Db\Row\User;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Loader;
@@ -103,7 +106,7 @@ class TagRecord extends AbstractBase implements TranslatorAwareInterface
         $source = $params->fromPost('source', DEFAULT_SEARCH_BACKEND);
         $tag = $params->fromPost('tag', '');
 
-        if (\strlen($tag) > 0) { // don't add empty tags
+        if (strlen($tag) > 0) { // don't add empty tags
             $driver = $this->loader->load($id, $source);
             ('false' === $params->fromPost('remove', 'false'))
                 ? $driver->addTags($this->user, $this->tagParser->parse($tag))

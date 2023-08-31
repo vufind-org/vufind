@@ -29,10 +29,14 @@
 
 namespace VuFind\RecordTab;
 
+use function in_array;
+
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+
+use function strlen;
 
 /**
  * Factory for building the Preview tab.
@@ -79,8 +83,8 @@ class PreviewFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
                 explode(',', strtolower($cfg->Content->previews))
             );
             if (
-                \in_array('google', $previews)
-                && \strlen(trim($cfg->Content->GoogleOptions['tab'] ?? '')) > 0
+                in_array('google', $previews)
+                && strlen(trim($cfg->Content->GoogleOptions['tab'] ?? '')) > 0
             ) {
                 $active = true;
             }

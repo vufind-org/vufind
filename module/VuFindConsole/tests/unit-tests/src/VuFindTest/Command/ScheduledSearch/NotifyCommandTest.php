@@ -29,6 +29,8 @@
 
 namespace VuFindTest\Command\ScheduledSearch;
 
+use function array_key_exists;
+
 use Symfony\Component\Console\Tester\CommandTester;
 use VuFindConsole\Command\ScheduledSearch\NotifyCommand;
 use VuFindTest\Container\MockContainer;
@@ -406,7 +408,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         // Don't create the mock search (and thus set up assertions) unless
         // we actually need to. We use array_key_exists() instead of isset()
         // because the key may be explicitly set to a value of null.
-        if (!\array_key_exists('search_object', $overrides)) {
+        if (!array_key_exists('search_object', $overrides)) {
             $defaults['search_object'] = serialize(
                 $this->getMockSearch(
                     $optionsCallback,

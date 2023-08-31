@@ -29,8 +29,14 @@
 
 namespace VuFind\Recommend;
 
+use function intval;
+use function is_string;
+
 use Laminas\Cache\Storage\Adapter\AbstractAdapter as CacheAdapter;
 use Laminas\Config\Config;
+
+use function strlen;
+
 use VuFind\Connection\LibGuides;
 
 /**
@@ -113,11 +119,11 @@ class LibGuidesProfile implements
         $this->setCacheStorage($cache);
 
         // Cache the data related to profiles for up to 10 minutes:
-        $this->cacheLifetime = \intval($config->GetAccounts->cache_lifetime ?? 600);
+        $this->cacheLifetime = intval($config->GetAccounts->cache_lifetime ?? 600);
 
         if ($profile = $config->Profile) {
             $strategies = $profile->get('strategies', []);
-            $this->strategies = \is_string($strategies) ? [$strategies] : $strategies;
+            $this->strategies = is_string($strategies) ? [$strategies] : $strategies;
 
             $this->callNumberToAlias = $profile->call_numbers ? $profile->call_numbers->toArray() : [];
             $this->aliasToAccountId = $profile->profile_aliases ? $profile->profile_aliases->toArray() : [];
@@ -228,8 +234,8 @@ class LibGuidesProfile implements
             $callNumber = trim(substr($current['value'], 0, $this->callNumberLength));
 
             // Find an alias for this call number, or a broader call number if none is found.
-            while (\strlen($callNumber > 0) && !isset($this->callNumberToAlias[$callNumber])) {
-                $callNumber = substr($callNumber, 0, \strlen($callNumber) - 1);
+            while (strlen($callNumber > 0) && !isset($this->callNumberToAlias[$callNumber])) {
+                $callNumber = substr($callNumber, 0, strlen($callNumber) - 1);
             }
 
             // Add "match value" to that alias based on the result count with that call number.

@@ -30,6 +30,8 @@
 
 namespace VuFind\Recommend;
 
+use function in_array;
+
 /**
  * SideFacets Recommendations Module
  *
@@ -106,7 +108,7 @@ class TopFacets extends AbstractFacets
     {
         // Turn on top facets in the search results:
         foreach ($this->facets as $name => $desc) {
-            $params->addFacet($name, $desc, \in_array($name, $this->orFacets));
+            $params->addFacet($name, $desc, in_array($name, $this->orFacets));
         }
     }
 

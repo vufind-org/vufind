@@ -35,6 +35,8 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
+use function strlen;
+
 /**
  * Factory for OAI harvest command.
  *
@@ -54,7 +56,7 @@ class HarvestOaiCommandFactory implements FactoryInterface
     protected function getHarvestRoot()
     {
         // Get the base VuFind path:
-        $home = \strlen(LOCAL_OVERRIDE_DIR) > 0
+        $home = strlen(LOCAL_OVERRIDE_DIR) > 0
             ? LOCAL_OVERRIDE_DIR
             : realpath(APPLICATION_PATH . '/..');
 

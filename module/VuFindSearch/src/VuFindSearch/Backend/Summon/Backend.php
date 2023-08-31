@@ -29,6 +29,9 @@
 
 namespace VuFindSearch\Backend\Summon;
 
+use function count;
+use function in_array;
+
 use SerialsSolutions\Summon\Laminas as Connector;
 use SerialsSolutions_Summon_Exception as SummonException;
 use SerialsSolutions_Summon_Query as SummonQuery;
@@ -166,7 +169,7 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
 
         // Retrieve records a page at a time:
         $results = false;
-        while (\count($ids) > 0) {
+        while (count($ids) > 0) {
             $currentPage = array_splice($ids, 0, $pageSize, []);
             $query = new SummonQuery(
                 null,
@@ -285,7 +288,7 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
         // should remain as arrays:
         $arraySettings = ['facets', 'filters', 'groupFilters', 'rangeFilters'];
         foreach ($params as $key => $param) {
-            $options[$key] = \in_array($key, $arraySettings) ? $param : $param[0];
+            $options[$key] = in_array($key, $arraySettings) ? $param : $param[0];
         }
 
         return new SummonQuery($query, $options);

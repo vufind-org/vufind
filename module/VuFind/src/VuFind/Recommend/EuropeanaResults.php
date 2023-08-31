@@ -30,6 +30,10 @@
 
 namespace VuFind\Recommend;
 
+use function count;
+use function intval;
+use function is_object;
+
 use Laminas\Feed\Reader\Reader as FeedReader;
 
 /**
@@ -148,7 +152,7 @@ class EuropeanaResults implements
         $this->requestParam = (isset($params[1]) && !empty($params[1]))
             ? $params[1] : 'searchTerms';
         $this->limit = isset($params[2]) && is_numeric($params[2])
-                        && $params[2] > 0 ? \intval($params[2]) : 5;
+                        && $params[2] > 0 ? intval($params[2]) : 5;
         $this->excludeProviders = (isset($params[3]) && !empty($params[3]))
             ? $params[3] : [];
         //make array
@@ -202,7 +206,7 @@ class EuropeanaResults implements
     {
         // Collect the best possible search term(s):
         $this->lookfor = $request->get('lookfor', '');
-        if (empty($this->lookfor) && \is_object($params)) {
+        if (empty($this->lookfor) && is_object($params)) {
             $this->lookfor = $params->getQuery()->getAllTerms();
         }
         $this->lookfor = urlencode(trim($this->lookfor));
@@ -243,7 +247,7 @@ class EuropeanaResults implements
                     'enclosure' => $value->getEnclosure()['url'] ?? null,
                 ];
             }
-            if (\count($resultsProcessed) == $this->limit) {
+            if (count($resultsProcessed) == $this->limit) {
                 break;
             }
         }

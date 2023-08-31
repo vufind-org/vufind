@@ -29,6 +29,11 @@
 
 namespace VuFind\Recommend;
 
+use function get_class;
+use function in_array;
+use function intval;
+use function is_array;
+
 use VuFind\Search\Solr\HierarchicalFacetHelper;
 use VuFind\Solr\Utils as SolrUtils;
 
@@ -263,7 +268,7 @@ class SideFacets extends AbstractFacets
         }
         // Turn on side facets in the search results:
         foreach ($mainFacets as $name => $desc) {
-            $params->addFacet($name, $desc, \in_array($name, $this->orFacets));
+            $params->addFacet($name, $desc, in_array($name, $this->orFacets));
         }
         foreach ($this->checkboxFacets as $name => $desc) {
             $params->addCheckboxFacet($name, $desc);
@@ -297,7 +302,7 @@ class SideFacets extends AbstractFacets
             if (isset($facetSet[$hierarchicalFacet])) {
                 if (!$this->hierarchicalFacetHelper) {
                     throw new \Exception(
-                        \get_class($this) . ': hierarchical facet helper unavailable'
+                        get_class($this) . ': hierarchical facet helper unavailable'
                     );
                 }
 
@@ -410,9 +415,9 @@ class SideFacets extends AbstractFacets
         // default. If neither is found, initialize return value to null.
         $val = null;
         if (isset($this->showMoreSettings[$facetName])) {
-            $val = \intval($this->showMoreSettings[$facetName]);
+            $val = intval($this->showMoreSettings[$facetName]);
         } elseif (isset($this->showMoreSettings['*'])) {
-            $val = \intval($this->showMoreSettings['*']);
+            $val = intval($this->showMoreSettings['*']);
         }
 
         // Validate the return value, using default if missing/invalid
@@ -451,7 +456,7 @@ class SideFacets extends AbstractFacets
     {
         $filters = $this->results->getParams()->getRawFilters();
         $result = [];
-        if (isset($this->$property) && \is_array($this->$property)) {
+        if (isset($this->$property) && is_array($this->$property)) {
             foreach ($this->$property as $current) {
                 $from = $to = '';
                 if (isset($filters[$current])) {

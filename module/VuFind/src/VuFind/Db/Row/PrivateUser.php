@@ -29,6 +29,8 @@
 
 namespace VuFind\Db\Row;
 
+use function array_key_exists;
+
 /**
  * Fake database row to represent a user in privacy mode.
  *
@@ -57,7 +59,7 @@ class PrivateUser extends User
      */
     public function __get($name)
     {
-        return \array_key_exists($name, $this->data) ? parent::__get($name) : null;
+        return array_key_exists($name, $this->data) ? parent::__get($name) : null;
     }
 
     /**

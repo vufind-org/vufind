@@ -30,6 +30,8 @@
 
 namespace VuFind\Auth;
 
+use function in_array;
+
 use VuFind\Exception\Auth as AuthException;
 
 /**
@@ -83,7 +85,7 @@ class LDAP extends AbstractBase
         // Normalize all values to lowercase except for potentially case-sensitive
         // bind and basedn credentials.
         $doNotLower = ['bind_username', 'bind_password', 'basedn'];
-        return (\in_array($name, $doNotLower)) ? $value : strtolower($value);
+        return (in_array($name, $doNotLower)) ? $value : strtolower($value);
     }
 
     /**

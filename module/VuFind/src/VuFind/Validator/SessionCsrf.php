@@ -29,6 +29,9 @@
 
 namespace VuFind\Validator;
 
+use function array_slice;
+use function count;
+
 /**
  * Extension of Laminas\Validator\Csrf with token counting/clearing functions added.
  *
@@ -56,7 +59,7 @@ class SessionCsrf extends \Laminas\Validator\Csrf implements CsrfInterface
         } elseif ($limit < $this->getTokenCount()) {
             // Trim the array if necessary:
             $session->tokenList
-                = \array_slice($session->tokenList, -1 * $limit, null, true);
+                = array_slice($session->tokenList, -1 * $limit, null, true);
         }
     }
 
@@ -67,6 +70,6 @@ class SessionCsrf extends \Laminas\Validator\Csrf implements CsrfInterface
      */
     public function getTokenCount()
     {
-        return \count($this->getSession()->tokenList ?? []);
+        return count($this->getSession()->tokenList ?? []);
     }
 }

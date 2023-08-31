@@ -29,6 +29,8 @@
 
 namespace VuFindConsole\Command\Util;
 
+use function ini_get;
+
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -89,7 +91,7 @@ class CommitCommand extends AbstractSolrCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         // Check time limit; increase if necessary:
-        if (\ini_get('max_execution_time') < 3600) {
+        if (ini_get('max_execution_time') < 3600) {
             ini_set('max_execution_time', '3600');
         }
 

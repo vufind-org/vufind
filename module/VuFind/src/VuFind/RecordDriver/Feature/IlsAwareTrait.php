@@ -31,6 +31,8 @@
 
 namespace VuFind\RecordDriver\Feature;
 
+use function in_array;
+
 use VuFind\Exception\ILS as ILSException;
 
 /**
@@ -100,7 +102,7 @@ trait IlsAwareTrait
     protected function hasILS()
     {
         return null !== $this->ils
-            && \in_array($this->getSourceIdentifier(), $this->ilsBackends);
+            && in_array($this->getSourceIdentifier(), $this->ilsBackends);
     }
 
     /**

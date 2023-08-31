@@ -29,6 +29,8 @@
 
 namespace VuFindSearch\Command;
 
+use function is_callable;
+
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
 
@@ -63,9 +65,9 @@ class GetLuceneHelperCommand extends \VuFindSearch\Command\AbstractBase
     public function execute(BackendInterface $backend): CommandInterface
     {
         $this->validateBackend($backend);
-        $qb = \is_callable([$backend, 'getQueryBuilder'])
+        $qb = is_callable([$backend, 'getQueryBuilder'])
             ? $backend->getQueryBuilder() : false;
-        $result = $qb && \is_callable([$qb, 'getLuceneHelper'])
+        $result = $qb && is_callable([$qb, 'getLuceneHelper'])
             ? $qb->getLuceneHelper() : false;
         return $this->finalizeExecution(
             $result instanceof LuceneSyntaxHelper ? $result : false

@@ -31,6 +31,9 @@
 namespace VuFindSearch\Backend\EDS;
 
 use Exception;
+
+use function in_array;
+
 use Laminas\Cache\Storage\Adapter\AbstractAdapter as CacheAdapter;
 use Laminas\Config\Config;
 use Laminas\Session\Container as SessionContainer;
@@ -409,7 +412,7 @@ class Backend extends AbstractBackend
             'query', 'facets', 'filters', 'groupFilters', 'rangeFilters', 'limiters',
         ];
         foreach ($params as $key => $param) {
-            $options[$key] = \in_array($key, $arraySettings)
+            $options[$key] = in_array($key, $arraySettings)
                 ? $param : $param[0];
         }
         return new SearchRequestModel($options);

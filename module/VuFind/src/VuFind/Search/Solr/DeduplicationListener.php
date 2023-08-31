@@ -34,6 +34,8 @@
 
 namespace VuFind\Search\Solr;
 
+use function in_array;
+
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use Psr\Container\ContainerInterface;
@@ -149,7 +151,7 @@ class DeduplicationListener
             $params = $command->getSearchParameters();
             $context = $command->getContext();
             $contexts = ['search', 'similar', 'getids', 'workExpressions'];
-            if ($params && \in_array($context, $contexts)) {
+            if ($params && in_array($context, $contexts)) {
                 // If deduplication is enabled, filter out merged child records,
                 // otherwise filter out dedup records.
                 if (
@@ -180,7 +182,7 @@ class DeduplicationListener
     public function hasChildFilter($params)
     {
         $filters = $params->get('fq');
-        return $filters != null && \in_array('merged_child_boolean:true', $filters);
+        return $filters != null && in_array('merged_child_boolean:true', $filters);
     }
 
     /**
@@ -200,7 +202,7 @@ class DeduplicationListener
         }
         $context = $command->getContext();
         $contexts = ['search', 'similar', 'workExpressions'];
-        if ($this->enabled && \in_array($context, $contexts)) {
+        if ($this->enabled && in_array($context, $contexts)) {
             $this->fetchLocalRecords($event);
         }
         return $event;
@@ -242,7 +244,7 @@ class DeduplicationListener
                 $localPriority = null;
                 [$source] = explode('.', $localId, 2);
                 // Ignore ID if source is not in the list of allowed record sources:
-                if ($recordSources && !\in_array($source, $recordSources)) {
+                if ($recordSources && !in_array($source, $recordSources)) {
                     continue;
                 }
                 if (!empty($buildingPriority)) {

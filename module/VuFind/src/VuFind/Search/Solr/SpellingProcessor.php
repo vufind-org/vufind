@@ -29,7 +29,14 @@
 
 namespace VuFind\Search\Solr;
 
+use function count;
+use function in_array;
+use function is_array;
+
 use Laminas\Config\Config;
+
+use function strlen;
+
 use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
 use VuFindSearch\Query\AbstractQuery;
 
@@ -146,7 +153,7 @@ class SpellingProcessor
                 $token .= ' ' . strtok('"') . '"';
             }
             // skip boolean operators
-            if (!\in_array($token, $joins)) {
+            if (!in_array($token, $joins)) {
                 $tokens[] = $token;
             }
             $token = strtok(" \t");
@@ -155,9 +162,9 @@ class SpellingProcessor
         // If the last token ends in a double quote but the input string does not,
         // the tokenization process added the quote, which will break spelling
         // replacements. We need to strip it back off again:
-        $last = \count($tokens) > 0 ? $tokens[\count($tokens) - 1] : null;
+        $last = count($tokens) > 0 ? $tokens[count($tokens) - 1] : null;
         if ($last && substr($last, -1) == '"' && substr($input, -1) != '"') {
-            $tokens[\count($tokens) - 1] = substr($last, 0, \strlen($last) - 1);
+            $tokens[count($tokens) - 1] = substr($last, 0, strlen($last) - 1);
         }
         return $tokens;
     }
@@ -204,7 +211,7 @@ class SpellingProcessor
     protected function formatAndFilterSuggestions($query, $info)
     {
         // Validate response format
-        if (isset($info['suggestion'][0]) && !\is_array($info['suggestion'][0])) {
+        if (isset($info['suggestion'][0]) && !is_array($info['suggestion'][0])) {
             throw new \Exception(
                 'Unexpected suggestion format; spellcheck.extendedResults'
                 . ' must be set to true.'
@@ -213,7 +220,7 @@ class SpellingProcessor
         $limit = $this->getSpellingLimit();
         $suggestions = [];
         foreach ($info['suggestion'] as $suggestion) {
-            if (\count($suggestions) >= $limit) {
+            if (count($suggestions) >= $limit) {
                 break;
             }
             $word = $suggestion['word'];

@@ -29,6 +29,8 @@
 
 namespace VuFindSearch\Query;
 
+use function in_array;
+
 use VuFindSearch\Exception\InvalidArgumentException;
 
 /**
@@ -206,7 +208,7 @@ class QueryGroup extends AbstractQuery
      */
     public function setOperator($operator)
     {
-        if (!\in_array($operator, self::$operators)) {
+        if (!in_array($operator, self::$operators)) {
             throw new InvalidArgumentException(
                 "Unknown or invalid boolean operator: {$operator}"
             );

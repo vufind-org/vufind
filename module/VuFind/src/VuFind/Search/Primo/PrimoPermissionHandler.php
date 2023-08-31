@@ -29,6 +29,9 @@
 
 namespace VuFind\Search\Primo;
 
+use function in_array;
+use function is_array;
+
 use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
 
 /**
@@ -71,7 +74,7 @@ class PrimoPermissionHandler
         if ($primoPermConfig instanceof \Laminas\Config\Config) {
             $primoPermConfig = $primoPermConfig->toArray();
         }
-        $this->primoConfig = \is_array($primoPermConfig) ? $primoPermConfig : [];
+        $this->primoConfig = is_array($primoPermConfig) ? $primoPermConfig : [];
         $this->checkLegacySettings();
         $this->checkConfig();
     }
@@ -99,7 +102,7 @@ class PrimoPermissionHandler
      */
     public function instCodeExists($code)
     {
-        return \in_array($code, $this->getInstCodes()) === true;
+        return in_array($code, $this->getInstCodes()) === true;
     }
 
     /**
@@ -193,7 +196,7 @@ class PrimoPermissionHandler
         foreach (['institutionCode', 'onCampusRule'] as $section) {
             if (
                 isset($this->primoConfig[$section])
-                && \is_array($this->primoConfig[$section])
+                && is_array($this->primoConfig[$section])
             ) {
                 $codes = array_merge(
                     $codes,
@@ -224,7 +227,7 @@ class PrimoPermissionHandler
         foreach (['institutionCode', 'onCampusRule'] as $section) {
             if (
                 isset($this->primoConfig[$section])
-                && \is_array($this->primoConfig[$section])
+                && is_array($this->primoConfig[$section])
             ) {
                 foreach ($this->primoConfig[$section] as $code => $permRule) {
                     if ($authService->isGranted($permRule)) {

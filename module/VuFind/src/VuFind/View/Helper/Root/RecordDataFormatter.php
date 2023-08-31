@@ -31,6 +31,11 @@
 
 namespace VuFind\View\Helper\Root;
 
+use function call_user_func;
+use function count;
+use function is_array;
+use function is_callable;
+
 use Laminas\View\Helper\AbstractHelper;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
@@ -128,7 +133,7 @@ class RecordDataFormatter extends AbstractHelper
         // Determine the rendering method to use, and bail out if it's illegal:
         $method = empty($options['renderType'])
             ? 'renderSimple' : 'render' . $options['renderType'];
-        if (!\is_callable([$this, $method])) {
+        if (!is_callable([$this, $method])) {
             return null;
         }
 
@@ -140,13 +145,13 @@ class RecordDataFormatter extends AbstractHelper
 
         // Special case: if we received an array rather than a string, we should
         // return it as-is (it probably came from renderMulti()).
-        if (\is_array($value)) {
+        if (is_array($value)) {
             return $value;
         }
 
         // Allow dynamic label override:
-        $label = \is_callable($options['labelFunction'] ?? null)
-            ? \call_user_func($options['labelFunction'], $data, $this->driver)
+        $label = is_callable($options['labelFunction'] ?? null)
+            ? call_user_func($options['labelFunction'], $data, $this->driver)
             : $field;
         $context = $options['context'] ?? [];
         $pos = $options['pos'] ?? 0;
@@ -175,7 +180,7 @@ class RecordDataFormatter extends AbstractHelper
         if (null === $this->driver) {
             throw new \Exception('No driver set in RecordDataFormatter');
         }
-        if (!\is_array($args[0])) {
+        if (!is_array($args[0])) {
             throw new \Exception('Argument 0 must be an array');
         }
         // Apply the spec:
@@ -207,9 +212,9 @@ class RecordDataFormatter extends AbstractHelper
             return [];
         }
         // Callback stored? Resolve to array on demand:
-        if (\is_callable($this->defaults[$key])) {
+        if (is_callable($this->defaults[$key])) {
             $this->defaults[$key] = $this->defaults[$key]();
-            if (!\is_array($this->defaults[$key])) {
+            if (!is_array($this->defaults[$key])) {
                 throw new \Exception('Callback for ' . $key . ' must return array');
             }
         }
@@ -228,7 +233,7 @@ class RecordDataFormatter extends AbstractHelper
      */
     public function setDefaults($key, $values)
     {
-        if (!\is_array($values) && !\is_callable($values)) {
+        if (!is_array($values) && !is_callable($values)) {
             throw new \Exception('$values must be array or callable');
         }
         $this->defaults[$key] = $values;
@@ -286,7 +291,7 @@ class RecordDataFormatter extends AbstractHelper
     ) {
         // Make sure we have a callback for sorting the $data into groups...
         $callback = $options['multiFunction'] ?? null;
-        if (!\is_callable($callback)) {
+        if (!is_callable($callback)) {
             throw new \Exception('Invalid multiFunction callback.');
         }
 
@@ -298,7 +303,7 @@ class RecordDataFormatter extends AbstractHelper
         // Collect the results:
         $results = [];
         $input = $callback($data, $options, $this->driver);
-        foreach (\is_array($input) ? $input : [] as $current) {
+        foreach (is_array($input) ? $input : [] as $current) {
             $label = $current['label'] ?? '';
             $values = $current['values'] ?? null;
             $currentOptions = ($current['options'] ?? []) + $defaultOptions;
@@ -324,7 +329,7 @@ class RecordDataFormatter extends AbstractHelper
     ) {
         $method = $options['helperMethod'] ?? null;
         $plugin = $this->getView()->plugin('record');
-        if (empty($method) || !\is_callable([$plugin, $method])) {
+        if (empty($method) || !is_callable([$plugin, $method])) {
             throw new \Exception('Cannot call "' . $method . '" on helper.');
         }
         return $plugin($this->driver)->$method($data);
@@ -391,7 +396,7 @@ class RecordDataFormatter extends AbstractHelper
         $separator = $options['separator'] ?? '<br>';
         $retVal = '';
         $array = (array)$data;
-        $remaining = \count($array);
+        $remaining = count($array);
         foreach ($array as $line) {
             $remaining--;
             $text = $options['itemPrefix'] ?? '';

@@ -29,6 +29,8 @@
 
 namespace VuFindTheme;
 
+use function is_array;
+
 /**
  * Class to compile a theme hierarchy into a single flat theme.
  *
@@ -134,7 +136,7 @@ class ThemeCompiler extends AbstractThemeUtility
                     // trump new incoming ones:
                     if (!isset($dest[$key])) {
                         $dest[$key] = $value;
-                    } elseif (\is_array($dest[$key])) {
+                    } elseif (is_array($dest[$key])) {
                         $dest[$key] = array_merge($value, $dest[$key]);
                     }
                     break;

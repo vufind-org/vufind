@@ -29,6 +29,8 @@
 
 namespace VuFind\AjaxHandler;
 
+use function is_array;
+
 use Laminas\Mvc\Controller\Plugin\Params;
 
 /**
@@ -124,7 +126,7 @@ class CheckRequestIsValid extends AbstractIlsAndUserAction
                             ->checkRequestIsValid($id, $data, $patron);
                         break;
                 }
-                if (\is_array($results)) {
+                if (is_array($results)) {
                     $msg = $results['status'];
                     $results = $results['valid'];
                 } else {

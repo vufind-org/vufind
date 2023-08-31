@@ -29,6 +29,8 @@
 
 namespace VuFind\ChannelProvider;
 
+use function in_array;
+
 use Laminas\Config\Config;
 use VuFind\Cache\Manager as CacheManager;
 use VuFind\ChannelProvider\PluginManager as ChannelManager;
@@ -173,7 +175,7 @@ class ChannelLoader
     {
         $providerIds = isset($this->config->{"source.$source"}->$configSection)
             ? $this->config->{"source.$source"}->$configSection->toArray() : [];
-        $finalIds = (!empty($activeId) && \in_array($activeId, $providerIds))
+        $finalIds = (!empty($activeId) && in_array($activeId, $providerIds))
             ? [$activeId] : $providerIds;
         return array_map([$this, 'getChannelProvider'], $finalIds);
     }

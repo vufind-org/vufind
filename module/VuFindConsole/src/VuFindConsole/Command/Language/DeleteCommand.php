@@ -29,6 +29,8 @@
 
 namespace VuFindConsole\Command\Language;
 
+use function strlen;
+
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -105,7 +107,7 @@ class DeleteCommand extends AbstractCommand
             $out = '';
             $found = false;
             foreach ($lines as $line) {
-                if (substr($line, 0, \strlen($target)) !== $target) {
+                if (substr($line, 0, strlen($target)) !== $target) {
                     $out .= $line;
                 } else {
                     $found = true;

@@ -31,6 +31,8 @@
 
 namespace VuFind\Controller\Plugin;
 
+use function in_array;
+
 /**
  * Action helper to perform storage retrieval request related actions
  *
@@ -145,7 +147,7 @@ class StorageRetrievalRequests extends AbstractRequestBase
             foreach ($details as $info) {
                 // If the user input contains a value not found in the session
                 // legal list, something has been tampered with -- abort the process.
-                if (!\in_array($info, $this->getSession()->validIds)) {
+                if (!in_array($info, $this->getSession()->validIds)) {
                     $flashMsg->addMessage('error_inconsistent_parameters', 'error');
                     return [];
                 }

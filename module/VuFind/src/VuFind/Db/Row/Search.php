@@ -29,6 +29,8 @@
 
 namespace VuFind\Db\Row;
 
+use function is_resource;
+
 use VuFind\Crypt\HMAC;
 
 /**
@@ -75,7 +77,7 @@ class Search extends RowGateway
         // Note that if we have a resource, we need to grab the contents before
         // saving -- this is necessary for PostgreSQL compatibility although MySQL
         // returns a plain string
-        if (\is_resource($this->search_object)) {
+        if (is_resource($this->search_object)) {
             $this->search_object = stream_get_contents($this->search_object);
         }
     }

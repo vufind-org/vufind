@@ -31,6 +31,9 @@
 
 namespace VuFind\Db\Table;
 
+use function count;
+use function is_object;
+
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Adapter\ParameterContainer;
 use Laminas\Db\TableGateway\Feature;
@@ -84,7 +87,7 @@ class Search extends Gateway
         // Special case for PostgreSQL inserts -- we need to provide an extra
         // clue so that the database knows how to write bytea data correctly:
         if ($this->adapter->getDriver()->getDatabasePlatformName() == 'Postgresql') {
-            if (!\is_object($this->featureSet)) {
+            if (!is_object($this->featureSet)) {
                 $this->featureSet = new Feature\FeatureSet();
             }
             $eventFeature = new Feature\EventFeature();
@@ -251,7 +254,7 @@ class Search extends Gateway
             $minified = $match->getSearchObject();
             if ($normalized->isEquivalentToMinifiedSearch($minified)) {
                 $results[] = $match;
-                if (\count($results) >= $limit) {
+                if (count($results) >= $limit) {
                     break;
                 }
             }

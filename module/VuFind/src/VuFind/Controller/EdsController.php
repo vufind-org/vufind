@@ -29,6 +29,8 @@
 
 namespace VuFind\Controller;
 
+use function in_array;
+
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Solr\Utils as SolrUtils;
 
@@ -187,7 +189,7 @@ class EdsController extends AbstractSearch
                     $searchObject->getParams()->removeFilter($expandFilt);
                 }
             } else {
-                if (\in_array($key, $defaultExpanders)) {
+                if (in_array($key, $defaultExpanders)) {
                     $availableExpanders[$key]['selected'] = true;
                 }
             }

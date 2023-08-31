@@ -29,6 +29,8 @@
 
 namespace VuFindConsole\Command\Import;
 
+use function is_callable;
+
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -133,7 +135,7 @@ class ImportXslCommand extends Command
             }
         } catch (\Exception $e) {
             $output->writeln('Fatal error: ' . $e->getMessage());
-            if (\is_callable([$e, 'getPrevious']) && $e = $e->getPrevious()) {
+            if (is_callable([$e, 'getPrevious']) && $e = $e->getPrevious()) {
                 while ($e) {
                     $output->writeln('Previous exception: ' . $e->getMessage());
                     $e = $e->getPrevious();

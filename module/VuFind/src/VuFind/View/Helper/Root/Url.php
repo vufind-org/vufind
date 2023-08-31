@@ -29,6 +29,9 @@
 
 namespace VuFind\View\Helper\Root;
 
+use function func_get_args;
+use function func_num_args;
+
 use Laminas\Http\PhpEnvironment\Request;
 
 /**
@@ -87,7 +90,7 @@ class Url extends \Laminas\View\Helper\Url
         $reuseMatchedParams = false
     ) {
         // If argument list is empty, return object for method access:
-        return \func_num_args() == 0 ? $this : parent::__invoke(...\func_get_args());
+        return func_num_args() == 0 ? $this : parent::__invoke(...func_get_args());
     }
 
     /**

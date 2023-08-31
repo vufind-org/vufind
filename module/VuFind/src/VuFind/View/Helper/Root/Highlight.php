@@ -29,6 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
+use function is_array;
+
 use Laminas\View\Helper\AbstractHelper;
 
 /**
@@ -79,7 +81,7 @@ class Highlight extends AbstractHelper
         // Also make sure our generated array is empty if needle itself is empty --
         // if $haystack already has highlighting markers in it, we may want to send
         // in a blank needle.
-        if (!\is_array($needle)) {
+        if (!is_array($needle)) {
             $needle = empty($needle) ? [] : [$needle];
         }
 

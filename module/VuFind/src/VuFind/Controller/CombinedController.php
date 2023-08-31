@@ -29,6 +29,11 @@
 
 namespace VuFind\Controller;
 
+use function count;
+use function in_array;
+use function intval;
+use function is_array;
+
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Search\SearchRunner;
 
@@ -207,11 +212,11 @@ class CombinedController extends AbstractSearch
         // Run the search to obtain recommendations:
         $results->performAndProcessSearch();
 
-        $actualMaxColumns = \count($combinedResults);
-        $columnConfig = \intval($config['Layout']['columns'] ?? $actualMaxColumns);
+        $actualMaxColumns = count($combinedResults);
+        $columnConfig = intval($config['Layout']['columns'] ?? $actualMaxColumns);
         $columns = min($columnConfig, $actualMaxColumns);
         $placement = $config['Layout']['stack_placement'] ?? 'distributed';
-        if (!\in_array($placement, ['distributed', 'left', 'right'])) {
+        if (!in_array($placement, ['distributed', 'left', 'right'])) {
             $placement = 'distributed';
         }
 
@@ -324,7 +329,7 @@ class CombinedController extends AbstractSearch
         // on include_recommendations setting.
         if ($settings['include_recommendations'] ?? false) {
             $query->noRecommend = 'side';
-            if (\is_array($settings['include_recommendations'])) {
+            if (is_array($settings['include_recommendations'])) {
                 $query->recommendOverride
                     = ['top' => $settings['include_recommendations']];
             }

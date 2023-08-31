@@ -29,8 +29,14 @@
 
 namespace VuFind\Search;
 
+use function array_key_exists;
+use function intval;
+
 use Laminas\Http\Request;
 use Laminas\Session\Container;
+
+use function strlen;
+
 use VuFind\Db\Table\Search;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 
@@ -202,7 +208,7 @@ class Memory
         }
 
         // Only remember URL if string is non-empty... otherwise clear the memory.
-        if (\strlen(trim($url)) > 0) {
+        if (strlen(trim($url)) > 0) {
             $this->session->last = $url;
             if ($id) {
                 $this->session->lastId = $id;
@@ -247,7 +253,7 @@ class Memory
     {
         $sid = $this->request->getQuery('sid')
             ?? $this->request->getPost('sid');
-        return \intval($sid) ?: null;
+        return intval($sid) ?: null;
     }
 
     /**
@@ -296,7 +302,7 @@ class Memory
      */
     protected function getSearchById(int $id): ?\VuFind\Search\Base\Results
     {
-        if (!\array_key_exists($id, $this->searchCache)) {
+        if (!array_key_exists($id, $this->searchCache)) {
             $search
                 = $this->searchTable->getOwnedRowById($id, $this->sessionId, null);
             if ($search) {

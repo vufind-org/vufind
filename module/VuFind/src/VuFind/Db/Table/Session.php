@@ -31,6 +31,8 @@
 
 namespace VuFind\Db\Table;
 
+use function intval;
+
 use Laminas\Db\Adapter\Adapter;
 use VuFind\Db\Row\RowGateway;
 use VuFind\Exception\SessionExpired as SessionExpiredException;
@@ -155,7 +157,7 @@ class Session extends Gateway
     {
         $callback = function ($select) use ($sess_maxlifetime) {
             $select->where
-                ->lessThan('last_used', time() - \intval($sess_maxlifetime));
+                ->lessThan('last_used', time() - intval($sess_maxlifetime));
         };
         $this->delete($callback);
     }

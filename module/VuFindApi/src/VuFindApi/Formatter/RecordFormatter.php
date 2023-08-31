@@ -29,6 +29,8 @@
 
 namespace VuFindApi\Formatter;
 
+use function is_object;
+
 use Laminas\View\HelperPluginManager;
 use VuFind\I18n\TranslatableString;
 
@@ -192,7 +194,7 @@ class RecordFormatter extends BaseFormatter
         array_walk_recursive(
             $result,
             function (&$value) use ($translator) {
-                if (\is_object($value)) {
+                if (is_object($value)) {
                     if ($value instanceof TranslatableString) {
                         $value = [
                             'value' => (string)$value,

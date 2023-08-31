@@ -29,6 +29,13 @@
 
 namespace VuFindSearch\Backend\Blender\Response\Json;
 
+use function array_slice;
+use function count;
+use function in_array;
+use function intval;
+use function is_array;
+use function is_string;
+
 use VuFindSearch\Response\RecordInterface;
 
 /**
@@ -150,7 +157,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
      */
     public function addError($error): void
     {
-        if (!\in_array($error, $this->errors)) {
+        if (!in_array($error, $this->errors)) {
             $this->errors[] = $error;
         }
     }
@@ -258,7 +265,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
         foreach ($collections as $backendId => $collection) {
             foreach ($collection->getErrors() as $error) {
                 $label = $this->config->Backends[$backendId];
-                if (\is_string($error) && $label) {
+                if (is_string($error) && $label) {
                     $error = [
                         'msg' => '%%error%% -- %%label%%',
                         'tokens' => [
@@ -300,7 +307,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
 
         // We're outside the blocks affected by boosting, calculate by block
         $currentBlock = floor($position / $blockSize);
-        $backendCount = \count($backendIds);
+        $backendCount = count($backendIds);
         return $backendCount ? $backendIds[$currentBlock % $backendCount] : '';
     }
 
@@ -381,10 +388,10 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
                     continue;
                 }
 
-                $result[$value] = ($result[$value] ?? 0) + \intval($count);
+                $result[$value] = ($result[$value] ?? 0) + intval($count);
                 if ($hierarchical) {
                     foreach ($this->getHierarchyParentKeys($value) as $key) {
-                        $result[$key] = ($result[$key] ?? 0) + \intval($count);
+                        $result[$key] = ($result[$key] ?? 0) + intval($count);
                     }
                 }
             }
@@ -393,7 +400,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
         foreach ($settings['Mappings'] as $backendId => $mappings) {
             $ignore = $mappings['Ignore'] ?? false;
             if ($ignore && ($collections[$backendId] ?? false)) {
-                $ignoredKeys = \is_array($ignore) ? $ignore : array_keys($result);
+                $ignoredKeys = is_array($ignore) ? $ignore : array_keys($result);
                 foreach ($ignoredKeys as $ignoredValue) {
                     $result[$ignoredValue] = ($result[$ignoredValue] ?? 0)
                         + $collections[$backendId]->getTotal();
@@ -422,8 +429,8 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
         $parts = explode('/', $value);
         $level = array_shift($parts);
         $result = [];
-        for ($i = \intval($level) - 1; $i >= 0; $i--) {
-            $result[] = $i . '/' . implode('/', \array_slice($parts, 0, $i + 1))
+        for ($i = intval($level) - 1; $i >= 0; $i--) {
+            $result[] = $i . '/' . implode('/', array_slice($parts, 0, $i + 1))
                 . '/';
         }
         return $result;
@@ -441,7 +448,7 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
         $delimiter = $this->getFacetDelimiter('blender_backend');
         $orFacets = $this->config->Results_Settings->orFacets ?? '';
         $orFacetList = array_map('trim', explode(',', $orFacets));
-        $isOrFacet = '*' === $orFacets || \in_array('blender_backend', $orFacetList);
+        $isOrFacet = '*' === $orFacets || in_array('blender_backend', $orFacetList);
         $result = [];
         foreach ($this->config->Backends as $backendId => $name) {
             $key = $delimiter ? ($backendId . $delimiter . $name) : $backendId;

@@ -29,6 +29,8 @@
 
 namespace VuFindTest\Record;
 
+use function count;
+
 use VuFind\Record\Cache;
 use VuFind\Record\FallbackLoader\PluginManager as FallbackLoader;
 use VuFind\Record\Loader;
@@ -414,7 +416,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $collection = $this->getMockBuilder(\VuFindSearch\Response\RecordCollectionInterface::class)
             ->getMock();
         $collection->expects($this->any())->method('getRecords')->will($this->returnValue($records));
-        $collection->expects($this->any())->method('count')->will($this->returnValue(\count($records)));
+        $collection->expects($this->any())->method('count')->will($this->returnValue(count($records)));
         return $collection;
     }
 }

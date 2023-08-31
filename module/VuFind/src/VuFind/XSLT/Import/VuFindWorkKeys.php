@@ -30,6 +30,9 @@
 namespace VuFind\XSLT\Import;
 
 use DOMDocument;
+
+use function in_array;
+
 use Normalizer;
 
 /**
@@ -113,7 +116,7 @@ class VuFindWorkKeys
             );
             if (
                 empty($normalizedTitle)                          // skip empties
-                || \in_array($normalizedTitle, $normalizedTitles) // avoid dupes
+                || in_array($normalizedTitle, $normalizedTitles) // avoid dupes
             ) {
                 continue;
             }

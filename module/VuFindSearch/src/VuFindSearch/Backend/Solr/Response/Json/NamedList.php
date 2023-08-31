@@ -29,7 +29,13 @@
 
 namespace VuFindSearch\Backend\Solr\Response\Json;
 
+use function count;
+
 use Countable;
+
+use function in_array;
+use function is_array;
+
 use Iterator;
 
 /**
@@ -96,7 +102,7 @@ class NamedList implements Countable, Iterator
      */
     public function count(): int
     {
-        return \count($this->list);
+        return count($this->list);
     }
 
     /// Iterator
@@ -140,7 +146,7 @@ class NamedList implements Countable, Iterator
      */
     public function valid(): bool
     {
-        return \is_array($this->current);
+        return is_array($this->current);
     }
 
     /**
@@ -177,7 +183,7 @@ class NamedList implements Countable, Iterator
     {
         $newList = [];
         foreach ($this->list as $current) {
-            if (!\in_array($current[0], $keys)) {
+            if (!in_array($current[0], $keys)) {
                 $newList[] = $current;
             }
         }

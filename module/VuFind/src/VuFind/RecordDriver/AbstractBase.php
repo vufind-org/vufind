@@ -29,6 +29,8 @@
 
 namespace VuFind\RecordDriver;
 
+use function is_callable;
+
 use VuFind\XSLT\Import\VuFind as ArticleStripper;
 
 /**
@@ -466,6 +468,6 @@ abstract class AbstractBase implements
      */
     public function tryMethod($method, $params = [], $default = null)
     {
-        return \is_callable([$this, $method]) ? $this->$method(...$params) : $default;
+        return is_callable([$this, $method]) ? $this->$method(...$params) : $default;
     }
 }

@@ -30,6 +30,16 @@
 
 namespace VuFind\ILS\Driver;
 
+use function array_key_exists;
+use function call_user_func_array;
+use function func_get_args;
+use function in_array;
+use function is_array;
+use function is_callable;
+use function is_int;
+use function is_string;
+use function strlen;
+
 use VuFind\Exception\ILS as ILSException;
 
 /**
@@ -510,7 +520,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         $holds = $this->callMethodIfSupported(
             $source,
             __FUNCTION__,
-            \func_get_args(),
+            func_get_args(),
             true,
             false
         );
@@ -594,7 +604,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         if ($driver = $this->getDriver($source)) {
             if (
                 !$this->driverSupportsSource($source, $id)
-                || !\is_callable([$driver, 'checkStorageRetrievalRequestIsValid'])
+                || !is_callable([$driver, 'checkStorageRetrievalRequestIsValid'])
             ) {
                 return false;
             }
@@ -834,7 +844,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         $driver = $this->getDriver($source);
         if (
             $driver
-            && \is_callable([$driver, 'placeStorageRetrievalRequest'])
+            && is_callable([$driver, 'placeStorageRetrievalRequest'])
         ) {
             if (!$this->driverSupportsSource($source, $details['id'])) {
                 return [
@@ -1104,7 +1114,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
             // If we can't determine the source, assume we are capable of handling
             // the request unless the method is one that doesn't have parameters that
             // allow the correct source to be determined.
-            return !\in_array($method, $this->methodsWithNoSourceSpecificParameters);
+            return !in_array($method, $this->methodsWithNoSourceSpecificParameters);
         }
 
         $driver = $this->getDriver($source);
@@ -1192,8 +1202,8 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         $params,
         $allowedKeys = [0, 'id', 'cat_username']
     ) {
-        if (!\is_array($params)) {
-            if (\is_string($params)) {
+        if (!is_array($params)) {
+            if (is_string($params)) {
                 $source = $this->getSource($params);
                 if ($source && isset($this->drivers[$source])) {
                     return $source;
@@ -1203,9 +1213,9 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         }
         foreach ($params as $key => $value) {
             $source = false;
-            if (\is_array($value) && (\is_int($key) || $key === 'patron')) {
+            if (is_array($value) && (is_int($key) || $key === 'patron')) {
                 $source = $this->getSourceFromParams($value, $allowedKeys);
-            } elseif (\in_array($key, $allowedKeys)) {
+            } elseif (in_array($key, $allowedKeys)) {
                 $source = $this->getSource($value);
             }
             if ($source && isset($this->drivers[$source])) {
@@ -1234,7 +1244,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         }
 
         // Check for a cached driver
-        if (!\array_key_exists($source, $this->driverCache)) {
+        if (!array_key_exists($source, $this->driverCache)) {
             // Create the driver
             $this->driverCache[$source] = $this->createDriver($source);
             if (null === $this->driverCache[$source]) {
@@ -1313,7 +1323,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         $source,
         $modifyFields = ['id', 'cat_username']
     ) {
-        if (empty($source) || empty($data) || !\is_array($data)) {
+        if (empty($source) || empty($data) || !is_array($data)) {
             return $data;
         }
 
@@ -1321,7 +1331,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
             if (null === $value) {
                 continue;
             }
-            if (\is_array($value)) {
+            if (is_array($value)) {
                 $data[$key] = $this->addIdPrefixes(
                     $value,
                     $source,
@@ -1331,7 +1341,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
                 if (
                     !ctype_digit((string)$key)
                     && $value !== ''
-                    && \in_array($key, $modifyFields)
+                    && in_array($key, $modifyFields)
                 ) {
                     $data[$key] = "$source.$value";
                 }
@@ -1361,14 +1371,14 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
         if (!isset($data) || empty($data)) {
             return $data;
         }
-        $array = \is_array($data) ? $data : [$data];
+        $array = is_array($data) ? $data : [$data];
 
         foreach ($array as $key => $value) {
             if (null === $value) {
                 continue;
             }
-            if (\is_array($value)) {
-                if (\in_array($key, $ignoreFields)) {
+            if (is_array($value)) {
+                if (in_array($key, $ignoreFields)) {
                     continue;
                 }
                 $array[$key] = $this->stripIdPrefixes(
@@ -1377,17 +1387,17 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
                     $modifyFields
                 );
             } else {
-                $prefixLen = \strlen($source) + 1;
+                $prefixLen = strlen($source) + 1;
                 if (
-                    (!\is_array($data)
-                    || (!ctype_digit((string)$key) && \in_array($key, $modifyFields)))
+                    (!is_array($data)
+                    || (!ctype_digit((string)$key) && in_array($key, $modifyFields)))
                     && strncmp("$source.", $value, $prefixLen) == 0
                 ) {
                     $array[$key] = substr($value, $prefixLen);
                 }
             }
         }
-        return \is_array($data) ? $array : $array[0];
+        return is_array($data) ? $array : $array[0];
     }
 
     /**
@@ -1401,7 +1411,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
      */
     protected function driverSupportsMethod($driver, $method, $params = null)
     {
-        if (\is_callable([$driver, $method])) {
+        if (is_callable([$driver, $method])) {
             if (method_exists($driver, 'supportsMethod')) {
                 return $driver->supportsMethod($method, $params ?: []);
             }
@@ -1461,7 +1471,7 @@ class MultiBackend extends AbstractBase implements \Laminas\Log\LoggerAwareInter
                 unset($param);
             }
             if ($this->driverSupportsMethod($driver, $method, $params)) {
-                $result = \call_user_func_array([$driver, $method], $params);
+                $result = call_user_func_array([$driver, $method], $params);
                 if ($addPrefixes) {
                     $result = $this->addIdPrefixes($result, $source);
                 }

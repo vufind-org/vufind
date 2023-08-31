@@ -30,6 +30,11 @@
 namespace VuFind\Config;
 
 use Composer\Semver\Comparator;
+
+use function count;
+use function in_array;
+use function is_array;
+
 use VuFind\Config\Writer as ConfigWriter;
 use VuFind\Exception\FileAccess as FileAccessException;
 
@@ -225,7 +230,7 @@ class Upgrade
         foreach ($custom_ini as $k => $v) {
             // Make a recursive call if we need to merge array values into an
             // existing key... otherwise just drop the value in place.
-            if (\is_array($v) && isset($config_ini[$k])) {
+            if (is_array($v) && isset($config_ini[$k])) {
                 $config_ini[$k] = self::iniMerge($config_ini[$k], $custom_ini[$k]);
             } else {
                 $config_ini[$k] = $v;
@@ -637,7 +642,7 @@ class Upgrade
         }
         if (
             isset($newConfig['Record']['related'])
-            && \in_array('Editions', $newConfig['Record']['related'])
+            && in_array('Editions', $newConfig['Record']['related'])
         ) {
             $newConfig['Record']['related'] = array_diff(
                 $newConfig['Record']['related'],
@@ -653,7 +658,7 @@ class Upgrade
         // Upgrade Google Options:
         if (
             isset($newConfig['Content']['GoogleOptions'])
-            && !\is_array($newConfig['Content']['GoogleOptions'])
+            && !is_array($newConfig['Content']['GoogleOptions'])
         ) {
             $newConfig['Content']['GoogleOptions']
                 = ['link' => $newConfig['Content']['GoogleOptions']];
@@ -919,7 +924,7 @@ class Upgrade
                 if (!isset($cfg[$key])) {
                     $cfg[$key] = [];
                 }
-                if (!\in_array('SpellingSuggestions', $cfg[$key])) {
+                if (!in_array('SpellingSuggestions', $cfg[$key])) {
                     $cfg[$key][] = 'SpellingSuggestions';
                 }
             }
@@ -929,8 +934,8 @@ class Upgrade
             // Add SpellingSuggestions to all non-skipped handlers:
             foreach ($cfg as $key => & $value) {
                 if (
-                    !\in_array($key, $skip)
-                    && !\in_array('SpellingSuggestions', $value)
+                    !in_array($key, $skip)
+                    && !in_array('SpellingSuggestions', $value)
                 ) {
                     $value[] = 'SpellingSuggestions';
                 }
@@ -1145,7 +1150,7 @@ class Upgrade
         ) {
             $codes = $config['Institutions']['code'];
             $regex = $config['Institutions']['regex'];
-            if (\count($regex) != \count($codes)) {
+            if (count($regex) != count($codes)) {
                 $this->addWarning(
                     'Mismatched code/regex counts in Primo.ini [Institutions].'
                 );
@@ -1168,7 +1173,7 @@ class Upgrade
                 $perm = "access.PrimoInstitution.$code";
                 $config['Institutions']["onCampusRule['$code']"] = $perm;
                 $permissions[$perm] = [
-                    'ipRegEx' => \count($regexes) == 1 ? $regexes[0] : $regexes,
+                    'ipRegEx' => count($regexes) == 1 ? $regexes[0] : $regexes,
                     'permission' => $perm,
                 ];
                 $this->permissionsModified = true;
@@ -1245,7 +1250,7 @@ class Upgrade
         $newConfig = & $this->newConfigs['WorldCat.ini'];
         if (
             isset($newConfig['Record']['related'])
-            && \in_array('WorldCatEditions', $newConfig['Record']['related'])
+            && in_array('WorldCatEditions', $newConfig['Record']['related'])
         ) {
             $newConfig['Record']['related'] = array_diff(
                 $newConfig['Record']['related'],

@@ -31,6 +31,8 @@
 
 namespace VuFind\Search\EDS;
 
+use function count;
+
 use VuFindSearch\ParamBag;
 
 /**
@@ -168,7 +170,7 @@ class Params extends AbstractEDSParams
     public function getEdsView()
     {
         $viewArr = explode('|', $this->view ?? '');
-        return (1 < \count($viewArr)) ? $viewArr[1] : $this->options->getEdsView();
+        return (1 < count($viewArr)) ? $viewArr[1] : $this->options->getEdsView();
     }
 
     /**

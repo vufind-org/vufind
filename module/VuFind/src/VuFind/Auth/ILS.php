@@ -30,6 +30,8 @@
 
 namespace VuFind\Auth;
 
+use function get_class;
+
 use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
@@ -266,7 +268,7 @@ class ILS extends AbstractBase
                 throw new \Exception('Email authenticator not set');
             }
             if ($patron) {
-                $class = \get_class($this);
+                $class = get_class($this);
                 if ($p = strrpos($class, '\\')) {
                     $class = substr($class, $p + 1);
                 }

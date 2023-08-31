@@ -31,6 +31,8 @@ namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
 
+use function count;
+
 /**
  * Mink favorites test class.
  *
@@ -381,7 +383,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         // Wait for save statuses to load:
         $this->findCss($page, '.savedLists.loaded');
-        $listCount = \count($page->findAll('css', '.savedLists a'));
+        $listCount = count($page->findAll('css', '.savedLists a'));
         // Save Record
         $this->clickCss($page, '.save-record');
         $this->findCss($page, '#save_list');
@@ -398,7 +400,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
             $listCount
         );
         $savedLists = $page->findAll('css', '.savedLists a');
-        $this->assertEquals($listCount + 1, \count($savedLists));
+        $this->assertEquals($listCount + 1, count($savedLists));
     }
 
     /**
@@ -673,7 +675,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         foreach ($links as $link) {
             $data[] = [
                 'text' => $link->getText(),
-                'iconCount' => \count($link->findAll('css', '.user-list__public-icon')),
+                'iconCount' => count($link->findAll('css', '.user-list__public-icon')),
             ];
             $hrefs[] = $link->getAttribute('href');
         }

@@ -30,6 +30,8 @@
 
 namespace VuFind\Service;
 
+use function count;
+
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
@@ -300,7 +302,7 @@ class MarkdownFactory implements FactoryInterface
             $attributesArray = [];
             foreach ($attributes as $attribute) {
                 $parts = array_map('trim', explode(':', $attribute));
-                if (2 === \count($parts)) {
+                if (2 === count($parts)) {
                     $attributesArray[$parts[0]] = $parts[1];
                 }
             }

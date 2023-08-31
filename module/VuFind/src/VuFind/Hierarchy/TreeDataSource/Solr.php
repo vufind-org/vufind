@@ -29,6 +29,8 @@
 
 namespace VuFind\Hierarchy\TreeDataSource;
 
+use function count;
+
 use VuFind\Hierarchy\TreeDataFormatter\PluginManager as FormatterManager;
 use VuFindSearch\Backend\Solr\Command\RawJsonSearchCommand;
 use VuFindSearch\ParamBag;
@@ -217,7 +219,7 @@ class Solr extends AbstractBase
                 break;
             }
             $records = array_merge($records, $results->response->docs);
-            if (\count($records) >= $rows) {
+            if (count($records) >= $rows) {
                 break;
             }
             $prevCursorMark = $cursorMark;

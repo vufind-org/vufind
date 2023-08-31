@@ -31,10 +31,17 @@
 
 namespace VuFindSearch\Backend\Solr;
 
+use function call_user_func_array;
+use function count;
+use function is_callable;
+
 use Laminas\Http\Client\Adapter\Exception\TimeoutException;
 use Laminas\Http\Client as HttpClient;
 use Laminas\Http\Request;
 use Laminas\Uri\Http;
+
+use function strlen;
+
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Backend\Exception\HttpErrorException;
 use VuFindSearch\Backend\Exception\RemoteErrorException;
@@ -270,7 +277,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     ) {
         $params = $params ?: new ParamBag();
         $urlSuffix = "/{$handler}";
-        if (\count($params) > 0) {
+        if (count($params) > 0) {
             $urlSuffix .= '?' . implode('&', $params->request());
         }
         $callback = function ($client) use ($document) {
@@ -278,7 +285,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             $body = $document->getContent();
             $client->setRawBody($body);
             $client->getRequest()->getHeaders()
-                ->addHeaderLine('Content-Length', \strlen($body));
+                ->addHeaderLine('Content-Length', strlen($body));
         };
         return $this->trySolrUrls('POST', $urlSuffix, $callback);
     }
@@ -298,12 +305,12 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     {
         $urlSuffix = '/' . $handler;
         $paramString = implode('&', $params->request());
-        if (\strlen($paramString) > self::MAX_GET_URL_LENGTH) {
+        if (strlen($paramString) > self::MAX_GET_URL_LENGTH) {
             $method = Request::METHOD_POST;
             $callback = function ($client) use ($paramString) {
                 $client->setRawBody($paramString);
                 $client->setEncType(HttpClient::ENC_URLENCODED);
-                $client->setHeaders(['Content-Length' => \strlen($paramString)]);
+                $client->setHeaders(['Content-Length' => strlen($paramString)]);
             };
         } else {
             $method = Request::METHOD_GET;
@@ -334,7 +341,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             throw new InvalidArgumentException("Method '$method' is not public");
         }
         if (empty($options)) {
-            return \call_user_func_array([$this, $method], $args);
+            return call_user_func_array([$this, $method], $args);
         }
         $originalFactory = $this->clientFactory;
         try {
@@ -346,7 +353,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
                 $client->setOptions($options);
                 return $client;
             };
-            return \call_user_func_array([$this, $method], $args);
+            return call_user_func_array([$this, $method], $args);
         } finally {
             $this->clientFactory = $originalFactory;
         }
@@ -415,7 +422,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         foreach ((array)$this->url as $base) {
             $client = ($this->clientFactory)($base . $urlSuffix);
             $client->setMethod($method);
-            if (\is_callable($callback)) {
+            if (is_callable($callback)) {
                 $callback($client);
             }
             // Always create the cache key from the first server, and only after any

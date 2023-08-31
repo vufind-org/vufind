@@ -29,6 +29,8 @@
 
 namespace VuFind\Search\Pazpar2;
 
+use function is_object;
+
 /**
  * Pazpar2 Search Options
  *
@@ -67,7 +69,7 @@ class Options extends \VuFind\Search\Base\Options
                 && !empty($searchSettings->SourcePreferences->defaultChecked)
             ) {
                 $defaultChecked
-                    = \is_object($searchSettings->SourcePreferences->defaultChecked)
+                    = is_object($searchSettings->SourcePreferences->defaultChecked)
                     ? $searchSettings->SourcePreferences->defaultChecked->toArray()
                     : [$searchSettings->SourcePreferences->defaultChecked];
                 foreach ($defaultChecked as $current) {

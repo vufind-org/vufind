@@ -30,6 +30,8 @@
 
 namespace VuFind\MetadataVocabulary;
 
+use function is_array;
+
 /**
  * Metadata vocabulary base class
  * (provides results from available RecordDriver methods in a standardized form)
@@ -98,7 +100,7 @@ abstract class AbstractBase implements MetadataVocabularyInterface
             foreach ((array)$genFields as $genericField) {
                 $genericValues = $genericData[$genericField] ?? [];
                 if ($genericValues) {
-                    if (!\is_array($genericValues)) {
+                    if (!is_array($genericValues)) {
                         $genericValues = [$genericValues];
                     }
                     foreach ($genericValues as $genericValue) {

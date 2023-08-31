@@ -29,6 +29,9 @@
 
 namespace VuFind\View\Helper\Root;
 
+use function in_array;
+use function is_string;
+
 use VuFind\Cookie\CookieManager;
 use VuFind\Date\Converter as DateConverter;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
@@ -194,7 +197,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
             return false;
         }
         if ($consent = $this->getCurrentConsent()) {
-            return \in_array($category, (array)($consent['categories'] ?? []));
+            return in_array($category, (array)($consent['categories'] ?? []));
         }
         return false;
     }
@@ -210,7 +213,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
     {
         foreach ($this->getControlledVuFindServices() as $category => $services) {
             if (
-                \in_array($service, $services)
+                in_array($service, $services)
                 && $this->isCategoryAccepted($category)
             ) {
                 return true;
@@ -366,7 +369,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
         ];
         $categoryData = $this->consentConfig['Categories'] ?? [];
         foreach ($categoryData as $categoryId => $categoryConfig) {
-            if ($enabledCategories && !\in_array($categoryId, $enabledCategories)) {
+            if ($enabledCategories && !in_array($categoryId, $enabledCategories)) {
                 continue;
             }
             $consentDialogConfig['categories'][$categoryId] = [
@@ -433,7 +436,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
         array_walk_recursive(
             $consentDialogConfig,
             function (&$value) use ($placeholderSearch, $placeholderReplace) {
-                if (\is_string($value)) {
+                if (is_string($value)) {
                     $value = str_replace(
                         $placeholderSearch,
                         $placeholderReplace,

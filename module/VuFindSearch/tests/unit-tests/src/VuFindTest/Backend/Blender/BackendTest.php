@@ -29,6 +29,10 @@
 
 namespace VuFindTest\Backend\Blender;
 
+use function array_slice;
+use function count;
+use function in_array;
+
 use Laminas\Config\Config;
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\EventManager;
@@ -291,27 +295,27 @@ class BackendTest extends TestCase
         }
 
         $expectedRecords = array_merge(
-            \array_slice($solrRecords, 0, 2),
-            \array_slice($edsRecords, 0, 2),
-            \array_slice($solrRecords, 2, 3),
-            \array_slice($edsRecords, 2, 7),
-            \array_slice($solrRecords, 5, 7),
-            \array_slice($edsRecords, 9, 7),
-            \array_slice($solrRecords, 12, 7),
-            \array_slice($edsRecords, 16, 5)
+            array_slice($solrRecords, 0, 2),
+            array_slice($edsRecords, 0, 2),
+            array_slice($solrRecords, 2, 3),
+            array_slice($edsRecords, 2, 7),
+            array_slice($solrRecords, 5, 7),
+            array_slice($edsRecords, 9, 7),
+            array_slice($solrRecords, 12, 7),
+            array_slice($edsRecords, 16, 5)
         );
 
         $expectedRecordsAdaptive = array_merge(
-            \array_slice($solrRecords, 0, 2),
-            \array_slice($edsRecords, 0, 2),
-            \array_slice($solrRecords, 2, 1),
-            \array_slice($edsRecords, 2, 5),
-            \array_slice($solrRecords, 3, 5),
-            \array_slice($edsRecords, 7, 5),
-            \array_slice($solrRecords, 8, 5),
-            \array_slice($edsRecords, 12, 5),
-            \array_slice($solrRecords, 13, 5),
-            \array_slice($edsRecords, 17, 5)
+            array_slice($solrRecords, 0, 2),
+            array_slice($edsRecords, 0, 2),
+            array_slice($solrRecords, 2, 1),
+            array_slice($edsRecords, 2, 5),
+            array_slice($solrRecords, 3, 5),
+            array_slice($edsRecords, 7, 5),
+            array_slice($solrRecords, 8, 5),
+            array_slice($edsRecords, 12, 5),
+            array_slice($solrRecords, 13, 5),
+            array_slice($edsRecords, 17, 5)
         );
         $adaptiveConfig = $this->config;
         $adaptiveConfig['Blending']['adaptiveBlockSizes'] = [
@@ -322,26 +326,26 @@ class BackendTest extends TestCase
             = 'blender_backend';
 
         $expectedRecordsNoBoost = array_merge(
-            \array_slice($solrRecords, 0, 7),
-            \array_slice($edsRecords, 0, 7),
-            \array_slice($solrRecords, 7, 7),
-            \array_slice($edsRecords, 7, 7),
-            \array_slice($solrRecords, 14, 7),
-            \array_slice($edsRecords, 14, 5)
+            array_slice($solrRecords, 0, 7),
+            array_slice($edsRecords, 0, 7),
+            array_slice($solrRecords, 7, 7),
+            array_slice($edsRecords, 7, 7),
+            array_slice($solrRecords, 14, 7),
+            array_slice($edsRecords, 14, 5)
         );
         $noBoostConfig = $this->config;
         unset($noBoostConfig['Blending']['initialResults']);
 
         $expectedRecordsTitleSearch = array_merge(
-            \array_slice($solrRecords, 0, 2),
-            \array_slice($edsRecords, 0, 2),
-            \array_slice($solrRecords, 2, 3),
-            \array_slice($edsRecords, 2, 13)
+            array_slice($solrRecords, 0, 2),
+            array_slice($edsRecords, 0, 2),
+            array_slice($solrRecords, 2, 3),
+            array_slice($edsRecords, 2, 13)
         );
 
         $expectedRecordsAuthorSearch = array_merge(
-            \array_slice($solrRecords, 0, 2),
-            \array_slice($edsRecords, 0, 6)
+            array_slice($solrRecords, 0, 2),
+            array_slice($edsRecords, 0, 6)
         );
 
         return [
@@ -353,49 +357,49 @@ class BackendTest extends TestCase
             [
                 0,
                 20,
-                \array_slice($expectedRecords, 0, 20),
+                array_slice($expectedRecords, 0, 20),
             ],
             [
                 1,
                 20,
-                \array_slice($expectedRecords, 1, 20),
+                array_slice($expectedRecords, 1, 20),
             ],
             [
                 2,
                 20,
-                \array_slice($expectedRecords, 2, 20),
+                array_slice($expectedRecords, 2, 20),
             ],
             [
                 3,
                 20,
-                \array_slice($expectedRecords, 3, 20),
+                array_slice($expectedRecords, 3, 20),
             ],
             [
                 19,
                 20,
-                \array_slice($expectedRecords, 19, 20),
+                array_slice($expectedRecords, 19, 20),
             ],
             [
                 0,
                 40,
-                \array_slice($expectedRecords, 0, 40),
+                array_slice($expectedRecords, 0, 40),
             ],
             [
                 0,
                 40,
-                \array_slice($expectedRecordsNoBoost, 0, 40),
+                array_slice($expectedRecordsNoBoost, 0, 40),
                 $noBoostConfig,
             ],
             [
                 0,
                 40,
-                \array_slice($expectedRecordsAdaptive, 0, 40),
+                array_slice($expectedRecordsAdaptive, 0, 40),
                 $adaptiveConfig,
             ],
             [
                 0,
                 20,
-                \array_slice($solrRecords, 0, 20),
+                array_slice($solrRecords, 0, 20),
                 $adaptiveConfig,
                 ['blender_backend:Solr'],
                 240,
@@ -404,7 +408,7 @@ class BackendTest extends TestCase
             [
                 0,
                 20,
-                \array_slice($solrRecords, 0, 20),
+                array_slice($solrRecords, 0, 20),
                 $adaptiveConfigWithOrFacet,
                 ['-blender_backend:EDS'],
                 240,
@@ -413,7 +417,7 @@ class BackendTest extends TestCase
             [
                 0,
                 20,
-                \array_slice($edsRecords, 0, 20),
+                array_slice($edsRecords, 0, 20),
                 $adaptiveConfigWithOrFacet,
                 ['blender_backend:EDS'],
                 0,
@@ -422,7 +426,7 @@ class BackendTest extends TestCase
             [
                 0,
                 40,
-                \array_slice($expectedRecords, 0, 40),
+                array_slice($expectedRecords, 0, 40),
                 null,
                 [
                     '{!tag=blender_backend_filter}blender_backend:'
@@ -496,7 +500,7 @@ class BackendTest extends TestCase
 
         $records = $result->getRecords();
         $this->assertIsArray($records);
-        $this->assertCount(\count($expectedRecords), $records);
+        $this->assertCount(count($expectedRecords), $records);
         foreach ($expectedRecords as $i => $expected) {
             $this->assertInstanceOf(
                 $expected['class'],
@@ -1111,7 +1115,7 @@ class BackendTest extends TestCase
             if (null === $fixture) {
                 $field = $params->get('qf')[0] ?? '';
                 $type = '';
-                if (\in_array($field, ['title', 'author'])) {
+                if (in_array($field, ['title', 'author'])) {
                     $type = "-$field";
                 }
                 $fixture = "blender/response/solr/search$type.json";
@@ -1119,7 +1123,7 @@ class BackendTest extends TestCase
             $start = $params->get('start')[0];
             $rows = $params->get('rows')[0];
             $results = $this->getJsonFixture($fixture, 'VuFindSearch');
-            $results['response']['docs'] = \array_slice(
+            $results['response']['docs'] = array_slice(
                 $results['response']['docs'],
                 $start,
                 $rows
@@ -1220,7 +1224,7 @@ class BackendTest extends TestCase
                 $fixture,
                 'VuFindSearch'
             );
-            $results['SearchResult']['Data']['Records'] = \array_slice(
+            $results['SearchResult']['Data']['Records'] = array_slice(
                 $results['SearchResult']['Data']['Records'],
                 ($page - 1) * $rows,
                 $rows

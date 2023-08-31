@@ -29,6 +29,8 @@
 
 namespace VuFindTest\Backend\EDS;
 
+use function count;
+
 use InvalidArgumentException;
 use VuFindSearch\Backend\EDS\Backend;
 use VuFindSearch\Query\Query;
@@ -208,7 +210,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $expected = ['Value' => 'News', 'Count' => '12055', 'AddAction' => 'addfacetfilter(SourceType:News)'];
         $this->assertEquals($expected, $rawFacets[0]['AvailableFacetValues'][0]);
         $facets = $coll->getFacets();
-        $this->assertEquals(\count($facets), \count($rawFacets));
+        $this->assertEquals(count($facets), count($rawFacets));
         $this->assertEquals(
             [
                 'News' => 12055,

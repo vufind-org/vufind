@@ -30,6 +30,9 @@
 
 namespace VuFind\Role;
 
+use function in_array;
+use function is_array;
+
 use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
 
 /**
@@ -103,8 +106,8 @@ class PermissionManager
                 return true;
             }
             if (
-                \is_array($value['permission'])
-                && \in_array($context, $value['permission'])
+                is_array($value['permission'])
+                && in_array($context, $value['permission'])
             ) {
                 return true;
             }

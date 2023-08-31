@@ -40,6 +40,9 @@ namespace VuFind\Resolver\Driver;
 
 use DOMDocument;
 use DOMXpath;
+
+use function in_array;
+
 use VuFind\Net\UserIpReader;
 
 /**
@@ -245,7 +248,7 @@ class Jop extends AbstractBase
             if (isset($value) && $value !== '') {
                 if (isset($map[$key])) {
                     $downgraded[] = "{$map[$key]}=$value";
-                } elseif (\in_array($key, $map)) {
+                } elseif (in_array($key, $map)) {
                     $downgraded[] = "$key=$value";
                 }
             }

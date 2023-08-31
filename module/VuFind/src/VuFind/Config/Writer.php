@@ -29,6 +29,11 @@
 
 namespace VuFind\Config;
 
+use function dirname;
+use function is_array;
+use function is_int;
+use function strlen;
+
 /**
  * Class to update VuFind configuration settings
  *
@@ -74,7 +79,7 @@ class Writer
             if (false === $this->content) {
                 throw new \Exception('Could not read ' . $filename);
             }
-        } elseif (\is_array($content)) {
+        } elseif (is_array($content)) {
             $this->content = $this->buildContent($content, $comments);
         } else {
             $this->content = $content;
@@ -189,10 +194,10 @@ class Writer
     {
         // Create parent directory structure if necessary:
         $stack = [];
-        $dirname = \dirname($this->filename);
+        $dirname = dirname($this->filename);
         while (!empty($dirname) && !is_dir($dirname)) {
             $stack[] = $dirname;
-            $dirname = \dirname($dirname);
+            $dirname = dirname($dirname);
         }
         foreach (array_reverse($stack) as $dir) {
             if (!mkdir($dir)) {
@@ -237,13 +242,13 @@ class Writer
     {
         // Build a tab string so the equals signs line up attractively:
         $tabStr = '';
-        for ($i = \strlen($key) + 1; $i < $tab; $i++) {
+        for ($i = strlen($key) + 1; $i < $tab; $i++) {
             $tabStr .= ' ';
         }
 
         // Special case: if value is an array, we need to adjust the key
         // accordingly:
-        if (\is_array($value)) {
+        if (is_array($value)) {
             $retVal = '';
             // TODO: replace $autoIndex code with array_is_list() check
             // when supported (after PHP 8.1 is minimum required version).
@@ -280,9 +285,9 @@ class Writer
             // We just want to use "[]" if this is a standard array with consecutive
             // keys; however, if we have non-numeric keys or out-of-order keys, we
             // want to retain those values as-is.
-            $subKey = (\is_int($key2) && $key2 == $expectedKey)
+            $subKey = (is_int($key2) && $key2 == $expectedKey)
                 ? ''
-                : (\is_int($key2) ? $key2 : "'{$key2}'");    // quote string keys
+                : (is_int($key2) ? $key2 : "'{$key2}'");    // quote string keys
             $content .= $this->buildContentLine("{$key}[{$subKey}]", $subValue);
             $content .= "\n";
             $expectedKey++;
@@ -319,7 +324,7 @@ class Writer
                 } else {
                     $settingComments = [];
                 }
-                if (\is_array($elem2)) {
+                if (is_array($elem2)) {
                     $content .= $this->buildContentArrayLines($key2, $elem2);
                 } else {
                     $content .= $this->buildContentLine($key2, $elem2);

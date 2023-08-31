@@ -29,6 +29,8 @@
 
 namespace VuFindTest\Session;
 
+use function function_exists;
+
 use VuFind\Session\File;
 
 /**
@@ -56,7 +58,7 @@ class FileTest extends \VuFindTest\Unit\SessionHandlerTestCase
      */
     public function setUp(): void
     {
-        $tempdir = \function_exists('sys_get_temp_dir')
+        $tempdir = function_exists('sys_get_temp_dir')
             ? sys_get_temp_dir() : DIRECTORY_SEPARATOR . 'tmp';
         $this->path = $tempdir . DIRECTORY_SEPARATOR . 'vufindtest_sessions';
     }

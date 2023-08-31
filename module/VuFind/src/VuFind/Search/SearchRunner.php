@@ -29,6 +29,9 @@
 
 namespace VuFind\Search;
 
+use function is_array;
+use function is_callable;
+
 use Laminas\EventManager\EventManager;
 use Laminas\EventManager\EventManagerInterface;
 use Laminas\Stdlib\Parameters;
@@ -123,7 +126,7 @@ class SearchRunner
         // Format the request object:
         $request = $rawRequest instanceof Parameters
             ? $rawRequest
-            : new Parameters(\is_array($rawRequest) ? $rawRequest : []);
+            : new Parameters(is_array($rawRequest) ? $rawRequest : []);
 
         // Set up the search:
         $results = $this->resultsManager->get($searchClassId);
@@ -131,7 +134,7 @@ class SearchRunner
         $params->setLastView($lastView);
         $params->initFromRequest($request);
 
-        if (\is_callable($setupCallback)) {
+        if (is_callable($setupCallback)) {
             $setupCallback($this, $params, $runningSearchId);
         }
 

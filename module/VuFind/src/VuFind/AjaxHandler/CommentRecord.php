@@ -29,6 +29,8 @@
 
 namespace VuFind\AjaxHandler;
 
+use function intval;
+
 use Laminas\Mvc\Controller\Plugin\Params;
 use VuFind\Config\AccountCapabilities;
 use VuFind\Controller\Plugin\Captcha;
@@ -186,7 +188,7 @@ class CommentRecord extends AbstractBase implements TranslatorAwareInterface
         ) {
             $driver->addOrUpdateRating(
                 $this->user->id,
-                '' === $rating ? null : \intval($rating)
+                '' === $rating ? null : intval($rating)
             );
         }
 

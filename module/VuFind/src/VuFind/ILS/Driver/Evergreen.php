@@ -30,6 +30,8 @@
 
 namespace VuFind\ILS\Driver;
 
+use function count;
+
 use PDO;
 use PDOException;
 use VuFind\Exception\ILS as ILSException;
@@ -466,7 +468,7 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
         } catch (PDOException $e) {
             $this->throwAsIlsException($e);
         }
-        return ['count' => \count($transList), 'records' => $transList];
+        return ['count' => count($transList), 'records' => $transList];
     }
 
     /**

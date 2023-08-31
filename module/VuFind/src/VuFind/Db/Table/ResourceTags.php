@@ -29,6 +29,10 @@
 
 namespace VuFind\Db\Table;
 
+use function count;
+use function in_array;
+use function is_array;
+
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
@@ -152,7 +156,7 @@ class ResourceTags extends Gateway
 
         // Detect missing IDs:
         foreach ($ids as $current) {
-            if (!\in_array($current, $retVal['present'])) {
+            if (!in_array($current, $retVal['present'])) {
                 $retVal['missing'][] = $current;
             }
         }
@@ -291,7 +295,7 @@ class ResourceTags extends Gateway
                 // Use AND operator for tags
                 $select->having->literal(
                     'tag_cnt = ?',
-                    \count(array_unique($tag))
+                    count(array_unique($tag))
                 );
             }
             $select->order('resource_tags.list_id');
@@ -329,7 +333,7 @@ class ResourceTags extends Gateway
         $result = $statement->execute();
         $stats = (array)$result->current();
         if ($extended) {
-            $stats['unique'] = \count($this->getUniqueTags());
+            $stats['unique'] = count($this->getUniqueTags());
             $stats['anonymous'] = $this->getAnonymousCount();
         }
         return $stats;
@@ -369,7 +373,7 @@ class ResourceTags extends Gateway
                 }
             }
             if (null !== $tag) {
-                if (\is_array($tag)) {
+                if (is_array($tag)) {
                     $select->where->in('tag_id', $tag);
                 } else {
                     $select->where->equalTo('tag_id', $tag);
@@ -400,7 +404,7 @@ class ResourceTags extends Gateway
             $select->where->equalTo('list_id', $list);
 
             if (null !== $tag) {
-                if (\is_array($tag)) {
+                if (is_array($tag)) {
                     $select->where->in('tag_id', $tag);
                 } else {
                     $select->where->equalTo('tag_id', $tag);
@@ -427,13 +431,13 @@ class ResourceTags extends Gateway
         $this->delete($callback);
 
         // Check for orphans:
-        if (\count($potentialOrphans) > 0) {
+        if (count($potentialOrphans) > 0) {
             $ids = [];
             foreach ($potentialOrphans as $current) {
                 $ids[] = $current->tag_id;
             }
             $checkResults = $this->checkForTags(array_unique($ids));
-            if (\count($checkResults['missing']) > 0) {
+            if (count($checkResults['missing']) > 0) {
                 $tagTable = $this->getDbTable('Tags');
                 $tagTable->deleteByIdArray($checkResults['missing']);
             }
@@ -450,7 +454,7 @@ class ResourceTags extends Gateway
         $callback = function ($select) {
             $select->where->isNull('user_id');
         };
-        return \count($this->select($callback));
+        return count($this->select($callback));
     }
 
     /**
@@ -765,7 +769,7 @@ class ResourceTags extends Gateway
             $select->where->in('id', $ids);
         };
         $this->delete($callback);
-        return \count($ids);
+        return count($ids);
     }
 
     /**

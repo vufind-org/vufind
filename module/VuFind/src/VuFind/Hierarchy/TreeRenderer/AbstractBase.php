@@ -29,6 +29,8 @@
 
 namespace VuFind\Hierarchy\TreeRenderer;
 
+use function is_object;
+
 /**
  * Hierarchy Tree Renderer
  *
@@ -97,7 +99,7 @@ abstract class AbstractBase
             // not support hierarchies!
             $hierarchyDriver = $this->getRecordDriver()
                 ->tryMethod('getHierarchyDriver');
-            if (!\is_object($hierarchyDriver)) {
+            if (!is_object($hierarchyDriver)) {
                 throw new \Exception(
                     'Cannot load hierarchy driver from record driver.'
                 );

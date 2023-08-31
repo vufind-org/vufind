@@ -31,6 +31,9 @@
 
 namespace VuFind\Role\PermissionProvider;
 
+use function count;
+use function in_array;
+
 use Laminas\Http\PhpEnvironment\Request;
 
 /**
@@ -121,7 +124,7 @@ class ServerParam implements
     {
         // split option on spaces unless escaped with backslash
         $optionParts = $this->splitString($option, ' ', '\\');
-        if (\count($optionParts) < 2) {
+        if (count($optionParts) < 2) {
             $this->logError("configuration option '{$option}' invalid");
             return false;
         }
@@ -133,8 +136,8 @@ class ServerParam implements
         }
 
         // optional modifier follow server param name
-        $modifierMatch = \in_array($optionParts[0], ['~', '!~']);
-        $modifierNot = \in_array($optionParts[0], ['!', '!~']);
+        $modifierMatch = in_array($optionParts[0], ['~', '!~']);
+        $modifierNot = in_array($optionParts[0], ['!', '!~']);
         if ($modifierNot || $modifierMatch) {
             array_shift($optionParts);
         }

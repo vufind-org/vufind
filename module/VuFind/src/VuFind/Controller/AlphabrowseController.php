@@ -30,6 +30,9 @@
 
 namespace VuFind\Controller;
 
+use function in_array;
+use function intval;
+
 use Laminas\Config\Config;
 use Laminas\View\Model\ViewModel;
 use VuFind\Exception\BadRequest;
@@ -127,7 +130,7 @@ class AlphabrowseController extends AbstractBase
         $result = [];
         if ($view->source && $view->from !== false) {
             // Validate source parameter:
-            if (!\in_array($view->source, array_keys($view->alphaBrowseTypes))) {
+            if (!in_array($view->source, array_keys($view->alphaBrowseTypes))) {
                 throw new BadRequest(
                     "Unsupported alphabrowse type: {$view->source}"
                 );
@@ -232,7 +235,7 @@ class AlphabrowseController extends AbstractBase
         // Process incoming parameters:
         $source = $this->params()->fromQuery('source', false);
         $from   = $this->params()->fromQuery('from', false);
-        $page   = \intval($this->params()->fromQuery('page', 0));
+        $page   = intval($this->params()->fromQuery('page', 0));
 
         // Load highlighting configuration while accounting for special case:
         // highlighting is pointless if there's no user input:

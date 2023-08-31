@@ -30,6 +30,12 @@
 
 namespace VuFind\View\Helper\Root;
 
+use function count;
+use function function_exists;
+use function in_array;
+use function is_array;
+use function strlen;
+
 use VuFind\Date\DateException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
@@ -211,7 +217,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
                 $name = $this->cleanNameDates($name);
                 if (!strstr($name, ',')) {
                     $parts = explode(' ', $name);
-                    if (\count($parts) > 1) {
+                    if (count($parts) > 1) {
                         $last = array_pop($parts);
                         $first = implode(' ', $parts);
                         return rtrim($last, '.') . ', ' . $first;
@@ -234,7 +240,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
                 // If we have exactly two parts, we should trim any trailing
                 // punctuation from the second part (this reduces the odds of
                 // accidentally trimming a "Jr." or "Sr."):
-                if (\count($parts) == 2) {
+                if (count($parts) == 2) {
                     $parts[1] = rtrim($parts[1], '.');
                 }
                 // Put the parts back together; eliminate stray commas:
@@ -440,7 +446,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
         $vol = $this->driver->tryMethod('getContainerVolume');
         $num = $this->driver->tryMethod('getContainerIssue');
         $date = $this->details['pubDate'];
-        if (\strlen($date) > 4) {
+        if (strlen($date) > 4) {
             try {
                 $year = $this->dateConverter->convertFromDisplayDate('Y', $date);
                 $month = $this->dateConverter->convertFromDisplayDate('M', $date)
@@ -489,7 +495,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
         $vol = $this->driver->tryMethod('getContainerVolume');
         $num = $this->driver->tryMethod('getContainerIssue');
         $date = $this->details['pubDate'];
-        if (\strlen($date) > 4) {
+        if (strlen($date) > 4) {
             try {
                 $year = $this->dateConverter->convertFromDisplayDate('Y', $date);
                 $month = $this->dateConverter->convertFromDisplayDate('F', $date);
@@ -537,7 +543,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
 
         // Is it a standard suffix?
         $suffixes = ['Jr', 'Sr'];
-        if (\in_array($str, $suffixes)) {
+        if (in_array($str, $suffixes)) {
             return true;
         }
 
@@ -579,10 +585,10 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
         // Attach initials...
         if (isset($parts[1])) {
             $fnameParts = explode(' ', $parts[1]);
-            for ($i = 0; $i < \count($fnameParts); $i++) {
+            for ($i = 0; $i < count($fnameParts); $i++) {
                 // Use the multi-byte substring function if available to avoid
                 // problems with accented characters:
-                $fnameParts[$i] = \function_exists('mb_substr')
+                $fnameParts[$i] = function_exists('mb_substr')
                     ? mb_substr($fnameParts[$i], 0, 1, 'utf8') . '.'
                     : substr($fnameParts[$i], 0, 1) . '.';
             }
@@ -606,7 +612,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
     {
         // Fix abbreviated letters.
         if (
-            \strlen($str) == 1
+            strlen($str) == 1
             || preg_match('/\s[a-zA-Z]/', substr($str, -2))
         ) {
             return $str . '.';
@@ -650,7 +656,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
     protected function isPunctuated($string)
     {
         $punctuation = ['.', '?', '!'];
-        return \in_array(substr($string, -1), $punctuation);
+        return in_array(substr($string, -1), $punctuation);
     }
 
     /**
@@ -664,7 +670,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
     {
         $punctuation = ['.', ',', ':', ';', '/'];
         $text = trim($text);
-        if (\in_array(substr($text, -1), $punctuation)) {
+        if (in_array(substr($text, -1), $punctuation)) {
             $text = substr($text, 0, -1);
         }
         return trim($text);
@@ -711,10 +717,10 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
             // we need to strip non-word characters (like punctuation) off of words
             // in order to reliably look them up in the uncappedWords list.
             $baseWord = preg_replace('/\W/', '', $word);
-            if (!\in_array($baseWord, $this->uncappedWords) || $followsColon) {
+            if (!in_array($baseWord, $this->uncappedWords) || $followsColon) {
                 // Includes special case to properly capitalize words in quotes:
                 $firstChar = substr($word, 0, 1);
-                $word = \in_array($firstChar, ['"', "'"])
+                $word = in_array($firstChar, ['"', "'"])
                     ? $firstChar . ucfirst(substr($word, 1))
                     : ucfirst($word);
             }
@@ -775,14 +781,14 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
         $authorStr = '';
         if (
             isset($this->details['authors'])
-            && \is_array($this->details['authors'])
+            && is_array($this->details['authors'])
         ) {
             $i = 0;
             $ellipsis = false;
-            $authorCount = \count($this->details['authors']);
+            $authorCount = count($this->details['authors']);
             foreach ($this->details['authors'] as $author) {
                 // Do not abbreviate corporate authors:
-                $author = \in_array($author, $this->details['corporateAuthors'])
+                $author = in_array($author, $this->details['corporateAuthors'])
                     ? $author : $this->abbreviateName($author);
                 if (($i + 1 == $authorCount) && ($i > 0)) { // Last
                     // Do we already have periods of ellipsis?  If not, we need
@@ -823,7 +829,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
         // Find the first edition statement that isn't "1st ed."
         if (
             isset($this->details['edition'])
-            && \is_array($this->details['edition'])
+            && is_array($this->details['edition'])
         ) {
             foreach ($this->details['edition'] as $edition) {
                 // Strip punctuation from the edition to get rid of unwanted
@@ -867,7 +873,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
     protected function formatPrimaryMLAAuthor($author)
     {
         // Corporate authors should not be reformatted:
-        return \in_array($author, $this->details['corporateAuthors'])
+        return in_array($author, $this->details['corporateAuthors'])
             ? $author : $this->cleanNameDates($author);
     }
 
@@ -900,16 +906,16 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
         $authorStr = '';
         if (
             isset($this->details['authors'])
-            && \is_array($this->details['authors'])
+            && is_array($this->details['authors'])
         ) {
             $i = 0;
-            if (\count($this->details['authors']) > $etAlThreshold) {
+            if (count($this->details['authors']) > $etAlThreshold) {
                 $author = $this->details['authors'][0];
                 $authorStr = $this->formatPrimaryMLAAuthor($author) . ', et al.';
             } else {
                 foreach ($this->details['authors'] as $rawAuthor) {
                     $author = $this->formatPrimaryMLAAuthor($rawAuthor);
-                    if (($i + 1 == \count($this->details['authors'])) && ($i > 0)) {
+                    if (($i + 1 == count($this->details['authors'])) && ($i > 0)) {
                         // Last
                         // Only add a comma if there are commas already in the
                         // preceding text. This helps, for example, with cases where
@@ -968,7 +974,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
     {
         if (isset($this->details['pubDate'])) {
             $numericDate = preg_replace('/\D/', '', $this->details['pubDate']);
-            if (\strlen($numericDate) > 4) {
+            if (strlen($numericDate) > 4) {
                 try {
                     return $this->dateConverter->convertFromDisplayDate(
                         'Y',

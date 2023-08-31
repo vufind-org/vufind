@@ -29,6 +29,10 @@
 
 namespace VuFindConsole\Command\Util;
 
+use function count;
+use function in_array;
+use function ini_get;
+
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -136,8 +140,8 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
         $index = [];
         foreach ($reserves as $record) {
             $requiredKeysFound
-                = \count(array_intersect(array_keys($record), $this->requiredKeys));
-            if ($requiredKeysFound < \count($this->requiredKeys)) {
+                = count(array_intersect(array_keys($record), $this->requiredKeys));
+            if ($requiredKeysFound < count($this->requiredKeys)) {
                 throw new \Exception(
                     implode(' and/or ', $this->requiredKeys) . ' fields ' .
                     'not present in reserve records. Please update ILS driver.'
@@ -160,7 +164,7 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
                     'department' => $departments[$departmentId] ?? '',
                 ];
             }
-            if (!\in_array($record['BIB_ID'], $index[$id]['bib_id'])) {
+            if (!in_array($record['BIB_ID'], $index[$id]['bib_id'])) {
                 $index[$id]['bib_id'][] = $record['BIB_ID'];
             }
         }
@@ -204,7 +208,7 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         // Check time limit; increase if necessary:
-        if (\ini_get('max_execution_time') < 3600) {
+        if (ini_get('max_execution_time') < 3600) {
             ini_set('max_execution_time', '3600');
         }
 
@@ -263,7 +267,7 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
             $this->solr->commit('SolrReserves');
             $this->solr->optimize('SolrReserves');
 
-            $output->writeln('Successfully loaded ' . \count($reserves) . ' rows.');
+            $output->writeln('Successfully loaded ' . count($reserves) . ' rows.');
             return 0;
         }
         $missing = array_merge(

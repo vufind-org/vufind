@@ -30,6 +30,10 @@
 
 namespace VuFind\ILS\Logic;
 
+use function in_array;
+use function is_array;
+use function is_bool;
+
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Connection as ILSConnection;
 
@@ -219,8 +223,8 @@ class TitleHolds
             $data = ['id' => $id, 'level' => 'title'];
             $result = $this->catalog->checkRequestIsValid($id, $data, $patron);
             if (
-                (\is_array($result) && $result['valid'])
-                || (\is_bool($result) && $result)
+                (is_array($result) && $result['valid'])
+                || (is_bool($result) && $result)
             ) {
                 return $this->getHoldDetails($data, $checkHolds['HMACKeys']);
             }
@@ -262,7 +266,7 @@ class TitleHolds
                 foreach ($holdings as $holding) {
                     if (
                         $holding['availability']
-                        && !\in_array($holding['location'], $this->hideHoldings)
+                        && !in_array($holding['location'], $this->hideHoldings)
                     ) {
                         $any_available = true;
                     }
@@ -301,7 +305,7 @@ class TitleHolds
         // Add Params
         $queryString = [];
         foreach ($data as $key => $param) {
-            $needle = \in_array($key, $HMACKeys);
+            $needle = in_array($key, $HMACKeys);
             if ($needle) {
                 $queryString[] = $key . '=' . urlencode($param);
             }

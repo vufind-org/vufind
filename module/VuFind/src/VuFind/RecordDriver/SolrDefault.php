@@ -32,6 +32,10 @@
 
 namespace VuFind\RecordDriver;
 
+use function count;
+use function in_array;
+use function is_array;
+
 use VuFindSearch\Command\SearchCommand;
 
 /**
@@ -139,7 +143,7 @@ class SolrDefault extends DefaultRecord implements
             ? false : $searchSettings->General->snippets;
         if (
             isset($searchSettings->Snippet_Captions)
-            && \count($searchSettings->Snippet_Captions) > 0
+            && count($searchSettings->Snippet_Captions) > 0
         ) {
             foreach ($searchSettings->Snippet_Captions as $key => $value) {
                 $this->snippetCaptions[$key] = $value;
@@ -232,10 +236,10 @@ class SolrDefault extends DefaultRecord implements
             // No preferred field found, so try for a non-forbidden field:
             if (
                 isset($this->highlightDetails)
-                && \is_array($this->highlightDetails)
+                && is_array($this->highlightDetails)
             ) {
                 foreach ($this->highlightDetails as $key => $value) {
-                    if ($value && !\in_array($key, $this->forbiddenSnippetFields)) {
+                    if ($value && !in_array($key, $this->forbiddenSnippetFields)) {
                         return [
                             'snippet' => $value[0],
                             'caption' => $this->getSnippetCaption($key),

@@ -29,6 +29,8 @@
 
 namespace VuFindApi\Formatter;
 
+use function in_array;
+
 use VuFind\Search\Base\Results;
 
 /**
@@ -118,7 +120,7 @@ class FacetFormatter extends BaseFormatter
             }
 
             foreach ($value as $key => $item) {
-                if (!\in_array($key, $fields)) {
+                if (!in_array($key, $fields)) {
                     continue;
                 }
                 if ($key == 'children') {

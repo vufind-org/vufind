@@ -29,6 +29,10 @@
 
 namespace VuFind\Auth;
 
+use function count;
+use function in_array;
+use function is_callable;
+
 use Laminas\Config\Config;
 use Laminas\Session\SessionManager;
 use VuFind\Cookie\CookieManager;
@@ -191,7 +195,7 @@ class Manager implements
     protected function makeAuth($method)
     {
         // If an illegal option was passed in, don't allow the object to load:
-        if (!\in_array($method, $this->legalAuthOptions)) {
+        if (!in_array($method, $this->legalAuthOptions)) {
             throw new \Exception("Illegal authentication method: $method");
         }
         $auth = $this->pluginManager->get($method);
@@ -337,7 +341,7 @@ class Manager implements
     public function getAuthClassForTemplateRendering()
     {
         $auth = $this->getAuth();
-        if (\is_callable([$auth, 'getSelectedAuthOption'])) {
+        if (is_callable([$auth, 'getSelectedAuthOption'])) {
             $selected = $auth->getSelectedAuthOption();
             if ($selected) {
                 $auth = $this->getAuth($selected);
@@ -356,7 +360,7 @@ class Manager implements
     public function getSelectableAuthOptions()
     {
         $auth = $this->getAuth();
-        if (\is_callable([$auth, 'getSelectableAuthOptions'])) {
+        if (is_callable([$auth, 'getSelectableAuthOptions'])) {
             if ($methods = $auth->getSelectableAuthOptions()) {
                 return $methods;
             }
@@ -374,7 +378,7 @@ class Manager implements
     public function getLoginTargets()
     {
         $auth = $this->getAuth();
-        return \is_callable([$auth, 'getLoginTargets'])
+        return is_callable([$auth, 'getLoginTargets'])
             ? $auth->getLoginTargets() : [];
     }
 
@@ -388,7 +392,7 @@ class Manager implements
     public function getDefaultLoginTarget()
     {
         $auth = $this->getAuth();
-        return \is_callable([$auth, 'getDefaultLoginTarget'])
+        return is_callable([$auth, 'getDefaultLoginTarget'])
             ? $auth->getDefaultLoginTarget() : null;
     }
 
@@ -497,7 +501,7 @@ class Manager implements
                 // normal mode
                 $results = $this->userTable
                     ->select(['id' => $this->session->userId]);
-                $this->currentUser = \count($results) < 1
+                $this->currentUser = count($results) < 1
                     ? false : $results->current();
                 // End the session since the logged-in user cannot be found:
                 if (false === $this->currentUser) {
@@ -723,7 +727,7 @@ class Manager implements
         $this->activeAuth = $method;
 
         if ($forceLegal) {
-            if (!\in_array($method, $this->legalAuthOptions)) {
+            if (!in_array($method, $this->legalAuthOptions)) {
                 $this->legalAuthOptions[] = $method;
             }
         }
@@ -772,7 +776,7 @@ class Manager implements
     public function getILSLoginMethod($target = '')
     {
         $auth = $this->getAuth();
-        if (\is_callable([$auth, 'getILSLoginMethod'])) {
+        if (is_callable([$auth, 'getILSLoginMethod'])) {
             return $auth->getILSLoginMethod($target);
         }
         return false;

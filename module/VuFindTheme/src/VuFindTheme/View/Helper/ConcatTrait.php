@@ -32,6 +32,11 @@
 
 namespace VuFindTheme\View\Helper;
 
+use function count;
+use function defined;
+use function in_array;
+use function is_resource;
+
 use VuFindTheme\ThemeInfo;
 
 /**
@@ -157,7 +162,7 @@ trait ConcatTrait
             return true;
         }
         $settings = array_map('trim', explode(',', $config));
-        return \in_array($this->getFileType(), $settings);
+        return in_array($this->getFileType(), $settings);
     }
 
     /**
@@ -217,7 +222,7 @@ trait ConcatTrait
             }
         }
 
-        return \count($groupTypes) > 0;
+        return count($groupTypes) > 0;
     }
 
     /**
@@ -228,7 +233,7 @@ trait ConcatTrait
      */
     protected function getResourceCacheDir()
     {
-        if (!\defined('LOCAL_CACHE_DIR')) {
+        if (!defined('LOCAL_CACHE_DIR')) {
             throw new \Exception(
                 'Asset pipeline feature depends on the LOCAL_CACHE_DIR constant.'
             );
@@ -249,7 +254,7 @@ trait ConcatTrait
         $urlHelper = $this->getView()->plugin('url');
 
         // Don't recompress individual files
-        if (\count($group['items']) === 1) {
+        if (count($group['items']) === 1) {
             $path = $this->getResourceFilePath($group['items'][0]);
             $details = $this->themeInfo->findContainingTheme(
                 $this->getFileType() . '/' . $path,
@@ -267,7 +272,7 @@ trait ConcatTrait
         if (!file_exists($concatPath)) {
             $lockfile = "$concatPath.lock";
             $handle = fopen($lockfile, 'c+');
-            if (!\is_resource($handle)) {
+            if (!is_resource($handle)) {
                 throw new \Exception("Could not open lock file $lockfile");
             }
             if (!flock($handle, LOCK_EX)) {
@@ -464,7 +469,7 @@ trait ConcatTrait
         try {
             if (
                 !$this->isPipelineActive() || !$this->filterItems()
-                || \count($this) == 1
+                || count($this) == 1
             ) {
                 return parent::toString($indent);
             }

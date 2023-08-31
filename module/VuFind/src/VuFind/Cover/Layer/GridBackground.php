@@ -29,6 +29,8 @@
 
 namespace VuFind\Cover\Layer;
 
+use function strlen;
+
 /**
  * Grid cover background layer
  *
@@ -70,7 +72,7 @@ class GridBackground extends AbstractBackgroundLayer
         // Convert to binary
         $bc = decbin($seed);
         // If we have less that a half of a quarter
-        if (\strlen($bc) < 8) {
+        if (strlen($bc) < 8) {
             // Rotate square of the first 4 into a 4x2
             // Simulate matrix rotation on string
             $bc = substr($bc, 0, 3)
@@ -80,7 +82,7 @@ class GridBackground extends AbstractBackgroundLayer
                 . substr($bc, 1, 1);
         }
         // If we have less than a quarter
-        if (\strlen($bc) < 16) {
+        if (strlen($bc) < 16) {
             // Rotate the first 8 as a 4x2 into a 4x4
             $bc .= strrev($bc);
         }

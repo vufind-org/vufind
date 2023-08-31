@@ -31,7 +31,14 @@
 
 namespace VuFind\OAI;
 
+use function count;
+use function in_array;
+use function intval;
+
 use SimpleXMLElement;
+
+use function strlen;
+
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\SimpleXML;
 use VuFindApi\Formatter\RecordFormatter;
@@ -722,7 +729,7 @@ class Server
 
         // Initialize delete lifetime, if set:
         if (isset($config->OAI->delete_lifetime)) {
-            $this->deleteLifetime = \intval($config->OAI->delete_lifetime);
+            $this->deleteLifetime = intval($config->OAI->delete_lifetime);
         }
 
         // Change cursormark behavior if necessary:
@@ -792,7 +799,7 @@ class Server
             $params = $this->listRecordsGetParams();
         } catch (\Exception $e) {
             $parts = explode(':', $e->getMessage(), 2);
-            if (\count($parts) != 2) {
+            if (count($parts) != 2) {
                 throw $e;
             }
             return $this->showError($parts[0], $parts[1]);
@@ -1094,14 +1101,14 @@ class Server
                 $params['from'] = $this->earliestDatestamp;
                 if (
                     !empty($params['until'])
-                    && \strlen($params['from']) > \strlen($params['until'])
+                    && strlen($params['from']) > strlen($params['until'])
                 ) {
                     $params['from'] = substr($params['from'], 0, 10);
                 }
             }
             if (empty($params['until'])) {
                 $params['until'] = $this->getUTCDateTime('now +1 day');
-                if (\strlen($params['until']) > \strlen($params['from'])) {
+                if (strlen($params['until']) > strlen($params['from'])) {
                     $params['until'] = substr($params['until'], 0, 10);
                 }
             }
@@ -1133,7 +1140,7 @@ class Server
 
         // Validate requested metadata format:
         $prefixes = array_keys($this->getMetadataFormats());
-        if (!\in_array($params['metadataPrefix'], $prefixes)) {
+        if (!in_array($params['metadataPrefix'], $prefixes)) {
             throw new \Exception('cannotDisseminateFormat:Unknown Format');
         }
 
@@ -1268,7 +1275,7 @@ class Server
     {
         // Remove timezone markers -- we don't want PHP to outsmart us by adjusting
         // the time zone!
-        if (\strlen($date) == 10) {
+        if (strlen($date) == 10) {
             $date .= ' ' . $time;
         } else {
             $date = str_replace(['T', 'Z'], [' ', ''], $date);
@@ -1399,7 +1406,7 @@ class Server
 
         // Prefix?  Strip it off and return the stripped version if valid:
         $prefix = 'oai:' . $this->idNamespace . ':';
-        $prefixLen = \strlen($prefix);
+        $prefixLen = strlen($prefix);
         if (substr($id, 0, $prefixLen) == $prefix) {
             return substr($id, $prefixLen);
         }

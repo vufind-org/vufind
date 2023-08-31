@@ -29,6 +29,9 @@
 
 namespace VuFind\Controller;
 
+use function in_array;
+use function is_array;
+
 use Laminas\Http\Response;
 use Laminas\Log\LoggerAwareInterface;
 use Laminas\Psr7Bridge\Psr7Response;
@@ -271,7 +274,7 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
         }
 
         $patron = $this->catalogLogin();
-        $patronLoginView = \is_array($patron) ? null : $patron;
+        $patronLoginView = is_array($patron) ? null : $patron;
         return $this->createViewModel(
             compact('authRequest', 'user', 'patron', 'patronLoginView')
         );
@@ -316,7 +319,7 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
                     Psr7ServerRequest::fromLaminas($laminasRequest)
                 );
             $scopes = $request->getAttribute('oauth_scopes');
-            if (!\in_array('openid', $scopes)) {
+            if (!in_array('openid', $scopes)) {
                 return $this->handleOAuth2Exception(
                     'User info request',
                     OAuthServerException::invalidRequest(

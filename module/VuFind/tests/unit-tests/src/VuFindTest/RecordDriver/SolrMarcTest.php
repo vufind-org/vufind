@@ -30,6 +30,9 @@
 
 namespace VuFindTest\RecordDriver;
 
+use function count;
+use function in_array;
+
 /**
  * SolrMarc Record Driver Test Class
  *
@@ -99,10 +102,10 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
             'Vico, Giambattista, 1668-1744.'
         );
         $secondary = $record->getSecondaryAuthors();
-        $this->assertEquals(\count($secondary), 1);
-        $this->assertTrue(\in_array('Pandolfi, Claudia.', $secondary));
+        $this->assertEquals(count($secondary), 1);
+        $this->assertTrue(in_array('Pandolfi, Claudia.', $secondary));
         $series = $record->getSeries();
-        $this->assertEquals(\count($series), 1);
+        $this->assertEquals(count($series), 1);
         $this->assertEquals(
             'Vico, Giambattista, 1668-1744. Works. 1982 ;',
             $series[0]['name']

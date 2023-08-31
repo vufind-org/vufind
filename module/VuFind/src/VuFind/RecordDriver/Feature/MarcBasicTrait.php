@@ -31,6 +31,8 @@
 
 namespace VuFind\RecordDriver\Feature;
 
+use function strlen;
+
 /**
  * Functions to add basic MARC-driven functionality to a record driver not already
  * powered by the standard index spec. Depends upon MarcReaderTrait.
@@ -156,7 +158,7 @@ trait MarcBasicTrait
         $retVal = [];
         $field = $this->getMarcReader()->getField('008');
         if ($field) {
-            if (\strlen($field) >= 38) {
+            if (strlen($field) >= 38) {
                 $retVal[] = substr($field, 35, 3);
             }
         }

@@ -29,6 +29,8 @@
 
 namespace VuFindTest\SMS;
 
+use function function_exists;
+
 use VuFind\SMS\Clickatell;
 
 /**
@@ -57,7 +59,7 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
     public function setUp(): void
     {
         // Without SOAP functionality, we can't proceed:
-        if (!\function_exists('iconv')) {
+        if (!function_exists('iconv')) {
             $this->markTestSkipped('iconv extension not installed');
         }
     }

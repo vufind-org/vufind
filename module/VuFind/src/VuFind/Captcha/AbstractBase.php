@@ -29,6 +29,8 @@
 
 namespace VuFind\Captcha;
 
+use function get_class;
+
 use Laminas\Mvc\Controller\Plugin\Params;
 
 /**
@@ -59,7 +61,7 @@ abstract class AbstractBase
      */
     public function getId(): string
     {
-        return preg_replace('"^.*\\\\"', '', \get_class($this));
+        return preg_replace('"^.*\\\\"', '', get_class($this));
     }
 
     /**

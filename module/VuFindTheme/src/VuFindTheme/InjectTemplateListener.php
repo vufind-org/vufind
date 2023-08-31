@@ -29,6 +29,8 @@
 
 namespace VuFindTheme;
 
+use function strlen;
+
 /**
  * VuFind "Inject Template" Listener -- this extends the core MVC class to adjust
  * default template configurations to something more appropriate for VuFind.
@@ -80,7 +82,7 @@ class InjectTemplateListener extends \Laminas\Mvc\View\Http\InjectTemplateListen
     {
         foreach ($this->prefixes as $prefix) {
             if (str_starts_with($name, $prefix)) {
-                return strtolower(substr($name, \strlen($prefix)));
+                return strtolower(substr($name, strlen($prefix)));
             }
         }
         return strtolower($name);

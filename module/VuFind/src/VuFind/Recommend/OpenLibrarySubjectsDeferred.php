@@ -30,6 +30,8 @@
 
 namespace VuFind\Recommend;
 
+use function is_object;
+
 /**
  * OpenLibrarySubjects Recommendations Module
  *
@@ -116,7 +118,7 @@ class OpenLibrarySubjectsDeferred extends OpenLibrarySubjects
 
         // Collect the best possible search term(s):
         $this->subject = $request->get($this->requestParam);
-        if (empty($this->subject) && \is_object($params)) {
+        if (empty($this->subject) && is_object($params)) {
             $this->subject = $params->getQuery()->getAllTerms();
         }
     }

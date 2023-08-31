@@ -29,6 +29,10 @@
 
 namespace VuFind\RecordDriver;
 
+use function count;
+use function in_array;
+use function is_array;
+
 /**
  * Model for Pazpar2 records.
  *
@@ -76,7 +80,7 @@ class Pazpar2 extends DefaultRecord
         foreach ($xml as $key => $data) {
             $children = [];
             // Attributes
-            if (\count($data->attributes()) > 0) {
+            if (count($data->attributes()) > 0) {
                 $children['_attr_'] = [];
                 foreach ($data->attributes() as $name => $attr) {
                     $children['_attr_'][$name] = (string)$attr;
@@ -98,7 +102,7 @@ class Pazpar2 extends DefaultRecord
                 $array[$key] = $children;
             } else {
                 if (
-                    \is_array($array[$key])
+                    is_array($array[$key])
                     && is_numeric(current(array_keys($array[$key])))
                 ) {
                     $array[$key][] = $children;
@@ -112,7 +116,7 @@ class Pazpar2 extends DefaultRecord
             }
         }
         // Top-level Attributes
-        if (\count($xml->attributes()) > 0) {
+        if (count($xml->attributes()) > 0) {
             $array['_attr_'] = [];
             foreach ($xml->attributes() as $key => $attr) {
                 $array['_attr_'][$key] = (string)$attr;
@@ -162,7 +166,7 @@ class Pazpar2 extends DefaultRecord
         foreach ($this->pz2fields['location'] as $location) {
             if (
                 isset($location['_attr_']['name'])
-                && !\in_array($location['_attr_']['name'], $providers)
+                && !in_array($location['_attr_']['name'], $providers)
             ) {
                 $providers[] = $location['_attr_']['name'];
             }

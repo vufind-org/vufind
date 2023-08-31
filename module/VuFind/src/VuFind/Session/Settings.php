@@ -32,6 +32,8 @@
 
 namespace VuFind\Session;
 
+use function is_callable;
+
 use Laminas\Session\SessionManager;
 
 /**
@@ -77,7 +79,7 @@ class Settings
             // Try to disable writes so that writeClose() below doesn't actually
             // write anything:
             $saveHandler = $this->manager->getSaveHandler();
-            if (\is_callable([$saveHandler, 'disableWrites'])) {
+            if (is_callable([$saveHandler, 'disableWrites'])) {
                 $saveHandler->disableWrites();
             }
             // Close the session:

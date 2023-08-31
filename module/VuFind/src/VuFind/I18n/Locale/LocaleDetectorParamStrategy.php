@@ -31,6 +31,8 @@
 
 namespace VuFind\I18n\Locale;
 
+use function in_array;
+
 use SlmLocale\LocaleEvent;
 use SlmLocale\Strategy\AbstractStrategy;
 
@@ -59,7 +61,7 @@ class LocaleDetectorParamStrategy extends AbstractStrategy
     {
         $request = $event->getRequest();
         $locale = $request->getPost(self::PARAM_NAME);
-        if (\in_array($locale, $event->getSupported())) {
+        if (in_array($locale, $event->getSupported())) {
             return $locale;
         }
     }

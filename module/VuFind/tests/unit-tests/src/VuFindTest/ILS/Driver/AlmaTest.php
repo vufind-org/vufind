@@ -31,6 +31,9 @@
 
 namespace VuFindTest\ILS\Driver;
 
+use function func_get_args;
+use function is_array;
+
 use VuFind\I18n\TranslatableString;
 use VuFind\ILS\Driver\Alma;
 
@@ -126,7 +129,7 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
         if (!empty($testData['expectedParams'])) {
             $msg = "Error in step {$this->currentFixtureStep} of fixture: "
                 . $this->currentFixture;
-            $params = \func_get_args();
+            $params = func_get_args();
             foreach ($testData['expectedParams'] as $i => $expectedParam) {
                 $this->assertEquals(
                     $expectedParam,
@@ -229,7 +232,7 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
     protected function convertTranslatableStrings(array $array): array
     {
         foreach ($array as &$current) {
-            if (\is_array($current)) {
+            if (is_array($current)) {
                 $current = $this->convertTranslatableStrings($current);
             } elseif ($current instanceof TranslatableString) {
                 $current = $current->getDisplayString() . '|'

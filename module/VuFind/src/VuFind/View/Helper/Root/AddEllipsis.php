@@ -31,6 +31,8 @@ namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
 
+use function strlen;
+
 /**
  * "Add ellipsis" view helper
  *
@@ -63,7 +65,7 @@ class AddEllipsis extends AbstractHelper
 
         // If the dehighlighted string is shorter than the full string, we need
         // to figure out where things changed:
-        if (\strlen($dehighlighted) < \strlen($fullString)) {
+        if (strlen($dehighlighted) < strlen($fullString)) {
             // If we can splice the highlighted text into the unhighlighted text,
             // let's do so!
             $pos = strpos($fullString, $dehighlighted);
@@ -72,9 +74,9 @@ class AddEllipsis extends AbstractHelper
                 $title = substr($fullString, 0, $pos) . $highlighted;
                 // If the overall title is relatively short, attach the rest;
                 // otherwise, unless we already have the full string, add ellipses.
-                if (\strlen($fullString) < 160) {
-                    $title .= substr($fullString, $pos + \strlen($dehighlighted));
-                } elseif ($pos + \strlen($dehighlighted) < \strlen($fullString)) {
+                if (strlen($fullString) < 160) {
+                    $title .= substr($fullString, $pos + strlen($dehighlighted));
+                } elseif ($pos + strlen($dehighlighted) < strlen($fullString)) {
                     $title = trim($title) . '...';
                 }
                 return $title;

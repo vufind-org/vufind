@@ -29,6 +29,11 @@
 
 namespace VuFind\ILS\Driver;
 
+use function count;
+use function in_array;
+use function is_array;
+use function strlen;
+
 use VuFind\Exception\ILS as ILSException;
 
 /**
@@ -141,13 +146,13 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         $result = $this->db->simpleSelect($sql, $fields);
 
         // If there are no results, lets try again because it has no items
-        if (\count($result) == 0) {
+        if (count($result) == 0) {
             $sql = 'SELECT b.call_number ' .
                    'FROM dbadmin.bibliographic_fields b ' .
                    'WHERE b.bib_id = :bib_id';
             $result = $this->db->simpleSelect($sql, $fields);
 
-            if (\count($result) > 0) {
+            if (count($result) > 0) {
                 $new_holding = [
                     'id'           => $id,
                     'availability' => false,
@@ -197,7 +202,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                             'AND h.bibid = :bib_id';
                         $result = $this->db->simpleSelect($sql, $fields);
 
-                        if (\count($result) > 0) {
+                        if (count($result) > 0) {
                             foreach ($result as $r) {
                                 $tmp_holding = $new_holding;
                                 // TODO: create a configuration file mechanism for
@@ -465,7 +470,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             $holding[] = $temp;
         }
 
-        return (\count($holding) != 0 && $patron['id'] != null)
+        return (count($holding) != 0 && $patron['id'] != null)
             ? $this->checkHoldAllowed($patron['id'], $holding) : $holding;
     }
 
@@ -493,7 +498,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         $result = $this->db->simpleSelect($sql, $fields);
 
         // We should have 1 row and only 1 row.
-        if (\count($result) != 1) {
+        if (count($result) != 1) {
             return $holdings;
         }
         $patron_type = $result[0]['PATRON_TYPE_ID'];
@@ -516,7 +521,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         // Where is the patron from?
         $location = '';
         foreach ($type_list as $loc => $patron_types) {
-            if (\in_array($patron_type, $patron_types)) {
+            if (in_array($patron_type, $patron_types)) {
                 $location = $loc;
             }
         }
@@ -551,13 +556,13 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
 
         // Set a flag for super users, better then
         //  the full function call inside the loop
-        if (\in_array($patron_type, $type_list['Super User'])) {
+        if (in_array($patron_type, $type_list['Super User'])) {
             $super_user = true;
         } else {
             $super_user = false;
         }
         // External Users cannot place a request
-        if (\in_array($patron_type, $type_list['Externals'])) {
+        if (in_array($patron_type, $type_list['Externals'])) {
             return $holdings;
         }
 
@@ -591,12 +596,12 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                     if ($item_is_out) {
                         // ... and has a requestable status or no status ...
                         if (
-                            \in_array($item_stat_code, $status_list)
+                            in_array($item_stat_code, $status_list)
                             || $item_stat_code === null
                         ) {
                             // ... can this user borrow on loan items at this
                             // location?
-                            $can_req = \in_array(
+                            $can_req = in_array(
                                 $location,
                                 $unavailable_locs[$item_loc_code]
                             );
@@ -605,10 +610,10 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                         // The item is NOT on loan ...
 
                         // ... and has a requestable status ...
-                        if (\in_array($item_stat_code, $status_list)) {
+                        if (in_array($item_stat_code, $status_list)) {
                             // ... can the user borrow status items at this location?
                             $can_req
-                                = \in_array($location, $status_locs[$item_loc_code]);
+                                = in_array($location, $status_locs[$item_loc_code]);
                         } else {
                             // ... and DOESN'T have a requestable status ...
                             if ($item_stat_code !== null) {
@@ -616,7 +621,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                             } else {
                                 // ... can the user borrow available items at this
                                 // location?
-                                $can_req = \in_array(
+                                $can_req = in_array(
                                     $location,
                                     $available_locs[$item_loc_code]
                                 );
@@ -677,7 +682,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         $end_time = $start_string = null;
 
         // Handle empty patterns
-        if (\count($data) == 0) {
+        if (count($data) == 0) {
             return '';
         }
 
@@ -710,9 +715,9 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                     // Year + Month
                 case '(year)(month)':
                     $months = explode('-', $data['data'][1]);
-                    $m = \count($months);
+                    $m = count($months);
                     $years  = explode('-', $data['data'][0]);
-                    $y = \count($years);
+                    $y = count($years);
                     $my = $m . $y;
 
                     $start_time = strtotime('01-' . $months[0] . '-' . $years[0]);
@@ -753,11 +758,11 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                     // Year + Month + Day
                 case '(year)(month)(day)':
                     $days   = explode('-', $data['data'][2]);
-                    $d = \count($days);
+                    $d = count($days);
                     $months = explode('-', $data['data'][1]);
-                    $m = \count($months);
+                    $m = count($months);
                     $years  = explode('-', $data['data'][0]);
-                    $y = \count($years);
+                    $y = count($years);
                     $dmy = $d . $m . $y;
 
                     $start_time
@@ -943,7 +948,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                 $p = $this->getField($pattern, $d['code']);
                 // Put into the sub pattern
                 // ... Enumeration/Chronology
-                if (\in_array($d['code'], $enum_chrono)) {
+                if (in_array($d['code'], $enum_chrono)) {
                     $this_en_ch['pattern_code'][] = $d['code'];
                     $this_en_ch['pattern'][] = $p;
                     $this_en_ch['data'][] = $d['data'];
@@ -1075,7 +1080,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         $result = $this->db->simpleSelect($sql, $fields);
 
         // Results indicate serial holdings
-        if (\count($result) == 0) {
+        if (count($result) == 0) {
             return [];
         }
 
@@ -1110,7 +1115,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             "AND i.field_tag in ('853') " .
             'ORDER BY i.field_sequence, i.subfield_sequence';
         $hresult = $this->db->simpleSelect($sql);
-        if (\count($hresult) == 0) {
+        if (count($hresult) == 0) {
             return null;
         }
 
@@ -1163,7 +1168,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         $fields = ['barcode:string' => $barcode];
         $result = $this->db->simpleSelect($sql, $fields);
 
-        if (\count($result) > 0) {
+        if (count($result) > 0) {
             // Valid Password
             if ($result[0]['PASSWORD'] == $password) {
                 $user = [];
@@ -1218,7 +1223,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         $fields = ['patron_id:string' => $patron['id']];
         $result = $this->db->simpleSelect($sql, $fields);
 
-        if (\count($result) > 0) {
+        if (count($result) > 0) {
             $split      = strpos($result[0]['NAME'], ',');
             $last_name  = substr($result[0]['NAME'], 0, $split);
             $first_name = substr($result[0]['NAME'], $split + 1);
@@ -1238,7 +1243,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                 ];
 
             if ($result[0]['CITY'] != null) {
-                if (\strlen($patron['address2']) > 0) {
+                if (strlen($patron['address2']) > 0) {
                     $patron['address2'] .= ', ' . trim($result[0]['CITY']);
                 } else {
                     $patron['address2'] = trim($result[0]['CITY']);
@@ -1278,7 +1283,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         $fields = ['patron_id:string' => $patron['id']];
         $result = $this->db->simpleSelect($sql, $fields);
 
-        if (\count($result) > 0) {
+        if (count($result) > 0) {
             foreach ($result as $row) {
                 $fineList[] = [
                     'amount'   => $row['FINE_AMOUNT'] * 100,
@@ -1316,7 +1321,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         $fields = ['patron_id:string' => $patron['id']];
         $result = $this->db->simpleSelect($sql, $fields);
 
-        if (\count($result) > 0) {
+        if (count($result) > 0) {
             foreach ($result as $row) {
                 $holdList[] = [
                     'id'       => 'vtls' . sprintf('%09d', (int)$row['BIBID']),
@@ -1367,7 +1372,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         $fields = ['patron_id:string' => $patron['id']];
         $result = $this->db->simpleSelect($sql, $fields);
 
-        if (\count($result) > 0) {
+        if (count($result) > 0) {
             foreach ($result as $row) {
                 $transList[] = [
                     'duedate' => $row['DUE_DATE'],
@@ -1401,7 +1406,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             'ORDER BY l.course_id';
         $result = $this->db->simpleSelect($sql);
 
-        if (\count($result) > 0) {
+        if (count($result) > 0) {
             foreach ($result as $row) {
                 $courseList[] = $row['COURSE_ID'];
             }
@@ -1437,7 +1442,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         $fields = ['course:string' => $course];
         $result = $this->db->simpleSelect($sql, $fields);
 
-        if (\count($result) > 0) {
+        if (count($result) > 0) {
             foreach ($result as $row) {
                 $recordList[] = 'vtls' . sprintf('%09d', (int)$row['BIBID']);
             }
@@ -1477,7 +1482,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             'WHERE UPPER(dayofweek) = UPPER(:dow)';
         $fields = ['dow:string' => date('l', $time)];
         $result = $this->db->simpleSelect($sql, $fields);
-        if (\count($result) == 0) {
+        if (count($result) == 0) {
             return [];
         }
 
@@ -1560,7 +1565,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             'bib'    => 1,
             'volume' => 2,
             ];
-        if (!\in_array($req_level, array_keys($allowed_req_levels))) {
+        if (!in_array($req_level, array_keys($allowed_req_levels))) {
             return $response;
         }
         //  * Pickup Location
@@ -1569,7 +1574,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             'Fraser Coast' => '40000',
             'Springfield'  => '50000',
             ];
-        if (!\in_array($pickup_loc, array_keys($allowed_pickup_locs))) {
+        if (!in_array($pickup_loc, array_keys($allowed_pickup_locs))) {
             return $response;
         }
         //  * Last Date - Valid date and a future date
@@ -1808,7 +1813,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         $return = [];
         foreach ($result as $row) {
             // Did we even attempt to renew?
-            if (\in_array($row['barcode'], $item_list)) {
+            if (in_array($row['barcode'], $item_list)) {
                 // Yes, so check if the due date changed
                 if ($row['duedate'] != $initial[$row['barcode']]['duedate']) {
                     $row['error'] = false;
@@ -1897,7 +1902,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
 
         try {
             $client = $this->httpService->createClient($url);
-            if (\is_array($postParams)) {
+            if (is_array($postParams)) {
                 $client->setParameterPost($postParams);
             }
             if (null !== $rawPost) {

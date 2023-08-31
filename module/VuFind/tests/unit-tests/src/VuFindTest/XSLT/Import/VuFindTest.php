@@ -29,6 +29,8 @@
 
 namespace VuFindTest\XSLT\Import;
 
+use function chr;
+
 use VuFind\XSLT\Import\VuFind;
 
 /**
@@ -110,7 +112,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
      */
     public function testStripBadChars()
     {
-        $this->assertEquals('f oo', VuFind::stripBadChars('f' . \chr(8) . 'oo'));
+        $this->assertEquals('f oo', VuFind::stripBadChars('f' . chr(8) . 'oo'));
     }
 
     /**

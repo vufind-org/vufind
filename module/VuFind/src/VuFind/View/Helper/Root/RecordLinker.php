@@ -31,6 +31,9 @@
 
 namespace VuFind\View\Helper\Root;
 
+use function is_array;
+use function is_string;
+
 use VuFind\RecordDriver\AbstractBase as AbstractRecord;
 
 /**
@@ -174,7 +177,7 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
      */
     public function getRequestUrl($url, $includeAnchor = true)
     {
-        if (\is_array($url)) {
+        if (is_array($url)) {
             // Assemble URL string from array parts:
             $source = $url['source'] ?? DEFAULT_SEARCH_BACKEND;
             parse_str($url['query'] ?? '', $query);
@@ -210,7 +213,7 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
      */
     public function getTabUrl($driver, $tab = null, $query = [], $options = [])
     {
-        $driverId = \is_string($driver)
+        $driverId = is_string($driver)
             ? $driver
             : ($driver->getSourceIdentifier() . '|' . $driver->getUniqueID());
         $cacheKey = md5(

@@ -29,6 +29,8 @@
 
 namespace VuFindTest\Auth;
 
+use function get_class;
+
 use Laminas\Config\Config;
 use Laminas\Session\SessionManager;
 use VuFind\Auth\Manager;
@@ -303,14 +305,14 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     {
         // Simple default case:
         $pm = $this->getMockPluginManager();
-        $this->assertEquals(\get_class($pm->get('Database')), $this->getManager()->getAuthClassForTemplateRendering());
+        $this->assertEquals(get_class($pm->get('Database')), $this->getManager()->getAuthClassForTemplateRendering());
 
         // Complex case involving proxied authenticator in ChoiceAuth:
         $config = ['Authentication' => ['method' => 'ChoiceAuth']];
         $choice = $pm->get('ChoiceAuth');
         $choice->expects($this->once())->method('getSelectedAuthOption')->will($this->returnValue('Shibboleth'));
         $manager = $this->getManager($config, null, null, $pm);
-        $this->assertEquals(\get_class($pm->get('Shibboleth')), $manager->getAuthClassForTemplateRendering());
+        $this->assertEquals(get_class($pm->get('Shibboleth')), $manager->getAuthClassForTemplateRendering());
     }
 
     /**

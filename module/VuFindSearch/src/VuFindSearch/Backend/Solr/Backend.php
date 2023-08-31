@@ -29,6 +29,9 @@
 
 namespace VuFindSearch\Backend\Solr;
 
+use function count;
+use function is_int;
+
 use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Backend\Exception\RemoteErrorException;
@@ -278,7 +281,7 @@ class Backend extends AbstractBackend implements
 
         // Retrieve records a page at a time:
         $results = false;
-        while (\count($ids) > 0) {
+        while (count($ids) > 0) {
             $currentPage = array_splice($ids, 0, $this->pageSize, []);
             $currentPage = array_map($formatIds, $currentPage);
             $params->set('q', 'id:(' . implode(' OR ', $currentPage) . ')');
@@ -466,7 +469,7 @@ class Backend extends AbstractBackend implements
 
         // Write!
         $connector->callWithHttpOptions(
-            \is_int($timeout ?? null) ? compact('timeout') : [],
+            is_int($timeout ?? null) ? compact('timeout') : [],
             'write',
             $doc,
             $handler,

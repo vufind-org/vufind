@@ -29,6 +29,9 @@
 
 namespace VuFind\ChannelProvider;
 
+use function count;
+use function is_object;
+
 use Laminas\Mvc\Controller\Plugin\Url;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Router as RecordRouter;
@@ -135,7 +138,7 @@ class SimilarItems extends AbstractChannelProvider implements TranslatorAwareInt
             return [];
         }
         $channel = $this->buildChannelFromRecord($driver);
-        return (\count($channel['contents']) > 0) ? [$channel] : [];
+        return (count($channel['contents']) > 0) ? [$channel] : [];
     }
 
     /**
@@ -157,9 +160,9 @@ class SimilarItems extends AbstractChannelProvider implements TranslatorAwareInt
             if ($channelToken !== null && $channelToken !== $driver->getUniqueID()) {
                 continue;
             }
-            if (\count($channels) < $this->maxRecordsToExamine) {
+            if (count($channels) < $this->maxRecordsToExamine) {
                 $channel = $this->buildChannelFromRecord($driver);
-                if (\count($channel['contents']) > 0) {
+                if (count($channel['contents']) > 0) {
                     $channels[] = $channel;
                 }
             } else {
@@ -170,7 +173,7 @@ class SimilarItems extends AbstractChannelProvider implements TranslatorAwareInt
         // we need to fetch it from the search service:
         if (
             empty($channels)
-            && \is_object($driver ?? null)
+            && is_object($driver ?? null)
             && $channelToken !== null
         ) {
             $command = new RetrieveCommand(

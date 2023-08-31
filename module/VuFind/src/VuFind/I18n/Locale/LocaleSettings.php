@@ -33,6 +33,9 @@
 
 namespace VuFind\I18n\Locale;
 
+use function array_key_exists;
+use function in_array;
+
 use Laminas\Config\Config;
 
 /**
@@ -126,7 +129,7 @@ class LocaleSettings
      */
     public function isRightToLeftLocale(string $locale): bool
     {
-        return \in_array($locale, $this->rightToLeftLocales);
+        return in_array($locale, $this->rightToLeftLocales);
     }
 
     /**
@@ -198,7 +201,7 @@ class LocaleSettings
         if (empty($locale)) {
             throw new \Exception('Default locale not configured!');
         }
-        if (!\array_key_exists($locale, $this->enabledLocales)) {
+        if (!array_key_exists($locale, $this->enabledLocales)) {
             throw new \Exception("Configured default locale '$locale' not enabled!");
         }
         return $locale;
@@ -258,6 +261,6 @@ class LocaleSettings
      */
     public function isLocaleInitialized($locale)
     {
-        return \in_array($locale, $this->initializedLocales);
+        return in_array($locale, $this->initializedLocales);
     }
 }

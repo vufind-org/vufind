@@ -30,6 +30,9 @@
 
 namespace VuFind\ILS\Logic;
 
+use function in_array;
+use function is_array;
+
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Connection as ILSConnection;
 
@@ -132,7 +135,7 @@ class Holds
             // Copy all text fields from the item to the holdings level
             foreach ($items as $item) {
                 foreach ($textFieldNames as $fieldName) {
-                    if (\in_array($fieldName, ['notes', 'holdings_notes'])) {
+                    if (in_array($fieldName, ['notes', 'holdings_notes'])) {
                         if (empty($item[$fieldName])) {
                             // begin aliasing
                             if (
@@ -154,7 +157,7 @@ class Holds
                     if (!empty($item[$fieldName])) {
                         $targetRef = & $retVal[$groupKey]['textfields'][$fieldName];
                         foreach ((array)$item[$fieldName] as $field) {
-                            if (empty($targetRef) || !\in_array($field, $targetRef)) {
+                            if (empty($targetRef) || !in_array($field, $targetRef)) {
                                 $targetRef[] = $field;
                             }
                         }
@@ -165,7 +168,7 @@ class Holds
                 if (!empty($item['purchase_history'])) {
                     $targetRef = & $retVal[$groupKey]['purchase_history'];
                     foreach ((array)$item['purchase_history'] as $field) {
-                        if (empty($targetRef) || !\in_array($field, $targetRef)) {
+                        if (empty($targetRef) || !in_array($field, $targetRef)) {
                             $targetRef[] = $field;
                         }
                     }
@@ -265,7 +268,7 @@ class Holds
         $holdings = [];
         if ($result['total']) {
             foreach ($result['holdings'] as $copy) {
-                $show = !\in_array($copy['location'], $this->hideHoldings);
+                $show = !in_array($copy['location'], $this->hideHoldings);
                 if ($show) {
                     $groupKey = $this->getHoldingsGroupKey($copy);
                     $holdings[$groupKey][] = $copy;
@@ -290,7 +293,7 @@ class Holds
 
         if ($result['total']) {
             foreach ($result['holdings'] as $copy) {
-                $show = !\in_array($copy['location'], $this->hideHoldings);
+                $show = !in_array($copy['location'], $this->hideHoldings);
                 if ($show) {
                     if ($holdConfig) {
                         // Is this copy holdable / linkable
@@ -338,7 +341,7 @@ class Holds
 
         if ($result['total']) {
             foreach ($result['holdings'] as $copy) {
-                $show = !\in_array($copy['location'], $this->hideHoldings);
+                $show = !in_array($copy['location'], $this->hideHoldings);
                 if ($show) {
                     $groupKey = $this->getHoldingsGroupKey($copy);
                     $holdings[$groupKey][] = $copy;
@@ -349,7 +352,7 @@ class Holds
                 }
             }
 
-            if ($holdConfig && \is_array($holdings)) {
+            if ($holdConfig && is_array($holdings)) {
                 // Generate Links
                 // Loop through each holding
                 foreach ($holdings as $location_key => $location) {
@@ -426,7 +429,7 @@ class Holds
         $patron,
         $requestsBlocked
     ) {
-        if (!\is_array($holdings)) {
+        if (!is_array($holdings)) {
             return $holdings;
         }
 
@@ -477,7 +480,7 @@ class Holds
      */
     protected function processILLRequests($holdings, $id, $patron, $requestsBlocked)
     {
-        if (!\is_array($holdings)) {
+        if (!is_array($holdings)) {
             return $holdings;
         }
 
@@ -537,7 +540,7 @@ class Holds
         // Add Params
         $queryString = [];
         foreach ($details as $key => $param) {
-            $needle = \in_array($key, $HMACKeys);
+            $needle = in_array($key, $HMACKeys);
             if ($needle) {
                 $queryString[] = $key . '=' . urlencode($param);
             }

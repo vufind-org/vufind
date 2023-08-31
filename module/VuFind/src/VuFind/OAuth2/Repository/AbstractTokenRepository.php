@@ -29,6 +29,8 @@
 
 namespace VuFind\OAuth2\Repository;
 
+use function is_callable;
+
 use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
 use VuFind\Db\Table\AccessToken;
 
@@ -105,7 +107,7 @@ class AbstractTokenRepository
         if ($token instanceof RefreshTokenEntityInterface) {
             $accessToken = $token->getAccessToken();
             $userId = $accessToken->getUserIdentifier();
-        } elseif (\is_callable([$token, 'getUserIdentifier'])) {
+        } elseif (is_callable([$token, 'getUserIdentifier'])) {
             $userId = $token->getUserIdentifier();
         }
         if ($userId) {

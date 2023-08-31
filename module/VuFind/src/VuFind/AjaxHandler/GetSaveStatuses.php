@@ -29,6 +29,9 @@
 
 namespace VuFind\AjaxHandler;
 
+use function count;
+use function is_array;
+
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Mvc\Controller\Plugin\Url;
 use VuFind\Db\Row\User;
@@ -115,7 +118,7 @@ class GetSaveStatuses extends AbstractBase implements TranslatorAwareInterface
                 $checked[$selector] = true;
 
                 $data = $this->user->getSavedData($id, null, $source);
-                $result[$selector] = ($data && \count($data) > 0)
+                $result[$selector] = ($data && count($data) > 0)
                     ? array_map([$this, 'formatListData'], $data->toArray()) : [];
             }
         }
@@ -143,7 +146,7 @@ class GetSaveStatuses extends AbstractBase implements TranslatorAwareInterface
         // loop through each ID check if it is saved to any of the user's lists
         $ids = $params->fromPost('id', $params->fromQuery('id', []));
         $sources = $params->fromPost('source', $params->fromQuery('source', []));
-        if (!\is_array($ids) || !\is_array($sources)) {
+        if (!is_array($ids) || !is_array($sources)) {
             return $this->formatResponse(
                 $this->translate('Argument must be array.'),
                 self::STATUS_HTTP_BAD_REQUEST

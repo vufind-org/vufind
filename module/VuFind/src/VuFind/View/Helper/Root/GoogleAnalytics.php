@@ -29,6 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
+use function is_array;
+
 use Laminas\View\Helper\HeadScript;
 
 /**
@@ -69,7 +71,7 @@ class GoogleAnalytics extends \Laminas\View\Helper\AbstractHelper
     {
         // The second constructor parameter used to be a boolean representing
         // the "universal" setting, so convert to an array for back-compatibility:
-        if (!\is_array($options)) {
+        if (!is_array($options)) {
             $options = ['universal' => (bool)$options];
         }
         $this->key = $key;

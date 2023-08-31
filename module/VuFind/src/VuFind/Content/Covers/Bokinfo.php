@@ -32,6 +32,8 @@ namespace VuFind\Content\Covers;
 
 use SimpleXMLElement;
 
+use function strlen;
+
 /**
  * Plugin for Bokinfo coverimages
  *
@@ -156,7 +158,7 @@ class Bokinfo extends \VuFind\Content\AbstractCover implements
         $xml = new SimpleXMLElement($rawXML);
 
         foreach ($xml->getDocNamespaces() as $strPrefix => $strNamespace) {
-            if (\strlen($strPrefix) == 0) {
+            if (strlen($strPrefix) == 0) {
                 $strPrefix = '_'; // Assign an arbitrary namespace prefix.
             }
             $xml->registerXPathNamespace($strPrefix, $strNamespace);

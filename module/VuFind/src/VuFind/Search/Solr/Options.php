@@ -29,6 +29,9 @@
 
 namespace VuFind\Search\Solr;
 
+use function count;
+use function is_object;
+
 /**
  * Solr Search Options
  *
@@ -100,7 +103,7 @@ class Options extends \VuFind\Search\Base\Options
         }
         if (
             isset($searchSettings->DefaultSortingByType)
-            && \count($searchSettings->DefaultSortingByType) > 0
+            && count($searchSettings->DefaultSortingByType) > 0
         ) {
             foreach ($searchSettings->DefaultSortingByType as $key => $val) {
                 $this->defaultSortByHandler[$key] = $val;
@@ -164,7 +167,7 @@ class Options extends \VuFind\Search\Base\Options
         $facetSettings = $configLoader->get($this->facetsIni);
         if (
             isset($facetSettings->Advanced_Settings->translated_facets)
-            && \count($facetSettings->Advanced_Settings->translated_facets) > 0
+            && count($facetSettings->Advanced_Settings->translated_facets) > 0
         ) {
             $this->setTranslatedFacets(
                 $facetSettings->Advanced_Settings->translated_facets->toArray()
@@ -177,7 +180,7 @@ class Options extends \VuFind\Search\Base\Options
         }
         if (
             isset($facetSettings->Advanced_Settings->delimited_facets)
-            && \count($facetSettings->Advanced_Settings->delimited_facets) > 0
+            && count($facetSettings->Advanced_Settings->delimited_facets) > 0
         ) {
             $this->setDelimitedFacets(
                 $facetSettings->Advanced_Settings->delimited_facets->toArray()
@@ -236,7 +239,7 @@ class Options extends \VuFind\Search\Base\Options
                 && !empty($searchSettings->ShardPreferences->defaultChecked)
             ) {
                 $defaultChecked
-                    = \is_object($searchSettings->ShardPreferences->defaultChecked)
+                    = is_object($searchSettings->ShardPreferences->defaultChecked)
                     ? $searchSettings->ShardPreferences->defaultChecked->toArray()
                     : [$searchSettings->ShardPreferences->defaultChecked];
                 foreach ($defaultChecked as $current) {

@@ -30,6 +30,8 @@
 
 namespace VuFind\Config;
 
+use function in_array;
+
 use Laminas\Config\Config;
 use VuFind\Auth\Manager as AuthManager;
 
@@ -102,7 +104,7 @@ class AccountCapabilities
             $setting = 'disabled';
         }
         $legal = ['enabled', 'disabled', 'public_only', 'private_only'];
-        if (!\in_array($setting, $legal)) {
+        if (!in_array($setting, $legal)) {
             $setting = 'enabled';
         }
         return $setting;

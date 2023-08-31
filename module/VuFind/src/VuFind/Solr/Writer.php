@@ -29,6 +29,8 @@
 
 namespace VuFind\Solr;
 
+use function func_get_args;
+
 use VuFind\Db\Table\ChangeTracker;
 use VuFindSearch\Backend\Solr\Command\WriteDocumentCommand;
 use VuFindSearch\Backend\Solr\Document\CommitDocument;
@@ -191,7 +193,7 @@ class Writer
         $handler = 'update',
         $params = null
     ) {
-        $command = new WriteDocumentCommand(...\func_get_args());
+        $command = new WriteDocumentCommand(...func_get_args());
         return $this->searchService->invoke($command)->getResult();
     }
 }

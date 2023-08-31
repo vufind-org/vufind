@@ -29,6 +29,8 @@
 
 namespace VuFind\Search\Favorites;
 
+use function count;
+
 use LmcRbacMvc\Service\AuthorizationServiceAwareInterface;
 use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
 use VuFind\Db\Table\Resource as ResourceTable;
@@ -204,7 +206,7 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
             $this->getTagFilters(),
             $this->getParams()->getSort()
         );
-        $this->resultTotal = \count($rawResults);
+        $this->resultTotal = count($rawResults);
 
         // Apply offset and limit if necessary!
         $limit = $this->getParams()->getLimit();

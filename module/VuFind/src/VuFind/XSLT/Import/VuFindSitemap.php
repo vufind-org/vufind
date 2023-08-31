@@ -29,6 +29,9 @@
 
 namespace VuFind\XSLT\Import;
 
+use function chr;
+use function is_array;
+
 /**
  * XSLT support class -- all methods of this class must be public and static;
  * they will be automatically made available to your XSL stylesheet for use
@@ -61,7 +64,7 @@ class VuFindSitemap extends VuFind
         }
 
         // Extract and decode the full text from the XML:
-        $xml = str_replace(\chr(0), ' ', file_get_contents($xmlFile));
+        $xml = str_replace(chr(0), ' ', file_get_contents($xmlFile));
         @unlink($xmlFile);
         preg_match('/<plainTextContent[^>]*>([^<]*)</ms', $xml, $matches);
         $final = isset($matches[1]) ?
@@ -204,7 +207,7 @@ class VuFindSitemap extends VuFind
     {
         $xml = '';
         foreach ($fields as $key => $value) {
-            $value = \is_array($value) ? $value : [$value];
+            $value = is_array($value) ? $value : [$value];
             foreach ($value as $current) {
                 if (!empty($current)) {
                     $xml .= '<field name="' . $key . '">'

@@ -29,6 +29,8 @@
 
 namespace VuFind\Db\Table;
 
+use function is_array;
+
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
@@ -177,7 +179,7 @@ class UserResource extends Gateway
         $callback = function ($select) use ($resource_id, $user_id, $list_id) {
             $select->where->equalTo('user_id', $user_id);
             if (null !== $resource_id) {
-                if (!\is_array($resource_id)) {
+                if (!is_array($resource_id)) {
                     $resource_id = [$resource_id];
                 }
                 $select->where->in('resource_id', $resource_id);

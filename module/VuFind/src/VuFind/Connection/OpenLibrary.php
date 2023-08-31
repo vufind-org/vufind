@@ -29,6 +29,8 @@
 
 namespace VuFind\Connection;
 
+use function count;
+
 /**
  * Open Library Utilities
  *
@@ -98,7 +100,7 @@ class OpenLibrary
             $details = 'true';
         }
 
-        for ($i = 0; $i < \count($subjectTypes); $i++) {
+        for ($i = 0; $i < count($subjectTypes); $i++) {
             if (empty($result)) {
                 $subjectType = '';
                 $subjectType = $subjectTypes[$i] == 'topic' ? '' :

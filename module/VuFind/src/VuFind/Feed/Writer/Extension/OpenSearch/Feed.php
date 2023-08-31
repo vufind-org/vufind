@@ -29,6 +29,9 @@
 
 namespace VuFind\Feed\Writer\Extension\OpenSearch;
 
+use function in_array;
+use function is_string;
+
 use Laminas\Feed\Uri;
 use Laminas\Feed\Writer\Exception;
 use Laminas\Feed\Writer\Extension\ITunes\Feed as ParentFeed;
@@ -240,13 +243,13 @@ class Feed extends ParentFeed
         $type = null,
         $title = null
     ) {
-        if (empty($url) || !\is_string($url) || !Uri::factory($url)->isValid()) {
+        if (empty($url) || !is_string($url) || !Uri::factory($url)->isValid()) {
             throw new Exception\InvalidArgumentException(
                 'Invalid parameter: "url" must be '
                 . 'a non-empty string and valid URI/IRI'
             );
         }
-        if (!\in_array(strtolower($type), ['rss', 'rdf', 'atom'])) {
+        if (!in_array(strtolower($type), ['rss', 'rdf', 'atom'])) {
             throw new Exception\InvalidArgumentException(
                 'Invalid parameter: "type"; You must declare the type of '
                 . 'feed the link points to, i.e. RSS, RDF or Atom'

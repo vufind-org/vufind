@@ -29,6 +29,9 @@
 
 namespace VuFind\Db\Table;
 
+use function count;
+use function is_object;
+
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
@@ -106,13 +109,13 @@ class Comments extends Gateway
     public function deleteIfOwnedByUser($id, $user)
     {
         // User must be object with ID:
-        if (!\is_object($user) || !isset($user->id)) {
+        if (!is_object($user) || !isset($user->id)) {
             return false;
         }
 
         // Comment row must exist:
         $matches = $this->select(['id' => $id]);
-        if (\count($matches) == 0 || !($row = $matches->current())) {
+        if (count($matches) == 0 || !($row = $matches->current())) {
             return false;
         }
 

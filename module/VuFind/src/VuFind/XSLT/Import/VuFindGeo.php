@@ -29,6 +29,9 @@
 
 namespace VuFind\XSLT\Import;
 
+use function call_user_func;
+use function count;
+
 /**
  * XSLT importer support methods for geographic indexing.
  *
@@ -56,7 +59,7 @@ class VuFindGeo
      */
     protected static function logError($msg)
     {
-        \call_user_func(static::$logMethod, $msg);
+        call_user_func(static::$logMethod, $msg);
     }
 
     /**
@@ -72,7 +75,7 @@ class VuFindGeo
         $parsed = [];
         foreach ($parts as $part) {
             $chunks = array_map('trim', explode('=', $part, 2));
-            if (\count($chunks) == 2) {
+            if (count($chunks) == 2) {
                 [$key, $value] = $chunks;
                 $parsed[$key] = $value;
             }

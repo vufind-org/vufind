@@ -29,6 +29,9 @@
 
 namespace VuFind\Search\Factory;
 
+use function count;
+use function is_object;
+
 use Laminas\Config\Config;
 use Psr\Container\ContainerInterface;
 use VuFind\Search\Solr\CustomFilterListener;
@@ -419,7 +422,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     protected function getSolrBaseUrls(): array
     {
         $urls = $this->getIndexConfig('url', []);
-        return \is_object($urls) ? $urls->toArray() : (array)$urls;
+        return is_object($urls) ? $urls->toArray() : (array)$urls;
     }
 
     /**
@@ -436,7 +439,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
             },
             $this->getSolrBaseUrls()
         );
-        return \count($urls) === 1 ? $urls[0] : $urls;
+        return count($urls) === 1 ? $urls[0] : $urls;
     }
 
     /**

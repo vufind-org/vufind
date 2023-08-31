@@ -29,6 +29,10 @@
 
 namespace VuFindTheme\View\Helper;
 
+use function count;
+use function in_array;
+use function is_array;
+
 /**
  * View helper for loading theme-related resources.
  *
@@ -106,7 +110,7 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
             $parts = $this->container->parseSetting($current);
             // Special case for media with paretheses
             // ie. (min-width: 768px)
-            if (\count($parts) > 1 && substr($parts[1], 0, 1) == '(') {
+            if (count($parts) > 1 && substr($parts[1], 0, 1) == '(') {
                 $parts[1] .= ':' . $parts[2];
                 array_splice($parts, 2, 1);
             }
@@ -124,7 +128,7 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
         $favicon = $this->container->getFavicon();
         if (!empty($favicon)) {
             $imageLink = $this->getView()->plugin('imageLink');
-            if (\is_array($favicon)) {
+            if (is_array($favicon)) {
                 foreach ($favicon as $attrs) {
                     if (isset($attrs['href'])) {
                         $attrs['href'] = $imageLink($attrs['href']);
@@ -159,7 +163,7 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
         foreach ($js as $current) {
             $position = $current['position'] ?? 'header';
             $helper = substr($position, 0, 4) . 'Script';
-            if (!\in_array($helper, $legalHelpers)) {
+            if (!in_array($helper, $legalHelpers)) {
                 throw new \Exception(
                     'Invalid script position for '
                     . $current['file'] . ': ' . $position . '.'

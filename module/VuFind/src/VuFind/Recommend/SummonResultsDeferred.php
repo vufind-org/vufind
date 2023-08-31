@@ -30,6 +30,8 @@
 
 namespace VuFind\Recommend;
 
+use function is_object;
+
 /**
  * SummonResultsDeferred Recommendations Module
  *
@@ -76,7 +78,7 @@ class SummonResultsDeferred extends AbstractSummonRecommendDeferred
         parent::init($params, $request);
 
         // Collect the label for the current search type:
-        if (\is_object($params)) {
+        if (is_object($params)) {
             $this->typeLabel = $params->getOptions()->getLabelForBasicHandler(
                 $params->getSearchHandler()
             );

@@ -30,6 +30,11 @@
 
 namespace VuFind\RecordDriver\Feature;
 
+use function array_key_exists;
+use function count;
+use function in_array;
+use function is_array;
+
 /**
  * Functions for reading MARC records.
  *
@@ -71,7 +76,7 @@ trait MarcReaderTrait
         $preferredMarcFieldArray = explode(',', $preferredMarcFields);
         $preferredMarcField = 'fullrecord';
         foreach ($preferredMarcFieldArray as $testField) {
-            if (\array_key_exists($testField, $this->fields)) {
+            if (array_key_exists($testField, $this->fields)) {
                 $preferredMarcField = $testField;
                 break;
             }
@@ -116,7 +121,7 @@ trait MarcReaderTrait
         $separator = ' '
     ) {
         // Default to subfield a if nothing is specified.
-        if (!\is_array($subfields)) {
+        if (!is_array($subfields)) {
             $subfields = ['a'];
         }
         return $this->getMarcReader()->getFieldsSubfields(
@@ -178,9 +183,9 @@ trait MarcReaderTrait
             }
         }
         $replace260 = $this->mainConfig->Record->replaceMarc260 ?? false;
-        if (\count($pubResults) > 0) {
+        if (count($pubResults) > 0) {
             return $replace260 ? $pubResults : array_merge($results, $pubResults);
-        } elseif (\count($copyResults) > 0) {
+        } elseif (count($copyResults) > 0) {
             return $replace260 ? $copyResults : array_merge($results, $copyResults);
         }
 
@@ -239,7 +244,7 @@ trait MarcReaderTrait
         // Loop through all subfields, collecting results that match the filter;
         // note that it is important to retain the original MARC order here!
         foreach ($currentField['subfields'] as $currentSubfield) {
-            if (\in_array($currentSubfield['code'], $subfields)) {
+            if (in_array($currentSubfield['code'], $subfields)) {
                 // Grab the current subfield value and act on it if it is non-empty:
                 $data = trim($currentSubfield['data']);
                 if (!empty($data)) {

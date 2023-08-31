@@ -29,6 +29,10 @@
 
 namespace VuFindSearch\Backend\EDS;
 
+use function count;
+use function intval;
+use function strlen;
+
 /**
  * EBSCO EDS API Search Model
  *
@@ -149,10 +153,10 @@ class SearchRequestModel
     {
         // PublicationDate:[xxxx TO xxxx]
         $dates = substr($filter, 17);
-        $dates = substr($dates, 0, \strlen($dates) - 1);
+        $dates = substr($dates, 0, strlen($dates) - 1);
         $parts = explode(' TO ', $dates, 2);
         $start = $end = null;
-        if (\count($parts) == 2) {
+        if (count($parts) == 2) {
             $start = trim($parts[0]);
             $end = trim($parts[1]);
         }
@@ -219,7 +223,7 @@ class SearchRequestModel
     public function convertToQueryStringParameterArray()
     {
         $qs = [];
-        if (isset($this->query) && 0 < \count($this->query)) {
+        if (isset($this->query) && 0 < count($this->query)) {
             $formatQuery = function ($json) {
                 $query = json_decode($json, true);
                 $queryString = empty($query['bool'])
@@ -233,7 +237,7 @@ class SearchRequestModel
             $qs['query-x'] = array_map($formatQuery, $this->query);
         }
 
-        if (isset($this->facetFilters) && 0 < \count($this->facetFilters)) {
+        if (isset($this->facetFilters) && 0 < count($this->facetFilters)) {
             $formatFilter = function ($raw) {
                 [$field, $value] = explode(':', $raw, 2);
                 return $field . ':' . static::escapeSpecialCharacters($value);
@@ -241,11 +245,11 @@ class SearchRequestModel
             $qs['facetfilter'] = array_map($formatFilter, $this->facetFilters);
         }
 
-        if (isset($this->limiters) && 0 < \count($this->limiters)) {
+        if (isset($this->limiters) && 0 < count($this->limiters)) {
             $qs['limiter'] = $this->limiters;
         }
 
-        if (isset($this->actions) && 0 < \count($this->actions)) {
+        if (isset($this->actions) && 0 < count($this->actions)) {
             $qs['action-x'] = $this->actions;
         }
 
@@ -261,7 +265,7 @@ class SearchRequestModel
             $qs['searchmode'] = $this->searchMode;
         }
 
-        if (isset($this->expanders) && 0 < \count($this->expanders)) {
+        if (isset($this->expanders) && 0 < count($this->expanders)) {
             $qs['expander'] = implode(',', $this->expanders);
         }
 
@@ -294,7 +298,7 @@ class SearchRequestModel
         $json->SearchCriteria = new \stdClass();
         $json->RetrievalCriteria = new \stdClass();
         $json->Actions = null;
-        if (isset($this->query) && 0 < \count($this->query)) {
+        if (isset($this->query) && 0 < count($this->query)) {
             $json->SearchCriteria->Queries = [];
             foreach ($this->query as $queryJson) {
                 $query = json_decode($queryJson, true);
@@ -310,7 +314,7 @@ class SearchRequestModel
             }
         }
 
-        if (isset($this->facetFilters) && 0 < \count($this->facetFilters)) {
+        if (isset($this->facetFilters) && 0 < count($this->facetFilters)) {
             $json->SearchCriteria->FacetFilters = [];
             foreach ($this->facetFilters as $currentFilter) {
                 [$id, $filter] = explode(',', $currentFilter, 2);
@@ -325,7 +329,7 @@ class SearchRequestModel
             }
         }
 
-        if (isset($this->limiters) && 0 < \count($this->limiters)) {
+        if (isset($this->limiters) && 0 < count($this->limiters)) {
             $json->SearchCriteria->Limiters = [];
             foreach ($this->limiters as $limiter) {
                 [$id, $values] = explode(':', $limiter, 2);
@@ -336,7 +340,7 @@ class SearchRequestModel
             }
         }
 
-        if (isset($this->actions) && 0 < \count($this->actions)) {
+        if (isset($this->actions) && 0 < count($this->actions)) {
             $json->Actions = $this->actions;
         }
 
@@ -350,7 +354,7 @@ class SearchRequestModel
             $json->SearchCriteria->SearchMode = $this->searchMode;
         }
 
-        if (isset($this->expanders) && 0 < \count($this->expanders)) {
+        if (isset($this->expanders) && 0 < count($this->expanders)) {
             $json->SearchCriteria->Expanders = $this->expanders;
         }
 
@@ -359,11 +363,11 @@ class SearchRequestModel
         }
 
         if (isset($this->resultsPerPage)) {
-            $json->RetrievalCriteria->ResultsPerPage = \intval($this->resultsPerPage);
+            $json->RetrievalCriteria->ResultsPerPage = intval($this->resultsPerPage);
         }
 
         if (isset($this->pageNumber)) {
-            $json->RetrievalCriteria->PageNumber = \intval($this->pageNumber);
+            $json->RetrievalCriteria->PageNumber = intval($this->pageNumber);
         }
 
         $highlightVal = isset($this->highlight) && $this->highlight ? 'y' : 'n';
@@ -384,7 +388,7 @@ class SearchRequestModel
         string $valueToCheck,
         string $valueToCheckFor
     ): bool {
-        return substr($valueToCheck, -\strlen($valueToCheckFor)) === $valueToCheckFor;
+        return substr($valueToCheck, -strlen($valueToCheckFor)) === $valueToCheckFor;
     }
 
     /**

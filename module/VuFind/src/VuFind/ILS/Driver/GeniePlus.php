@@ -29,6 +29,9 @@
 
 namespace VuFind\ILS\Driver;
 
+use function count;
+use function in_array;
+
 use VuFind\Exception\ILS as ILSException;
 
 /**
@@ -274,17 +277,17 @@ class GeniePlus extends AbstractAPI
         );
         $total = max(
             [
-                \count($barcodes),
-                \count($callNos),
-                \count($dueDates),
-                \count($locations),
-                \count($statuses),
-                \count($volumes),
+                count($barcodes),
+                count($callNos),
+                count($dueDates),
+                count($locations),
+                count($statuses),
+                count($volumes),
             ]
         );
         $result = [];
         for ($i = 0; $i < $total; $i++) {
-            $availability = \in_array($statuses[$i] ?? '', $this->availableStatuses)
+            $availability = in_array($statuses[$i] ?? '', $this->availableStatuses)
                 ? 1 : 0;
             $result[] = [
                 'id' => $bibId,

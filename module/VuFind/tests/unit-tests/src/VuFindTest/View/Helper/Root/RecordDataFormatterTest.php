@@ -29,6 +29,8 @@
 
 namespace VuFindTest\View\Helper\Root;
 
+use function count;
+
 use Psr\Container\ContainerInterface;
 use VuFind\View\Helper\Root\RecordDataFormatter;
 use VuFind\View\Helper\Root\RecordDataFormatterFactory;
@@ -266,7 +268,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
                     ],
                     [
                         'label' => 'Multi Count',
-                        'values' => \count($data),
+                        'values' => count($data),
                     ],
                 ];
             },

@@ -29,6 +29,8 @@
 
 namespace VuFindConsole\Command\Util;
 
+use function is_array;
+
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -112,7 +114,7 @@ class SuppressedCommand extends AbstractSolrAndIlsCommand
         }
 
         // Validate result:
-        if (!\is_array($result)) {
+        if (!is_array($result)) {
             $output->writeln('Could not obtain suppressed record list from ILS.');
             return 1;
         } elseif (empty($result)) {

@@ -29,6 +29,13 @@
 
 namespace VuFind\Log;
 
+use function in_array;
+use function is_array;
+use function is_bool;
+use function is_float;
+use function is_int;
+use function is_object;
+
 use Laminas\Log\Logger as BaseLogger;
 use Traversable;
 use VuFind\Net\UserIpReader;
@@ -107,7 +114,7 @@ class Logger extends BaseLogger
     {
         // Special case to handle arrays of messages (for multi-verbosity-level
         // logging, not supported by base class):
-        if (\is_array($message)) {
+        if (is_array($message)) {
             $timestamp = new \DateTime();
             foreach ($this->writers->toArray() as $writer) {
                 $writer->write(
@@ -141,7 +148,7 @@ class Logger extends BaseLogger
         // Treat unexpected or 5xx errors as more severe than 4xx errors.
         if (
             $error instanceof \VuFind\Exception\HttpStatusInterface
-            && \in_array($error->getHttpStatus(), [403, 404])
+            && in_array($error->getHttpStatus(), [403, 404])
         ) {
             return BaseLogger::WARN;
         }
@@ -180,7 +187,7 @@ class Logger extends BaseLogger
         $detailedServer = "\nServer Context:\n"
             . print_r($server->toArray(), true);
         $basicBacktrace = $detailedBacktrace = "\nBacktrace:\n";
-        if (\is_array($error->getTrace())) {
+        if (is_array($error->getTrace())) {
             foreach ($error->getTrace() as $line) {
                 if (!isset($line['file'])) {
                     $line['file'] = 'unlisted file';
@@ -226,20 +233,20 @@ class Logger extends BaseLogger
      */
     protected function argumentToString($arg)
     {
-        if (\is_object($arg)) {
+        if (is_object($arg)) {
             return $arg::class . ' Object';
         }
-        if (\is_array($arg)) {
+        if (is_array($arg)) {
             $args = [];
             foreach ($arg as $key => $item) {
                 $args[] = "$key => " . $this->argumentToString($item);
             }
             return 'array(' . implode(', ', $args) . ')';
         }
-        if (\is_bool($arg)) {
+        if (is_bool($arg)) {
             return $arg ? 'true' : 'false';
         }
-        if (\is_int($arg) || \is_float($arg)) {
+        if (is_int($arg) || is_float($arg)) {
             return (string)$arg;
         }
         if (null === $arg) {

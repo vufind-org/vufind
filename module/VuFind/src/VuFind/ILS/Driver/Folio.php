@@ -29,9 +29,18 @@
 
 namespace VuFind\ILS\Driver;
 
+use function array_key_exists;
+use function count;
+
 use DateTime;
 use DateTimeZone;
 use Exception;
+
+use function in_array;
+use function is_int;
+use function is_object;
+use function is_string;
+
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
@@ -358,11 +367,11 @@ class Folio extends AbstractAPI implements
 
         // Special case: if we're using instance IDs and we already have one,
         // short-circuit the lookup process:
-        if ($idType === 'instance' && \is_string($instanceOrInstanceId)) {
+        if ($idType === 'instance' && is_string($instanceOrInstanceId)) {
             return $instanceOrInstanceId;
         }
 
-        $instance = \is_object($instanceOrInstanceId)
+        $instance = is_object($instanceOrInstanceId)
             ? $instanceOrInstanceId
             : $this->getInstanceById($instanceOrInstanceId, $holdingId, $itemId);
 
@@ -408,7 +417,7 @@ class Folio extends AbstractAPI implements
         ];
         $response = $this->makeRequest('GET', '/instance-storage/instances', $query);
         $instances = json_decode($response->getBody());
-        if (\count($instances->instances ?? []) == 0) {
+        if (count($instances->instances ?? []) == 0) {
             throw new ILSException('Item Not Found');
         }
         return $instances->instances[0];
@@ -489,7 +498,7 @@ class Folio extends AbstractAPI implements
             return true;
         }
         // Otherwise exclude checking by exact match
-        return !\in_array($locationName, $excludeLocs);
+        return !in_array($locationName, $excludeLocs);
     }
 
     /**
@@ -533,7 +542,7 @@ class Folio extends AbstractAPI implements
         $locationMap = $this->getLocations();
         $name = '';
         $code = '';
-        if (\array_key_exists($locationId, $locationMap)) {
+        if (array_key_exists($locationId, $locationMap)) {
             return $locationMap[$locationId];
         } else {
             // if key is not found in cache, the location could have
@@ -723,7 +732,7 @@ class Folio extends AbstractAPI implements
             }
         );
         // Renumber the re-sorted batch:
-        $nbCount = \count($holdings);
+        $nbCount = count($holdings);
         for ($nbIndex = 0; $nbIndex < $nbCount; $nbIndex++) {
             $holdings[$nbIndex]['number'] = $nbIndex + 1;
         }
@@ -936,7 +945,7 @@ class Folio extends AbstractAPI implements
     {
         $response = $this->makeRequest('GET', '/users', compact('query'));
         $json = json_decode($response->getBody());
-        return \count($json->users ?? []) === 1 ? $json->users[0] : null;
+        return count($json->users ?? []) === 1 ? $json->users[0] : null;
     }
 
     /**
@@ -1366,12 +1375,12 @@ class Folio extends AbstractAPI implements
                 'reqnum' => $hold->id,
                 // Title moved from item to instance in Lotus release:
                 'title' => $hold->instance->title ?? $hold->item->title ?? '',
-                'available' => \in_array(
+                'available' => in_array(
                     $hold->status,
                     $this->config['Holds']['available']
                     ?? $this->defaultAvailabilityStatuses
                 ),
-                'in_transit' => \in_array(
+                'in_transit' => in_array(
                     $hold->status,
                     $this->config['Holds']['in_transit']
                     ?? $this->defaultInTransitStatuses
@@ -1418,7 +1427,7 @@ class Folio extends AbstractAPI implements
         $default_request = $this->config['Holds']['default_request'] ?? 'Hold';
         if (
             !empty($holdDetails['requiredByTS'])
-            && !\is_int($holdDetails['requiredByTS'])
+            && !is_int($holdDetails['requiredByTS'])
         ) {
             throw new ILSException('hold_date_invalid');
         }

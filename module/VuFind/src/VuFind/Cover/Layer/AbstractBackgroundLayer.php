@@ -29,6 +29,9 @@
 
 namespace VuFind\Cover\Layer;
 
+use function ord;
+use function strlen;
+
 /**
  * Abstract cover background layer
  *
@@ -56,8 +59,8 @@ abstract class AbstractBackgroundLayer extends AbstractLayer
         }
         if (null !== $callnumber) {
             $cv = 0;
-            for ($i = 0; $i < \strlen($callnumber); $i++) {
-                $cv += \ord($callnumber[$i]);
+            for ($i = 0; $i < strlen($callnumber); $i++) {
+                $cv += ord($callnumber[$i]);
             }
             return $cv;
         } else {

@@ -29,6 +29,8 @@
 
 namespace VuFindTest\Auth;
 
+use function get_class;
+
 use Laminas\Config\Config;
 use Laminas\ServiceManager\Exception\InvalidServiceException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -150,7 +152,7 @@ class MultiAuthTest extends \PHPUnit\Framework\TestCase
         );
 
         $config = $this->getAuthConfig();
-        $config->MultiAuth->method_order = \get_class($this) . ',Database';
+        $config->MultiAuth->method_order = get_class($this) . ',Database';
 
         $request = $this->getLoginRequest();
         $this->getAuthObject($config)->authenticate($request);

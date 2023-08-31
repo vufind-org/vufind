@@ -31,6 +31,8 @@
 
 namespace VuFind\Controller;
 
+use function is_callable;
+
 use Laminas\View\Model\ViewModel;
 
 /**
@@ -71,7 +73,7 @@ class ContentController extends AbstractBase
 
         $method = isset($data) ? 'getViewFor' . ucwords($data['renderer']) : false;
 
-        return $method && \is_callable([$this, $method])
+        return $method && is_callable([$this, $method])
             ? $this->$method($data['page'], $data['path'])
             : $this->notFoundAction();
     }

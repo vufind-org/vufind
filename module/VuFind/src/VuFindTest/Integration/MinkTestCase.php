@@ -32,7 +32,15 @@ namespace VuFindTest\Integration;
 use Behat\Mink\Driver\Selenium2Driver;
 use Behat\Mink\Element\Element;
 use DMore\ChromeDriver\ChromeDriver;
+
+use function floatval;
+use function in_array;
+use function intval;
+
 use PHPUnit\Util\Test;
+
+use function strlen;
+
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
@@ -109,7 +117,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     protected function changeConfigs($configs, $replace = [])
     {
         foreach ($configs as $file => $settings) {
-            $this->changeConfigFile($file, $settings, \in_array($file, $replace));
+            $this->changeConfigFile($file, $settings, in_array($file, $replace));
         }
     }
 
@@ -129,7 +137,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     protected function changeYamlConfigs($configs, $replace = [])
     {
         foreach ($configs as $file => $settings) {
-            $this->changeYamlConfigFile($file, $settings, \in_array($file, $replace));
+            $this->changeYamlConfigFile($file, $settings, in_array($file, $replace));
         }
     }
 
@@ -147,7 +155,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     {
         $file = $configName . '.ini';
         $local = $this->pathResolver->getLocalConfigPath($file, null, true);
-        if (!\in_array($configName, $this->modifiedConfigs)) {
+        if (!in_array($configName, $this->modifiedConfigs)) {
             if (file_exists($local)) {
                 // File exists? Make a backup!
                 copy($local, $local . '.bak');
@@ -186,7 +194,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     {
         $file = $configName . '.yaml';
         $local = $this->pathResolver->getLocalConfigPath($file, null, true);
-        if (!\in_array($configName, $this->modifiedYamlConfigs)) {
+        if (!in_array($configName, $this->modifiedYamlConfigs)) {
             if (file_exists($local)) {
                 // File exists? Make a backup!
                 copy($local, $local . '.bak');
@@ -213,7 +221,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function snooze($secs = 1)
     {
-        $snoozeMultiplier = \floatval(getenv('VUFIND_SNOOZE_MULTIPLIER'));
+        $snoozeMultiplier = floatval(getenv('VUFIND_SNOOZE_MULTIPLIER'));
         if ($snoozeMultiplier <= 0) {
             $snoozeMultiplier = 1;
         }
@@ -227,7 +235,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function getDefaultTimeout(): int
     {
-        return \intval(
+        return intval(
             getenv('VUFIND_DEFAULT_TEST_TIMEOUT') ?: self::DEFAULT_TIMEOUT
         );
     }
@@ -747,7 +755,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     protected function assertLightboxWarning(Element $page, $message)
     {
         $warning = $page->find('css', '.modal-body .alert-danger .message');
-        if (!$warning || \strlen(trim($warning->getText())) == 0) {
+        if (!$warning || strlen(trim($warning->getText())) == 0) {
             $warning = $this->findCss($page, '.modal-body .alert-danger');
         }
         $this->assertEquals($message, $warning->getText());
@@ -867,7 +875,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $result = '  [' . ($message['firstLine'] ?? $message['lastLine'] ?? 0) . ':'
             . ($message['firstColumn'] ?? 0)
             . '] ';
-        $stampLen = \strlen($result);
+        $stampLen = strlen($result);
         $result .= $message['message'];
         if (!empty($message['extract'])) {
             $result .= PHP_EOL . str_pad('', $stampLen) . 'Extract: '

@@ -29,6 +29,8 @@
 
 namespace VuFind\RecordDriver;
 
+use function count;
+
 /**
  * Model for Solr reserves records.
  *
@@ -108,7 +110,7 @@ class SolrReserves extends SolrDefault
     public function getItemCount()
     {
         return isset($this->fields['bib_id'])
-            ? \count($this->fields['bib_id']) : 0;
+            ? count($this->fields['bib_id']) : 0;
     }
 
     /**

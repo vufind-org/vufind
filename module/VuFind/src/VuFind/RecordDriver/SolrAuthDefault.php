@@ -29,6 +29,8 @@
 
 namespace VuFind\RecordDriver;
 
+use function is_array;
+
 /**
  * Model for Solr authority records.
  *
@@ -69,7 +71,7 @@ class SolrAuthDefault extends SolrDefault
     public function getSeeAlso()
     {
         return isset($this->fields['see_also'])
-            && \is_array($this->fields['see_also'])
+            && is_array($this->fields['see_also'])
             ? $this->fields['see_also'] : [];
     }
 
@@ -81,7 +83,7 @@ class SolrAuthDefault extends SolrDefault
     public function getUseFor()
     {
         return isset($this->fields['use_for'])
-            && \is_array($this->fields['use_for'])
+            && is_array($this->fields['use_for'])
             ? $this->fields['use_for'] : [];
     }
 }

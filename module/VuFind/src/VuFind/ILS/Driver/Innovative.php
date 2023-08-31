@@ -29,6 +29,9 @@
 
 namespace VuFind\ILS\Driver;
 
+use function count;
+use function strlen;
+
 use VuFind\Exception\ILS as ILSException;
 
 /**
@@ -175,7 +178,7 @@ class Innovative extends AbstractBase implements
             $cols = preg_split('/<t(h|d)([^>]*)>/', $row);
 
             // for each th or td section, do the following.
-            for ($i = 0; $i < \count($cols); $i++) {
+            for ($i = 0; $i < count($cols); $i++) {
                 // replace non blocking space encodings with a space.
                 $cols[$i] = str_replace('&nbsp;', ' ', $cols[$i]);
                 // remove html comment tags
@@ -221,7 +224,7 @@ class Innovative extends AbstractBase implements
                                 substr(
                                     $cols[$i],
                                     stripos($cols[$i], (string)$stat_due)
-                                        + \strlen($stat_due)
+                                        + strlen($stat_due)
                                 )
                             );
                             $t = substr($t, 0, stripos($t, ' '));

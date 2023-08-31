@@ -29,6 +29,9 @@
 
 namespace VuFind\View\Helper\Root;
 
+use function is_array;
+use function strlen;
+
 /**
  * Piwik Web Analytics view helper
  *
@@ -129,7 +132,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
         if ($url && substr($url, -1) != '/') {
             $this->url .= '/';
         }
-        if (\is_array($options)) {
+        if (is_array($options)) {
             $this->siteId = $options['siteId'];
             $this->searchPrefix = $options['searchPrefix'] ?? '';
             $this->disableCookies = $options['disableCookies'] ?? '';
@@ -300,7 +303,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
         $children = $current->getChildren();
         if (isset($children[0])) {
             $results = $children[0]->getVariable('combinedResults');
-            if (\is_array($results)) {
+            if (is_array($results)) {
                 return $results;
             }
         }
@@ -383,7 +386,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
     {
         $id = $recordDriver->getUniqueID();
         $formats = $recordDriver->tryMethod('getFormats');
-        if (\is_array($formats)) {
+        if (is_array($formats)) {
             $formats = implode(',', $formats);
         }
         $formats = $formats;
@@ -397,7 +400,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
             $title = '-';
         }
         $institutions = $recordDriver->tryMethod('getInstitutions');
-        if (\is_array($institutions)) {
+        if (is_array($institutions)) {
             $institutions = implode(',', $institutions);
         }
         $institutions = $institutions;
@@ -474,7 +477,7 @@ class Piwik extends \Laminas\View\Helper\AbstractHelper
             $replace = 'AjaxTab';
             $tab = $this->request->getPost('tab');
             if (null !== ($pos = strrpos($path, $replace))) {
-                $path = substr_replace($path, $tab, $pos, $pos + \strlen($replace));
+                $path = substr_replace($path, $tab, $pos, $pos + strlen($replace));
             }
         }
         return $path;

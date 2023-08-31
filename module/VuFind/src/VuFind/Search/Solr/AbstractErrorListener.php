@@ -29,6 +29,8 @@
 
 namespace VuFind\Search\Solr;
 
+use function in_array;
+
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use VuFindSearch\Service;
@@ -94,7 +96,7 @@ abstract class AbstractErrorListener
      */
     public function listenForBackend(string $backend)
     {
-        return \in_array($backend, $this->backends);
+        return in_array($backend, $this->backends);
     }
 
     /**

@@ -29,6 +29,8 @@
 
 namespace VuFind\Search\Base;
 
+use function count;
+
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
@@ -85,7 +87,7 @@ class FacetCacheFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $parts = explode('\\', $requestedName);
-        $requestedNamespace = $parts[\count($parts) - 2];
+        $requestedNamespace = $parts[count($parts) - 2];
         $results = $this->getResults($container, $requestedNamespace);
         $cacheManager = $container->get(\VuFind\Cache\Manager::class);
         $language = $container->get(LocaleSettings::class)->getUserLocale();

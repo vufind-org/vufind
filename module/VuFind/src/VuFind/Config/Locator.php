@@ -29,6 +29,9 @@
 
 namespace VuFind\Config;
 
+use function defined;
+use function strlen;
+
 /**
  * VuFind Configuration Locator - A static compatibility wrapper around PathResolver
  *
@@ -101,8 +104,8 @@ class Locator
      */
     protected static function getPathResolver(): PathResolver
     {
-        $localDirs = \defined('LOCAL_OVERRIDE_DIR')
-            && \strlen(trim(LOCAL_OVERRIDE_DIR)) > 0
+        $localDirs = defined('LOCAL_OVERRIDE_DIR')
+            && strlen(trim(LOCAL_OVERRIDE_DIR)) > 0
             ? [
                 [
                     'directory' => LOCAL_OVERRIDE_DIR,

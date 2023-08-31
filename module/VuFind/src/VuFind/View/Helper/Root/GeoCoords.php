@@ -29,6 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
+use function is_array;
+
 use VuFind\Search\Base\Options;
 
 /**
@@ -85,7 +87,7 @@ class GeoCoords extends \Laminas\View\Helper\AbstractHelper
      */
     protected function recommendationEnabled($settings)
     {
-        if (isset($settings['top']) && \is_array($settings['top'])) {
+        if (isset($settings['top']) && is_array($settings['top'])) {
             foreach ($settings['top'] as $setting) {
                 $parts = explode(':', $setting);
                 if (strtolower($parts[0]) === 'mapselection') {

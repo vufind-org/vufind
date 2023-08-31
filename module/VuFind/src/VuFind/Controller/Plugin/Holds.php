@@ -31,6 +31,8 @@
 
 namespace VuFind\Controller\Plugin;
 
+use function in_array;
+
 use VuFind\Date\DateException;
 
 /**
@@ -160,7 +162,7 @@ class Holds extends AbstractRequestBase
             foreach ($details as $info) {
                 // If the user input contains a value not found in the session
                 // legal list, something has been tampered with -- abort the process.
-                if (!\in_array($info, $this->getSession()->validIds)) {
+                if (!in_array($info, $this->getSession()->validIds)) {
                     $flashMsg->addErrorMessage('error_inconsistent_parameters');
                     return [];
                 }
@@ -227,14 +229,14 @@ class Holds extends AbstractRequestBase
             'errors' => [],
         ];
         if (
-            !\in_array('startDate', $enabledFormFields)
-            && !\in_array('requiredByDate', $enabledFormFields)
-            && !\in_array('requiredByDateOptional', $enabledFormFields)
+            !in_array('startDate', $enabledFormFields)
+            && !in_array('requiredByDate', $enabledFormFields)
+            && !in_array('requiredByDateOptional', $enabledFormFields)
         ) {
             return $result;
         }
 
-        if (\in_array('startDate', $enabledFormFields)) {
+        if (in_array('startDate', $enabledFormFields)) {
             try {
                 $result['startDateTS'] = $startDate
                     ? (int)$this->dateConverter->convertFromDisplayDate(
@@ -250,10 +252,10 @@ class Holds extends AbstractRequestBase
         }
 
         if (
-            \in_array('requiredByDate', $enabledFormFields)
-            || \in_array('requiredByDateOptional', $enabledFormFields)
+            in_array('requiredByDate', $enabledFormFields)
+            || in_array('requiredByDateOptional', $enabledFormFields)
         ) {
-            $optional = \in_array('requiredByDateOptional', $enabledFormFields);
+            $optional = in_array('requiredByDateOptional', $enabledFormFields);
             try {
                 if ($requiredBy) {
                     $requiredByDateTime = \DateTime::createFromFormat(
@@ -280,7 +282,7 @@ class Holds extends AbstractRequestBase
 
         if (
             !$result['errors']
-            && \in_array('startDate', $enabledFormFields)
+            && in_array('startDate', $enabledFormFields)
             && !empty($result['requiredByTS'])
             && $result['startDateTS'] > $result['requiredByTS']
         ) {
@@ -310,7 +312,7 @@ class Holds extends AbstractRequestBase
             'frozenThroughTS' => null,
             'errors' => [],
         ];
-        if (!\in_array('frozenThrough', $extraHoldFields) || empty($frozenThrough)) {
+        if (!in_array('frozenThrough', $extraHoldFields) || empty($frozenThrough)) {
             return $result;
         }
 

@@ -29,6 +29,8 @@
 
 namespace VuFind\Record;
 
+use function count;
+
 /**
  * Checklist class (used for checking off a list of values)
  *
@@ -91,7 +93,7 @@ class Checklist
      */
     public function hasChecked()
     {
-        return \count($this->checked) > 0;
+        return count($this->checked) > 0;
     }
 
     /**
@@ -101,7 +103,7 @@ class Checklist
      */
     public function hasUnchecked()
     {
-        return \count($this->unchecked) > 0;
+        return count($this->unchecked) > 0;
     }
 
     /**

@@ -29,6 +29,10 @@
 
 namespace VuFind\Controller;
 
+use function array_slice;
+use function count;
+use function is_object;
+
 use VuFind\Exception\Mail as MailException;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
 
@@ -212,7 +216,7 @@ class SearchController extends AbstractSolrSearch
                 ? $this->redirect()->toRoute('search-history')
                 : $this->forceLogin();
         }
-        $userId = \is_object($user) ? $user->id : null;
+        $userId = is_object($user) ? $user->id : null;
 
         $searchHistoryHelper = $this->serviceLocator
             ->get(\VuFind\Search\History::class);
@@ -233,7 +237,7 @@ class SearchController extends AbstractSolrSearch
             unset($viewData['schedule']);
         } else {
             $viewData['scheduleOptions'] = $scheduleOptions;
-            $viewData['alertemail'] = \is_object($user) ? $user->email : null;
+            $viewData['alertemail'] = is_object($user) ? $user->email : null;
         }
         return $this->createViewModel($viewData);
     }
@@ -415,8 +419,8 @@ class SearchController extends AbstractSolrSearch
         // Truncate the list if it is too long:
         $limit = $this->getResultsManager()->get('Solr')->getParams()
             ->getQueryIDLimit();
-        if (\count($bibIDs) > $limit) {
-            $bibIDs = \array_slice($bibIDs, 0, $limit);
+        if (count($bibIDs) > $limit) {
+            $bibIDs = array_slice($bibIDs, 0, $limit);
             $this->flashMessenger()->addMessage('too_many_reserves', 'info');
         }
 

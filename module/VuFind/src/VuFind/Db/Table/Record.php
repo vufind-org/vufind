@@ -32,6 +32,8 @@
 
 namespace VuFind\Db\Table;
 
+use function count;
+
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Predicate\Expression;
 use Laminas\Db\Sql\Where;
@@ -169,6 +171,6 @@ class Record extends Gateway
             $this->delete(['id' => $result['id']]);
         }
 
-        return \count($results);
+        return count($results);
     }
 }

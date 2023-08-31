@@ -29,6 +29,9 @@
 
 namespace VuFind\ILS\Driver;
 
+use function count;
+use function in_array;
+
 use PDO;
 use PDOException;
 use VuFind\Exception\ILS as ILSException;
@@ -135,7 +138,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
         // Pick the first entry by default, then see if we can find a better match:
         $status = $statusArray[0];
         $rank = $this->statusRankings[$status];
-        for ($x = 1; $x < \count($statusArray); $x++) {
+        for ($x = 1; $x < count($statusArray); $x++) {
             if ($this->statusRankings[$statusArray[$x]] < $rank) {
                 $status = $statusArray[$x];
             }
@@ -174,7 +177,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
 
         // If we found other statuses or if we failed to find "Not Charged,"
         // the item is not available!
-        $available = (\count($otherStatuses) == 0 && $notCharged);
+        $available = (count($otherStatuses) == 0 && $notCharged);
         return ['available' => $available, 'otherStatuses' => $otherStatuses];
     }
 
@@ -374,14 +377,14 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
                     }
                 } else {
                     $status_array = & $data[$row['BIB_ITM_NBR']]['status_array'];
-                    if (!\in_array($prestados, $status_array)) {
+                    if (!in_array($prestados, $status_array)) {
                         $status_array[] = $prestados;
                     }
                 }
             }
             // If we found any information, break out of the foreach loop;
             // we don't need to try any more queries.
-            if (\count($data) == 0) {
+            if (count($data) == 0) {
                 $data[$id] = [
                     'id' => $id,
                     'status' => $prestados,
@@ -392,7 +395,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
                 ];
                 break;
             }
-            if (\count($data) > 0) {
+            if (count($data) > 0) {
                 break;
             }
         }
@@ -403,7 +406,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
             $availability = $this->determineAvailability($current['status_array']);
             // If we found other statuses, we should override the display value
             // appropriately:
-            if (\count($availability['otherStatuses']) > 0) {
+            if (count($availability['otherStatuses']) > 0) {
                 $current['status']
                     = $this->pickStatus($availability['otherStatuses']);
             }
@@ -504,7 +507,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
                     'duedate' => $this->sacaFecha($row['CPY_ID_NBR']),
                     // TODO: fill this in if you want "recently returned" support:
                     'returnDate' => false,
-                    'number' => \count($data) + 1,
+                    'number' => count($data) + 1,
                     'item_id' => $row['CPY_ID_NBR'],
                     'barcode' => $row['BRCDE_NBR'],
                 ];
@@ -512,7 +515,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
             }
             // If we found data, we can leave the foreach loop -- we don't need to
             // try any more queries.
-            if (\count($data) > 0) {
+            if (count($data) > 0) {
                 break;
             }
         }

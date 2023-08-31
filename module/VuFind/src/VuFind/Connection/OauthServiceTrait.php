@@ -31,6 +31,8 @@
 
 namespace VuFind\Connection;
 
+use function func_get_args;
+
 /**
  * Helper trait for OAuth 2.0 connections.
  *
@@ -170,7 +172,7 @@ trait OauthServiceTrait
     protected function oauthServiceTraitLog($level, $msg)
     {
         if (method_exists($this, 'log')) {
-            $this->log(...\func_get_args());
+            $this->log(...func_get_args());
         }
     }
 }

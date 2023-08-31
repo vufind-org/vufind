@@ -29,6 +29,10 @@
 
 namespace VuFind\Controller\Plugin;
 
+use function count;
+use function get_class;
+use function in_array;
+
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use Laminas\Session\Container;
 use Laminas\Session\SessionManager;
@@ -102,7 +106,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
     {
         if (!isset($this->session)) {
             $this->session = new Container(
-                \get_class($this) . '_Helper',
+                get_class($this) . '_Helper',
                 $this->sessionManager
             );
         }
@@ -207,7 +211,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
     public function validatePickUpInput($pickup, $extraHoldFields, $pickUpLibs)
     {
         // Not having to care for pickUpLocation is equivalent to having a valid one.
-        if (!\in_array('pickUpLocation', $extraHoldFields)) {
+        if (!in_array('pickUpLocation', $extraHoldFields)) {
             return true;
         }
 
@@ -250,7 +254,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
         $requestGroups
     ) {
         // Not having to care for requestGroup is equivalent to having a valid one.
-        if (!\in_array('requestGroup', $extraHoldFields)) {
+        if (!in_array('requestGroup', $extraHoldFields)) {
             return true;
         }
         if (
@@ -314,7 +318,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
         if ($dateArray[0] == 'driver') {
             $useDriver = true;
             array_shift($dateArray);
-            if (\count($dateArray) < 3) {
+            if (count($dateArray) < 3) {
                 $dateArray = [0, 1, 0];
             }
         } else {

@@ -30,6 +30,8 @@
 
 namespace VuFind\ILS\Driver;
 
+use function count;
+
 use PDO;
 use PDOException;
 use VuFind\Exception\ILS as ILSException;
@@ -508,7 +510,7 @@ class Koha extends AbstractBase
             $this->throwAsIlsException($e);
         }
 
-        return \count($blocks) ? $blocks : false;
+        return count($blocks) ? $blocks : false;
     }
 
     /**

@@ -29,6 +29,9 @@
 
 namespace VuFindTest\Feature;
 
+use function defined;
+use function strlen;
+
 use VuFind\Config\PathResolver;
 
 /**
@@ -51,8 +54,8 @@ trait PathResolverTrait
      */
     protected function getPathResolver(?string $baseDirectory = null): PathResolver
     {
-        $localDirs = \defined('LOCAL_OVERRIDE_DIR')
-            && \strlen(trim(LOCAL_OVERRIDE_DIR)) > 0
+        $localDirs = defined('LOCAL_OVERRIDE_DIR')
+            && strlen(trim(LOCAL_OVERRIDE_DIR)) > 0
             ? [
                 [
                     'directory' => LOCAL_OVERRIDE_DIR,

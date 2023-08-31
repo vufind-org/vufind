@@ -29,6 +29,9 @@
 
 namespace VuFind\Log;
 
+use function is_array;
+use function is_int;
+
 use Laminas\Config\Config;
 use Laminas\Log\Writer\WriterInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -329,7 +332,7 @@ class LoggerFactory implements FactoryInterface
         $this->addWriters(
             $logger,
             $writer,
-            'debug-' . (\is_int($debug) ? $debug : '5')
+            'debug-' . (is_int($debug) ? $debug : '5')
         );
     }
 
@@ -349,7 +352,7 @@ class LoggerFactory implements FactoryInterface
      */
     protected function addWriters(Logger $logger, WriterInterface $writer, $filters)
     {
-        if (!\is_array($filters)) {
+        if (!is_array($filters)) {
             $filters = explode(',', $filters);
         }
 

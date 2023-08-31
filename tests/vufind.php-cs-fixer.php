@@ -19,6 +19,11 @@ $rules = [
     'concat_space' => ['spacing' => 'one'],
     'ereg_to_preg' => true,
     'get_class_to_class_keyword' => true,
+    'global_namespace_import' => [
+        'import_constants' => null,
+        'import_functions' => true,
+        'import_classes' => null,
+    ],
     'is_null' => true,
     'linebreak_after_opening_tag' => true,
     'lowercase_cast' => true,

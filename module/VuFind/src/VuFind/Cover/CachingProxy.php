@@ -29,6 +29,8 @@
 
 namespace VuFind\Cover;
 
+use function dirname;
+
 use Laminas\Http\Client;
 use Laminas\Http\Response;
 
@@ -125,8 +127,8 @@ class CachingProxy
         if (!file_exists($this->cache)) {
             mkdir($this->cache);
         }
-        if (!file_exists(\dirname($file))) {
-            mkdir(\dirname($file));
+        if (!file_exists(dirname($file))) {
+            mkdir(dirname($file));
         }
         file_put_contents($file, serialize($response));
     }

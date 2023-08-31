@@ -30,6 +30,10 @@
 
 namespace VuFind\Controller\Plugin;
 
+use function count;
+use function in_array;
+use function is_object;
+
 use Laminas\Db\Adapter\Adapter as DbAdapter;
 use Laminas\Db\Metadata\Source\Factory as DbMetadataSourceFactory;
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
@@ -113,7 +117,7 @@ class DbUpgrade extends AbstractPlugin
      */
     public function getAdapter()
     {
-        if (!\is_object($this->adapter)) {
+        if (!is_object($this->adapter)) {
             throw new \Exception('Database adapter not set.');
         }
         return $this->adapter;
@@ -436,7 +440,7 @@ class DbUpgrade extends AbstractPlugin
         $tables = $this->getAllTables();
         $missing = [];
         foreach (array_keys($this->dbCommands) as $table) {
-            if (!\in_array(trim(strtolower($table)), $tables)) {
+            if (!in_array(trim(strtolower($table)), $tables)) {
                 $missing[] = $table;
             }
         }
@@ -501,7 +505,7 @@ class DbUpgrade extends AbstractPlugin
         $this->getTableInfo(true); // force reload of table info
         foreach ($this->dbCommands as $table => $sql) {
             // Skip missing tables if we're logging
-            if (\in_array($table, $missingTables)) {
+            if (in_array($table, $missingTables)) {
                 continue;
             }
 
@@ -524,7 +528,7 @@ class DbUpgrade extends AbstractPlugin
             // Now check for missing columns and build our return array:
             $actualColumns = array_keys($this->getTableColumns($table));
             foreach ($expectedColumns as $column) {
-                if (!\in_array(strtolower($column), $actualColumns)) {
+                if (!in_array(strtolower($column), $actualColumns)) {
                     if (!isset($missing[$table])) {
                         $missing[$table] = [];
                     }
@@ -564,9 +568,9 @@ class DbUpgrade extends AbstractPlugin
             foreach ($constraints as $constraint) {
                 $matchFound = false;
                 foreach ($actual[$type] ?? [] as $existing) {
-                    $diffCount = \count(
+                    $diffCount = count(
                         array_diff($constraint['fields'], $existing['fields'])
-                    ) + \count(
+                    ) + count(
                         array_diff($existing['fields'], $constraint['fields'])
                     );
                     if ($diffCount == 0) {
@@ -596,7 +600,7 @@ class DbUpgrade extends AbstractPlugin
         $missing = [];
         foreach ($this->dbCommands as $table => $sql) {
             // Skip missing tables if we're logging
-            if (\in_array($table, $missingTables)) {
+            if (in_array($table, $missingTables)) {
                 continue;
             }
 
@@ -740,7 +744,7 @@ class DbUpgrade extends AbstractPlugin
         $modified = [];
         foreach ($this->dbCommands as $table => $sql) {
             // Skip missing tables if we're logging
-            if (\in_array($table, $missingTables)) {
+            if (in_array($table, $missingTables)) {
                 continue;
             }
 
@@ -982,7 +986,7 @@ class DbUpgrade extends AbstractPlugin
         $this->getTableInfo(true); // force reload of table info
         foreach ($this->dbCommands as $table => $sql) {
             // Skip missing tables if we're logging
-            if (\in_array($table, $missingTables)) {
+            if (in_array($table, $missingTables)) {
                 continue;
             }
 
@@ -1160,7 +1164,7 @@ class DbUpgrade extends AbstractPlugin
         $modified = [];
         foreach ($this->dbCommands as $table => $sql) {
             // Skip missing tables if we're logging
-            if (\in_array($table, $missingTables)) {
+            if (in_array($table, $missingTables)) {
                 continue;
             }
 

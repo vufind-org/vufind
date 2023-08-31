@@ -29,6 +29,8 @@
 
 namespace VuFind\ChannelProvider;
 
+use function count;
+
 use Laminas\Mvc\Controller\Plugin\Url;
 use Laminas\Stdlib\Parameters;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
@@ -200,9 +202,9 @@ class ListItems extends AbstractChannelProvider
         $lists = $channelToken
             ? $this->getListsById([$channelToken]) : $this->getLists();
         foreach ($lists as $list) {
-            $tokenOnly = (\count($channels) >= $this->initialListsToDisplay);
+            $tokenOnly = (count($channels) >= $this->initialListsToDisplay);
             $channel = $this->getChannelFromList($list, $tokenOnly);
-            if ($tokenOnly || \count($channel['contents']) > 0) {
+            if ($tokenOnly || count($channel['contents']) > 0) {
                 $channels[] = $channel;
             }
         }

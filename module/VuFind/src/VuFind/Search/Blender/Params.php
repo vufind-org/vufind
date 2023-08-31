@@ -29,6 +29,13 @@
 
 namespace VuFind\Search\Blender;
 
+use function array_slice;
+use function call_user_func_array;
+use function count;
+use function func_get_args;
+use function in_array;
+use function is_callable;
+
 use VuFind\Search\Base\Params as BaseParams;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
 use VuFindSearch\ParamBag;
@@ -127,7 +134,7 @@ class Params extends \VuFind\Search\Solr\Params
         foreach ($this->searchParams as $params) {
             $translatedRequest = clone $request;
             foreach (array_keys($translatedRequest->getArrayCopy()) as $key) {
-                if (\in_array($key, $filteredParams)) {
+                if (in_array($key, $filteredParams)) {
                     $translatedRequest->offsetUnset($key);
                 }
             }
@@ -340,7 +347,7 @@ class Params extends \VuFind\Search\Solr\Params
     {
         $this->unsupportedFilters = [];
         if (null === $field) {
-            $this->proxyMethod(__FUNCTION__, \func_get_args());
+            $this->proxyMethod(__FUNCTION__, func_get_args());
             return;
         }
 
@@ -410,7 +417,7 @@ class Params extends \VuFind\Search\Solr\Params
      */
     public function resetFacetConfig()
     {
-        $this->proxyMethod(__FUNCTION__, \func_get_args());
+        $this->proxyMethod(__FUNCTION__, func_get_args());
     }
 
     /**
@@ -428,7 +435,7 @@ class Params extends \VuFind\Search\Solr\Params
         }
         foreach ($this->searchParams as $params) {
             $backendId = $params->getSearchClassId();
-            if (!\is_callable([$params, 'getBackendParameters'])) {
+            if (!is_callable([$params, 'getBackendParameters'])) {
                 throw new \Exception(
                     "Backend $backendId missing support for getBackendParameters"
                 );
@@ -493,9 +500,9 @@ class Params extends \VuFind\Search\Solr\Params
      */
     protected function proxyMethod(string $method, array $params)
     {
-        $result = \call_user_func_array(parent::class . "::$method", $params);
+        $result = call_user_func_array(parent::class . "::$method", $params);
         foreach ($this->searchParams as $searchParams) {
-            $result = \call_user_func_array([$searchParams, $method], $params);
+            $result = call_user_func_array([$searchParams, $method], $params);
         }
         return $result;
     }
@@ -541,7 +548,7 @@ class Params extends \VuFind\Search\Solr\Params
 
         $fieldConfig = $this->mappings['Facets']['Fields'][$field] ?? [];
         if ($ignore = $fieldConfig['Mappings'][$backendId]['Ignore'] ?? '') {
-            if (true === $ignore || \in_array($value, (array)$ignore)) {
+            if (true === $ignore || in_array($value, (array)$ignore)) {
                 return [null];
             }
         }
@@ -575,7 +582,7 @@ class Params extends \VuFind\Search\Solr\Params
         }
 
         // If the result is more than one value, convert an AND search to OR:
-        if ('' === $prefix && \count($resultValues) > 1) {
+        if ('' === $prefix && count($resultValues) > 1) {
             $prefix = '~';
         }
 
@@ -614,7 +621,7 @@ class Params extends \VuFind\Search\Solr\Params
             $levelGood = false;
             foreach ($mappings as $k => $v) {
                 $parts = explode('/', $v);
-                $partCount = \count($parts);
+                $partCount = count($parts);
                 if ($parts[0] <= 0 || $partCount <= 2) {
                     continue;
                 }
@@ -626,7 +633,7 @@ class Params extends \VuFind\Search\Solr\Params
                 $levelValue = $level . '/'
                     . implode(
                         '/',
-                        \array_slice($parts, 1, $level + 1)
+                        array_slice($parts, 1, $level + 1)
                     ) . '/';
                 if ($value === $levelValue) {
                     $resultValues[] = $k;

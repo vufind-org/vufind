@@ -29,6 +29,10 @@
 
 namespace VuFindSearch\Backend\BrowZine;
 
+use function array_slice;
+use function count;
+use function is_array;
+
 use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\ParamBag;
@@ -112,13 +116,13 @@ class Backend extends AbstractBackend
         }
         // Use array_values and array_filter to strip any nulls out of the
         // response (these are present sometimes due to an apparent API bug)
-        $results = isset($response['data']) && \is_array($response['data'])
+        $results = isset($response['data']) && is_array($response['data'])
             ? array_values(array_filter($response['data'])) : [];
         $collection = $this->createRecordCollection(
             [
                 'offset' => $offset,
-                'recordCount' => \count($results),
-                'data' => \array_slice($results, $offset, $limit),
+                'recordCount' => count($results),
+                'data' => array_slice($results, $offset, $limit),
             ]
         );
         $this->injectSourceIdentifier($collection);

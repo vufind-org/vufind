@@ -29,6 +29,9 @@
 
 namespace VuFind\RecordDriver\Feature;
 
+use function count;
+use function in_array;
+
 /**
  * Hierarchy support for record drivers.
  *
@@ -163,7 +166,7 @@ trait HierarchyAwareTrait
         }
 
         // Map the titles and IDs to a useful format:
-        $c = \count($ids);
+        $c = count($ids);
         $retVal = [];
         for ($i = 0; $i < $c; $i++) {
             $retVal[$ids[$i]] = $titles[$i];
@@ -194,7 +197,7 @@ trait HierarchyAwareTrait
                 return isset($this->fields['is_hierarchy_title'])
                     && isset($this->fields['is_hierarchy_id'])
                     && isset($this->fields['hierarchy_top_id'])
-                    && \in_array(
+                    && in_array(
                         $this->fields['is_hierarchy_id'],
                         $this->fields['hierarchy_top_id']
                     );

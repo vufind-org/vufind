@@ -29,6 +29,8 @@
 
 namespace VuFindSearch\Backend\Exception;
 
+use function in_array;
+
 use VuFindSearch\Exception\RuntimeException;
 
 /**
@@ -80,6 +82,6 @@ class BackendException extends RuntimeException
      */
     public function hasTag($tag)
     {
-        return \in_array($tag, $this->tags);
+        return in_array($tag, $this->tags);
     }
 }

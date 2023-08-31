@@ -30,6 +30,8 @@
 
 namespace VuFind\Cookie;
 
+use function strlen;
+
 /**
  * Class for treating a set of cookies as an object (inspired by
  * \Laminas\Session\Container).
@@ -77,8 +79,8 @@ class Container
     {
         $retVal = [];
         foreach ($this->manager->getCookies() as $key => $value) {
-            if (substr($key, 0, \strlen($this->groupName)) == $this->groupName) {
-                $retVal[substr($key, \strlen($this->groupName))] = $value;
+            if (substr($key, 0, strlen($this->groupName)) == $this->groupName) {
+                $retVal[substr($key, strlen($this->groupName))] = $value;
             }
         }
         return $retVal;

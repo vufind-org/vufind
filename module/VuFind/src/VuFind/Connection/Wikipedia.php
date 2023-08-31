@@ -29,6 +29,10 @@
 
 namespace VuFind\Connection;
 
+use function count;
+use function is_array;
+use function strlen;
+
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
@@ -201,7 +205,7 @@ class Wikipedia implements TranslatorAwareInterface
                 'Bio', 'Ficha de escritor', 'Infobox', 'Info/Biografia',
             ];
             foreach ($infoboxTags as $tag) {
-                if (substr($m, 0, \strlen($tag) + 1) == '{' . $tag) {
+                if (substr($m, 0, strlen($tag) + 1) == '{' . $tag) {
                     // We found an infobox!!
                     return '{' . $m . '}';
                 }
@@ -232,9 +236,9 @@ class Wikipedia implements TranslatorAwareInterface
         if (isset($matches[3][0])) {
             $parts = explode('|', $matches[3][0]);
             $imageName = str_replace(' ', '_', $parts[0]);
-            if (\count($parts) > 1) {
+            if (count($parts) > 1) {
                 $imageCaption = strip_tags(
-                    preg_replace('/({{).*(}})/U', '', $parts[\count($parts) - 1])
+                    preg_replace('/({{).*(}})/U', '', $parts[count($parts) - 1])
                 );
             }
         }
@@ -265,7 +269,7 @@ class Wikipedia implements TranslatorAwareInterface
         $body .= '[[file:bad]]';
         preg_match_all("/{$open}{$recursive_match}{$close}/Us", $body, $new_matches);
         // Loop through every match (link) we found
-        if (\is_array($new_matches)) {
+        if (is_array($new_matches)) {
             foreach ($new_matches as $nm) {
                 foreach ((array)$nm as $n) {
                     // If it's a file link get rid of it
@@ -397,7 +401,7 @@ class Wikipedia implements TranslatorAwareInterface
             // Start of the infobox
             $start  = strpos($body['*'], $infoboxStr);
             // + the length of the infobox
-            $offset = \strlen($infoboxStr);
+            $offset = strlen($infoboxStr);
             // Every after the infobox
             return substr($body['*'], $start + $offset);
         }

@@ -29,6 +29,12 @@
 
 namespace VuFind;
 
+use function array_slice;
+use function chr;
+use function count;
+use function in_array;
+use function ord;
+
 use VuFind\Cookie\CookieManager;
 
 /**
@@ -136,7 +142,7 @@ class Cart
      */
     public function contains($item)
     {
-        return \in_array($item, $this->items);
+        return in_array($item, $this->items);
     }
 
     /**
@@ -175,8 +181,8 @@ class Cart
     {
         $items = array_merge($this->items, $items);
 
-        $total = \count($items);
-        $this->items = \array_slice(array_unique($items), 0, $this->maxSize);
+        $total = count($items);
+        $this->items = array_slice(array_unique($items), 0, $this->maxSize);
         $this->save();
         if ($total > $this->maxSize) {
             $notAdded = $total - $this->maxSize;
@@ -196,7 +202,7 @@ class Cart
     {
         $results = [];
         foreach ($this->items as $id) {
-            if (!\in_array($id, $items)) {
+            if (!in_array($id, $items)) {
                 $results[] = $id;
             }
         }
@@ -221,7 +227,7 @@ class Cart
      */
     public function isFull()
     {
-        return \count($this->items) >= $this->maxSize;
+        return count($this->items) >= $this->maxSize;
     }
 
     /**
@@ -271,7 +277,7 @@ class Cart
             if (!isset($cookies[self::CART_COOKIE_SOURCES])) {
                 // Backward compatibility with VuFind 1.x -- if no source cookie, all
                 // items come from the default source:
-                for ($i = 0; $i < \count($items); $i++) {
+                for ($i = 0; $i < count($items); $i++) {
                     $items[$i] = DEFAULT_SEARCH_BACKEND . '|' . $items[$i];
                 }
             } else {
@@ -280,8 +286,8 @@ class Cart
                     self::CART_COOKIE_DELIM,
                     $cookies[self::CART_COOKIE_SOURCES]
                 );
-                for ($i = 0; $i < \count($items); $i++) {
-                    $sourceIndex = \ord(substr($items[$i], 0, 1)) - 65;
+                for ($i = 0; $i < count($items); $i++) {
+                    $sourceIndex = ord(substr($items[$i], 0, 1)) - 65;
                     $items[$i]
                         = $sources[$sourceIndex] . '|' . substr($items[$i], 1);
                 }
@@ -308,12 +314,12 @@ class Cart
             // Add the source to the source array if it is not already there:
             $sourceIndex = array_search($source, $sources);
             if ($sourceIndex === false) {
-                $sourceIndex = \count($sources);
+                $sourceIndex = count($sources);
                 $sources[$sourceIndex] = $source;
             }
 
             // Encode the source into the ID as a single character:
-            $ids[] = \chr(65 + $sourceIndex) . $id;
+            $ids[] = chr(65 + $sourceIndex) . $id;
         }
 
         // Save the cookies:

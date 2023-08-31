@@ -29,6 +29,8 @@
 
 namespace VuFind\Sitemap;
 
+use function is_array;
+
 /**
  * Class for representing sitemap files
  *
@@ -83,7 +85,7 @@ class Sitemap extends AbstractFile
      */
     protected function getEntry($url)
     {
-        if (\is_array($url)) {
+        if (is_array($url)) {
             $link = $url['url'];
             $languages = $url['languages'] ?? [];
             $frequency = $url['frequency'] ?? '';

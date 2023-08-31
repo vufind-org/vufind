@@ -29,6 +29,9 @@
 
 namespace VuFind\Http\PhpEnvironment;
 
+use function is_array;
+use function is_string;
+
 /**
  * HTTP Request class
  *
@@ -99,11 +102,11 @@ class Request extends \Laminas\Http\PhpEnvironment\Request
     protected function cleanup($param)
     {
         if (
-            \is_array($param)
+            is_array($param)
             || $param instanceof \Laminas\Stdlib\ParametersInterface
         ) {
             foreach ($param as $key => &$value) {
-                if (\is_array($value)) {
+                if (is_array($value)) {
                     $value = $this->cleanup($value);
                 } elseif (!$this->isValid($key) || !$this->isValid($value)) {
                     unset($param[$key]);
@@ -112,7 +115,7 @@ class Request extends \Laminas\Http\PhpEnvironment\Request
             return $param;
         }
 
-        if (\is_string($param) && !$this->isValid($param)) {
+        if (is_string($param) && !$this->isValid($param)) {
             return '';
         }
 
@@ -128,7 +131,7 @@ class Request extends \Laminas\Http\PhpEnvironment\Request
      */
     protected function isValid($param)
     {
-        if (!\is_string($param)) {
+        if (!is_string($param)) {
             return true;
         }
         // Check if the string is UTF-8:

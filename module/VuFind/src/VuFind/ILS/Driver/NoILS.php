@@ -30,6 +30,8 @@
 
 namespace VuFind\ILS\Driver;
 
+use function strlen;
+
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
@@ -116,7 +118,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
         // Add idPrefix condition
         $idPrefix = $this->getIdPrefix();
         return $this->recordLoader->load(
-            \strlen($idPrefix) ? $idPrefix . $id : $id,
+            strlen($idPrefix) ? $idPrefix . $id : $id,
             DEFAULT_SEARCH_BACKEND,
             true    // tolerate missing records
         );
@@ -267,10 +269,10 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
             // ID prefix, strip it off!
             $idPrefix = $this->getIdPrefix();
             if (
-                isset($result[0]['id']) && \strlen($idPrefix)
-                && $idPrefix === substr($result[0]['id'], 0, \strlen($idPrefix))
+                isset($result[0]['id']) && strlen($idPrefix)
+                && $idPrefix === substr($result[0]['id'], 0, strlen($idPrefix))
             ) {
-                $result[0]['id'] = substr($result[0]['id'], \strlen($idPrefix));
+                $result[0]['id'] = substr($result[0]['id'], strlen($idPrefix));
             }
             return empty($result) ? [] : $result;
         }

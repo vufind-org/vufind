@@ -29,6 +29,8 @@
 
 namespace VuFindSearch\Backend\Pazpar2;
 
+use function intval;
+
 use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
@@ -167,7 +169,7 @@ class Backend extends AbstractBackend
         $hits = $response->hit ?? [];
         $collection = $this->createRecordCollection(
             $hits,
-            \intval($response->merged),
+            intval($response->merged),
             $offset
         );
         $this->injectSourceIdentifier($collection);

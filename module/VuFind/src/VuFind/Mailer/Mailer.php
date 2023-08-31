@@ -29,6 +29,9 @@
 
 namespace VuFind\Mailer;
 
+use function count;
+use function is_callable;
+
 use Laminas\Mail\Address;
 use Laminas\Mail\AddressList;
 use Laminas\Mail\Header\ContentType;
@@ -133,7 +136,7 @@ class Mailer implements
         // disconnect fails, revert to the transport instance clone made before a
         // connection was made.
         $transport = $this->getTransport();
-        if (\is_callable([$transport, 'disconnect'])) {
+        if (is_callable([$transport, 'disconnect'])) {
             try {
                 $transport->disconnect();
             } catch (\Exception $e) {
@@ -255,7 +258,7 @@ class Mailer implements
 
         // Validate email addresses:
         if ($this->maxRecipients > 0) {
-            if ($this->maxRecipients < \count($recipients)) {
+            if ($this->maxRecipients < count($recipients)) {
                 throw new MailException(
                     'Too Many Email Recipients',
                     MailException::ERROR_TOO_MANY_RECIPIENTS
@@ -263,7 +266,7 @@ class Mailer implements
             }
         }
         $validator = new \Laminas\Validator\EmailAddress();
-        if (\count($recipients) == 0) {
+        if (count($recipients) == 0) {
             throw new MailException(
                 'Invalid Recipient Email Address',
                 MailException::ERROR_INVALID_RECIPIENT
@@ -300,7 +303,7 @@ class Mailer implements
         ) {
             // Add the original from address as the reply-to address unless
             // a reply-to address has been specified
-            if (\count($replyTo) === 0) {
+            if (count($replyTo) === 0) {
                 $replyTo->add($fromEmail);
             }
             if (!($from instanceof Address)) {

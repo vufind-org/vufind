@@ -29,6 +29,11 @@
 
 namespace VuFind\RecordDriver;
 
+use function count;
+use function in_array;
+use function is_array;
+use function strlen;
+
 use VuFind\View\Helper\Root\RecordLinker;
 use VuFindCode\ISBN;
 
@@ -460,7 +465,7 @@ class DefaultRecord extends AbstractBase
         $dedup_data = function (&$array) {
             foreach ($array as $author => $data) {
                 foreach ($data as $field => $values) {
-                    if (\is_array($values)) {
+                    if (is_array($values)) {
                         $array[$author][$field] = array_unique($values);
                     }
                 }
@@ -727,13 +732,13 @@ class DefaultRecord extends AbstractBase
         // If we have multiple formats, Book, Journal and Article are most
         // important...
         $formats = $this->getFormats();
-        if (\in_array('Book', $formats) || \in_array('eBook', $formats)) {
+        if (in_array('Book', $formats) || in_array('eBook', $formats)) {
             return 'Book';
-        } elseif (\in_array('Article', $formats)) {
+        } elseif (in_array('Article', $formats)) {
             return 'Article';
-        } elseif (\in_array('Journal', $formats)) {
+        } elseif (in_array('Journal', $formats)) {
             return 'Journal';
-        } elseif (\strlen($this->getCleanISSN()) > 0) {
+        } elseif (strlen($this->getCleanISSN()) > 0) {
             // If the record has an ISSN and we have not already
             // decided it is an Article, we'll treat it as a Book
             // if it has an ISBN and is therefore likely part of a
@@ -742,10 +747,10 @@ class DefaultRecord extends AbstractBase
             // Anecdotally, some link resolvers do not return correct
             // results when given both ISBN and ISSN for a member of a
             // monographic series.
-            return \strlen($this->getCleanISBN()) > 0 ? 'Book' : 'Journal';
+            return strlen($this->getCleanISBN()) > 0 ? 'Book' : 'Journal';
         } elseif (isset($formats[0])) {
             return $formats[0];
-        } elseif (\strlen($this->getCleanISBN()) > 0) {
+        } elseif (strlen($this->getCleanISBN()) > 0) {
             // Last ditch. Note that this is last by intention; if the
             // record has a format set and also has an ISBN, we don't
             // necessarily want to send the ISBN, as it may be a game
@@ -815,14 +820,14 @@ class DefaultRecord extends AbstractBase
         $params['rft.genre'] = 'book';
         $params['rft.btitle'] = $params['rft.title'];
         $series = $this->getSeries();
-        if (\count($series) > 0) {
+        if (count($series) > 0) {
             // Handle both possible return formats of getSeries:
-            $params['rft.series'] = \is_array($series[0]) ?
+            $params['rft.series'] = is_array($series[0]) ?
                 $series[0]['name'] : $series[0];
         }
         $params['rft.au'] = $this->getPrimaryAuthor();
         $publishers = $this->getPublishers();
-        if (\count($publishers) > 0) {
+        if (count($publishers) > 0) {
             $params['rft.pub'] = $publishers[0];
         }
         $params['rft.edition'] = $this->getEdition();
@@ -854,7 +859,7 @@ class DefaultRecord extends AbstractBase
 
         $params['rft.format'] = 'Article';
         $langs = $this->getLanguages();
-        if (\count($langs) > 0) {
+        if (count($langs) > 0) {
             $params['rft.language'] = $langs[0];
         }
         return $params;
@@ -873,12 +878,12 @@ class DefaultRecord extends AbstractBase
         $params['rft_val_fmt'] = 'info:ofi/fmt:kev:mtx:dc';
         $params['rft.creator'] = $this->getPrimaryAuthor();
         $publishers = $this->getPublishers();
-        if (\count($publishers) > 0) {
+        if (count($publishers) > 0) {
             $params['rft.pub'] = $publishers[0];
         }
         $params['rft.format'] = $format;
         $langs = $this->getLanguages();
-        if (\count($langs) > 0) {
+        if (count($langs) > 0) {
             $params['rft.language'] = $langs[0];
         }
         return $params;

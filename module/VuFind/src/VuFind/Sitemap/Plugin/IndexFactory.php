@@ -29,6 +29,8 @@
 
 namespace VuFind\Sitemap\Plugin;
 
+use function is_callable;
+
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
@@ -93,7 +95,7 @@ class IndexFactory implements FactoryInterface
         if (!$backendConfig) {
             return [];
         }
-        $backendConfig = \is_callable([$backendConfig, 'toArray'])
+        $backendConfig = is_callable([$backendConfig, 'toArray'])
             ? $backendConfig->toArray() : (array)$backendConfig;
         $callback = function ($n) {
             $parts = array_map('trim', explode(',', $n));

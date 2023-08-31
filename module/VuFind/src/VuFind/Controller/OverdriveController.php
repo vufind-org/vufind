@@ -14,6 +14,8 @@
 
 namespace VuFind\Controller;
 
+use function is_array;
+
 use Laminas\Log\LoggerAwareInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\DigitalContent\OverdriveConnector;
@@ -64,7 +66,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     {
         $this->debug('ODC mycontent action');
         // Force login
-        if (!\is_array($patron = $this->catalogLogin())) {
+        if (!is_array($patron = $this->catalogLogin())) {
             return $patron;
         }
         $holds = [];
@@ -178,7 +180,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
     {
         $this->debug('ODC Hold action');
 
-        if (!\is_array($patron = $this->catalogLogin())) {
+        if (!is_array($patron = $this->catalogLogin())) {
             return $patron;
         }
         $this->debug('patron: ' . print_r($patron, true));

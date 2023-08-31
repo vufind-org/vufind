@@ -29,6 +29,8 @@
 
 namespace VuFindSearch\Backend\EIT;
 
+use function is_array;
+
 use Laminas\Http\Client;
 use Laminas\Http\Request;
 use VuFindSearch\Backend\Exception\HttpErrorException;
@@ -158,7 +160,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         if ($params) {
             $query = [];
             foreach ($params as $function => $value) {
-                if (\is_array($value)) {
+                if (is_array($value)) {
                     foreach ($value as $additional) {
                         $additional = urlencode($additional);
                         $query[] = "$function=$additional";

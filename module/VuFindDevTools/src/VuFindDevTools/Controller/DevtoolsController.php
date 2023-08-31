@@ -30,6 +30,8 @@
 
 namespace VuFindDevTools\Controller;
 
+use function is_callable;
+
 use VuFind\I18n\Locale\LocaleSettings;
 use VuFind\I18n\Translator\Loader\ExtendedIni;
 use VuFind\Search\Results\PluginManager as ResultsManager;
@@ -87,7 +89,7 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
         if (isset($view->results) && $view->results) {
             $params = $view->results->getParams();
             $view->query = $params->getQuery();
-            if (\is_callable([$params, 'getBackendParameters'])) {
+            if (is_callable([$params, 'getBackendParameters'])) {
                 $view->backendParams = $params->getBackendParameters()
                     ->getArrayCopy();
             }

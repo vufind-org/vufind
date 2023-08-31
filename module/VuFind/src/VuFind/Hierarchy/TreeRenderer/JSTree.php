@@ -29,7 +29,12 @@
 
 namespace VuFind\Hierarchy\TreeRenderer;
 
+use function count;
+use function in_array;
+
 use Laminas\Mvc\Controller\Plugin\Url as UrlPlugin;
+
+use function strlen;
 
 /**
  * Hierarchy Tree Renderer
@@ -92,7 +97,7 @@ class JSTree extends AbstractBase implements \VuFind\I18n\Translator\TranslatorA
         if ($hierarchyID) {
             // Specific Hierarchy Supplied
             if (
-                \in_array($hierarchyID, $inHierarchies)
+                in_array($hierarchyID, $inHierarchies)
                 && $this->getDataSource()->supports($hierarchyID)
             ) {
                 return [
@@ -202,7 +207,7 @@ class JSTree extends AbstractBase implements \VuFind\I18n\Translator\TranslatorA
         ];
         if (isset($node->children)) {
             $ret['children'] = [];
-            for ($i = 0; $i < \count($node->children); $i++) {
+            for ($i = 0; $i < count($node->children); $i++) {
                 $ret['children'][$i] = $this
                     ->buildNodeArray($node->children[$i], $context, $hierarchyID);
             }
@@ -297,7 +302,7 @@ class JSTree extends AbstractBase implements \VuFind\I18n\Translator\TranslatorA
     {
         $escaper = new \Laminas\Escaper\Escaper('utf-8');
 
-        $name = \strlen($node->title) > 100
+        $name = strlen($node->title) > 100
             ? substr($node->title, 0, 100) . '...'
             : $node->title;
         $href = $this->getContextualUrl($node, $context);

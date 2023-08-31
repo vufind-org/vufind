@@ -29,6 +29,10 @@
 
 namespace VuFind\RecordDriver;
 
+use function in_array;
+use function is_array;
+use function strlen;
+
 /**
  * Model for records retrieved via EBSCO's EIT API.
  *
@@ -180,7 +184,7 @@ class EIT extends DefaultRecord
     {
         if (
             isset($this->controlInfo['artinfo']['doctype'])
-            && \is_array($this->controlInfo['artinfo']['doctype'])
+            && is_array($this->controlInfo['artinfo']['doctype'])
         ) {
             return $this->controlInfo['artinfo']['doctype'];
         }
@@ -197,7 +201,7 @@ class EIT extends DefaultRecord
     {
         if (
             isset($this->controlInfo['artinfo']['aug']['au'])
-            && \is_array($this->controlInfo['artinfo']['aug']['au'])
+            && is_array($this->controlInfo['artinfo']['aug']['au'])
         ) {
             return $this->controlInfo['artinfo']['aug']['au'];
         } else {
@@ -260,7 +264,7 @@ class EIT extends DefaultRecord
             isset($this->controlInfo['artinfo']['ab'])
             && !empty($this->controlInfo['artinfo']['ab'])
         ) {
-            return \is_array($this->controlInfo['artinfo']['ab'])
+            return is_array($this->controlInfo['artinfo']['ab'])
                 ? $this->controlInfo['artinfo']['ab']
                 : [$this->controlInfo['artinfo']['ab']];
         }
@@ -417,11 +421,11 @@ class EIT extends DefaultRecord
         // If we have multiple formats, Book, Journal and Article are most
         // important...
         $formats = $this->getFormats();
-        if (\in_array('Book', $formats)) {
+        if (in_array('Book', $formats)) {
             return 'Book';
-        } elseif (\in_array('Article', $formats)) {
+        } elseif (in_array('Article', $formats)) {
             return 'Article';
-        } elseif (\in_array('Journal', $formats)) {
+        } elseif (in_array('Journal', $formats)) {
             return 'Journal';
         }
         // Defaulting to "Article" because many EBSCO databases have things like
@@ -457,7 +461,7 @@ class EIT extends DefaultRecord
         }
         $no = $this->getContainerIssue();
         if (!empty($no)) {
-            if (\strlen($str) > 0) {
+            if (strlen($str) > 0) {
                 $str .= '; ';
             }
             $str .= $this->translate('citation_issue_abbrev')
@@ -465,7 +469,7 @@ class EIT extends DefaultRecord
         }
         $start = $this->getContainerStartPage();
         if (!empty($start)) {
-            if (\strlen($str) > 0) {
+            if (strlen($str) > 0) {
                 $str .= '; ';
             }
             $end = $this->getContainerEndPage();

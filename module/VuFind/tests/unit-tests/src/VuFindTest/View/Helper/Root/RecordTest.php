@@ -29,6 +29,8 @@
 
 namespace VuFindTest\View\Helper\Root;
 
+use function is_array;
+
 use Laminas\Config\Config;
 use Laminas\View\Exception\RuntimeException;
 use VuFind\Cover\Loader;
@@ -658,7 +660,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $view->setHelperPluginManager($container);
         $view->expects($this->any())->method('resolver')
             ->will($this->returnValue($this->getMockResolver()));
-        $config = \is_array($config) ? new \Laminas\Config\Config($config) : $config;
+        $config = is_array($config) ? new \Laminas\Config\Config($config) : $config;
         $record = new Record($config);
         $record->setCoverRouter(new \VuFind\Cover\Router('http://foo/bar', $this->getCoverLoader()));
         $record->setView($view);

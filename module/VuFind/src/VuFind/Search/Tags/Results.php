@@ -29,6 +29,8 @@
 
 namespace VuFind\Search\Tags;
 
+use function count;
+
 use VuFind\Db\Table\Tags as TagsTable;
 use VuFind\Record\Loader;
 use VuFind\Search\Base\Results as BaseResults;
@@ -107,7 +109,7 @@ class Results extends BaseResults
         );
 
         // How many results were there?
-        $this->resultTotal = \count($rawResults);
+        $this->resultTotal = count($rawResults);
 
         // Apply offset and limit if necessary!
         $limit = $this->getParams()->getLimit();

@@ -35,9 +35,20 @@
 
 namespace VuFind\ILS\Driver;
 
+use function array_key_exists;
+use function array_slice;
+
 use ArrayObject;
+
+use function count;
+use function in_array;
+use function is_callable;
+
 use Laminas\Http\Request as HttpRequest;
 use Laminas\Session\Container as SessionContainer;
+
+use function strlen;
+
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Logic\ItemStatus;
@@ -203,7 +214,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     ) {
         $this->dateConverter = $dateConverter;
         $this->searchService = $ss;
-        if (!\is_callable($sessionFactory)) {
+        if (!is_callable($sessionFactory)) {
             throw new \Exception('Invalid session factory passed to constructor.');
         }
         $this->sessionFactory = $sessionFactory;
@@ -273,7 +284,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     protected function getFakeLoc($returnText = true)
     {
         $locations = $this->locations;
-        $loc = rand() % \count($locations);
+        $loc = rand() % count($locations);
         return $returnText
             ? $locations[$loc]['locationDisplay']
             : $locations[$loc]['locationID'];
@@ -295,7 +306,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         }
 
         // Make it more likely we have a single service than many:
-        $count = rand(1, 5) == 1 ? rand(1, \count($services)) : 1;
+        $count = rand(1, 5) == 1 ? rand(1, count($services)) : 1;
         $keys = (array)array_rand($services, $count);
         $fakeServices = [];
 
@@ -338,7 +349,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     protected function getFakeCallNum()
     {
         $codes = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $a = $codes[rand() % \strlen($codes)];
+        $a = $codes[rand() % strlen($codes)];
         $b = rand() % 899 + 100;
         $c = rand() % 9999;
         return $a . $b . '.' . $c;
@@ -381,7 +392,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         $query = $this->config['Records']['query'] ?? '*:*';
         $command = new RandomCommand($source, new Query($query), 1);
         $result = $this->searchService->invoke($command)->getResult();
-        if (\count($result) === 0) {
+        if (count($result) === 0) {
             throw new \Exception("Problem retrieving random record from $source.");
         }
         $record = current($result->getRecords());
@@ -618,7 +629,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                             ->convertToDisplayDate('U', $lastDate);
                     }
                 }
-                $pos = rand(0, \count($requestGroups) - 1);
+                $pos = rand(0, count($requestGroups) - 1);
                 $currentItem['requestGroup'] = $requestGroups[$pos]['name'];
                 $currentItem['cancel_details'] = $currentItem['updateDetails']
                     = (!$currentItem['available'] && !$currentItem['in_transit'])
@@ -758,7 +769,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         $id = (string)$id;
         $session = $this->getSession($patron['id'] ?? null);
         $i = isset($session->statuses[$id])
-            ? \count($session->statuses[$id]) + 1 : 1;
+            ? count($session->statuses[$id]) + 1 : 1;
         $holding = array_merge($this->getRandomHolding($id, $i, $patron), $holding);
 
         // if statuses is already stored
@@ -876,7 +887,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 return $this->getSorter()->compare($a['location'], $b['location']);
             };
             usort($status, $callback);
-            $slice = \array_slice(
+            $slice = array_slice(
                 $status,
                 $options['offset'] ?? 0,
                 $options['itemLimit']
@@ -896,7 +907,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
 
         // Send back final value:
         return [
-            'total' => \count($status),
+            'total' => count($status),
             'holdings' => $slice ?: $status,
             'electronic_holdings' => $electronic,
         ];
@@ -1286,11 +1297,11 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         if (isset($params['limit'])) {
             $limit = $params['limit'] ?? 50;
             $offset = isset($params['page']) ? ($params['page'] - 1) * $limit : 0;
-            $transactions = \array_slice($transactions, $offset, $limit);
+            $transactions = array_slice($transactions, $offset, $limit);
         }
 
         return [
-            'count' => \count($session->transactions),
+            'count' => count($session->transactions),
             'records' => $transactions,
         ];
     }
@@ -1433,7 +1444,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         $historicLoans = array_splice($historicLoans, $start, $limit);
 
         return [
-            'count' => \count($session->historicLoans),
+            'count' => count($session->historicLoans),
             'transactions' => $historicLoans,
         ];
     }
@@ -1458,7 +1469,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             $session->historicLoans = array_filter(
                 $session->historicLoans ?? [],
                 function ($loan) use ($ids) {
-                    return !\in_array($loan['row_id'], $ids);
+                    return !in_array($loan['row_id'], $ids);
                 }
             );
             $status = 'loan_history_selected_purged';
@@ -1508,7 +1519,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             $result = array_filter(
                 $result,
                 function ($loc) use ($excluded) {
-                    return !\in_array($loc['locationID'], $excluded);
+                    return !in_array($loc['locationID'], $excluded);
                 }
             );
         }
@@ -1685,7 +1696,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             $randomId = $this->getRandomBibId();
 
             // avoid duplicate entries in array:
-            if (!\in_array($randomId, $results)) {
+            if (!in_array($randomId, $results)) {
                 $results[] = $randomId;
             }
         }
@@ -1718,7 +1729,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         // whichever is smaller (this can be pretty slow due to the random ID code).
         $results = $this->config['Records']['new_items']
             ?? $this->getRandomBibIds(30);
-        $retVal = ['count' => \count($results), 'results' => []];
+        $retVal = ['count' => count($results), 'results' => []];
         foreach ($results as $result) {
             $retVal['results'][] = ['id' => $result];
         }
@@ -1734,7 +1745,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      */
     protected function getCourseId(string $course = ''): string
     {
-        return empty($course) ? (string)rand(0, \count($this->courses) - 1) : $course;
+        return empty($course) ? (string)rand(0, count($this->courses) - 1) : $course;
     }
 
     /**
@@ -1746,7 +1757,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      */
     protected function getDepartmentId(string $dept = ''): string
     {
-        return empty($dept) ? (string)rand(0, \count($this->departments) - 1) : $dept;
+        return empty($dept) ? (string)rand(0, count($this->departments) - 1) : $dept;
     }
 
     /**
@@ -1758,7 +1769,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      */
     protected function getInstructorId(string $inst = ''): string
     {
-        return empty($inst) ? (string)rand(0, \count($this->instructors) - 1) : $inst;
+        return empty($inst) ? (string)rand(0, count($this->instructors) - 1) : $inst;
     }
 
     /**
@@ -1784,7 +1795,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             $randomId = $this->getRandomBibId();
 
             // avoid duplicate entries in array:
-            if (!\in_array($randomId, $results)) {
+            if (!in_array($randomId, $results)) {
                 $results[] = $randomId;
             }
         }
@@ -1820,7 +1831,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         $retVal = ['count' => 0, 'items' => []];
         $session = $this->getSession($cancelDetails['patron']['id'] ?? null);
         foreach ($session->holds as $current) {
-            if (!\in_array($current['reqnum'], $cancelDetails['details'])) {
+            if (!in_array($current['reqnum'], $cancelDetails['details'])) {
                 $newHolds->append($current);
             } else {
                 if (!$this->isFailing(__METHOD__, 50)) {
@@ -1867,7 +1878,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         foreach ($session->holds as &$currentHold) {
             if (
                 !isset($currentHold['updateDetails'])
-                || !\in_array($currentHold['updateDetails'], $holdsDetails)
+                || !in_array($currentHold['updateDetails'], $holdsDetails)
             ) {
                 continue;
             }
@@ -1877,7 +1888,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                     = 'Simulated error; try again and it will work eventually.';
                 continue;
             }
-            if (\array_key_exists('frozen', $fields)) {
+            if (array_key_exists('frozen', $fields)) {
                 if ($fields['frozen']) {
                     $currentHold['frozen'] = true;
                     if (isset($fields['frozenThrough'])) {
@@ -1921,7 +1932,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         $retVal = ['count' => 0, 'items' => []];
         $session = $this->getSession($cancelDetails['patron']['id'] ?? null);
         foreach ($session->storageRetrievalRequests as $current) {
-            if (!\in_array($current['reqnum'], $cancelDetails['details'])) {
+            if (!in_array($current['reqnum'], $cancelDetails['details'])) {
                 $newRequests->append($current);
             } else {
                 if (!$this->isFailing(__METHOD__, 50)) {
@@ -1999,7 +2010,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         $transactions = $session->transactions;
         foreach ($transactions as $i => $current) {
             // Only renew requested items:
-            if (\in_array($current['item_id'], $renewDetails['details'])) {
+            if (in_array($current['item_id'], $renewDetails['details'])) {
                 if (!$this->isFailing(__METHOD__, 50)) {
                     $transactions[$i]['rawduedate'] += 21 * 24 * 60 * 60;
                     $transactions[$i]['dueStatus']
@@ -2116,7 +2127,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         if (!isset($session->holds)) {
             $session->holds = new ArrayObject();
         }
-        $lastHold = \count($session->holds) - 1;
+        $lastHold = count($session->holds) - 1;
         $nextId = $lastHold >= 0
             ? $session->holds[$lastHold]['item_id'] + 1 : 0;
 
@@ -2239,7 +2250,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         $validLocations = array_column($this->getPickUpLocations(), 'locationID');
         if (
             null !== $pickUpLocation
-            && !\in_array($pickUpLocation, $validLocations)
+            && !in_array($pickUpLocation, $validLocations)
         ) {
             return [
                 'success' => false,
@@ -2261,7 +2272,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         if (!isset($session->storageRetrievalRequests)) {
             $session->storageRetrievalRequests = new ArrayObject();
         }
-        $lastRequest = \count($session->storageRetrievalRequests) - 1;
+        $lastRequest = count($session->storageRetrievalRequests) - 1;
         $nextId = $lastRequest >= 0
             ? $session->storageRetrievalRequests[$lastRequest]['item_id'] + 1
             : 0;
@@ -2377,7 +2388,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         if (!isset($session->ILLRequests)) {
             $session->ILLRequests = new ArrayObject();
         }
-        $lastRequest = \count($session->ILLRequests) - 1;
+        $lastRequest = count($session->ILLRequests) - 1;
         $nextId = $lastRequest >= 0
             ? $session->ILLRequests[$lastRequest]['item_id'] + 1
             : 0;
@@ -2553,7 +2564,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         $retVal = ['count' => 0, 'items' => []];
         $session = $this->getSession($cancelDetails['patron']['id'] ?? null);
         foreach ($session->ILLRequests as $current) {
-            if (!\in_array($current['reqnum'], $cancelDetails['details'])) {
+            if (!in_array($current['reqnum'], $cancelDetails['details'])) {
                 $newRequests->append($current);
             } else {
                 if (!$this->isFailing(__METHOD__, 50)) {

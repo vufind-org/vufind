@@ -29,6 +29,8 @@
 
 namespace VuFind\Role;
 
+use function in_array;
+
 use Laminas\ServiceManager\Config;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
@@ -200,7 +202,7 @@ class DynamicRoleProviderFactory implements FactoryInterface
         foreach ($config as $current) {
             if (
                 isset($current['permission'])
-                && \in_array($permission, (array)$current['permission'])
+                && in_array($permission, (array)$current['permission'])
             ) {
                 return true;
             }

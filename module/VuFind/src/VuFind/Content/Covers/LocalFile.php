@@ -29,6 +29,9 @@
 
 namespace VuFind\Content\Covers;
 
+use function in_array;
+use function is_string;
+
 /**
  * Local file cover content loader.
  *
@@ -88,7 +91,7 @@ class LocalFile extends \VuFind\Content\AbstractCover
         );
         // Validate MIME type if we have a valid file path.
         if ($fileName && file_exists($fileName)) {
-            if (\in_array(mime_content_type($fileName), $this->allowedMimeTypes)) {
+            if (in_array(mime_content_type($fileName), $this->allowedMimeTypes)) {
                 return 'file://' . $fileName;
             }
         }
@@ -114,7 +117,7 @@ class LocalFile extends \VuFind\Content\AbstractCover
 
         // Only create tokens for strings, not objects:
         foreach ($ids as $key => $val) {
-            if (\is_string($val)) {
+            if (is_string($val)) {
                 $tokens[] = '%' . $key . '%';
                 $replacements[] = $val;
             }

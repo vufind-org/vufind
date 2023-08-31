@@ -32,6 +32,9 @@
 
 namespace VuFind\Resolver;
 
+use function call_user_func_array;
+use function is_callable;
+
 /**
  * Resolver Connection Class
  *
@@ -144,8 +147,8 @@ class Connection
     public function __call($methodName, $params)
     {
         $method = [$this->driver, $methodName];
-        if (\is_callable($method)) {
-            return \call_user_func_array($method, $params);
+        if (is_callable($method)) {
+            return call_user_func_array($method, $params);
         }
         return false;
     }

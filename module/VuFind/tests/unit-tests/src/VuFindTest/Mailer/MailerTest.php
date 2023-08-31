@@ -29,6 +29,8 @@
 
 namespace VuFindTest\Mailer;
 
+use function count;
+
 use Laminas\Mail\Address;
 use Laminas\Mail\AddressList;
 use VuFind\Mailer\Factory as MailerFactory;
@@ -399,7 +401,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
             $to = $message->getTo();
             return $to->has('to@example.com')
                 && $to->has('to2@example.com')
-                && 2 == \count($to)
+                && 2 == count($to)
                 && '<from@example.com>' == $message->getFrom()->current()->toString()
                 && '<cc@example.com>' == $message->getCc()->current()->toString()
                 && 'body' == $message->getBody()

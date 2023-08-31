@@ -29,6 +29,8 @@
 
 namespace VuFind\Search\MixedList;
 
+use function count;
+
 use VuFind\Search\Base\Results as BaseResults;
 
 /**
@@ -66,6 +68,6 @@ class Results extends BaseResults
     {
         $recordsToRequest = $this->getParams()->getRecordsToRequest();
         $this->results = $this->recordLoader->loadBatch($recordsToRequest);
-        $this->resultTotal = \count($this->results);
+        $this->resultTotal = count($this->results);
     }
 }

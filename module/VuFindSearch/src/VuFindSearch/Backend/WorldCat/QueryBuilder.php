@@ -31,6 +31,8 @@
 
 namespace VuFindSearch\Backend\WorldCat;
 
+use function count;
+
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
@@ -144,12 +146,12 @@ class QueryBuilder
 
         // Put our advanced search together
         $queryStr = '';
-        if (\count($groups) > 0) {
+        if (count($groups) > 0) {
             $queryStr
                 .= '(' . implode(') ' . $query->getOperator() . ' (', $groups) . ')';
         }
         // and concatenate exclusion after that
-        if (\count($excludes) > 0) {
+        if (count($excludes) > 0) {
             $queryStr .= ' NOT ((' . implode(') OR (', $excludes) . '))';
         }
 

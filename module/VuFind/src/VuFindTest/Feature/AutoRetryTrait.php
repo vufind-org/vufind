@@ -32,6 +32,10 @@
 
 namespace VuFindTest\Feature;
 
+use function call_user_func;
+use function get_class;
+use function is_callable;
+
 use PHPUnit\Framework\SkippedTestError;
 use PHPUnit\Util\Test;
 
@@ -112,18 +116,18 @@ trait AutoRetryTrait
                         $this,
                         $annotations['method']['retryLogMethod'][0] ?? 'logWarning',
                     ];
-                    if (\is_callable($logMethod)) {
-                        $method = \get_class($this) . '::' . $this->getName(false);
+                    if (is_callable($logMethod)) {
+                        $method = get_class($this) . '::' . $this->getName(false);
                         $msg = "RETRY TEST $method ({$this->retriesLeft} left)"
                             . ' after exception: ' . $e->getMessage() . '.';
-                        \call_user_func(
+                        call_user_func(
                             $logMethod,
                             $msg . ' See PHP error log for details.',
                             $msg . ' Full exception: ' . (string)$e
                         );
                     }
                     foreach ($retryCallbacks as $callback) {
-                        if (\is_callable([$this, $callback])) {
+                        if (is_callable([$this, $callback])) {
                             $this->{$callback}();
                         }
                     }

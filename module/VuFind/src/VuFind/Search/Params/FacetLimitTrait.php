@@ -29,6 +29,8 @@
 
 namespace VuFind\Search\Params;
 
+use function in_array;
+
 use Laminas\Config\Config;
 
 /**
@@ -143,7 +145,7 @@ trait FacetLimitTrait
             && $limit !== $this->hierarchicalFacetLimit
         ) {
             $hierarchicalFacets = $this->getOptions()->getHierarchicalFacets();
-            if (\in_array($field, $hierarchicalFacets)) {
+            if (in_array($field, $hierarchicalFacets)) {
                 $limit = $this->hierarchicalFacetLimit;
             }
         }

@@ -29,7 +29,15 @@
 
 namespace VuFind\Auth;
 
+use function call_user_func_array;
+use function func_get_args;
+use function in_array;
+use function is_callable;
+
 use Laminas\Http\PhpEnvironment\Request;
+
+use function strlen;
+
 use VuFind\Db\Row\User;
 use VuFind\Exception\Auth as AuthException;
 
@@ -102,7 +110,7 @@ class ChoiceAuth extends AbstractBase
     {
         if (
             !isset($this->config->ChoiceAuth->choice_order)
-            || !\strlen($this->config->ChoiceAuth->choice_order)
+            || !strlen($this->config->ChoiceAuth->choice_order)
         ) {
             throw new AuthException(
                 'One or more ChoiceAuth parameters are missing. ' .
@@ -165,7 +173,7 @@ class ChoiceAuth extends AbstractBase
     public function authenticate($request)
     {
         try {
-            return $this->proxyUserLoad($request, 'authenticate', \func_get_args());
+            return $this->proxyUserLoad($request, 'authenticate', func_get_args());
         } catch (\Exception $e) {
             // If an exception was thrown during login, we need to clear the
             // stored strategy to ensure that we display the full ChoiceAuth
@@ -186,7 +194,7 @@ class ChoiceAuth extends AbstractBase
      */
     public function create($request)
     {
-        return $this->proxyUserLoad($request, 'create', \func_get_args());
+        return $this->proxyUserLoad($request, 'create', func_get_args());
     }
 
     /**
@@ -256,7 +264,7 @@ class ChoiceAuth extends AbstractBase
         // perform default behavior of returning unmodified URL:
         try {
             return $this->strategy
-                ? $this->proxyAuthMethod('logout', \func_get_args()) : $url;
+                ? $this->proxyAuthMethod('logout', func_get_args()) : $url;
         } catch (InvalidArgumentException $e) {
             // If we're in an invalid state (due to an illegal login method),
             // we should just clear everything out so the user can try again.
@@ -276,7 +284,7 @@ class ChoiceAuth extends AbstractBase
      */
     public function getSessionInitiator($target)
     {
-        return $this->proxyAuthMethod('getSessionInitiator', \func_get_args());
+        return $this->proxyAuthMethod('getSessionInitiator', func_get_args());
     }
 
     /**
@@ -286,7 +294,7 @@ class ChoiceAuth extends AbstractBase
      */
     public function supportsPasswordChange()
     {
-        return $this->proxyAuthMethod('supportsPasswordChange', \func_get_args());
+        return $this->proxyAuthMethod('supportsPasswordChange', func_get_args());
     }
 
     /**
@@ -296,7 +304,7 @@ class ChoiceAuth extends AbstractBase
      */
     public function supportsPasswordRecovery()
     {
-        return $this->proxyAuthMethod('supportsPasswordRecovery', \func_get_args());
+        return $this->proxyAuthMethod('supportsPasswordRecovery', func_get_args());
     }
 
     /**
@@ -306,7 +314,7 @@ class ChoiceAuth extends AbstractBase
      */
     public function getUsernamePolicy()
     {
-        return $this->proxyAuthMethod('getUsernamePolicy', \func_get_args());
+        return $this->proxyAuthMethod('getUsernamePolicy', func_get_args());
     }
 
     /**
@@ -316,7 +324,7 @@ class ChoiceAuth extends AbstractBase
      */
     public function getPasswordPolicy()
     {
-        return $this->proxyAuthMethod('getPasswordPolicy', \func_get_args());
+        return $this->proxyAuthMethod('getPasswordPolicy', func_get_args());
     }
 
     /**
@@ -333,7 +341,7 @@ class ChoiceAuth extends AbstractBase
         // auth method included in the request since we haven't set an active
         // strategy yet -- thus we should check for it.
         $this->setStrategyFromRequest($request);
-        return $this->proxyAuthMethod('updatePassword', \func_get_args());
+        return $this->proxyAuthMethod('updatePassword', func_get_args());
     }
 
     /**
@@ -347,7 +355,7 @@ class ChoiceAuth extends AbstractBase
      */
     public function getDelegateAuthMethod(Request $request)
     {
-        return $this->proxyAuthMethod('getDelegateAuthMethod', \func_get_args());
+        return $this->proxyAuthMethod('getDelegateAuthMethod', func_get_args());
     }
 
     /**
@@ -358,7 +366,7 @@ class ChoiceAuth extends AbstractBase
     protected function hasLegalStrategy()
     {
         // Do a case-insensitive search of the strategy list:
-        return \in_array(
+        return in_array(
             strtolower($this->strategy),
             array_map('strtolower', $this->strategies)
         );
@@ -386,10 +394,10 @@ class ChoiceAuth extends AbstractBase
         }
         $authenticator = $this->getPluginManager()->get($this->strategy);
         $authenticator->setConfig($this->getConfig());
-        if (!\is_callable([$authenticator, $method])) {
+        if (!is_callable([$authenticator, $method])) {
             throw new AuthException($this->strategy . "has no method $method");
         }
-        return \call_user_func_array([$authenticator, $method], $params);
+        return call_user_func_array([$authenticator, $method], $params);
     }
 
     /**
@@ -454,7 +462,7 @@ class ChoiceAuth extends AbstractBase
             // In this instance we are checking credentials but do not wish to
             // change the state of the current object. Thus, we use proxyAuthMethod()
             // here instead of proxyUserLoad().
-            $user = $this->proxyAuthMethod('authenticate', \func_get_args());
+            $user = $this->proxyAuthMethod('authenticate', func_get_args());
         } catch (AuthException $e) {
             return false;
         }
@@ -475,6 +483,6 @@ class ChoiceAuth extends AbstractBase
         if (!$this->strategy) {
             return true;
         }
-        return $this->proxyAuthMethod('needsCsrfCheck', \func_get_args());
+        return $this->proxyAuthMethod('needsCsrfCheck', func_get_args());
     }
 }

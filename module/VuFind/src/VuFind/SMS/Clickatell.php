@@ -29,6 +29,8 @@
 
 namespace VuFind\SMS;
 
+use function function_exists;
+
 use VuFind\Exception\SMS as SMSException;
 
 /**
@@ -170,7 +172,7 @@ class Clickatell extends AbstractBase
     protected function formatMessage($message)
     {
         // Clickatell expects UCS-2 encoding:
-        if (!\function_exists('iconv')) {
+        if (!function_exists('iconv')) {
             throw new SMSException(
                 'Clickatell requires iconv PHP extension.',
                 SMSException::ERROR_UNKNOWN

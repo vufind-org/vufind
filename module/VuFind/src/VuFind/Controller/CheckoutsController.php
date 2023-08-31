@@ -31,6 +31,8 @@
 
 namespace VuFind\Controller;
 
+use function is_array;
+
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\SessionManager;
 use VuFind\ILS\PaginationHelper;
@@ -106,7 +108,7 @@ class CheckoutsController extends AbstractBase
         $this->resetValidRowIds();
 
         // Stop now if the user does not have valid catalog credentials available:
-        if (!\is_array($patron = $this->catalogLogin())) {
+        if (!is_array($patron = $this->catalogLogin())) {
             return $patron;
         }
 
@@ -197,7 +199,7 @@ class CheckoutsController extends AbstractBase
             = $this->redirect()->toRoute('checkouts-history');
 
         // Stop now if the user does not have valid catalog credentials available:
-        if (!\is_array($patron = $this->catalogLogin())) {
+        if (!is_array($patron = $this->catalogLogin())) {
             return $patron;
         }
 

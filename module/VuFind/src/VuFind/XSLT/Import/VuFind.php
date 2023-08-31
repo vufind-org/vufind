@@ -29,7 +29,13 @@
 
 namespace VuFind\XSLT\Import;
 
+use function count;
+
 use DOMDocument;
+
+use function in_array;
+use function is_callable;
+use function strlen;
 
 /**
  * XSLT support class -- all methods of this class must be public and static;
@@ -372,13 +378,13 @@ class VuFind
     {
         static $articles = ['a', 'an', 'the'];
 
-        $text = \is_callable('mb_strtolower')
+        $text = is_callable('mb_strtolower')
             ? mb_strtolower(trim($in), 'UTF-8')
             : strtolower(trim($in));
 
         foreach ($articles as $a) {
-            if (substr($text, 0, \strlen($a) + 1) == ($a . ' ')) {
-                $text = substr($text, \strlen($a) + 1);
+            if (substr($text, 0, strlen($a) + 1) == ($a . ' ')) {
+                $text = substr($text, strlen($a) + 1);
                 break;
             }
         }
@@ -515,7 +521,7 @@ class VuFind
                     $matches
                 );
                 foreach ($matches[0] as $match) {
-                    if (\strlen($match) > \strlen($adequateMatch)) {
+                    if (strlen($match) > strlen($adequateMatch)) {
                         $adequateMatch = $match;
                     }
                 }
@@ -535,15 +541,15 @@ class VuFind
     {
         $parts = explode(',', $name);
         // If there are no commas, it's not inverted...
-        if (\count($parts) < 2) {
+        if (count($parts) < 2) {
             return false;
         }
         // If there are commas, let's see if the last part is a title,
         // in which case it could go either way, so we need to recalculate.
         $lastPart = array_pop($parts);
         $titles = ['jr', 'sr', 'dr', 'mrs', 'ii', 'iii', 'iv'];
-        if (\in_array(strtolower(trim($lastPart, ' .')), $titles)) {
-            return \count($parts) > 1;
+        if (in_array(strtolower(trim($lastPart, ' .')), $titles)) {
+            return count($parts) > 1;
         }
         return true;
     }
@@ -559,7 +565,7 @@ class VuFind
     {
         // includes the full name, eg.: Bento, Filipe Manuel dos Santos
         $parts = preg_split('/\s+(?=[^\s]+$)/', $rawName, 2);
-        if (\count($parts) != 2) {
+        if (count($parts) != 2) {
             return $rawName;
         }
         [$fnames, $lname] = $parts;

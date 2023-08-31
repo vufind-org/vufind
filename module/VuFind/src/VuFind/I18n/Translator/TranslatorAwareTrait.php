@@ -29,6 +29,11 @@
 
 namespace VuFind\I18n\Translator;
 
+use function count;
+use function is_array;
+use function is_callable;
+use function is_string;
+
 use Laminas\I18n\Translator\TranslatorInterface;
 
 /**
@@ -82,7 +87,7 @@ trait TranslatorAwareTrait
     public function getTranslatorLocale($default = 'en')
     {
         return null !== $this->translator
-            && \is_callable([$this->translator, 'getLocale'])
+            && is_callable([$this->translator, 'getLocale'])
             ? $this->translator->getLocale()
             : $default;
     }
@@ -167,7 +172,7 @@ trait TranslatorAwareTrait
         $tokens = [],
         $default = null
     ) {
-        if (\is_string($target)) {
+        if (is_string($target)) {
             if (null === $default) {
                 $default = $target;
             }
@@ -226,11 +231,11 @@ trait TranslatorAwareTrait
      */
     protected function extractTextDomain($target)
     {
-        $parts = \is_array($target) ? $target : explode('::', $target, 2);
-        if (\count($parts) < 1 || \count($parts) > 2) {
+        $parts = is_array($target) ? $target : explode('::', $target, 2);
+        if (count($parts) < 1 || count($parts) > 2) {
             throw new \Exception('Unexpected value sent to translator!');
         }
-        if (\count($parts) == 2) {
+        if (count($parts) == 2) {
             if (empty($parts[0])) {
                 $parts[0] = 'default';
             }
@@ -244,6 +249,6 @@ trait TranslatorAwareTrait
             }
             return $parts;
         }
-        return ['default', \is_array($target) ? $parts[0] : $target];
+        return ['default', is_array($target) ? $parts[0] : $target];
     }
 }

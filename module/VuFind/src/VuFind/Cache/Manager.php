@@ -31,9 +31,14 @@
 
 namespace VuFind\Cache;
 
+use function dirname;
+use function is_array;
+
 use Laminas\Cache\Service\StorageAdapterFactory;
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\Config\Config;
+
+use function strlen;
 
 /**
  * VuFind Cache Manager
@@ -179,9 +184,9 @@ class Manager
             );
         }
 
-        if (\strlen(LOCAL_CACHE_DIR) > 0) {
+        if (strlen(LOCAL_CACHE_DIR) > 0) {
             $dir = LOCAL_CACHE_DIR . '/';
-        } elseif (\strlen(LOCAL_OVERRIDE_DIR) > 0) {
+        } elseif (strlen(LOCAL_OVERRIDE_DIR) > 0) {
             $dir = LOCAL_OVERRIDE_DIR . '/cache/';
         } else {
             $dir = APPLICATION_PATH . '/data/cache/';
@@ -307,7 +312,7 @@ class Manager
                 $dir_perm = 0777;
             }
             // Make sure cache parent directory and directory itself exist:
-            $parentDir = \dirname($dirName);
+            $parentDir = dirname($dirName);
             if (!is_dir($parentDir) && !@mkdir($parentDir, $dir_perm)) {
                 $this->directoryCreationError = true;
             }
@@ -317,7 +322,7 @@ class Manager
         }
         if (empty($opts)) {
             $opts = ['cache_dir' => $dirName];
-        } elseif (\is_array($opts)) {
+        } elseif (is_array($opts)) {
             // If VUFIND_CACHE_DIR was set in the environment, the cache-specific
             // name should have been appended to it to create the value $dirName.
             $opts['cache_dir'] = $dirName;

@@ -31,6 +31,8 @@
 
 namespace VuFindTest\Search\Solr;
 
+use function get_class;
+
 use VuFind\Config\PluginManager;
 use VuFind\I18n\TranslatableString;
 use VuFind\Record\Loader;
@@ -189,7 +191,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         $checkCommand = function ($command) use ($expectedParams) {
             return $command::class === \VuFindSearch\Command\SearchCommand::class
                 && $command->getTargetIdentifier() === 'Solr'
-                && \get_class($command->getArguments()[0]) === \VuFindSearch\Query\Query::class
+                && get_class($command->getArguments()[0]) === \VuFindSearch\Query\Query::class
                 && $command->getArguments()[1] === 0
                 && $command->getArguments()[2] === 20
                 && $command->getArguments()[3]->getArrayCopy() == $expectedParams;

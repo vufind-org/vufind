@@ -31,6 +31,9 @@ namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
 
+use function count;
+use function is_object;
+
 /**
  * Mink cart test class.
  *
@@ -108,7 +111,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         for ($clickRetry = 0; $clickRetry <= 4; $clickRetry++) {
             $this->clickCss($page, $updateCartId);
             $content = $page->find('css', '.popover-content');
-            if (\is_object($content)) {
+            if (is_object($content)) {
                 $this->assertEquals(
                     'No items were selected. '
                     . 'Please click on a checkbox next to an item and try again.',
@@ -138,7 +141,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         for ($clickRetry = 0; $clickRetry <= 4; $clickRetry++) {
             $this->clickCss($page, $updateCartId);
             $content = $page->find('css', '.popover-content');
-            if (\is_object($content)) {
+            if (is_object($content)) {
                 $this->assertEquals(
                     '0 item(s) added to your Book Bag 2 item(s) are either '
                     . 'already in your Book Bag or could not be added',
@@ -168,7 +171,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         $selectAll = $this->findCss($page, $selectAllId);
         $selectAll->check();
         // Make sure all items are checked:
-        $checkboxCount = \count($page->findAll('css', '.checkbox-select-item'));
+        $checkboxCount = count($page->findAll('css', '.checkbox-select-item'));
         $this->waitStatement(
             '$(".checkbox-select-item:checked").length === ' . $checkboxCount
         );
@@ -698,13 +701,13 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         // Do the export:
         $session = $this->getMinkSession();
         $windowNames = $session->getWindowNames();
-        $windowCount = \count($session->getWindowNames());
+        $windowCount = count($session->getWindowNames());
         $submit = $this->findCss($page, '.modal-body input[name=submit]');
         $submit->click();
         $this->assertEqualsWithTimeout(
             $windowCount + 1,
             function () use ($session) {
-                return \count($session->getWindowNames());
+                return count($session->getWindowNames());
             }
         );
         $newWindows = array_diff($session->getWindowNames(), $windowNames);

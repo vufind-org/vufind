@@ -29,6 +29,9 @@
 
 namespace VuFind\Autocomplete;
 
+use function is_callable;
+use function is_object;
+
 use Laminas\Stdlib\Parameters;
 use VuFind\Config\PluginManager as ConfigManager;
 use VuFind\Search\Options\PluginManager as OptionsManager;
@@ -135,16 +138,16 @@ class Suggester
             $handler = null;
         }
 
-        if (\is_callable([$handler, 'addFilters'])) {
+        if (is_callable([$handler, 'addFilters'])) {
             $handler->addFilters($hiddenFilters);
         }
 
         // if the handler needs the complete request, pass it on
-        if (\is_callable([$handler, 'setRequest'])) {
+        if (is_callable([$handler, 'setRequest'])) {
             $handler->setRequest($request);
         }
 
-        return \is_object($handler)
+        return is_object($handler)
             ? array_values($handler->getSuggestions($query)) : [];
     }
 }

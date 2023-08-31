@@ -29,6 +29,8 @@
 
 namespace VuFind\Controller;
 
+use function in_array;
+
 /**
  * AbstractSearch with Solr-specific features added.
  *
@@ -154,7 +156,7 @@ class AbstractSolrSearch extends AbstractSearch
         foreach ($facetList as $facet => &$list) {
             // Hierarchical facets: format display texts and sort facets
             // to a flat array according to the hierarchy
-            if (\in_array($facet, $hierarchicalFacets)) {
+            if (in_array($facet, $hierarchicalFacets)) {
                 $tmpList = $list['list'];
 
                 $sort = $hierarchicalFacetsSortOptions[$facet]

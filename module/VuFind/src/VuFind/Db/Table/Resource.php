@@ -29,6 +29,8 @@
 
 namespace VuFind\Db\Table;
 
+use function in_array;
+
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
@@ -305,7 +307,7 @@ class Resource extends Gateway
         $legalSorts = [
             'title', 'title desc', 'author', 'author desc', 'year', 'year desc',
         ];
-        if (!empty($sort) && \in_array(strtolower($sort), $legalSorts)) {
+        if (!empty($sort) && in_array(strtolower($sort), $legalSorts)) {
             // Strip off 'desc' to obtain the raw field name -- we'll need it
             // to sort null values to the bottom:
             $parts = explode(' ', $sort);

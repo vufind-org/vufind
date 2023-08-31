@@ -29,6 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
+use function is_array;
+
 use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Laminas\View\Helper\AbstractHelper;
 
@@ -103,7 +105,7 @@ class Flashmessages extends AbstractHelper
                 }
                 $html .= '>';
                 // Advanced form:
-                if (\is_array($msg)) {
+                if (is_array($msg)) {
                     $msgHtml = $msg['html'] ?? false;
                     $message = $msg['msg'];
                     $escapeHtml = $this->getView()->plugin('escapeHtml');

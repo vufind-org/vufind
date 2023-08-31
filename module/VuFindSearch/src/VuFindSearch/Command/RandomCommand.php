@@ -31,6 +31,8 @@
 
 namespace VuFindSearch\Command;
 
+use function in_array;
+
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Feature\RandomInterface;
 use VuFindSearch\ParamBag;
@@ -137,7 +139,7 @@ class RandomCommand extends CallMethodCommand
             $retrievedIndexes = [];
             for ($i = 0; $i < $limit; $i++) {
                 $nextIndex = rand(0, $total_records - 1);
-                while (\in_array($nextIndex, $retrievedIndexes)) {
+                while (in_array($nextIndex, $retrievedIndexes)) {
                     // avoid duplicate records
                     $nextIndex = rand(0, $total_records - 1);
                 }

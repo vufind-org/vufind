@@ -30,6 +30,8 @@
 
 namespace VuFind\RecordTab;
 
+use function count;
+
 use VuFind\Config\PathResolver;
 
 /**
@@ -246,7 +248,7 @@ class Map extends AbstractBase
             if (file_exists($file)) {
                 $fp = fopen($file, 'r');
                 while (($line = fgetcsv($fp, 0, "\t")) !== false) {
-                    if (\count($line) > 1) {
+                    if (count($line) > 1) {
                         $label_lookup[$line[0]] = $line[1];
                     }
                 }

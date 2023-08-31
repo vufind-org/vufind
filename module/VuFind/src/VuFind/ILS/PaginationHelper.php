@@ -32,6 +32,8 @@
 
 namespace VuFind\ILS;
 
+use function in_array;
+
 /**
  * ILS Pagination Helper
  *
@@ -118,7 +120,7 @@ class PaginationHelper
         if (isset($functionConfig['max_results'])) {
             $limit = min([$functionConfig['max_results'], $limit]);
         } elseif (isset($functionConfig['page_size'])) {
-            if (!\in_array($limit, $functionConfig['page_size'])) {
+            if (!in_array($limit, $functionConfig['page_size'])) {
                 $limit = $functionConfig['default_page_size']
                     ?? $functionConfig['page_size'][0];
             }

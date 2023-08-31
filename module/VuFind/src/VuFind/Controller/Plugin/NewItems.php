@@ -29,6 +29,11 @@
 
 namespace VuFind\Controller\Plugin;
 
+use function array_slice;
+use function count;
+use function intval;
+use function is_string;
+
 use Laminas\Config\Config;
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
@@ -84,15 +89,15 @@ class NewItems extends AbstractPlugin
         // Build a list of unique IDs
         $bibIDs = [];
         if (isset($newItems['results'])) {
-            for ($i = 0; $i < \count($newItems['results']); $i++) {
+            for ($i = 0; $i < count($newItems['results']); $i++) {
                 $bibIDs[] = $newItems['results'][$i]['id'];
             }
         }
 
         // Truncate the list if it is too long:
         $limit = $params->getQueryIDLimit();
-        if (\count($bibIDs) > $limit) {
-            $bibIDs = \array_slice($bibIDs, 0, $limit);
+        if (count($bibIDs) > $limit) {
+            $bibIDs = array_slice($bibIDs, 0, $limit);
             $flash->addMessage('too_many_new_items', 'info');
         }
 
@@ -124,7 +129,7 @@ class NewItems extends AbstractPlugin
         if (!isset($this->config->filter)) {
             return [];
         }
-        if (\is_string($this->config->filter)) {
+        if (is_string($this->config->filter)) {
             return [$this->config->filter];
         }
         $hiddenFilters = [];
@@ -167,7 +172,7 @@ class NewItems extends AbstractPlugin
         if (isset($this->config->ranges)) {
             $tmp = explode(',', $this->config->ranges);
             foreach ($tmp as $range) {
-                $range = \intval($range);
+                $range = intval($range);
                 if ($range > 0) {
                     $ranges[] = $range;
                 }
@@ -187,7 +192,7 @@ class NewItems extends AbstractPlugin
     public function getResultPages()
     {
         if (isset($this->config->result_pages)) {
-            $resultPages = \intval($this->config->result_pages);
+            $resultPages = intval($this->config->result_pages);
             if ($resultPages < 1) {
                 $resultPages = 10;
             }

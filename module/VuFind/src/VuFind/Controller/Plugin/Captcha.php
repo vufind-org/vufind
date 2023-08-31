@@ -30,6 +30,9 @@
 
 namespace VuFind\Controller\Plugin;
 
+use function count;
+use function in_array;
+
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
@@ -86,7 +89,7 @@ class Captcha extends AbstractPlugin implements TranslatorAwareInterface
     public function __construct($config, array $captchas = [])
     {
         $this->captchas = $captchas;
-        if (\count($captchas) > 0 && isset($config->Captcha->forms)) {
+        if (count($captchas) > 0 && isset($config->Captcha->forms)) {
             $this->active = true;
             $this->domains = '*' == trim($config->Captcha->forms)
                 ? true
@@ -106,7 +109,7 @@ class Captcha extends AbstractPlugin implements TranslatorAwareInterface
      */
     public function setErrorMode($mode): bool
     {
-        if (\in_array($mode, ['flash', 'throw', 'none'])) {
+        if (in_array($mode, ['flash', 'throw', 'none'])) {
             $this->errorMode = $mode;
             return true;
         }
@@ -167,6 +170,6 @@ class Captcha extends AbstractPlugin implements TranslatorAwareInterface
     {
         return $this->active
         && ($domain == false || $this->domains === true
-        || \in_array($domain, $this->domains));
+        || in_array($domain, $this->domains));
     }
 }

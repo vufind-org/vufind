@@ -31,6 +31,9 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
+
+use function strlen;
+
 use VuFind\Search\Memory;
 
 /**
@@ -182,7 +185,7 @@ class SearchMemory extends AbstractHelper
         if ($lastUrl) {
             $expectedPath
                 = $this->view->url($params->getOptions()->getSearchAction());
-            if (substr($lastUrl, 0, \strlen($expectedPath)) === $expectedPath) {
+            if (substr($lastUrl, 0, strlen($expectedPath)) === $expectedPath) {
                 $params->initFromRequest($request);
             }
         }

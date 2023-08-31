@@ -30,6 +30,9 @@
 
 namespace VuFind\View\Helper\Root;
 
+use function in_array;
+use function is_array;
+
 /**
  * Make tag view helper
  *
@@ -282,7 +285,7 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
         $options = []
     ) {
         // $attrs not an object, interpret as class name
-        if (!\is_array($attrs)) {
+        if (!is_array($attrs)) {
             $attrs = !empty($attrs) ? ['class' => $attrs] : [];
         }
 
@@ -304,9 +307,9 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
         $lowerTagName = mb_strtolower($tagName, 'UTF-8');
 
         // Existing tag?
-        if (\in_array($lowerTagName, $this->validBodyTags)) {
+        if (in_array($lowerTagName, $this->validBodyTags)) {
             // Deprecated tag? Throw warning.
-            if (\in_array($lowerTagName, $this->deprecatedElements)) {
+            if (in_array($lowerTagName, $this->deprecatedElements)) {
                 trigger_error(
                     "'<$lowerTagName>' is deprecated and should be replaced.",
                     E_USER_WARNING
@@ -372,7 +375,7 @@ class MakeTag extends \Laminas\View\Helper\AbstractHelper
 
         $htmlAttrs = $this->getView()->plugin('htmlAttributes')($attrs);
 
-        if (empty($contents) && \in_array($tagName, $this->voidElements)) {
+        if (empty($contents) && in_array($tagName, $this->voidElements)) {
             return '<' . $tagName . $htmlAttrs . '>';
         }
 

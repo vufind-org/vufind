@@ -29,6 +29,8 @@
 
 namespace VuFindSearch\Backend\Solr\Response\Json;
 
+use function array_key_exists;
+
 use VuFindSearch\Response\AbstractRecordCollection;
 
 /**
@@ -87,7 +89,7 @@ class RecordCollection extends AbstractRecordCollection
     public function __construct(array $response)
     {
         if (
-            \array_key_exists('response', $response)
+            array_key_exists('response', $response)
             && null === $response['response']
         ) {
             unset($response['response']);

@@ -29,6 +29,8 @@
 
 namespace VuFind\ContentBlock;
 
+use function is_callable;
+
 /**
  * Class TemplateBased
  *
@@ -99,7 +101,7 @@ class TemplateBased implements ContentBlockInterface
         $method = isset($data) ? 'getContextFor' . ucwords($data['renderer'])
             : false;
 
-        $context = $method && \is_callable([$this, $method])
+        $context = $method && is_callable([$this, $method])
             ? $this->$method($data['relativePath'], $data['path'])
             : [];
         $context['pageLocatorDetails'] = $data;

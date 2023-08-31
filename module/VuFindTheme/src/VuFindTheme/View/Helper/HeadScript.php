@@ -29,6 +29,8 @@
 
 namespace VuFindTheme\View\Helper;
 
+use function array_key_exists;
+
 use VuFindTheme\ThemeInfo;
 
 /**
@@ -141,7 +143,7 @@ class HeadScript extends \Laminas\View\Helper\HeadScript implements \Laminas\Log
         foreach ($this->getContainer() as $offset => $item) {
             if (
                 ($item->source === null)
-                && \array_key_exists('src', $item->attributes)
+                && array_key_exists('src', $item->attributes)
                 && ($src === $item->attributes['src'])
             ) {
                 $this->offsetUnset($offset);

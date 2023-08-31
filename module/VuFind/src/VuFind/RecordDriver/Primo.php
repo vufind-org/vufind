@@ -29,6 +29,8 @@
 
 namespace VuFind\RecordDriver;
 
+use function in_array;
+
 /**
  * Model for Primo Central records.
  *
@@ -295,6 +297,6 @@ class Primo extends DefaultRecord
     public function exportDisabled($format)
     {
         // Support export for EndNote and RefWorks
-        return !\in_array($format, ['EndNote', 'RefWorks']);
+        return !in_array($format, ['EndNote', 'RefWorks']);
     }
 }

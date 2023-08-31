@@ -30,6 +30,9 @@
 
 namespace VuFind\ILS\Driver;
 
+use function in_array;
+use function is_array;
+
 use VuFind\Exception\ILS as ILSException;
 
 /**
@@ -353,7 +356,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
 
         // Add Params
         foreach ($params as $key => $param) {
-            if (\is_array($param)) {
+            if (is_array($param)) {
                 foreach ($param as $sub) {
                     $queryString[] = $key . '=' . urlencode($sub);
                 }
@@ -677,7 +680,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
             foreach ($data as $values) {
                 $itemID = $values['item_id'];
                 // If the bib id is matched, the cancel must have failed
-                if (\in_array($values['bib_id'], $keys)) {
+                if (in_array($values['bib_id'], $keys)) {
                     $responseItems[$itemID] = [
                         'success' => false, 'status' => 'hold_cancel_fail',
                     ];
@@ -810,7 +813,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
         $i = 0;
         foreach ($origData->itemout as $item) {
             $ikey = (string)$item->ikey;
-            if (\in_array($ikey, $renewIDs)) {
+            if (in_array($ikey, $renewIDs)) {
                 $response['details'][$ikey]['item_id'] = $ikey;
                 $origRenewals = (string)$item->numrenewals;
                 $currentRenewals = (string)$renewData->itemout[$i]->numrenewals;

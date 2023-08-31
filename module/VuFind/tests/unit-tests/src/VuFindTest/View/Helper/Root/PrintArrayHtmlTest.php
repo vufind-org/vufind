@@ -29,6 +29,8 @@
 
 namespace VuFindTest\View\Helper\Root;
 
+use function call_user_func;
+
 use VuFind\View\Helper\Root\PrintArrayHtml;
 use VuFindTest\Unit\AbstractMakeTagTest;
 
@@ -377,7 +379,7 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
 
         $this->assertEquals(
             $expected,
-            \call_user_func([$helper, '__invoke'], $entry)
+            call_user_func([$helper, '__invoke'], $entry)
         );
     }
 }

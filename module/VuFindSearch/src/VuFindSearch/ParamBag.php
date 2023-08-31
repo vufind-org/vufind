@@ -29,6 +29,10 @@
 
 namespace VuFindSearch;
 
+use function count;
+use function in_array;
+use function is_array;
+
 /**
  * Lightweight wrapper for request parameters.
  *
@@ -84,7 +88,7 @@ class ParamBag implements \Countable
      */
     public function count(): int
     {
-        return \count($this->params);
+        return count($this->params);
     }
 
     /**
@@ -110,7 +114,7 @@ class ParamBag implements \Countable
     public function contains($name, $value)
     {
         $haystack = $this->get($name);
-        return \is_array($haystack) && \in_array($value, $haystack);
+        return is_array($haystack) && in_array($value, $haystack);
     }
 
     /**
@@ -123,7 +127,7 @@ class ParamBag implements \Countable
      */
     public function set($name, $value)
     {
-        if (\is_array($value)) {
+        if (is_array($value)) {
             $this->params[$name] = $value;
         } else {
             $this->params[$name] = [$value];
@@ -157,7 +161,7 @@ class ParamBag implements \Countable
         if (!isset($this->params[$name])) {
             $this->params[$name] = [];
         }
-        if (\is_array($value)) {
+        if (is_array($value)) {
             $this->params[$name] = array_merge($this->params[$name], $value);
         } else {
             $this->params[$name][] = $value;

@@ -31,6 +31,9 @@
 
 namespace VuFind\Auth;
 
+use function in_array;
+use function is_object;
+
 use Laminas\Crypt\Password\Bcrypt;
 use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Db\Row\User;
@@ -84,7 +87,7 @@ class Database extends AbstractBase
 
         // Validate the credentials:
         $user = $this->getUserTable()->getByUsername($this->username, false);
-        if (!\is_object($user) || !$this->checkPassword($this->password, $user)) {
+        if (!is_object($user) || !$this->checkPassword($this->password, $user)) {
             throw new AuthException('authentication_error_invalid');
         }
 
@@ -324,7 +327,7 @@ class Database extends AbstractBase
         $domain = strtolower(trim(array_pop($parts)));
 
         // Match domain against allowed list:
-        return \in_array($domain, $includeList);
+        return in_array($domain, $includeList);
     }
 
     /**

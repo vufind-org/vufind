@@ -33,6 +33,11 @@
 
 namespace VuFind\ILS\Driver;
 
+use function count;
+use function in_array;
+use function is_array;
+use function is_callable;
+
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\ILS as ILSException;
@@ -766,7 +771,7 @@ class PAIA extends DAIA
      */
     public function getMyProfile($patron)
     {
-        if (\is_array($patron)) {
+        if (is_array($patron)) {
             $type = isset($patron['type'])
                 ? implode(
                     ', ',
@@ -791,7 +796,7 @@ class PAIA extends DAIA
                 'expires'    => isset($patron['expires'])
                     ? $this->convertDate($patron['expires']) : null,
                 'statuscode' => $patron['status'] ?? null,
-                'canWrite'   => \in_array(self::SCOPE_WRITE_ITEMS, $this->getScope()),
+                'canWrite'   => in_array(self::SCOPE_WRITE_ITEMS, $this->getScope()),
             ];
         }
         return [];
@@ -1356,19 +1361,19 @@ class PAIA extends DAIA
         }
 
         if (isset($itemsResponse['doc'])) {
-            if (\count($filter)) {
+            if (count($filter)) {
                 $filteredItems = [];
                 foreach ($itemsResponse['doc'] as $doc) {
                     $filterCounter = 0;
                     foreach ($filter as $filterKey => $filterValue) {
                         if (
                             isset($doc[$filterKey])
-                            && \in_array($doc[$filterKey], (array)$filterValue)
+                            && in_array($doc[$filterKey], (array)$filterValue)
                         ) {
                             $filterCounter++;
                         }
                     }
-                    if ($filterCounter == \count($filter)) {
+                    if ($filterCounter == count($filter)) {
                         $filteredItems[] = $doc;
                     }
                 }
@@ -1408,7 +1413,7 @@ class PAIA extends DAIA
     protected function paiaParseUserDetails($patron, $user_response)
     {
         $username = trim($user_response['name']);
-        if (\count(explode(',', $username)) == 2) {
+        if (count(explode(',', $username)) == 2) {
             $nameArr = explode(',', $username);
             $firstname = $nameArr[1];
             $lastname = $nameArr[0];
@@ -1449,7 +1454,7 @@ class PAIA extends DAIA
      */
     protected function mapPaiaItems($items, $mapping)
     {
-        if (\is_callable([$this, $mapping])) {
+        if (is_callable([$this, $mapping])) {
             return $this->$mapping($items);
         }
 
@@ -1813,7 +1818,7 @@ class PAIA extends DAIA
     {
         // as PAIA supports two authentication methods (defined as grant_type:
         // password or client_credentials), check which one is configured
-        if (!\in_array($this->grantType, ['password', 'client_credentials'])) {
+        if (!in_array($this->grantType, ['password', 'client_credentials'])) {
             throw new ILSException(
                 'Unsupported PAIA grant_type configured: ' . $this->grantType
             );
@@ -1944,8 +1949,8 @@ class PAIA extends DAIA
      */
     protected function paiaCheckScope($scope)
     {
-        return (!empty($scope) && \is_array($this->getScope()))
-            ? \in_array($scope, $this->getScope()) : false;
+        return (!empty($scope) && is_array($this->getScope()))
+            ? in_array($scope, $this->getScope()) : false;
     }
 
     /**
@@ -1985,7 +1990,7 @@ class PAIA extends DAIA
         if (
             isset($patron['status']) && $patron['status'] == 0
             && isset($patron['expires']) && $patron['expires'] > date('Y-m-d')
-            && \in_array(self::SCOPE_WRITE_ITEMS, $this->getScope())
+            && in_array(self::SCOPE_WRITE_ITEMS, $this->getScope())
         ) {
             return true;
         }
@@ -2211,6 +2216,6 @@ class PAIA extends DAIA
             unset($blocks[self::SCOPE_UPDATE_PATRON_ADDRESS]);
         }
 
-        return \count($blocks) ? array_values($blocks) : false;
+        return count($blocks) ? array_values($blocks) : false;
     }
 }

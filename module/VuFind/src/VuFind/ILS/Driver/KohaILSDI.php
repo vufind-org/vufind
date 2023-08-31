@@ -31,6 +31,12 @@
 
 namespace VuFind\ILS\Driver;
 
+use function array_slice;
+use function count;
+use function in_array;
+use function intval;
+use function is_callable;
+
 use Laminas\Log\LoggerAwareInterface;
 use PDO;
 use PDOException;
@@ -938,7 +944,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
              * the item is considered available
              */
 
-            if (\in_array($rowItem['LOCATION'], $this->availableLocationsDefault)) {
+            if (in_array($rowItem['LOCATION'], $this->availableLocationsDefault)) {
                 $available = true;
                 $duedate = '';
                 $status = 'Available';
@@ -1036,7 +1042,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
 
         $this->debug(
             'Processing finished, rows processed: '
-            . \count($holding) . ', took ' . (microtime(true) - $started) .
+            . count($holding) . ', took ' . (microtime(true) - $started) .
             ' sec'
         );
 
@@ -1063,7 +1069,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
         $this->debug("getNewItems called $page|$limit|$daysOld|$fundId");
 
         $items = [];
-        $daysOld = min(abs(\intval($daysOld)), 30);
+        $daysOld = min(abs(intval($daysOld)), 30);
         $sql = "SELECT distinct biblionumber as id
                 FROM items
                 WHERE itemlost = 0
@@ -1086,7 +1092,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
 
         $this->debug($rescount . ' fetched');
 
-        $results = \array_slice($items, ($page - 1) * $limit, ($page * $limit) - 1);
+        $results = array_slice($items, ($page - 1) * $limit, ($page * $limit) - 1);
         return ['count' => $rescount, 'results' => $results];
     }
 
@@ -1449,7 +1455,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
             $this->throwAsIlsException($e);
         }
 
-        return \count($blocks) ? $blocks : false;
+        return count($blocks) ? $blocks : false;
     }
 
     /**
@@ -2068,6 +2074,6 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
         if ($method == 'getMyTransactionHistory') {
             return !empty($this->config['TransactionHistory']['enabled']);
         }
-        return \is_callable([$this, $method]);
+        return is_callable([$this, $method]);
     }
 }

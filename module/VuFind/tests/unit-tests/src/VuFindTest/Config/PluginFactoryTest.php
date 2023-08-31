@@ -29,6 +29,8 @@
 
 namespace VuFindTest\Config;
 
+use function count;
+
 use VuFind\Config\PathResolver;
 use VuFindTest\Feature\FixtureTrait;
 use VuFindTest\Feature\PathResolverTrait;
@@ -121,7 +123,7 @@ class PluginFactoryTest extends \PHPUnit\Framework\TestCase
     {
         // This should retrieve sms.ini, which should include a Carriers array.
         $config = $this->getConfig('sms');
-        $this->assertTrue(isset($config->Carriers) && \count($config->Carriers) > 0);
+        $this->assertTrue(isset($config->Carriers) && count($config->Carriers) > 0);
     }
 
     /**

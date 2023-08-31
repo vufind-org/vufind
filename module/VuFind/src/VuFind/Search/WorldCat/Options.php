@@ -29,6 +29,8 @@
 
 namespace VuFind\Search\WorldCat;
 
+use function count;
+
 /**
  * WorldCat Search Options
  *
@@ -77,7 +79,7 @@ class Options extends \VuFind\Search\Base\Options
         }
         if (
             isset($searchSettings->DefaultSortingByType)
-            && \count($searchSettings->DefaultSortingByType) > 0
+            && count($searchSettings->DefaultSortingByType) > 0
         ) {
             foreach ($searchSettings->DefaultSortingByType as $key => $val) {
                 $this->defaultSortByHandler[$key] = $val;

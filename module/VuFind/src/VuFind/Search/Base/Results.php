@@ -29,6 +29,14 @@
 
 namespace VuFind\Search\Base;
 
+use function call_user_func_array;
+use function count;
+use function func_get_args;
+use function get_class;
+use function in_array;
+use function is_callable;
+use function is_object;
+
 use Laminas\Paginator\Paginator;
 use VuFind\Record\Loader;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
@@ -213,7 +221,7 @@ abstract class Results
      */
     public function __clone()
     {
-        if (\is_object($this->params)) {
+        if (is_object($this->params)) {
             $this->params = clone $this->params;
         }
         $this->helpers = [];
@@ -626,7 +634,7 @@ abstract class Results
     {
         // Not implemented in the base class
         if (!empty($data)) {
-            error_log(\get_class($this) . ': Extra data passed but not handled');
+            error_log(get_class($this) . ': Extra data passed but not handled');
         }
     }
 
@@ -694,9 +702,9 @@ abstract class Results
      */
     public function translate()
     {
-        return \call_user_func_array(
+        return call_user_func_array(
             [$this->getOptions(), 'translate'],
-            \func_get_args()
+            func_get_args()
         );
     }
 
@@ -826,13 +834,13 @@ abstract class Results
         // Loop through every field returned by the result set
         $translatedFacets = $this->getOptions()->getTranslatedFacets();
         $hierarchicalFacets
-            = \is_callable([$this->getOptions(), 'getHierarchicalFacets'])
+            = is_callable([$this->getOptions(), 'getHierarchicalFacets'])
             ? $this->getOptions()->getHierarchicalFacets()
             : [];
         foreach (array_keys($filter) as $field) {
             $data = $facetList[$field] ?? [];
             // Skip empty arrays:
-            if (\count($data) < 1) {
+            if (count($data) < 1) {
                 continue;
             }
             // Initialize the settings for the current field
@@ -841,8 +849,8 @@ abstract class Results
                 'list' => [],
             ];
             // Should we translate values for the current facet?
-            $translate = \in_array($field, $translatedFacets);
-            $hierarchical = \in_array($field, $hierarchicalFacets);
+            $translate = in_array($field, $translatedFacets);
+            $hierarchical = in_array($field, $hierarchicalFacets);
             $operator = $this->getParams()->getFacetOperator($field);
             // Loop through values:
             foreach ($data as $value => $count) {
@@ -851,7 +859,7 @@ abstract class Results
                 if ($hierarchical) {
                     if (!$this->hierarchicalFacetHelper) {
                         throw new \Exception(
-                            \get_class($this)
+                            get_class($this)
                             . ': hierarchical facet helper unavailable'
                         );
                     }

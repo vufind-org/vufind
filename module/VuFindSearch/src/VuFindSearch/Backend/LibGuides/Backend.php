@@ -29,6 +29,8 @@
 
 namespace VuFindSearch\Backend\LibGuides;
 
+use function in_array;
+
 use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\ParamBag;
@@ -230,7 +232,7 @@ class Backend extends AbstractBackend
         // should remain as arrays:
         $arraySettings = [/* TODO: determine if values are needed here. */];
         foreach ($params as $key => $param) {
-            $options[$key] = \in_array($key, $arraySettings) ? $param : $param[0];
+            $options[$key] = in_array($key, $arraySettings) ? $param : $param[0];
         }
 
         return $options;

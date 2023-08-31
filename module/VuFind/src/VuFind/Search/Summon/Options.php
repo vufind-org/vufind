@@ -29,6 +29,8 @@
 
 namespace VuFind\Search\Summon;
 
+use function count;
+
 /**
  * Summon Search Options
  *
@@ -69,7 +71,7 @@ class Options extends \VuFind\Search\Base\Options
         $facetSettings = $configLoader->get($this->facetsIni);
         if (
             isset($facetSettings->Advanced_Facet_Settings->translated_facets)
-            && \count($facetSettings->Advanced_Facet_Settings->translated_facets) > 0
+            && count($facetSettings->Advanced_Facet_Settings->translated_facets) > 0
         ) {
             $this->setTranslatedFacets(
                 $facetSettings->Advanced_Facet_Settings->translated_facets->toArray()
@@ -140,7 +142,7 @@ class Options extends \VuFind\Search\Base\Options
         }
         if (
             isset($searchSettings->DefaultSortingByType)
-            && \count($searchSettings->DefaultSortingByType) > 0
+            && count($searchSettings->DefaultSortingByType) > 0
         ) {
             foreach ($searchSettings->DefaultSortingByType as $key => $val) {
                 $this->defaultSortByHandler[$key] = $val;

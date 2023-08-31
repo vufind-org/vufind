@@ -31,6 +31,8 @@
 
 namespace VuFind\Session;
 
+use function call_user_func;
+
 use Laminas\ServiceManager\Factory\DelegatorFactoryInterface;
 use ProxyManager\Factory\LazyLoadingValueHolderFactory;
 use Psr\Container\ContainerInterface;
@@ -70,7 +72,7 @@ class SecureDelegatorFactory implements DelegatorFactoryInterface
          *
          * @var HandlerInterface $handler
          */
-        $handler = \call_user_func($callback);
+        $handler = call_user_func($callback);
         $config = $container->get(\VuFind\Config\PluginManager::class);
         $secure = $config->get('config')->Session->secure ?? false;
         return $secure ? $this->delegate($container, $handler) : $handler;

@@ -29,6 +29,8 @@
 
 namespace VuFind\ChannelProvider;
 
+use function count;
+
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Params;
@@ -121,7 +123,7 @@ class Random extends AbstractChannelProvider implements TranslatorAwareInterface
     {
         $randomParams = $this->paramManager->get($driver->getSourceIdentifier());
         $channel = $this->buildChannelFromParams($randomParams);
-        return (\count($channel['contents']) > 0) ? [$channel] : [];
+        return (count($channel['contents']) > 0) ? [$channel] : [];
     }
 
     /**
@@ -144,7 +146,7 @@ class Random extends AbstractChannelProvider implements TranslatorAwareInterface
             $randomParams = clone $params;
         }
         $channel = $this->buildChannelFromParams($randomParams);
-        return (\count($channel['contents']) > 0) ? [$channel] : [];
+        return (count($channel['contents']) > 0) ? [$channel] : [];
     }
 
     /**

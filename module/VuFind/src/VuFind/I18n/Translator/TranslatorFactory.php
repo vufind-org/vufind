@@ -29,6 +29,8 @@
 
 namespace VuFind\I18n\Translator;
 
+use function extension_loaded;
+
 use Laminas\I18n\Translator\TranslatorInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -73,7 +75,7 @@ class TranslatorFactory implements DelegatorFactoryInterface
         array $options = null
     ) {
         $translator = $callback();
-        if (!\extension_loaded('intl')) {
+        if (!extension_loaded('intl')) {
             error_log(
                 'Translation broken due to missing PHP intl extension.'
             );

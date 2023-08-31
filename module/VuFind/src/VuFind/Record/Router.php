@@ -29,6 +29,9 @@
 
 namespace VuFind\Record;
 
+use function count;
+use function is_object;
+
 /**
  * Record route generator
  *
@@ -108,7 +111,7 @@ class Router
                 );
             $routeName = $route['route'];
             if ($collectionRoute = ($collectionRoutes[$routeName] ?? null)) {
-                if (!\is_object($driver)) {
+                if (!is_object($driver)) {
                     // Avoid loading the driver. Set a flag so that if the link is
                     // used, record controller will check for redirection.
                     $route['options']['query']['checkRoute'] = 1;
@@ -138,7 +141,7 @@ class Router
         $extraParams = []
     ) {
         // Extract source and ID from driver or string:
-        if (\is_object($driver)) {
+        if (is_object($driver)) {
             $source = $driver->getSourceIdentifier();
             $id = $driver->getUniqueId();
         } else {
@@ -178,7 +181,7 @@ class Router
     protected function extractSourceAndId($driver)
     {
         $parts = explode('|', $driver, 2);
-        if (\count($parts) < 2) {
+        if (count($parts) < 2) {
             $source = DEFAULT_SEARCH_BACKEND;
             $id = $parts[0];
         } else {

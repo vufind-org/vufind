@@ -29,6 +29,10 @@
 
 namespace VuFindApi\Formatter;
 
+use function count;
+use function is_array;
+use function is_bool;
+
 /**
  * Base formatter for API responses
  *
@@ -53,7 +57,7 @@ class BaseFormatter
     protected function filterArrayValues(&$array)
     {
         foreach ($array as $key => &$value) {
-            if (\is_array($value) && !empty($value)) {
+            if (is_array($value) && !empty($value)) {
                 $this->filterArrayValues($value);
                 $this->resetArrayIndices($value);
             }
@@ -62,12 +66,12 @@ class BaseFormatter
             // with a non-numeric key, since the key could be significant (e.g. in
             // the case of an author name => roles array with no assigned roles).
             if (
-                (is_numeric($key) && \is_array($value) && empty($value))
-                || (\is_bool($value) && !$value)
+                (is_numeric($key) && is_array($value) && empty($value))
+                || (is_bool($value) && !$value)
                 || $value === null || $value === ''
             ) {
                 unset($array[$key]);
-            } elseif (\is_bool($value) || $value === 'true' || $value === 'false') {
+            } elseif (is_bool($value) || $value === 'true' || $value === 'false') {
                 $array[$key] = $value === true || $value === 'true' ? 1 : 0;
             }
         }
@@ -83,7 +87,7 @@ class BaseFormatter
      */
     protected function resetArrayIndices(&$array)
     {
-        $isNumeric = \count(array_filter(array_keys($array), 'is_string')) === 0;
+        $isNumeric = count(array_filter(array_keys($array), 'is_string')) === 0;
         if ($isNumeric) {
             $array = array_values($array);
         }

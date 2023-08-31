@@ -29,6 +29,9 @@
 
 namespace VuFind\ChannelProvider;
 
+use function count;
+use function is_object;
+
 use Laminas\Mvc\Controller\Plugin\Url;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Router as RecordRouter;
@@ -169,7 +172,7 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
             return [];
         }
         $channel = $this->buildChannelFromRecord($driver);
-        return (\count($channel['contents']) > 0) ? [$channel] : [];
+        return (count($channel['contents']) > 0) ? [$channel] : [];
     }
 
     /**
@@ -191,16 +194,16 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
             if ($channelToken !== null && $channelToken !== $driver->getUniqueID()) {
                 continue;
             }
-            $channel = (\count($channels) < $this->maxRecordsToExamine)
+            $channel = (count($channels) < $this->maxRecordsToExamine)
                 ? $this->buildChannelFromRecord($driver)
                 : $this->buildChannelFromRecord($driver, true);
-            if (isset($channel['token']) || \count($channel['contents']) > 0) {
+            if (isset($channel['token']) || count($channel['contents']) > 0) {
                 $channels[] = $channel;
             }
         }
         // If the search results did not include the object we were looking for,
         // we need to fetch it from the search service:
-        if (empty($channels) && \is_object($driver) && $channelToken !== null) {
+        if (empty($channels) && is_object($driver) && $channelToken !== null) {
             $command = new RetrieveCommand(
                 $driver->getSourceIdentifier(),
                 $channelToken

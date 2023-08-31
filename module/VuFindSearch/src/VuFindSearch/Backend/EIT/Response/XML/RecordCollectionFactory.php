@@ -30,6 +30,11 @@
 
 namespace VuFindSearch\Backend\EIT\Response\XML;
 
+use function call_user_func;
+use function gettype;
+use function is_array;
+use function is_callable;
+
 use VuFindSearch\Exception\InvalidArgumentException;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
@@ -70,7 +75,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
      */
     public function __construct($recordFactory = null, $collectionClass = null)
     {
-        if (!\is_callable($recordFactory)) {
+        if (!is_callable($recordFactory)) {
             throw new InvalidArgumentException('Record factory must be callable.');
         }
         $this->recordFactory = $recordFactory;
@@ -86,17 +91,17 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
      */
     public function factory($response)
     {
-        if (!\is_array($response)) {
+        if (!is_array($response)) {
             throw new InvalidArgumentException(
                 sprintf(
                     'Unexpected type of value: Expected array, got %s',
-                    \gettype($response)
+                    gettype($response)
                 )
             );
         }
         $collection = new $this->collectionClass($response);
         foreach ($response['docs'] as $doc) {
-            $collection->add(\call_user_func($this->recordFactory, $doc), false);
+            $collection->add(call_user_func($this->recordFactory, $doc), false);
         }
         return $collection;
     }

@@ -29,6 +29,8 @@
 
 namespace VuFindTest\Cookie;
 
+use function in_array;
+
 use VuFind\Cookie\Container;
 
 /**
@@ -89,8 +91,8 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         // Test getAllValues:
         $all = $this->container->getAllValues();
         $this->assertCount(2, $all);
-        $this->assertTrue(\in_array('value', array_keys($all)));
-        $this->assertTrue(\in_array('testArray', array_keys($all)));
+        $this->assertTrue(in_array('value', array_keys($all)));
+        $this->assertTrue(in_array('testArray', array_keys($all)));
     }
 
     /**

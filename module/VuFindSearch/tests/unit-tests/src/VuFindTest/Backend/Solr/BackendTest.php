@@ -29,6 +29,8 @@
 
 namespace VuFindTest\Backend\Solr;
 
+use function count;
+
 use InvalidArgumentException;
 use Laminas\Http\Response;
 use Laminas\Uri\Http;
@@ -487,7 +489,7 @@ class BackendTest extends TestCase
             ];
             $paramsArr = $params->getArrayCopy();
             foreach ($expected as $key => $vals) {
-                if (\count(array_diff($vals, $paramsArr[$key] ?? [])) !== 0) {
+                if (count(array_diff($vals, $paramsArr[$key] ?? [])) !== 0) {
                     return false;
                 }
             }

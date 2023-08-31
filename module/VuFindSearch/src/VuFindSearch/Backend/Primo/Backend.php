@@ -29,6 +29,8 @@
 
 namespace VuFindSearch\Backend\Primo;
 
+use function in_array;
+
 use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\ParamBag;
@@ -241,7 +243,7 @@ class Backend extends AbstractBackend
             'query', 'facets', 'filterList', 'groupFilters', 'rangeFilters',
         ];
         foreach ($params as $key => $param) {
-            $options[$key] = \in_array($key, $arraySettings) ? $param : $param[0];
+            $options[$key] = in_array($key, $arraySettings) ? $param : $param[0];
         }
 
         // Use special pcAvailability filter if it has been set:
@@ -249,7 +251,7 @@ class Backend extends AbstractBackend
             $value = reset($values);
             // Note that '' is treated as true for the simple case with no value
             $options['pcAvailability']
-                = !\in_array($value, [false, 0, '0', 'false'], true);
+                = !in_array($value, [false, 0, '0', 'false'], true);
             unset($options['filterList']['pcAvailability']);
         }
 

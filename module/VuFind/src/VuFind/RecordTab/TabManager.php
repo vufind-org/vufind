@@ -29,6 +29,8 @@
 
 namespace VuFind\RecordTab;
 
+use function in_array;
+
 use VuFind\Config\PluginManager as ConfigManager;
 use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
 
@@ -126,7 +128,7 @@ class TabManager
      */
     public function setContext($context)
     {
-        if (!\in_array($context, array_keys($this->contextSettings))) {
+        if (!in_array($context, array_keys($this->contextSettings))) {
             throw new \Exception("Unsupported context: $context");
         }
         $this->context = $context;

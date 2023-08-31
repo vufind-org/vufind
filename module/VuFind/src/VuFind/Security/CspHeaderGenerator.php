@@ -29,6 +29,8 @@
 
 namespace VuFind\Security;
 
+use function in_array;
+
 use Laminas\Http\Header\ContentSecurityPolicy;
 use Laminas\Http\Header\ContentSecurityPolicyReportOnly;
 
@@ -93,7 +95,7 @@ class CspHeaderGenerator
         foreach ($directives as $name => $value) {
             $sources = $value->toArray();
             if (
-                \in_array($name, $this->scriptDirectives)
+                in_array($name, $this->scriptDirectives)
                 && $this->config->CSP->use_nonce
             ) {
                 $sources[] = "'nonce-$this->nonce'";

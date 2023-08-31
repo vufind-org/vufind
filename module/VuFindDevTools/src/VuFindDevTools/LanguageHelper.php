@@ -29,6 +29,9 @@
 
 namespace VuFindDevTools;
 
+use function count;
+use function in_array;
+
 use Laminas\I18n\Translator\TextDomain;
 use VuFind\I18n\Translator\Loader\ExtendedIni;
 
@@ -144,8 +147,8 @@ class LanguageHelper
         return [
             'notInL1' => $this->findMissingLanguageStrings($lang2, $lang1),
             'notInL2' => $this->findMissingLanguageStrings($lang1, $lang2),
-            'l1Percent' => number_format(\count($lang1) / \count($lang2) * 100, 2),
-            'l2Percent' => number_format(\count($lang2) / \count($lang1) * 100, 2),
+            'l1Percent' => number_format(count($lang1) / count($lang2) * 100, 2),
+            'l2Percent' => number_format(count($lang2) / count($lang1) * 100, 2),
         ];
     }
 
@@ -192,7 +195,7 @@ class LanguageHelper
                 if (
                     $current != '.' && $current != '..'
                     && is_dir("$base/$current")
-                    && !\in_array($current, $filter)
+                    && !in_array($current, $filter)
                 ) {
                     $domains[] = $current;
                 }
@@ -290,10 +293,10 @@ class LanguageHelper
                 'name' => $diffs['name'],
                 'langtitle' => $langCode . (($langCode != $diffs['name'])
                     ? ' (' . $diffs['name'] . ')' : ''),
-                'missing' => \count($diffs['notInL2']),
-                'extra' => \count($diffs['notInL1']),
+                'missing' => count($diffs['notInL2']),
+                'extra' => count($diffs['notInL1']),
                 'percent' => $diffs['l2Percent'],
-                'countfiles' => \count($diffs['helpFiles']),
+                'countfiles' => count($diffs['helpFiles']),
                 'files' => $diffs['helpFiles'],
                 'progresslevel' => $progressLevel,
             ];

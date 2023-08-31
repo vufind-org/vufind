@@ -31,6 +31,8 @@
 
 namespace VuFindTest\Mink;
 
+use function count;
+
 use VuFind\Db\Table\User;
 
 /**
@@ -271,7 +273,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
             $page,
             '#home_library option',
             null,
-            \count($expectedChoices)
+            count($expectedChoices)
         );
 
         // Change the default and verify:

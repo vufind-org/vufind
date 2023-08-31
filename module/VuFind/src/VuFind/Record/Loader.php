@@ -31,6 +31,9 @@
 
 namespace VuFind\Record;
 
+use function count;
+use function is_object;
+
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\Record\FallbackLoader\PluginManager as FallbackLoader;
 use VuFind\RecordDriver\PluginManager as RecordFactory;
@@ -167,7 +170,7 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
                     $fallbackRecords = [];
                 }
 
-                if (\count($fallbackRecords) == 1) {
+                if (count($fallbackRecords) == 1) {
                     return $fallbackRecords[0];
                 }
             }
@@ -350,7 +353,7 @@ class Loader implements \Laminas\Log\LoggerAwareInterface
         // Check for missing records and fill gaps with \VuFind\RecordDriver\Missing
         // objects:
         foreach ($list->getAll() as $i => $details) {
-            if (!isset($retVal[$i]) || !\is_object($retVal[$i])) {
+            if (!isset($retVal[$i]) || !is_object($retVal[$i])) {
                 $retVal[$i] = $this->buildMissingRecord($details);
             }
         }

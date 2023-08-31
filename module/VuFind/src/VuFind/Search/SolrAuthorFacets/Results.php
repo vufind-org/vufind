@@ -29,6 +29,9 @@
 
 namespace VuFind\Search\SolrAuthorFacets;
 
+use function array_slice;
+use function count;
+
 use VuFindSearch\Command\SearchCommand;
 
 /**
@@ -64,8 +67,8 @@ class Results extends \VuFind\Search\Solr\Results
             $params = $this->getParams();
             $this->resultTotal
                 = (($params->getPage() - 1) * $params->getLimit())
-                + \count($facets['author_facet']['list']);
-            $this->results = \array_slice(
+                + count($facets['author_facet']['list']);
+            $this->results = array_slice(
                 $facets['author_facet']['list'],
                 0,
                 $params->getLimit()

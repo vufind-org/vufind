@@ -29,6 +29,8 @@
 
 namespace VuFind\Controller;
 
+use function extension_loaded;
+
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Stdlib\ResponseInterface as Response;
 
@@ -79,7 +81,7 @@ class ShibbolethLogoutNotificationController extends AbstractBase
      */
     public function postAction()
     {
-        if (!\extension_loaded('soap')) {
+        if (!extension_loaded('soap')) {
             throw new \Exception('SOAP extension is not loaded.');
         }
         $this->disableSessionWrites();

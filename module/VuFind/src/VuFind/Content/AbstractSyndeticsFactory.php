@@ -35,6 +35,8 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
+use function strlen;
+
 /**
  * Generic Syndetics content plugin factory.
  *
@@ -76,7 +78,7 @@ class AbstractSyndeticsFactory implements FactoryInterface
         // mode.
         $plus = substr($requestedName, -4) === 'Plus';
         $className = $plus
-            ? substr($requestedName, 0, \strlen($requestedName) - 4) : $requestedName;
+            ? substr($requestedName, 0, strlen($requestedName) - 4) : $requestedName;
 
         return new $className(
             isset($config->Syndetics->use_ssl) && $config->Syndetics->use_ssl,

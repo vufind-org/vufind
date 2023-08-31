@@ -29,6 +29,10 @@
 
 namespace VuFind\Controller;
 
+use function count;
+use function in_array;
+use function intval;
+
 use Laminas\Http\Response as HttpResponse;
 use Laminas\Session\SessionManager;
 use Laminas\Stdlib\ResponseInterface as Response;
@@ -106,7 +110,7 @@ class AbstractSearch extends AbstractBase
 
         // If we have default filters, set them up as a fake "saved" search
         // to properly populate special controls on the advanced screen.
-        if (!$view->saved && \count($view->options->getDefaultFilters()) > 0) {
+        if (!$view->saved && count($view->options->getDefaultFilters()) > 0) {
             $view->saved = $this->serviceLocator
                 ->get(\VuFind\Search\Results\PluginManager::class)
                 ->get($this->searchClassId);
@@ -244,7 +248,7 @@ class AbstractSearch extends AbstractBase
             $rawConfig = $params->getOptions()
                 ->getRecommendationSettings($params->getSearchHandler());
             foreach ($rawConfig as $key => $value) {
-                if (\in_array($key, $activeRecs)) {
+                if (in_array($key, $activeRecs)) {
                     $config[$key] = $value;
                 }
             }
@@ -868,7 +872,7 @@ class AbstractSearch extends AbstractBase
         $options = $results->getOptions();
         $facetSortOptions = $options->getFacetSortOptions($facet);
         $sort = $this->params()->fromQuery('facetsort', null);
-        if ($sort === null || !\in_array($sort, array_keys($facetSortOptions))) {
+        if ($sort === null || !in_array($sort, array_keys($facetSortOptions))) {
             $sort = empty($facetSortOptions)
                 ? 'count'
                 : current(array_keys($facetSortOptions));
@@ -891,7 +895,7 @@ class AbstractSearch extends AbstractBase
         $view = $this->createViewModel(
             [
                 'data' => $list,
-                'exclude' => \intval($this->params()->fromQuery('facetexclude', 0)),
+                'exclude' => intval($this->params()->fromQuery('facetexclude', 0)),
                 'facet' => $facet,
                 'facetLabel' => $facetLabel,
                 'operator' => $this->params()->fromQuery('facetop', 'AND'),

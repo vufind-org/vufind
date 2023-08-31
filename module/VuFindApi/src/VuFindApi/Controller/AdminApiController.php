@@ -29,6 +29,8 @@
 
 namespace VuFindApi\Controller;
 
+use function in_array;
+
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Cache\Manager as CacheManager;
 
@@ -174,7 +176,7 @@ class AdminApiController extends \VuFind\Controller\AbstractBase implements ApiI
     {
         $result = [];
         foreach ($this->cacheManager->getCacheList() as $id) {
-            if (\in_array($id, $this->defaultIgnoredCaches)) {
+            if (in_array($id, $this->defaultIgnoredCaches)) {
                 continue;
             }
             $cache = $this->cacheManager->getCache($id);

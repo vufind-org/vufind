@@ -29,6 +29,8 @@
 
 namespace VuFindSearch\Backend\SRU;
 
+use function is_array;
+
 use VuFind\XSLT\Processor as XSLTProcessor;
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Backend\Exception\HttpErrorException;
@@ -206,7 +208,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         if ($params) {
             $query = ['version=' . $this->sruVersion];
             foreach ($params as $function => $value) {
-                if (\is_array($value)) {
+                if (is_array($value)) {
                     foreach ($value as $additional) {
                         $additional = urlencode($additional);
                         $query[] = "$function=$additional";

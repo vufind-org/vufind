@@ -29,6 +29,8 @@
 
 namespace VuFindTest\Captcha;
 
+use function func_get_args;
+
 /**
  * Unit tests for Image CAPTCHA handler factory.
  *
@@ -90,7 +92,7 @@ class ImageFactoryTest extends \PHPUnit\Framework\TestCase
              */
             public function __construct()
             {
-                $this->constructorArgs = \func_get_args();
+                $this->constructorArgs = func_get_args();
             }
         };
         $result = $factory($container, $fakeImage::class);

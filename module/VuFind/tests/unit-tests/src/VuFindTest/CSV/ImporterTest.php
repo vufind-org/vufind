@@ -29,6 +29,8 @@
 
 namespace VuFindTest\CSV;
 
+use function array_slice;
+
 use VuFind\CSV\Importer;
 use VuFindSearch\Backend\Solr\Document\RawJSONDocument;
 use VuFindTest\Container\MockContainer;
@@ -82,7 +84,7 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
     {
         $configBaseDir = implode(
             '/',
-            \array_slice(explode('/', realpath($this->csvFixtureDir)), -5)
+            array_slice(explode('/', realpath($this->csvFixtureDir)), -5)
         );
         return new Importer($this->container, compact('configBaseDir'));
     }
