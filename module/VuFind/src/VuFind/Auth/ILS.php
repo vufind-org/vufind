@@ -30,11 +30,11 @@
 
 namespace VuFind\Auth;
 
-use function get_class;
-
 use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
+
+use function get_class;
 
 /**
  * ILS authentication module.

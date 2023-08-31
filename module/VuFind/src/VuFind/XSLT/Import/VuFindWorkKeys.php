@@ -30,10 +30,9 @@
 namespace VuFind\XSLT\Import;
 
 use DOMDocument;
+use Normalizer;
 
 use function in_array;
-
-use Normalizer;
 
 /**
  * XSLT importer support methods for work key generation.

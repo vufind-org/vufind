@@ -29,12 +29,12 @@
 
 namespace VuFindTest\Auth;
 
-use function get_class;
-
 use Laminas\Config\Config;
 use Laminas\ServiceManager\Exception\InvalidServiceException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use VuFind\Auth\MultiAuth;
+
+use function get_class;
 
 /**
  * LDAP authentication test class.

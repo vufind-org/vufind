@@ -29,9 +29,9 @@
 
 namespace VuFind\RecordDriver;
 
-use function is_callable;
-
 use VuFind\XSLT\Import\VuFind as ArticleStripper;
+
+use function is_callable;
 
 /**
  * Abstract base record model.

@@ -29,9 +29,9 @@
 
 namespace VuFind\Config\Feature;
 
-use function chr;
-
 use Laminas\Config\Reader\Ini as IniReader;
+
+use function chr;
 
 /**
  * Trait for creating INI readers

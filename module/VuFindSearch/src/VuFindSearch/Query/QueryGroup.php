@@ -29,9 +29,9 @@
 
 namespace VuFindSearch\Query;
 
-use function in_array;
-
 use VuFindSearch\Exception\InvalidArgumentException;
+
+use function in_array;
 
 /**
  * A group of single/simples queries, joined by boolean operator.

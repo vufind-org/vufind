@@ -29,13 +29,13 @@
 
 namespace VuFindTest\Sitemap\Command;
 
-use function array_slice;
-
 use VuFind\Sitemap\Plugin\Index\TermsIdFetcher;
 use VuFindSearch\Backend\Solr\Response\Json\Terms;
 use VuFindSearch\Command\GetUniqueKeyCommand;
 use VuFindSearch\Command\TermsCommand;
 use VuFindSearch\Service;
+
+use function array_slice;
 
 /**
  * GetIdsWithTermsCommand Test Class

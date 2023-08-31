@@ -29,11 +29,11 @@
 
 namespace VuFindTest\Backend\EDS;
 
-use function count;
-
 use InvalidArgumentException;
 use VuFindSearch\Backend\EDS\Backend;
 use VuFindSearch\Query\Query;
+
+use function count;
 
 /**
  * Unit tests for EDS backend.

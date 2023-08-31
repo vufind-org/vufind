@@ -31,8 +31,6 @@
 
 namespace VuFind\I18n\Locale;
 
-use function call_user_func;
-
 use Laminas\EventManager\EventInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -42,6 +40,8 @@ use Psr\Container\ContainerInterface;
 use SlmLocale\LocaleEvent;
 use SlmLocale\Strategy\QueryStrategy;
 use VuFind\Cookie\CookieManager;
+
+use function call_user_func;
 
 /**
  * Locale Detector Delegator Factory

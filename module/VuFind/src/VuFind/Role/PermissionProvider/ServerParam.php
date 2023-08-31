@@ -31,10 +31,10 @@
 
 namespace VuFind\Role\PermissionProvider;
 
+use Laminas\Http\PhpEnvironment\Request;
+
 use function count;
 use function in_array;
-
-use Laminas\Http\PhpEnvironment\Request;
 
 /**
  * ServerParam permission provider for VuFind.

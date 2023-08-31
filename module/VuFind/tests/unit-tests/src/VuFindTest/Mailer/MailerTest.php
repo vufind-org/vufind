@@ -29,13 +29,13 @@
 
 namespace VuFindTest\Mailer;
 
-use function count;
-
 use Laminas\Mail\Address;
 use Laminas\Mail\AddressList;
 use VuFind\Mailer\Factory as MailerFactory;
 use VuFind\Mailer\Mailer;
 use VuFindTest\Container\MockContainer;
+
+use function count;
 
 /**
  * Mailer Test Class

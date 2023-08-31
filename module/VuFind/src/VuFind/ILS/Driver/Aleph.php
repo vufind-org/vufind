@@ -39,19 +39,15 @@
 
 namespace VuFind\ILS\Driver;
 
-use function array_key_exists;
-
-use function count;
-
-use function in_array;
-use function is_callable;
-
 use Laminas\I18n\Translator\TranslatorInterface;
-
-use function strlen;
-
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
+
+use function array_key_exists;
+use function count;
+use function in_array;
+use function is_callable;
+use function strlen;
 
 /**
  * Aleph ILS driver

@@ -31,15 +31,15 @@
 
 namespace VuFind\Search\Solr;
 
-use function in_array;
-use function is_array;
-
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\I18n\TranslatableString;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Service;
+
+use function in_array;
+use function is_array;
 
 /**
  * Solr hierarchical facet handling listener.

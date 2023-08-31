@@ -29,11 +29,11 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\Cover\Router as CoverRouter;
+
 use function get_class;
 use function in_array;
 use function is_callable;
-
-use VuFind\Cover\Router as CoverRouter;
 
 /**
  * Record driver view helper

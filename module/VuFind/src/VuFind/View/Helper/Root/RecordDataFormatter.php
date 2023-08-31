@@ -31,13 +31,13 @@
 
 namespace VuFind\View\Helper\Root;
 
+use Laminas\View\Helper\AbstractHelper;
+use VuFind\RecordDriver\AbstractBase as RecordDriver;
+
 use function call_user_func;
 use function count;
 use function is_array;
 use function is_callable;
-
-use Laminas\View\Helper\AbstractHelper;
-use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
 /**
  * Record driver data formatting view helper

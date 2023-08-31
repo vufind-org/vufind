@@ -31,12 +31,12 @@
 
 namespace VuFind\Controller;
 
-use function is_array;
-
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\SessionManager;
 use VuFind\ILS\PaginationHelper;
 use VuFind\Validator\CsrfInterface;
+
+use function is_array;
 
 /**
  * Controller for the user checkouts area.

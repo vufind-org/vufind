@@ -29,10 +29,10 @@
 
 namespace VuFindTest\Integration\Connection;
 
+use VuFindSearch\ParamBag;
+
 use function count;
 use function in_array;
-
-use VuFindSearch\ParamBag;
 
 /**
  * Solr Connection Test Class

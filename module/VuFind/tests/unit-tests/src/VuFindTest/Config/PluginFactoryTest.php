@@ -29,11 +29,11 @@
 
 namespace VuFindTest\Config;
 
-use function count;
-
 use VuFind\Config\PathResolver;
 use VuFindTest\Feature\FixtureTrait;
 use VuFindTest\Feature\PathResolverTrait;
+
+use function count;
 
 /**
  * Config Factory Test Class

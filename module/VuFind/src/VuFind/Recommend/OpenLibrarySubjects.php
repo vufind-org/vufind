@@ -30,11 +30,11 @@
 
 namespace VuFind\Recommend;
 
-use function intval;
-use function is_object;
-
 use VuFind\Connection\OpenLibrary;
 use VuFind\Solr\Utils as SolrUtils;
+
+use function intval;
+use function is_object;
 
 /**
  * OpenLibrarySubjects Recommendations Module

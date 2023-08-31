@@ -29,12 +29,12 @@
 
 namespace VuFindTest\Backend\Solr\Json\Response;
 
-use function in_array;
-
 use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
 use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
 use VuFindTest\RecordDriver\TestHarness;
+
+use function in_array;
 
 /**
  * Unit tests for simple JSON-based record collection.

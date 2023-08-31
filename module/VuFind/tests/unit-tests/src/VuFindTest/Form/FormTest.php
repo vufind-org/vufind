@@ -30,11 +30,11 @@
 
 namespace VuFindTest\Form;
 
-use function get_class;
-
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Config\YamlReader;
 use VuFind\Form\Form;
+
+use function get_class;
 
 /**
  * Form Test Class

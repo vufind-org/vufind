@@ -29,8 +29,6 @@
 
 namespace VuFind\AjaxHandler;
 
-use function intval;
-
 use Laminas\Mvc\Controller\Plugin\Params;
 use VuFind\Config\AccountCapabilities;
 use VuFind\Controller\Plugin\Captcha;
@@ -38,6 +36,8 @@ use VuFind\Db\Row\User;
 use VuFind\Db\Table\Resource;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Loader as RecordLoader;
+
+use function intval;
 
 /**
  * AJAX handler to comment on a record.

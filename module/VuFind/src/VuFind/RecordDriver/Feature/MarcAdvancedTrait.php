@@ -32,12 +32,12 @@
 
 namespace VuFind\RecordDriver\Feature;
 
+use VuFind\View\Helper\Root\RecordLinker;
+use VuFind\XSLT\Processor as XSLTProcessor;
+
 use function count;
 use function in_array;
 use function is_array;
-
-use VuFind\View\Helper\Root\RecordLinker;
-use VuFind\XSLT\Processor as XSLTProcessor;
 
 /**
  * Functions to add advanced MARC-driven functionality to a record driver already

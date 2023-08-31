@@ -29,10 +29,10 @@
 
 namespace VuFind\Controller\Plugin;
 
-use function is_array;
-
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use VuFind\Validator\CsrfInterface;
+
+use function is_array;
 
 /**
  * Action helper to perform renewal-related actions

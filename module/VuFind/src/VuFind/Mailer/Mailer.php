@@ -29,9 +29,6 @@
 
 namespace VuFind\Mailer;
 
-use function count;
-use function is_callable;
-
 use Laminas\Mail\Address;
 use Laminas\Mail\AddressList;
 use Laminas\Mail\Header\ContentType;
@@ -41,6 +38,9 @@ use Laminas\Mime\Message as MimeMessage;
 use Laminas\Mime\Mime;
 use Laminas\Mime\Part as MimePart;
 use VuFind\Exception\Mail as MailException;
+
+use function count;
+use function is_callable;
 
 /**
  * VuFind Mailer Class

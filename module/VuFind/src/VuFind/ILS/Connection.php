@@ -33,6 +33,12 @@
 
 namespace VuFind\ILS;
 
+use Laminas\Log\LoggerAwareInterface;
+use VuFind\Exception\BadConfig;
+use VuFind\Exception\ILS as ILSException;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\ILS\Driver\DriverInterface;
+
 use function call_user_func_array;
 use function count;
 use function func_get_args;
@@ -41,12 +47,6 @@ use function intval;
 use function is_array;
 use function is_callable;
 use function is_object;
-
-use Laminas\Log\LoggerAwareInterface;
-use VuFind\Exception\BadConfig;
-use VuFind\Exception\ILS as ILSException;
-use VuFind\I18n\Translator\TranslatorAwareInterface;
-use VuFind\ILS\Driver\DriverInterface;
 
 /**
  * Catalog Connection Class

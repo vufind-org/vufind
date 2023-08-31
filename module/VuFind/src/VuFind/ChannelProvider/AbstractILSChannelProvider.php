@@ -29,12 +29,12 @@
 
 namespace VuFind\ChannelProvider;
 
-use function count;
-
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Results;
 use VuFindSearch\Command\RetrieveBatchCommand;
+
+use function count;
 
 /**
  * Abstract base class for channel providers relying on the ILS.

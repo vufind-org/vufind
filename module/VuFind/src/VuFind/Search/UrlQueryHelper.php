@@ -29,15 +29,15 @@
 
 namespace VuFind\Search;
 
+use VuFindSearch\Query\AbstractQuery;
+use VuFindSearch\Query\Query;
+use VuFindSearch\Query\QueryGroup;
+
 use function call_user_func;
 use function count;
 use function in_array;
 use function is_array;
 use function is_callable;
-
-use VuFindSearch\Query\AbstractQuery;
-use VuFindSearch\Query\Query;
-use VuFindSearch\Query\QueryGroup;
 
 /**
  * Class to help build URLs and forms in the view based on search settings.

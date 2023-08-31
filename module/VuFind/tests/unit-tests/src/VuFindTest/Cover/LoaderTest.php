@@ -30,11 +30,10 @@
 namespace VuFindTest\Cover;
 
 use Laminas\Config\Config;
-
-use function strlen;
-
 use VuFind\Cover\Loader;
 use VuFindTheme\ThemeInfo;
+
+use function strlen;
 
 /**
  * Cover Loader Test Class

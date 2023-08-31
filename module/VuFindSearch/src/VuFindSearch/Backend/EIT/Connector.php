@@ -29,12 +29,12 @@
 
 namespace VuFindSearch\Backend\EIT;
 
-use function is_array;
-
 use Laminas\Http\Client;
 use Laminas\Http\Request;
 use VuFindSearch\Backend\Exception\HttpErrorException;
 use VuFindSearch\ParamBag;
+
+use function is_array;
 
 /**
  * Central class for connecting to EIT resources used by VuFind.

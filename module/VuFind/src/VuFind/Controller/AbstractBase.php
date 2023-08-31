@@ -30,9 +30,6 @@
 
 namespace VuFind\Controller;
 
-use function intval;
-use function is_object;
-
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Mvc\MvcEvent;
 use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
@@ -43,6 +40,9 @@ use VuFind\Exception\ILS as ILSException;
 use VuFind\Http\PhpEnvironment\Request as HttpRequest;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
+
+use function intval;
+use function is_object;
 
 /**
  * VuFind controller base class (defines some methods that can be shared by other

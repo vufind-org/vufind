@@ -31,6 +31,13 @@
 
 namespace VuFind\Search\Base;
 
+use VuFind\I18n\TranslatableString;
+use VuFind\Search\QueryAdapter;
+use VuFind\Solr\Utils as SolrUtils;
+use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
+use VuFindSearch\Query\Query;
+use VuFindSearch\Query\QueryGroup;
+
 use function call_user_func;
 use function count;
 use function get_class;
@@ -42,13 +49,6 @@ use function is_float;
 use function is_int;
 use function is_object;
 use function strlen;
-
-use VuFind\I18n\TranslatableString;
-use VuFind\Search\QueryAdapter;
-use VuFind\Solr\Utils as SolrUtils;
-use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
-use VuFindSearch\Query\Query;
-use VuFindSearch\Query\QueryGroup;
 
 /**
  * Abstract parameters search model.

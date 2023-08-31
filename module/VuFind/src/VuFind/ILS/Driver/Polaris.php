@@ -28,12 +28,11 @@
 
 namespace VuFind\ILS\Driver;
 
-use function count;
+use VuFind\Exception\ILS as ILSException;
 
+use function count;
 use function intval;
 use function strlen;
-
-use VuFind\Exception\ILS as ILSException;
 
 /**
  * VuFind Connector for Polaris

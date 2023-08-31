@@ -31,15 +31,15 @@
 
 namespace VuFind\Auth;
 
-use function in_array;
-use function is_object;
-
 use Laminas\Crypt\Password\Bcrypt;
 use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Db\Row\User;
 use VuFind\Db\Table\User as UserTable;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
+
+use function in_array;
+use function is_object;
 
 /**
  * Database authentication class

@@ -29,9 +29,9 @@
 
 namespace VuFindTest\Cookie;
 
-use function in_array;
-
 use VuFind\Cookie\Container;
+
+use function in_array;
 
 /**
  * Cookie Container Test Class

@@ -29,12 +29,12 @@
 
 namespace VuFind\View\Helper\Root;
 
-use function in_array;
-use function is_string;
-
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\View\Helper\AbstractHelper;
 use Laminas\View\Helper\EscapeHtmlAttr;
+
+use function in_array;
+use function is_string;
 
 /**
  * Icon view helper

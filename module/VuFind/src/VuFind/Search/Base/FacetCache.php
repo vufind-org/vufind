@@ -29,9 +29,9 @@
 
 namespace VuFind\Search\Base;
 
-use function in_array;
-
 use VuFind\Cache\Manager as CacheManager;
+
+use function in_array;
 
 /**
  * Solr FacetCache Factory.

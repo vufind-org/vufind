@@ -31,11 +31,11 @@
 
 namespace VuFindTest\ILS\Driver;
 
-use function func_get_args;
-use function is_array;
-
 use VuFind\I18n\TranslatableString;
 use VuFind\ILS\Driver\Alma;
+
+use function func_get_args;
+use function is_array;
 
 /**
  * Alma ILS driver test

@@ -29,12 +29,12 @@
 
 namespace VuFind\Autocomplete;
 
-use function is_callable;
-use function is_object;
-
 use Laminas\Stdlib\Parameters;
 use VuFind\Config\PluginManager as ConfigManager;
 use VuFind\Search\Options\PluginManager as OptionsManager;
+
+use function is_callable;
+use function is_object;
 
 /**
  * Autocomplete handler plugin manager

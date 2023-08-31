@@ -30,12 +30,11 @@
 namespace VuFind\XSLT;
 
 use DOMDocument;
-
-use function is_array;
-
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFindSearch\Backend\Solr\Document\RawXMLDocument;
 use XSLTProcessor;
+
+use function is_array;
 
 /**
  * VuFind XSLT importer

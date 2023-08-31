@@ -31,18 +31,10 @@
 
 namespace VuFindSearch\Backend\Solr;
 
-use function call_user_func_array;
-use function count;
-use function is_callable;
-
 use Laminas\Http\Client\Adapter\Exception\TimeoutException;
-
 use Laminas\Http\Client as HttpClient;
 use Laminas\Http\Request;
 use Laminas\Uri\Http;
-
-use function strlen;
-
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Backend\Exception\HttpErrorException;
 use VuFindSearch\Backend\Exception\RemoteErrorException;
@@ -50,6 +42,11 @@ use VuFindSearch\Backend\Exception\RequestErrorException;
 use VuFindSearch\Backend\Solr\Document\DocumentInterface;
 use VuFindSearch\Exception\InvalidArgumentException;
 use VuFindSearch\ParamBag;
+
+use function call_user_func_array;
+use function count;
+use function is_callable;
+use function strlen;
 
 /**
  * SOLR connector.

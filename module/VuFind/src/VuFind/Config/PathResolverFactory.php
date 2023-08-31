@@ -29,20 +29,17 @@
 
 namespace VuFind\Config;
 
-use function defined;
-use function in_array;
-
 use Laminas\Config\Config;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
-
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-
-use function strlen;
-
 use VuFind\Config\Feature\IniReaderTrait;
+
+use function defined;
+use function in_array;
+use function strlen;
 
 /**
  * Factory for PathResolver.

@@ -32,9 +32,9 @@
 
 namespace VuFind\Session;
 
-use function is_callable;
-
 use Laminas\Session\SessionManager;
+
+use function is_callable;
 
 /**
  * Container for session settings, allowing those settings to be configured

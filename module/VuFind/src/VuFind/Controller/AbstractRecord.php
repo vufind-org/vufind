@@ -29,16 +29,16 @@
 
 namespace VuFind\Controller;
 
-use function in_array;
-use function intval;
-use function is_array;
-use function is_object;
-
 use VuFind\Exception\BadRequest as BadRequestException;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
 use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
 use VuFindSearch\ParamBag;
+
+use function in_array;
+use function intval;
+use function is_array;
+use function is_object;
 
 /**
  * VuFind Record Controller

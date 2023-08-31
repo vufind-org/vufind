@@ -29,10 +29,10 @@
 
 namespace VuFind\Controller;
 
-use function extension_loaded;
-
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Stdlib\ResponseInterface as Response;
+
+use function extension_loaded;
 
 /**
  * Handles Shibboleth back-channel logout notifications.

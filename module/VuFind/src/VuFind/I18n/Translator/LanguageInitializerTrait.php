@@ -30,10 +30,9 @@
 namespace VuFind\I18n\Translator;
 
 use Laminas\I18n\Translator\TranslatorInterface;
+use VuFind\I18n\Locale\LocaleSettings;
 
 use function strlen;
-
-use VuFind\I18n\Locale\LocaleSettings;
 
 /**
  * Logic for initializing a language within a translator used by VuFind.

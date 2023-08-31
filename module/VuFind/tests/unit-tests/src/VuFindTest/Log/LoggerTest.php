@@ -29,9 +29,9 @@
 
 namespace VuFindTest\Log;
 
-use function count;
-
 use VuFind\Log\Logger;
+
+use function count;
 
 /**
  * Logger Test Class

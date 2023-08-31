@@ -31,9 +31,9 @@
 
 namespace VuFindTest\Mink;
 
-use function count;
-
 use VuFind\Db\Table\User;
+
+use function count;
 
 /**
  * Mink account actions test class.

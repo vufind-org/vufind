@@ -30,19 +30,15 @@
 namespace VuFind\View\Helper\Root;
 
 use DateTime;
+use Laminas\Feed\Writer\Feed;
+use Laminas\Feed\Writer\Writer as FeedWriter;
+use Laminas\View\Helper\AbstractHelper;
+use Psr\Container\ContainerInterface;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 use function is_array;
 use function is_string;
-
-use Laminas\Feed\Writer\Feed;
-use Laminas\Feed\Writer\Writer as FeedWriter;
-
-use Laminas\View\Helper\AbstractHelper;
-use Psr\Container\ContainerInterface;
-
 use function strlen;
-
-use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
  * "Results as feed" view helper

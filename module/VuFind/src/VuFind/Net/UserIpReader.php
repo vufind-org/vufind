@@ -29,9 +29,9 @@
 
 namespace VuFind\Net;
 
-use function count;
-
 use Laminas\Stdlib\Parameters;
+
+use function count;
 
 /**
  * Service to retrieve user IP address.

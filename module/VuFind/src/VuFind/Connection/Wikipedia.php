@@ -29,11 +29,11 @@
 
 namespace VuFind\Connection;
 
+use VuFind\I18n\Translator\TranslatorAwareInterface;
+
 use function count;
 use function is_array;
 use function strlen;
-
-use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
  * Wikipedia connection class

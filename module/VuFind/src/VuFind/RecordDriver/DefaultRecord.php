@@ -29,13 +29,13 @@
 
 namespace VuFind\RecordDriver;
 
+use VuFind\View\Helper\Root\RecordLinker;
+use VuFindCode\ISBN;
+
 use function count;
 use function in_array;
 use function is_array;
 use function strlen;
-
-use VuFind\View\Helper\Root\RecordLinker;
-use VuFindCode\ISBN;
 
 /**
  * Default model for records

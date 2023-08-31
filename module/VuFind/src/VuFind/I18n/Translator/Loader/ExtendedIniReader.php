@@ -29,9 +29,9 @@
 
 namespace VuFind\I18n\Translator\Loader;
 
-use function is_array;
-
 use Laminas\I18n\Translator\TextDomain;
+
+use function is_array;
 
 /**
  * Helper class to load .ini files from disk.

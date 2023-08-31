@@ -29,22 +29,18 @@
 
 namespace VuFind\Controller;
 
-use function count;
+use Laminas\Crypt\Password\Bcrypt;
+use Laminas\Mvc\MvcEvent;
+use VuFind\Config\Writer as ConfigWriter;
+use VuFindSearch\Command\RetrieveCommand;
 
+use function count;
 use function defined;
 use function dirname;
-
 use function function_exists;
 use function in_array;
 use function is_callable;
-
-use Laminas\Crypt\Password\Bcrypt;
-use Laminas\Mvc\MvcEvent;
-
 use function strlen;
-
-use VuFind\Config\Writer as ConfigWriter;
-use VuFindSearch\Command\RetrieveCommand;
 
 /**
  * Class controls VuFind auto-configuration.

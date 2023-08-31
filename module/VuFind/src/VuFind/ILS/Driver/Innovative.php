@@ -29,10 +29,10 @@
 
 namespace VuFind\ILS\Driver;
 
+use VuFind\Exception\ILS as ILSException;
+
 use function count;
 use function strlen;
-
-use VuFind\Exception\ILS as ILSException;
 
 /**
  * VuFind Connector for Innovative

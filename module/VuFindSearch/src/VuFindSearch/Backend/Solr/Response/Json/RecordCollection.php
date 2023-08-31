@@ -29,9 +29,9 @@
 
 namespace VuFindSearch\Backend\Solr\Response\Json;
 
-use function array_key_exists;
-
 use VuFindSearch\Response\AbstractRecordCollection;
+
+use function array_key_exists;
 
 /**
  * Simple JSON-based record collection.

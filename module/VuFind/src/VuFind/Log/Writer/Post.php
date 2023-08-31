@@ -29,9 +29,9 @@
 
 namespace VuFind\Log\Writer;
 
-use function is_array;
-
 use Laminas\Http\Client;
+
+use function is_array;
 
 /**
  * This class extends the Laminas Logging to sent POST messages over HTTP

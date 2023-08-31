@@ -29,9 +29,9 @@
 
 namespace VuFind\Content;
 
-use function is_object;
-
 use VuFindCode\ISBN;
+
+use function is_object;
 
 /**
  * Abstract base for content loader plug-ins.

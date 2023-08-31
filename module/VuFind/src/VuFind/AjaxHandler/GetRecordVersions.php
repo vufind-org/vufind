@@ -29,14 +29,14 @@
 
 namespace VuFind\AjaxHandler;
 
-use function count;
-use function is_array;
-
 use Laminas\Mvc\Controller\Plugin\Params;
 use VuFind\Record\Loader;
 use VuFind\RecordTab\TabManager;
 use VuFind\Session\Settings as SessionSettings;
 use VuFind\View\Helper\Root\Record;
+
+use function count;
+use function is_array;
 
 /**
  * AJAX handler for fetching versions link

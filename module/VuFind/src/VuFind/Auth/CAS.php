@@ -30,9 +30,9 @@
 
 namespace VuFind\Auth;
 
-use function constant;
-
 use VuFind\Exception\Auth as AuthException;
+
+use function constant;
 
 /**
  * CAS authentication module.

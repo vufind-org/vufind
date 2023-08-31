@@ -29,12 +29,12 @@
 
 namespace VuFind\Search\Solr;
 
-use function is_array;
-
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
 use VuFindSearch\Service;
+
+use function is_array;
 
 /**
  * Conditional Filter listener.

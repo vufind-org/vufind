@@ -29,16 +29,13 @@
 
 namespace VuFind\Controller;
 
-use function is_array;
-
 use Laminas\ServiceManager\ServiceLocatorInterface;
-
 use Laminas\Session\Container;
-
-use function strlen;
-
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
+
+use function is_array;
+use function strlen;
 
 /**
  * Book Bag / Bulk Action Controller

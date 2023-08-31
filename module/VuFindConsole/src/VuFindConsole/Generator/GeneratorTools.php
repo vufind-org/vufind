@@ -29,18 +29,17 @@
 
 namespace VuFindConsole\Generator;
 
-use function count;
-use function in_array;
-use function is_array;
-use function is_callable;
-use function is_string;
-
 use Laminas\Code\Generator\ClassGenerator;
 use Laminas\Code\Generator\FileGenerator;
 use Laminas\Code\Generator\MethodGenerator;
 use Laminas\Code\Reflection\ClassReflection;
 use Psr\Container\ContainerInterface;
 
+use function count;
+use function in_array;
+use function is_array;
+use function is_callable;
+use function is_string;
 use function strlen;
 
 /**

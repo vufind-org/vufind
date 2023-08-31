@@ -29,14 +29,14 @@
 
 namespace VuFind\RecordTab;
 
-use function in_array;
-
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\Config\PluginManager as ConfigManager;
 use VuFind\Content\PluginManager as ContentManager;
+
+use function in_array;
 
 /**
  * Abstract factory for building AbstractContent tabs.

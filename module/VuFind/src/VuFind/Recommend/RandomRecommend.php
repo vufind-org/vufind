@@ -29,9 +29,9 @@
 
 namespace VuFind\Recommend;
 
-use function count;
-
 use VuFindSearch\Command\RandomCommand;
+
+use function count;
 
 /**
  * RandomRecommend Module

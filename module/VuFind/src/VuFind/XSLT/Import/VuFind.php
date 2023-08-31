@@ -29,10 +29,9 @@
 
 namespace VuFind\XSLT\Import;
 
-use function count;
-
 use DOMDocument;
 
+use function count;
 use function in_array;
 use function is_callable;
 use function strlen;

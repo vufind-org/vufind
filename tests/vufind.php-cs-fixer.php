@@ -54,7 +54,10 @@ $rules = [
     'no_useless_return' => true,
     'no_whitespace_in_blank_line' => true,
     'non_printable_character' => true,
-    'ordered_imports' => true,
+    'ordered_imports' => [
+        'imports_order' => ['class', 'function', 'const'],
+        'sort_algorithm' => 'alpha',
+    ],
     'phpdoc_no_access' => true,
     'php_unit_method_casing' => true,
     'pow_to_exponentiation' => true,

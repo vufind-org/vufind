@@ -31,9 +31,9 @@
 
 namespace VuFind\Search\EDS;
 
-use function count;
-
 use VuFindSearch\ParamBag;
+
+use function count;
 
 /**
  * EDS API Params

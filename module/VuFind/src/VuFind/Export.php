@@ -29,11 +29,11 @@
 
 namespace VuFind;
 
-use function in_array;
-use function is_callable;
-
 use Laminas\Config\Config;
 use Laminas\View\Renderer\PhpRenderer;
+
+use function in_array;
+use function is_callable;
 
 /**
  * Export support class

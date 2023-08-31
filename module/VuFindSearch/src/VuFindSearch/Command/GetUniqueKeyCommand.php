@@ -29,9 +29,9 @@
 
 namespace VuFindSearch\Command;
 
-use function is_callable;
-
 use VuFindSearch\Backend\BackendInterface;
+
+use function is_callable;
 
 /**
  * Get the backend's unique search key field (currently only supported by Solr)

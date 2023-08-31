@@ -31,14 +31,14 @@
 
 namespace VuFindSearch\Backend\Solr;
 
-use function in_array;
-use function is_array;
-use function strlen;
-
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
+
+use function in_array;
+use function is_array;
+use function strlen;
 
 /**
  * SOLR QueryBuilder.

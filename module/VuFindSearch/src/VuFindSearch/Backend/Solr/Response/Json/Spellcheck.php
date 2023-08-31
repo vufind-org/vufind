@@ -31,11 +31,9 @@ namespace VuFindSearch\Backend\Solr\Response\Json;
 
 use ArrayObject;
 use Countable;
-
-use function is_array;
-
 use IteratorAggregate;
 
+use function is_array;
 use function strlen;
 
 /**

@@ -29,11 +29,11 @@
 
 namespace VuFind\AjaxHandler;
 
-use function count;
-
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\View\Renderer\RendererInterface;
 use VuFind\DoiLinker\PluginManager;
+
+use function count;
 
 /**
  * AJAX handler to look up DOI data.

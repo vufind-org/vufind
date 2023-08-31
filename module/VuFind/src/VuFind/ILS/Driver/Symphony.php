@@ -30,10 +30,6 @@
 
 namespace VuFind\ILS\Driver;
 
-use function count;
-use function in_array;
-use function is_array;
-
 use Laminas\Log\LoggerAwareInterface;
 use SoapClient;
 use SoapFault;
@@ -41,6 +37,10 @@ use SoapHeader;
 use VuFind\Cache\Manager as CacheManager;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Record\Loader;
+
+use function count;
+use function in_array;
+use function is_array;
 
 /**
  * Symphony Web Services (symws) ILS Driver

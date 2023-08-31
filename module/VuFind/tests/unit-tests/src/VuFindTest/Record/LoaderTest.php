@@ -29,8 +29,6 @@
 
 namespace VuFindTest\Record;
 
-use function count;
-
 use VuFind\Record\Cache;
 use VuFind\Record\FallbackLoader\PluginManager as FallbackLoader;
 use VuFind\Record\Loader;
@@ -39,6 +37,8 @@ use VuFind\RecordDriver\PluginManager as RecordFactory;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Response\RecordCollectionInterface;
 use VuFindSearch\Service as SearchService;
+
+use function count;
 
 /**
  * Record loader tests.

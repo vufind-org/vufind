@@ -34,13 +34,13 @@
 
 namespace VuFind\Search\Solr;
 
-use function in_array;
-
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use Psr\Container\ContainerInterface;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Service;
+
+use function in_array;
 
 /**
  * Solr merged record handling listener.

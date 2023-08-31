@@ -29,12 +29,11 @@
 
 namespace VuFindTheme;
 
+use Laminas\Cache\Storage\StorageInterface;
+
 use function array_key_exists;
 use function is_array;
 use function is_string;
-
-use Laminas\Cache\Storage\StorageInterface;
-
 use function strlen;
 
 /**

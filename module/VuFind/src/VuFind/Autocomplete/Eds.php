@@ -31,9 +31,9 @@
 
 namespace VuFind\Autocomplete;
 
-use function is_array;
-
 use VuFindSearch\Service;
+
+use function is_array;
 
 /**
  * EDS Autocomplete Module

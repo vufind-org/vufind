@@ -29,14 +29,14 @@
 
 namespace VuFindTest\I18n\Locale;
 
-use function func_get_args;
-
 use SlmLocale\Strategy\HttpAcceptLanguageStrategy;
 use SlmLocale\Strategy\QueryStrategy;
 use VuFind\I18n\Locale\LocaleDetectorCookieStrategy;
 use VuFind\I18n\Locale\LocaleDetectorFactory;
 use VuFind\I18n\Locale\LocaleDetectorParamStrategy;
 use VuFind\I18n\Locale\LocaleSettings;
+
+use function func_get_args;
 
 /**
  * LocaleDetectorFactory Test Class

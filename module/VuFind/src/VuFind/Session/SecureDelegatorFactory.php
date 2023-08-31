@@ -31,11 +31,11 @@
 
 namespace VuFind\Session;
 
-use function call_user_func;
-
 use Laminas\ServiceManager\Factory\DelegatorFactoryInterface;
 use ProxyManager\Factory\LazyLoadingValueHolderFactory;
 use Psr\Container\ContainerInterface;
+
+use function call_user_func;
 
 /**
  * Secure session delegator factory

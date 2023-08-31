@@ -30,15 +30,14 @@
 
 namespace VuFind\ILS\Driver;
 
-use function count;
-
-use function in_array;
-use function intval;
-
 use Laminas\Log\LoggerAwareInterface;
 use PDO;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Log\LoggerAwareTrait;
+
+use function count;
+use function in_array;
+use function intval;
 
 /**
  * Horizon ILS Driver

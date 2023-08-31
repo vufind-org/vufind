@@ -29,12 +29,12 @@
 
 namespace VuFindApi\Controller;
 
-use function count;
-use function is_array;
-
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFindApi\Formatter\FacetFormatter;
 use VuFindApi\Formatter\RecordFormatter;
+
+use function count;
+use function is_array;
 
 /**
  * Search API Controller

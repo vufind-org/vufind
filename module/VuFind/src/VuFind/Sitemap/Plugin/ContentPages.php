@@ -29,11 +29,11 @@
 
 namespace VuFind\Sitemap\Plugin;
 
-use function in_array;
-
 use Laminas\Config\Config;
 use Laminas\Router\RouteStackInterface;
 use VuFindTheme\ThemeInfo;
+
+use function in_array;
 
 /**
  * Content pages generator plugin

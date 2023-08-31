@@ -29,12 +29,12 @@
 
 namespace VuFind\Search\Solr;
 
-use function count;
-
 use VuFind\Search\Solr\AbstractErrorListener as ErrorListener;
 use VuFindSearch\Command\SearchCommand;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\QueryGroup;
+
+use function count;
 
 /**
  * Solr Search Parameters

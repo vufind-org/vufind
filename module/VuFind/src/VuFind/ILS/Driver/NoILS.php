@@ -30,10 +30,10 @@
 
 namespace VuFind\ILS\Driver;
 
-use function strlen;
-
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+
+use function strlen;
 
 /**
  * Driver for offline/missing ILS.

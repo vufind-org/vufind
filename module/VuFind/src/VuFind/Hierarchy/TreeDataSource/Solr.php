@@ -29,13 +29,13 @@
 
 namespace VuFind\Hierarchy\TreeDataSource;
 
-use function count;
-
 use VuFind\Hierarchy\TreeDataFormatter\PluginManager as FormatterManager;
 use VuFindSearch\Backend\Solr\Command\RawJsonSearchCommand;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Service;
+
+use function count;
 
 /**
  * Hierarchy Tree Data Source (Solr)

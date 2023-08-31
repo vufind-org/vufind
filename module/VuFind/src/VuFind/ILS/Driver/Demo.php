@@ -35,28 +35,22 @@
 
 namespace VuFind\ILS\Driver;
 
-use function array_key_exists;
-
-use function array_slice;
-
 use ArrayObject;
-
-use function count;
-
-use function in_array;
-use function is_callable;
-
 use Laminas\Http\Request as HttpRequest;
 use Laminas\Session\Container as SessionContainer;
-
-use function strlen;
-
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Logic\ItemStatus;
 use VuFindSearch\Command\RandomCommand;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Service as SearchService;
+
+use function array_key_exists;
+use function array_slice;
+use function count;
+use function in_array;
+use function is_callable;
+use function strlen;
 
 /**
  * Advanced Dummy ILS Driver -- Returns sample values based on Solr index.

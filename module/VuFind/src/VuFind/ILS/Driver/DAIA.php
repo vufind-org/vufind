@@ -34,20 +34,15 @@
 
 namespace VuFind\ILS\Driver;
 
-use function count;
-
 use DOMDocument;
-
-use function in_array;
-
-use function is_array;
-
 use Laminas\Log\LoggerAwareInterface as LoggerAwareInterface;
-
-use function strlen;
-
 use VuFind\Exception\ILS as ILSException;
 use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
+
+use function count;
+use function in_array;
+use function is_array;
+use function strlen;
 
 /**
  * ILS Driver for VuFind to query availability information via DAIA.

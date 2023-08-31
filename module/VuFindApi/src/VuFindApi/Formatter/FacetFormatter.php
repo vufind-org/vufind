@@ -29,9 +29,9 @@
 
 namespace VuFindApi\Formatter;
 
-use function in_array;
-
 use VuFind\Search\Base\Results;
+
+use function in_array;
 
 /**
  * Facet formatter for API responses

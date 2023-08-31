@@ -31,8 +31,6 @@
 
 namespace VuFindTest\Search\Solr;
 
-use function get_class;
-
 use VuFind\Config\PluginManager;
 use VuFind\I18n\TranslatableString;
 use VuFind\Record\Loader;
@@ -43,6 +41,8 @@ use VuFind\Search\Solr\Results;
 use VuFind\Search\Solr\SpellingProcessor;
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
 use VuFindSearch\Service as SearchService;
+
+use function get_class;
 
 /**
  * Solr Search Object Results Test

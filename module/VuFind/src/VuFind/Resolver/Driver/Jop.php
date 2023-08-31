@@ -40,10 +40,9 @@ namespace VuFind\Resolver\Driver;
 
 use DOMDocument;
 use DOMXpath;
+use VuFind\Net\UserIpReader;
 
 use function in_array;
-
-use VuFind\Net\UserIpReader;
 
 /**
  * JOP Link Resolver Driver

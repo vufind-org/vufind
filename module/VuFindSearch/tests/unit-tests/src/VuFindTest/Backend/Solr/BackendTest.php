@@ -29,8 +29,6 @@
 
 namespace VuFindTest\Backend\Solr;
 
-use function count;
-
 use InvalidArgumentException;
 use Laminas\Http\Response;
 use Laminas\Uri\Http;
@@ -42,6 +40,8 @@ use VuFindSearch\Backend\Solr\HandlerMap;
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
+
+use function count;
 
 /**
  * Unit tests for SOLR backend.

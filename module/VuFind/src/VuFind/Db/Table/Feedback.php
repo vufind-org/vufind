@@ -31,11 +31,11 @@ declare(strict_types=1);
 
 namespace VuFind\Db\Table;
 
-use function intval;
-
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Paginator\Paginator;
 use VuFind\Db\Row\RowGateway;
+
+use function intval;
 
 /**
  * Class Feedback

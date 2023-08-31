@@ -29,9 +29,6 @@
 
 namespace VuFindSearch\Backend\Summon;
 
-use function count;
-use function in_array;
-
 use SerialsSolutions\Summon\Laminas as Connector;
 use SerialsSolutions_Summon_Exception as SummonException;
 use SerialsSolutions_Summon_Query as SummonQuery;
@@ -42,6 +39,9 @@ use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Response\RecordCollectionInterface;
+
+use function count;
+use function in_array;
 
 /**
  * Summon backend.

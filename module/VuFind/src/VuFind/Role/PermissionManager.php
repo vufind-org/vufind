@@ -30,10 +30,10 @@
 
 namespace VuFind\Role;
 
+use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
+
 use function in_array;
 use function is_array;
-
-use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
 
 /**
  * Permission Manager

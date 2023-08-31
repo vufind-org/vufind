@@ -31,9 +31,9 @@
 
 namespace VuFind\RecordDriver\Feature;
 
-use function in_array;
-
 use VuFind\Exception\ILS as ILSException;
+
+use function in_array;
 
 /**
  * ILS support for MARC and other types of records.

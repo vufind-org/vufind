@@ -29,9 +29,9 @@
 
 namespace VuFind\Search\MixedList;
 
-use function count;
-
 use VuFind\Search\Base\Results as BaseResults;
+
+use function count;
 
 /**
  * Search Mixed List Results

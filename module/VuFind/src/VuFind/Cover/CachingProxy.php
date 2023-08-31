@@ -29,10 +29,10 @@
 
 namespace VuFind\Cover;
 
-use function dirname;
-
 use Laminas\Http\Client;
 use Laminas\Http\Response;
+
+use function dirname;
 
 /**
  * Caching Proxy for Cover Images

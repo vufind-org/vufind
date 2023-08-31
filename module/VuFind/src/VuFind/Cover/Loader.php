@@ -30,15 +30,15 @@
 
 namespace VuFind\Cover;
 
+use VuFind\Content\Covers\PluginManager as ApiManager;
+use VuFindCode\ISBN;
+use VuFindCode\ISMN;
+
 use function func_get_args;
 use function in_array;
 use function is_array;
 use function is_callable;
 use function strlen;
-
-use VuFind\Content\Covers\PluginManager as ApiManager;
-use VuFindCode\ISBN;
-use VuFindCode\ISMN;
 
 /**
  * Book Cover Generator

@@ -29,10 +29,10 @@
 
 namespace VuFind\CSV;
 
-use function count;
-
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFindSearch\Backend\Solr\Document\RawJSONDocument;
+
+use function count;
 
 /**
  * VuFind CSV importer configuration

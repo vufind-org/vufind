@@ -29,15 +29,14 @@
 
 namespace VuFindSearch\Backend\Blender\Response\Json;
 
-use function array_slice;
+use VuFindSearch\Response\RecordInterface;
 
+use function array_slice;
 use function count;
 use function in_array;
 use function intval;
 use function is_array;
 use function is_string;
-
-use VuFindSearch\Response\RecordInterface;
 
 /**
  * JSON-based record collection for records from multiple sources.

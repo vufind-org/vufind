@@ -29,13 +29,13 @@
 
 namespace VuFind\Search\EDS;
 
-use function call_user_func;
-use function count;
-
 use Laminas\Stdlib\Parameters;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
+
+use function call_user_func;
+use function count;
 
 /**
  * EDS API Query Adapter: search query parameters to AbstractQuery object

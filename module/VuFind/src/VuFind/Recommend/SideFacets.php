@@ -29,13 +29,13 @@
 
 namespace VuFind\Recommend;
 
+use VuFind\Search\Solr\HierarchicalFacetHelper;
+use VuFind\Solr\Utils as SolrUtils;
+
 use function get_class;
 use function in_array;
 use function intval;
 use function is_array;
-
-use VuFind\Search\Solr\HierarchicalFacetHelper;
-use VuFind\Solr\Utils as SolrUtils;
 
 /**
  * SideFacets Recommendations Module

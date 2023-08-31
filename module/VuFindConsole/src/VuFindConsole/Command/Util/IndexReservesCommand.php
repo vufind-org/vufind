@@ -29,16 +29,16 @@
 
 namespace VuFindConsole\Command\Util;
 
-use function count;
-use function in_array;
-use function ini_get;
-
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Reserves\CsvReader;
 use VuFindSearch\Backend\Solr\Document\UpdateDocument;
 use VuFindSearch\Backend\Solr\Record\SerializableRecord;
+
+use function count;
+use function in_array;
+use function ini_get;
 
 /**
  * Console command: index course reserves into Solr.

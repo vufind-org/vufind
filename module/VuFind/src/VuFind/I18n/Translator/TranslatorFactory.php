@@ -29,8 +29,6 @@
 
 namespace VuFind\I18n\Translator;
 
-use function extension_loaded;
-
 use Laminas\I18n\Translator\TranslatorInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -38,6 +36,8 @@ use Laminas\ServiceManager\Factory\DelegatorFactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\I18n\Locale\LocaleSettings;
+
+use function extension_loaded;
 
 /**
  * Translator factory.

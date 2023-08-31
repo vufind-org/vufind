@@ -29,8 +29,6 @@
 
 namespace VuFindConsole\Command\Util;
 
-use function count;
-
 use Laminas\Config\Config;
 use Laminas\Crypt\BlockCipher;
 use Laminas\Crypt\Symmetric\Openssl;
@@ -42,6 +40,8 @@ use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
 use VuFind\Db\Table\User as UserTable;
+
+use function count;
 
 /**
  * Console command: switch database encryption algorithm.

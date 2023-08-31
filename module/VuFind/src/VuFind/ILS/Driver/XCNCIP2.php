@@ -29,16 +29,15 @@
 
 namespace VuFind\ILS\Driver;
 
-use function array_key_exists;
-
-use function count;
-use function in_array;
-use function is_array;
-
 use VuFind\Config\PathResolver;
 use VuFind\Date\DateException;
 use VuFind\Exception\AuthToken as AuthTokenException;
 use VuFind\Exception\ILS as ILSException;
+
+use function array_key_exists;
+use function count;
+use function in_array;
+use function is_array;
 
 /**
  * XC NCIP Toolkit (v2) ILS Driver

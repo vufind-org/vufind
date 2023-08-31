@@ -29,13 +29,13 @@
 
 namespace VuFind\Controller;
 
+use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\Search\SearchRunner;
+
 use function count;
 use function in_array;
 use function intval;
 use function is_array;
-
-use Laminas\ServiceManager\ServiceLocatorInterface;
-use VuFind\Search\SearchRunner;
 
 /**
  * Redirects the user to the appropriate default VuFind action.

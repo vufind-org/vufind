@@ -30,11 +30,10 @@
 namespace VuFind\Record\FallbackLoader;
 
 use SerialsSolutions\Summon\Laminas as Connector;
-
-use function strlen;
-
 use VuFindSearch\Command\RetrieveCommand;
 use VuFindSearch\ParamBag;
+
+use function strlen;
 
 /**
  * Summon record fallback loader

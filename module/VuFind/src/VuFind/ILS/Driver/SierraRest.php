@@ -29,23 +29,20 @@
 
 namespace VuFind\ILS\Driver;
 
-use function call_user_func_array;
+use Laminas\Log\LoggerAwareInterface;
+use VuFind\Date\DateException;
+use VuFind\Exception\ILS as ILSException;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFindHttp\HttpServiceAwareInterface;
 
+use function call_user_func_array;
 use function func_get_args;
 use function in_array;
 use function intval;
 use function is_array;
 use function is_callable;
 use function is_string;
-
-use Laminas\Log\LoggerAwareInterface;
-
 use function strlen;
-
-use VuFind\Date\DateException;
-use VuFind\Exception\ILS as ILSException;
-use VuFind\I18n\Translator\TranslatorAwareInterface;
-use VuFindHttp\HttpServiceAwareInterface;
 
 /**
  * III Sierra REST API driver

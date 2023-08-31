@@ -29,12 +29,12 @@
 
 namespace VuFind\Recommend;
 
-use function count;
-
 use Laminas\I18n\Translator\TranslatorInterface;
 use VuFind\Connection\Wikipedia;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindSearch\Query\Query;
+
+use function count;
 
 /**
  * AuthorInfo Recommendations Module

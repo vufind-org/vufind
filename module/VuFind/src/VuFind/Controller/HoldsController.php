@@ -31,14 +31,14 @@
 
 namespace VuFind\Controller;
 
-use function count;
-use function in_array;
-use function is_array;
-
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Validator\CsrfInterface;
+
+use function count;
+use function in_array;
+use function is_array;
 
 /**
  * Controller for the user holds area.

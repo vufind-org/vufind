@@ -29,12 +29,11 @@
 
 namespace VuFindDevTools;
 
-use function count;
-
-use function in_array;
-
 use Laminas\I18n\Translator\TextDomain;
 use VuFind\I18n\Translator\Loader\ExtendedIni;
+
+use function count;
+use function in_array;
 
 /**
  * Language Helper for Development Tools Controller

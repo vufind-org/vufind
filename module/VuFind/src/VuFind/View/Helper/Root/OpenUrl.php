@@ -29,11 +29,11 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\Resolver\Driver\PluginManager;
+
 use function count;
 use function in_array;
 use function is_callable;
-
-use VuFind\Resolver\Driver\PluginManager;
 
 /**
  * OpenUrl view helper

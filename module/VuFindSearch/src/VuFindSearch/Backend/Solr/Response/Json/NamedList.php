@@ -29,14 +29,12 @@
 
 namespace VuFindSearch\Backend\Solr\Response\Json;
 
-use function count;
-
 use Countable;
+use Iterator;
 
+use function count;
 use function in_array;
 use function is_array;
-
-use Iterator;
 
 /**
  * SOLR NamedList with parameter json.nl=arrarr.

@@ -29,10 +29,10 @@
 
 namespace VuFind\Sitemap\Plugin\Index;
 
-use function count;
-
 use VuFindSearch\Command\GetUniqueKeyCommand;
 use VuFindSearch\Command\TermsCommand;
+
+use function count;
 
 /**
  * Plugin to get IDs for a sitemap from a backend using terms (if supported).

@@ -29,9 +29,9 @@
 
 namespace VuFindSearch\Backend\Summon\Response;
 
-use function is_array;
-
 use VuFindSearch\Response\AbstractRecordCollection;
+
+use function is_array;
 
 /**
  * WorldCat record collection.

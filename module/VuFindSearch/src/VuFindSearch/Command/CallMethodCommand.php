@@ -29,12 +29,12 @@
 
 namespace VuFindSearch\Command;
 
-use function call_user_func;
-
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Feature\ExtraRequestDetailsInterface;
 use VuFindSearch\ParamBag;
+
+use function call_user_func;
 
 /**
  * Call method command.

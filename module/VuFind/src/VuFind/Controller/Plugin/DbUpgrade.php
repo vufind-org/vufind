@@ -30,13 +30,13 @@
 
 namespace VuFind\Controller\Plugin;
 
-use function count;
-use function in_array;
-use function is_object;
-
 use Laminas\Db\Adapter\Adapter as DbAdapter;
 use Laminas\Db\Metadata\Source\Factory as DbMetadataSourceFactory;
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
+
+use function count;
+use function in_array;
+use function is_object;
 
 /**
  * Action helper to perform database upgrades

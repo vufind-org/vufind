@@ -30,10 +30,6 @@
 
 namespace VuFind\Form;
 
-use function count;
-use function in_array;
-use function is_array;
-
 use Laminas\InputFilter\InputFilter;
 use Laminas\InputFilter\InputFilterInterface;
 use Laminas\Validator\Callback;
@@ -44,6 +40,10 @@ use Laminas\View\HelperPluginManager;
 use VuFind\Config\YamlReader;
 use VuFind\Form\Handler\HandlerInterface;
 use VuFind\Form\Handler\PluginManager as HandlerManager;
+
+use function count;
+use function in_array;
+use function is_array;
 
 /**
  * Configurable form.

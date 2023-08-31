@@ -33,14 +33,14 @@
 
 namespace VuFind\ILS\Driver;
 
-use function count;
-use function in_array;
-use function is_callable;
-
 use PDO;
 use PDOException;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
+
+use function count;
+use function in_array;
+use function is_callable;
 
 /**
  * Voyager Restful ILS Driver

@@ -29,9 +29,9 @@
 
 namespace VuFind\View\Helper\Root;
 
-use function is_array;
-
 use VuFind\Search\Base\Options;
+
+use function is_array;
 
 /**
  * GeoCoords view helper

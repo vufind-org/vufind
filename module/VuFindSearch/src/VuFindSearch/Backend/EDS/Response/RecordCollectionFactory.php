@@ -29,13 +29,13 @@
 
 namespace VuFindSearch\Backend\EDS\Response;
 
+use VuFindSearch\Exception\InvalidArgumentException;
+use VuFindSearch\Response\RecordCollectionFactoryInterface;
+
 use function call_user_func;
 use function gettype;
 use function is_array;
 use function is_callable;
-
-use VuFindSearch\Exception\InvalidArgumentException;
-use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
 /**
  * Factory for record collection.

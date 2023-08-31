@@ -29,9 +29,9 @@
 
 namespace VuFind\SMS;
 
-use function function_exists;
-
 use VuFind\Exception\SMS as SMSException;
+
+use function function_exists;
 
 /**
  * Class for text messaging via Clickatell's HTTP API

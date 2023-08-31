@@ -29,9 +29,9 @@
 
 namespace VuFindTest\Session;
 
-use function function_exists;
-
 use VuFind\Session\File;
+
+use function function_exists;
 
 /**
  * File Session Handler Test Class

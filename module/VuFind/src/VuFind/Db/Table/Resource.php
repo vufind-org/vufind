@@ -29,14 +29,14 @@
 
 namespace VuFind\Db\Table;
 
-use function in_array;
-
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 use VuFind\Date\Converter as DateConverter;
 use VuFind\Db\Row\RowGateway;
 use VuFind\Record\Loader;
+
+use function in_array;
 
 /**
  * Table Definition for resource

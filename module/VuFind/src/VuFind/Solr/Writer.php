@@ -29,8 +29,6 @@
 
 namespace VuFind\Solr;
 
-use function func_get_args;
-
 use VuFind\Db\Table\ChangeTracker;
 use VuFindSearch\Backend\Solr\Command\WriteDocumentCommand;
 use VuFindSearch\Backend\Solr\Document\CommitDocument;
@@ -39,6 +37,8 @@ use VuFindSearch\Backend\Solr\Document\DocumentInterface;
 use VuFindSearch\Backend\Solr\Document\OptimizeDocument;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Service;
+
+use function func_get_args;
 
 /**
  * Solr Writer service

@@ -29,9 +29,6 @@
 
 namespace VuFindConsole\Command\Util;
 
-use function count;
-use function in_array;
-
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -39,6 +36,9 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Record\Loader;
 use VuFind\Search\Results\PluginManager;
+
+use function count;
+use function in_array;
 
 /**
  * Generic base class for Solr commands.

@@ -29,16 +29,16 @@
 
 namespace VuFind\Controller;
 
-use function count;
-use function in_array;
-use function intval;
-
 use Laminas\Http\Response as HttpResponse;
 use Laminas\Session\SessionManager;
 use Laminas\Stdlib\ResponseInterface as Response;
 use Laminas\View\Model\ViewModel;
 use VuFind\Search\RecommendListener;
 use VuFind\Solr\Utils as SolrUtils;
+
+use function count;
+use function in_array;
+use function intval;
 
 /**
  * VuFind Search Controller

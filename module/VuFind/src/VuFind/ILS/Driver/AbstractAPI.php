@@ -29,13 +29,13 @@
 
 namespace VuFind\ILS\Driver;
 
-use function in_array;
-use function is_string;
-
 use Laminas\Log\LoggerAwareInterface;
 use VuFind\Exception\BadConfig;
 use VuFind\Exception\ILS as ILSException;
 use VuFindHttp\HttpServiceAwareInterface;
+
+use function in_array;
+use function is_string;
 
 /**
  * Abstract Driver for API-based ILS drivers

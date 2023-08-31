@@ -30,10 +30,10 @@
 
 namespace VuFind\Config;
 
-use function in_array;
-
 use Laminas\Config\Config;
 use VuFind\Auth\Manager as AuthManager;
+
+use function in_array;
 
 /**
  * Class to determine which account capabilities are available, based on

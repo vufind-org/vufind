@@ -29,14 +29,14 @@
 
 namespace VuFindConsole\Command\Import;
 
-use function is_callable;
-
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\XSLT\Importer;
+
+use function is_callable;
 
 /**
  * Console command: XSLT importer

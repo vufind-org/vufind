@@ -29,9 +29,6 @@
 
 namespace VuFind\ChannelProvider;
 
-use function count;
-use function is_object;
-
 use Laminas\Mvc\Controller\Plugin\Url;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Router as RecordRouter;
@@ -41,6 +38,9 @@ use VuFindSearch\Command\AlphabeticBrowseCommand;
 use VuFindSearch\Command\RetrieveBatchCommand;
 use VuFindSearch\Command\RetrieveCommand;
 use VuFindSearch\ParamBag;
+
+use function count;
+use function is_object;
 
 /**
  * Alphabrowse channel provider.

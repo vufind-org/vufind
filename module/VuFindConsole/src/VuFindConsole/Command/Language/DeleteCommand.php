@@ -29,11 +29,11 @@
 
 namespace VuFindConsole\Command\Language;
 
-use function strlen;
-
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+
+use function strlen;
 
 /**
  * Language command: add string using template.

@@ -30,11 +30,11 @@
 
 namespace VuFindSearch\Backend\Solr\Document;
 
-use function is_array;
-
 use SplObjectStorage;
 use VuFindSearch\Backend\Solr\Record\SerializableRecordInterface;
 use XMLWriter;
+
+use function is_array;
 
 /**
  * SOLR update document class.

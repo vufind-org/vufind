@@ -32,12 +32,12 @@
 
 namespace VuFindTheme\View\Helper;
 
+use VuFindTheme\ThemeInfo;
+
 use function count;
 use function defined;
 use function in_array;
 use function is_resource;
-
-use VuFindTheme\ThemeInfo;
 
 /**
  * Trait to add asset pipeline functionality (concatenation / minification) to

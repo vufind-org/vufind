@@ -29,9 +29,9 @@
 
 namespace VuFind\Recommend;
 
-use function in_array;
-
 use Laminas\Config\Config;
+
+use function in_array;
 
 /**
  * SideFacets Recommendations Module

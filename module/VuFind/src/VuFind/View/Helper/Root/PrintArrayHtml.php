@@ -29,10 +29,10 @@
 
 namespace VuFind\View\Helper\Root;
 
+use Laminas\View\Helper\AbstractHelper;
+
 use function count;
 use function is_array;
-
-use Laminas\View\Helper\AbstractHelper;
 
 /**
  * View helper to print an array formatted for HTML display.

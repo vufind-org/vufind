@@ -31,13 +31,12 @@
 
 namespace VuFind\Cache;
 
-use function dirname;
-use function is_array;
-
 use Laminas\Cache\Service\StorageAdapterFactory;
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\Config\Config;
 
+use function dirname;
+use function is_array;
 use function strlen;
 
 /**

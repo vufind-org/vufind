@@ -32,11 +32,11 @@
 
 namespace VuFind\RecordDriver;
 
-use function in_array;
-
 use Laminas\Config\Config;
 use Laminas\Log\LoggerAwareInterface;
 use VuFind\DigitalContent\OverdriveConnector;
+
+use function in_array;
 
 /**
  * VuFind Record Driver for SolrOverdrive Records

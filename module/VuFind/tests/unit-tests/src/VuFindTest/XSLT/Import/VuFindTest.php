@@ -29,9 +29,9 @@
 
 namespace VuFindTest\XSLT\Import;
 
-use function chr;
-
 use VuFind\XSLT\Import\VuFind;
+
+use function chr;
 
 /**
  * XSLT helper tests.

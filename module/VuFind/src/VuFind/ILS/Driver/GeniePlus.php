@@ -29,10 +29,10 @@
 
 namespace VuFind\ILS\Driver;
 
+use VuFind\Exception\ILS as ILSException;
+
 use function count;
 use function in_array;
-
-use VuFind\Exception\ILS as ILSException;
 
 /**
  * GeniePlus API driver

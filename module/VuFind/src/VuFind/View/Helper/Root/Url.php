@@ -29,10 +29,10 @@
 
 namespace VuFind\View\Helper\Root;
 
+use Laminas\Http\PhpEnvironment\Request;
+
 use function func_get_args;
 use function func_num_args;
-
-use Laminas\Http\PhpEnvironment\Request;
 
 /**
  * Url view helper (extending core Laminas helper with additional functionality)

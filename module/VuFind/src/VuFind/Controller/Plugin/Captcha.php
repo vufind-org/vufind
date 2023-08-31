@@ -30,11 +30,11 @@
 
 namespace VuFind\Controller\Plugin;
 
-use function count;
-use function in_array;
-
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+
+use function count;
+use function in_array;
 
 /**
  * Action helper to manage Captcha fields

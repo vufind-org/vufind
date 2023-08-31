@@ -29,10 +29,10 @@
 
 namespace VuFind\Recommend;
 
-use function is_array;
-
 use Laminas\Http\Client\Adapter\Exception\TimeoutException;
 use Laminas\Http\Client as HttpClient;
+
+use function is_array;
 
 /**
  * DPLATerms Recommendations Module

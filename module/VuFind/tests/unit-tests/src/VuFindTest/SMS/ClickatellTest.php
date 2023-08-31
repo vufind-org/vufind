@@ -29,9 +29,9 @@
 
 namespace VuFindTest\SMS;
 
-use function function_exists;
-
 use VuFind\SMS\Clickatell;
+
+use function function_exists;
 
 /**
  * SMS test

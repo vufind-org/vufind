@@ -30,6 +30,8 @@
 
 namespace VuFind\ILS\Driver;
 
+use VuFind\Exception\ILS as ILSException;
+
 use function array_key_exists;
 use function call_user_func_array;
 use function func_get_args;
@@ -39,8 +41,6 @@ use function is_callable;
 use function is_int;
 use function is_string;
 use function strlen;
-
-use VuFind\Exception\ILS as ILSException;
 
 /**
  * Multiple Backend Driver.

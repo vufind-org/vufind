@@ -29,14 +29,14 @@
 
 namespace VuFindConsole\Command\Util;
 
-use function count;
-
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Marc\MarcCollectionFile;
 use VuFind\Marc\MarcLint;
+
+use function count;
 
 /**
  * Console command: Lint MARC records.

@@ -29,10 +29,6 @@
 
 namespace VuFindSearch\Backend\Blender;
 
-use function count;
-
-use function intval;
-
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\EventManager;
 use Laminas\EventManager\EventManagerInterface;
@@ -44,6 +40,9 @@ use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Response\RecordCollectionInterface;
 use VuFindSearch\Response\RecordInterface;
+
+use function count;
+use function intval;
 
 /**
  * Blender backend.

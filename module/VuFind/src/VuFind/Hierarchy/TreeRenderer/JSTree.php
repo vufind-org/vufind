@@ -29,11 +29,10 @@
 
 namespace VuFind\Hierarchy\TreeRenderer;
 
-use function count;
-use function in_array;
-
 use Laminas\Mvc\Controller\Plugin\Url as UrlPlugin;
 
+use function count;
+use function in_array;
 use function strlen;
 
 /**

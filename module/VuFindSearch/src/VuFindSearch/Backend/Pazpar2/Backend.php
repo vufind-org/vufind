@@ -29,13 +29,13 @@
 
 namespace VuFindSearch\Backend\Pazpar2;
 
-use function intval;
-
 use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Response\RecordCollectionInterface;
+
+use function intval;
 
 /**
  * Pazpar2 backend.

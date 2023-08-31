@@ -29,12 +29,12 @@
 
 namespace VuFind\Net;
 
-use function is_object;
-
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+
+use function is_object;
 
 /**
  * Factory for instantiating UserIpReader.

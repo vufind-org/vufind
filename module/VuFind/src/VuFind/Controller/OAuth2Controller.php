@@ -29,9 +29,6 @@
 
 namespace VuFind\Controller;
 
-use function in_array;
-use function is_array;
-
 use Laminas\Http\Response;
 use Laminas\Log\LoggerAwareInterface;
 use Laminas\Psr7Bridge\Psr7Response;
@@ -47,6 +44,9 @@ use VuFind\Exception\BadRequest as BadRequestException;
 use VuFind\OAuth2\Entity\UserEntity;
 use VuFind\OAuth2\Repository\IdentityRepository;
 use VuFind\Validator\CsrfInterface;
+
+use function in_array;
+use function is_array;
 
 /**
  * OAuth2 Controller

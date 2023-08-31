@@ -29,10 +29,10 @@
 
 namespace VuFindSearch\Command;
 
-use function is_callable;
-
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
+
+use function is_callable;
 
 /**
  * Command to fetch a Lucene helper object from a search backend.

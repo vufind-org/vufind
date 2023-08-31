@@ -30,12 +30,7 @@
 
 namespace VuFind\DigitalContent;
 
-use function count;
-
 use Exception;
-
-use function in_array;
-
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\Config\Config;
 use Laminas\Http\Client;
@@ -46,6 +41,9 @@ use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Cache\KeyGeneratorTrait;
 use VuFind\Exception\ILS as ILSException;
+
+use function count;
+use function in_array;
 
 /**
  * OverdriveConnector

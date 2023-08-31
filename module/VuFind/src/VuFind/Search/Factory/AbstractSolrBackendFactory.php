@@ -29,9 +29,6 @@
 
 namespace VuFind\Search\Factory;
 
-use function count;
-use function is_object;
-
 use Laminas\Config\Config;
 use Psr\Container\ContainerInterface;
 use VuFind\Search\Solr\CustomFilterListener;
@@ -55,6 +52,9 @@ use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
 use VuFindSearch\Backend\Solr\SimilarBuilder;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
+
+use function count;
+use function is_object;
 
 /**
  * Abstract factory for SOLR backends.

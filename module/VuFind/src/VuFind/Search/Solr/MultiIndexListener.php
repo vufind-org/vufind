@@ -29,13 +29,13 @@
 
 namespace VuFind\Search\Solr;
 
-use function in_array;
-use function is_array;
-
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Service;
+
+use function in_array;
+use function is_array;
 
 /**
  * MultiIndex listener class file.

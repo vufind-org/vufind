@@ -29,11 +29,11 @@
 
 namespace VuFindConsole\Command\Util;
 
-use function ini_get;
-
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+
+use function ini_get;
 
 /**
  * Console command: commit to Solr

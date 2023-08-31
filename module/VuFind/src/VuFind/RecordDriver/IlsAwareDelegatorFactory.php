@@ -29,11 +29,11 @@
 
 namespace VuFind\RecordDriver;
 
-use function call_user_func;
-use function is_array;
-
 use Laminas\ServiceManager\Factory\DelegatorFactoryInterface;
 use Psr\Container\ContainerInterface;
+
+use function call_user_func;
+use function is_array;
 
 /**
  * ILS aware delegator factory

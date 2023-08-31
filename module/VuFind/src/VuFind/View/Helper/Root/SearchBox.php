@@ -29,11 +29,11 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\Search\Options\PluginManager as OptionsManager;
+
 use function count;
 use function in_array;
 use function is_array;
-
-use VuFind\Search\Options\PluginManager as OptionsManager;
 
 /**
  * Search box view helper

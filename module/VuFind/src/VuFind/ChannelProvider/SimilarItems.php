@@ -29,9 +29,6 @@
 
 namespace VuFind\ChannelProvider;
 
-use function count;
-use function is_object;
-
 use Laminas\Mvc\Controller\Plugin\Url;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Router as RecordRouter;
@@ -39,6 +36,9 @@ use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Results;
 use VuFindSearch\Command\RetrieveCommand;
 use VuFindSearch\Command\SimilarCommand;
+
+use function count;
+use function is_object;
 
 /**
  * "Similar items" channel provider.

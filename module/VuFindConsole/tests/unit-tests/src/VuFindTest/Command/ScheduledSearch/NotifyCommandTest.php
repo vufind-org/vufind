@@ -29,11 +29,11 @@
 
 namespace VuFindTest\Command\ScheduledSearch;
 
-use function array_key_exists;
-
 use Symfony\Component\Console\Tester\CommandTester;
 use VuFindConsole\Command\ScheduledSearch\NotifyCommand;
 use VuFindTest\Container\MockContainer;
+
+use function array_key_exists;
 
 /**
  * ScheduledSearch/Notify command test.

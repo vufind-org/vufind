@@ -31,9 +31,6 @@
 
 namespace VuFind\Db\Table;
 
-use function count;
-use function is_object;
-
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Adapter\ParameterContainer;
 use Laminas\Db\TableGateway\Feature;
@@ -41,6 +38,9 @@ use minSO;
 use VuFind\Db\Row\RowGateway;
 use VuFind\Search\NormalizedSearch;
 use VuFind\Search\SearchNormalizer;
+
+use function count;
+use function is_object;
 
 /**
  * Table Definition for search

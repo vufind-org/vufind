@@ -29,9 +29,9 @@
 
 namespace VuFind\Record;
 
-use function is_array;
-
 use VuFind\RecordDriver\AbstractBase as Record;
+
+use function is_array;
 
 /**
  * Record ID list (support class for Loader)

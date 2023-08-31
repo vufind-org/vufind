@@ -29,11 +29,6 @@
 
 namespace VuFind\Search\Solr;
 
-use function array_slice;
-
-use function count;
-use function is_string;
-
 use VuFind\I18n\HasSorterInterface;
 use VuFind\I18n\HasSorterTrait;
 use VuFind\I18n\TranslatableString;
@@ -41,6 +36,10 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\Search\Base\HierarchicalFacetHelperInterface;
 use VuFind\Search\UrlQueryHelper;
+
+use function array_slice;
+use function count;
+use function is_string;
 
 /**
  * Functions for manipulating facets

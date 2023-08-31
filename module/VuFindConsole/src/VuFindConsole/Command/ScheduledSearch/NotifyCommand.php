@@ -29,9 +29,6 @@
 
 namespace VuFindConsole\Command\ScheduledSearch;
 
-use function count;
-use function in_array;
-
 use Laminas\Config\Config;
 use Laminas\View\Renderer\PhpRenderer;
 use Symfony\Component\Console\Command\Command;
@@ -44,6 +41,9 @@ use VuFind\I18n\Locale\LocaleSettings;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Mailer\Mailer;
 use VuFind\Search\Results\PluginManager as ResultsManager;
+
+use function count;
+use function in_array;
 
 /**
  * Console command: notify users of scheduled searches.

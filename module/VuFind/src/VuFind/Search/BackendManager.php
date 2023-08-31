@@ -29,9 +29,6 @@
 
 namespace VuFind\Search;
 
-use function gettype;
-use function is_object;
-
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
@@ -39,6 +36,9 @@ use SplObjectStorage;
 use UnexpectedValueException;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Service;
+
+use function gettype;
+use function is_object;
 
 /**
  * Manager for search backends.

@@ -33,27 +33,13 @@ namespace VuFind\Controller;
 
 use ArrayObject;
 use Composer\Semver\Comparator;
-
-use function count;
-
-use function dirname;
-
 use Exception;
-
-use function in_array;
-use function is_object;
-use function is_string;
-
 use Laminas\Crypt\BlockCipher;
-
 use Laminas\Crypt\Symmetric\Openssl;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Mvc\MvcEvent;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container;
-
-use function strlen;
-
 use VuFind\Cache\Manager as CacheManager;
 use VuFind\Config\Upgrade;
 use VuFind\Config\Version;
@@ -65,6 +51,13 @@ use VuFind\Date\Converter;
 use VuFind\Db\AdapterFactory;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\Search\Results\PluginManager as ResultsManager;
+
+use function count;
+use function dirname;
+use function in_array;
+use function is_object;
+use function is_string;
+use function strlen;
 
 /**
  * Class controls VuFind upgrading.

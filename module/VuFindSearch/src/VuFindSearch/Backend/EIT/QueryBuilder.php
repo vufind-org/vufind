@@ -32,12 +32,12 @@
 
 namespace VuFindSearch\Backend\EIT;
 
-use function count;
-
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
+
+use function count;
 
 /**
  * EIT QueryBuilder.

@@ -29,8 +29,6 @@
 
 namespace VuFindTest\AjaxHandler;
 
-use function count;
-
 use VuFind\AjaxHandler\Recommend;
 use VuFind\AjaxHandler\RecommendFactory;
 use VuFind\Recommend\PluginManager;
@@ -39,6 +37,8 @@ use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFind\Search\Solr\Results;
 use VuFind\Session\Settings;
 use VuFind\View\Helper\Root\Recommend as RecommendHelper;
+
+use function count;
 
 /**
  * Recommend test class.

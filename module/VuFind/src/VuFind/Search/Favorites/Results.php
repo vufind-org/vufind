@@ -29,8 +29,6 @@
 
 namespace VuFind\Search\Favorites;
 
-use function count;
-
 use LmcRbacMvc\Service\AuthorizationServiceAwareInterface;
 use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
 use VuFind\Db\Table\Resource as ResourceTable;
@@ -40,6 +38,8 @@ use VuFind\Record\Cache;
 use VuFind\Record\Loader;
 use VuFind\Search\Base\Results as BaseResults;
 use VuFindSearch\Service as SearchService;
+
+use function count;
 
 /**
  * Search Favorites Results

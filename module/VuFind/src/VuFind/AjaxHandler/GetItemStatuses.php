@@ -33,10 +33,6 @@
 
 namespace VuFind\AjaxHandler;
 
-use function count;
-use function in_array;
-use function is_array;
-
 use Laminas\Config\Config;
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\View\Renderer\RendererInterface;
@@ -46,6 +42,10 @@ use VuFind\ILS\Connection;
 use VuFind\ILS\Logic\Holds;
 use VuFind\ILS\Logic\ItemStatus;
 use VuFind\Session\Settings as SessionSettings;
+
+use function count;
+use function in_array;
+use function is_array;
 
 /**
  * "Get Item Status" AJAX handler

@@ -29,9 +29,6 @@
 
 namespace VuFindSearch\Backend\Solr;
 
-use function count;
-use function is_int;
-
 use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Backend\Exception\RemoteErrorException;
@@ -48,6 +45,9 @@ use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Response\RecordCollectionInterface;
+
+use function count;
+use function is_int;
 
 /**
  * SOLR backend.

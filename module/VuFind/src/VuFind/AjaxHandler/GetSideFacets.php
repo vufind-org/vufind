@@ -29,9 +29,6 @@
 
 namespace VuFind\AjaxHandler;
 
-use function in_array;
-use function is_callable;
-
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\View\Renderer\RendererInterface;
 use VuFind\Recommend\PluginManager as RecommendPluginManager;
@@ -42,6 +39,9 @@ use VuFind\Search\SearchRunner;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
 use VuFind\Search\UrlQueryHelper;
 use VuFind\Session\Settings as SessionSettings;
+
+use function in_array;
+use function is_callable;
 
 /**
  * "Get Side Facets" AJAX handler

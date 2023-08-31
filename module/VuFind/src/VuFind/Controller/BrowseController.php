@@ -29,12 +29,12 @@
 
 namespace VuFind\Controller;
 
-use function array_slice;
-use function in_array;
-
 use Laminas\Config\Config;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Exception\Forbidden as ForbiddenException;
+
+use function array_slice;
+use function in_array;
 
 /**
  * BrowseController Class

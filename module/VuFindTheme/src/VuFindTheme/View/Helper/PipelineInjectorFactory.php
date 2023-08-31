@@ -29,14 +29,14 @@
 
 namespace VuFindTheme\View\Helper;
 
-use function count;
-
 use Laminas\Config\Config;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+
+use function count;
 
 /**
  * Factory for helpers relying on asset pipeline configuration.

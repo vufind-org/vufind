@@ -29,13 +29,13 @@
 
 namespace VuFind\ChannelProvider;
 
-use function count;
-
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Params;
 use VuFind\Search\Base\Results;
 use VuFindSearch\Command\RandomCommand;
+
+use function count;
 
 /**
  * "Random items" channel provider.

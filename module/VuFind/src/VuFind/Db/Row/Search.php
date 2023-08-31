@@ -29,9 +29,9 @@
 
 namespace VuFind\Db\Row;
 
-use function is_resource;
-
 use VuFind\Crypt\HMAC;
+
+use function is_resource;
 
 /**
  * Row Definition for search

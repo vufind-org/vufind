@@ -29,10 +29,10 @@
 
 namespace VuFind\Service;
 
+use Laminas\ReCaptcha\ReCaptcha as LaminasReCaptcha;
+
 use function func_get_args;
 use function is_callable;
-
-use Laminas\ReCaptcha\ReCaptcha as LaminasReCaptcha;
 
 /**
  * Recaptcha service

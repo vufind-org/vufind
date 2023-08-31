@@ -31,12 +31,12 @@
 
 namespace VuFindSearch\Command;
 
-use function in_array;
-
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Feature\RandomInterface;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\QueryInterface;
+
+use function in_array;
 
 /**
  * Return random records command.

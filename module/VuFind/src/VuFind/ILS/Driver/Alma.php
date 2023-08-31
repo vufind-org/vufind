@@ -29,12 +29,6 @@
 
 namespace VuFind\ILS\Driver;
 
-use function count;
-
-use function floatval;
-use function in_array;
-use function is_callable;
-
 use Laminas\Http\Headers;
 use SimpleXMLElement;
 use VuFind\Exception\ILS as ILSException;
@@ -43,6 +37,11 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\ILS\Logic\ItemStatus;
 use VuFind\Marc\MarcReader;
+
+use function count;
+use function floatval;
+use function in_array;
+use function is_callable;
 
 /**
  * Alma ILS Driver

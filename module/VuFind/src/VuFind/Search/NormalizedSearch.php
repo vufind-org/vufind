@@ -29,11 +29,11 @@
 
 namespace VuFind\Search;
 
-use function get_class;
-
 use minSO;
 use VuFind\Search\Base\Results;
 use VuFind\Search\Results\PluginManager as ResultsManager;
+
+use function get_class;
 
 /**
  * Normalized search object.

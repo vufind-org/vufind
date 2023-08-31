@@ -31,10 +31,10 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\RecordDriver\AbstractBase as AbstractRecord;
+
 use function is_array;
 use function is_string;
-
-use VuFind\RecordDriver\AbstractBase as AbstractRecord;
 
 /**
  * Record linker view helper

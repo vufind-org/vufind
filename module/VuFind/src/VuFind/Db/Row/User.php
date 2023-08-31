@@ -29,12 +29,12 @@
 
 namespace VuFind\Db\Row;
 
-use function count;
-
 use Laminas\Crypt\BlockCipher as BlockCipher;
 use Laminas\Crypt\Symmetric\Openssl;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
+
+use function count;
 
 /**
  * Row Definition for user

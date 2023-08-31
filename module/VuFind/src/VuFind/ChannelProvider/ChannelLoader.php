@@ -29,14 +29,14 @@
 
 namespace VuFind\ChannelProvider;
 
-use function in_array;
-
 use Laminas\Config\Config;
 use VuFind\Cache\Manager as CacheManager;
 use VuFind\ChannelProvider\PluginManager as ChannelManager;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Search\Base\Results;
 use VuFind\Search\SearchRunner;
+
+use function in_array;
 
 /**
  * Channel loader

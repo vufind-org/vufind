@@ -29,12 +29,12 @@
 
 namespace VuFind\Search\Tags;
 
-use function count;
-
 use VuFind\Db\Table\Tags as TagsTable;
 use VuFind\Record\Loader;
 use VuFind\Search\Base\Results as BaseResults;
 use VuFindSearch\Service as SearchService;
+
+use function count;
 
 /**
  * Search Tags Results

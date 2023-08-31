@@ -29,10 +29,10 @@
 
 namespace VuFindTest\Net;
 
-use function func_get_args;
-
 use Laminas\Stdlib\Parameters;
 use VuFind\Net\UserIpReaderFactory;
+
+use function func_get_args;
 
 /**
  * UserIpReaderFactory Test Class

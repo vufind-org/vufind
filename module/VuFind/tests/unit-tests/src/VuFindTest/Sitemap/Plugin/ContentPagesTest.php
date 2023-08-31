@@ -29,13 +29,13 @@
 
 namespace VuFindTest\Sitemap\Plugin;
 
-use function func_get_args;
-
 use Laminas\Router\RouteStackInterface;
 use VuFind\Sitemap\Plugin\ContentPages;
 use VuFind\Sitemap\Plugin\ContentPagesFactory;
 use VuFindTest\Container\MockContainer;
 use VuFindTheme\ThemeInfo;
+
+use function func_get_args;
 
 /**
  * ContentPages Plugin Test Class

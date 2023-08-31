@@ -32,19 +32,15 @@ namespace VuFindTest\Integration;
 use Behat\Mink\Driver\Selenium2Driver;
 use Behat\Mink\Element\Element;
 use DMore\ChromeDriver\ChromeDriver;
-
-use function floatval;
-
-use function in_array;
-use function intval;
-
 use PHPUnit\Util\Test;
-
-use function strlen;
-
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
+
+use function floatval;
+use function in_array;
+use function intval;
+use function strlen;
 
 /**
  * Abstract base class for PHPUnit test cases using Mink.

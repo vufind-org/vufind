@@ -31,13 +31,13 @@
 
 namespace VuFindTest\ILS\Driver;
 
-use function call_user_func_array;
-use function count;
-use function in_array;
-
 use Laminas\Config\Exception\RuntimeException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Driver\MultiBackend;
+
+use function call_user_func_array;
+use function count;
+use function in_array;
 
 /**
  * ILS driver test

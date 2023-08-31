@@ -29,14 +29,14 @@
 
 namespace VuFind\AjaxHandler;
 
-use function count;
-use function is_array;
-
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Mvc\Controller\Plugin\Url;
 use VuFind\Db\Row\User;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Session\Settings as SessionSettings;
+
+use function count;
+use function is_array;
 
 /**
  * "Get Save Statuses" AJAX handler

@@ -30,11 +30,10 @@
 
 namespace VuFindSearch\Backend\LibGuides;
 
-use function array_slice;
-use function count;
-
 use Laminas\Http\Client as HttpClient;
 
+use function array_slice;
+use function count;
 use function strlen;
 
 /**

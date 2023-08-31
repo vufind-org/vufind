@@ -29,11 +29,11 @@
 
 namespace VuFind\Role;
 
-use function in_array;
-
 use Laminas\ServiceManager\Config;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
+
+use function in_array;
 
 /**
  * VuFind dynamic role provider factory.

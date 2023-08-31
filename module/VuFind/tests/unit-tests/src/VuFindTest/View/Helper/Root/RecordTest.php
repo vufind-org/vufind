@@ -29,13 +29,13 @@
 
 namespace VuFindTest\View\Helper\Root;
 
-use function is_array;
-
 use Laminas\Config\Config;
 use Laminas\View\Exception\RuntimeException;
 use VuFind\Cover\Loader;
 use VuFind\View\Helper\Root\Record;
 use VuFindTheme\ThemeInfo;
+
+use function is_array;
 
 /**
  * Record view helper Test Class

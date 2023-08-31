@@ -29,19 +29,15 @@
 
 namespace VuFind\Auth;
 
-use function call_user_func_array;
-
-use function func_get_args;
-
-use function in_array;
-use function is_callable;
-
 use Laminas\Http\PhpEnvironment\Request;
-
-use function strlen;
-
 use VuFind\Db\Row\User;
 use VuFind\Exception\Auth as AuthException;
+
+use function call_user_func_array;
+use function func_get_args;
+use function in_array;
+use function is_callable;
+use function strlen;
 
 /**
  * ChoiceAuth Authentication plugin

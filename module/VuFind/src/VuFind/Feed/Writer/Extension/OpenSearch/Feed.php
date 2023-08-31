@@ -29,13 +29,13 @@
 
 namespace VuFind\Feed\Writer\Extension\OpenSearch;
 
-use function in_array;
-use function is_string;
-
 use Laminas\Feed\Uri;
 use Laminas\Feed\Writer\Exception;
 use Laminas\Feed\Writer\Extension\ITunes\Feed as ParentFeed;
 use Laminas\Stdlib\StringUtils;
+
+use function in_array;
+use function is_string;
 
 /**
  * Laminas\Feed\Feed extension for Open Search

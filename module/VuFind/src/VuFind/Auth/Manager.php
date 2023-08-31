@@ -29,10 +29,6 @@
 
 namespace VuFind\Auth;
 
-use function count;
-use function in_array;
-use function is_callable;
-
 use Laminas\Config\Config;
 use Laminas\Session\SessionManager;
 use VuFind\Cookie\CookieManager;
@@ -40,6 +36,10 @@ use VuFind\Db\Row\User as UserRow;
 use VuFind\Db\Table\User as UserTable;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Validator\CsrfInterface;
+
+use function count;
+use function in_array;
+use function is_callable;
 
 /**
  * Wrapper class for handling logged-in user in session.
