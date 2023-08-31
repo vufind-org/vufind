@@ -34,6 +34,9 @@ namespace VuFind\Resolver\Driver;
 use DOMDocument;
 use Laminas\Dom\DOMXPath;
 
+use function chr;
+use function count;
+
 /**
  * ReDi Link Resolver Driver
  *

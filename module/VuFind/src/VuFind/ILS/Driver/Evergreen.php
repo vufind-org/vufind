@@ -34,6 +34,8 @@ use PDO;
 use PDOException;
 use VuFind\Exception\ILS as ILSException;
 
+use function count;
+
 /**
  * VuFind Connector for Evergreen
  *

@@ -33,6 +33,9 @@ use PDO;
 use PDOException;
 use VuFind\Exception\ILS as ILSException;
 
+use function count;
+use function is_array;
+
 /**
  * ILS Driver for NewGenLib
  *

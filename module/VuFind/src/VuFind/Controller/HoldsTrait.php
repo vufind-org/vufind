@@ -29,6 +29,10 @@
 
 namespace VuFind\Controller;
 
+use function count;
+use function in_array;
+use function is_array;
+
 /**
  * Holds trait (for subclasses of AbstractRecord)
  *

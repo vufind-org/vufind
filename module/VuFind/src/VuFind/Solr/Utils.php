@@ -29,6 +29,8 @@
 
 namespace VuFind\Solr;
 
+use function strlen;
+
 /**
  * Solr Utility Functions
  *

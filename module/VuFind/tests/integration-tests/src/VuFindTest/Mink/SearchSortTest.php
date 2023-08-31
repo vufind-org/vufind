@@ -33,6 +33,8 @@ namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
 
+use function count;
+
 /**
  * Test for sorting of search results.
  *

@@ -29,6 +29,10 @@
 
 namespace VuFindTheme;
 
+use function count;
+use function in_array;
+use function is_array;
+
 /**
  * VuFind Theme Public Resource Handler (for CSS, JS, etc.)
  *

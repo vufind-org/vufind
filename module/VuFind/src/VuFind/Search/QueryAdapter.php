@@ -34,6 +34,10 @@ use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
 
+use function array_key_exists;
+use function call_user_func;
+use function count;
+
 /**
  * Legacy adapter: search query parameters to AbstractQuery object
  *

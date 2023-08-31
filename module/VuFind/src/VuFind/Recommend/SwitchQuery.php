@@ -33,6 +33,9 @@ namespace VuFind\Recommend;
 use VuFindSearch\Command\GetLuceneHelperCommand;
 use VuFindSearch\Service;
 
+use function in_array;
+use function strlen;
+
 /**
  * SwitchQuery Recommendations Module
  *

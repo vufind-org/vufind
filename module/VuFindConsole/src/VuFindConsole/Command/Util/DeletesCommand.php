@@ -36,6 +36,9 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Marc\MarcCollectionFile;
 
+use function count;
+use function strlen;
+
 /**
  * Console command: delete from Solr
  *

@@ -29,6 +29,11 @@
 
 namespace VuFindAdmin\Controller;
 
+use function count;
+use function intval;
+use function is_array;
+use function is_object;
+
 /**
  * Class controls distribution of tags and resource tags.
  *

@@ -39,6 +39,9 @@ use Laminas\Mime\Mime;
 use Laminas\Mime\Part as MimePart;
 use VuFind\Exception\Mail as MailException;
 
+use function count;
+use function is_callable;
+
 /**
  * VuFind Mailer Class
  *

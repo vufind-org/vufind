@@ -35,6 +35,15 @@ use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindHttp\HttpServiceAwareInterface;
 
+use function call_user_func_array;
+use function func_get_args;
+use function in_array;
+use function intval;
+use function is_array;
+use function is_callable;
+use function is_string;
+use function strlen;
+
 /**
  * III Sierra REST API driver
  *
