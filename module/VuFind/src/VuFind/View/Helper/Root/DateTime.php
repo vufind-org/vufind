@@ -29,6 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
+use function call_user_func_array;
+
 /**
  * View helper for formatting dates and times
  *

@@ -30,6 +30,9 @@
 
 namespace VuFind\View\Helper\Root;
 
+use function in_array;
+use function is_array;
+
 /**
  * Make tag view helper
  *

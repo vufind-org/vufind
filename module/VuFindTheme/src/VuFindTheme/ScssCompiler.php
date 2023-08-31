@@ -29,6 +29,8 @@
 
 namespace VuFindTheme;
 
+use function dirname;
+
 /**
  * Class to compile SCSS into CSS within a theme.
  *

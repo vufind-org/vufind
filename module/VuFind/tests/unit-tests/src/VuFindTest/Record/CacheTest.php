@@ -34,6 +34,8 @@ namespace VuFindTest\Record;
 use VuFind\Db\Entity\Record;
 use VuFind\Record\Cache;
 
+use function in_array;
+
 /**
  * Record cache tests.
  *

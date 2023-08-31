@@ -33,6 +33,8 @@ use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 use VuFind\Db\Entity\UserCard;
 
+use function count;
+
 /**
  * Row Definition for user
  *

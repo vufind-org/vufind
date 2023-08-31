@@ -34,6 +34,8 @@ use PDO;
 use PDOException;
 use VuFind\Exception\ILS as ILSException;
 
+use function count;
+
 /**
  * VuFind Driver for Koha (version: 3.02)
  *

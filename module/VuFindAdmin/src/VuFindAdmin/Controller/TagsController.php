@@ -32,6 +32,11 @@ namespace VuFindAdmin\Controller;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Db\Service\TagService;
 
+use function count;
+use function intval;
+use function is_array;
+use function is_object;
+
 /**
  * Class controls distribution of tags and resource tags.
  *

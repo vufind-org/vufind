@@ -32,6 +32,8 @@ namespace VuFind\RecordTab;
 
 use VuFind\Config\PathResolver;
 
+use function count;
+
 /**
  * Map tab
  *

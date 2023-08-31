@@ -33,6 +33,10 @@ use Composer\Semver\Comparator;
 use VuFind\Config\Writer as ConfigWriter;
 use VuFind\Exception\FileAccess as FileAccessException;
 
+use function count;
+use function in_array;
+use function is_array;
+
 /**
  * Class to upgrade previous VuFind configurations to the current version
  *
@@ -421,7 +425,7 @@ class Upgrade
         // same, we don't need to copy anything!
         if (
             file_exists($src) && file_exists($raw)
-            && md5(file_get_contents($src)) == md5(file_get_contents($raw))
+            && md5(file_get_contents($src)) === md5(file_get_contents($raw))
         ) {
             return;
         }

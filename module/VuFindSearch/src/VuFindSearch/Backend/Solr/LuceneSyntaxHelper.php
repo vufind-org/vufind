@@ -33,6 +33,9 @@
 
 namespace VuFindSearch\Backend\Solr;
 
+use function count;
+use function in_array;
+
 /**
  * Lucene query syntax helper class.
  *

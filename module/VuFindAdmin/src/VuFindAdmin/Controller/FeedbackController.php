@@ -35,6 +35,9 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Db\Service\FeedbackService;
 use VuFind\Db\Table\Feedback;
 
+use function count;
+use function is_array;
+
 /**
  * Class FeedbackController
  *

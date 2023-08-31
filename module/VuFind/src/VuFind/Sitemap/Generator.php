@@ -31,6 +31,11 @@ namespace VuFind\Sitemap;
 
 use Laminas\Config\Config;
 
+use function call_user_func;
+use function in_array;
+use function is_callable;
+use function is_string;
+
 /**
  * Class for generating sitemaps
  *

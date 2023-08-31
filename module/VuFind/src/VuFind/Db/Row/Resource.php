@@ -32,6 +32,10 @@ namespace VuFind\Db\Row;
 use VuFind\Date\DateException;
 use VuFind\Exception\LoginRequired as LoginRequiredException;
 
+use function intval;
+use function is_object;
+use function strlen;
+
 /**
  * Row Definition for resource
  *

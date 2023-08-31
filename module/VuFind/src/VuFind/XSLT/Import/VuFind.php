@@ -31,6 +31,11 @@ namespace VuFind\XSLT\Import;
 
 use DOMDocument;
 
+use function count;
+use function in_array;
+use function is_callable;
+use function strlen;
+
 /**
  * XSLT support class -- all methods of this class must be public and static;
  * they will be automatically made available to your XSL stylesheet for use

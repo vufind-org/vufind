@@ -35,6 +35,11 @@ use VuFind\Exception\Mail as MailException;
 use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
 use VuFindSearch\ParamBag;
 
+use function in_array;
+use function intval;
+use function is_array;
+use function is_object;
+
 /**
  * VuFind Record Controller
  *

@@ -32,6 +32,8 @@ namespace VuFindTest\View\Helper\Root;
 use VuFind\View\Helper\Root\PrintArrayHtml;
 use VuFindTest\Unit\AbstractMakeTagTest;
 
+use function call_user_func;
+
 /**
  * PrintArrayHtml Test Class
  *

@@ -33,6 +33,13 @@ use VuFind\Search\Base\Params as BaseParams;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
 use VuFindSearch\ParamBag;
 
+use function array_slice;
+use function call_user_func_array;
+use function count;
+use function func_get_args;
+use function in_array;
+use function is_callable;
+
 /**
  * Blender Search Parameters
  *

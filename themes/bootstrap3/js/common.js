@@ -642,16 +642,6 @@ function keyboardShortcuts() {
   }
 }
 
-function setupIeSupport() {
-  // Disable Bootstrap modal focus enforce on IE since it breaks Recaptcha.
-  // Cannot use conditional comments since IE 11 doesn't support them but still has
-  // the issue
-  var ua = window.navigator.userAgent;
-  if (ua.indexOf('MSIE') || ua.indexOf('Trident/')) {
-    $.fn.modal.Constructor.prototype.enforceFocus = function emptyEnforceFocus() { };
-  }
-}
-
 function unwrapJQuery(node) {
   return node instanceof Node ? node : node[0];
 }
@@ -731,8 +721,6 @@ $(function commonDocReady() {
   if (url.indexOf('?print=') !== -1 || url.indexOf('&print=') !== -1) {
     $("link[media='print']").attr("media", "all");
   }
-
-  setupIeSupport();
 });
 
 $(function searchFormResetHandler() {

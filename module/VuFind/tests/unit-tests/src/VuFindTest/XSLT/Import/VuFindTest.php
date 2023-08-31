@@ -31,6 +31,8 @@ namespace VuFindTest\XSLT\Import;
 
 use VuFind\XSLT\Import\VuFind;
 
+use function chr;
+
 /**
  * XSLT helper tests.
  *

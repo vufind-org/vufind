@@ -34,6 +34,9 @@ use Laminas\Session\Container;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
 
+use function is_array;
+use function strlen;
+
 /**
  * Book Bag / Bulk Action Controller
  *

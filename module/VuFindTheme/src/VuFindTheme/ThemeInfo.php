@@ -31,6 +31,11 @@ namespace VuFindTheme;
 
 use Laminas\Cache\Storage\StorageInterface;
 
+use function array_key_exists;
+use function is_array;
+use function is_string;
+use function strlen;
+
 /**
  * Class to represent currently-selected theme and related information.
  *

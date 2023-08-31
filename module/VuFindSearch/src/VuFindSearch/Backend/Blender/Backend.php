@@ -41,6 +41,9 @@ use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Response\RecordCollectionInterface;
 use VuFindSearch\Response\RecordInterface;
 
+use function count;
+use function intval;
+
 /**
  * Blender backend.
  *
