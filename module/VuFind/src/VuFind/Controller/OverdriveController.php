@@ -18,6 +18,8 @@ use Laminas\Log\LoggerAwareInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\DigitalContent\OverdriveConnector;
 
+use function is_array;
+
 /**
  * Overdrive Controller supports actions for Overdrive Integration
  *

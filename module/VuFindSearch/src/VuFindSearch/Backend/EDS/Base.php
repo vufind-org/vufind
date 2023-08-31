@@ -30,6 +30,8 @@
 
 namespace VuFindSearch\Backend\EDS;
 
+use function is_array;
+
 /**
  * EBSCO Search API abstract base class
  *

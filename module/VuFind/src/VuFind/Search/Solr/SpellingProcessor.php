@@ -33,6 +33,11 @@ use Laminas\Config\Config;
 use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
 use VuFindSearch\Query\AbstractQuery;
 
+use function count;
+use function in_array;
+use function is_array;
+use function strlen;
+
 /**
  * Solr spelling processor.
  *

@@ -32,6 +32,8 @@ namespace VuFind\Content\Covers;
 
 use SimpleXMLElement;
 
+use function strlen;
+
 /**
  * Plugin for Bokinfo coverimages
  *

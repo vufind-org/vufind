@@ -35,6 +35,9 @@ use Laminas\Db\Sql\Predicate\Predicate;
 use Laminas\Db\Sql\Select;
 use VuFind\Db\Row\RowGateway;
 
+use function count;
+use function is_callable;
+
 /**
  * Table Definition for tags
  *

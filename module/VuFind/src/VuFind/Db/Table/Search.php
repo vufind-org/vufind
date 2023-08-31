@@ -39,6 +39,9 @@ use VuFind\Db\Row\RowGateway;
 use VuFind\Search\NormalizedSearch;
 use VuFind\Search\SearchNormalizer;
 
+use function count;
+use function is_object;
+
 /**
  * Table Definition for search
  *

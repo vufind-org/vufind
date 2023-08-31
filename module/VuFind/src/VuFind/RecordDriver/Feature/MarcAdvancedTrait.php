@@ -35,6 +35,10 @@ namespace VuFind\RecordDriver\Feature;
 use VuFind\View\Helper\Root\RecordLinker;
 use VuFind\XSLT\Processor as XSLTProcessor;
 
+use function count;
+use function in_array;
+use function is_array;
+
 /**
  * Functions to add advanced MARC-driven functionality to a record driver already
  * powered by the standard index spec. Depends upon MarcReaderTrait.

@@ -29,6 +29,8 @@
 
 namespace VuFind\Recommend;
 
+use function array_slice;
+
 /**
  * PubDateVisAjax Recommendations Module
  *

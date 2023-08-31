@@ -29,6 +29,8 @@
 
 namespace VuFind\Normalizer;
 
+use function in_array;
+
 /**
  * Default text normalizer for spellcheck text replacement.
  *

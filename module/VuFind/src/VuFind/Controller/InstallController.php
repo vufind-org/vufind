@@ -34,6 +34,14 @@ use Laminas\Mvc\MvcEvent;
 use VuFind\Config\Writer as ConfigWriter;
 use VuFindSearch\Command\RetrieveCommand;
 
+use function count;
+use function defined;
+use function dirname;
+use function function_exists;
+use function in_array;
+use function is_callable;
+use function strlen;
+
 /**
  * Class controls VuFind auto-configuration.
  *

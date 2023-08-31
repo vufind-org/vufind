@@ -36,6 +36,11 @@ use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\SimpleXML;
 use VuFindApi\Formatter\RecordFormatter;
 
+use function count;
+use function in_array;
+use function intval;
+use function strlen;
+
 /**
  * OAI Server class
  *

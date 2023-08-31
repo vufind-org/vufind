@@ -34,6 +34,9 @@ use PDOException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
+use function count;
+use function in_array;
+
 /**
  * Amicus ILS Driver
  *

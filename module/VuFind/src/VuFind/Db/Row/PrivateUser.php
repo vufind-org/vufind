@@ -29,6 +29,8 @@
 
 namespace VuFind\Db\Row;
 
+use function array_key_exists;
+
 /**
  * Fake database row to represent a user in privacy mode.
  *
