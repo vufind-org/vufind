@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Tweaked Laminas "From" header class
+ * Tweaked Laminas "Cc" header class
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Mailer;
 
 /**
- * Tweaked Laminas "From" header class
+ * Tweaked Laminas "Cc" header class
  *
  * @category VuFind
  * @package  Mailer
@@ -38,7 +38,7 @@ namespace VuFind\Mailer;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class From extends \Laminas\Mail\Header\From
+class Cc extends \Laminas\Mail\Header\Cc
 {
     use GetFieldValueFixTrait;
 }

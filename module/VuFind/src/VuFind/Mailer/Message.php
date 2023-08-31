@@ -53,4 +53,44 @@ class Message extends \Laminas\Mail\Message
     {
         return $this->getAddressListFromHeader('from', From::class);
     }
+
+    /**
+     * Access the address list of the To header
+     *
+     * @return AddressList
+     */
+    public function getTo()
+    {
+        return $this->getAddressListFromHeader('to', To::class);
+    }
+
+    /**
+     * Retrieve list of CC recipients
+     *
+     * @return AddressList
+     */
+    public function getCc()
+    {
+        return $this->getAddressListFromHeader('cc', Cc::class);
+    }
+
+    /**
+     * Retrieve list of BCC recipients
+     *
+     * @return AddressList
+     */
+    public function getBcc()
+    {
+        return $this->getAddressListFromHeader('bcc', Bcc::class);
+    }
+
+    /**
+     * Access the address list of the Reply-To header
+     *
+     * @return AddressList
+     */
+    public function getReplyTo()
+    {
+        return $this->getAddressListFromHeader('reply-to', ReplyTo::class);
+    }
 }
