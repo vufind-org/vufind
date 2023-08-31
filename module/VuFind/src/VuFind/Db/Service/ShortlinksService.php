@@ -176,4 +176,21 @@ class ShortlinksService extends AbstractService implements LoggerAwareInterface
         }
         return $baseUrl . current($result)->getPath();
     }
+
+    /**
+     * Generate base62 encoding to migrate old shortlinks and return total number of migrated links.
+     *
+     * @return int
+     */
+    public function fixshortlinks()
+    {
+        $base62 = new \VuFind\Crypt\Base62();
+        $results = $this->entityManager->getRepository($this->getEntityClass(Shortlinks::class))
+            ->findBy(['hash' => null]);
+        foreach ($results as $result) {
+            $result->setHash($base62->encode($result->getId()));
+        }
+        $this->entityManager->flush();
+        return count($results);
+    }
 }
