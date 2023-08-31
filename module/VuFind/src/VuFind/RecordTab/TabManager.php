@@ -32,6 +32,8 @@ namespace VuFind\RecordTab;
 use VuFind\Config\PluginManager as ConfigManager;
 use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
 
+use function in_array;
+
 /**
  * Record tab manager
  *

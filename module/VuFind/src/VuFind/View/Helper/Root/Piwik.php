@@ -29,6 +29,9 @@
 
 namespace VuFind\View\Helper\Root;
 
+use function is_array;
+use function strlen;
+
 /**
  * Piwik Web Analytics view helper
  *

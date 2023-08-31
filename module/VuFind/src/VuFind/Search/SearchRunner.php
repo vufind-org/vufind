@@ -35,6 +35,9 @@ use Laminas\Stdlib\Parameters;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFind\Search\Solr\AbstractErrorListener as ErrorListener;
 
+use function is_array;
+use function is_callable;
+
 /**
  * VuFind Search Runner
  *

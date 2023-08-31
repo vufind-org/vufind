@@ -40,6 +40,8 @@ use League\CommonMark\MarkdownConverter;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
+use function count;
+
 /**
  * VuFind Markdown Service factory.
  *

@@ -32,6 +32,9 @@
 
 namespace VuFind\Resolver;
 
+use function call_user_func_array;
+use function is_callable;
+
 /**
  * Resolver Connection Class
  *

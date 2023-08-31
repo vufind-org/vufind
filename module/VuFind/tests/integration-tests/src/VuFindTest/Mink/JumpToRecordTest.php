@@ -29,6 +29,8 @@
 
 namespace VuFindTest\Mink;
 
+use function strlen;
+
 /**
  * "Jump to record" test class.
  *

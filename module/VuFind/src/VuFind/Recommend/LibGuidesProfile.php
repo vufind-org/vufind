@@ -33,6 +33,10 @@ use Laminas\Cache\Storage\Adapter\AbstractAdapter as CacheAdapter;
 use Laminas\Config\Config;
 use VuFind\Connection\LibGuides;
 
+use function intval;
+use function is_string;
+use function strlen;
+
 /**
  * LibGuides Profile Recommendations Module
  *

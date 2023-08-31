@@ -34,6 +34,8 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFindSearch\Backend\Solr\Document\RawXMLDocument;
 use XSLTProcessor;
 
+use function is_array;
+
 /**
  * VuFind XSLT importer
  *

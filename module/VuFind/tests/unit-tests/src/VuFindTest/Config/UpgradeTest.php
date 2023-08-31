@@ -31,6 +31,8 @@ namespace VuFindTest\Config;
 
 use VuFind\Config\Upgrade;
 
+use function in_array;
+
 /**
  * Config Upgrade Test Class
  *

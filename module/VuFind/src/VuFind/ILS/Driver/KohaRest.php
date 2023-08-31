@@ -37,6 +37,14 @@ use VuFind\Exception\AuthToken as AuthTokenException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Service\CurrencyFormatter;
 
+use function array_key_exists;
+use function call_user_func;
+use function count;
+use function in_array;
+use function is_array;
+use function is_callable;
+use function is_string;
+
 /**
  * VuFind Driver for Koha, using REST API
  *

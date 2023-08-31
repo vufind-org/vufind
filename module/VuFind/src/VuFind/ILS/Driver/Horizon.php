@@ -35,6 +35,10 @@ use PDO;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Log\LoggerAwareTrait;
 
+use function count;
+use function in_array;
+use function intval;
+
 /**
  * Horizon ILS Driver
  *

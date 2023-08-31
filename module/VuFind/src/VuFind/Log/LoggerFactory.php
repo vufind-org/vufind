@@ -37,6 +37,9 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
+use function is_array;
+use function is_int;
+
 /**
  * Factory for instantiating Logger
  *

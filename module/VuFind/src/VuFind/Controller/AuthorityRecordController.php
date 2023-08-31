@@ -31,6 +31,8 @@ namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
 
+use function is_callable;
+
 /**
  * Authority Record Controller
  *

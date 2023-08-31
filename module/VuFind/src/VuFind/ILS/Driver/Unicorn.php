@@ -32,6 +32,13 @@ use VuFind\Exception\ILS as ILSException;
 use VuFind\Marc\MarcCollection;
 use VuFind\Marc\MarcReader;
 
+use function array_key_exists;
+use function array_slice;
+use function count;
+use function floatval;
+use function in_array;
+use function strlen;
+
 /**
  * SirsiDynix Unicorn ILS Driver (VuFind side)
  *

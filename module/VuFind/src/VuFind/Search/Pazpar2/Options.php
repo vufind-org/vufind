@@ -29,6 +29,8 @@
 
 namespace VuFind\Search\Pazpar2;
 
+use function is_object;
+
 /**
  * Pazpar2 Search Options
  *

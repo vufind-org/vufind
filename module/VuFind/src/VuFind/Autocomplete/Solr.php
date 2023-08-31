@@ -30,6 +30,10 @@
 
 namespace VuFind\Autocomplete;
 
+use function count;
+use function is_array;
+use function is_object;
+
 /**
  * Solr Autocomplete Module
  *
