@@ -455,6 +455,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             try {
                 $elements = $page->findAll('css', $selector);
                 if (!isset($elements[$index])) {
+                    $this->assertNull(null);
                     return;
                 }
             } catch (\Exception $e) {
