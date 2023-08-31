@@ -34,6 +34,14 @@ use VuFind\Record\Loader;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
 use VuFindSearch\Service as SearchService;
 
+use function call_user_func_array;
+use function count;
+use function func_get_args;
+use function get_class;
+use function in_array;
+use function is_callable;
+use function is_object;
+
 /**
  * Abstract results search model.
  *

@@ -30,6 +30,8 @@
 
 namespace VuFind\Recommend;
 
+use function is_object;
+
 /**
  * Abstract base for deferred-load Summon recommendations modules
  *

@@ -34,6 +34,10 @@ use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 use Psr\Container\ContainerInterface;
 use VuFind\Config\Feature\IniReaderTrait;
 
+use function count;
+use function in_array;
+use function is_object;
+
 /**
  * VuFind Config Plugin Factory
  *

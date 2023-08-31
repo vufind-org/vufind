@@ -34,6 +34,9 @@ use Laminas\Db\TableGateway\AbstractTableGateway;
 use Laminas\Db\TableGateway\Feature;
 use VuFind\Db\Row\RowGateway;
 
+use function count;
+use function is_object;
+
 /**
  * Generic VuFind table gateway.
  *

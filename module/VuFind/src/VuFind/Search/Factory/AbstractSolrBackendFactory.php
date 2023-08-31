@@ -53,6 +53,9 @@ use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
 use VuFindSearch\Backend\Solr\SimilarBuilder;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
+use function count;
+use function is_object;
+
 /**
  * Abstract factory for SOLR backends.
  *

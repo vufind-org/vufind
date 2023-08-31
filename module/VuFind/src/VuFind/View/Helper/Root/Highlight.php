@@ -31,6 +31,8 @@ namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
 
+use function is_array;
+
 /**
  * Highlight view helper
  *

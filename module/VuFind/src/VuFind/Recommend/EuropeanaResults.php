@@ -32,6 +32,10 @@ namespace VuFind\Recommend;
 
 use Laminas\Feed\Reader\Reader as FeedReader;
 
+use function count;
+use function intval;
+use function is_object;
+
 /**
  * EuropeanaResults Recommendations Module
  *

@@ -29,6 +29,8 @@
 
 namespace VuFind\Connection;
 
+use function count;
+
 /**
  * Open Library Utilities
  *

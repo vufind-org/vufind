@@ -34,6 +34,8 @@ use Laminas\EventManager\SharedEventManagerInterface;
 use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
 use VuFindSearch\Service;
 
+use function is_array;
+
 /**
  * Conditional Filter listener.
  *

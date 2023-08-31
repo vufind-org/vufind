@@ -29,6 +29,8 @@
 
 namespace VuFind\Sitemap;
 
+use function is_array;
+
 /**
  * Class for representing sitemap files
  *

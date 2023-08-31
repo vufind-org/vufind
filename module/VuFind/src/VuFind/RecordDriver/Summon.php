@@ -29,6 +29,11 @@
 
 namespace VuFind\RecordDriver;
 
+use function count;
+use function intval;
+use function is_array;
+use function strlen;
+
 /**
  * Model for Summon records.
  *

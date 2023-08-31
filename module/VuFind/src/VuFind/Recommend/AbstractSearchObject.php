@@ -32,6 +32,9 @@ namespace VuFind\Recommend;
 
 use VuFind\Search\SearchRunner;
 
+use function intval;
+use function is_object;
+
 /**
  * Abstract SearchObject Recommendations Module (needs to be extended to use
  * a particular search object).

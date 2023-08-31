@@ -29,6 +29,8 @@
 
 namespace VuFind\Controller\Feature;
 
+use function count;
+
 /**
  * VuFind Action Feature Trait - Configuration file path methods
  *

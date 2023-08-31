@@ -34,6 +34,8 @@ namespace VuFind\I18n\Locale;
 use SlmLocale\LocaleEvent;
 use SlmLocale\Strategy\AbstractStrategy;
 
+use function in_array;
+
 /**
  * Locale Detector Strategy for VuFind POST Parameter
  *
