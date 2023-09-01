@@ -31,6 +31,8 @@ namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
 
+use function count;
+
 /**
  * Mink favorites test class.
  *

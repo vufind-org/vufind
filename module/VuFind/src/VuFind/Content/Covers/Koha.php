@@ -29,6 +29,8 @@
 
 namespace VuFind\Content\Covers;
 
+use function in_array;
+
 /**
  * Koha cover content loader.
  *

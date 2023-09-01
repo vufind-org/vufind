@@ -29,6 +29,9 @@
 
 namespace VuFind\ILS\Driver\Aleph;
 
+use function call_user_func_array;
+use function get_class;
+
 /**
  * Aleph Translator Class
  *

@@ -38,6 +38,9 @@ use VuFind\Search\Base\Results;
 use VuFind\Search\Memory as SearchMemory;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 
+use function count;
+use function is_array;
+
 /**
  * Class for managing "next" and "previous" navigation within result sets.
  *

@@ -140,9 +140,9 @@
                   <option value="NOT"<?php if (isset($setSearchGroups[$group]) && 'NOT' == $setSearchGroups[$group]):?> selected<?php endif; ?>><?=$this->transEsc('search_NOT')?></option>
                 </select>
               </div>
-              <a href="#" class="adv-group-close hidden" role="button">
-                <?=$this->icon('ui-remove') ?>
-                <?=$this->transEsc('del_search')?>
+              <a href="#" class="adv-group-close icon-link hidden" role="button">
+                <?=$this->icon('ui-remove', 'icon-link__icon') ?>
+                <span class="icon-link__label"><?=$this->transEsc('del_search') ?></span>
               </a>
             </div>
             <?php if ($group == 0): ?>

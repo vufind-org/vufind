@@ -42,6 +42,8 @@ use VuFind\Search\Solr\SpellingProcessor;
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
 use VuFindSearch\Service as SearchService;
 
+use function get_class;
+
 /**
  * Solr Search Object Results Test
  *

@@ -29,6 +29,10 @@
 
 namespace VuFindSearch\Backend\EDS;
 
+use function count;
+use function intval;
+use function strlen;
+
 /**
  * EBSCO EDS API Search Model
  *

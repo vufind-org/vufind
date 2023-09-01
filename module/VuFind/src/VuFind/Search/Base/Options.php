@@ -32,6 +32,12 @@ namespace VuFind\Search\Base;
 use Laminas\Config\Config;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
+use function count;
+use function get_class;
+use function in_array;
+use function intval;
+use function is_array;
+
 /**
  * Abstract options search model.
  *

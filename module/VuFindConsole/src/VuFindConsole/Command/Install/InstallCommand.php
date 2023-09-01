@@ -35,6 +35,9 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 
+use function in_array;
+use function intval;
+
 /**
  * Console command: VuFind installer.
  *

@@ -29,6 +29,10 @@
 
 namespace VuFind\RecordDriver;
 
+use function in_array;
+use function is_array;
+use function strlen;
+
 /**
  * Model for records retrieved via EBSCO's EIT API.
  *

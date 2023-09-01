@@ -38,6 +38,10 @@ use VuFind\Cache\Manager as CacheManager;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Record\Loader;
 
+use function count;
+use function in_array;
+use function is_array;
+
 /**
  * Symphony Web Services (symws) ILS Driver
  *

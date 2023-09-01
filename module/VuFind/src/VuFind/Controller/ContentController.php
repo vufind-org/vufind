@@ -33,6 +33,8 @@ namespace VuFind\Controller;
 
 use Laminas\View\Model\ViewModel;
 
+use function is_callable;
+
 /**
  * Controller for mostly static pages that doesn't fall under any particular
  * function.

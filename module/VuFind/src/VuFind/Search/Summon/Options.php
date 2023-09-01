@@ -29,6 +29,8 @@
 
 namespace VuFind\Search\Summon;
 
+use function count;
+
 /**
  * Summon Search Options
  *
