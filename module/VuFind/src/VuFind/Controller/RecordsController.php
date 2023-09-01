@@ -31,6 +31,8 @@ namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
 
+use function count;
+
 /**
  * Records Controller
  *

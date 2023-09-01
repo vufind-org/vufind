@@ -29,6 +29,8 @@
 
 namespace VuFind\Recommend;
 
+use function is_callable;
+
 /**
  * VisualFacets Recommendations Module
  *

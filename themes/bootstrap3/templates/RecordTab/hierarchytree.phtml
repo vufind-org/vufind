@@ -13,8 +13,8 @@
   $this->inlineScript(
       \Laminas\View\Helper\HeadScript::SCRIPT,
       "var hierarchySettings = {\n"
-      . "    lightboxMode: " . ($this->layout()->getTemplate() == 'layout/lightbox' ? 'true' : 'false') . ",\n"
-      . "    fullHierarchy: " . ($this->tab->isFullHierarchyVisible() ? 'true' : 'false') . "\n"
+      . '    lightboxMode: ' . ($this->layout()->getTemplate() == 'layout/lightbox' ? 'true' : 'false') . ",\n"
+      . '    fullHierarchy: ' . ($this->tab->isFullHierarchyVisible() ? 'true' : 'false') . "\n"
       . "};\n"
       . "VuFind.addTranslations($translations);\n",
       'SET'

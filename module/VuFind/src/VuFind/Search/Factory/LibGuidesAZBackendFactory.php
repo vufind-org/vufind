@@ -64,7 +64,7 @@ class LibGuidesAZBackendFactory extends LibGuidesBackendFactory
         $builder = new QueryBuilder();
 
         // Widget type 2 = Databases A-Z
-        $builder->setDefaultWidgetType("2");
+        $builder->setDefaultWidgetType('2');
 
         return $builder;
     }

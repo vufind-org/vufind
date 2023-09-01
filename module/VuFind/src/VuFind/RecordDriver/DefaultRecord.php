@@ -32,6 +32,11 @@ namespace VuFind\RecordDriver;
 use VuFind\View\Helper\Root\RecordLinker;
 use VuFindCode\ISBN;
 
+use function count;
+use function in_array;
+use function is_array;
+use function strlen;
+
 /**
  * Default model for records
  *
@@ -676,7 +681,7 @@ class DefaultRecord extends AbstractBase
         // If there is a forward slash (/) in the string, remove it, and remove all
         // characters to the right of the forward slash.
         if (strpos($raw, '/') > 0) {
-            $tmpArray = explode("/", $raw);
+            $tmpArray = explode('/', $raw);
             $raw = $tmpArray[0];
         }
         /* If there is a hyphen in the string:
@@ -691,8 +696,8 @@ class DefaultRecord extends AbstractBase
         if (strpos($raw, '-') > 0) {
             // haven't checked for i. above. If they aren't all digits, there is
             // nothing that can be done, so might as well leave it.
-            $tmpArray = explode("-", $raw);
-            $raw = $tmpArray[0] . str_pad($tmpArray[1], 6, "0", STR_PAD_LEFT);
+            $tmpArray = explode('-', $raw);
+            $raw = $tmpArray[0] . str_pad($tmpArray[1], 6, '0', STR_PAD_LEFT);
         }
         return $raw;
     }
@@ -727,7 +732,7 @@ class DefaultRecord extends AbstractBase
         // If we have multiple formats, Book, Journal and Article are most
         // important...
         $formats = $this->getFormats();
-        if (in_array('Book', $formats)) {
+        if (in_array('Book', $formats) || in_array('eBook', $formats)) {
             return 'Book';
         } elseif (in_array('Article', $formats)) {
             return 'Article';
@@ -954,7 +959,7 @@ class DefaultRecord extends AbstractBase
                 $query[] = urlencode($key) . '=' . urlencode($sub);
             }
         }
-        return implode("&", $query);
+        return implode('&', $query);
     }
 
     /**

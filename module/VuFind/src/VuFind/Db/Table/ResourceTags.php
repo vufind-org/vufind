@@ -34,6 +34,10 @@ use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 use VuFind\Db\Row\RowGateway;
 
+use function count;
+use function in_array;
+use function is_array;
+
 /**
  * Table Definition for resource_tags
  *
@@ -515,7 +519,7 @@ class ResourceTags extends Gateway
             $select->join(
                 ['r' => 'resource'],
                 'resource_tags.resource_id = r.id',
-                ["title" => "title"]
+                ['title' => 'title']
             );
             if (null !== $userId) {
                 $select->where->equalTo('resource_tags.user_id', $userId);
@@ -640,7 +644,7 @@ class ResourceTags extends Gateway
             $select->join(
                 ['u' => 'user'],
                 'resource_tags.user_id = u.id',
-                ["username" => "username"]
+                ['username' => 'username']
             );
             if (null !== $userId) {
                 $select->where->equalTo('resource_tags.user_id', $userId);
@@ -700,7 +704,7 @@ class ResourceTags extends Gateway
     ) {
         $order = (null !== $order)
             ? [$order]
-            : ["username", "tag", "title"];
+            : ['username', 'tag', 'title'];
 
         $sql = $this->getSql();
         $select = $sql->select();
@@ -715,12 +719,12 @@ class ResourceTags extends Gateway
         $select->join(
             ['u' => 'user'],
             'resource_tags.user_id = u.id',
-            ["username" => "username"]
+            ['username' => 'username']
         );
         $select->join(
             ['r' => 'resource'],
             'resource_tags.resource_id = r.id',
-            ["title" => "title"]
+            ['title' => 'title']
         );
         if (null !== $userId) {
             $select->where->equalTo('resource_tags.user_id', $userId);

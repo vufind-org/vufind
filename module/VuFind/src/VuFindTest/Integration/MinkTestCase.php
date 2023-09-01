@@ -37,6 +37,11 @@ use Symfony\Component\Yaml\Yaml;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
 
+use function floatval;
+use function in_array;
+use function intval;
+use function strlen;
+
 /**
  * Abstract base class for PHPUnit test cases using Mink.
  *
@@ -392,7 +397,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $session = $this->getMinkSession();
         $session->wait(
             $timeout,
-            "typeof $ !== 'undefined' && $('$selector').length > $index"
+            "document.querySelectorAll('$selector').length > $index"
         );
         $results = $page->findAll('css', $selector);
         $this->assertIsArray($results, "Selector not found: $selector");
@@ -682,7 +687,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         );
         $session->wait(
             $timeout,
-            "window.__documentIsReady === true"
+            'window.__documentIsReady === true'
         );
     }
 

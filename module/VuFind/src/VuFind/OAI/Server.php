@@ -36,6 +36,11 @@ use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\SimpleXML;
 use VuFindApi\Formatter\RecordFormatter;
 
+use function count;
+use function in_array;
+use function intval;
+use function strlen;
+
 /**
  * OAI Server class
  *
@@ -1150,11 +1155,11 @@ class Server
      */
     protected function isBadDate($from, $until)
     {
-        $dt = \DateTime::createFromFormat("Y-m-d", substr($until, 0, 10));
+        $dt = \DateTime::createFromFormat('Y-m-d', substr($until, 0, 10));
         if ($dt === false || array_sum($dt->getLastErrors())) {
             return true;
         }
-        $dt = \DateTime::createFromFormat("Y-m-d", substr($from, 0, 10));
+        $dt = \DateTime::createFromFormat('Y-m-d', substr($from, 0, 10));
         if ($dt === false || array_sum($dt->getLastErrors())) {
             return true;
         }

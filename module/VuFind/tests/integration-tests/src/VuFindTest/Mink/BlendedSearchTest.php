@@ -29,6 +29,9 @@
 
 namespace VuFindTest\Mink;
 
+use function count;
+use function intval;
+
 /**
  * Mink test class for blended search.
  *

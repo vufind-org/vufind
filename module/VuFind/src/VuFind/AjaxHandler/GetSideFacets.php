@@ -40,6 +40,9 @@ use VuFind\Search\Solr\HierarchicalFacetHelper;
 use VuFind\Search\UrlQueryHelper;
 use VuFind\Session\Settings as SessionSettings;
 
+use function in_array;
+use function is_callable;
+
 /**
  * "Get Side Facets" AJAX handler
  *

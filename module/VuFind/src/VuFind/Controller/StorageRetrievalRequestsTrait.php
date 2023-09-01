@@ -29,6 +29,9 @@
 
 namespace VuFind\Controller;
 
+use function in_array;
+use function is_array;
+
 /**
  * Storage retrieval requests trait (for subclasses of AbstractRecord)
  *
@@ -94,7 +97,7 @@ trait StorageRetrievalRequestsTrait
         // Send various values to the view so we can build the form:
         $pickup = $catalog->getPickUpLocations($patron, $gatheredDetails);
         $extraFields = isset($checkRequests['extraFields'])
-            ? explode(":", $checkRequests['extraFields']) : [];
+            ? explode(':', $checkRequests['extraFields']) : [];
 
         // Check that there are pick up locations to choose from if the field is
         // required:
@@ -158,7 +161,7 @@ trait StorageRetrievalRequestsTrait
             ->getDefaultRequiredDate($checkRequests);
         $defaultRequiredDate
             = $this->serviceLocator->get(\VuFind\Date\Converter::class)
-            ->convertToDisplayDate("U", $defaultRequiredDate);
+            ->convertToDisplayDate('U', $defaultRequiredDate);
         try {
             $defaultPickup
                 = $catalog->getDefaultPickUpLocation($patron, $gatheredDetails);

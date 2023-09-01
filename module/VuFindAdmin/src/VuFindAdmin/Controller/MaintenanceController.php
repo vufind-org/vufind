@@ -29,6 +29,8 @@
 
 namespace VuFindAdmin\Controller;
 
+use function intval;
+
 /**
  * Class helps maintain database
  *
