@@ -685,7 +685,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         $page = $this->gotoUserAccount();
-        // Click on the first list and make it public:
+        // Click on the first list and tag it:
         $link = $this->findAndAssertLink($page, 'Test List');
         $link->click();
         $button = $this->findAndAssertLink($page, 'Edit List');
