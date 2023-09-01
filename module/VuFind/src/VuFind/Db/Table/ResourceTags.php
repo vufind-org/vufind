@@ -230,7 +230,7 @@ class ResourceTags extends Gateway
             $publicOnly,
             $andTags
         ) {
-            $columns = [Select::SQL_STAR];
+            $columns = ['id' => new Expression('min(resource_tags.id)'), 'list_id'];
             if ($andTags) {
                 $columns['tag_cnt'] = new Expression(
                     'COUNT(DISTINCT(?))',
@@ -243,10 +243,7 @@ class ResourceTags extends Gateway
             $select->join(
                 ['t' => 'tags'],
                 'resource_tags.tag_id = t.id',
-                [
-                    'tag' =>
-                        $this->caseSensitive ? 'tag' : new Expression('lower(tag)'),
-                ]
+                []
             );
             $select->join(
                 ['l' => 'user_list'],
