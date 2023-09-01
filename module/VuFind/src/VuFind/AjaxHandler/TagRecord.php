@@ -35,6 +35,8 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Loader;
 use VuFind\Tags;
 
+use function strlen;
+
 /**
  * AJAX handler to tag/untag a record.
  *

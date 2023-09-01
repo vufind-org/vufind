@@ -283,6 +283,7 @@ return [
             'ui-failure' => 'FontAwesome:times',
             'ui-menu' => 'FontAwesome:bars',
             'ui-remove' => 'FontAwesome:times',
+            'ui-reset-search' => 'Alias:ui-remove',
             'ui-save' => 'FontAwesome:floppy-o',
             'ui-success' => 'FontAwesome:check',
             'user-checked-out' => 'FontAwesome:book',

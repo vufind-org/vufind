@@ -34,6 +34,8 @@ use VuFindSearch\Command\SearchCommand;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\QueryGroup;
 
+use function count;
+
 /**
  * Solr Search Parameters
  *
@@ -408,7 +410,7 @@ class Results extends \VuFind\Search\Base\Results
 
         // Start building the flare object:
         $flare = new \stdClass();
-        $flare->name = "flare";
+        $flare->name = 'flare';
         $flare->total = $this->resultTotal;
         $flare->children = $this->responsePivotFacets;
         return $flare;

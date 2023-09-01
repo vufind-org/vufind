@@ -29,6 +29,8 @@
 
 namespace VuFindTest\Captcha;
 
+use function func_get_args;
+
 /**
  * Unit tests for Image CAPTCHA handler factory.
  *

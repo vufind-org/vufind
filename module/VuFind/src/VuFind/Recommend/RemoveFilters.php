@@ -30,6 +30,8 @@
 
 namespace VuFind\Recommend;
 
+use function count;
+
 /**
  * RemoveFilters Recommendations Module
  * Recommends to remove filters
