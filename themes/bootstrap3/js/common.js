@@ -695,7 +695,7 @@ $(function searchFormResetHandler() {
   let query = queryInput.val();
   if (query !== '') {
     resetButton.show();
-    queryInput.focus().val('').val(query);
+    queryInput.trigger('focus').val('').val(query);
     queryInput[0].ac.hide();
   }
   queryInput.on('input', function onInput() {
@@ -706,8 +706,8 @@ $(function searchFormResetHandler() {
     }
   });
   resetButton.on('click', function onClick() {
-    queryInput.attr('value', '').focus();
-    queryInput[0].ac.hide(); // not sure why AC is using previous value
+    queryInput.attr('value', '').trigger('focus');
+    queryInput[0].ac.hide();
     resetButton.hide();
   });
 });
