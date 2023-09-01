@@ -230,15 +230,9 @@ class ResourceTags extends Gateway
             $publicOnly,
             $andTags
         ) {
-            $columns = ['id' => new Expression('min(resource_tags.id)'), 'list_id'];
-            if ($andTags) {
-                $columns['tag_cnt'] = new Expression(
-                    'COUNT(DISTINCT(?))',
-                    ['resource_tags.tag_id'],
-                    [Expression::TYPE_IDENTIFIER]
-                );
-            }
-            $select->columns($columns);
+            $select->columns(
+                ['id' => new Expression('min(resource_tags.id)'), 'list_id']
+            );
 
             $select->join(
                 ['t' => 'tags'],
@@ -291,7 +285,7 @@ class ResourceTags extends Gateway
             if ($tag && $andTags) {
                 // Use AND operator for tags
                 $select->having->literal(
-                    'tag_cnt = ?',
+                    'count(distinct(resource_tags.tag_id)) = ?',
                     count(array_unique($tag))
                 );
             }
