@@ -53,7 +53,7 @@ VuFind.register('lightbox', function Lightbox() {
     let fragmentSplit = url.split('#');
     let paramsSplit = fragmentSplit[0].split('?');
     let searchParams = new URLSearchParams(paramsSplit.length > 1 ? paramsSplit[1] : "");
-    for ( const [key, value] of Object.entries(params)) {
+    for (const [key, value] of Object.entries(params)) {
       searchParams.append(key, value);
     }
     let res = paramsSplit[0] + '?' + searchParams.toString();
