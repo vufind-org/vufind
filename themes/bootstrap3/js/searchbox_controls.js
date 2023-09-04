@@ -111,8 +111,6 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
         physicalKeyboardHighlight: true
       });
 
-    _onChange(_textInput.value);
-
     let layout = window.Cookies.get("keyboard");
     if (layout == null) {
       layout = "none";
@@ -135,6 +133,8 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
     if (typeof window.SimpleKeyboard !== 'undefined') {
       _initKeyboard();
     }
+
+    _onChange(_textInput.value);
   }
 
   return {
