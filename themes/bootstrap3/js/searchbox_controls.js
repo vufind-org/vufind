@@ -57,7 +57,7 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
     }
   }
 
-  function _updateKeyboardLayout(layoutName){
+  function _updateKeyboardLayout(layoutName) {
     $('.keyboard-selection-item').each(function deactivateItems() {
       $(this).parent().removeClass("active");
     });
