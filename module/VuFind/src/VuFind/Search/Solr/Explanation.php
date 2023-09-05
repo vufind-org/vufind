@@ -33,6 +33,10 @@ namespace VuFind\Search\Solr;
 use VuFindSearch\Backend\Solr\Command\RawJsonSearchCommand;
 use VuFindSearch\ParamBag;
 
+use function count;
+use function floatval;
+use function strlen;
+
 /**
  * Solr Explanation
  *
