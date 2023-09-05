@@ -32,6 +32,11 @@ namespace VuFind\RecordDriver;
 use VuFind\View\Helper\Root\RecordLinker;
 use VuFindCode\ISBN;
 
+use function count;
+use function in_array;
+use function is_array;
+use function strlen;
+
 /**
  * Default model for records
  *
@@ -727,7 +732,7 @@ class DefaultRecord extends AbstractBase
         // If we have multiple formats, Book, Journal and Article are most
         // important...
         $formats = $this->getFormats();
-        if (in_array('Book', $formats)) {
+        if (in_array('Book', $formats) || in_array('eBook', $formats)) {
             return 'Book';
         } elseif (in_array('Article', $formats)) {
             return 'Article';
@@ -824,6 +829,10 @@ class DefaultRecord extends AbstractBase
         $publishers = $this->getPublishers();
         if (count($publishers) > 0) {
             $params['rft.pub'] = $publishers[0];
+        }
+        $placesOfPublication = $this->getPlacesOfPublication();
+        if (count($placesOfPublication) > 0) {
+            $params['rft.place'] = $placesOfPublication[0];
         }
         $params['rft.edition'] = $this->getEdition();
         $params['rft.isbn'] = (string)$this->getCleanISBN();

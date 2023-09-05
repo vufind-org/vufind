@@ -29,6 +29,8 @@
 
 namespace VuFind\Autocomplete;
 
+use function is_object;
+
 /**
  * Solr autocomplete module with prefix queries using edge N-gram filter
  *

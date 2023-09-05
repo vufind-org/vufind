@@ -38,6 +38,8 @@ use VuFindSearch\ParamBag;
 use VuFindSearch\Response\RecordCollectionInterface;
 use VuFindSearch\Service as SearchService;
 
+use function count;
+
 /**
  * Record loader tests.
  *

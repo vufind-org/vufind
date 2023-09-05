@@ -29,6 +29,10 @@
 
 namespace VuFind\RecordDriver;
 
+use function count;
+use function in_array;
+use function is_array;
+
 /**
  * Model for Pazpar2 records.
  *

@@ -34,6 +34,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\I18n\ExtendedIniNormalizer;
 use VuFind\I18n\Translator\Loader\ExtendedIniReader;
 
+use function count;
+use function is_callable;
+
 /**
  * Abstract base class for language commands.
  *

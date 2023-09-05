@@ -29,6 +29,8 @@
 
 namespace VuFind\Search\Primo;
 
+use function count;
+
 /**
  * Primo Search Options
  *

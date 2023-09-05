@@ -30,6 +30,8 @@
 
 namespace VuFind\Recommend;
 
+use function is_object;
+
 /**
  * OpenLibrarySubjects Recommendations Module
  *

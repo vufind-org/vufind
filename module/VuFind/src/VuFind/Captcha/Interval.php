@@ -35,6 +35,8 @@ use Laminas\Session\Container as SessionContainer;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
 
+use function intval;
+
 /**
  * Interval CAPTCHA (requires an interval between actions or from start of session).
  *

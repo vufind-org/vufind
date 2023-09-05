@@ -33,6 +33,8 @@ namespace VuFind\Controller\Plugin;
 
 use VuFind\Date\DateException;
 
+use function in_array;
+
 /**
  * Action helper to perform holds-related actions
  *

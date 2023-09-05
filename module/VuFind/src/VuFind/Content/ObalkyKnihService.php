@@ -29,6 +29,8 @@
 
 namespace VuFind\Content;
 
+use function count;
+
 /**
  * Service class for ObalkyKnih
  *

@@ -37,6 +37,11 @@ use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\ILS as ILSException;
 
+use function count;
+use function in_array;
+use function is_array;
+use function is_callable;
+
 /**
  * PAIA ILS Driver for VuFind to get patron information
  *

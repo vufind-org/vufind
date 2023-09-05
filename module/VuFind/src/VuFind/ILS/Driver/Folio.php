@@ -36,6 +36,13 @@ use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
 
+use function array_key_exists;
+use function count;
+use function in_array;
+use function is_int;
+use function is_object;
+use function is_string;
+
 /**
  * FOLIO REST API driver
  *

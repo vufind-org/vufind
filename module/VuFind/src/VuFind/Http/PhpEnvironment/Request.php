@@ -29,6 +29,9 @@
 
 namespace VuFind\Http\PhpEnvironment;
 
+use function is_array;
+use function is_string;
+
 /**
  * HTTP Request class
  *
