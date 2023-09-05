@@ -98,6 +98,13 @@ class Results extends \VuFind\Search\Base\Results
     protected $cursorMark = null;
 
     /**
+     * Highest relevance of all the results
+     *
+     * @var null|float
+     */
+    protected $maxScore = null;
+
+    /**
      * Get spelling processor.
      *
      * @return SpellingProcessor
@@ -142,6 +149,33 @@ class Results extends \VuFind\Search\Base\Results
     public function setCursorMark($cursorMark)
     {
         $this->cursorMark = $cursorMark;
+    }
+
+    /**
+     * Get the scores of the results
+     *
+     * @return array
+     */
+    public function getScores()
+    {
+        $scoreMap = [];
+        foreach ($this->results as $record) {
+            $data = $record->getRawData();
+            if ($data['score'] ?? false) {
+                $scoreMap[$record->getUniqueId()] = $data['score'];
+            }
+        }
+        return $scoreMap;
+    }
+
+    /**
+     * Getting the highest relevance of all the results
+     *
+     * @return null|float
+     */
+    public function getMaxScore()
+    {
+        return $this->maxScore;
     }
 
     /**
@@ -200,6 +234,9 @@ class Results extends \VuFind\Search\Base\Results
         $this->extraSearchBackendDetails = $command->getExtraRequestDetails();
 
         $this->responseFacets = $collection->getFacets();
+
+        $this->maxScore = $collection->getMaxScore();
+
         $this->responseQueryFacets = $collection->getQueryFacets();
         $this->responsePivotFacets = $collection->getPivotFacets();
         $this->resultTotal = $collection->getTotal();

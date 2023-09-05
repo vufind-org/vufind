@@ -119,6 +119,13 @@ class SolrDefault extends DefaultRecord implements
     protected $searchService = null;
 
     /**
+     * If the explain features is enabled
+     *
+     * @var bool
+     */
+    protected $explainEnabled = false;
+
+    /**
      * Constructor
      *
      * @param \Laminas\Config\Config $mainConfig     VuFind main configuration (omit
@@ -149,6 +156,8 @@ class SolrDefault extends DefaultRecord implements
         $this->containerLinking
             = !isset($mainConfig->Hierarchy->simpleContainerLinks)
             ? false : $mainConfig->Hierarchy->simpleContainerLinks;
+
+        $this->explainEnabled = $searchSettings->Explain->enabled ?? false;
 
         parent::__construct($mainConfig, $recordConfig, $searchSettings);
     }
@@ -324,5 +333,15 @@ class SolrDefault extends DefaultRecord implements
     public function getWorkKeys()
     {
         return $this->fields['work_keys_str_mv'] ?? [];
+    }
+
+    /**
+     * Get if the explain features is enabled.
+     *
+     * @return bool
+     */
+    public function explainEnabled()
+    {
+        return $this->explainEnabled;
     }
 }

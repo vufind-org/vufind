@@ -387,6 +387,8 @@
   <target name="copynodemodules">
     <!-- autocomplete.js -->
     <copy file="${srcdir}/node_modules/autocomplete.js/autocomplete.js" todir="${srcdir}/themes/bootstrap3/js/vendor" overwrite="true" />
+    <!-- chart.js -->
+    <copy file="${srcdir}/node_modules/chart.js/dist/chart.umd.js" tofile="${srcdir}/themes/bootstrap3/js/vendor/chart.js" overwrite="true" />
     <!-- jstree -->
     <copy todir="${srcdir}/themes/bootstrap3/js/vendor/jsTree" overwrite="true">
       <fileset dir="${srcdir}/node_modules/jstree/dist/" >
