@@ -37,6 +37,10 @@ use VuFind\Db\Table\User as UserTable;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Validator\CsrfInterface;
 
+use function count;
+use function in_array;
+use function is_callable;
+
 /**
  * Wrapper class for handling logged-in user in session.
  *

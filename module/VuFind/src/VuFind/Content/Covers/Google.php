@@ -31,6 +31,8 @@ namespace VuFind\Content\Covers;
 
 use VuFind\Exception\HttpDownloadException;
 
+use function is_callable;
+
 /**
  * Google cover content loader.
  *

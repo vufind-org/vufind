@@ -37,6 +37,10 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\Config\Feature\IniReaderTrait;
 
+use function defined;
+use function in_array;
+use function strlen;
+
 /**
  * Factory for PathResolver.
  *

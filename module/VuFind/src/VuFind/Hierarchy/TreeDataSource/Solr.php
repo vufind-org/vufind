@@ -35,6 +35,8 @@ use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Service;
 
+use function count;
+
 /**
  * Hierarchy Tree Data Source (Solr)
  *

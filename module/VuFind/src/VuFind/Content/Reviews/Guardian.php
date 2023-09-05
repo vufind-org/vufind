@@ -29,6 +29,8 @@
 
 namespace VuFind\Content\Reviews;
 
+use function strlen;
+
 /**
  * Guardian review content loader.
  *

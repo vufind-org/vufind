@@ -31,6 +31,9 @@ namespace VuFind\Session;
 
 use Laminas\Config\Config;
 
+use function function_exists;
+use function strlen;
+
 /**
  * File-based session handler
  *

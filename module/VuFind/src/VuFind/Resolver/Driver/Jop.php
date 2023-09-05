@@ -42,6 +42,8 @@ use DOMDocument;
 use DOMXpath;
 use VuFind\Net\UserIpReader;
 
+use function in_array;
+
 /**
  * JOP Link Resolver Driver
  *

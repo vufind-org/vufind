@@ -32,6 +32,10 @@ namespace VuFind\Controller;
 use VuFind\Exception\Mail as MailException;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
 
+use function array_slice;
+use function count;
+use function is_object;
+
 /**
  * Redirects the user to the appropriate default VuFind action.
  *

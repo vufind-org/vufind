@@ -29,6 +29,9 @@
 
 namespace VuFind\Search\Solr;
 
+use function count;
+use function is_object;
+
 /**
  * Solr Search Options
  *

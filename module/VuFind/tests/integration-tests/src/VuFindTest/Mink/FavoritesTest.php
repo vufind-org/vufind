@@ -31,6 +31,8 @@ namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
 
+use function count;
+
 /**
  * Mink favorites test class.
  *
@@ -651,6 +653,51 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
             'Your item(s) were emailed',
             $this->findCss($page, '.modal .alert-success')->getText()
         );
+    }
+
+    /**
+     * Test that a public list can be tagged and displayed as a channel.
+     *
+     * @depends testEmailPublicList
+     *
+     * @return void
+     */
+    public function testListTaggingToDisplayChannel(): void
+    {
+        $this->changeConfigs(
+            [
+                'channels' => [
+                    'General' => [
+                        'cache_home_channels' => false,
+                    ],
+                    'source.Solr' => [
+                        'home' => ['listitems'],
+                    ],
+                    'provider.listitems' => [
+                        'tags' => ['channel'],
+                    ],
+                ],
+                'config' => [
+                    'Social' => [
+                        'listTags' => 'enabled',
+                    ],
+                ],
+            ]
+        );
+        $page = $this->gotoUserAccount();
+        // Click on the first list and tag it:
+        $link = $this->findAndAssertLink($page, 'Test List');
+        $link->click();
+        $button = $this->findAndAssertLink($page, 'Edit List');
+        $button->click();
+        $this->findCssAndSetValue($page, '#list_tags', 'channel');
+        $this->clickCss($page, 'input[name="submit"]'); // submit button
+
+        // Now go to the channel page, where the tagged public list should appear:
+        $this->getMinkSession()->visit($this->getVuFindUrl() . '/Channels');
+        $this->waitForPageLoad($page);
+        $this->assertEquals('Test List', $this->findCss($page, '.channel-title h2')->getText());
+        $this->assertCount(1, $page->findAll('css', '.channel-record'));
     }
 
     /**

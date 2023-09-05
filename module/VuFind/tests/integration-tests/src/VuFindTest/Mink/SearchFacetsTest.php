@@ -29,6 +29,8 @@
 
 namespace VuFindTest\Mink;
 
+use function count;
+
 /**
  * Mink search facet/filter functionality test class.
  *

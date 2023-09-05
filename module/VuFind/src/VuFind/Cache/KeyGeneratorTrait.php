@@ -29,6 +29,8 @@
 
 namespace VuFind\Cache;
 
+use function get_class;
+
 /**
  * VuFind Cache Key Generator Trait
  *

@@ -292,8 +292,9 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
             . 'te=1992&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&rft.genre=book&rft.btitl'
             . 'e=La+congiura+dei+Principi+Napoletani+1701+%3A+%28prima+e+seconda+stesura%29+%2F'
             . '&rft.series=Vico%2C+Giambattista%2C+1668-1744.+Works.+1982+%3B&rft.au=Vico%2C+Gi'
-            . 'ambattista%2C+1668-1744.&rft.pub=Centro+di+Studi+Vichiani%2C&rft.edition=Fiction'
-            . 'al+edition.&rft.isbn=8820737493&rft_id=info%3Adoi%2Fxxx&rft_id=pmid%3Ayyy';
+            . 'ambattista%2C+1668-1744.&rft.pub=Centro+di+Studi+Vichiani%2C&rft.place=Morano+%3A'
+            . '&rft.edition=Fictional+edition.&rft.isbn=8820737493&rft_id=info%3Adoi%2Fxxx'
+            . '&rft_id=pmid%3Ayyy';
 
         // Parameters returned by getBookOpenUrlParams with rft_id added
         $openUrlParams = [
@@ -309,6 +310,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
             'rft.series' => 'Vico, Giambattista, 1668-1744. Works. 1982 ;',
             'rft.au' => 'Vico, Giambattista, 1668-1744.',
             'rft.pub' => 'Centro di Studi Vichiani,',
+            'rft.place' => 'Morano :',
             'rft.edition' => 'Fictional edition.',
             'rft.isbn' => '8820737493',
             'rft_id' => [

@@ -32,6 +32,9 @@ namespace VuFind\View\Helper\Root;
 use VuFind\RecordDriver\AbstractBase as RecordDriverBase;
 use VuFind\Search\Base\Results;
 
+use function intval;
+use function is_array;
+
 /**
  * Matomo web analytics view helper for Matomo versions >= 4
  *
