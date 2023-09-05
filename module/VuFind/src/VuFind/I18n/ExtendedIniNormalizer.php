@@ -135,7 +135,9 @@ class ExtendedIniNormalizer
         // Format the lines:
         $output = '';
         foreach ($input as $key => $value) {
-            $output .= "$key = \"$value\"\n";
+            // Put purely numeric keys in single quotes for Lokalise compatibility:
+            $normalizedKey = is_numeric($key) ? "'$key'" : $key;
+            $output .= "$normalizedKey = \"$value\"\n";
         }
         return trim($output) . "\n";
     }
