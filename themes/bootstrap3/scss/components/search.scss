@@ -348,9 +348,26 @@ body.rtl {
   .grid-small-break { display: none; }
 }
 
-.searchtools a {
-  padding: 0 .5rem;
-  white-space: nowrap;
+.searchtools {
+  h2 {
+    display: inline-block;
+    font-size: inherit;
+    font-weight: bold;
+  }
+  ul {
+    display: inline-block;
+    padding-left: 0;
+    li {
+      display: inline;
+      &:not(:first-child):before {
+        content: '\2013'; // n-dash
+      }
+      a {
+        padding: 0 .5rem;
+        white-space: nowrap;
+      }
+    }  
+  }
 }
 
 /* ------ COMBINED ------ */
