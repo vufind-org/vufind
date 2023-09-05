@@ -33,6 +33,10 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use function count;
+use function in_array;
+use function strlen;
+
 /**
  * Language command: ingest and normalise language files exported from Lokalise.
  *
