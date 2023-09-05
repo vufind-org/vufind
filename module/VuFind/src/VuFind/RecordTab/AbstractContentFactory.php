@@ -36,6 +36,8 @@ use Psr\Container\ContainerInterface;
 use VuFind\Config\PluginManager as ConfigManager;
 use VuFind\Content\PluginManager as ContentManager;
 
+use function in_array;
+
 /**
  * Abstract factory for building AbstractContent tabs.
  *

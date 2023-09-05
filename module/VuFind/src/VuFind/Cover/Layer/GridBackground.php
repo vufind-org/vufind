@@ -29,6 +29,8 @@
 
 namespace VuFind\Cover\Layer;
 
+use function strlen;
+
 /**
  * Grid cover background layer
  *

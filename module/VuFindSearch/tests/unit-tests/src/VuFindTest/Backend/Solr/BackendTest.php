@@ -41,6 +41,8 @@ use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
 
+use function count;
+
 /**
  * Unit tests for SOLR backend.
  *

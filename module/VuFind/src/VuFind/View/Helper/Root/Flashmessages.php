@@ -32,6 +32,8 @@ namespace VuFind\View\Helper\Root;
 use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Laminas\View\Helper\AbstractHelper;
 
+use function is_array;
+
 /**
  * Flash message view helper
  *

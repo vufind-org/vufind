@@ -35,6 +35,8 @@ use VuFind\Search\Base\Params;
 use VuFind\Search\Base\Results;
 use VuFindSearch\Command\RandomCommand;
 
+use function count;
+
 /**
  * "Random items" channel provider.
  *

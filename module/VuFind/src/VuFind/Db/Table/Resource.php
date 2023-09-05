@@ -36,6 +36,8 @@ use VuFind\Date\Converter as DateConverter;
 use VuFind\Db\Row\RowGateway;
 use VuFind\Record\Loader;
 
+use function in_array;
+
 /**
  * Table Definition for resource
  *

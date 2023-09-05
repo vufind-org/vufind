@@ -31,6 +31,9 @@
 
 namespace VuFind\Search\EDS;
 
+use function count;
+use function is_callable;
+
 /**
  * EDS API Options
  *

@@ -33,6 +33,8 @@ use Psr\Container\ContainerInterface;
 use VuFind\View\Helper\Root\RecordDataFormatter;
 use VuFind\View\Helper\Root\RecordDataFormatterFactory;
 
+use function count;
+
 /**
  * RecordDataFormatter Test Class
  *

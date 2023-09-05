@@ -46,6 +46,10 @@ use VuFindSearch\Command\SearchCommand;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
 
+use function array_slice;
+use function count;
+use function in_array;
+
 /**
  * Unit tests for Blender backend.
  *

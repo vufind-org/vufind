@@ -29,6 +29,10 @@
 
 namespace VuFindTheme\View\Helper;
 
+use function count;
+use function in_array;
+use function is_array;
+
 /**
  * View helper for loading theme-related resources.
  *

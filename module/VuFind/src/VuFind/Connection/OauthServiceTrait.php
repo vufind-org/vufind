@@ -31,6 +31,8 @@
 
 namespace VuFind\Connection;
 
+use function func_get_args;
+
 /**
  * Helper trait for OAuth 2.0 connections.
  *

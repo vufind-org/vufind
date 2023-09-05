@@ -34,6 +34,9 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFindSearch\Command\SearchCommand;
 use VuFindSearch\Query\Query;
 
+use function array_slice;
+use function count;
+
 /**
  * Collections Controller
  *

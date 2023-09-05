@@ -29,6 +29,9 @@
 
 namespace VuFind\Connection;
 
+use function count;
+use function is_array;
+
 /**
  * Oracle support code for VTLS Virtua Driver
  *

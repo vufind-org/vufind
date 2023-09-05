@@ -38,6 +38,11 @@ use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\ILS\Logic\ItemStatus;
 use VuFind\Marc\MarcReader;
 
+use function count;
+use function floatval;
+use function in_array;
+use function is_callable;
+
 /**
  * Alma ILS Driver
  *

@@ -29,6 +29,11 @@
 
 namespace VuFind\RecordDriver;
 
+use function count;
+use function in_array;
+use function is_callable;
+use function strlen;
+
 /**
  * Model for EDS records.
  *

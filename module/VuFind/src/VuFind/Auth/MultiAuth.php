@@ -31,6 +31,9 @@ namespace VuFind\Auth;
 
 use VuFind\Exception\Auth as AuthException;
 
+use function call_user_func;
+use function strlen;
+
 /**
  * MultiAuth Authentication plugin
  *
