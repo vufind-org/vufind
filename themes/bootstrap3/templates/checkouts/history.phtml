@@ -46,7 +46,7 @@
         <div class="checkbox">
           <?php if ($purgeSelectedAllowed): ?>
             <label>
-              <input type="checkbox" name="selectAll" class="checkbox-select-all"/>
+              <input type="checkbox" name="selectAll" class="checkbox-select-all">
               <?=$this->transEsc('select_page')?>
             </label>
             <div class="btn-group">
@@ -82,7 +82,7 @@
               <?php if (isset($ilsDetails['row_id'])): ?>
                 <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['row_id']); ?>
                 <label>
-                  <input class="checkbox-select-item" type="checkbox" name="purgeSelectedIDs[]" value="<?=$this->escapeHtmlAttr($ilsDetails['row_id'])?>" id="checkbox_<?=$safeId?>" />
+                  <input class="checkbox-select-item" type="checkbox" name="purgeSelectedIDs[]" value="<?=$this->escapeHtmlAttr($ilsDetails['row_id'])?>" id="checkbox_<?=$safeId?>">
                 </label>
               <?php else: ?>
                 <label> </label>
