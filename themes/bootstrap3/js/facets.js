@@ -40,20 +40,16 @@ function buildFacetNodes(facetName, data, currentPath, allowExclude, excludeTitl
 
     // Create facet text element
     const orFacet = facet.operator === 'OR';
-    let textEl;
+    let valueEl = el('span', 'facet-value');
+    valueEl.innerText = facet.displayText;
+    let textEl = el('span', 'text');
     if (orFacet) {
-      const iconLabel = el('span', 'facet-value icon-link__label');
-      iconLabel.innerText = facet.displayText;
-
-      textEl = el('span', 'text');
+      valueEl.className += ' icon-link__label';
       textEl.innerHTML = facet.isApplied
         ? VuFind.icon('facet-checked', { title: VuFind.translate('Selected'), class: 'icon-link__icon' })
         : VuFind.icon('facet-unchecked', 'icon-link__icon');
-      textEl.append(iconLabel);
-    } else {
-      textEl = el('span', 'text');
-      textEl.append(facet.displayText);
     }
+    textEl.append(valueEl);
 
     // Create link element
     const linkEl = el('a', (orFacet ? ' icon-link' : ''));
