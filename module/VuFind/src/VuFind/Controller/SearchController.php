@@ -48,25 +48,6 @@ use function is_object;
 class SearchController extends AbstractSolrSearch
 {
     /**
-     * Blended search action.
-     *
-     * @return mixed
-     */
-    public function blendedAction()
-    {
-        $saveId = $this->searchClassId;
-        try {
-            $this->searchClassId = 'Blender';
-            $view = $this->resultsAction();
-        } catch (\Exception $e) {
-            $this->searchClassId = $saveId;
-            throw $e;
-        }
-        $this->searchClassId = $saveId;
-        return $view;
-    }
-
-    /**
      * Show facet list for Solr-driven collections.
      *
      * @return mixed
@@ -549,7 +530,6 @@ class SearchController extends AbstractSolrSearch
     {
         $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
             ->get('config');
-        return isset($config->Record->next_prev_navigation)
-            && $config->Record->next_prev_navigation;
+        return $config->Record->next_prev_navigation ?? false;
     }
 }

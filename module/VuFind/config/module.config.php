@@ -69,6 +69,16 @@ $config = [
                     ],
                 ],
             ],
+            'legacy-blender-results' => [
+                'type' => 'Laminas\Router\Http\Literal',
+                'options' => [
+                    'route'    => '/Search/Blended',
+                    'defaults' => [
+                        'controller' => 'Blender',
+                        'action'     => 'Results',
+                    ],
+                ],
+            ],
             'legacy-bookcover' => [
                 'type' => 'Laminas\Router\Http\Literal',
                 'options' => [
@@ -139,6 +149,7 @@ $config = [
             'VuFind\Controller\AuthorController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\AuthorityController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\AuthorityRecordController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFind\Controller\BlenderController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\BrowseController' => 'VuFind\Controller\AbstractBaseWithConfigFactory',
             'VuFind\Controller\BrowZineController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\CartController' => 'VuFind\Controller\CartControllerFactory',
@@ -210,6 +221,8 @@ $config = [
             'authority' => 'VuFind\Controller\AuthorityController',
             'AuthorityRecord' => 'VuFind\Controller\AuthorityRecordController',
             'authorityrecord' => 'VuFind\Controller\AuthorityRecordController',
+            'Blender' => 'VuFind\Controller\BlenderController',
+            'blender' => 'VuFind\Controller\BlenderController',
             'Browse' => 'VuFind\Controller\BrowseController',
             'browse' => 'VuFind\Controller\BrowseController',
             'BrowZine' => 'VuFind\Controller\BrowZineController',
@@ -713,6 +726,7 @@ $dynamicRoutes = [
 $staticRoutes = [
     'Alphabrowse/Home', 'Author/FacetList', 'Author/Home', 'Author/Search',
     'Authority/FacetList', 'Authority/Home', 'Authority/Search',
+    'Blender/Advanced', 'Blender/Home', 'Blender/Results',
     'Browse/Author', 'Browse/Dewey', 'Browse/Era', 'Browse/Genre', 'Browse/Home',
     'Browse/LCC', 'Browse/Region', 'Browse/Tag', 'Browse/Topic', 'Cart/doExport',
     'BrowZine/Home', 'BrowZine/Search',
@@ -754,8 +768,8 @@ $staticRoutes = [
     'Primo/Advanced', 'Primo/Home', 'Primo/Search',
     'QRCode/Show', 'QRCode/Unavailable', 'Records/Home',
     'Relais/Login', 'Relais/Request',
-    'Search/Advanced', 'Search/Blended', 'Search/CollectionFacetList',
-    'Search/EditMemory', 'Search/Email',
+    'Search/Advanced',
+    'Search/CollectionFacetList', 'Search/EditMemory', 'Search/Email',
     'Search/FacetList', 'Search/History', 'Search/Home', 'Search/NewItem',
     'Search/OpenSearch', 'Search/Reserves', 'Search/ReservesFacetList',
     'Search/Results', 'Search/Suggest', 'Search/Versions',
