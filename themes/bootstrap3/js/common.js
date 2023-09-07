@@ -1,4 +1,4 @@
-/*global Autocomplete, grecaptcha, isPhoneNumberValid */
+/*global grecaptcha, isPhoneNumberValid */
 /*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
 
 // IE 9< console polyfill
@@ -354,21 +354,6 @@ function escapeHtmlAttr(str) {
   });
 }
 
-function extractClassParams(selector) {
-  var str = $(selector).attr('class');
-  if (typeof str === "undefined") {
-    return [];
-  }
-  var params = {};
-  var classes = str.split(/\s+/);
-  for (var i = 0; i < classes.length; i++) {
-    if (classes[i].indexOf(':') > 0) {
-      var pair = classes[i].split(':');
-      params[pair[0]] = pair[1];
-    }
-  }
-  return params;
-}
 // Turn GET string into array
 function deparam(url) {
   if (!url.match(/\?|&/)) {
@@ -479,79 +464,6 @@ function setupOffcanvas() {
   }
 }
 
-function setupAutocomplete() {
-  // If .autocomplete class is missing, autocomplete is disabled and we should bail out.
-  var $searchbox = $('#searchForm_lookfor.autocomplete');
-  if ($searchbox.length === 0) {
-    return;
-  }
-
-  const typeahead = new Autocomplete({
-    rtl: $(document.body).hasClass("rtl"),
-    maxResults: 10,
-    loadingString: VuFind.translate('loading_ellipsis'),
-  });
-
-  let cache = {};
-  const input = $searchbox[0];
-  typeahead(input, function vufindACHandler(query, callback) {
-    const classParams = extractClassParams(input);
-    const searcher = classParams.searcher;
-    const type = classParams.type ? classParams.type : $('#searchForm_type').val();
-
-    const cacheKey = searcher + "|" + type;
-    if (typeof cache[cacheKey] === "undefined") {
-      cache[cacheKey] = {};
-    }
-
-    if (typeof cache[cacheKey][query] !== "undefined") {
-      callback(cache[cacheKey][query]);
-      return;
-    }
-
-    var hiddenFilters = [];
-    $('#searchForm').find('input[name="hiddenFilters[]"]').each(function hiddenFiltersEach() {
-      hiddenFilters.push($(this).val());
-    });
-
-    $.ajax({
-      url: VuFind.path + '/AJAX/JSON',
-      data: {
-        q: query,
-        method: 'getACSuggestions',
-        searcher: searcher,
-        type: type,
-        hiddenFilters,
-      },
-      dataType: 'json',
-      success: function autocompleteJSON(json) {
-        const highlighted = json.data.suggestions.map(
-          (item) => ({
-            text: item.replaceAll("&", "&amp;")
-              .replaceAll("<", "&lt;")
-              .replaceAll(">", "&gt;")
-              .replaceAll(query, `<b>${query}</b>`),
-            value: item,
-          })
-        );
-        cache[cacheKey][query] = highlighted;
-        callback(highlighted);
-      }
-    });
-  });
-
-  // Bind autocomplete auto submit
-  if ($searchbox.hasClass("ac-auto-submit")) {
-    input.addEventListener("ac-select", (event) => {
-      const value = typeof event.detail === "string"
-        ? event.detail
-        : event.detail.value;
-      input.value = value;
-      $("#searchForm").trigger("submit");
-    });
-  }
-}
-
 /**
  * Handle arrow keys to jump to next record
  */
@@ -645,8 +557,6 @@ function setupQRCodeLinks(_container) {
 $(function commonDocReady() {
   // Start up all of our submodules
   VuFind.init();
-  // Setup search autocomplete
-  setupAutocomplete();
   // Off canvas
   setupOffcanvas();
   // Keyboard shortcuts in detail view
@@ -686,28 +596,4 @@ $(function commonDocReady() {
   if (url.indexOf('?print=') !== -1 || url.indexOf('&print=') !== -1) {
     $("link[media='print']").attr("media", "all");
   }
-});
-
-$(function searchFormResetHandler() {
-  const queryInput = $('#searchForm_lookfor');
-  const resetButton = $('#searchForm-reset');
-
-  let query = queryInput.val();
-  if (query !== '') {
-    resetButton.show();
-    queryInput.trigger('focus').val('').val(query);
-    queryInput[0].ac.hide();
-  }
-  queryInput.on('input', function onInput() {
-    if ($(this).val() === '') {
-      resetButton.hide();
-    } else {
-      resetButton.show();
-    }
-  });
-  resetButton.on('click', function onClick() {
-    queryInput.attr('value', '').trigger('focus');
-    queryInput[0].ac.hide();
-    resetButton.hide();
-  });
 });
