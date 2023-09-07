@@ -97,7 +97,7 @@ class CopyStringCommand extends AbstractCommand
      */
     protected function addLineToFile($filename, $key, $value)
     {
-        $fHandle = fopen($filename, "a");
+        $fHandle = fopen($filename, 'a');
         if (!$fHandle) {
             throw new \Exception('Cannot open ' . $filename . ' for writing.');
         }

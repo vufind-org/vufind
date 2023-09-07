@@ -41,6 +41,8 @@ use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Response\RecordCollectionInterface;
 
+use function in_array;
+
 /**
  *  EDS API Backend
  *
@@ -275,7 +277,7 @@ class Backend extends AbstractBackend
                     break;
             }
         } catch (Exception $e) {
-            $this->debugPrint("Exception found: " . $e->getMessage());
+            $this->debugPrint('Exception found: ' . $e->getMessage());
             throw new BackendException($e->getMessage(), $e->getCode(), $e);
         }
         $collection = $this->createRecordCollection($response);

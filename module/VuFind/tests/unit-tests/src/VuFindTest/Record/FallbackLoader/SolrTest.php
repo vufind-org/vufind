@@ -67,7 +67,7 @@ class SolrTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($collection));
         $checkCommand = function ($command) {
             return $command::class === \VuFindSearch\Command\SearchCommand::class
-                && $command->getTargetIdentifier() === "Solr"
+                && $command->getTargetIdentifier() === 'Solr'
                 && $command->getArguments()[0]->getString() ===
                 'previous_id_str_mv:"oldId"';
         };

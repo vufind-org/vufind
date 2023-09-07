@@ -26,6 +26,7 @@
     "watch-dev:less": "grunt watch:lessdev",
 
     "build:scss": "grunt scss",
+    "check:scss": "grunt check:scss",
     "watch:scss": "grunt watch:scss",
 
     "lessToSass": "grunt lessToSass",

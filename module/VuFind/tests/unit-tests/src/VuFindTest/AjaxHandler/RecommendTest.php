@@ -38,6 +38,8 @@ use VuFind\Search\Solr\Results;
 use VuFind\Session\Settings;
 use VuFind\View\Helper\Root\Recommend as RecommendHelper;
 
+use function count;
+
 /**
  * Recommend test class.
  *

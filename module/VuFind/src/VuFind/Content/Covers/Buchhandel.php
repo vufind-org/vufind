@@ -95,7 +95,7 @@ class Buchhandel extends \VuFind\Content\AbstractCover
                 $lsize = substr($size, 0, 1);
                 break;
             default:
-                $lsize = "s";
+                $lsize = 's';
                 break;
         }
 

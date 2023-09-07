@@ -32,6 +32,13 @@ use VuFind\Exception\ILS as ILSException;
 use VuFind\Marc\MarcCollection;
 use VuFind\Marc\MarcReader;
 
+use function array_key_exists;
+use function array_slice;
+use function count;
+use function floatval;
+use function in_array;
+use function strlen;
+
 /**
  * SirsiDynix Unicorn ILS Driver (VuFind side)
  *
@@ -257,7 +264,7 @@ class Unicorn extends AbstractBase implements
 
         // process the API response
         if ($response == 'invalid_login') {
-            return ['blocks' => ["authentication_error_admin"]];
+            return ['blocks' => ['authentication_error_admin']];
         }
 
         $results = [];
@@ -354,7 +361,7 @@ class Unicorn extends AbstractBase implements
     {
         $statuses = [];
         $params = [
-            'query' => 'multiple', 'ids' => implode("|", array_unique($idList)),
+            'query' => 'multiple', 'ids' => implode('|', array_unique($idList)),
         ];
         $response = $this->querySirsi($params);
         if (empty($response)) {
@@ -462,7 +469,7 @@ class Unicorn extends AbstractBase implements
         if ($response == 'invalid_login') {
             return [
               'success' => false,
-              'sysMessage' => "authentication_error_admin"];
+              'sysMessage' => 'authentication_error_admin'];
         }
 
         $matches = [];
@@ -509,7 +516,7 @@ class Unicorn extends AbstractBase implements
             $cat3, $cat4, $cat5, $expiry, $holds, $status] = explode('|', $response);
 
         [$last, $first] = explode(',', $name);
-        $first = rtrim($first, " ");
+        $first = rtrim($first, ' ');
 
         if ($expiry != '0') {
             $expiry = $this->parseDateTime(trim($expiry));
@@ -751,12 +758,12 @@ class Unicorn extends AbstractBase implements
         foreach ($details as $holdKey) {
             if (in_array($holdKey, $failures)) {
                 $items[$holdKey] = [
-                    'success' => false, 'status' => "hold_cancel_fail",
+                    'success' => false, 'status' => 'hold_cancel_fail',
                 ];
             } else {
                 $count++;
                 $items[$holdKey] = [
-                  'success' => true, 'status' => "hold_cancel_success",
+                  'success' => true, 'status' => 'hold_cancel_success',
                 ];
             }
         }
@@ -1062,7 +1069,7 @@ class Unicorn extends AbstractBase implements
             $holdcount, $library_code, $library, $location_code, $location,
             $currLocCode, $current_location, $holdable, $circulation_rule, $duedate,
             $date_recalled, $recall_period, $format, $title_holds]
-                = explode("|", $line);
+                = explode('|', $line);
 
         // availability
         $availability = ($number_of_charges == 0) ? 1 : 0;
@@ -1192,10 +1199,10 @@ class Unicorn extends AbstractBase implements
         if (empty($url)) {
             $url = $this->host;
             if ($this->port) {
-                $url = "http://" . $url . ":" . $this->port . "/" .
+                $url = 'http://' . $url . ':' . $this->port . '/' .
                     $this->search_prog;
             } else {
-                $url = "http://" . $url . "/" . $this->search_prog;
+                $url = 'http://' . $url . '/' . $this->search_prog;
             }
         }
 

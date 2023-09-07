@@ -14,9 +14,9 @@
 <div class="<?=$this->layoutClass('mainbody')?>">
   <h3><?=$this->transEsc('Search For Items on Reserve')?></h3>
   <form class="form-inline" method="get" name="reservesSearchForm">
-    <label for="reservesSearchForm_lookfor"><?=$this->transEsc("Your search terms")?></label>
+    <label for="reservesSearchForm_lookfor"><?=$this->transEsc('Your search terms')?></label>
     <input id="reservesSearchForm_lookfor" type="text" name="lookfor" size="40" value="<?=$this->escapeHtmlAttr($reservesLookfor)?>" <?=$this->searchOptions('SolrReserves')->autocompleteEnabled() ? ' class="autocomplete searcher:SolrReserves type:Reserves"' : ''?>>
-    <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEscAttr("Find")?>">
+    <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEscAttr('Find')?>">
   </form>
   <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, "$('#reservesSearchForm_lookfor').focus()", 'SET')?>
 

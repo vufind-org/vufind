@@ -56,6 +56,7 @@ trait LiveDetectionTrait
     public function continuousIntegrationRunning()
     {
         // We'll assume that if the CI Solr PID is present, then CI is active:
-        return file_exists(__DIR__ . '/../../../../../local/solr-8983.pid');
+        $port = getenv('SOLR_PORT') ?? '8983';
+        return file_exists(__DIR__ . "/../../../../../local/solr-$port.pid");
     }
 }

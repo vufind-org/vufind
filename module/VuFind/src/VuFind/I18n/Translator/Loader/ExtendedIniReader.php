@@ -31,6 +31,8 @@ namespace VuFind\I18n\Translator\Loader;
 
 use Laminas\I18n\Translator\TextDomain;
 
+use function is_array;
+
 /**
  * Helper class to load .ini files from disk.
  *
@@ -62,8 +64,14 @@ class ExtendedIniReader
             foreach ($contents as $current) {
                 // Split the string on the equals sign, keeping a max of two chunks:
                 $parts = explode('=', $current, 2);
-                $key = trim($parts[0]);
-                if ($key != "" && substr($key, 0, 1) != ';') {
+                // Trim off outermost single quotes, if any, from keys (these are
+                // needed by Lokalise in some cases for keys with numeric values)
+                $key = preg_replace(
+                    '/^\'?(.*?)\'?$/',
+                    '$1',
+                    trim($parts[0])
+                );
+                if ($key != '' && substr($key, 0, 1) != ';') {
                     // Trim outermost double quotes off the value if present:
                     if (isset($parts[1])) {
                         $value = preg_replace(

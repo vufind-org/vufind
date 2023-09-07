@@ -34,6 +34,14 @@ use VuFind\Record\Loader;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
 use VuFindSearch\Service as SearchService;
 
+use function call_user_func_array;
+use function count;
+use function func_get_args;
+use function get_class;
+use function in_array;
+use function is_callable;
+use function is_object;
+
 /**
  * Abstract results search model.
  *
@@ -520,7 +528,7 @@ abstract class Results
     protected function startQueryTimer()
     {
         // Get time before the query
-        $time = explode(" ", microtime());
+        $time = explode(' ', microtime());
         $this->queryStartTime = $time[1] + $time[0];
     }
 
@@ -532,7 +540,7 @@ abstract class Results
      */
     protected function stopQueryTimer()
     {
-        $time = explode(" ", microtime());
+        $time = explode(' ', microtime());
         $this->queryEndTime = $time[1] + $time[0];
         $this->queryTime = $this->queryEndTime - $this->queryStartTime;
     }

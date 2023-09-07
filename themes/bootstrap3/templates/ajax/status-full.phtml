@@ -31,7 +31,7 @@
       </td>
       <td class="fullAvailability">
         <?php if ($item['use_unknown_message'] ?? false): ?>
-          <span class="text-muted"><?=$this->transEsc("status_unknown_message")?></span>
+          <span class="text-muted"><?=$this->transEsc('status_unknown_message')?></span>
         <?php elseif ((int)$item['availability'] === \VuFind\ILS\Logic\ItemStatus::STATUS_UNAVAILABLE): ?>
           <span class="text-danger"><?=$this->transEsc($item['status'])?></span>
         <?php elseif ((int)$item['availability'] === \VuFind\ILS\Logic\ItemStatus::STATUS_UNCERTAIN): ?>

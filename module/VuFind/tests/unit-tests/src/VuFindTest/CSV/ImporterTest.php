@@ -33,6 +33,8 @@ use VuFind\CSV\Importer;
 use VuFindSearch\Backend\Solr\Document\RawJSONDocument;
 use VuFindTest\Container\MockContainer;
 
+use function array_slice;
+
 /**
  * CSV Importer Test Class
  *

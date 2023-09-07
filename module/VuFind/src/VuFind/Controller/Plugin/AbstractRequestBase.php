@@ -36,6 +36,10 @@ use VuFind\Crypt\HMAC;
 use VuFind\Date\Converter as DateConverter;
 use VuFind\ILS\Connection;
 
+use function count;
+use function get_class;
+use function in_array;
+
 /**
  * Action helper base class to perform request-related actions
  *
@@ -306,7 +310,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
     ) {
         // Load config:
         $dateArray = isset($checkHolds['defaultRequiredDate'])
-             ? explode(":", $checkHolds['defaultRequiredDate'])
+             ? explode(':', $checkHolds['defaultRequiredDate'])
              : [0, 1, 0];
 
         // Process special "driver" prefix and adjust default date

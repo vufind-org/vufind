@@ -77,7 +77,7 @@ function setupVuFindRemoteCodeCoverage(array $modules): void
             $filter
         );
     } catch (\Exception $e) {
-        $error("Failed to create collector: " . (string)$e);
+        $error('Failed to create collector: ' . (string)$e);
     }
 
     $outputDir .= '/' . urlencode($testName);

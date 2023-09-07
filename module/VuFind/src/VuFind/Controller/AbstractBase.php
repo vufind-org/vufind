@@ -41,6 +41,9 @@ use VuFind\Http\PhpEnvironment\Request as HttpRequest;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
 
+use function intval;
+use function is_object;
+
 /**
  * VuFind controller base class (defines some methods that can be shared by other
  * controllers).
@@ -407,7 +410,8 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
                     $routeMatch = $this->getEvent()->getRouteMatch();
                     $routeName = $routeMatch ? $routeMatch->getMatchedRouteName()
                         : 'myresearch-profile';
-                    $ilsAuth->sendEmailLoginLink($username, $routeName);
+                    $routeParams = $routeMatch ? $routeMatch->getParams() : [];
+                    $ilsAuth->sendEmailLoginLink($username, $routeName, $routeParams, ['catalogLogin' => 'true']);
                     $this->flashMessenger()
                         ->addSuccessMessage('email_login_link_sent');
                 } else {
