@@ -343,6 +343,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
             'basic lowercasing' => ['ABCDEF', 'abcdef'],
             'Latin accent stripping' => ['çèñüĂ', 'cenua'],
             'Punctuation stripping' => ['this:that:...!>!the other', 'this that the other'],
+            'Japanese text' => ['日本語テキスト', '日本語テキスト'],
         ];
     }
 
