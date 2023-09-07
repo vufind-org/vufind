@@ -331,4 +331,33 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
             VuFind::invertNames($input)->saveXML()
         );
     }
+
+    /**
+     * Data provider for testTitleSortLower().
+     *
+     * @return array
+     */
+    public function titleSortLowerProvider(): array
+    {
+        return [
+            'basic lowercasing' => ['ABCDEF', 'abcdef'],
+            'Latin accent stripping' => ['çèñüĂ', 'cenua'],
+            'Punctuation stripping' => ['this:that:...!>!the other', 'this that the other'],
+        ];
+    }
+
+    /**
+     * Test the titleSortLower helper.
+     *
+     * @param string $input    Input to test
+     * @param string $expected Expected output of test
+     *
+     * @return void
+     *
+     * @dataProvider titleSortLowerProvider
+     */
+    public function testTitleSortLower($input, $expected): void
+    {
+        $this->assertEquals($expected, VuFind::titleSortLower($input));
+    }
 }

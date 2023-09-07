@@ -392,6 +392,49 @@ class VuFind
     }
 
     /**
+     * Strip accents from a string.
+     *
+     * @param string $str String to process.
+     *
+     * @return string     Processed string.
+     */
+    public static function stripAccents(string $str): string
+    {
+        $tl = \Transliterator::create('Latin-ASCII;');
+        return $tl->transliterate($str);
+    }
+
+    /**
+     * Strip punctuation from a string.
+     *
+     * @param string $str String to process.
+     *
+     * @return string     Processed string.
+     */
+    public static function stripPunctuation(string $str): string
+    {
+        // Convert strings of spaces and punctuation into single spaces, for
+        // consistency with SolrMarc behavior.
+        return preg_replace('/[[:punct:]\s]+/', ' ', $str);
+    }
+
+    /**
+     * Perform text processing roughly equivalent to SolrMarc's titleSortLower
+     * feature to allow consistent indexing into the title_sort field.
+     *
+     * @param string $str String to process.
+     *
+     * @return string     Processed string.
+     */
+    public static function titleSortLower(string $str): string
+    {
+        return mb_strtolower(
+            static::stripPunctuation(static::stripAccents($str)),
+            'UTF-8'
+        );
+    }
+
+    /**
      * Convert provided nodes into XML and return as text. This is useful for
      * populating the fullrecord field with the raw input XML.
      *
