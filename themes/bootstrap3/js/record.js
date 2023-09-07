@@ -291,7 +291,7 @@ function ajaxTagUpdate(_link, tag, _remove) {
 }
 
 function getNewRecordTab(tabid) {
-    return $('<div class="tab-pane ' + tabid + '-tab" aria-labelledby="record-tab-' + tabid + '">' + VuFind.loading() + '</div>');
+    return $('<div class="tab-pane ' + tabid + '-tab" aria-labelledby="record-tab-' + escapeHtmlAttr(tabid) + '">' + VuFind.loading() + '</div>');
 }
 
 function backgroundLoadTab(tabid) {
