@@ -247,10 +247,12 @@ h3.facet-title {
       }
     }
 
+    // Child items:
     ul {
       padding-left: 1rem;
       flex: 1;
       .facet {
+        // Smaller padding to make the list a bit more condensed:
         padding-top: 0.2rem;
         padding-bottom: 0.2rem;
       }
@@ -262,7 +264,13 @@ h3.facet-title {
     padding-left: .1rem;
   }
 
+  // Top level bottom border:
   & > ul > li, .more-less-btn-wrapper {
     border-bottom: 1px solid @list-group-border;
+  }
+  // Make the first child level start a bit higher to counter the padding of top
+  // level items:
+  & > ul > li > ul {
+    margin-top: -0.3rem;
   }
 }
