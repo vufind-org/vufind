@@ -239,7 +239,7 @@ h3.facet-title {
         width: calc(100% - 3.0em);
       }
 
-      .icon-link__label {
+      .facet-value {
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
@@ -250,6 +250,10 @@ h3.facet-title {
     ul {
       padding-left: 1rem;
       flex: 1;
+      .facet {
+        padding-top: 0.2rem;
+        padding-bottom: 0.2rem;
+      }
     }
   }
 
