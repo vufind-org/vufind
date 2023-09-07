@@ -31,6 +31,9 @@ namespace VuFind\Search\SolrAuthorFacets;
 
 use VuFindSearch\Command\SearchCommand;
 
+use function array_slice;
+use function count;
+
 /**
  * AuthorFacets Search Results
  *

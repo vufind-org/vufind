@@ -3,7 +3,7 @@
 ?>
 <div class="media" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
   <?php
-    $QRCode = $this->record($this->driver)->getQRCode("core");
+    $QRCode = $this->record($this->driver)->getQRCode('core');
     $coverDetails = $this->record($this->driver)->getCoverDetails('core', 'medium', $this->record($this->driver)->getThumbnail('large'));
     $cover = $coverDetails['html'];
     $preview = ($this->previewOverride ?? false)
@@ -77,7 +77,7 @@
     <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
       <?php /* Display the lists that this record is saved to */ ?>
       <div class="savedLists">
-        <strong><?=$this->transEsc("Saved in")?>:</strong>
+        <strong><?=$this->transEsc('Saved in')?>:</strong>
       </div>
     <?php endif; ?>
 

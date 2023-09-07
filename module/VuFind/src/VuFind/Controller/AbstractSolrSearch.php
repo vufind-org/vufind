@@ -29,6 +29,8 @@
 
 namespace VuFind\Controller;
 
+use function in_array;
+
 /**
  * AbstractSearch with Solr-specific features added.
  *

@@ -29,6 +29,10 @@
 
 namespace VuFindTheme;
 
+use function count;
+use function in_array;
+use function is_array;
+
 /**
  * VuFind Theme Public Resource Handler (for CSS, JS, etc.)
  *
@@ -121,7 +125,7 @@ class ResourceContainer
         } elseif ($js === []) {
             return;
         } else {
-            throw new \Exception("Invalid JS entry format: " . print_r($js, true));
+            throw new \Exception('Invalid JS entry format: ' . print_r($js, true));
         }
     }
 

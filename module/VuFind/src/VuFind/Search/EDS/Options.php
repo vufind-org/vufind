@@ -31,6 +31,9 @@
 
 namespace VuFind\Search\EDS;
 
+use function count;
+use function is_callable;
+
 /**
  * EDS API Options
  *
@@ -472,7 +475,7 @@ class Options extends \VuFind\Search\Base\Options
         }
         if (isset($this->searchSettings->General->limit_options)) {
             $this->limitOptions
-                = explode(",", $this->searchSettings->General->limit_options);
+                = explode(',', $this->searchSettings->General->limit_options);
         }
 
         // Set up highlighting preference

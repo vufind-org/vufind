@@ -29,6 +29,8 @@
 
 namespace VuFindTheme;
 
+use function strlen;
+
 /**
  * VuFind "Inject Template" Listener -- this extends the core MVC class to adjust
  * default template configurations to something more appropriate for VuFind.

@@ -85,7 +85,7 @@ class SearchServiceTest extends TestCase
         $command = $this->createMock(\VuFindSearch\Command\RetrieveCommand::class);
         $command->expects($this->once())->method('execute')
             ->with($this->equalTo($backend))
-            ->will($this->throwException(new BackendException("test")));
+            ->will($this->throwException(new BackendException('test')));
         $em = $service->getEventManager();
         $em->expects($this->exactly(2))->method('trigger')
             ->withConsecutive(['pre', $service], ['error', $service]);

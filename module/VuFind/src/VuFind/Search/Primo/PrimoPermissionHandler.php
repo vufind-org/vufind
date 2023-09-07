@@ -31,6 +31,9 @@ namespace VuFind\Search\Primo;
 
 use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
 
+use function in_array;
+use function is_array;
+
 /**
  * Primo Permission Handler.
  *

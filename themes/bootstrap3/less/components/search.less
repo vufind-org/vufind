@@ -348,9 +348,29 @@ body.rtl {
   .grid-small-break { display: none; }
 }
 
-.searchtools a {
-  padding: 0 .5rem;
-  white-space: nowrap;
+.searchtools {
+  h2 {
+    display: inline-block;
+    margin: 0;
+    font-size: inherit;
+    font-weight: bold;
+    vertical-align: middle;
+  }
+  ul {
+    display: inline-block;
+    margin: 0;
+    padding-left: 0;
+    li {
+      display: inline;
+      &:not(:first-child):before {
+        content: '\2013'; // n-dash
+      }
+      a {
+        padding: 0 .5rem;
+        white-space: nowrap;
+      }
+    }  
+  }
 }
 
 /* ------ COMBINED ------ */
@@ -566,6 +586,32 @@ table.search-history-table {
   tbody > tr > td { vertical-align: middle; }
   .history_time {
     width: 20%;
+  }
+}
+
+.searchForm-query {
+  position: relative;
+  display: inline-block;
+
+  #searchForm_lookfor {
+    padding-right: 28px;
+  }
+
+  #searchForm-reset {
+    position: absolute;
+    display: none;
+    right: 3px;
+    top: 3px;
+    bottom: 0;
+    width: 2em;
+    height: 2em;
+    border: none;
+    border-radius: 50%;
+    background-color: @gray-lighter;
+    margin: 0;
+    padding: 2px;
+    font-size: 1em;
+    cursor: pointer;
   }
 }
 

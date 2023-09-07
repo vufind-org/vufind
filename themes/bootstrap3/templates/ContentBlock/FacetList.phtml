@@ -74,7 +74,7 @@
                   }
                 ?>
                 <?php if ($i >= $maxListLength): // list too long? show more link! ?>
-                  <li><a href="<?=$moreUrl?>"><strong><?=$this->transEsc("more_options_ellipsis")?></strong></a></li>
+                  <li><a href="<?=$moreUrl?>"><strong><?=$this->transEsc('more_options_ellipsis')?></strong></a></li>
                   <?php break; ?>
                 <?php elseif ($i % $columnSize === 0): // end of column? insert break! ?>
                   </ul><ul class="home-facet-list">

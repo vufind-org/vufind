@@ -35,6 +35,15 @@ use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindHttp\HttpServiceAwareInterface;
 
+use function call_user_func_array;
+use function func_get_args;
+use function in_array;
+use function intval;
+use function is_array;
+use function is_callable;
+use function is_string;
+use function strlen;
+
 /**
  * III Sierra REST API driver
  *
@@ -482,7 +491,7 @@ class SierraRest extends AbstractBase implements
      */
     public function getStatus($id)
     {
-        return $this->getItemStatusesForBib($id, false);
+        return $this->getItemStatusesForBib($id, $this->config['Holdings']['check_holdings_in_results'] ?? true);
     }
 
     /**
@@ -499,7 +508,7 @@ class SierraRest extends AbstractBase implements
     {
         $items = [];
         foreach ($ids as $id) {
-            $items[] = $this->getItemStatusesForBib($id, false);
+            $items[] = $this->getStatus($id);
         }
         return $items;
     }

@@ -29,6 +29,8 @@
 
 namespace VuFind\Resolver\Driver;
 
+use function in_array;
+
 /**
  * Alma Link Resolver Driver
  *

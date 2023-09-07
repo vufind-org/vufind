@@ -33,6 +33,8 @@ use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use VuFindSearch\Service;
 
+use function is_array;
+
 /**
  * Listener to convert one field to another in filters (for legacy purposes).
  *

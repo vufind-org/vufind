@@ -35,6 +35,10 @@ use Laminas\Cache\Service\StorageAdapterFactory;
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\Config\Config;
 
+use function dirname;
+use function is_array;
+use function strlen;
+
 /**
  * VuFind Cache Manager
  *
@@ -279,6 +283,14 @@ class Manager
     protected function createFileCache($cacheName, $dirName, $overrideOpts = [])
     {
         $opts = array_merge($this->defaults, $overrideOpts);
+        if ($opts['disabled'] ?? false) {
+            $this->createNoCache($cacheName);
+            return;
+        } else {
+            // Laminas does not support "disabled = false"; unset to avoid error.
+            unset($opts['disabled']);
+        }
+
         if (!is_dir($dirName)) {
             if (isset($opts['umask'])) {
                 // convert umask from string

@@ -8,7 +8,7 @@
 ?>
 <div class="facet">
   <form class="facet-range-form" name="<?=$safeBaseId?>Filter" id="<?=$safeBaseId?>Filter">
-    <?=$results->getUrlQuery()->asHiddenFields(['page' => "/./", 'filter' => "/^{$this->title}:.*/"])?>
+    <?=$results->getUrlQuery()->asHiddenFields(['page' => '/./', 'filter' => "/^{$this->title}:.*/"])?>
     <input type="hidden" name="<?=$this->escapeHtmlAttr($this->facet['type'])?>range[]" value="<?=$this->escapeHtmlAttr($this->title)?>">
     <div class="date-fields">
       <?php $extraInputAttribs = ($this->facet['type'] == 'date') ? 'maxlength="4" ' : ''; ?>

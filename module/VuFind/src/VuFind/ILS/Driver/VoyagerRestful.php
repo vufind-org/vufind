@@ -38,6 +38,10 @@ use PDOException;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 
+use function count;
+use function in_array;
+use function is_callable;
+
 /**
  * Voyager Restful ILS Driver
  *
@@ -714,23 +718,23 @@ class VoyagerRestful extends Voyager implements
                 && $this->pickupLocationsInRequestGroup
                 && !empty($holdDetails['requestGroupId'])
             ) {
-                $sql = "SELECT CIRC_POLICY_LOCS.LOCATION_ID as location_id, " .
-                    "NVL(LOCATION.LOCATION_DISPLAY_NAME, LOCATION.LOCATION_NAME) " .
-                    "as location_name from " .
+                $sql = 'SELECT CIRC_POLICY_LOCS.LOCATION_ID as location_id, ' .
+                    'NVL(LOCATION.LOCATION_DISPLAY_NAME, LOCATION.LOCATION_NAME) ' .
+                    'as location_name from ' .
                     $this->dbName . ".CIRC_POLICY_LOCS, $this->dbName.LOCATION, " .
                     "$this->dbName.REQUEST_GROUP_LOCATION rgl " .
                     "where CIRC_POLICY_LOCS.PICKUP_LOCATION = 'Y' " .
-                    "and CIRC_POLICY_LOCS.LOCATION_ID = LOCATION.LOCATION_ID " .
-                    "and rgl.GROUP_ID=:requestGroupId " .
-                    "and rgl.LOCATION_ID = LOCATION.LOCATION_ID";
+                    'and CIRC_POLICY_LOCS.LOCATION_ID = LOCATION.LOCATION_ID ' .
+                    'and rgl.GROUP_ID=:requestGroupId ' .
+                    'and rgl.LOCATION_ID = LOCATION.LOCATION_ID';
                 $params['requestGroupId'] = $holdDetails['requestGroupId'];
             } else {
-                $sql = "SELECT CIRC_POLICY_LOCS.LOCATION_ID as location_id, " .
-                    "NVL(LOCATION.LOCATION_DISPLAY_NAME, LOCATION.LOCATION_NAME) " .
-                    "as location_name from " .
+                $sql = 'SELECT CIRC_POLICY_LOCS.LOCATION_ID as location_id, ' .
+                    'NVL(LOCATION.LOCATION_DISPLAY_NAME, LOCATION.LOCATION_NAME) ' .
+                    'as location_name from ' .
                     $this->dbName . ".CIRC_POLICY_LOCS, $this->dbName.LOCATION " .
                     "where CIRC_POLICY_LOCS.PICKUP_LOCATION = 'Y' " .
-                    "and CIRC_POLICY_LOCS.LOCATION_ID = LOCATION.LOCATION_ID";
+                    'and CIRC_POLICY_LOCS.LOCATION_ID = LOCATION.LOCATION_ID';
             }
 
             try {
@@ -1158,7 +1162,7 @@ class VoyagerRestful extends Voyager implements
             $xmlString .= '</' . $root . '>';
         }
 
-        $xmlComplete = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" . $xmlString;
+        $xmlComplete = '<?xml version="1.0" encoding="UTF-8"?>' . $xmlString;
 
         return $xmlComplete;
     }
@@ -1864,14 +1868,14 @@ class VoyagerRestful extends Voyager implements
         // We need to significantly change the where clauses to account for remote
         // holds
         $sqlArray['where'] = [
-            "HOLD_RECALL.PATRON_ID = :id",
-            "HOLD_RECALL.HOLD_RECALL_ID = HOLD_RECALL_ITEMS.HOLD_RECALL_ID(+)",
-            "HOLD_RECALL_ITEMS.ITEM_ID = MFHD_ITEM.ITEM_ID(+)",
-            "(HOLD_RECALL_ITEMS.HOLD_RECALL_STATUS IS NULL OR " .
-            "HOLD_RECALL_ITEMS.HOLD_RECALL_STATUS < 3)",
-            "HOLD_RECALL.BIB_ID = BIB_TEXT.BIB_ID(+)",
-            "HOLD_RECALL.REQUEST_GROUP_ID = REQUEST_GROUP.GROUP_ID(+)",
-            "HOLD_RECALL.HOLDING_DB_ID = VOYAGER_DATABASES.DB_ID(+)",
+            'HOLD_RECALL.PATRON_ID = :id',
+            'HOLD_RECALL.HOLD_RECALL_ID = HOLD_RECALL_ITEMS.HOLD_RECALL_ID(+)',
+            'HOLD_RECALL_ITEMS.ITEM_ID = MFHD_ITEM.ITEM_ID(+)',
+            '(HOLD_RECALL_ITEMS.HOLD_RECALL_STATUS IS NULL OR ' .
+            'HOLD_RECALL_ITEMS.HOLD_RECALL_STATUS < 3)',
+            'HOLD_RECALL.BIB_ID = BIB_TEXT.BIB_ID(+)',
+            'HOLD_RECALL.REQUEST_GROUP_ID = REQUEST_GROUP.GROUP_ID(+)',
+            'HOLD_RECALL.HOLDING_DB_ID = VOYAGER_DATABASES.DB_ID(+)',
         ];
 
         return $sqlArray;
