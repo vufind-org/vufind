@@ -34,6 +34,7 @@ use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Mvc\MvcEvent;
 use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use Laminas\Uri\Http;
 use Laminas\View\Model\ViewModel;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
@@ -200,7 +201,11 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
             $this->layout()->setTemplate('layout/lightbox');
             $params['inLightbox'] = true;
         }
-        $this->layout()->lightboxParent = $this->getServerUrl();
+        $lightboxParentUrl =  new Http($this->getServerUrl());
+        $query = $lightboxParentUrl->getQueryAsArray();
+        unset($query['lightboxChild']);
+        $lightboxParentUrl->setQuery($query);
+        $this->layout()->lightboxParent = $lightboxParentUrl->toString();
         if ($lightboxChild = $this->getRequest()->getQuery('lightboxChild')) {
             $this->layout()->lightboxChild = $lightboxChild;
         }
