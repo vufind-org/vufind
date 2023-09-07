@@ -484,6 +484,7 @@ VuFind.register('lightbox', function Lightbox() {
   function loadConfiguredLightbox(){
     if (VuFind.lightbox.child) {
       // load lightbox
+      _currentUrl = VuFind.lightbox.child;
       var obj = {
         url: VuFind.lightbox.child
       };
