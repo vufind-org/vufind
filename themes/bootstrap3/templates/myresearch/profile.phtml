@@ -110,6 +110,28 @@
         );
       ?>
     </table>
+    <?php
+      $proxyValues = [];
+      if (!empty($this->proxiedUsers)) {
+        $proxyValues['proxy_list_for'] = $this->proxiedUsers;
+      }
+      if (!empty($this->proxyingUsers)) {
+        $proxyValues['proxy_list_by'] = $this->proxyingUsers;
+      }
+    ?>
+    <?php if (!empty($proxyValues)): ?>
+      <h3><?=$this->transEsc('proxy_list_heading')?></h3>
+      <p><?=$this->transEsc('proxy_list_description')?></p>
+      <?php foreach ($proxyValues as $proxyHeading => $proxyValueGroup): ?>
+        <h4><?=$this->transEsc($proxyHeading)?></h4>
+        <?php natsort($proxyValueGroup); ?>
+        <ul>
+          <?php foreach ($proxyValueGroup as $proxyValue): ?>
+            <li><?=$this->escapeHtml($proxyValue)?></li>
+          <?php endforeach; ?>
+        </ul>
+      <?php endforeach; ?>
+    <?php endif; ?>
   <?php elseif ('ils-none' !== $this->ils()->getOfflineMode() && $this->patronLoginView && !empty($this->patronLoginView->getTemplate())): ?>
     <?=$this->partial($this->patronLoginView);?>
   <?php endif; ?>
