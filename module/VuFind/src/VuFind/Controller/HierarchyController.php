@@ -29,6 +29,9 @@
 
 namespace VuFind\Controller;
 
+use function array_slice;
+use function count;
+
 /**
  * Hierarchy Controller
  *
@@ -84,7 +87,7 @@ class HierarchyController extends AbstractBase
     {
         $this->disableSessionWrites();  // avoid session write timing bug
         $config = $this->getConfig();
-        $limit = $config->Hierarchy->treeSearchLimit ?? -1;
+        $limit = $config->Hierarchy->treeSearchLimit;
         $resultIDs = [];
         $hierarchyID = $this->params()->fromQuery('hierarchyID');
         $source = $this->params()
@@ -96,7 +99,7 @@ class HierarchyController extends AbstractBase
             ->get(\VuFind\Search\Results\PluginManager::class)->get($source);
         $results->getParams()->setBasicSearch($lookfor, $searchType);
         $results->getParams()->addFilter('hierarchy_top_id:' . $hierarchyID);
-        $facets = $results->getFullFieldFacets(['id'], false, $limit + 1);
+        $facets = $results->getFullFieldFacets(['id'], false, null === $limit ? -1 : $limit + 1);
 
         $callback = function ($data) {
             return $data['value'];

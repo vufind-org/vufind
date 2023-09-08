@@ -32,6 +32,9 @@ namespace VuFind\ILS\Driver;
 
 use VuFind\Exception\ILS as ILSException;
 
+use function in_array;
+use function is_array;
+
 /**
  * Horizon ILS Driver (w/ XML API support)
  *

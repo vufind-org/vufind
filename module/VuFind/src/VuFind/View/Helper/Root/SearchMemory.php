@@ -33,6 +33,8 @@ namespace VuFind\View\Helper\Root;
 use Laminas\View\Helper\AbstractHelper;
 use VuFind\Search\Memory;
 
+use function strlen;
+
 /**
  * View helper for remembering recent user searches/parameters.
  *

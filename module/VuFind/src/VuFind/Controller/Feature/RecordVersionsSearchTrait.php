@@ -30,6 +30,8 @@
 
 namespace VuFind\Controller\Feature;
 
+use function is_callable;
+
 /**
  * VuFind Action Feature Trait - Record Versions Search
  *

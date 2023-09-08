@@ -41,6 +41,12 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Marc\MarcReader;
 use Yajra\Pdo\Oci8;
 
+use function chr;
+use function count;
+use function in_array;
+use function intval;
+use function is_array;
+
 /**
  * Voyager ILS Driver
  *

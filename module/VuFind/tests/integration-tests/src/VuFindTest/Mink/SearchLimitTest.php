@@ -32,6 +32,8 @@ namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
 
+use function intval;
+
 /**
  * Test for search limits.
  *

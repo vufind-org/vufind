@@ -83,17 +83,28 @@ var VuFind = (function VuFind() {
   };
 
   var initClickHandlers = function initClickHandlers() {
+    let checkClickHandlers = function (event, elem) {
+      if (elem.hasAttribute('data-click-callback')) {
+        return evalCallback(elem.dataset.clickCallback, event, {});
+      }
+      if (elem.hasAttribute('data-click-set-checked')) {
+        document.getElementById(elem.dataset.clickSetChecked).checked = true;
+        event.preventDefault();
+      }
+      if (elem.hasAttribute('data-toggle-aria-expanded')) {
+        elem.setAttribute('aria-expanded', elem.getAttribute('aria-expanded') === 'true' ? 'false' : 'true');
+        event.preventDefault();
+      }
+      // Check also parent node for spans (e.g. a button with icon)
+      if (!event.defaultPrevented && elem.localName === 'span' && elem.parentNode) {
+        checkClickHandlers(event, elem.parentNode);
+      }
+    };
+
     window.addEventListener(
       'click',
       function handleClick(event) {
-        let elem = event.target;
-        if (elem.hasAttribute('data-click-callback')) {
-          return evalCallback(elem.dataset.clickCallback, event, {});
-        }
-        if (elem.hasAttribute('data-click-set-checked')) {
-          document.getElementById(elem.dataset.clickSetChecked).checked = true;
-          event.preventDefault();
-        }
+        checkClickHandlers(event, event.target);
       }
     );
     window.addEventListener(
@@ -140,18 +151,16 @@ var VuFind = (function VuFind() {
       return name;
     }
 
-    var html = _icons[name];
-
     // Add additional attributes
     function addAttrs(_html, _attrs = {}) {
       var mod = String(_html);
       for (var attr in _attrs) {
         if (Object.prototype.hasOwnProperty.call(_attrs, attr)) {
-          var sliceStart = html.indexOf(" ");
+          var sliceStart = mod.indexOf(" ");
           var sliceEnd = sliceStart;
           var value = _attrs[attr];
           var regex = new RegExp(` ${attr}=(['"])([^\\1]+?)\\1`);
-          var existing = html.match(regex);
+          var existing = mod.match(regex);
           if (existing) {
             sliceStart = existing.index;
             sliceEnd = sliceStart + existing[0].length;
@@ -164,6 +173,8 @@ var VuFind = (function VuFind() {
       }
       return mod;
     }
+
+    var html = _icons[name];
 
     if (typeof attrs == "string") {
       return addAttrs(html, { class: attrs });
@@ -642,16 +653,6 @@ function keyboardShortcuts() {
   }
 }
 
-function setupIeSupport() {
-  // Disable Bootstrap modal focus enforce on IE since it breaks Recaptcha.
-  // Cannot use conditional comments since IE 11 doesn't support them but still has
-  // the issue
-  var ua = window.navigator.userAgent;
-  if (ua.indexOf('MSIE') || ua.indexOf('Trident/')) {
-    $.fn.modal.Constructor.prototype.enforceFocus = function emptyEnforceFocus() { };
-  }
-}
-
 function unwrapJQuery(node) {
   return node instanceof Node ? node : node[0];
 }
@@ -734,8 +735,6 @@ $(function commonDocReady() {
   if (url.indexOf('?print=') !== -1 || url.indexOf('&print=') !== -1) {
     $("link[media='print']").attr("media", "all");
   }
-
-  setupIeSupport();
 });
 
 $(function searchFormResetHandler() {

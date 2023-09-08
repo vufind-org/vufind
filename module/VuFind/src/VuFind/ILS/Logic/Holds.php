@@ -33,6 +33,9 @@ namespace VuFind\ILS\Logic;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Connection as ILSConnection;
 
+use function in_array;
+use function is_array;
+
 /**
  * Hold Logic Class
  *

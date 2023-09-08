@@ -37,6 +37,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Record\Loader;
 use VuFind\Search\Results\PluginManager;
 
+use function count;
+use function in_array;
+
 /**
  * Generic base class for Solr commands.
  *

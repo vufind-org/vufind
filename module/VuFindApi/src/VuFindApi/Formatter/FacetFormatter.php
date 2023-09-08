@@ -31,6 +31,8 @@ namespace VuFindApi\Formatter;
 
 use VuFind\Search\Base\Results;
 
+use function in_array;
+
 /**
  * Facet formatter for API responses
  *

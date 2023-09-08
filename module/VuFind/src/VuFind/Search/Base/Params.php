@@ -38,6 +38,18 @@ use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
 
+use function call_user_func;
+use function count;
+use function get_class;
+use function in_array;
+use function intval;
+use function is_array;
+use function is_callable;
+use function is_float;
+use function is_int;
+use function is_object;
+use function strlen;
+
 /**
  * Abstract parameters search model.
  *

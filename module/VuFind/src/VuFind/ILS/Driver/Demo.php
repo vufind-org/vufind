@@ -45,6 +45,13 @@ use VuFindSearch\Command\RandomCommand;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Service as SearchService;
 
+use function array_key_exists;
+use function array_slice;
+use function count;
+use function in_array;
+use function is_callable;
+use function strlen;
+
 /**
  * Advanced Dummy ILS Driver -- Returns sample values based on Solr index.
  *
@@ -2772,10 +2779,26 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @param array $patron The patron array with username and password
      *
      * @return array
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getProxiedUsers(array $patron): array
     {
         return $this->config['ProxiedUsers'] ?? [];
+    }
+
+    /**
+     * Get list of users who act as proxies for the provided patron.
+     *
+     * @param array $patron The patron array with username and password
+     *
+     * @return array
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getProxyingUsers(array $patron): array
+    {
+        return $this->config['ProxyingUsers'] ?? [];
     }
 
     /**

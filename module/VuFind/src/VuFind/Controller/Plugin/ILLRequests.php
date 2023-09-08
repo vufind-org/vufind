@@ -31,6 +31,8 @@
 
 namespace VuFind\Controller\Plugin;
 
+use function in_array;
+
 /**
  * Action helper to perform ILL request related actions
  *

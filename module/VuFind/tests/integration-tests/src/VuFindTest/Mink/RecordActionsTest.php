@@ -30,6 +30,10 @@
 
 namespace VuFindTest\Mink;
 
+use function count;
+use function intval;
+use function strlen;
+
 /**
  * Mink record actions test class.
  *

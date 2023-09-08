@@ -33,6 +33,8 @@ use VuFind\XSLT\Processor as XSLTProcessor;
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Backend\Exception\HttpErrorException;
 
+use function is_array;
+
 /**
  * SRU Search Interface
  *

@@ -29,6 +29,11 @@
 
 namespace VuFind\Config;
 
+use function dirname;
+use function is_array;
+use function is_int;
+use function strlen;
+
 /**
  * Class to update VuFind configuration settings
  *

@@ -29,6 +29,9 @@
 
 namespace VuFind\Content\Covers;
 
+use function in_array;
+use function is_string;
+
 /**
  * Local file cover content loader.
  *
