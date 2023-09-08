@@ -37,6 +37,7 @@ use Symfony\Component\Yaml\Yaml;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
 
+use function call_user_func;
 use function floatval;
 use function in_array;
 use function intval;

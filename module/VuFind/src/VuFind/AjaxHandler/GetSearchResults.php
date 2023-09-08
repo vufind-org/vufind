@@ -41,6 +41,8 @@ use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFind\Search\SearchNormalizer;
 use VuFind\Session\Settings as SessionSettings;
 
+use function call_user_func;
+
 /**
  * "Get Search Results" AJAX handler
  *
