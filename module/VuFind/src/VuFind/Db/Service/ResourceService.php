@@ -286,4 +286,24 @@ class ResourceService extends AbstractService implements \VuFind\Db\Service\Serv
         $result = $query->getResult();
         return $result;
     }
+
+    /**
+     * Update resource IDs for a specific class of entity (useful when merging
+     * duplicate resources).
+     *
+     * @param string       $entity      Entity class
+     * @param int|Resource $newResource New resourceid.
+     * @param int|User     $oldResource Old resourceid.
+     *
+     * @return void
+     */
+    public function updateResource($entity, $newResource, $oldResource)
+    {
+        $dql = 'UPDATE ' . $this->getEntityClass($entity) . ' e '
+            . 'SET e.resource = :newResource WHERE e.resource = :oldResource';
+        $parameters = compact('newResource', 'oldResource');
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $query->execute();
+    }
 }

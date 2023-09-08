@@ -34,6 +34,8 @@ use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 use VuFind\Date\Converter as DateConverter;
 use VuFind\Db\Row\RowGateway;
+use VuFind\Db\Service\ServiceAwareInterface;
+use VuFind\Db\Service\ServiceAwareTrait;
 use VuFind\Record\Loader;
 
 use function in_array;
@@ -47,8 +49,10 @@ use function in_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Resource extends Gateway
+class Resource extends Gateway implements ServiceAwareInterface
 {
+    use ServiceAwareTrait;
+
     /**
      * Date converter
      *
@@ -240,21 +244,24 @@ class Resource extends Gateway
             $oldId !== $newId
             && $resource = $this->findResource($oldId, $source, false)
         ) {
-            $tableObjects = [];
             // Do this as a transaction to prevent odd behavior:
             $connection = $this->getAdapter()->getDriver()->getConnection();
             $connection->beginTransaction();
             // Does the new ID already exist?
+            $deduplicate = false;
             if ($newResource = $this->findResource($newId, $source, false)) {
                 // Special case: merge new ID and old ID:
-                foreach (['comments', 'userresource', 'resourcetags'] as $table) {
-                    $tableObjects[$table] = $this->getDbTable($table);
-                    $tableObjects[$table]->update(
-                        ['resource_id' => $newResource->id],
-                        ['resource_id' => $resource->id]
-                    );
+                $resourceService = $this->getDbService(\VuFind\Db\Service\ResourceService::class);
+                $entitiesToUpdate = [
+                    \VuFind\Db\Entity\Comments::class,
+                    \VuFind\Db\Entity\UserResource::class,
+                    \VuFind\Db\Entity\ResourceTags::class,
+                ];
+                foreach ($entitiesToUpdate as $entityToUpdate) {
+                    $resourceService->updateResource($entityToUpdate, $newResource->id, $resource->id);
                 }
                 $resource->delete();
+                $deduplicate = true;
             } else {
                 // Default case: just update the record ID:
                 $resource->record_id = $newId;
@@ -265,11 +272,11 @@ class Resource extends Gateway
 
             // Deduplicate rows where necessary (this can be safely done outside
             // of the transaction):
-            if (isset($tableObjects['resourcetags'])) {
-                $tableObjects['resourcetags']->deduplicate();
-            }
-            if (isset($tableObjects['userresource'])) {
-                $tableObjects['userresource']->deduplicate();
+            if ($deduplicate) {
+                $tagService = $this->getDbService(\VuFind\Db\Service\TagService::class);
+                $tagService->deduplicateResourceLinks();
+                $userResourceService = $this->getDbService(\VuFind\Db\Service\UserResourceService::class);
+                $userResourceService->deduplicate();
             }
         }
     }

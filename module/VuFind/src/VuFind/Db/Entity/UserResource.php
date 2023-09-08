@@ -122,4 +122,27 @@ class UserResource implements EntityInterface
      * })
      */
     protected $list;
+
+    /**
+     * Notes setter
+     *
+     * @param string $notes Notes
+     *
+     * @return UserResource
+     */
+    public function setNotes(string $notes): UserResource
+    {
+        $this->notes = $notes;
+        return $this;
+    }
+
+    /**
+     * Notes getter
+     *
+     * @return string
+     */
+    public function getNotes(): string
+    {
+        return $this->notes;
+    }
 }
