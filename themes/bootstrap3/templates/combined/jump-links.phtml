@@ -1,0 +1,10 @@
+<div class="combined-jump-links">
+  <span>Jump to Results:</span>
+  <ul>
+    <?php foreach ($combinedResults as $section) : ?>
+      <li>
+        <a href="#<?= $section['domId'] ?>"><?= $section['label'] ?></a>
+      </li>
+    <?php endforeach; ?>
+  </ul>
+</div>

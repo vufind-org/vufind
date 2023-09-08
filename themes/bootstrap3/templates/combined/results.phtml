@@ -60,6 +60,8 @@
       <?php endforeach; ?>
     </div>
   <?php endif; ?>
+  <?php // TODO check config file to enable ?>
+  <?=$this->context($this)->renderInContext('combined/jump-links.phtml', ['combinedResults' => $this->combinedResults])?>
   <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => ''])?>
   <?php
     $viewParams = [

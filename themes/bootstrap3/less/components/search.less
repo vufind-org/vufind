@@ -402,6 +402,19 @@ body.rtl {
   padding: 0;
 }
 
+.combined-jump-links ul {
+  display: inline;
+  list-style: none;
+  padding-left: 0;
+
+  li {
+    display: inline;
+    &:not(:first-child):before {
+      content: '\2013'; // n-dash
+    }
+  }
+}
+
 .combined-column {
   margin-left: 1rem;
   margin-right: 1rem;
