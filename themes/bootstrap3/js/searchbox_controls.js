@@ -61,6 +61,7 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
       _enabled = true;
       const keyboardLayout = new _KeyboardLayoutClass().get(layoutName);
       _keyboard.setOptions({layout: keyboardLayout.layout});
+      _showKeyboard();
     }
   }
 
@@ -82,6 +83,9 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
       if (
         _keyboard.options.theme.includes("show-keyboard") &&
         !event.target.className.includes("searchForm_lookfor") &&
+        !event.target.className.includes('keyboard-selection') &&
+        !event.target.parentNode.className.includes('keyboard-selection') &&
+        !event.target.parentNode.parentNode.className.includes('keyboard-selection') &&
         !event.target.className.includes("hg-button") &&
         !event.target.className.includes("hg-row") &&
         !event.target.className.includes("simple-keyboard") &&
@@ -107,6 +111,7 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
       layout = "none";
     }
     _updateKeyboardLayout(layout);
+    _hideKeyboard();
   }
 
   function _handleInputChange(input, triggerInputEvent = true) {
