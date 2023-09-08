@@ -455,6 +455,11 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             try {
                 $elements = $page->findAll('css', $selector);
                 if (!isset($elements[$index])) {
+                    // Assert so that this method can be the only check in a test
+                    // without it being marked as risky with the message
+                    // "This test did not perform any assertions". Also makes this
+                    // check count as an assertion in test statistics.
+                    $this->assertNull(null);
                     return;
                 }
             } catch (\Exception $e) {
