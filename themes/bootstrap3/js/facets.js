@@ -45,6 +45,7 @@ VuFind.register('facetList', function FacetList() {
   }
 
   function updateContent() {
+    $('#facet-info-result').html(VuFind.loading());
     getContent().then(html => {
       let htmlList = '';
       $(html).find('.full-facet-list').each(function itemEach() {
