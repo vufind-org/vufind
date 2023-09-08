@@ -31,16 +31,20 @@
         <a href="<?=$urlBase . '&amp;facetpage=1&amp;facetsort=' . urlencode($key) . '&amp;contains=' . urlencode($contains) ?>" class="btn btn-default js-facet-sort<?php if($this->sort == $key): ?> active<?php endif; ?>" data-sort="<?=$key ?>"><?=$this->translate($sort) ?></a>
       <?php endforeach; ?>
     </div>
+
+    <?php if (method_exists($this->results->getParams(), 'setFacetContains')): ?>
+      <label><?=$this->transEsc('Filter') ?></label>
+      <div class="btn-group">
+        <form>
+          <input class="ajax_param" data-name="contains" class="form-control" type="text" value="<?=htmlspecialchars($this->contains)?>">
+
+          <?php $ajaxParams = ['facet' => $this->facet, 'facetexclude' => $this->exclude, 'facetop' => $this->operator, 'facetpage' => $this->page, 'facetsort' => $this->sort, 'urlBase' => $urlBase, 'searchAction' => $searchAction, 'ajaxLightbox' => intval ($this->ajaxLightbox || $this->inLightbox)]; ?>
+          <input class="ajax_params" type="hidden" data-params="<?=$this->htmlSafeJsonEncode($ajaxParams)?>">
+        </form>
+      </div>
+    <?php endif; ?>
   </div>
 <?php endif; ?>
-
-<form>
-  <?php if (method_exists($this->results->getParams(), 'setFacetContains')): ?>
-    <input class="ajax_param" data-name="contains" placeholder="<?=$this->transEscAttr('Filter')?>" class="form-control" type="text" value="<?=htmlspecialchars($this->contains)?>">
-  <?php endif; ?>
-  <?php $ajaxParams = ['facet' => $this->facet, 'facetexclude' => $this->exclude, 'facetop' => $this->operator, 'facetpage' => $this->page, 'facetsort' => $this->sort, 'urlBase' => $urlBase, 'searchAction' => $searchAction, 'ajaxLightbox' => intval ($this->ajaxLightbox || $this->inLightbox)]; ?>
-  <input class="ajax_params" type="hidden" data-params="<?=$this->htmlSafeJsonEncode($ajaxParams)?>">
-</form>
 
 <?php $this->headScript()->appendFile('facets.js'); ?>
 
