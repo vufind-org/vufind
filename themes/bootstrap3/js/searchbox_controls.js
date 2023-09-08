@@ -20,7 +20,9 @@ VuFind.register("searchbox_controls", function SearchboxControls() {
     resetButton.addEventListener("click", function resetOnClick() {
       resetButton.classList.add("hidden");
       queryInput.setAttribute("value", "");
-      queryInput.focus();
+      // We need to blur before we focus to be sure the input change registers
+      // with the autocomplete control.
+      queryInput.blur().focus();
     });
   }
 
