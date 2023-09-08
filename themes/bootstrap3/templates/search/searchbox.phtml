@@ -1,6 +1,8 @@
 <?php
-    // Initialize from current search (if available) or defaults:
-    if ($results = ($this->results ?? $this->searchMemory()->getCurrentSearch())) {
+    // Initialize from current search (if available and not explicitly overridden) or defaults:
+    if (!isset($this->searchClassId)
+      && ($results = ($this->results ?? $this->searchMemory()->getCurrentSearch()))
+    ) {
       $params = $results->getParams();
       $this->searchClassId = $params->getSearchClassId();
       $hiddenFilters = $params->getHiddenFilters();
