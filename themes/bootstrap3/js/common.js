@@ -151,18 +151,16 @@ var VuFind = (function VuFind() {
       return name;
     }
 
-    var html = _icons[name];
-
     // Add additional attributes
     function addAttrs(_html, _attrs = {}) {
       var mod = String(_html);
       for (var attr in _attrs) {
         if (Object.prototype.hasOwnProperty.call(_attrs, attr)) {
-          var sliceStart = html.indexOf(" ");
+          var sliceStart = mod.indexOf(" ");
           var sliceEnd = sliceStart;
           var value = _attrs[attr];
           var regex = new RegExp(` ${attr}=(['"])([^\\1]+?)\\1`);
-          var existing = html.match(regex);
+          var existing = mod.match(regex);
           if (existing) {
             sliceStart = existing.index;
             sliceEnd = sliceStart + existing[0].length;
@@ -175,6 +173,8 @@ var VuFind = (function VuFind() {
       }
       return mod;
     }
+
+    var html = _icons[name];
 
     if (typeof attrs == "string") {
       return addAttrs(html, { class: attrs });

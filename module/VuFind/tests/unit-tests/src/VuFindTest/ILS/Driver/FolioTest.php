@@ -703,6 +703,22 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test the getProxyingUsers method.
+     *
+     * @return void
+     */
+    public function testGetProxyingUsers(): void
+    {
+        $this->createConnector('get-proxying-users');
+        $patron = [
+            'id' => 'fakeid',
+        ];
+        $result = $this->driver->getProxyingUsers($patron);
+        $expected = ['foo' => 'Lastname, Proxity P.'];
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
      * Get expected result of get-holding fixture (shared by multiple tests).
      *
      * @return array
