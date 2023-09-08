@@ -10,8 +10,8 @@
 <form class="form-inline" action="<?=$this->url('cart-processor')?>" method="post"  name="cartForm" data-lightbox-onsubmit="cartFormHandler">
   <input type="hidden" id="dropdown_value">
   <?php if (!$this->cart()->isEmpty()): ?>
-    <div class="cart-controls clearfix">
-      <div class="checkbox pull-left flip">
+    <div class="cart-controls">
+      <div class="checkbox">
         <label>
           <input type="checkbox" name="selectAll" class="checkbox-select-all">
           <?=$this->transEsc('select_page_cart')?>
