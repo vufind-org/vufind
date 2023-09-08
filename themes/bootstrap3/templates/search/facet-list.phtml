@@ -38,7 +38,7 @@
         <form>
           <input class="ajax_param" data-name="contains" class="form-control" type="text" value="<?=htmlspecialchars($this->contains)?>">
 
-          <?php $ajaxParams = ['facet' => $this->facet, 'facetexclude' => $this->exclude, 'facetop' => $this->operator, 'facetpage' => $this->page, 'facetsort' => $this->sort, 'urlBase' => $urlBase, 'searchAction' => $searchAction, 'ajaxLightbox' => intval ($this->ajaxLightbox || $this->inLightbox)]; ?>
+          <?php $ajaxParams = ['facet' => $this->facet, 'facetexclude' => $this->exclude, 'facetop' => $this->operator, 'facetpage' => $this->page, 'facetsort' => $this->sort, 'urlBase' => $urlBase, 'searchAction' => $searchAction, 'ajaxLightbox' => intval($this->ajaxLightbox || $this->inLightbox)]; ?>
           <input class="ajax_params" type="hidden" data-params="<?=$this->htmlSafeJsonEncode($ajaxParams)?>">
         </form>
       </div>

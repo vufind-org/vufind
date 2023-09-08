@@ -6,7 +6,7 @@ VuFind.register('facetList', function FacetList() {
   function overrideHref(selector, overrideParams = {}) {
     $(selector).each(function overrideHrefEach() {
       let dummyDomain = 'https://www.example.org'; // we need this since the URL class cannot parse relative URLs
-      let url = new URL(dummyDomain + VuFind.path + $(this).attr('href'));
+      let url = new URL(dummyDomain + $(this).attr('href'));
       Object.entries(overrideParams).forEach(([key, value]) => {
         url.searchParams.set(key, value);
       });
