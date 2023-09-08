@@ -55,9 +55,11 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
     $(".keyboard-selection-item[data-value='" + layoutName + "']").parent().addClass("active");
     window.Cookies.set("keyboard", layoutName);
     if (layoutName === "none") {
+      $("#keyboard-selection-button").removeClass("activated");
       _enabled = false;
       _hideKeyboard();
     } else {
+      $("#keyboard-selection-button").addClass("activated");
       _enabled = true;
       const keyboardLayout = new _KeyboardLayoutClass().get(layoutName);
       _keyboard.setOptions({layout: keyboardLayout.layout});

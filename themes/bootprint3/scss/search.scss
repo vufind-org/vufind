@@ -80,6 +80,12 @@
       }
     }
 
+    &:not(.open) {
+      .activated:not(:hover){
+        background: lighten($brand-primary, 35%);
+      }
+    }
+
     .btn-primary {
       height: 20px;
     }

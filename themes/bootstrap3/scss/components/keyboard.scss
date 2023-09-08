@@ -14,13 +14,18 @@
       padding: 3px 10px;
     }
   }
-}
 
-#keyboard-selection-button {
-  padding: 0 2px 0 4px !important;
+  #keyboard-selection-button {
+    padding: 0 2px 0 4px !important;
+    .icon {
+      margin: 0;
+    }
+  }
 
-  .icon {
-    margin: 0;
+  &:not(.open) {
+    .activated:not(:hover){
+      background: lighten($brand-primary, 55%);
+    }
   }
 }
 
