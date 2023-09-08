@@ -77,7 +77,7 @@
     <div class="searchForm-query input-group">
       <input id="searchForm_lookfor" class="searchForm_lookfor form-control search-query<?php if ($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete searcher:<?=$this->escapeHtmlAttr($this->searchClassId) ?><?=$this->searchbox()->autocompleteAutoSubmit($this->searchClassId) ? ' ac-auto-submit' : '' ?><?php endif ?>" type="search" name="lookfor" value="<?=$this->escapeHtmlAttr($this->lookfor)?>"<?php if ($placeholder): ?> placeholder="<?=$this->transEscAttr($placeholder) ?>"<?php endif ?> aria-label="<?=$this->transEscAttr('search_terms')?>">
       <div id="searchForm_controls">
-        <button id="searchForm-reset" class="searchForm-reset" type="button" tabindex="-1" aria-label="<?=$this->transEsc('searchform_reset_button')?>"><?=$this->icon('ui-reset-search');?></button>
+        <button id="searchForm-reset" class="searchForm-reset hidden" type="button" tabindex="-1" aria-label="<?=$this->transEsc('searchform_reset_button')?>"><?=$this->icon('ui-reset-search');?></button>
         <?php if (!empty($keyboardLayouts)): ?>
           <?php
           $this->headScript()->appendFile('vendor/js.cookie.js');
