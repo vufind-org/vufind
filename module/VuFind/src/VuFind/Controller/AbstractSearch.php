@@ -870,8 +870,10 @@ class AbstractSearch extends AbstractBase
         $facet = $this->params()->fromQuery('facet');
         $contains = $this->params()->fromQuery('contains', '');
         $page = (int)$this->params()->fromQuery('facetpage', 1);
+        // Has the request been sent in an AJAX context?
         $ajax = (int)$this->params()->fromQuery('ajax', 0);
-        $ajaxLightbox = (int)$this->params()->fromQuery('ajaxLightbox', null);
+        // Has the requesting view been rendered inside a lightbox?
+        $ajaxLightbox = (int)$this->params()->fromQuery('ajaxLightbox', 0);
         $urlBase = $this->params()->fromQuery('urlBase', '');
         $searchAction = $this->params()->fromQuery('searchAction', '');
         $options = $results->getOptions();
@@ -920,15 +922,8 @@ class AbstractSearch extends AbstractBase
             'searchAction' => $searchAction,
         ];
         $viewParams['delegateParams'] = $viewParams;
-
-        if ($ajax == 0) {
-            $view = $this->createViewModel($viewParams);
-            $view->setTemplate('search/facet-list');
-            return $view;
-        } else {
-            $view = $this->createViewModel($viewParams);
-            $view->setTemplate('search/facet-list-content');
-            return $view;
-        }
+        $view = $this->createViewModel($viewParams);
+        $view->setTemplate($ajax ? 'search/facet-list-content' : 'search/facet-list');
+        return $view;
     }
 }

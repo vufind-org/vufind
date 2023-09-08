@@ -38,7 +38,7 @@
   <?php if (method_exists($this->results->getParams(), 'setFacetContains')): ?>
     <input class="ajax_param" data-name="contains" placeholder="<?=$this->transEscAttr('Filter')?>" class="form-control" type="text" value="<?=htmlspecialchars($this->contains)?>">
   <?php endif; ?>
-  <?php $ajaxParams = ['facet' => $this->facet, 'facetexclude' => $this->exclude, 'facetop' => $this->operator, 'facetpage' => $this->page, 'facetsort' => $this->sort, 'urlBase' => $urlBase, 'searchAction' => $searchAction, 'ajaxLightbox' => $this->ajaxLightbox ? intval($this->ajaxLightbox) : intval($this->inLightbox)]; ?>
+  <?php $ajaxParams = ['facet' => $this->facet, 'facetexclude' => $this->exclude, 'facetop' => $this->operator, 'facetpage' => $this->page, 'facetsort' => $this->sort, 'urlBase' => $urlBase, 'searchAction' => $searchAction, 'ajaxLightbox' => intval ($this->ajaxLightbox || $this->inLightbox)]; ?>
   <input class="ajax_params" type="hidden" data-params="<?=$this->htmlSafeJsonEncode($ajaxParams)?>">
 </form>
 
@@ -48,11 +48,13 @@
   <?php foreach ($this->sortOptions as $key => $sort): ?>
     <?php $active = $this->sort == $key; ?>
     <div class="full-facet-list facet-group<?php if(!$active): ?> hidden<?php endif; ?>" id="facet-list-<?=$this->escapeHtmlAttr($key) ?>">
-      <!-- The content of this list will later be updated via AJAX, see facet-list-content.phtml -->
-      <?php $params = $this->delegateParams; ?>
-      <?php $params['urlBase'] = $urlBase; ?>
-      <?php $params['searchAction'] = $searchAction; ?>
-      <?php $params['inLightbox'] = $this->inLightbox; ?>
+      <?php
+        //The content of this list will later be updated via AJAX, see facet-list-content.phtml -->
+        $params = $this->delegateParams;
+        $params['urlBase'] = $urlBase;
+        $params['searchAction'] = $searchAction;
+        $params['inLightbox'] = $this->inLightbox;
+      ?>
       <?=$this->render('search/facet-list-content.phtml', $params) ?>
     </div>
   <?php endforeach; ?>
