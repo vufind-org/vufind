@@ -73,15 +73,37 @@ header .container.navbar { margin-bottom: 0; }
   }
 }
 
-.record-nav,
-.bulkActionButtons {
+.record-nav {
   .clearfix();
   margin: 1rem 0;
   padding: 0;
 }
-.bulk-checkbox,
+.bulkActionButtons,
+.action-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  align-items: center;
+}
+.bulkActionButtons {
+  margin-block: 1rem;
+}
+.bulk-checkbox {
+  padding-inline-end: 1rem;
+  /* wrap below */
+  order: 1;
+  flex-basis: 100%;
+}
 .bulkActionButtons label { display: inline-block; }
 .bulkActionButtons label input { margin-top: 2px; }
+
+@media (min-width: 1200px) {
+  .bulk-checkbox {
+    /* place inline */
+    order: unset;
+    flex-basis: auto;
+  }
+}
 
 .action-toolbar {
   display: inline-block;
