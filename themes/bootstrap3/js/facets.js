@@ -44,9 +44,9 @@ VuFind.register('facetList', function FacetList() {
     }));
   }
 
-  function updateContent() {
+  function updateContent(overrideParams = {}) {
     $('#facet-info-result').html(VuFind.loading());
-    getContent().then(html => {
+    getContent(overrideParams).then(html => {
       let htmlList = '';
       $(html).find('.full-facet-list').each(function itemEach() {
         htmlList += $(this).prop('outerHTML');
@@ -65,7 +65,7 @@ VuFind.register('facetList', function FacetList() {
     $('.ajax_param[data-name="contains"]').on('keyup', function onKeyupChangeFacetList() {
       clearTimeout(keyupCallbackTimeout);
       keyupCallbackTimeout = setTimeout(function onKeyupTimeout() {
-        updateContent();
+        updateContent({facetpage: 1});
       }, 500);
     });
   }
@@ -80,7 +80,7 @@ VuFind.register('facetList', function FacetList() {
     }
   }
 
-  return { setup: setup, getContent: getContent };
+  return { setup: setup, getContent: getContent, updateContent: updateContent };
 });
 
 function buildFacetNodes(facetName, data, currentPath, allowExclude, excludeTitle, showCounts, counter, locale)
@@ -413,17 +413,8 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
     var sortButtons = $('.js-facet-sort');
     function sortAjax(button) {
       var sort = $(button).data('sort');
-      var list = $('#facet-list-' + sort);
-      if (list.find('.js-facet-item').length === 0) {
-        list.find('.js-facet-next-page').html(VuFind.translate('loading_ellipsis'));
-        $.ajax(button.href + '&layout=lightbox')
-          .done(function facetSortTitleDone(data) {
-            list.prepend($('<span>' + data + '</span>').find('.js-facet-item'));
-            list.find('.js-facet-next-page').html(VuFind.translate('more_ellipsis'));
-          });
-      }
+      VuFind.facetList.updateContent({facetsort: sort});
       $('.full-facet-list').addClass('hidden');
-      list.removeClass('hidden');
       sortButtons.removeClass('active');
     }
     sortButtons.click(function facetSortButton() {
