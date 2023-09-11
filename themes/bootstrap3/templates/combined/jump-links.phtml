@@ -2,7 +2,7 @@
   <span><?=$this->translate('combined_jump_links_intro')?></span>
   <ul>
     <?php foreach ($combinedResults as $section) : ?>
-      <li>
+      <li class="<?= $section['domId'] ?>">
         <a href="#<?= $section['domId'] ?>"><?= $section['label'] ?></a>
       </li>
     <?php endforeach; ?>
