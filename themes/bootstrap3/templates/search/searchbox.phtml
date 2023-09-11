@@ -23,7 +23,7 @@
       $lastLimit = $this->searchMemory()->getLastLimit($this->searchClassId);
     }
 
-  // Load search actions and settings (if any):
+    // Load search actions and settings (if any):
     $handlers = $this->searchbox()->getHandlers(
         $this->searchClassId,
         $this->searchIndex ?? null
