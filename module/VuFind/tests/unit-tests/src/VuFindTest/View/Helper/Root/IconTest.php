@@ -168,7 +168,8 @@ class IconTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expected, trim($helper('foo', ['bar' => 'baz'])));
 
         // Add class to class
-        $expected = '<span class="icon&#x20;icon--font&#x20;fa&#x20;fa-foo&#x20;foo-bar" role="img" aria-hidden="true"></span>';
+        $expected = '<span class="icon&#x20;icon--font&#x20;fa&#x20;fa-foo&#x20;foo-bar" '
+            . 'role="img" aria-hidden="true"></span>';
         $this->assertEquals($expected, trim($helper('foo', ['class' => 'foo-bar'])));
 
         // Shortcut
