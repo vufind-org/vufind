@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Primo Central Controller
+ * Blended Search Controller
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -32,7 +32,7 @@ namespace VuFind\Controller;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
- * Primo Central Controller
+ * Blended Search Controller
  *
  * @category VuFind
  * @package  Controller
@@ -40,7 +40,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class PrimoController extends AbstractSearch
+class BlenderController extends AbstractSearch
 {
     /**
      * Constructor
@@ -49,8 +49,7 @@ class PrimoController extends AbstractSearch
      */
     public function __construct(ServiceLocatorInterface $sm)
     {
-        $this->accessPermission = 'access.PrimoModule';
-        $this->searchClassId = 'Primo';
+        $this->searchClassId = 'Blender';
         parent::__construct($sm);
     }
 
@@ -62,17 +61,7 @@ class PrimoController extends AbstractSearch
     protected function resultScrollerActive()
     {
         $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
-            ->get('Primo');
+            ->get('config');
         return $config->Record->next_prev_navigation ?? false;
-    }
-
-    /**
-     * Search action -- call standard results action
-     *
-     * @return mixed
-     */
-    public function searchAction()
-    {
-        return $this->resultsAction();
     }
 }

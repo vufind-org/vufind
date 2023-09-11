@@ -62,7 +62,6 @@ class Search2Controller extends AbstractSolrSearch
     {
         $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
             ->get('Search2');
-        return isset($config->Record->next_prev_navigation)
-            && $config->Record->next_prev_navigation;
+        return $config->Record->next_prev_navigation ?? false;
     }
 }

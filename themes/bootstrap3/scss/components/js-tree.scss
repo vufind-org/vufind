@@ -63,10 +63,6 @@
 }
 
 /* facet and tree text overflow  */
-.facet .text {
-  overflow: hidden;
-}
-
 .hierarchical-facet-anchor,
 .hierarchical-facet-anchor .text {
   width: calc(100% - 1.5em);
