@@ -75,6 +75,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
                 'bar' => 'Fugue:baz.png',
                 'bar-rtl' => 'Fugue:zab.png',
                 'ltronly' => 'Fugue:ltronly.png',
+                'quoted' => 'Fugue:"quoted".png',
                 'xyzzy' => 'FakeSprite:sprite',
                 'same' => 'Alias:foo',
                 'illegal' => 'Alias:criminal',
@@ -216,6 +217,20 @@ class IconTest extends \PHPUnit\Framework\TestCase
         $expected = '<img class="icon&#x20;icon--img" src="baz.png" aria-hidden="true"'
             . ' alt="">';
         $this->assertEquals($expected, $helper('bar'));
+    }
+
+    /**
+     * Test that we can generate an image-based icon where the icon contains a special character.
+     *
+     * @return void
+     */
+    public function testImageIconWithSpecialChars(): void
+    {
+        $plugins = ['imageLink' => $this->getMockImageLink('icons/"quoted".png')];
+        $helper = $this->getIconHelper(null, null, $plugins);
+        $expected = '<img class="icon&#x20;icon--img" src="&quot;quoted&quot;.png" aria-hidden="true"'
+            . ' alt="">';
+        $this->assertEquals($expected, $helper('quoted'));
     }
 
     /**
