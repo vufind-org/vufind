@@ -70,6 +70,9 @@ class IconTest extends \PHPUnit\Framework\TestCase
                     'template' => 'svg-sprite',
                     'src' => 'mysprites.svg',
                 ],
+                'Unicode' => [
+                    'template' => 'unicode',
+                ],
             ],
             'aliases' => [
                 'bar' => 'Fugue:baz.png',
@@ -83,6 +86,10 @@ class IconTest extends \PHPUnit\Framework\TestCase
                 'foolish' => 'Alias:foolish',
                 'classy' => 'FontAwesome:spinner:extraClass',
                 'extraClassy' => 'Fugue:zzz.png:weird:class foo',
+                'smile' => 'Unicode:1F600',
+                'wrySmile' => 'Unicode:1F600:wry',
+                'classyWrySmile' => 'Unicode:1F600:wry:classy smile',
+                'oddGlyph' => 'Unicode:c<de',
             ],
         ];
     }
@@ -175,6 +182,99 @@ class IconTest extends \PHPUnit\Framework\TestCase
 
         // Shortcut
         $this->assertEquals($expected, trim($helper('foo', 'foo-bar')));
+    }
+
+    /**
+     * Data provider for testUnicodeIcons
+     *
+     * @return array
+     */
+    public function unicodeIconProvider(): array
+    {
+        return [
+            [
+                '',
+                '',
+                '1F600',
+                'smile',
+                ''
+            ],
+            [
+                'wry',
+                '',
+                '1F600',
+                'wrySmile',
+                ''
+            ],
+            [
+                'super wry',
+                '',
+                '1F600',
+                'wrySmile',
+                'super'
+            ],
+            [
+                'super wry',
+                '',
+                '1F600',
+                'wrySmile',
+                ['class' => 'super'],
+            ],
+            [
+                'wry',
+                'foo="b&#x2B;r"',
+                '1F600',
+                'wrySmile',
+                [
+                    'foo' => 'b+r',
+                ],
+            ],
+            [
+                'super wry',
+                'foo="b&#x2B;r"',
+                '1F600',
+                'wrySmile',
+                [
+                    'class' => 'super',
+                    'foo' => 'b+r',
+                ],
+            ],
+            [
+                '',
+                '',
+                'c&lt;de',
+                'oddGlyph',
+                '',
+            ],
+        ];
+    }
+
+    /**
+     * Test that we can generate a Unicode icons.
+     *
+     * @param string       $expectedClasses Expected extra classes
+     * @param string       $expectedAttrs   Expected extra attributes
+     * @param string       $expectedIcon    Expected icon code
+     * @param string       $icon            Icon alias
+     * @param string|array $attrs           Classes or attributes
+     *
+     * @dataProvider unicodeIconProvider
+     *
+     * @return void
+     */
+    public function testUnicodeIcons(
+        string $expectedClasses,
+        string $expectedAttrs,
+        string $expectedIcon,
+        string $icon,
+        string|array $attrs
+    ): void {
+        $helper = $this->getIconHelper();
+        $expected = '<span class="icon icon--font icon--unicode'
+            . ($expectedClasses ? " $expectedClasses" : '') . '"'
+            . ($expectedAttrs ? " $expectedAttrs" : '')
+            . ' role="img" aria-hidden="true">&#x' . $expectedIcon . ';</span>';
+        $this->assertEquals($expected, trim($helper($icon, $attrs)));
     }
 
     /**
