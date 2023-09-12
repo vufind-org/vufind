@@ -643,7 +643,7 @@ class Form extends \Laminas\Form\Form implements
             'label' => $this->translate('feedback_email'),
             'group' => '__sender__',
             'settings' => [
-                'size' => 254,
+                'maxlength' => 254,
             ],
         ];
         if ($formConfig['senderInfoRequired'] ?? false) {
