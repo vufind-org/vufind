@@ -712,8 +712,8 @@ class UpgradeController extends AbstractBase
                     $this->flashMessenger()
                         ->addMessage("User {$user} not found.", 'error');
                 } else {
-                    $table = $this->getTable('ResourceTags');
-                    $table->assignAnonymousTags($user->id);
+                    $tagService = $this->getDbService(\VuFind\Db\Service\TagService::class);
+                    $tagService->assignAnonymousTags($user->id);
                     $this->session->warnings->append(
                         "Assigned all anonymous tags to {$user->username}."
                     );

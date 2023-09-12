@@ -176,10 +176,8 @@ class Resource extends Gateway implements ServiceAwareInterface
         $offset = 0,
         $limit = null
     ) {
-        // Set up base query:
-        $obj = & $this;
         return $this->select(
-            function ($s) use ($user, $list, $tags, $sort, $offset, $limit, $obj) {
+            function ($s) use ($user, $list, $tags, $sort, $offset, $limit) {
                 $s->columns(
                     [
                         new Expression(
@@ -210,14 +208,12 @@ class Resource extends Gateway implements ServiceAwareInterface
 
                 // Adjust for tags if necessary:
                 if (!empty($tags)) {
-                    $linkingTable = $obj->getDbTable('ResourceTags');
+                    $linkingTable = $this->getDbService(\VuFind\Db\Service\TagService::class);
                     foreach ($tags as $tag) {
                         $matches = $linkingTable
-                            ->getResourcesForTag($tag, $user, $list)->toArray();
-                        $getId = function ($i) {
-                            return $i['resource_id'];
-                        };
-                        $s->where->in('resource.id', array_map($getId, $matches));
+                            ->getResourceIDsForTag($tag, $user, $list);
+
+                        $s->where->in('resource.id', $matches);
                     }
                 }
 

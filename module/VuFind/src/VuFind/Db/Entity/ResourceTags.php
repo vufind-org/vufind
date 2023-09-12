@@ -29,6 +29,7 @@
 
 namespace VuFind\Db\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -123,4 +124,129 @@ class ResourceTags implements EntityInterface
      * })
      */
     protected $user;
+
+    /**
+     * Id getter
+     *
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * Resource setter.
+     *
+     * @param ?Resource $resource Resource
+     *
+     * @return ResourceTags
+     */
+    public function setResource(?Resource $resource): ResourceTags
+    {
+        $this->resource = $resource;
+        return $this;
+    }
+
+    /**
+     * Resource getter
+     *
+     * @return Resource
+     */
+    public function getResource(): Resource
+    {
+        return $this->resource;
+    }
+
+    /**
+     * Tags setter.
+     *
+     * @param ?Tags $tag Tag object
+     *
+     * @return ResourceTags
+     */
+    public function setTag(?Tags $tag): ResourceTags
+    {
+        $this->tag = $tag;
+        return $this;
+    }
+
+    /**
+     * Tag getter
+     *
+     * @return Tags
+     */
+    public function getTag(): Tags
+    {
+        return $this->tag;
+    }
+
+    /**
+     * List setter.
+     *
+     * @param ?UserList $list UserList object
+     *
+     * @return ResourceTags
+     */
+    public function setList(?UserList $list): ResourceTags
+    {
+        $this->list = $list;
+        return $this;
+    }
+
+    /**
+     * List getter
+     *
+     * @return UserList
+     */
+    public function getList(): UserList
+    {
+        return $this->list;
+    }
+
+    /**
+     * User setter.
+     *
+     * @param ?User $user User object
+     *
+     * @return ResourceTags
+     */
+    public function setUser(?User $user): ResourceTags
+    {
+        $this->user = $user;
+        return $this;
+    }
+
+    /**
+     * User getter
+     *
+     * @return User
+     */
+    public function getUser(): User
+    {
+        return $this->user;
+    }
+
+    /**
+     * Posted setter.
+     *
+     * @param ?Datetime $dateTime Posted date
+     *
+     * @return ResourceTags
+     */
+    public function setPosted(?DateTime $dateTime): ResourceTags
+    {
+        $this->posted = $dateTime;
+        return $this;
+    }
+
+    /**
+     * Posted getter
+     *
+     * @return Datetime
+     */
+    public function getPosted(): ?Datetime
+    {
+        return $this->posted;
+    }
 }

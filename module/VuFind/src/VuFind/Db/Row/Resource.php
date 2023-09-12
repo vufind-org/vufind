@@ -53,9 +53,12 @@ use function strlen;
  * @property string  $source
  * @property ?string $extra_metadata
  */
-class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface
+class Resource extends RowGateway implements
+    \VuFind\Db\Table\DbTableAwareInterface,
+    \VuFind\Db\Service\ServiceAwareInterface
 {
     use \VuFind\Db\Table\DbTableAwareTrait;
+    use \VuFind\Db\Service\ServiceAwareTrait;
 
     /**
      * Constructor
@@ -78,7 +81,7 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
      */
     public function deleteTags($user, $list_id = null)
     {
-        $unlinker = $this->getDbTable('ResourceTags');
+        $unlinker = $this->getDbService(\VuFind\Db\Service\TagService::class);
         $unlinker->destroyResourceLinks($this->id, $user->id, $list_id);
     }
 
@@ -129,7 +132,7 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
                 $tagIds[] = $tag->id;
             }
             if (!empty($tagIds)) {
-                $linker = $this->getDbTable('ResourceTags');
+                $linker = $this->getDbService(\VuFind\Db\Service\TagService::class);
                 $linker->destroyResourceLinks(
                     $this->id,
                     $user->id,

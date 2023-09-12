@@ -71,7 +71,8 @@ class ListItemsFactory implements FactoryInterface
         return new $requestedName(
             $container->get(\VuFind\Db\Table\PluginManager::class)->get('UserList'),
             $container
-                ->get(\VuFind\Db\Table\PluginManager::class)->get('ResourceTags'),
+                ->get(\VuFind\Db\Service\PluginManager::class)
+                ->get(\VuFind\Db\Service\TagService::class),
             $container->get('ControllerPluginManager')->get('url'),
             $container->get(\VuFind\Search\Results\PluginManager::class)
         );

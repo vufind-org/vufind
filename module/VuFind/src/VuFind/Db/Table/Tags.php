@@ -47,8 +47,10 @@ use function is_callable;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Tags extends Gateway
+class Tags extends Gateway implements \VuFind\Db\Service\ServiceAwareInterface
 {
+    use \VuFind\Db\Service\ServiceAwareTrait;
+
     /**
      * Are tags case sensitive?
      *
@@ -517,26 +519,6 @@ class Tags extends Gateway
     }
 
     /**
-     * Delete a group of tags.
-     *
-     * @param array $ids IDs of tags to delete.
-     *
-     * @return void
-     */
-    public function deleteByIdArray($ids)
-    {
-        // Do nothing if we have no IDs to delete!
-        if (empty($ids)) {
-            return;
-        }
-
-        $callback = function ($select) use ($ids) {
-            $select->where->in('id', $ids);
-        };
-        $this->delete($callback);
-    }
-
-    /**
      * Get a list of duplicate tags (this should never happen, but past bugs
      * and the introduction of case-insensitive tags have introduced problems).
      *
@@ -587,11 +569,12 @@ class Tags extends Gateway
             return;
         }
         $table = $this->getDbTable('ResourceTags');
+        $tagService = $this->getDbService(\VuFind\Db\Service\TagService::class);
         $result = $table->select(['tag_id' => $source]);
 
         foreach ($result as $current) {
             // Move the link to the target ID:
-            $table->createLink(
+            $tagService->createLink(
                 $current->resource_id,
                 $target,
                 $current->user_id,

@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2021.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -31,11 +31,18 @@ namespace VuFind\Db\Service;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use Laminas\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\PluginManager as EntityPluginManager;
+use VuFind\Db\Entity\Resource;
 use VuFind\Db\Entity\ResourceTags;
+use VuFind\Db\Entity\Tags;
+use VuFind\Db\Entity\User;
+use VuFind\Db\Entity\UserList;
+use VuFind\Log\LoggerAwareTrait;
 
 use function count;
 use function in_array;
+use function is_object;
 
 /**
  * Database service for tags.
@@ -46,8 +53,10 @@ use function in_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class TagService extends AbstractService
+class TagService extends AbstractService implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     /**
      * Are tags case sensitive?
      *
@@ -69,6 +78,352 @@ class TagService extends AbstractService
     ) {
         parent::__construct($entityManager, $entityPluginManager);
         $this->caseSensitive = $caseSensitive;
+    }
+
+    /**
+     * Create a resourceTags entity object.
+     *
+     * @return ResourceTags
+     */
+    public function createResourceTags(): ResourceTags
+    {
+        $class = $this->getEntityClass(ResourceTags::class);
+        return new $class();
+    }
+
+    /**
+     * Look up a row for the specified resource.
+     *
+     * @param int|Resource $resource ID of resource to link up
+     * @param int|Tags     $tag      ID of tag to link up
+     * @param int|User     $user     ID of user creating link (optional but recommended)
+     * @param int|UserList $list     ID of list to link up (optional)
+     * @param \DateTime    $posted   Posted date (optional -- omit for current)
+     *
+     * @return void
+     */
+    public function createLink(
+        $resource,
+        $tag,
+        $user = null,
+        $list = null,
+        $posted = null
+    ) {
+        $resource = is_object($resource) ? $resource : $this->entityManager->getReference(Resource::class, $resource);
+        $tag = is_object($tag) ? $tag : $this->entityManager->getReference(Tags::class, $tag);
+
+        $dql = ' DELETE rt FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt ';
+
+        $dqlWhere = [];
+        $dqlWhere[] = 'rt.resource = :resource ';
+        $dqlWhere[] = 'rt.tag = :tag ';
+        $parameters = compact('resource', 'tag');
+
+        if (null !== $list) {
+            $list = is_object($list) ? $list : $this->entityManager->getReference(UserList::class, $list);
+            $dql .= 'rt.list = :list ';
+            $parameters['list'] = $list;
+        } else {
+            $dql .= 'rt.list IS NULL ';
+        }
+
+        if (null !== $user) {
+            $user = is_object($user) ? $user : $this->entityManager->getReference(User::class, $user);
+            $dql .= 'rt.user = :user';
+            $parameters['user'] = $user;
+        } else {
+            $dql .= 'rt.user IS NULL ';
+        }
+        $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
+
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $result = current($query->getResult());
+
+        // Only create row if it does not already exist:
+        if (empty($result)) {
+            $row = $this->createResourceTags()
+                ->setResource($resource)
+                ->setTag($tag);
+            if (null !== $list) {
+                $row->setList($list);
+            }
+            if (null !== $user) {
+                $row->setUser($user);
+            }
+            if (null !== $posted) {
+                $row->setPosted($posted);
+            }
+            try {
+                $this->persistEntity($row);
+            } catch (\Exception $e) {
+                $this->logError('Could not save resource tag: ' . $e->getMessage());
+                return false;
+            }
+        }
+    }
+
+    /**
+     * Check whether or not the specified tags are present in the table.
+     *
+     * @param array $ids IDs to check.
+     *
+     * @return array     Associative array with two keys: present and missing
+     */
+    public function checkForTags($ids)
+    {
+        // Set up return arrays:
+        $retVal = ['present' => [], 'missing' => []];
+
+        // Look up IDs in the table:
+        $dql = 'SELECT IDENTITY(rt.tag) FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
+            . 'WHERE rt.tag IN (:ids)';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters(compact('ids'));
+        $results = $query->getSingleColumnResult();
+
+        // Record all IDs that are present:
+        $retVal['present'] = array_unique($results);
+
+        // Detect missing IDs:
+        $retVal['missing'] = array_diff($ids, $retVal['present']);
+
+        // Send back the results:
+        return $retVal;
+    }
+
+    /**
+     * Get resources associated with a particular tag.
+     *
+     * @param string $tag  Tag to match
+     * @param string $user ID of user owning favorite list
+     * @param string $list ID of list to retrieve (null for all favorites)
+     *
+     * @return array
+     */
+    public function getResourceIDsForTag($tag, $user, $list = null)
+    {
+        $dql = 'SELECT DISTINCT(rt.resource) AS resource_id '
+            . 'FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
+            . 'JOIN rt.tag t '
+            . 'WHERE ' . ($this->caseSensitive ? 't.tag = :tag' : 'LOWER(t.tag) = LOWER(:tag) ')
+            . 'AND rt.user = :user ';
+
+        $user = is_object($user) ? $user : $this->entityManager->getReference(User::class, $user);
+        $parameters = compact('tag', 'user');
+        if (null !== $list) {
+            $list = is_object($list) ? $list : $this->entityManager->getReference(UserList::class, $list);
+            $dql .= 'AND rt.list = :list';
+            $parameters['list'] = $list;
+        }
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $result =  $query->getSingleColumnResult();
+        return $result;
+    }
+
+    /**
+     * Get IDs of lists associated with a particular tag.
+     *
+     * @param string|array      $tag        Tag to match
+     * @param null|string|array $listId     List ID to retrieve (null for all)
+     * @param bool              $publicOnly Whether to return only public lists
+     * @param bool              $andTags    Use AND operator when filtering by tag.
+     *
+     * @return array
+     */
+    public function getListsForTag(
+        $tag,
+        $listId = null,
+        $publicOnly = true,
+        $andTags = true
+    ) {
+        $tag = (array)$tag;
+        $listId = $listId ? (array)$listId : null;
+        $dql = 'SELECT IDENTITY(rt.list) as list '
+            . 'FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
+            . 'JOIN rt.tag t '
+            . 'JOIN rt.list l '
+            // Discard tags assigned to a user resource:
+            . 'WHERE rt.resource IS NULL '
+            // Restrict to tags by list owner:
+            . 'AND rt.user = l.user ';
+        $parameters = [];
+        if (null !== $listId) {
+            $dql .= 'AND rt.list IN (:listId) ';
+            $parameters['listId'] = $listId;
+        }
+        if ($publicOnly) {
+            $dql .= 'AND l.public = 1 ';
+        }
+        if ($tag) {
+            if ($this->caseSensitive) {
+                $dql .= 'AND t.tag IN (:tag) ';
+                $parameters['tag'] = $tag;
+            } else {
+                $tagClauses = [];
+                foreach ($tag as $i => $currentTag) {
+                    $tagPlaceholder = 'tag' . $i;
+                    $tagClauses[] = 'LOWER(t.tag) = LOWER(:' . $tagPlaceholder . ')';
+                    $parameters[$tagPlaceholder] = $currentTag;
+                }
+                $dql .= 'AND (' . implode(' OR ', $tagClauses) . ')';
+            }
+        }
+        $dql .= ' GROUP BY rt.list ';
+        if ($tag && $andTags) {
+            // If we are ANDing the tags together, only pick lists that match ALL tags:
+            $dql .= 'HAVING COUNT(DISTINCT(rt.tag)) = :cnt ';
+            $parameters['cnt'] = count(array_unique($tag));
+        }
+        $dql .= 'ORDER BY rt.list';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $result = $query->getSingleColumnResult();
+        return $result;
+    }
+
+    /**
+     * Unlink rows for the specified resource.
+     *
+     * @param string|array|null $resource ID (or array of IDs) of resource(s) to
+     * unlink (null for ALL matching resources)
+     * @param string|User       $user     ID of user removing links
+     * @param mixed             $list     ID of list to unlink (null for ALL matching
+     * tags, 'none' for tags not in a list, true for tags only found in a list)
+     * @param string|array|null $tag      ID or array of IDs of tag(s) to unlink (null
+     * for ALL matching tags)
+     *
+     * @return void
+     */
+    public function destroyResourceLinks($resource, $user, $list = null, $tag = null)
+    {
+        $dql = 'SELECT rt FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt ';
+
+        $dqlWhere = ['rt.user = :user '];
+        $parameters = ['user' => $user];
+        if (null !== $resource) {
+            $dqlWhere[] = 'rt.resource IN (:resource) ';
+            $parameters['resource'] = (array)$resource;
+        }
+        if (null !== $list) {
+            if (true === $list) {
+                // special case -- if $list is set to boolean true, we
+                // want to only delete tags that are associated with lists.
+                $dqlWhere[] = 'rt.list IS NOT NULL ';
+            } elseif ('none' === $list) {
+                // special case -- if $list is set to the string "none", we
+                // want to delete tags that are not associated with lists.
+                $dqlWhere[] = 'rt.list IS NULL ';
+            } else {
+                $dqlWhere[] = 'rt.list = :list';
+                $parameters['list'] = $list;
+            }
+        }
+        if (null !== $tag) {
+            $dqlWhere[] = 'rt.tag IN (:tag) ';
+            $parameters['tag'] = (array)$tag;
+        }
+        $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $result = $query->getResult();
+        $this->processDestroyLinks($result);
+    }
+
+    /**
+     * Unlink rows for the specified user list.
+     *
+     * @param int|UserList $list ID of list to unlink
+     * @param int|User     $user ID of user removing links
+     * @param string|array $tag  ID or array of IDs of tag(s) to unlink (null
+     *                           for ALL matching tags)
+     *
+     * @return void
+     */
+    public function destroyListLinks($list, $user, $tag = null)
+    {
+        $dql = 'SELECT rt FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
+            . 'WHERE rt.user = :user AND rt.resource IS NULL AND rt.list = :list ';
+        $parameters = compact('user', 'list');
+        if (null !== $tag) {
+            $dqlWhere[] = 'AND rt.tag IN (:tag) ';
+            $parameters['tag'] = (array)$tag;
+        }
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $result = $query->getResult();
+        $this->processDestroyLinks($result);
+    }
+
+    /**
+     * Process link rows marked to be destroyed.
+     *
+     * @param array $potentialOrphans List of resource tags being destroyed.
+     *
+     * @return void
+     */
+    protected function processDestroyLinks($potentialOrphans)
+    {
+        if (count($potentialOrphans) > 0) {
+            $ids = [];
+            // Now delete the unwanted rows:
+            foreach ($potentialOrphans as $current) {
+                $ids[] = $current->getTag()->getId();
+                $this->entityManager->remove($current);
+            }
+            try {
+                $this->entityManager->flush();
+            } catch (\Exception $e) {
+                $this->logError('Could not delete resourceTags: ' . $e->getMessage());
+                throw $e;
+            }
+
+            // Check for orphans:
+            $checkResults = $this->checkForTags(array_unique($ids));
+            if (count($checkResults['missing']) > 0) {
+                $this->deleteByIdArray($checkResults['missing']);
+            }
+        }
+    }
+
+    /**
+     * Delete a group of entity objects.
+     *
+     * @param array $ids Tags to delete.
+     *
+     * @return void
+     */
+    public function deleteByIdArray($ids)
+    {
+        // Do nothing if we have no IDs to delete!
+        if (empty($ids)) {
+            return;
+        }
+        $dql = 'DELETE FROM ' . $this->getEntityClass(Tags::class) . ' t '
+            . 'WHERE t.id in (:ids)';
+
+        $parameters = compact('ids');
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $query->execute();
+    }
+
+    /**
+     * Assign anonymous tags to the specified user ID.
+     *
+     * @param int|User $id User ID to own anonymous tags.
+     *
+     * @return void
+     */
+    public function assignAnonymousTags($id)
+    {
+        $dql = 'UPDATE ' . $this->getEntityClass(ResourceTags::class) . ' rt '
+            . 'SET rt.user = :id WHERE rt.user is NULL';
+        $parameters = compact('id');
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $query->execute();
     }
 
     /**
@@ -233,7 +588,7 @@ class TagService extends AbstractService
         $limit = 20
     ): Paginator {
         $tag = $this->caseSensitive ? 't.tag' : 'lower(t.tag)';
-        $dql = "SELECT rt.id, $tag AS tag, u.username AS username, r.title AS title,"
+        $dql = 'SELECT rt.id, $tag AS tag, u.username AS username, r.title AS title,'
             . ' t.id AS tag_id, r.id AS resource_id, u.id AS user_id '
             . 'FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
             . 'LEFT JOIN rt.resource r '
