@@ -72,6 +72,11 @@ class AuthorControllerTest extends \VuFindTest\Integration\MinkTestCase
         );
     }
 
+    /**
+     * Data provider that offers various author controller paths for testing.
+     *
+     * @return array
+     */
     public function authorPathsProvider(): array
     {
         return [
