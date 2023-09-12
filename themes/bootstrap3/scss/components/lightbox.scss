@@ -1,9 +1,17 @@
 #modal { background-color: rgba(0,0,0,.2); }
 
 #modal .modal-dialog {
-  width: fit-content;
-  min-width: min(600px, 100%);
-  max-width: 1200px;
+  width: 100%;
+  margin-inline: auto;
+  padding-left: 14px;
+}
+@media (min-width: 768px) {
+  #modal .modal-dialog {
+    width: fit-content;
+    max-width: 1200px;
+    min-width: 600px;
+    padding: 0;
+  }
 }
 
 #modal .modal-content > .close {
