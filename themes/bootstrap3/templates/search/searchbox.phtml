@@ -3,24 +3,24 @@
     if ($results = ($this->results ?? $this->searchMemory()->getCurrentSearch())) {
       $params = $results->getParams();
       $this->searchClassId = $this->overrideSearchClassId ?? $params->getSearchClassId();
-      $options = $results->getOptions();
     } else {
+      $params = null;
       if (!isset($this->searchClassId)) {
           $config = $this->config()->get('config');
           $this->searchClassId = $this->overrideSearchClassId ?? $config->Site->defaultSearchBackend ?? 'Solr';
       }
-      $options = $this->searchOptions($this->searchClassId);
-      $params = null;
     }
     // Initialize from current search if eligible, defaults otherwise:
     if (isset($params) && $this->searchClassId === $params->getSearchClassId()) {
       $hiddenFilters = $params->getHiddenFilters();
       $lastSort = $params->getSort();
       $lastLimit = $params->getLimit();
+      $options = $params->getOptions();
     } else {
       $hiddenFilters = $this->searchTabs()->getHiddenFilters($this->searchClassId, true, $this->ignoreHiddenFiltersInRequest ?? false);
       $lastSort = $this->searchMemory()->getLastSort($this->searchClassId);
       $lastLimit = $this->searchMemory()->getLastLimit($this->searchClassId);
+      $options = $this->searchOptions($this->searchClassId);
     }
 
     // Load search actions and settings (if any):
