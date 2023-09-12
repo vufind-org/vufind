@@ -234,7 +234,7 @@ class Icon extends AbstractHelper
                     array_merge(
                         $this->config['sets'][$set] ?? [],
                         [
-                            'icon' => ($this->esc)($icon),
+                            'icon' => $icon,
                             'attrs' => $this->compileAttrs($attrs),
                             'extra' => $attrs,
                         ]

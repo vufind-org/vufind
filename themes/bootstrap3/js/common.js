@@ -1,9 +1,6 @@
 /*global Autocomplete, grecaptcha, isPhoneNumberValid */
 /*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
 
-// IE 9< console polyfill
-window.console = window.console || { log: function polyfillLog() {} };
-
 var VuFind = (function VuFind() {
   var defaultSearchBackend = null;
   var path = null;
