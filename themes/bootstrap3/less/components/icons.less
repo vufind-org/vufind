@@ -73,6 +73,10 @@ span.icon-link .icon-link__label,
     vertical-align: text-bottom;
 }
 
+.icon--unicode:before {
+    content: attr(data-icon);
+}
+
 .show--closed,
 .collapsed .show--open {
     display: none;
