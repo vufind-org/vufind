@@ -1,9 +1,6 @@
 /*global Autocomplete, grecaptcha, isPhoneNumberValid */
 /*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
 
-// IE 9< console polyfill
-window.console = window.console || { log: function polyfillLog() {} };
-
 var VuFind = (function VuFind() {
   var defaultSearchBackend = null;
   var path = null;
@@ -697,26 +694,4 @@ $(function commonDocReady() {
   if (url.indexOf('?print=') !== -1 || url.indexOf('&print=') !== -1) {
     $("link[media='print']").attr("media", "all");
   }
-});
-
-$(function searchFormResetHandler() {
-  const queryInput = $('#searchForm_lookfor');
-  const resetButton = $('#searchForm-reset');
-
-  let query = queryInput.val();
-  if (query !== '') {
-    resetButton.show();
-    queryInput.focus().val('').val(query);
-  }
-  queryInput.on('input', function onInput() {
-    if ($(this).val() === '') {
-      resetButton.hide();
-    } else {
-      resetButton.show();
-    }
-  });
-  resetButton.on('click', function onClick() {
-    queryInput.attr('value', '').focus();
-    resetButton.hide();
-  });
 });
