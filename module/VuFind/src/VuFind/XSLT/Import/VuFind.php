@@ -467,8 +467,9 @@ class VuFind
             $strippingRegex = [
                 '/.*\w\w\.$/',
                 '/.*\p{L}\p{L}\.$/',
-                '/.*\w\p{InCombiningDiacriticalMarks}?\w\p{InCombiningDiacriticalMarks}?\.$/u',
-                '/.*\p{Punct}\.$/u',
+                // The following regex is unsupported by PHP but retained for reference:
+                //'/.*\w\p{InCombiningDiacriticalMarks}?\w\p{InCombiningDiacriticalMarks}?\.$/u',
+                '/.*\p{P}\.$/u',
             ];
             foreach ($noStrippingRegex as $regex) {
                 if (preg_match($regex, $strToCheck)) {
