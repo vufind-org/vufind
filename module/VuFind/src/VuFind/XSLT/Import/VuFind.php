@@ -440,10 +440,10 @@ class VuFind
             if ($openBracketFirst && $closeBracketLast && $totalLefts === 1 && $totalRights === 1) {
                 // only square brackets are at beginning and end
                 $result = substr($result, 1, strlen($result) - 2);
-            } else if ($openBracketFirst && $totalRights === 0) {
+            } elseif ($openBracketFirst && $totalRights === 0) {
                 // starts with '[' but no ']'; remove open bracket
                 $result = substr($result, 1);
-            } else if ($closeBracketLast && $totalLefts === 0) {
+            } elseif ($closeBracketLast && $totalLefts === 0) {
                 // ends with ']' but no '['; remove close bracket
                 $result = substr($result, 0, strlen($result) - 1);
             }
