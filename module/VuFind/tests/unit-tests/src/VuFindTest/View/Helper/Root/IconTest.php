@@ -273,7 +273,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
         $expected = '<span class="icon&#x20;icon--font&#x20;icon--unicode'
             . ($expectedClasses ? "&#x20;$expectedClasses" : '') . '"'
             . ($expectedAttrs ? " $expectedAttrs" : '')
-            . ' role="img" aria-hidden="true">&#x' . $expectedIcon . ';</span>';
+            . ' role="img" aria-hidden="true" data-icon="&#x' . $expectedIcon . ';"></span>';
         $this->assertEquals($expected, trim($helper($icon, $attrs)));
     }
 
