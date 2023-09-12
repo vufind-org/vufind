@@ -1,22 +1,26 @@
 <?php
-    // Initialize from current search (if available) or defaults:
+    // Initialize from current search (if available and not explicitly overridden) or defaults:
     if ($results = ($this->results ?? $this->searchMemory()->getCurrentSearch())) {
       $params = $results->getParams();
-      $this->searchClassId = $params->getSearchClassId();
+      $this->searchClassId = $this->overrideSearchClassId ?? $params->getSearchClassId();
+    } else {
+      $params = null;
+      $this->searchClassId = $this->overrideSearchClassId
+        ?? $this->searchClassId
+        ?? $this->config()->get('config')->Site->defaultSearchBackend
+        ?? 'Solr';
+    }
+    // Initialize from current search if eligible, defaults otherwise:
+    if (isset($params) && $this->searchClassId === $params->getSearchClassId()) {
       $hiddenFilters = $params->getHiddenFilters();
       $lastSort = $params->getSort();
       $lastLimit = $params->getLimit();
-      $options = $results->getOptions();
+      $options = $params->getOptions();
     } else {
-      if (!isset($this->searchClassId)) {
-          $config = $this->config()->get('config');
-          $this->searchClassId = $config->Site->defaultSearchBackend ?? 'Solr';
-      }
-      $options = $this->searchOptions($this->searchClassId);
       $hiddenFilters = $this->searchTabs()->getHiddenFilters($this->searchClassId, true, $this->ignoreHiddenFiltersInRequest ?? false);
       $lastSort = $this->searchMemory()->getLastSort($this->searchClassId);
       $lastLimit = $this->searchMemory()->getLastLimit($this->searchClassId);
-      $params = null;
+      $options = $this->searchOptions($this->searchClassId);
     }
 
     // Load search actions and settings (if any):
