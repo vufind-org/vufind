@@ -61,7 +61,7 @@
     </div>
   <?php endif; ?>
   <?php if ($config['Layout']['jump_links'] ?? false): ?>
-    <?=$this->context($this)->renderInContext('combined/jump-links.phtml', ['combinedResults' => $this->combinedResults])?>
+    <?=$this->render('combined/jump-links.phtml', ['combinedResults' => $this->combinedResults])?>
   <?php endif; ?>
   <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => ''])?>
   <?php
