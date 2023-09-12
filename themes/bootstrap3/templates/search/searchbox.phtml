@@ -5,10 +5,10 @@
       $this->searchClassId = $this->overrideSearchClassId ?? $params->getSearchClassId();
     } else {
       $params = null;
-      if (!isset($this->searchClassId)) {
-          $config = $this->config()->get('config');
-          $this->searchClassId = $this->overrideSearchClassId ?? $config->Site->defaultSearchBackend ?? 'Solr';
-      }
+      $this->searchClassId = $this->overrideSearchClassId
+        ?? $this->searchClassId
+        ?? $this->config()->get('config')->Site->defaultSearchBackend
+        ?? 'Solr';
     }
     // Initialize from current search if eligible, defaults otherwise:
     if (isset($params) && $this->searchClassId === $params->getSearchClassId()) {
