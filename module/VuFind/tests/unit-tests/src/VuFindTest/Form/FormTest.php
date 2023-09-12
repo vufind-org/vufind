@@ -369,7 +369,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                     'label' => 'Sender Name',
                     'settings' => [
                         'maxlength' => 50, // from Form.php defaults
-                        'size' => 100 // from feedbackforms/test.yaml
+                        'size' => 100, // from feedbackforms/test.yaml
                     ],
                 ],
                 [
