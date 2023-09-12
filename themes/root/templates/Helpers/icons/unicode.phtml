@@ -1,5 +1,4 @@
 <?php
-    $this->headLink()->appendStylesheet($this->src);
     $className = trim('icon icon--font icon--unicode ' . ($this->extra['class'] ?? ''));
 ?>
 <span class="<?=$className?>"<?=$this->attrs ?> role="img" aria-hidden="true">&#x<?=$this->escapeHtml($this->icon)?>;</span>
