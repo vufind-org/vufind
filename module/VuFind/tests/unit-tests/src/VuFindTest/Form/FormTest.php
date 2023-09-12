@@ -163,14 +163,14 @@ class FormTest extends \PHPUnit\Framework\TestCase
                     'name' => 'name',
                     'group' => '__sender__',
                     'label' => 'feedback_name',
-                    'settings' => ['size' => 50],
+                    'settings' => ['maxlength' => 50],
                 ],
                 [
                     'type' => 'email',
                     'name' => 'email',
                     'group' => '__sender__',
                     'label' => 'feedback_email',
-                    'settings' => ['size' => 254],
+                    'settings' => ['maxlength' => 254],
                 ],
                 [
                     'type' => 'submit',
@@ -210,7 +210,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                 'name' => 'name',
                 'group' => '__sender__',
                 'label' => 'feedback_name',
-                'settings' => ['size' => 50],
+                'settings' => ['maxlength' => 50],
             ],
             [
                 'type' => 'email',
@@ -219,7 +219,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                 'name' => 'email',
                 'group' => '__sender__',
                 'label' => 'feedback_email',
-                'settings' => ['size' => 254],
+                'settings' => ['maxlength' => 254],
             ],
         ];
         $postParams = [
@@ -293,14 +293,14 @@ class FormTest extends \PHPUnit\Framework\TestCase
                     'name' => 'name',
                     'group' => '__sender__',
                     'label' => 'feedback_name',
-                    'settings' => ['size' => 50],
+                    'settings' => ['maxlength' => 50],
                 ],
                 [
                     'type' => 'email',
                     'name' => 'email',
                     'group' => '__sender__',
                     'label' => 'feedback_email',
-                    'settings' => ['size' => 254],
+                    'settings' => ['maxlength' => 254],
                 ],
                 [
                     'type' => 'submit',
@@ -319,21 +319,21 @@ class FormTest extends \PHPUnit\Framework\TestCase
                     'name' => 'name',
                     'group' => '__sender__',
                     'label' => 'Sender Name',
-                    'settings' => ['size' => 50],
+                    'settings' => ['maxlength' => 50],
                 ],
                 [
                     'type' => 'text',
                     'name' => 'phone',
                     'group' => '__sender__',
                     'label' => 'Phone Number',
-                    'settings' => ['size' => 50],
+                    'settings' => [],
                 ],
                 [
                     'type' => 'email',
                     'name' => 'email',
                     'group' => '__sender__',
                     'label' => 'feedback_email',
-                    'settings' => ['size' => 254],
+                    'settings' => ['maxlength' => 254],
                 ],
                 [
                     'type' => 'textarea',
@@ -367,14 +367,17 @@ class FormTest extends \PHPUnit\Framework\TestCase
                     'name' => 'name',
                     'group' => '__sender__',
                     'label' => 'Sender Name',
-                    'settings' => ['size' => 100],
+                    'settings' => [
+                        'maxlength' => 50, // from Form.php defaults
+                        'size' => 100 // from feedbackforms/test.yaml
+                    ],
                 ],
                 [
                     'type' => 'text',
                     'name' => 'phone',
                     'group' => '__sender__',
                     'label' => 'Phone Number',
-                    'settings' => ['size' => 50],
+                    'settings' => [],
                 ],
                 [
                     'type' => 'email',
@@ -382,7 +385,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                     'group' => '__sender__',
                     'label' => 'feedback_email',
                     'settings' => [
-                        'size' => 254,
+                        'maxlength' => 254,
                         'aria-label' => 'Test label',
                     ],
                 ],
@@ -872,14 +875,14 @@ class FormTest extends \PHPUnit\Framework\TestCase
                     'name' => 'name',
                     'group' => '__sender__',
                     'label' => 'Sender Name',
-                    'settings' => ['size' => 50],
+                    'settings' => ['maxlength' => 50],
                 ],
                 [
                     'type' => 'email',
                     'name' => 'email',
                     'group' => '__sender__',
                     'label' => 'feedback_email',
-                    'settings' => ['size' => 254],
+                    'settings' => ['maxlength' => 254],
                 ],
                 [
                     'type' => 'textarea',
@@ -895,7 +898,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                     'type' => 'text',
                     'name' => 'phone',
                     'label' => 'Phone Number',
-                    'settings' => ['size' => 50],
+                    'settings' => [],
                 ],
                 [
                     'type' => 'hidden',
@@ -937,14 +940,14 @@ class FormTest extends \PHPUnit\Framework\TestCase
                     'name' => 'name',
                     'group' => '__sender__',
                     'label' => 'Sender Name',
-                    'settings' => ['size' => 50],
+                    'settings' => ['maxlength' => 50],
                 ],
                 [
                     'type' => 'email',
                     'name' => 'email',
                     'group' => '__sender__',
                     'label' => 'feedback_email',
-                    'settings' => ['size' => 254],
+                    'settings' => ['maxlength' => 254],
                 ],
                 [
                     'type' => 'textarea',

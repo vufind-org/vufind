@@ -634,7 +634,7 @@ class Form extends \Laminas\Form\Form implements
             'label' => $this->translate('feedback_name'),
             'group' => '__sender__',
             'settings' => [
-                'size' => 50,
+                'maxlength' => 50,
             ],
         ];
         $senderEmail = [
@@ -714,14 +714,6 @@ class Form extends \Laminas\Form\Form implements
             } elseif ('email' === $element['name']) {
                 $element = array_replace_recursive($senderEmail, $element);
                 $senderEmail = null;
-            }
-
-            // Add default field size settings for fields that don't define them:
-            if (
-                in_array($elementType, ['text', 'url', 'email'])
-                && !isset($element['settings']['size'])
-            ) {
-                $element['settings']['size'] = 50;
             }
 
             if ($elementType == 'textarea') {
