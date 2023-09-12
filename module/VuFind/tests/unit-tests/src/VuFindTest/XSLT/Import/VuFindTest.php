@@ -344,6 +344,14 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
             'Latin accent stripping' => ['çèñüĂ', 'cenua'],
             'Punctuation stripping' => ['this:that:...!>!the other', 'this that the other'],
             'Japanese text' => ['日本語テキスト', '日本語テキスト'],
+            'Leading bracket' => ['[foo', 'foo'],
+            'Trailing bracket' => ['foo]', 'foo'],
+            'Outer brackets' => ['[foo]', 'foo'],
+            'Stacked outer brackets' => ['[[foo]]', 'foo'],
+            'Tons of brackets' => ['[]foo][[', 'foo'],
+            'Inner brackets' => ['foo[]foo', 'foo foo'],
+            'Trailing whitespace' => ['foo   ', 'foo'],
+            'Trailing punctuation' => ['foo /.', 'foo'],
         ];
     }
 

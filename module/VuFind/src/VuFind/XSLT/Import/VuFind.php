@@ -419,6 +419,89 @@ class VuFind
     }
 
     /**
+     * Remove single square bracket characters if they are the start and/or end
+     * chars (matched or unmatched) and are the only square bracket chars in the
+     * string.
+     *
+     * Ported from SolrMarc's DataUtil class.
+     *
+     * @param string $str Text string with possible enclosing brackets
+     *
+     * @return string     Processed string with the brackets removed.
+     */
+    public static function removeOuterBrackets(string $str): string
+    {
+        $result = trim($str);
+        if (strlen($result) > 0) {
+            $openBracketFirst = str_starts_with($result, '[');
+            $closeBracketLast = str_ends_with($result, ']');
+            $totalLefts = substr_count($result, '[');
+            $totalRights = substr_count($result, ']');
+            if ($openBracketFirst && $closeBracketLast && $totalLefts === 1 && $totalRights === 1) {
+                // only square brackets are at beginning and end
+                $result = substr($result, 1, strlen($result) - 2);
+            } else if ($openBracketFirst && $totalRights === 0) {
+                // starts with '[' but no ']'; remove open bracket
+                $result = substr($result, 1);
+            } else if ($closeBracketLast && $totalLefts === 0) {
+                // ends with ']' but no '['; remove close bracket
+                $result = substr($result, 0, strlen($result) - 1);
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Port of logic from SolrMarc's DataUtil::cleanData method.
+     *
+     * @param string $str String to process.
+     *
+     * @return string     Processed string.
+     */
+    public static function solrMarcStyleCleanData(string $str): string
+    {
+        $needsPeriodStripping = function ($strToCheck) {
+            $noStrippingRegex = [
+                '/.*[JS]r\.$/', // don't strip period off of Jr. or Sr.
+            ];
+            $strippingRegex = [
+                '/.*\w\w\.$/',
+                '/.*\p{L}\p{L}\.$',
+                '/.*\w\p{InCombiningDiacriticalMarks}?\w\p{InCombiningDiacriticalMarks}?\.$',
+                '/.*\p{Punct}\.$/',
+            ];
+            foreach ($noStrippingRegex as $regex) {
+                if (preg_match($regex, $strToCheck)) {
+                    return false;
+                }
+            }
+            foreach ($strippingRegex as $regex) {
+                if (preg_match($regex, $strToCheck)) {
+                    return true;
+                }
+            }
+            return false;
+        };
+
+        $current = $str;
+        do {
+            $previous = $current;
+            $current = trim($current);
+            $current = preg_replace('|\s*([,/;:])$|', '', $current);
+            if (str_ends_with($current, '.')) {
+                if ($needsPeriodStripping($current)) {
+                    $current = mb_substr($current, 0, mb_strlen($current, 'UTF-8') - 1, 'UTF-8');
+                }
+            }
+            $current = static::removeOuterBrackets($current);
+            if (strlen($current) === 0) {
+                return $current;
+            }
+        } while ($current !== $previous);
+        return $current;
+    }
+
+    /**
      * Perform text processing roughly equivalent to SolrMarc's titleSortLower
      * feature to allow consistent indexing into the title_sort field.
      *
@@ -429,7 +512,11 @@ class VuFind
     public static function titleSortLower(string $str): string
     {
         return mb_strtolower(
-            static::stripPunctuation(static::stripAccents($str)),
+            static::solrMarcStyleCleanData(
+                static::stripPunctuation(
+                    static::stripAccents($str)
+                )
+            ),
             'UTF-8'
         );
     }
