@@ -197,24 +197,24 @@ class IconTest extends \PHPUnit\Framework\TestCase
                 '',
                 '1F600',
                 'smile',
-                ''
+                '',
             ],
             [
                 'wry',
                 '',
                 '1F600',
                 'wrySmile',
-                ''
+                '',
             ],
             [
-                'super wry',
+                'super&#x20;wry',
                 '',
                 '1F600',
                 'wrySmile',
-                'super'
+                'super',
             ],
             [
-                'super wry',
+                'super&#x20;wry',
                 '',
                 '1F600',
                 'wrySmile',
@@ -230,7 +230,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
             [
-                'super wry',
+                'super&#x20;wry',
                 'foo="b&#x2B;r"',
                 '1F600',
                 'wrySmile',
@@ -270,8 +270,8 @@ class IconTest extends \PHPUnit\Framework\TestCase
         string|array $attrs
     ): void {
         $helper = $this->getIconHelper();
-        $expected = '<span class="icon icon--font icon--unicode'
-            . ($expectedClasses ? " $expectedClasses" : '') . '"'
+        $expected = '<span class="icon&#x20;icon--font&#x20;icon--unicode'
+            . ($expectedClasses ? "&#x20;$expectedClasses" : '') . '"'
             . ($expectedAttrs ? " $expectedAttrs" : '')
             . ' role="img" aria-hidden="true">&#x' . $expectedIcon . ';</span>';
         $this->assertEquals($expected, trim($helper($icon, $attrs)));
