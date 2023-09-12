@@ -10,13 +10,13 @@
 ?>
 <?php
     $countsJs = <<<JS
-      $(document).ready(function() {
-        let count = $recordTotal;
-        count = count.toLocaleString();
-        const span = $("<span class='record-total'>(" + count + ")</span>");
-        $('.combined-jump-links .combined_$searchClassId').append(span);
-      });
-      JS;
+        $(document).ready(function() {
+          let count = $recordTotal;
+          count = count.toLocaleString();
+          const span = $("<span class='record-total'>(" + count + ")</span>");
+          $('.combined-jump-links .combined_$searchClassId').append(span);
+        });
+        JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $countsJs, 'SET')?>
 <?php if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
