@@ -466,8 +466,8 @@ class VuFind
             ];
             $strippingRegex = [
                 '/.*\w\w\.$/',
-                '/.*\p{L}\p{L}\.$',
-                '/.*\w\p{InCombiningDiacriticalMarks}?\w\p{InCombiningDiacriticalMarks}?\.$',
+                '/.*\p{L}\p{L}\.$/',
+                '/.*\w\p{InCombiningDiacriticalMarks}?\w\p{InCombiningDiacriticalMarks}?\.$/',
                 '/.*\p{Punct}\.$/',
             ];
             foreach ($noStrippingRegex as $regex) {
