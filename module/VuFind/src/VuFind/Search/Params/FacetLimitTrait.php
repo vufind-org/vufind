@@ -31,6 +31,8 @@ namespace VuFind\Search\Params;
 
 use Laminas\Config\Config;
 
+use function in_array;
+
 /**
  * Trait to add facet limiting settings to a Params object.
  *

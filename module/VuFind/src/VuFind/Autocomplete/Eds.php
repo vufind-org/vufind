@@ -33,6 +33,8 @@ namespace VuFind\Autocomplete;
 
 use VuFindSearch\Service;
 
+use function is_array;
+
 /**
  * EDS Autocomplete Module
  *

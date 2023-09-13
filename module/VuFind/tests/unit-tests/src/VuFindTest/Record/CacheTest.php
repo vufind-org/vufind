@@ -33,6 +33,8 @@ namespace VuFindTest\Record;
 
 use VuFind\Record\Cache;
 
+use function in_array;
+
 /**
  * Record cache tests.
  *

@@ -36,6 +36,13 @@ use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
 
+use function array_key_exists;
+use function count;
+use function in_array;
+use function is_int;
+use function is_object;
+use function is_string;
+
 /**
  * FOLIO REST API driver
  *
@@ -409,7 +416,7 @@ class Folio extends AbstractAPI implements
         $response = $this->makeRequest('GET', '/instance-storage/instances', $query);
         $instances = json_decode($response->getBody());
         if (count($instances->instances ?? []) == 0) {
-            throw new ILSException("Item Not Found");
+            throw new ILSException('Item Not Found');
         }
         return $instances->instances[0];
     }
@@ -471,7 +478,7 @@ class Folio extends AbstractAPI implements
         $excludeLocs = (array)($this->config['Holds']['excludeHoldLocations'] ?? []);
 
         // Exclude checking by regex match
-        if (trim(strtolower($mode)) == "regex") {
+        if (trim(strtolower($mode)) == 'regex') {
             foreach ($excludeLocs as $pattern) {
                 $match = @preg_match($pattern, $locationName);
                 // Invalid regex, skip this pattern
@@ -1064,7 +1071,7 @@ class Folio extends AbstractAPI implements
         $profile = $this->getUserById($patron['id']);
         $expiration = isset($profile->expirationDate)
             ? $this->dateConverter->convertToDisplayDate(
-                "Y-m-d H:i",
+                'Y-m-d H:i',
                 $profile->expirationDate
             )
             : null;
@@ -1211,11 +1218,11 @@ class Folio extends AbstractAPI implements
                     $renewal = [
                         'success' => true,
                         'new_date' => $this->dateConverter->convertToDisplayDate(
-                            "Y-m-d H:i",
+                            'Y-m-d H:i',
                             $json->dueDate
                         ),
                         'new_time' => $this->dateConverter->convertToDisplayTime(
-                            "Y-m-d H:i",
+                            'Y-m-d H:i',
                             $json->dueDate
                         ),
                         'item_id' => $json->itemId,
@@ -1235,7 +1242,7 @@ class Folio extends AbstractAPI implements
                 );
                 $renewal = [
                     'success' => false,
-                    'sysMessage' => "Renewal Failed",
+                    'sysMessage' => 'Renewal Failed',
                 ];
             }
             $renewalResults['details'][$loanId] = $renewal;
@@ -1336,27 +1343,27 @@ class Folio extends AbstractAPI implements
             ) as $hold
         ) {
             $requestDate = $this->dateConverter->convertToDisplayDate(
-                "Y-m-d H:i",
+                'Y-m-d H:i',
                 $hold->requestDate
             );
             // Set expire date if it was included in the response
             $expireDate = isset($hold->requestExpirationDate)
                 ? $this->dateConverter->convertToDisplayDate(
-                    "Y-m-d H:i",
+                    'Y-m-d H:i',
                     $hold->requestExpirationDate
                 )
                 : null;
             // Set lastPickup Date if provided, format to j M Y
             $lastPickup = isset($hold->holdShelfExpirationDate)
                 ? $this->dateConverter->convertToDisplayDate(
-                    "Y-m-d H:i",
+                    'Y-m-d H:i',
                     $hold->holdShelfExpirationDate
                 )
                 : null;
             $currentHold = [
                 'type' => $hold->requestType,
                 'create' => $requestDate,
-                'expire' => $expireDate ?? "",
+                'expire' => $expireDate ?? '',
                 'id' => $this->getBibId(
                     $hold->instanceId,
                     $hold->holdingsRecordId,
@@ -1528,7 +1535,7 @@ class Folio extends AbstractAPI implements
                 $request_json->requesterId != $patron['id']
                 && ($request_json->proxyUserId ?? null) != $patron['id']
             ) {
-                throw new ILSException("Invalid Request");
+                throw new ILSException('Invalid Request');
             }
             // Change status to Closed and add cancellationID
             $request_json->status = 'Closed - Cancelled';
@@ -1790,7 +1797,7 @@ class Folio extends AbstractAPI implements
                 'status' => $fine->paymentStatus->name,
                 'type' => $fine->feeFineType,
                 'title' => $title,
-                'createdate' => date_format($date, "j M Y"),
+                'createdate' => date_format($date, 'j M Y'),
             ];
         }
         return $fines;
@@ -1828,19 +1835,21 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Get list of users for whom the provided patron is a proxy.
+     * Support method for getProxiedUsers() and getProxyingUsers() to load proxy user data.
      *
      * This requires the FOLIO user configured in Folio.ini to have the permission:
      * proxiesfor.collection.get
      *
-     * @param array $patron The patron array with username and password
+     * @param array  $patron       The patron array with username and password
+     * @param string $lookupField  Field to use for looking up matching users
+     * @param string $displayField Field in response to use for displaying user names
      *
      * @return array
      */
-    public function getProxiedUsers(array $patron): array
+    protected function loadProxyUserData(array $patron, string $lookupField, string $displayField): array
     {
         $query = [
-            'query' => '(proxyUserId=="' . $patron['id'] . '")',
+            'query' => '(' . $lookupField . '=="' . $patron['id'] . '")',
         ];
         $results = [];
         $proxies = $this->getPagedResults('proxiesFor', '/proxiesfor', $query);
@@ -1848,14 +1857,40 @@ class Folio extends AbstractAPI implements
             if (
                 $current->status ?? '' === 'Active'
                 && $current->requestForSponsor ?? '' === 'Yes'
-                && isset($current->userId)
+                && isset($current->$displayField)
             ) {
-                if ($proxy = $this->getUserById($current->userId)) {
+                if ($proxy = $this->getUserById($current->$displayField)) {
                     $results[$proxy->id] = $this->formatUserNameForProxyList($proxy);
                 }
             }
         }
         return $results;
+    }
+
+    /**
+     * Get list of users for whom the provided patron is a proxy.
+     *
+     * @param array $patron The patron array with username and password
+     *
+     * @return array
+     */
+    public function getProxiedUsers(array $patron): array
+    {
+        return $this->loadProxyUserData($patron, 'proxyUserId', 'userId');
+    }
+
+    /**
+     * Get list of users who act as proxies for the provided patron.
+     *
+     * @param array $patron The patron array with username and password
+     *
+     * @return array
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getProxyingUsers(array $patron): array
+    {
+        return $this->loadProxyUserData($patron, 'userId', 'proxyUserId');
     }
 
     /**

@@ -28,6 +28,28 @@
   padding-right: 1rem;
   list-style: none;
 }
+// Reset styling of hierarchical facets on the home page:
+.home-facet .facet-tree li {
+  line-height: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  border: 0;
+
+  .facet-tree__toggle-expanded {
+    line-height: inherit;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .facet {
+    padding: 0;
+    line-height: inherit;
+    .badge {
+      display: none;
+    }
+  }
+}
+
 @media (min-width: 768px) {
   .search-home-facets,
   .home-facet-container { display: flex; }
@@ -73,15 +95,37 @@ header .container.navbar { margin-bottom: 0; }
   }
 }
 
-.record-nav,
-.bulkActionButtons {
+.record-nav {
   .clearfix();
   margin: 1rem 0;
   padding: 0;
 }
-.bulk-checkbox,
+.bulkActionButtons,
+.action-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  align-items: center;
+}
+.bulkActionButtons {
+  margin-block: 1rem;
+}
+.bulk-checkbox {
+  padding-inline-end: 1rem;
+  /* wrap below */
+  order: 1;
+  flex-basis: 100%;
+}
 .bulkActionButtons label { display: inline-block; }
 .bulkActionButtons label input { margin-top: 2px; }
+
+@media (min-width: 1200px) {
+  .bulk-checkbox {
+    /* place inline */
+    order: unset;
+    flex-basis: auto;
+  }
+}
 
 .action-toolbar {
   display: inline-block;
@@ -348,9 +392,29 @@ body.rtl {
   .grid-small-break { display: none; }
 }
 
-.searchtools a {
-  padding: 0 .5rem;
-  white-space: nowrap;
+.searchtools {
+  h2 {
+    display: inline-block;
+    margin: 0;
+    font-size: inherit;
+    font-weight: bold;
+    vertical-align: middle;
+  }
+  ul {
+    display: inline-block;
+    margin: 0;
+    padding-left: 0;
+    li {
+      display: inline;
+      &:not(:first-child):before {
+        content: '\2013'; // n-dash
+      }
+      a {
+        padding: 0 .5rem;
+        white-space: nowrap;
+      }
+    }  
+  }
 }
 
 /* ------ COMBINED ------ */
@@ -579,7 +643,6 @@ table.search-history-table {
 
   #searchForm-reset {
     position: absolute;
-    display: none;
     right: 3px;
     top: 3px;
     bottom: 0;

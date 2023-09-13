@@ -31,6 +31,10 @@
 
 namespace VuFindSearch\Backend\Solr;
 
+use function chr;
+use function in_array;
+use function intval;
+
 /**
  * VuFind SearchHandler.
  *

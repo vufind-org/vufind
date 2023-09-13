@@ -30,6 +30,8 @@
 
 namespace VuFindSearch\Backend\EDS;
 
+use function is_array;
+
 /**
  * EBSCO Search API abstract base class
  *
@@ -161,7 +163,7 @@ abstract class Base
      */
     public function info($authenticationToken = null, $sessionToken = null)
     {
-        $this->debugPrint("Info");
+        $this->debugPrint('Info');
         $url = $this->apiHost . '/info';
         $headers = $this->setTokens($authenticationToken, $sessionToken);
         return $this->call($url, $headers);
@@ -318,9 +320,9 @@ abstract class Base
     protected function parseAutocomplete($msg)
     {
         $result = [];
-        if (isset($msg["terms"]) && is_array($msg["terms"])) {
-            foreach ($msg["terms"] as $value) {
-                $result[] = $value["term"];
+        if (isset($msg['terms']) && is_array($msg['terms'])) {
+            foreach ($msg['terms'] as $value) {
+                $result[] = $value['term'];
             }
         }
         return $result;
@@ -353,7 +355,7 @@ abstract class Base
 
         $url = $data['url'] . '?' . http_build_query($params);
 
-        $this->debugPrint("Autocomplete URL: " . $url);
+        $this->debugPrint('Autocomplete URL: ' . $url);
         $response = $this->call($url, null, null, 'GET', null);
         return $raw ? $response : $this->parseAutocomplete($response);
     }
@@ -453,7 +455,7 @@ abstract class Base
         $params = [],
         $method = 'GET',
         $message = null,
-        $messageFormat = "",
+        $messageFormat = '',
         $cacheable = true
     ) {
         // Build Query String Parameters

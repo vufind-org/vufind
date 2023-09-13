@@ -39,6 +39,9 @@ use VuFindSearch\Command\RetrieveBatchCommand;
 use VuFindSearch\Command\RetrieveCommand;
 use VuFindSearch\ParamBag;
 
+use function count;
+use function is_object;
+
 /**
  * Alphabrowse channel provider.
  *
