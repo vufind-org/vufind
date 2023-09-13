@@ -74,7 +74,7 @@
       'params' => $params,
       'showCheckboxes' => $this->showCartControls || $this->showBulkOptions,
       'excludeResultIds' => true, // Don't add id attributes to results to avoid duplicates
-      'combined' => true,
+      'combined' => true, // Flag that we're in combined mode; may be useful to customize template behavior
     ];
   ?>
   <?=$this->render('search/list-' . $viewType . '.phtml', $viewParams)?>
