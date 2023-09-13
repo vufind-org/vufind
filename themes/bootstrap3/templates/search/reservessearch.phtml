@@ -14,7 +14,7 @@
 <div class="<?=$this->layoutClass('mainbody')?>">
   <h3><?=$this->transEsc('Search For Items on Reserve')?></h3>
   <form class="form-inline" method="get" name="reservesSearchForm">
-    <label for="reservesSearchForm_lookfor"><?=$this->transEsc("Your search terms")?></label>
+    <label for="reservesSearchForm_lookfor"><?=$this->transEsc('Your search terms')?></label>
     <?php
       $searchboxAttributes = [
         'id' => 'reservesSearchForm_lookfor',
@@ -28,12 +28,12 @@
         $searchboxAttributes['placeholder'] = $placeholder;
       }
       if ($this->searchbox()->autocompleteEnabled('SolrReserves')) {
-        $searchboxAttributes['class'] = " autocomplete searcher:SolrReserves type:Reserves";
+        $searchboxAttributes['class'] = ' autocomplete searcher:SolrReserves type:Reserves';
         $searchboxAttributes['data-autocomplete-formatting-rules'] = $this->searchbox()->autocompleteFormattingRulesJson('SolrReserves');
       }
     ?>
     <input<?=$this->htmlAttributes($searchboxAttributes)?>>
-    <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEscAttr("Find")?>">
+    <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEscAttr('Find')?>">
   </form>
   <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, "$('#reservesSearchForm_lookfor').focus()", 'SET')?>
 
