@@ -43,6 +43,7 @@ use VuFindSearch\Feature\SimilarInterface;
 use VuFindSearch\Feature\WorkExpressionsInterface;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
+use VuFindSearch\Query\WorkKeysQuery;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Response\RecordCollectionInterface;
 
@@ -135,6 +136,9 @@ class Backend extends AbstractBackend implements
         $limit,
         ParamBag $params = null
     ) {
+        if ($query instanceof WorkKeysQuery) {
+            return $this->workExpressions($query->getId(), $query->getWorkKeys(), $params);
+        }
         $json = $this->rawJsonSearch($query, $offset, $limit, $params);
         $collection = $this->createRecordCollection($json);
         $this->injectSourceIdentifier($collection);
