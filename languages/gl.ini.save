@@ -474,7 +474,7 @@ ill_request_place_fail_missing = "A súa solicitude fallou, contactar co persoal
 ill_request_place_success = "Realizouse a súa solicitude"
 ill_request_place_text = "Solicitar Préstamo Interbibliotecario"
 ill_request_processed = "Procesado"
-ill_request_profile_html = 'Para información de solicitude de préstamo *interbibliotecario, por favor establecer o seu <a href="%%url%%">Perfil do Catálogo da biblioteca</a>'
+ill_request_profile_html = 'Para información de solicitude de préstamo *interbibliotecario, por favor establecer o seu <a *href="%%url%%">Perfil do Catálogo da biblioteca</a>'
 ill_request_submit_text = "Lugar de Solicitude"
 Illustrated = "Ilustrado"
 ils_offline_holdings_message = "Neste momento non hai información de existencias e dispoñibilidade de copias. Por favor acepte as nosas desculpas polos inconvenientes causados, contacte connosco para unha maior información"
@@ -636,7 +636,7 @@ nohit_suggest = "Debería tentar revisar a súa frase de procura eliminando algu
 NOT = "NON"
 Not Illustrated = "Sen Ilustracións"
 Not On Reserve = "Non en Reserva"
-not_applicable = "n/a, Non aplicable"
+not_applicable = 'n/a", "Non aplicable'
 Note = "Nota"
 note_760 = "Serie principal"
 note_762 = "Subseries"
