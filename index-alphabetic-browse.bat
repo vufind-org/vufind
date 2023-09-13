@@ -43,8 +43,13 @@ goto javaset
 set JAVA="%JAVA_HOME%\bin\java"
 :javaset
 
+rem This would be /opt/bitnami/solr on a solr docker container
+if not "!%SOLR_JAR_PATH%!"=="!!" goto solrjarpathfound
+set SOLR_JAR_PATH=%SOLR_HOME%\..\vendor
+:solrjarpathfound
+
 cd %VUFIND_HOME%\import
-SET CLASSPATH="browse-indexing.jar;%VUFIND_HOME%\import\lib\*;%SOLR_HOME%\jars\*;%SOLR_HOME%\..\vendor\modules\analysis-extras\lib\*;%SOLR_HOME%\..\vendor\server\solr-webapp\webapp\WEB-INF\lib\*"
+SET CLASSPATH="browse-indexing.jar;%VUFIND_HOME%\import\lib\*;%SOLR_HOME%\jars\*;%SOLR_JAR_PATH%\modules\analysis-extras\lib\*;%SOLR_JAR_PATH%\server\solr-webapp\webapp\WEB-INF\lib\*"
 
 SET bib_index=%SOLR_HOME%\biblio\index
 SET auth_index=%SOLR_HOME%\authority\index
@@ -62,6 +67,7 @@ if exist %index_dir% goto nomakeindexdir
 mkdir "%index_dir%"
 :nomakeindexdir
 
+rem These parameters should match the ones in solr/vufind/biblio/conf/solrconfig.xml - BrowseRequestHandler
 call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse hierarchy hierarchy_browse
 call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse title title_fullStr 1 "-Dbibleech=StoredFieldLeech -Dsortfield=title_sort -Dvaluefield=title_fullStr"
 call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse topic topic_browse
