@@ -49,9 +49,22 @@ set SOLR_JAR_PATH=%SOLR_HOME%\..\vendor
 :solrjarpathfound
 
 cd %VUFIND_HOME%\import
+setlocal enabledelayedexpansion
+set SOLRMARC_MATCHCOUNT=x
 for %%a in (solrmarc_core*.jar) do (
   set SOLRMARC_CLASSPATH=%%a
+  set SOLRMARC_MATCHCOUNT=!SOLRMARC_MATCHCOUNT!x
 )
+setlocal disabledelayedexpansion
+rem Make sure we found one, and only one, SolrMarc jar file
+if "%SOLRMARC_MATCHCOUNT%"=="xx" goto onesolrmarcfound
+if "%SOLRMARC_MATCHCOUNT%"=="x" goto nosolrmarcfound
+echo Error: more than one solrmarc_core*.jar in import; exiting.
+goto end
+:nosolrmarcfound
+echo "Error: could not find solrmarc_core*.jar in import; exiting.
+goto end
+:onesolrmarcfound
 SET CLASSPATH="browse-indexing.jar;%SOLRMARC_CLASSPATH%;%VUFIND_HOME%\import\lib\*;%SOLR_HOME%\jars\*;%SOLR_JAR_PATH%\modules\analysis-extras\lib\*;%SOLR_JAR_PATH%\server\solr-webapp\webapp\WEB-INF\lib\*"
 
 SET bib_index=%SOLR_HOME%\biblio\index
