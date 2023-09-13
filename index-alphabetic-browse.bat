@@ -49,7 +49,10 @@ set SOLR_JAR_PATH=%SOLR_HOME%\..\vendor
 :solrjarpathfound
 
 cd %VUFIND_HOME%\import
-SET CLASSPATH="browse-indexing.jar;%VUFIND_HOME%\import\lib\*;%SOLR_HOME%\jars\*;%SOLR_JAR_PATH%\modules\analysis-extras\lib\*;%SOLR_JAR_PATH%\server\solr-webapp\webapp\WEB-INF\lib\*"
+for %%a in (solrmarc_core*.jar) do (
+  set SOLRMARC_CLASSPATH=%%a
+)
+SET CLASSPATH="browse-indexing.jar;%SOLRMARC_CLASSPATH%;%VUFIND_HOME%\import\lib\*;%SOLR_HOME%\jars\*;%SOLR_JAR_PATH%\modules\analysis-extras\lib\*;%SOLR_JAR_PATH%\server\solr-webapp\webapp\WEB-INF\lib\*"
 
 SET bib_index=%SOLR_HOME%\biblio\index
 SET auth_index=%SOLR_HOME%\authority\index
@@ -69,7 +72,7 @@ mkdir "%index_dir%"
 
 rem These parameters should match the ones in solr/vufind/biblio/conf/solrconfig.xml - BrowseRequestHandler
 call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse hierarchy hierarchy_browse
-call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse title title_fullStr 1 "-Dbibleech=StoredFieldLeech -Dsortfield=title_sort -Dvaluefield=title_fullStr"
+call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse title title_fullStr 1 "-Dbibleech=StoredFieldLeech -Dsortfield=title_sort -Dvaluefield=title_fullStr -Dbrowse.normalizer=org.vufind.util.TitleNormalizer"
 call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse topic topic_browse
 call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse author author_browse
 call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse lcc callnumber-raw 1 "-Dbrowse.normalizer=org.vufind.util.LCCallNormalizer"
