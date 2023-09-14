@@ -1,0 +1,16 @@
+<div class="bound-with-records">
+    <h4><?=$this->transEsc('bound_with_heading')?></h4>
+    <p><?=$this->translate('bound_with_intro', ['%%title%%' => $this->escapeHtml($this->truncate($driver->getTitle(), 50))])?></p>
+    <ol>
+        <?php foreach ($boundWithRecords as $record): ?>
+            <li>
+                <a 
+                    href="<?=$this->escapeHtmlAttr($record['bibId'])?>"
+                    <?=($record['bibId']==$driver->getUniqueId()) ? 'class="direct-item"' : 'class="bound-with-item"'?>
+                >
+                    <?=$this->escapeHtml($this->truncate($record['title'], 45)) ?>
+                </a>
+            </li>
+        <?php endforeach; ?>
+    </ol>
+</div>
