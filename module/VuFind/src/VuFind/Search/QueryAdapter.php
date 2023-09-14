@@ -109,7 +109,7 @@ abstract class QueryAdapter
 
         // Work keys query:
         if ($query instanceof WorkKeysQuery) {
-            return $query->getId();
+            return $query->getId() ?? '';
         }
 
         // Complex case -- advanced query:
