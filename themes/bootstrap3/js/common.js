@@ -591,7 +591,12 @@ function setupAutocomplete() {
           ? event.detail
           : event.detail.value;
         input.value = value;
-        $("#searchForm").trigger("submit");
+        const $form = $searchbox.closest("form");
+        // Try to submit the form:
+        $form.trigger('submit');
+        // If form submit failed (which currently happens for course reserves),
+        // click the input button instead:
+        $form.find('input[type="submit"]').trigger('click');
       });
     }
   });
