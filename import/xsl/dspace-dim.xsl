@@ -89,7 +89,7 @@
                         <xsl:value-of select="dim:field[@element='title']"/>
                     </field>
                     <field name="title_sort">
-                        <xsl:value-of select="php:function('VuFind::stripArticles', string(dim:field[@element='title'][normalize-space()]))"/>
+                        <xsl:value-of select="php:function('VuFind::titleSortLower', php:function('VuFind::stripArticles', string(dim:field[@element='title'][normalize-space()])))"/>
                     </field>
                 </xsl:if>
 
