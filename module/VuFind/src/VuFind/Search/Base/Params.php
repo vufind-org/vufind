@@ -1915,7 +1915,7 @@ class Params
      *
      * @return AbstractQuery
      */
-    public function getQuery(): AbstractQuery
+    public function getQuery()
     {
         if ($this->overrideQuery) {
             return new Query($this->overrideQuery);
