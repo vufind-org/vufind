@@ -432,11 +432,7 @@ class Backend extends AbstractBackend implements
         $params = $defaultParams ? clone $defaultParams
             : new \VuFindSearch\ParamBag();
         $this->injectResponseWriter($params);
-        $terms = [];
-        foreach ($workKeys as $key) {
-            $terms[] = addcslashes($key, ',+-&|!(){}[]^"~*?:\\/');
-        }
-        $params->set('q', '{!terms f=work_keys_str_mv}' . implode(',', $terms));
+        $params->set('q', "{!terms f=work_keys_str_mv separator=\"\u{001f}\"}" . implode("\u{001f}", $workKeys));
         if ($id) {
             $params->add('fq', sprintf('-id:"%s"', addcslashes($id, '"')));
         }
