@@ -31,11 +31,17 @@ then
   SOLR_HOME="$VUFIND_HOME/solr/vufind"
 fi
 
+# This can point to an external Solr in e.g. a Docker container
+if [ -z "$SOLR_JAR_PATH" ]
+then
+  SOLR_JAR_PATH="${SOLR_HOME}/../vendor"
+fi
+
 set -e
 set -x
 
 cd "`dirname $0`/import"
-CLASSPATH="browse-indexing.jar:${VUFIND_HOME}/import/lib/*:${SOLR_HOME}/jars/*:${SOLR_HOME}/../vendor/modules/analysis-extras/lib/*:${SOLR_HOME}/../vendor/server/solr-webapp/webapp/WEB-INF/lib/*"
+CLASSPATH="browse-indexing.jar:${VUFIND_HOME}/import/lib/*:${SOLR_HOME}/jars/*:${SOLR_JAR_PATH}/modules/analysis-extras/lib/*:${SOLR_JAR_PATH}/server/solr-webapp/webapp/WEB-INF/lib/*"
 
 # make index work with replicated index
 # current index is stored in the last line of index.properties

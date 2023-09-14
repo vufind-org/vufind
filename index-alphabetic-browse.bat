@@ -43,8 +43,13 @@ goto javaset
 set JAVA="%JAVA_HOME%\bin\java"
 :javaset
 
+rem This can point to an external Solr in e.g. a Docker container
+if not "!%SOLR_JAR_PATH%!"=="!!" goto solrjarpathfound
+set SOLR_JAR_PATH=%SOLR_HOME%\..\vendor
+:solrjarpathfound
+
 cd %VUFIND_HOME%\import
-SET CLASSPATH="browse-indexing.jar;%VUFIND_HOME%\import\lib\*;%SOLR_HOME%\jars\*;%SOLR_HOME%\..\vendor\modules\analysis-extras\lib\*;%SOLR_HOME%\..\vendor\server\solr-webapp\webapp\WEB-INF\lib\*"
+SET CLASSPATH="browse-indexing.jar;%VUFIND_HOME%\import\lib\*;%SOLR_HOME%\jars\*;%SOLR_JAR_PATH%\modules\analysis-extras\lib\*;%SOLR_JAR_PATH%\server\solr-webapp\webapp\WEB-INF\lib\*"
 
 SET bib_index=%SOLR_HOME%\biblio\index
 SET auth_index=%SOLR_HOME%\authority\index
