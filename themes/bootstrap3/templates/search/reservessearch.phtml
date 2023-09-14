@@ -34,7 +34,7 @@
       }
     ?>
     <input<?=$this->htmlAttributes($searchboxAttributes)?>>
-    <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEscAttr('Find')?>">
+    <input class="btn btn-primary" type="submit" value="<?=$this->transEscAttr('Find')?>">
   </form>
   <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, "$('#reservesSearchForm_lookfor').focus()", 'SET')?>
 
