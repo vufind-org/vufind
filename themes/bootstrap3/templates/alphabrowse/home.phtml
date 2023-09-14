@@ -63,7 +63,8 @@
         'class' => 'form-control',
       ];
       if ($this->searchbox()->autocompleteEnabled('Solr')) {
-        $searchboxAttributes['class'] .= ' autocomplete';
+        $searchboxAttributes['class'] .= ' autocomplete'
+          . ($this->searchbox()->autocompleteAutoSubmit('SolrReserves') ? ' ac-auto-submit' : '');
         $searchboxAttributes['data-autocomplete-type-field-selector'] = '#alphaBrowseForm_source';
         $searchboxAttributes['data-autocomplete-type-prefix'] = 'alphabrowse_';
         $searchboxAttributes['data-autocomplete-formatting-rules'] = $this->searchbox()->autocompleteFormattingRulesJson('Solr');
