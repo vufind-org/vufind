@@ -591,7 +591,7 @@ function setupAutocomplete() {
           ? event.detail
           : event.detail.value;
         input.value = value;
-        $("#searchForm").trigger("submit");
+        input.form.submit();
       });
     }
   });
