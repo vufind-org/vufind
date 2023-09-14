@@ -31,7 +31,7 @@ then
   SOLR_HOME="$VUFIND_HOME/solr/vufind"
 fi
 
-# This would be /opt/bitnami/solr on a solr docker container
+# This can point to an external Solr in e.g. a Docker container
 if [ -z "$SOLR_JAR_PATH" ]
 then
   SOLR_JAR_PATH="${SOLR_HOME}/../vendor"

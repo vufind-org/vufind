@@ -43,7 +43,7 @@ goto javaset
 set JAVA="%JAVA_HOME%\bin\java"
 :javaset
 
-rem This would be /opt/bitnami/solr on a solr docker container
+rem This can point to an external Solr in e.g. a Docker container
 if not "!%SOLR_JAR_PATH%!"=="!!" goto solrjarpathfound
 set SOLR_JAR_PATH=%SOLR_HOME%\..\vendor
 :solrjarpathfound
