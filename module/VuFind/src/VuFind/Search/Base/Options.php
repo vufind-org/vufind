@@ -37,6 +37,7 @@ use function get_class;
 use function in_array;
 use function intval;
 use function is_array;
+use function is_string;
 
 /**
  * Abstract options search model.
@@ -262,6 +263,13 @@ abstract class Options implements TranslatorAwareInterface
      * @var bool
      */
     protected $autocompleteAutoSubmit = true;
+
+    /**
+     * Autocomplete query formatting rules
+     *
+     * @var array
+     */
+    protected $autocompleteFormattingRules = [];
 
     /**
      * Configuration file to read global settings from
@@ -808,6 +816,16 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
+     * Get autocomplete query formatting rules.
+     *
+     * @return array
+     */
+    public function getAutocompleteFormattingRules(): array
+    {
+        return $this->autocompleteFormattingRules;
+    }
+
+    /**
      * Get a string of the listviewOption (full or tab).
      *
      * @return string
@@ -1097,6 +1115,10 @@ abstract class Options implements TranslatorAwareInterface
             ?? $this->autocompleteEnabled;
         $this->autocompleteAutoSubmit = $searchSettings->Autocomplete->auto_submit
             ?? $this->autocompleteAutoSubmit;
+        $formattingRules = $searchSettings->Autocomplete->formatting_rule ?? [];
+        if (!is_string($formattingRules) && count($formattingRules) > 0) {
+            $this->autocompleteFormattingRules = $formattingRules->toArray();
+        }
     }
 
     /**
