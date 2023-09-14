@@ -28,7 +28,7 @@
         $searchboxAttributes['placeholder'] = $placeholder;
       }
       if ($this->searchbox()->autocompleteEnabled('SolrReserves')) {
-        $searchboxAttributes['class'] = ' autocomplete searcher:SolrReserves type:Reserves'
+        $searchboxAttributes['class'] = ' autocomplete form-control searcher:SolrReserves type:Reserves'
           . ($this->searchbox()->autocompleteAutoSubmit('SolrReserves') ? ' ac-auto-submit' : '');
         $searchboxAttributes['data-autocomplete-formatting-rules'] = $this->searchbox()->autocompleteFormattingRulesJson('SolrReserves');
       }
