@@ -7,18 +7,16 @@
           'facetop' => $this->operator,
           'facetexclude' => $this->exclude,
       ],
-      '',
-      '&amp;'
   );
   if (empty($this->sortOptions)) {
     $this->sort = 'default';
     $this->sortOptions = [ 'default' => 'default' ];
   }
-  $urlBase = $this->url($facetLightbox) . $results->getUrlQuery()->getParams() . "&amp;$facetLightboxParams";
+  $urlBase = $this->url($facetLightbox) . $results->getUrlQuery()->getParams(false) . "&$facetLightboxParams";
   $searchAction = $this->url($options->getSearchAction());
   if (!empty($this->baseUriExtra)) {
     $searchAction .= urlencode($this->baseUriExtra);
-    $urlBase .= '&amp;baseUriExtra=' . urlencode($this->baseUriExtra);
+    $urlBase .= '&baseUriExtra=' . urlencode($this->baseUriExtra);
   }
   $this->headTitle($this->translate('facet_list_for', ['%%field%%' => $this->facetLabel]));
 ?>
