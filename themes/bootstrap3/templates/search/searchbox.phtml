@@ -5,8 +5,7 @@
       $this->searchClassId = $params->getSearchClassId();
     } else {
       $params = null;
-      $this->searchClassId = $this->searchClassId
-        ?? $this->config()->get('config')->Site->defaultSearchBackend
+      $this->searchClassId ??= $this->config()->get('config')->Site->defaultSearchBackend
         ?? 'Solr';
     }
     // Initialize from current search if eligible, defaults otherwise:
