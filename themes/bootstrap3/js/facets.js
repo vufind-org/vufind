@@ -61,21 +61,26 @@ VuFind.register('facetList', function FacetList() {
   // to detect when the user stops typing.
   // See also: https://stackoverflow.com/questions/1909441/how-to-delay-the-keyup-handler-until-the-user-stops-typing
   var keyupCallbackTimeout = null;
-  function registerContentKeyupCallback() {
+  function registerCallbacks() {
     $('.ajax_param[data-name="contains"]').on('keyup', function onKeyupChangeFacetList() {
       clearTimeout(keyupCallbackTimeout);
       keyupCallbackTimeout = setTimeout(function onKeyupTimeout() {
         updateContent({facetpage: 1});
       }, 500);
     });
+
+    $('#btn-reset-contains').on('click', function onResetClick() {
+      $('.ajax_param[data-name="contains"]').val('');
+      updateContent({facetpage: 1});
+    });
   }
 
   function setup() {
     if ($.isReady) {
-      registerContentKeyupCallback();
+      registerCallbacks();
     } else {
       $(function ready() {
-        registerContentKeyupCallback();
+        registerCallbacks();
       });
     }
   }
