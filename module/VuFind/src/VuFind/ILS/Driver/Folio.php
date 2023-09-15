@@ -413,7 +413,7 @@ class Folio extends AbstractAPI implements
         $query = [
             'query' => '(' . $idField . '=="' . $this->escapeCql($bibId) . '")',
         ];
-        $response = $this->makeRequest('GET', '/search/instances', $query);
+        $response = $this->makeRequest('GET', '/instance-storage/instances', $query);
         $instances = json_decode($response->getBody());
         if (count($instances->instances ?? []) == 0) {
             throw new ILSException('Item Not Found');
