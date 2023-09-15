@@ -21,7 +21,11 @@
       $options = $this->searchOptions($this->searchClassId);
     }
     // Override search class ID with searchbox-specific settings, if necessary:
-    $this->searchClassId = $options->getSearchBoxSearchClassId();
+    $overrideSeachClassId = $options->getSearchBoxSearchClassId();
+    if ($overrideSearchClassId !== $this->searchClassId) {
+      $this->searchClassId = $overrideSeachClassId;
+      $options = $this->searchOptions($overrideSeachClassId);
+    }
 
     // Load search actions and settings (if any):
     $handlers = $this->searchbox()->getHandlers(
