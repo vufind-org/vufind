@@ -890,6 +890,7 @@ class AbstractSearch extends AbstractBase
         $limit = $this->params()->fromQuery('facetlimit', $limit);
         if (!empty($contains)) {
             $params->setFacetContains($contains);
+            $params->setFacetContainsIgnoreCase(true);
         }
         $facets = $results->getPartialFieldFacets(
             [$facet],
