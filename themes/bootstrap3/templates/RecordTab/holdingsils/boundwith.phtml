@@ -8,11 +8,8 @@
     <p><?=$this->translate('bound_with_intro', ['%%title%%' => $this->escapeHtml($this->truncate($driver->getTitle(), 50))])?></p>
     <ol>
         <?php foreach ($boundWithRecords as $record): ?>
-            <li>
-                <a 
-                    href="<?=$this->escapeHtmlAttr($record['bibId'])?>"
-                    <?=($record['bibId']==$driver->getUniqueId()) ? 'class="direct-item"' : 'class="bound-with-item"'?>
-                >
+            <li class="<?=($record['bibId']==$driver->getUniqueId()) ? 'direct-item' : 'bound-with-item'?>">
+                <a href="<?=$this->escapeHtmlAttr($record['bibId'])?>">
                     <?=$this->escapeHtml($this->truncate($record['title'], 45)) ?>
                 </a>
             </li>
