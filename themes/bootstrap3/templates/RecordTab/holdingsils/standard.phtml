@@ -84,6 +84,8 @@
                 'RecordTab/holdingsils/boundwith.phtml',
                 [
                   'boundWithRecords' => $holding['bound_with_records'],
+                  'callNumber' => $holding['callnumber'],
+                  'callNumberCount' => count($callNos),
                   'driver' => $driver,
                 ]
             );

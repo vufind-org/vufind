@@ -1,5 +1,10 @@
 <div class="bound-with-records">
-    <h4><?=$this->transEsc('bound_with_heading')?></h4>
+    <h4>
+        <?=$this->transEsc(
+            $callNumberCount < 2 ? 'bound_with_heading_one_callnumber' : 'bound_with_heading_multiple_callnumbers', 
+            ['%%callnumber%%' => $this->escapeHtml($callNumber)])
+        ?>
+    </h4>
     <p><?=$this->translate('bound_with_intro', ['%%title%%' => $this->escapeHtml($this->truncate($driver->getTitle(), 50))])?></p>
     <ol>
         <?php foreach ($boundWithRecords as $record): ?>
