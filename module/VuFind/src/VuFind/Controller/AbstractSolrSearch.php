@@ -167,22 +167,18 @@ class AbstractSolrSearch extends AbstractSearch
             }
 
             if (
-                !empty($facetConfig->Advanced_Settings->enable_filters)
+                in_array(
+                    $facet,
+                    $facetConfig->Advanced_Settings?->enable_filters?->toArray() ?? []
+                )
                 && (!empty($facetConfig->FacetFilters->$facet)
                 || !empty($facetConfig->ExcludeFilters->$facet))
             ) {
-                if (in_array($facet, $facetConfig->Advanced_Settings->enable_filters->toArray())) {
-                    $filters = !empty($facetConfig->FacetFilters->$facet)
-                        ? $facetConfig->FacetFilters->$facet->toArray() : [];
-                    $excludeFilters = !empty($facetConfig->ExcludeFilters->$facet)
-                        ? $facetConfig->ExcludeFilters->$facet->toArray() : [];
-        
-                    $list['list'] = $facetHelper->filterFacets(
-                        $list['list'],
-                        $filters,
-                        $excludeFilters
-                    );
-                }
+                $list['list'] = $facetHelper->filterFacets(
+                    $list['list'],
+                    $facetConfig->FacetFilters?->$facet?->toArray() ?? [],
+                    $facetConfig->ExcludeFilters?->$facet?->toArray() ?? []
+                );
             }
 
             foreach ($list['list'] as $key => $value) {
