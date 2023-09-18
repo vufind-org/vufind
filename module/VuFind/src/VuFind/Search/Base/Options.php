@@ -1071,6 +1071,19 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
+     * Get the search class ID for identifying search box options; this is normally
+     * the same as the current search class ID, but some "special purpose" search
+     * namespaces (e.g. SolrAuthor) need to point to a different ID for search box
+     * generation
+     *
+     * @return string
+     */
+    public function getSearchBoxSearchClassId(): string
+    {
+        return $this->getSearchClassId();
+    }
+
+    /**
      * Should we include first/last options in result scroller navigation?
      *
      * @return bool
