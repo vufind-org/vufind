@@ -74,10 +74,12 @@ class ExtendedIniReader
                 if ($key != '' && substr($key, 0, 1) != ';') {
                     // Trim outermost matching single or double quotes off the value if present:
                     if (isset($parts[1])) {
-                        $value = preg_replace(
-                            '/^(["\'])?(.*?)\1?$/',
-                            '$2',
-                            trim($parts[1])
+                        $value = stripslashes(
+                            preg_replace(
+                                '/^(["\'])?(.*?)\1?$/',
+                                '$2',
+                                trim($parts[1])
+                            )
                         );
 
                         // Store the key/value pair (allow empty values -- sometimes

@@ -138,7 +138,8 @@ class ExtendedIniNormalizer
             // Put purely numeric keys in single quotes for Lokalise compatibility:
             $normalizedKey = is_numeric($key) ? "'$key'" : $key;
             $quote = str_contains($value, '"') ? "'" : '"';
-            $output .= "$normalizedKey = $quote$value$quote\n";
+            $escapedValue = str_replace($quote, '\\' . $quote, $value);
+            $output .= "$normalizedKey = $quote$escapedValue$quote\n";
         }
         return trim($output) . "\n";
     }

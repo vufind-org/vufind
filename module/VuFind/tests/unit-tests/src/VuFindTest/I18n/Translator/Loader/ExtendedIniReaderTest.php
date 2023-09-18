@@ -56,6 +56,7 @@ class ExtendedIniReaderTest extends \PHPUnit\Framework\TestCase
             "baz='xyzzy'",
             'spaced = yes',
             'quotedspaced = "alsoyes"',
+            "escaped = 'this \\'r that'",
             'keepquotes="\'\'"',
         ];
         $output = [
@@ -64,6 +65,7 @@ class ExtendedIniReaderTest extends \PHPUnit\Framework\TestCase
             'baz' => 'xyzzy',
             'spaced' => 'yes',
             'quotedspaced' => 'alsoyes',
+            'escaped' => "this 'r that",
             'keepquotes' => "''",
         ];
         $reader = new ExtendedIniReader();
