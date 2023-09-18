@@ -7,6 +7,12 @@
 
   // More link should use default limit, not custom limit:
   $moreUrl = $this->url($params->getOptions()->getSearchAction()) . $results->getUrlQuery()->setPage(1)->setLimit($params->getOptions()->getDefaultLimit());
+
+  // Advanced search link
+  $advancedSearchAction = $params->getOptions()->getAdvancedSearchAction();
+  $advancedSearchUrl = $advancedSearchAction
+    ? $this->url($advancedSearchAction, [], ['query' => ['edit' => $results->getSearchId()]])
+    : false;
 ?>
 <?php if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
   <div class="pull-right flip">
@@ -79,11 +85,25 @@
   ?>
   <?=$this->render('search/list-' . $viewType . '.phtml', $viewParams)?>
   <?php if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
-    <p>
+    <p class="more_link">
       <a class="icon-link" href="<?=$moreUrl?>">
         <span class="icon-link__label"><?=$this->transEsc($currentSearch['more_link'])?></span>
         <?=$this->icon('more', 'icon-link__icon') ?>
       </a>
     </p>
+  <?php endif; ?>
+  <?php if (($currentSearch['more_link'] ?? false) && ($currentSearch['advanced_link'] ?? false)): ?>
+    <p class="advanced_link">
+      <span class="more-advanced-separator"><?=$this->transEsc('combined_more_advanced_separator')?></span>
+  <?php endif; ?>
+  <?php if ($currentSearch['advanced_link'] ?? false): ?>
+    <?php if (!($currentSearch['more_link'] ?? false)): ?>
+      <p>
+    <?php endif; ?>
+      <a class="icon-link" href="<?=$advancedSearchUrl?>">
+        <span class="icon-link__label"><?=$this->transEsc($currentSearch['advanced_link'])?></span>
+        <?=$this->icon('more', 'icon-link__icon') ?>
+      </a>
+   </p>
   <?php endif; ?>
 <?php endif; ?>
