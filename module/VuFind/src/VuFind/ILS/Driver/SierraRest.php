@@ -2285,7 +2285,7 @@ class SierraRest extends AbstractBase implements
                     : $bibCallNumber,
                 'duedate' => $duedate,
                 'number' => $volume,
-                'barcode' => $item['barcode'],
+                'barcode' => $item['barcode'] ?? '',
                 'sort' => $sort--,
             ];
             if ($notes) {
