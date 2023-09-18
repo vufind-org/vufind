@@ -18,11 +18,12 @@ VuFind.register("searchbox_controls", function SearchboxControls() {
     });
 
     resetButton.addEventListener("click", function resetOnClick() {
-      resetButton.classList.add("hidden");
       queryInput.setAttribute("value", "");
-      // We need to blur before we focus to be sure the input change registers
-      // with the autocomplete control.
-      queryInput.blur().focus();
+      // Send an input event to be sure the autocomplete updates correctly
+      // (this may become unnecessary after future updates to the autocomplete library)
+      queryInput.dispatchEvent(new Event('input'));
+      queryInput.focus();
+      resetButton.classList.add("hidden");
     });
   }
 
