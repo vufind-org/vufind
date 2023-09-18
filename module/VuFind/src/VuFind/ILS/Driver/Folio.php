@@ -645,13 +645,14 @@ class Folio extends AbstractAPI implements
      * Support method for getHolding() -- given a few key details, format an item
      * for inclusion in the return value.
      *
-     * @param string $bibId          Current bibliographic ID
-     * @param array  $holdingDetails Holding details produced by
-     * getHoldingDetailsForItem()
-     * @param object $item           FOLIO item record (decoded from JSON)
-     * @param int    $number         The current item number (position within
-     * current holdings record)
-     * @param string $dueDateValue   The due date to display to the user
+     * @param string $bibId            Current bibliographic ID
+     * @param array  $holdingDetails   Holding details produced by
+     *                                 getHoldingDetailsForItem()
+     * @param object $item             FOLIO item record (decoded from JSON)
+     * @param int    $number           The current item number (position within
+     *                                 current holdings record)
+     * @param string $dueDateValue     The due date to display to the user
+     * @param array  $boundWithRecords Any bib records this holding is bound with
      *
      * @return array
      */
@@ -742,9 +743,9 @@ class Folio extends AbstractAPI implements
     /**
      * Get all bib records bound-with this item, including
      * the directly-linked bib record.
-     * 
+     *
      * @param object $item The item record
-     * 
+     *
      * @return array An array of key metadtaa for each bib record
      */
     protected function getBoundWithRecords($item)

@@ -751,7 +751,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                     'reserve' => 'TODO',
                     'addLink' => true,
                     'bound_with_records' => [],
-                ]
+                ],
             ],
             'electronic_holdings' => [],
         ];
