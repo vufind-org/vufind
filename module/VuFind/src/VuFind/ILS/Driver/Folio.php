@@ -823,7 +823,7 @@ class Folio extends AbstractAPI implements
                     $query
                 ) as $item
             ) {
-                if ($item->discoverySuppress) {
+                if ($item->discoverySuppress ?? false) {
                     continue;
                 }
                 $number++;
