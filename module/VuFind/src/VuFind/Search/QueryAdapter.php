@@ -33,6 +33,7 @@ use Laminas\Stdlib\Parameters;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
+use VuFindSearch\Query\WorkKeysQuery;
 
 use function array_key_exists;
 use function call_user_func;
@@ -104,6 +105,11 @@ abstract class QueryAdapter
         // Simple case -- basic query:
         if ($query instanceof Query) {
             return $query->getString();
+        }
+
+        // Work keys query:
+        if ($query instanceof WorkKeysQuery) {
+            return $query->getId() ?? '';
         }
 
         // Complex case -- advanced query:

@@ -104,8 +104,8 @@ class AuthorControllerTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '#searchForm_lookfor', 'foo');
         $this->clickCss($page, '#searchForm button.btn-primary');
         $this->waitForPageLoad($page);
-        $this->assertStringEndsWith(
-            '/Search/Results?lookfor=foo&type=AllFields',
+        $this->assertStringStartsWith(
+            $this->getVuFindUrl() . '/Search/Results?lookfor=foo&type=AllFields',
             $session->getCurrentUrl()
         );
     }

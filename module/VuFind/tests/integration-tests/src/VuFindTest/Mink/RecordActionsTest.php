@@ -49,6 +49,7 @@ use function strlen;
  */
 final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
 {
+    use \VuFindTest\Feature\AutocompleteTrait;
     use \VuFindTest\Feature\LiveDatabaseTrait;
     use \VuFindTest\Feature\UserCreationTrait;
 
@@ -142,6 +143,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test adding comments on records (with Captcha enabled).
      *
      * @return void
+     *
+     * @depends testAddComment
      */
     public function testAddCommentWithCaptcha()
     {
@@ -205,6 +208,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * @retryCallback removeUsername2
      *
      * @return void
+     *
+     * @depends testAddComment
      */
     public function testAddTag()
     {
@@ -289,6 +294,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test searching for one of the tags created above.
      *
      * @return void
+     *
+     * @depends testAddTag
      */
     public function testTagSearch()
     {
@@ -309,9 +316,45 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test that default autocomplete behavior is correct on a non-default search handler.
+     *
+     * @return void
+     *
+     * @depends testAddTag
+     */
+    public function testTagAutocomplete(): void
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Home');
+        $page = $session->getPage();
+        $this->findCss($page, '#searchForm_type')
+            ->setValue('tag');
+        $this->findCss($page, '#searchForm_lookfor')
+            ->setValue('fiv');
+        $acItem = $this->getAndAssertFirstAutocompleteValue($page, 'five');
+        $acItem->click();
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            $this->getVuFindUrl() . '/Search/Results?lookfor=five&type=tag',
+            $session->getCurrentUrl()
+        );
+        $expected = 'Showing 1 - 1 results of 1 for search \'five\'';
+        $this->assertEquals(
+            $expected,
+            substr(
+                $this->findCss($page, '.search-stats')->getText(),
+                0,
+                strlen($expected)
+            )
+        );
+    }
+
+    /**
      * Test adding case sensitive tags on records.
      *
      * @return void
+     *
+     * @depends testAddTag
      */
     public function testAddSensitiveTag()
     {
