@@ -12,7 +12,7 @@
         <?php foreach ($boundWithRecords as $record): ?>
             <li class="<?=($record['bibId']==$driver->getUniqueId()) ? 'direct-item' : 'bound-with-item'?>">
                 <a href="<?=$this->escapeHtmlAttr($record['bibId'])?>">
-                    <?=$this->escapeHtml($this->truncate($record['title'], 45)) ?>
+                    <?=$this->escapeHtml($this->truncate($record['title'], 85)) ?>
                 </a>
             </li>
         <?php endforeach; ?>
