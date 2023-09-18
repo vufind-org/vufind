@@ -163,7 +163,6 @@ class AbstractSolrSearch extends AbstractSearch
                     $facet,
                     $tmpList
                 );
-
                 $list['list'] = $facetHelper->flattenFacetHierarchy($tmpList);
             }
 
