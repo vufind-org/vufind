@@ -146,11 +146,9 @@ class AbstractSolrSearch extends AbstractSearch
         $hierarchicalFacetsSortOptions = []
     ) {
         // Process the facets
-        $facetHelper = null;
-        if (!empty($hierarchicalFacets)) {
-            $facetHelper = $this->serviceLocator
-                ->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class);
-        }
+        $facetHelper = $this->serviceLocator
+            ->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class);
+        $facetConfig = $this->getConfig('facets');
         foreach ($facetList as $facet => &$list) {
             // Hierarchical facets: format display texts and sort facets
             // to a flat array according to the hierarchy
@@ -165,7 +163,27 @@ class AbstractSolrSearch extends AbstractSearch
                     $facet,
                     $tmpList
                 );
+
                 $list['list'] = $facetHelper->flattenFacetHierarchy($tmpList);
+            }
+
+            if (
+                !empty($facetConfig->Advanced_Settings->enable_filters)
+                && (!empty($facetConfig->FacetFilters->$facet)
+                || !empty($facetConfig->ExcludeFilters->$facet))
+            ) {
+                if (in_array($facet, $facetConfig->Advanced_Settings->enable_filters->toArray())) {
+                    $filters = !empty($facetConfig->FacetFilters->$facet)
+                        ? $facetConfig->FacetFilters->$facet->toArray() : [];
+                    $excludeFilters = !empty($facetConfig->ExcludeFilters->$facet)
+                        ? $facetConfig->ExcludeFilters->$facet->toArray() : [];
+        
+                    $list['list'] = $facetHelper->filterFacets(
+                        $list['list'],
+                        $filters,
+                        $excludeFilters
+                    );
+                }
             }
 
             foreach ($list['list'] as $key => $value) {
