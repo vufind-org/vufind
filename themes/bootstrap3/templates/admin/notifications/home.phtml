@@ -1,0 +1,14 @@
+<?php
+    // Set page title.
+    $this->headTitle($this->translate('VuFind Administration - System Maintenance'));
+?>
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <h2><?=$this->transEsc('System Maintenance')?></h2>
+
+  <h3>Notifications</h3>
+  <?=$this->flashmessages()?>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>">
+  <?=$this->render("admin/menu.phtml")?>
+</div>

@@ -1,0 +1,24 @@
+<?php
+    // Set up page title:
+    $this->headTitle($this->translate('Pages Home'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('search-home') . '">' . $this->transEsc('Search Home') . '</a></li>';
+?>
+
+<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="Expand Sidebar">
+    <?=$this->transEsc('Home') ?>
+</a>
+
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <h2><?=$this->page['headline'];?></h2>
+  <?=$this->flashmessages()?>
+
+  <p>
+      <?=$this->page['content'];?>
+  </p>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
+
+</div>

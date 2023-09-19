@@ -1,0 +1,12 @@
+<?php
+  $pages = $this->notifications()->getPages();
+?>
+<ul class="nav navbar-nav navbar-left flip">
+  <?php foreach($pages as $page): ?>
+    <?php if($page['is_external_url']): ?>
+      <li><a href="<?=$page['external_url']?>" target="_blank"><?=$page['nav_title']?></a></li>
+    <?php else: ?>
+      <li><a href="<?=$this->url('notifications-page')?><?=$page['page_id']?>"><?=$page['nav_title']?></a></li>
+    <?php ENDIF; ?>
+  <?php endforeach; ?>
+</ul>

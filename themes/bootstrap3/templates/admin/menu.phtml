@@ -8,4 +8,6 @@
   <?php if ($this->overdrive()->showOverdriveAdminLink()):?>
     <a href="<?=$this->url('admin/overdrive')?>" class="list-group-item<?=strtolower($this->layout()->templateName) == 'overdrive' ? ' active' : ''?>"><?=$this->transEsc('Overdrive API')?></a>
   <?php endif;?>
+  <a href="<?=$this->url('admin/notifications-pages', ['action' => 'Pages'])?>" class="list-group-item<?=strtolower($this->layout()->templateName) == 'pages' ? ' active' : ''?>"><?=$this->transEsc('Notifications Pages')?></a>
+  <a href="<?=$this->url('admin/notifications-broadcasts', ['action' => 'Broadcasts'])?>" class="list-group-item<?=strtolower($this->layout()->templateName) == 'broadcasts' ? ' active' : ''?>"><?=$this->transEsc('Notifications Broadcasts')?></a>
 </nav>

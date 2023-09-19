@@ -1,0 +1,79 @@
+<?php
+$form = $this->form;
+
+$submit = $form->get('submit');
+$submit->setValue($this->submitLabel);
+
+$cancel = $form->get('cancel');
+$cancel->setValue($this->cancelLabel);
+
+$form->prepare();
+?>
+
+<?= $this->form()->openTag($form) ?>
+
+<div id="notifications-tabs">
+
+  <div class="form-group">
+      <?php $visibility = $form->get('visibility'); ?>
+      <?= $this->formLabel($visibility) ?>
+      <?= $this->formElement($visibility) ?>
+      <?= $this->formElementErrors()->render($visibility, ['class' => 'help-block']) ?>
+  </div>
+
+  <div class="form-group">
+      <?php $isExternalUrl = $form->get('is_external_url'); ?>
+      <?= $this->formLabel($isExternalUrl) ?>
+      <?= $this->formElement($isExternalUrl) ?>
+      <?= $this->formElementErrors()->render($isExternalUrl, ['class' => 'help-block']) ?>
+  </div>
+
+  <ul>
+    <?php foreach($this->languages as $language): ?>
+      <li><a href="#notifications-tabs-<?=$language?>"><?=$this->transEsc('pages_tab_header')?> (<?=strtoupper($language)?>)</a></li>
+    <?php endforeach; ?>
+  </ul>
+
+  <?php foreach($this->languages as $language): ?>
+    <div id="notifications-tabs-<?=$language?>">
+      <div class="form-group">
+          <?php $navTitle = $form->get('nav_title_'.$language); ?>
+          <?= $this->formLabel($navTitle) ?>
+          <?= $this->formElement($navTitle) ?>
+          <?= $this->formElementErrors()->render($navTitle, ['class' => 'help-block']) ?>
+      </div>
+
+      <div class="not_external_url_content">
+        <div class="form-group">
+            <?php $headline = $form->get('headline_'.$language); ?>
+            <?= $this->formLabel($headline) ?>
+            <?= $this->formElement($headline) ?>
+            <?= $this->formElementErrors()->render($headline, ['class' => 'help-block']) ?>
+        </div>
+
+        <div class="form-group">
+            <?php $content = $form->get('content_'.$language); ?>
+            <?php $content->setLabelOptions(['disable_html_escape' => true]); ?>
+            <?= $this->formLabel($content) ?>
+            <?= $this->formElement($content) ?>
+            <?= $this->formElementErrors()->render($content, ['class' => 'help-block']) ?>
+        </div>
+      </div>
+
+      <div class="form-group external_url_content">
+          <?php $externalUrl = $form->get('external_url_'.$language); ?>
+          <?php $externalUrl->setLabelOptions(['disable_html_escape' => true]); ?>
+          <?= $this->formLabel($externalUrl) ?>
+          <?= $this->formElement($externalUrl) ?>
+          <?= $this->formElementErrors()->render($externalUrl, ['class' => 'help-block']) ?>
+      </div>
+    </div>
+  <?php endforeach; ?>
+</div>
+
+<div class="form-group">
+    <?= $this->formSubmit($submit) ?>
+    <?= $this->formSubmit($cancel) ?>
+</div>
+
+<?= $this->form()->closeTag($form) ?>
