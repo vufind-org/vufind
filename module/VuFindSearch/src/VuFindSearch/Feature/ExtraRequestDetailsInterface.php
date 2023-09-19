@@ -4,7 +4,7 @@
  * Optional backend feature: Get some extra details about a search,
  * e.g. the search parameters or request url
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Hebis Verbundzentrale 2023.
  *
