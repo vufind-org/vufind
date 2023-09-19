@@ -1835,19 +1835,21 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Get list of users for whom the provided patron is a proxy.
+     * Support method for getProxiedUsers() and getProxyingUsers() to load proxy user data.
      *
      * This requires the FOLIO user configured in Folio.ini to have the permission:
      * proxiesfor.collection.get
      *
-     * @param array $patron The patron array with username and password
+     * @param array  $patron       The patron array with username and password
+     * @param string $lookupField  Field to use for looking up matching users
+     * @param string $displayField Field in response to use for displaying user names
      *
      * @return array
      */
-    public function getProxiedUsers(array $patron): array
+    protected function loadProxyUserData(array $patron, string $lookupField, string $displayField): array
     {
         $query = [
-            'query' => '(proxyUserId=="' . $patron['id'] . '")',
+            'query' => '(' . $lookupField . '=="' . $patron['id'] . '")',
         ];
         $results = [];
         $proxies = $this->getPagedResults('proxiesFor', '/proxiesfor', $query);
@@ -1855,14 +1857,40 @@ class Folio extends AbstractAPI implements
             if (
                 $current->status ?? '' === 'Active'
                 && $current->requestForSponsor ?? '' === 'Yes'
-                && isset($current->userId)
+                && isset($current->$displayField)
             ) {
-                if ($proxy = $this->getUserById($current->userId)) {
+                if ($proxy = $this->getUserById($current->$displayField)) {
                     $results[$proxy->id] = $this->formatUserNameForProxyList($proxy);
                 }
             }
         }
         return $results;
+    }
+
+    /**
+     * Get list of users for whom the provided patron is a proxy.
+     *
+     * @param array $patron The patron array with username and password
+     *
+     * @return array
+     */
+    public function getProxiedUsers(array $patron): array
+    {
+        return $this->loadProxyUserData($patron, 'proxyUserId', 'userId');
+    }
+
+    /**
+     * Get list of users who act as proxies for the provided patron.
+     *
+     * @param array $patron The patron array with username and password
+     *
+     * @return array
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getProxyingUsers(array $patron): array
+    {
+        return $this->loadProxyUserData($patron, 'userId', 'proxyUserId');
     }
 
     /**
