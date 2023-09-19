@@ -350,7 +350,7 @@ class Alma extends AbstractBase implements
      * number of items for the given bib id, and the key "holdings" containing an
      * array of holding information each one with these keys: id, source,
      * availability, status, location, reserve, callnumber, duedate, returnDate,
-     * number, barcode, item_notes, item_id, holding_id, addLink, description
+     * number, barcode, item_notes, item_id, holdings_id, addLink, description
      */
     public function getHolding($id, $patron = null, array $options = [])
     {
@@ -416,7 +416,8 @@ class Alma extends AbstractBase implements
                     'barcode' => empty($barcode) ? 'n/a' : $barcode,
                     'item_notes' => $itemNotes ?? null,
                     'item_id' => $itemId,
-                    'holding_id' => $holdingId,
+                    'holdings_id' => $holdingId,
+                    'holding_id' => $holdingId, // deprecated, retained for backward compatibility
                     'holdtype' => 'auto',
                     'addLink' => $patron ? 'check' : false,
                     // For Alma title-level hold requests
@@ -464,7 +465,7 @@ class Alma extends AbstractBase implements
         if ('copy' === $level) {
             // Call the request-options API for the logged-in user
             $requestOptionsPath = '/bibs/' . rawurlencode($id)
-                . '/holdings/' . rawurlencode($data['holding_id']) . '/items/'
+                . '/holdings/' . rawurlencode($data['holdings_id']) . '/items/'
                 . rawurlencode($data['item_id']) . '/request-options?user_id='
                 . urlencode($patronId);
 
@@ -1493,7 +1494,7 @@ class Alma extends AbstractBase implements
         // Get information that is valid for both, item level requests and title
         // level requests.
         $mmsId = $holdDetails['id'];
-        $holId = $holdDetails['holding_id'];
+        $holId = $holdDetails['holdings_id'];
         $itmId = $holdDetails['item_id'];
         $patronId = $holdDetails['patron']['id'];
         $pickupLocation = $holdDetails['pickUpLocation'] ?? null;
