@@ -2,12 +2,10 @@
     // Initialize from current search (if available and not explicitly overridden) or defaults:
     if ($results = ($this->results ?? $this->searchMemory()->getCurrentSearch())) {
       $params = $results->getParams();
-      $this->searchClassId = $this->overrideSearchClassId ?? $params->getSearchClassId();
+      $this->searchClassId = $params->getSearchClassId();
     } else {
       $params = null;
-      $this->searchClassId = $this->overrideSearchClassId
-        ?? $this->searchClassId
-        ?? $this->config()->get('config')->Site->defaultSearchBackend
+      $this->searchClassId ??= $this->config()->get('config')->Site->defaultSearchBackend
         ?? 'Solr';
     }
     // Initialize from current search if eligible, defaults otherwise:
@@ -21,6 +19,12 @@
       $lastSort = $this->searchMemory()->getLastSort($this->searchClassId);
       $lastLimit = $this->searchMemory()->getLastLimit($this->searchClassId);
       $options = $this->searchOptions($this->searchClassId);
+    }
+    // Override search class ID with searchbox-specific settings, if necessary:
+    $overrideSearchClassId = $options->getSearchBoxSearchClassId();
+    if ($overrideSearchClassId !== $this->searchClassId) {
+      $this->searchClassId = $overrideSearchClassId;
+      $options = $this->searchOptions($overrideSearchClassId);
     }
 
     // Load search actions and settings (if any):
