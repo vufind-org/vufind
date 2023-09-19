@@ -92,18 +92,17 @@
       </a>
     </p>
   <?php endif; ?>
-  <?php if (($currentSearch['more_link'] ?? false) && ($currentSearch['advanced_link'] ?? false)): ?>
-    <p class="advanced_link">
-      <span class="more-advanced-separator"><?=$this->transEsc('combined_more_advanced_separator')?></span>
-  <?php endif; ?>
   <?php if ($currentSearch['advanced_link'] ?? false): ?>
-    <?php if (!($currentSearch['more_link'] ?? false)): ?>
-      <p>
-    <?php endif; ?>
+    <p class="advanced_link">
+      <?php // Add a separator if the advanced_link follows a more_link ?>
+      <?php if ($currentSearch['more_link'] ?? false): ?>
+        <span class="more-advanced-separator"><?=$this->transEsc('combined_more_advanced_separator')?></span>
+      <?php endif; ?>
+
       <a class="icon-link" href="<?=$advancedSearchUrl?>">
         <span class="icon-link__label"><?=$this->transEsc($currentSearch['advanced_link'])?></span>
         <?=$this->icon('more', 'icon-link__icon') ?>
       </a>
-   </p>
+    </p>
   <?php endif; ?>
 <?php endif; ?>
