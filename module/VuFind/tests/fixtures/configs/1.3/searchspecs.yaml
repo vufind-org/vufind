@@ -120,7 +120,6 @@
 # [lowercase] - Convert string to lowercase
 # [preg_replace, pattern, replacement] - Perform a regular expression replace
 #                                        using the preg_replace() PHP function
-# [prepend, text] - Prepend text to the beginning of the user's search string
 # [uppercase] - Convert string to uppercase
 #
 # See the CallNumber search below for an example of custom munging in action.
