@@ -33,6 +33,7 @@
         "colinmollenhour/credis": "1.16.1",
         "composer/package-versions-deprecated": "1.11.99.5",
         "composer/semver": "3.4.3",
+        "elgigi/commonmark-emoji": "2.0.0",
         "endroid/qr-code": "5.1.0",
         "firebase/php-jwt": "6.10.1",
         "guzzlehttp/guzzle": "7.9.2",
@@ -100,7 +101,9 @@
         "webfontkit/open-sans": "^1.0",
         "webmozart/glob": "^4.7",
         "wikimedia/composer-merge-plugin": "2.1.0",
-        "yajra/laravel-pdo-via-oci8": "3.4.4"
+        "yajra/laravel-pdo-via-oci8": "3.4.4",
+        "league/commonmark": "2.3.9",
+        "elgigi/commonmark-emoji": "2.0.0"
     },
     "require-dev": {
         "behat/mink": "1.11.0",

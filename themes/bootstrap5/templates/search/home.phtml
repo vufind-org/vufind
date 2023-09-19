@@ -12,10 +12,13 @@
   }
 
   $this->layout()->breadcrumbs = false;
+
+  $this->layout()->notifications = false;
 ?>
 
 <div class="searchHomeContent">
   <?php $this->slot('search-home-hero')->start() ?>
+    <?=$this->context($this)->renderInContext('notifications/searchhomebroadcasts.phtml', [])?>
     <?=$this->render('search/searchbox.phtml')?>
     <?=$this->assetManager()->outputInlineScriptString('$("#searchForm_lookfor").focus();'); ?>
   <?=$this->slot('search-home-hero')->end() ?>

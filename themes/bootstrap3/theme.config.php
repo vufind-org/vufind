@@ -70,6 +70,7 @@ return [
         ['file' => 'openurl.js', 'priority' => 380],
         ['file' => 'list_item_selection.js', 'priority' => 390],
         ['file' => 'validation.js', 'priority' => 400],
+        ['file' => 'notifications.js', 'priority' => 410],
     ],
     /**
      * Configuration for a single or multiple favicons.
@@ -104,6 +105,7 @@ return [
             'VuFind\View\Helper\Bootstrap3\Highlight' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Bootstrap3\LayoutClass' => 'VuFind\View\Helper\Bootstrap3\LayoutClassFactory',
             'VuFind\View\Helper\Bootstrap3\Search' => 'Laminas\ServiceManager\Factory\InvokableFactory',
+            'VuFind\View\Helper\Notifications\Notifications' => 'VuFind\View\Helper\Notifications\NotificationsFactory',
         ],
         'aliases' => [
             'bulkAction' => 'VuFind\View\Helper\Bootstrap3\BulkAction',
@@ -112,6 +114,7 @@ return [
             'highlight' => 'VuFind\View\Helper\Bootstrap3\Highlight',
             'layoutClass' => 'VuFind\View\Helper\Bootstrap3\LayoutClass',
             'search' => 'VuFind\View\Helper\Bootstrap3\Search',
+            'notifications' => 'VuFind\View\Helper\Notifications\Notifications',
         ],
     ],
     'icons' => [
@@ -261,6 +264,13 @@ return [
             'offcanvas-hide-right' => 'FontAwesome:angle-left',
             'offcanvas-show-left' => 'FontAwesome:angle-double-left',
             'offcanvas-show-right' => 'FontAwesome:angle-double-right',
+            'notifications-edit' => 'FontAwesome:edit',
+            'notifications-delete' => 'FontAwesome:trash',
+            'notifications-visible' => 'FontAwesome:eye',
+            'notifications-invisible' => 'FontAwesome:eye-slash',
+            'notifications-visible-global' => 'FontAwesome:times-circle',
+            'notifications-invisible-global' => 'FontAwesome:globe',
+            'notifications-order' => 'FontAwesome:list',
             'options' => 'FontAwesome:gear',
             'overdrive' => 'FontAwesome:download',
             'overdrive-cancel-hold' => 'Alias:ui-cancel',

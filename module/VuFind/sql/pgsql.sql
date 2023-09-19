@@ -383,6 +383,52 @@ PRIMARY KEY (id, type)
 );
 
 --
+-- Table structure for table `notifications_broadcasts`
+--
+
+DROP TABLE IF EXISTS "notifications_broadcasts";
+
+CREATE TABLE notifications_broadcasts (
+id serial,
+broadcast_id int DEFAULT NULL,
+visibility tinyint DEFAULT NULL,
+visibility_global tinyint DEFAULT NULL,
+priority int DEFAULT NULL,
+author_id int DEFAULT NULL,
+content text DEFAULT NULL,
+color varchar(255) DEFAULT NULL,
+startdate date DEFAULT NULL,
+enddate date DEFAULT NULL,
+change_date date DEFAULT NULL,
+create_date date DEFAULT NULL,
+language varchar(255) DEFAULT NULL,
+PRIMARY KEY (id)
+);
+
+--
+-- Table structure for table `notifications_pages`
+--
+
+DROP TABLE IF EXISTS "notifications_pages";
+
+CREATE TABLE notifications_pages (
+id serial,
+page_id int DEFAULT NULL,
+visibility tinyint DEFAULT NULL,
+is_external_url tinyint DEFAULT NULL,
+priority int DEFAULT NULL,
+author_id int DEFAULT NULL,
+headline varchar(255) DEFAULT NULL,
+nav_title varchar(255) DEFAULT NULL,
+content text DEFAULT NULL,
+external_url varchar(255) DEFAULT NULL,
+change_date date DEFAULT NULL,
+create_date date DEFAULT NULL,
+language varchar(255) DEFAULT NULL,
+PRIMARY KEY (id)
+);
+
+--
 -- Table structure for table `login_token`
 --
 
