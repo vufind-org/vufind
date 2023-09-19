@@ -95,15 +95,37 @@ header .container.navbar { margin-bottom: 0; }
   }
 }
 
-.record-nav,
-.bulkActionButtons {
+.record-nav {
   @include clearfix();
   margin: 1rem 0;
   padding: 0;
 }
-.bulk-checkbox,
+.bulkActionButtons,
+.action-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  align-items: center;
+}
+.bulkActionButtons {
+  margin-block: 1rem;
+}
+.bulk-checkbox {
+  padding-inline-end: 1rem;
+  /* wrap below */
+  order: 1;
+  flex-basis: 100%;
+}
 .bulkActionButtons label { display: inline-block; }
 .bulkActionButtons label input { margin-top: 2px; }
+
+@media (min-width: 1200px) {
+  .bulk-checkbox {
+    /* place inline */
+    order: unset;
+    flex-basis: auto;
+  }
+}
 
 .action-toolbar {
   display: inline-block;
@@ -461,8 +483,10 @@ body.rtl {
 .active-filters {
   clear: both;
   display: flex;
-  justify-content: flex-start;
-  align-items: baseline;
+  gap: 1rem;
+  align-items: start;
+  margin-block: 0.5rem;
+
   .retain-filters {
     float: right;
   }
@@ -487,7 +511,7 @@ body.rtl {
   }
   .filters {
     flex: 10 1 auto;
-    padding: 5px 0 5px 10px;
+
     .collapse {
       display: none;
       .in {
@@ -552,6 +576,9 @@ body.rtl {
   &:hover {
     background-color: rgba(0,0,0,.1);
   }
+}
+.reset-filters-btn {
+  flex: none;
 }
 
 .active-filters .filters a.filter-value:hover,
@@ -621,7 +648,6 @@ table.search-history-table {
 
   #searchForm-reset {
     position: absolute;
-    display: none;
     right: 3px;
     top: 3px;
     bottom: 0;

@@ -453,6 +453,9 @@ class SearchHandler
                     $string
                 );
                 break;
+            case 'prepend':
+                $string = $operation[1] . $string;
+                break;
             case 'ucfirst':
                 $string = ucfirst($string);
                 break;

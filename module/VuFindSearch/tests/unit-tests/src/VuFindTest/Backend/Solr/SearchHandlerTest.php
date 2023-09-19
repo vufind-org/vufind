@@ -127,6 +127,7 @@ class SearchHandlerTest extends TestCase
                     ['preg_replace', '/[ "]/', ''],
                     ['preg_replace', '/\*+$/', ''],
                     ['append', '*'],
+                    ['prepend', '^'],
                 ],
             ],
             'QueryFields' => [
@@ -143,7 +144,7 @@ class SearchHandlerTest extends TestCase
 
         $hndl = new SearchHandler($spec);
         $this->assertEquals(
-            '(callnumber:(ABC123)^1000 OR callnumber:(ABC123*) OR dewey-full:(ABC123)^1000 OR dewey-full:(ABC123*))',
+            '(callnumber:(ABC123)^1000 OR callnumber:(^ABC123*) OR dewey-full:(ABC123)^1000 OR dewey-full:(^ABC123*))',
             $hndl->createSimpleQueryString('abc"123*')
         );
     }

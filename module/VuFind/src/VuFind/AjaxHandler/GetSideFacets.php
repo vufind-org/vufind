@@ -290,7 +290,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
      * Get facet data for a hierarchical facet
      *
      * @param string         $facet       Facet
-     * @param array          $sortOptions Hierarhical facet sort options
+     * @param array          $sortOptions Hierarchical facet sort options
      * @param array          $facetList   Facet list
      * @param UrlQueryHelper $urlHelper   UrlQueryHelper for creating facet URLs
      *
