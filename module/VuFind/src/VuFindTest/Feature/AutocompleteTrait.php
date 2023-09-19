@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Session view helper Test Class
+ * Trait adding autocomplete checking functionality to a Mink test class.
  *
  * PHP version 8
  *
@@ -27,13 +27,12 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 
-namespace VuFindTest\View\Helper\Root;
+namespace VuFindTest\Feature;
 
-use VuFind\View\Helper\Root\Session;
-use VuFind\View\Helper\Root\SessionFactory;
+use Behat\Mink\Element\Element;
 
 /**
- * Session view helper Test Class
+ * Trait adding autocomplete checking functionality to a Mink test class.
  *
  * @category VuFind
  * @package  Tests
@@ -41,30 +40,32 @@ use VuFind\View\Helper\Root\SessionFactory;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class SessionTest extends \PHPUnit\Framework\TestCase
+trait AutocompleteTrait
 {
     /**
-     * Test the helper
+     * Get an autocomplete item, and assert its value.
      *
-     * @return void
+     * @param Element $page Page element
+     * @param string  $text Expected text
+     *
+     * @return Element
      */
-    public function testSession()
+    public function getAndAssertFirstAutocompleteValue(Element $page, string $text): Element
     {
-        // Set up a real session manager so that we can test the factory behavior:
-        $container = new \VuFindTest\Container\MockContainer($this);
-        $container->set(\Laminas\Session\SessionManager::class, \Laminas\Session\Container::getDefaultManager());
-        $factory = new SessionFactory();
-
-        // Now build the test subject
-        $session = $factory($container, Session::class);
-        // Values default to null
-        $this->assertNull($session->get('foo'));
-        // Put returns last assigned value
-        $this->assertNull($session->put('foo', 'bar'));
-        $this->assertEquals('bar', $session->put('foo', 'baz'));
-        // Getter works after setter
-        $this->assertEquals('baz', $session->get('foo'));
-        // Invoke works
-        $this->assertEquals($session, $session());
+        $tries = 0;
+        $loadMsg = 'Loading…';
+        do {
+            $acItem = $this->findCss($page, '.autocomplete-results .ac-item');
+            $acItemText = $acItem->getText();
+            if (strcasecmp($acItemText, $loadMsg) === 0) {
+                $this->snooze(0.5);
+            }
+            $tries++;
+        } while (strcasecmp($acItemText, $loadMsg) === 0 && $tries <= 5);
+        $this->assertEquals(
+            $text,
+            $this->findCss($page, '.autocomplete-results .ac-item')->getText()
+        );
+        return $acItem;
     }
 }

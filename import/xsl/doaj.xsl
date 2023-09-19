@@ -100,7 +100,7 @@
                         <xsl:value-of select="oai_doaj:title[normalize-space()]"/>
                     </field>
                     <field name="title_sort">
-                        <xsl:value-of select="php:function('VuFind::stripArticles', string(oai_doaj:title[normalize-space()]))"/>
+                        <xsl:value-of select="php:function('VuFind::titleSortLower', php:function('VuFind::stripArticles', string(oai_doaj:title[normalize-space()])))"/>
                     </field>
                 </xsl:if>
 
