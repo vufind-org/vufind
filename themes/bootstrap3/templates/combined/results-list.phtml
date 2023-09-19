@@ -92,10 +92,10 @@
       </a>
     </p>
   <?php endif; ?>
-  <?php if ($currentSearch['advanced_link'] ?? false): ?>
-    <p class="advanced_link">
+  <?php if ($currentSearch['advanced_link_bottom'] ?? false): ?>
+    <p class="advanced_link_bottom">
       <a class="icon-link" href="<?=$advancedSearchUrl?>">
-        <span class="icon-link__label"><?=$this->transEsc($currentSearch['advanced_link'])?></span>
+        <span class="icon-link__label"><?=$this->transEsc($currentSearch['advanced_link_bottom'])?></span>
         <?=$this->icon('more', 'icon-link__icon') ?>
       </a>
     </p>
