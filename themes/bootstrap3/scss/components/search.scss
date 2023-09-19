@@ -496,8 +496,10 @@ body.rtl {
 .active-filters {
   clear: both;
   display: flex;
-  justify-content: flex-start;
-  align-items: baseline;
+  gap: 1rem;
+  align-items: start;
+  margin-block: 0.5rem;
+
   .retain-filters {
     float: right;
   }
@@ -522,7 +524,7 @@ body.rtl {
   }
   .filters {
     flex: 10 1 auto;
-    padding: 5px 0 5px 10px;
+
     .collapse {
       display: none;
       .in {
@@ -587,6 +589,9 @@ body.rtl {
   &:hover {
     background-color: rgba(0,0,0,.1);
   }
+}
+.reset-filters-btn {
+  flex: none;
 }
 
 .active-filters .filters a.filter-value:hover,
