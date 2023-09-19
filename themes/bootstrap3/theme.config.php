@@ -7,8 +7,7 @@ return [
         'vendor/datatables.min.css',
         'vendor/jquery-ui.css',
         'compiled.css',
-        'print.css:print',
-        'notifications.css',
+        'print.css:print'
     ],
     'js' => [
         /**

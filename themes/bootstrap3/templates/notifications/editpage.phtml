@@ -8,6 +8,7 @@
 
     // Set up page title:
     $this->headTitle($this->translate($title));
+    $this->headScript()->appendFile('notifications.js');
 
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('admin/notifications-pages', ['action' => 'Pages']) . '">' . $this->transEsc('Notifications Pages') . '</a></li> <li class="active">' . $this->transEsc($title) . '</li>';

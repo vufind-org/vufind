@@ -8,6 +8,7 @@
 
     // Set up broadcast title:
     $this->headTitle($this->translate($title));
+    $this->headScript()->appendFile('notifications.js');
 
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('admin/notifications-broadcasts', ['action' => 'Broadcasts']) . '">' . $this->transEsc('Notifications Broadcasts') . '</a></li> <li class="active">' . $this->transEsc($title) . '</li>';

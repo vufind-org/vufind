@@ -1,6 +1,7 @@
 <?php
     // Set up page title:
     $this->headTitle($this->translate('Delete Page'));
+    $this->headScript()->appendFile('notifications.js');
 
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('admin/notifications-broadcasts', ['action' => 'Broadcasts']) . '">' . $this->transEsc('Notifications Broadcasts') . '</a></li> <li class="active">' . $this->transEsc('Delete Broadcast') . '</li>';

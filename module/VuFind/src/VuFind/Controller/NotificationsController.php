@@ -118,7 +118,7 @@
          */
         public function broadcastsAction () {
             if (!stristr($this->getRequest()->getRequestUri(), '/Admin')) {
-                return $this->redirect()->toRoute('admin/notifications-broadcast', ['action' => 'Broadcasts']);
+                return $this->redirect()->toRoute('admin/notifications-broadcasts', ['action' => 'Broadcasts']);
             }
             if (!$this->getAuthManager()->isLoggedIn()) {
                 return $this->redirect()->toRoute('myresearch-home');
@@ -226,14 +226,14 @@
          */
         public function editBroadcastAction () {
             if (!stristr($this->getRequest()->getRequestUri(), '/Admin')) {
-                return $this->redirect()->toRoute('admin/notifications-broadcast', ['action' => 'EditBroadcast']);
+                return $this->redirect()->toRoute('admin/notifications-broadcasts', ['action' => 'EditBroadcast']);
             }
             $user = $this->getAuthManager()->isLoggedIn();
             if (!$user) {
                 return $this->redirect()->toRoute('myresearch-home');
             }
             if ($this->getRequest()->getPost('cancel')) {
-                return $this->redirect()->toRoute('admin/notifications-broadcast', ['action' => 'Broadcasts']);
+                return $this->redirect()->toRoute('admin/notifications-broadcasts', ['action' => 'Broadcasts']);
             }
 
             $broadcastsTable = $this->getTable('notifications_broadcasts');

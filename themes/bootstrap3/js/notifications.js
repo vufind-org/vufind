@@ -46,7 +46,7 @@ $(function() {
         e.preventDefault();
         var $this = $(this);
         $.ajax({
-            url : '/vufind/AJAX/JSON?method=Visibility',
+            url : '/vufind/AJAX/JSON?method=NotificationsVisibility',
             dataType:'json',
             data: {
                 'page-id': $this.parents('tr').data('page-id'),
@@ -71,7 +71,7 @@ $(function() {
         e.preventDefault();
         var $this = $(this);
         $.ajax({
-            url : '/vufind/AJAX/JSON?method=Visibility',
+            url : '/vufind/AJAX/JSON?method=NotificationsVisibility',
             dataType:'json',
             data: {
                 'page-id': $this.parents('tr').data('page-id'),
