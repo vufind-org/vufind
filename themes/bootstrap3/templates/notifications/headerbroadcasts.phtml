@@ -1,0 +1,8 @@
+<?php
+  $broadcasts = $this->notifications()->getBroadcasts(true);
+?>
+<div class="broadcast_wrapper_global">
+  <?php foreach($broadcasts as $broadcast): ?>
+    <span class="broadcast" style="background-color:<?=$broadcast['color_value']?>; border-color:<?=$broadcast['border_color_value']?>;"><?=$broadcast['content']?></span>
+  <?php endforeach; ?>
+</div>

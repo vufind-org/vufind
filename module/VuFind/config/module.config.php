@@ -139,6 +139,39 @@ $config = [
                     ],
                 ],
             ],
+            'admin' => [
+                'type' => 'Laminas\Router\Http\Literal',
+                'options' => [
+                    'route'    => '/Admin',
+                    'defaults' => [
+                        'controller' => 'Admin',
+                        'action'     => 'Home',
+                    ]
+                ],
+                'may_terminate' => true,
+                'child_routes' => [
+                    'notifications-pages' => [
+                        'type' => 'Laminas\Router\Http\Segment',
+                        'options' => [
+                            'route'    => '/Notifications[/:action][?page_id=:page_id]',
+                            'defaults' => [
+                                'controller' => 'Notifications',
+                                'action'     => 'Home',
+                            ]
+                        ],
+                    ],
+                    'notifications-broadcasts' => [
+                        'type' => 'Laminas\Router\Http\Segment',
+                        'options' => [
+                            'route'    => '/Notifications[/:action][?broadcast_id=:broadcast_id]',
+                            'defaults' => [
+                                'controller' => 'Notifications',
+                                'action'     => 'Home',
+                            ]
+                        ],
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
@@ -183,6 +216,7 @@ $config = [
             'VuFind\Controller\LibraryCardsController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\MissingrecordController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\MyResearchController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFind\Controller\NotificationsController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\OaiController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\OAuth2Controller' => 'VuFind\Controller\OAuth2ControllerFactory',
             'VuFind\Controller\OverdriveController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -289,6 +323,8 @@ $config = [
             'missingrecord' => 'VuFind\Controller\MissingrecordController',
             'MyResearch' => 'VuFind\Controller\MyResearchController',
             'myresearch' => 'VuFind\Controller\MyResearchController',
+            'Notifications' => 'VuFind\Controller\NotificationsController',
+            'notifications' => 'VuFind\Controller\NotificationsController',
             'OAI' => 'VuFind\Controller\OaiController',
             'oai' => 'VuFind\Controller\OaiController',
             'OAuth2' => 'VuFind\Controller\OAuth2Controller',
@@ -368,6 +404,12 @@ $config = [
             'reserves' => 'VuFind\Controller\Plugin\Reserves',
             'resultScroller' => 'VuFind\Controller\Plugin\ResultScroller',
             'storageRetrievalRequests' => 'VuFind\Controller\Plugin\StorageRetrievalRequests',
+        ],
+    ],
+    'form_elements' => [
+        'factories' => [
+            'VuFind\Form\BroadcastsForm' => 'VuFind\Form\BroadcastsFormFactory',
+            'VuFind\Form\PagesForm' => 'VuFind\Form\PagesFormFactory',
         ],
     ],
     'service_manager' => [
@@ -719,6 +761,7 @@ $dynamicRoutes = [
     'Feedback' => ['feedback-form' => 'Form/[:id]'],
     'MyResearch' => ['userList' => 'MyList/[:id]', 'editList' => 'EditList/[:id]'],
     'LibraryCards' => ['editLibraryCard' => 'editCard/[:id]'],
+    'Notifications' => ['notifications-page' => 'Page/[:page_id]'],
 ];
 
 // Define static routes -- Controller/Action strings

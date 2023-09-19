@@ -1,0 +1,28 @@
+<?php
+    $title = 'Edit Page';
+    $submit = 'Save';
+    if ($this->addNew) {
+        $title = 'Add Page';
+        $submit = 'Save';
+    }
+
+    // Set up page title:
+    $this->headTitle($this->translate($title));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('admin/notifications-pages', ['action' => 'Pages']) . '">' . $this->transEsc('Notifications Pages') . '</a></li> <li class="active">' . $this->transEsc($title) . '</li>';
+?>
+
+<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="Expand Sidebar">
+    <?=$this->transEsc($title) ?>
+</a>
+
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <h2><?=$this->transEsc($title)?></h2>
+    <?=$this->flashmessages()?>
+    <?= $this->partial('pagesform', ['form' => $this->form, 'submitLabel' => $this->translate($submit), 'cancelLabel' => $this->translate('confirm_dialog_no'), 'languages' => $this->languages,]) ?>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>">
+    <?=$this->render("admin/menu.phtml")?>
+</div>

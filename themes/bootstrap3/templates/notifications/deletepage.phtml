@@ -1,0 +1,33 @@
+<?php
+    // Set up page title:
+    $this->headTitle($this->translate('Delete Page'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('admin/notifications-pages', ['action' => 'Pages']) . '">' . $this->transEsc('Notifications Pages') . '</a></li> <li class="active">' . $this->transEsc('Delete Page') . '</li>';
+?>
+
+<a class="search-filter-toggle visible-xs" href="#myresearch-sidebar" data-toggle="offcanvas" title="Expand Sidebar">
+    <?=$this->transEsc('Delete Page') ?>
+</a>
+
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <h2><?=$this->transEsc('Delete Page')?></h2>
+    <?=$this->flashmessages()?>
+
+  <p><?= $this->translate('Are you sure you want to delete the following page?') ?></p>
+
+  <b><?= $this->page['nav_title'].' / '.$this->page['headline'] ?></b><br/><br/>
+
+  <form action="<?php $this->url('admin/notifications-pages', [['action' => 'DeletePage'], 'page_id' => $this->page_id]) ?>" method="post">
+    <div class="form-group">
+      <input type="hidden" name="page_id" value="<?= $this->escapeHtmlAttr($this->page->page_id) ?>" />
+      <input class="btn btn-default" type="submit" name="confirm" value="<?= $this->translate('confirm_dialog_no') ?>" />
+      <input class="btn btn-danger" type="submit" name="confirm" value="<?= $this->translate('Delete') ?>" />
+    </div>
+  </form>
+
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
+    <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'pages'])?>
+</div>

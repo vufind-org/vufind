@@ -4,8 +4,11 @@ return [
     'css' => [
         //'vendor/bootstrap.min.css',
         //'vendor/bootstrap-accessibility.css',
+        'vendor/datatables.min.css',
+        'vendor/jquery-ui.css',
         'compiled.css',
         'print.css:print',
+        'notifications.css',
     ],
     'js' => [
         /**
@@ -40,6 +43,8 @@ return [
         ['file' => 'vendor/validator.min.js', 'priority' => 140],
         ['file' => 'vendor/autocomplete.js', 'priority' => 220],
         ['file' => 'lib/ajax_request_queue.js', 'priority' => 230],
+        ['file' => 'vendor/datatables.min.js', 'priority' => 240],
+        ['file' => 'vendor/jquery-ui.min.js', 'priority' => 250],
         ['file' => 'common.js', 'priority' => 310],
         ['file' => 'lightbox.js', 'priority' => 320],
         ['file' => 'searchbox_controls.js', 'priority' => 330],
@@ -79,6 +84,7 @@ return [
             'VuFind\View\Helper\Bootstrap3\Highlight' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Bootstrap3\LayoutClass' => 'VuFind\View\Helper\Bootstrap3\LayoutClassFactory',
             'VuFind\View\Helper\Bootstrap3\Search' => 'Laminas\ServiceManager\Factory\InvokableFactory',
+            'VuFind\View\Helper\Notifications\Notifications' => 'VuFind\View\Helper\Notifications\NotificationsFactory'
         ],
         'aliases' => [
             'copyToClipboardButton' => 'VuFind\View\Helper\Bootstrap3\CopyToClipboardButton',
@@ -86,6 +92,7 @@ return [
             'highlight' => 'VuFind\View\Helper\Bootstrap3\Highlight',
             'layoutClass' => 'VuFind\View\Helper\Bootstrap3\LayoutClass',
             'search' => 'VuFind\View\Helper\Bootstrap3\Search',
+            'notifications' => 'VuFind\View\Helper\Notifications\Notifications',
         ],
     ],
     'icons' => [
@@ -224,6 +231,13 @@ return [
             'my-account-notification' => 'Alias:notification',
             'my-account-warning' => 'Alias:warning',
             'notification' => 'FontAwesome:bell',
+            'notifications-edit' => 'FontAwesome:edit',
+            'notifications-delete' => 'FontAwesome:trash',
+            'notifications-visible' => 'FontAwesome:eye',
+            'notifications-invisible' => 'FontAwesome:eye-slash',
+            'notifications-visible-global' => 'FontAwesome:times-circle',
+            'notifications-invisible-global' => 'FontAwesome:globe',
+            'notifications-order' => 'FontAwesome:list',
             'options' => 'FontAwesome:gear',
             'overdrive' => 'FontAwesome:download',
             'overdrive-cancel-hold' => 'FontAwesome:flag-o',
