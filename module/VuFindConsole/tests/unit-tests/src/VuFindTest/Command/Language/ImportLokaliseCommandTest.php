@@ -91,10 +91,12 @@ class ImportLokaliseCommandTest extends \PHPUnit\Framework\TestCase
         $source = $this->baseFixtureDir . '/incoming';
         $target = $this->baseFixtureDir . '/existing';
         $command = $this->getMockCommand();
-        $command->expects($this->exactly(2))->method('writeToDisk')
+        $command->expects($this->exactly(4))->method('writeToDisk')
             ->withConsecutive(
+                [$target . '/da.ini', "new = \"NEW!\"\n"],
                 [$target . '/en.ini', "bar = \"enbaz\"\nfoo = \"enINCOMING\"\nxyzzy = \"enXYZZY\"\n"],
-                [$target . '/pt-br.ini', "bar = \"pt-brbaz\"\nfoo = \"pt-brINCOMING\"\nxyzzy = \"pt-brXYZZY\"\n"]
+                [$target . '/pt-br.ini', "bar = \"pt-brbaz\"\nfoo = \"pt-brINCOMING\"\nxyzzy = \"pt-brXYZZY\"\n"],
+                [$target . '/zh.ini', "bar = \"zhbaz\"\nfoo = \"zhINCOMING\"\nxyzzy = \"zhXYZZY\"\n"],
             );
         $commandTester = new CommandTester($command);
         $commandTester->execute(compact('source', 'target'));
