@@ -70,8 +70,8 @@
             }
             $tablePluginManager = $container->get(\VuFind\Db\Table\PluginManager::class);
             return new $requestedName(
-                $tablePluginManager->get(\Notifications\Db\Table\Pages::class),
-                $tablePluginManager->get(\Notifications\Db\Table\Broadcasts::class),
+                $tablePluginManager->get(\VuFind\Db\Table\Pages::class),
+                $tablePluginManager->get(\VuFind\Db\Table\Broadcasts::class),
             );
         }
     }
