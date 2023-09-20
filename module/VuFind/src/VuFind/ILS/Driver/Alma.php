@@ -463,10 +463,11 @@ class Alma extends AbstractBase implements
         $patronId = $patron['id'];
         $level = $data['level'] ?? 'copy';
         if ('copy' === $level) {
-            // Call the request-options API for the logged-in user
+            // Call the request-options API for the logged-in user; note that holding_id
+            // is deprecated but retained for backward compatibility.
             $requestOptionsPath = '/bibs/' . rawurlencode($id)
-                . '/holdings/' . rawurlencode($data['holdings_id']) . '/items/'
-                . rawurlencode($data['item_id']) . '/request-options?user_id='
+                . '/holdings/' . rawurlencode($data['holdings_id'] ?? $data['holding_id'])
+                . '/items/' . rawurlencode($data['item_id']) . '/request-options?user_id='
                 . urlencode($patronId);
 
             // Make the API request
@@ -1494,7 +1495,8 @@ class Alma extends AbstractBase implements
         // Get information that is valid for both, item level requests and title
         // level requests.
         $mmsId = $holdDetails['id'];
-        $holId = $holdDetails['holdings_id'];
+        // The holding_id value is deprecated but retained for back-compatibility
+        $holId = $holdDetails['holdings_id'] ?? $data['holding_id'];
         $itmId = $holdDetails['item_id'];
         $patronId = $holdDetails['patron']['id'];
         $pickupLocation = $holdDetails['pickUpLocation'] ?? null;
