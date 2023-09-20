@@ -93,7 +93,7 @@ class ImportLokaliseCommandTest extends \PHPUnit\Framework\TestCase
         $command = $this->getMockCommand();
         $command->expects($this->exactly(4))->method('writeToDisk')
             ->withConsecutive(
-                [$target . '/da.ini', "new = \"NEW!\"\n"],
+                [$target . '/da.ini', "new = \"NEW!\"\nstripped = \"NoQuotes\"\n"],
                 [$target . '/en.ini', "bar = \"enbaz\"\nfoo = \"enINCOMING\"\nxyzzy = \"enXYZZY\"\n"],
                 [$target . '/pt-br.ini', "bar = \"pt-brbaz\"\nfoo = \"pt-brINCOMING\"\nxyzzy = \"pt-brXYZZY\"\n"],
                 [$target . '/zh.ini', "bar = \"zhbaz\"\nfoo = \"zhINCOMING\"\nxyzzy = \"zhXYZZY\"\n"],
