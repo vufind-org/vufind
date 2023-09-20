@@ -9,7 +9,8 @@
   $moreUrl = $this->url($params->getOptions()->getSearchAction()) . $results->getUrlQuery()->setPage(1)->setLimit($params->getOptions()->getDefaultLimit());
 
   // Advanced search link
-  $advancedSearchAction = $params->getOptions()->getAdvancedSearchAction();
+  $advancedSearchAction = ($currentSearch['advanced_link_bottom'] ?? false)
+    ? $params->getOptions()->getAdvancedSearchAction() : false;
   $advancedSearchUrl = $advancedSearchAction
     ? $this->url($advancedSearchAction, [], ['query' => ['edit' => $results->getSearchId()]])
     : false;
@@ -92,7 +93,7 @@
       </a>
     </p>
   <?php endif; ?>
-  <?php if ($currentSearch['advanced_link_bottom'] ?? false): ?>
+  <?php if ($advancedSearchUrl): ?>
     <p class="advanced_link_bottom">
       <a class="icon-link" href="<?=$advancedSearchUrl?>">
         <span class="icon-link__label"><?=$this->transEsc($currentSearch['advanced_link_bottom'])?></span>
