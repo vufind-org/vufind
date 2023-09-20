@@ -86,7 +86,7 @@ class ImportLokaliseCommand extends AbstractCommand
      */
     protected function collectSourceFiles(string $dir): array
     {
-        $dirs = [];
+        $files = [];
         $dirHandle = opendir($dir);
         while ($file = readdir($dirHandle)) {
             if (strlen(trim($file, '.')) === 0) {
@@ -94,13 +94,14 @@ class ImportLokaliseCommand extends AbstractCommand
             }
             $next = "$dir/$file";
             if (is_dir($next)) {
-                $dirs = array_merge($dirs, $this->collectSourceFiles($next));
+                $files = array_merge($files, $this->collectSourceFiles($next));
             } elseif (str_ends_with($next, '.ini')) {
-                $dirs[] = $next;
+                $files[] = $next;
             }
         }
         closedir($dirHandle);
-        return $dirs;
+        sort($files); // sort file list for consistent, predictable order of operations
+        return $files;
     }
 
     /**
