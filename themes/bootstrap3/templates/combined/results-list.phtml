@@ -86,7 +86,7 @@
   ?>
   <?=$this->render('search/list-' . $viewType . '.phtml', $viewParams)?>
   <?php if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
-    <p class="more_link">
+    <p class="more_link_bottom">
       <a class="icon-link" href="<?=$moreUrl?>">
         <span class="icon-link__label"><?=$this->transEsc($currentSearch['more_link'])?></span>
         <?=$this->icon('more', 'icon-link__icon') ?>
