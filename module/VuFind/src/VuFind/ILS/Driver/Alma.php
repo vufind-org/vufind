@@ -1496,7 +1496,7 @@ class Alma extends AbstractBase implements
         // level requests.
         $mmsId = $holdDetails['id'];
         // The holding_id value is deprecated but retained for back-compatibility
-        $holId = $holdDetails['holdings_id'] ?? $data['holding_id'];
+        $holId = $holdDetails['holdings_id'] ?? $holdDetails['holding_id'];
         $itmId = $holdDetails['item_id'];
         $patronId = $holdDetails['patron']['id'];
         $pickupLocation = $holdDetails['pickUpLocation'] ?? null;
