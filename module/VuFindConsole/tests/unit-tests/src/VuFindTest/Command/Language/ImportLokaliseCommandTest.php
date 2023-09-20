@@ -44,12 +44,31 @@ use VuFindConsole\Command\Language\ImportLokaliseCommand;
  */
 class ImportLokaliseCommandTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
+    /**
+     * Base fixture directory
+     *
+     * @var string
+     */
+    protected $baseFixtureDir = null;
+
+    /**
+     * Standard setup method.
+     *
+     * @return void
+     */
+    public function setUp(): void
+    {
+        $this->baseFixtureDir = $this->getFixtureDir('VuFindConsole') . 'lokalise';
+    }
+
     /**
      * Test that missing parameters yield an error message.
      *
      * @return void
      */
-    public function testWithoutParameters()
+    public function testWithoutParameters(): void
     {
         $this->expectException(
             \Symfony\Component\Console\Exception\RuntimeException::class
@@ -57,25 +76,40 @@ class ImportLokaliseCommandTest extends \PHPUnit\Framework\TestCase
         $this->expectExceptionMessage(
             'Not enough arguments (missing: "source, target").'
         );
-        $command = new ImportLokaliseCommand($this->getMockNormalizer());
+        $command = new ImportLokaliseCommand(new ExtendedIniNormalizer());
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
     }
 
     /**
-     * Get a mock normalizer object
+     * Test a successful load.
      *
-     * @param array $methods Methods to mock
-     *
-     * @return ExtendedIniNormalizer
+     * @return void
      */
-    protected function getMockNormalizer($methods = [])
+    public function testDataLoad(): void
     {
-        $builder = $this->getMockBuilder(ExtendedIniNormalizer::class)
-            ->disableOriginalConstructor();
-        if (!empty($methods)) {
-            $builder->onlyMethods($methods);
-        }
-        return $builder->getMock();
+        $source = $this->baseFixtureDir . '/incoming';
+        $target = $this->baseFixtureDir . '/existing';
+        $command = $this->getMockCommand();
+        $command->expects($this->exactly(2))->method('writeToDisk')
+            ->withConsecutive(
+                [$target . '/en.ini', "bar = \"enbaz\"\nfoo = \"enINCOMING\"\nxyzzy = \"enXYZZY\"\n"],
+                [$target . '/pt-br.ini', "bar = \"pt-brbaz\"\nfoo = \"pt-brINCOMING\"\nxyzzy = \"pt-brXYZZY\"\n"]
+            );
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(compact('source', 'target'));
+    }
+
+    /**
+     * Get a mock command (with file writing stubbed out).
+     *
+     * @return ImportLokaliseCommmand
+     */
+    protected function getMockCommand(): ImportLokaliseCommand
+    {
+        return $this->getMockBuilder(ImportLokaliseCommand::class)
+            ->setConstructorArgs([new ExtendedIniNormalizer()])
+            ->setMethods(['writeToDisk'])
+            ->getMock();
     }
 }
