@@ -168,6 +168,20 @@ class ImportLokaliseCommand extends AbstractCommand
     }
 
     /**
+     * Write content to disk.
+     *
+     * @param string $file Filename
+     * @param string $text Text to write
+     *
+     * @return void
+     */
+    protected function writeToDisk(string $file, string $text): void
+    {
+        // We wrap the file write here for testing/extensibility purposes.
+        file_put_contents($file, $text);
+    }
+
+    /**
      * Add new strings from $sourceFile to $targetFile.
      *
      * @param string $sourceFile New file from Lokalise
@@ -182,7 +196,7 @@ class ImportLokaliseCommand extends AbstractCommand
             $this->normalizer->loadFileIntoArray($sourceFile)
         );
         $targetStrings = file_exists($targetFile) ? $this->normalizer->loadFileIntoArray($targetFile) : [];
-        file_put_contents(
+        $this->writeToDisk(
             $targetFile,
             $this->normalizer->normalizeArray(array_merge($targetStrings, $sourceStrings))
         );
