@@ -82,6 +82,44 @@ class ImportLokaliseCommandTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test bad input parameter.
+     *
+     * @return void
+     */
+    public function testBadInputParameter(): void
+    {
+        $source = $this->baseFixtureDir . '/doesNotExist';
+        $target = $this->baseFixtureDir . '/existing';
+        $command = new ImportLokaliseCommand(new ExtendedIniNormalizer());
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(compact('source', 'target'));
+        $this->assertEquals(
+            "{$source} does not exist or is not a directory.\n",
+            $commandTester->getDisplay()
+        );
+        $this->assertEquals(1, $commandTester->getStatusCode());
+    }
+
+    /**
+     * Test bad output parameter.
+     *
+     * @return void
+     */
+    public function testBadOutputParameter(): void
+    {
+        $source = $this->baseFixtureDir . '/incoming';
+        $target = $this->baseFixtureDir . '/doesNotExist';
+        $command = new ImportLokaliseCommand(new ExtendedIniNormalizer());
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(compact('source', 'target'));
+        $this->assertEquals(
+            "{$target} does not exist or is not a directory.\n",
+            $commandTester->getDisplay()
+        );
+        $this->assertEquals(1, $commandTester->getStatusCode());
+    }
+
+    /**
      * Test a successful load.
      *
      * @return void
