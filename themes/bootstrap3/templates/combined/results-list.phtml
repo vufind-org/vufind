@@ -16,12 +16,13 @@
     : false;
 ?>
 <?php
+    $classId = $domId ?? 'combined_'.$searchClassId;
     $countsJs = <<<JS
         $(document).ready(function() {
           let count = $recordTotal;
           count = count.toLocaleString();
           const span = $("<span class='record-total'>(" + count + ")</span>");
-          $('.combined-jump-links .combined_$searchClassId').append(span);
+          $('.combined-jump-links .$classId').append(span);
         });
         JS;
 ?>
