@@ -156,7 +156,8 @@ class ImportLokaliseCommand extends AbstractCommand
     }
 
     /**
-     * Format a single line from a Lokalise language file to VuFind standards.
+     * Format a single line from a Lokalise language file so it is ready for further
+     * processing by the language file normalizer.
      *
      * @param string $line Line to format
      *
