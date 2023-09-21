@@ -633,18 +633,12 @@ class Form extends \Laminas\Form\Form implements
             'type' => 'text',
             'label' => $this->translate('feedback_name'),
             'group' => '__sender__',
-            'settings' => [
-                'maxlength' => 50,
-            ],
         ];
         $senderEmail = [
             'name' => 'email',
             'type' => 'email',
             'label' => $this->translate('feedback_email'),
             'group' => '__sender__',
-            'settings' => [
-                'maxlength' => 254,
-            ],
         ];
         if ($formConfig['senderInfoRequired'] ?? false) {
             $senderEmail['required'] = $senderName['required'] = true;
@@ -717,9 +711,6 @@ class Form extends \Laminas\Form\Form implements
             }
 
             if ($elementType == 'textarea') {
-                if (!isset($element['settings']['cols'])) {
-                    $element['settings']['cols'] = 50;
-                }
                 if (!isset($element['settings']['rows'])) {
                     $element['settings']['rows'] = 8;
                 }
