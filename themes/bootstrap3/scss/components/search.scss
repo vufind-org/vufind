@@ -427,7 +427,7 @@ body.rtl {
 .combined-jump-links {
   margin-left: 1rem;
   margin-right: 1rem;
-  
+
   ul {
     display: inline;
     list-style: none;
@@ -435,6 +435,7 @@ body.rtl {
 
     li {
       display: inline;
+      white-space: nowrap;
       &:not(:first-child):before {
         content: '\2013'; // n-dash
       }
