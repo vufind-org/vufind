@@ -16,14 +16,26 @@
     : false;
 ?>
 <?php
-    $classId = $domId ?? 'combined_' . $searchClassId;
+    $classId = $this->escapeHtml($domId ?? 'combined_' . $searchClassId);
     $countsJs = <<<JS
-        $(document).ready(function() {
+        function updateJumpLink_$classId() {
           let count = $recordTotal;
           count = count.toLocaleString();
-          const span = $("<span class='record-total'>(" + count + ")</span>");
-          $('.combined-jump-links .$classId').append(span);
-        });
+
+          const template = document.createElement('template');
+          template.innerHTML = "<span class='record-total'>(" + count + ")</span>";
+          const span = template.content.children[0];
+
+          const link = document.querySelector('.combined-jump-links .$classId');
+          link.append(span);
+        }
+
+        if (document.readyState != 'loading') {
+          updateJumpLink_$classId();
+        }
+        else {
+          document.addEventListener('DOMContentLoaded', updateJumpLink_$classId);
+        }
         JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $countsJs, 'SET')?>
