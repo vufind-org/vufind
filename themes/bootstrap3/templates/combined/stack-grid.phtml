@@ -1,7 +1,6 @@
 <div class="combined-search-container grid"
   style="grid-template-columns: repeat(<?=$this->escapeHtmlAttr($columns)?>, 1fr)"
 >
-  <?php $columnedParams = []; ?>
   <?php $columnIndex = 0; ?>
   <?php foreach ($this->combinedResults as $searchClassId => $currentSearch): ?>
     <?php
