@@ -27,7 +27,7 @@
         JS;
 ?>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $countsJs, 'SET')?>
-<?php if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
+<?php if ($currentSearch['more_link'] ?? false): ?>
   <div class="pull-right flip">
     <a href="<?=$moreUrl?>" class="btn btn-link icon-link">
       <?=$this->icon('options', 'icon-link__icon') ?>
@@ -97,7 +97,7 @@
     ];
   ?>
   <?=$this->render('search/list-' . $viewType . '.phtml', $viewParams)?>
-  <?php if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
+  <?php if ($currentSearch['more_link'] ?? false): ?>
     <p class="more_link_bottom">
       <a class="icon-link" href="<?=$moreUrl?>">
         <span class="icon-link__label"><?=$this->transEsc($currentSearch['more_link'])?></span>
