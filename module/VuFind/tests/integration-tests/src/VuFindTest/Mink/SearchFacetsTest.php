@@ -31,8 +31,6 @@
 
 namespace VuFindTest\Mink;
 
-use function count;
-
 /**
  * Mink search facet/filter functionality test class.
  *
@@ -42,7 +40,7 @@ use function count;
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    0
+ * @retry    4
  */
 class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -220,7 +218,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function ztestApplyFacet()
+    public function testApplyFacet()
     {
         $page = $this->performSearch('building:weird_ids.mrc');
 
@@ -237,7 +235,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function ztestApplyFacetDeferred()
+    public function testApplyFacetDeferred()
     {
         $this->changeConfigs(
             [
@@ -263,7 +261,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function ztestFacetLightbox()
+    public function testFacetLightbox()
     {
         $limit = 4;
         $this->changeConfigs(
@@ -389,7 +387,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function ztestFacetLightboxMoreSetting()
+    public function testFacetLightboxMoreSetting()
     {
         $limit = 4;
         $this->changeConfigs(
@@ -419,7 +417,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function ztestFacetLightboxExclusion()
+    public function testFacetLightboxExclusion()
     {
         $limit = 4;
         $this->changeConfigs(
@@ -469,7 +467,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function ztestHierarchicalFacets()
+    public function testHierarchicalFacets()
     {
         $this->changeConfigs(
             [
@@ -492,7 +490,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function ztestHierarchicalFacetExclude()
+    public function testHierarchicalFacetExclude()
     {
         $this->changeConfigs(
             [
@@ -537,7 +535,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function ztestCollapseStatePersistence()
+    public function testCollapseStatePersistence()
     {
         $this->changeConfigs(
             [
@@ -614,7 +612,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function ztestDefaultRetainFiltersBehavior()
+    public function testDefaultRetainFiltersBehavior()
     {
         $page = $this->getFilteredSearch();
         $this->assertFilterIsStillThere($page);
@@ -633,7 +631,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function ztestRetainFiltersOnHomePageBehavior()
+    public function testRetainFiltersOnHomePageBehavior()
     {
         $page = $this->getFilteredSearch();
         // Back to home spage:
@@ -652,7 +650,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function ztestFiltersOnRecord()
+    public function testFiltersOnRecord()
     {
         $page = $this->getFilteredSearch();
         $this->assertFilterIsStillThere($page);
@@ -671,7 +669,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function ztestNeverRetainFiltersBehavior()
+    public function testNeverRetainFiltersBehavior()
     {
         $this->changeConfigs(
             [
@@ -694,7 +692,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function ztestDefaultFiltersWithResetButton()
+    public function testDefaultFiltersWithResetButton()
     {
         // Unlike the other tests, which use $this->getFilteredSearch() to set up
         // the weird_ids.mrc filter through a URL parameter, this test sets up the
@@ -733,7 +731,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function ztestOrFacets()
+    public function testOrFacets()
     {
         $this->changeConfigs(
             [
