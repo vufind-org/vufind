@@ -1,7 +1,7 @@
 <div class="full-facet-list facet-group<?php if(!$active): ?> hidden<?php endif; ?>" id="facet-list-<?=$this->escapeHtmlAttr($key) ?>">
   <?php if ($active): ?>
     <?php if ($this->page > 1 && !$this->inLightbox && !$this->ajaxLightbox): ?>
-      <a href="<?=$urlBase . '&amp;facetpage=' . ($this->page - 1) . '&amp;facetsort=' . urlencode($this->sort) . '&amp;contains=' . urlencode($this->contains)?>" class="facet js-facet-prev-page" data-page="<?=($this->page + 1) ?>" data-sort="<?=$this->sort ?>" data-limit="<?=count($this->data) ?>"><?=$this->translate('prev_ellipsis') ?></a>
+      <a href="<?=$this->escapeHtmlAttr($urlBase . '&facetpage=' . ($this->page - 1) . '&facetsort=' . urlencode($this->sort) . '&contains=' . urlencode($this->contains))?>" class="facet js-facet-prev-page" data-page="<?=($this->page + 1) ?>" data-sort="<?=$this->sort ?>" data-limit="<?=count($this->data) ?>"><?=$this->translate('prev_ellipsis') ?></a>
     <?php endif; ?>
     <?php foreach ($this->data as $item): ?>
       <?=$this->render('Recommend/SideFacets/single-facet.phtml', [
@@ -14,7 +14,7 @@
     <?php endforeach; ?>
   <?php endif; ?>
   <?php if ($this->anotherPage): ?>
-    <a href="<?=$urlBase . '&amp;facet=' . $facet . '&amp;facetpage=' . ($this->page + 1) . '&amp;facetsort=' . urlencode($key) . '&amp;contains=' . urlencode($this->contains) ?>" class="facet js-facet-next-page" data-page="<?=($this->page + 1) ?>" data-sort="<?=$this->escapeHtmlAttr($key) ?>" data-lightbox-ignore>
+    <a href="<?=$this->escapeHtmlAttr($urlBase . '&facet=' . $facet . '&facetpage=' . ($this->page + 1) . '&facetsort=' . urlencode($key) . '&contains=' . urlencode($this->contains))?>" class="facet js-facet-next-page" data-page="<?=($this->page + 1) ?>" data-sort="<?=$this->escapeHtmlAttr($key) ?>" data-lightbox-ignore>
       <span class="text"><?=$this->translate('more_ellipsis') ?></span>
     </a>
   <?php endif; ?>

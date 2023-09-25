@@ -52,7 +52,7 @@
     <?php $active = $this->sort == $key; ?>
     <div class="full-facet-list facet-group<?php if(!$active): ?> hidden<?php endif; ?>" id="facet-list-<?=$this->escapeHtmlAttr($key) ?>">
       <?php
-        //The content of this list will later be updated via AJAX, see facet-list-content.phtml -->
+        // The content of this list will later be updated via AJAX, see facet-list-content.phtml -->
         $params = $this->delegateParams;
         $params['urlBase'] = $urlBase;
         $params['searchAction'] = $searchAction;
