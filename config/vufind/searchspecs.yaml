@@ -210,6 +210,7 @@
 # [preg_replace, pattern, replacement] - Perform a regular expression replace
 #     using the preg_replace() PHP function.  If you use backreferences in your
 #     replacement phrase, be sure to escape dollar signs (i.e. \$1, not $1).
+# [prepend, text] - Prepend text to the beginning of the user's search string
 # [ucfirst] - Uppercase the first letter of each word in the string
 # [uppercase] - Convert string to uppercase
 #
