@@ -33,6 +33,7 @@ use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\View\Renderer\RendererInterface;
 use VuFind\Recommend\PluginManager as RecommendPluginManager;
 use VuFind\Recommend\SideFacets;
+use VuFind\Search\Base\Options;
 use VuFind\Search\Base\Results;
 use VuFind\Search\RecommendListener;
 use VuFind\Search\SearchRunner;
@@ -75,13 +76,6 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
     protected $facetHelper;
 
     /**
-     * Main facet configuration
-     *
-     * @var \VuFind\Config\PluginManager
-     */
-    protected $facetConfig;
-
-    /**
      * View renderer
      *
      * @var RendererInterface
@@ -95,7 +89,6 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
      * @param RecommendPluginManager  $rpm      Recommend plugin manager
      * @param SearchRunner            $sr       Search runner
      * @param HierarchicalFacetHelper $fh       Facet helper
-     * @param \Laminas\Config\Config  $fc       Facet config
      * @param RendererInterface       $renderer View renderer
      */
     public function __construct(
@@ -103,14 +96,12 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
         \VuFind\Recommend\PluginManager $rpm,
         SearchRunner $sr,
         HierarchicalFacetHelper $fh,
-        \Laminas\Config\Config $fc,
         RendererInterface $renderer
     ) {
         $this->sessionSettings = $ss;
         $this->recommendPluginManager = $rpm;
         $this->searchRunner = $sr;
         $this->facetHelper = $fh;
-        $this->facetConfig = $fc;
         $this->renderer = $renderer;
     }
 
@@ -254,7 +245,8 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
                     $facet,
                     $hierarchicalFacetSortOptions,
                     $facetSet[$facet]['list'] ?? [],
-                    $urlHelper
+                    $urlHelper,
+                    $results->getOptions(),
                 );
             } else {
                 $context['facet'] = $facet;
@@ -290,6 +282,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
      * @param array          $sortOptions Hierarhical facet sort options
      * @param array          $facetList   Facet list
      * @param UrlQueryHelper $urlHelper   UrlQueryHelper for creating facet URLs
+     * @param Options        $options     Results options
      *
      * @return array
      */
@@ -297,7 +290,8 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
         $facet,
         $sortOptions,
         $facetList,
-        UrlQueryHelper $urlHelper
+        UrlQueryHelper $urlHelper,
+        Options $options
     ) {
         if (!empty($sortOptions[$facet])) {
             $this->facetHelper->sortFacetList(
@@ -305,7 +299,8 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
                 'top' === $sortOptions[$facet]
             );
         }
-
+        $facetFilters = $options->getFacetFilters();
+        $excludeFilters = $options->getExcludeFilters();
         $result = $this->facetHelper->buildFacetArray(
             $facet,
             $facetList,
@@ -314,18 +309,13 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
         );
 
         if (
-            !empty($this->facetConfig->FacetFilters->$facet)
-            || !empty($this->facetConfig->ExcludeFilters->$facet)
+            !empty($facetFilters[$facet])
+            || !empty($excludeFilters[$facet])
         ) {
-            $filters = !empty($this->facetConfig->FacetFilters->$facet)
-                ? $this->facetConfig->FacetFilters->$facet->toArray() : [];
-            $excludeFilters = !empty($this->facetConfig->ExcludeFilters->$facet)
-                ? $this->facetConfig->ExcludeFilters->$facet->toArray() : [];
-
             $result = $this->facetHelper->filterFacets(
                 $result,
-                $filters,
-                $excludeFilters
+                $facetFilters[$facet],
+                $excludeFilters[$facet]
             );
         }
 

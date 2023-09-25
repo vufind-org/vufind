@@ -379,4 +379,65 @@ class HierarchicalFacetHelper implements
         }
         return $result;
     }
+
+    /**
+     * Filter hierarchical facets
+     *
+     * @param array $facets         Facet list
+     * @param array $filters        Facet filters
+     * @param array $excludeFilters Exclusion filters
+     *
+     * @return array
+     */
+    public function filterFacets($facets, $filters, $excludeFilters)
+    {
+        if (!empty($filters)) {
+            foreach ($facets as $key => &$facet) {
+                $value = $facet['value'];
+                [$level] = explode('/', $value);
+                $match = false;
+                $levelSpecified = false;
+                foreach ($filters as $filterItem) {
+                    [$filterLevel] = explode('/', $filterItem);
+                    if ($level === $filterLevel) {
+                        $levelSpecified = true;
+                    }
+                    if (strncmp($value, $filterItem, strlen($filterItem)) == 0) {
+                        $match = true;
+                    }
+                }
+                if (!$match && $levelSpecified) {
+                    unset($facets[$key]);
+                } elseif (!empty($facet['children'])) {
+                    $facet['children'] = $this->filterFacets(
+                        $facet['children'],
+                        $filters,
+                        $excludeFilters
+                    );
+                }
+            }
+        }
+
+        if (!empty($excludeFilters)) {
+            foreach ($facets as $key => &$facet) {
+                $value = $facet['value'];
+                $match = false;
+                foreach ($excludeFilters as $filterItem) {
+                    if (strncmp($value, $filterItem, strlen($filterItem)) == 0) {
+                        unset($facets[$key]);
+                        continue 2;
+                    }
+                }
+                if (!empty($facet['children'])) {
+                    $facet['children'] = $this->filterFacets(
+                        $facet['children'],
+                        $filters,
+                        $excludeFilters
+                    );
+                }
+            }
+        }
+
+        return array_values($facets);
+    }
 }

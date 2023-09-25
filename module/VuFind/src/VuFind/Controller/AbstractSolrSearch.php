@@ -88,6 +88,18 @@ class AbstractSolrSearch extends AbstractSearch
     }
 
     /**
+     * Get proper options file for search class
+     *
+     * @return \VuFind\Search\Base\Options
+     */
+    public function getOptionsForClass(): \VuFind\Search\Base\Options
+    {
+        return $this->serviceLocator
+            ->get(\VuFind\Search\Options\PluginManager::class)
+            ->get($this->searchClassId);
+    }
+
+    /**
      * Get the possible legal values for the illustration limit radio buttons.
      *
      * @param object $savedSearch Saved search object (false if none)
@@ -148,7 +160,9 @@ class AbstractSolrSearch extends AbstractSearch
         // Process the facets
         $facetHelper = $this->serviceLocator
             ->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class);
-        $facetConfig = $this->getConfig('facets');
+        $options = $this->getOptionsForClass();
+        $facetFilters = $options->getFacetFilters();
+        $excludeFilters = $options->getExcludeFilters();
         foreach ($facetList as $facet => &$list) {
             // Hierarchical facets: format display texts and sort facets
             // to a flat array according to the hierarchy
@@ -167,17 +181,14 @@ class AbstractSolrSearch extends AbstractSearch
             }
 
             if (
-                in_array(
-                    $facet,
-                    $facetConfig->Advanced_Settings?->enable_filters?->toArray() ?? []
-                )
-                && (!empty($facetConfig->FacetFilters->$facet)
-                || !empty($facetConfig->ExcludeFilters->$facet))
+                $options->getFilterFacetsInAdvanced()
+                && (!empty($facetFilters[$facet])
+                || !empty($excludeFilters[$facet]))
             ) {
                 $list['list'] = $facetHelper->filterFacets(
                     $list['list'],
-                    $facetConfig->FacetFilters?->$facet?->toArray() ?? [],
-                    $facetConfig->ExcludeFilters?->$facet?->toArray() ?? []
+                    $facetFilters[$facet] ?? [],
+                    $excludeFilters[$facet] ?? []
                 );
             }
 

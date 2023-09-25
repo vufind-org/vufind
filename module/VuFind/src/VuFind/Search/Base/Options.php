@@ -307,6 +307,27 @@ abstract class Options implements TranslatorAwareInterface
     protected $firstlastNavigation = false;
 
     /**
+     * Should FacetFilters and ExcludeFilters apply in advanced search
+     *
+     * @var bool
+     */
+    protected $filterFacetsInAdvanced = false;
+
+    /**
+     * Excluded filters
+     *
+     * @var array
+     */
+    protected $excludeFilters = [];
+
+    /**
+     * Facet filters
+     *
+     * @var array
+     */
+    protected $facetFilters = [];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Config loader
@@ -328,6 +349,9 @@ abstract class Options implements TranslatorAwareInterface
                 }
             }
         }
+        $this->filterFacetsInAdvanced = !empty($facetSettings->Advanced_Settings->enable_filters);
+        $this->excludeFilters = $facetSettings->ExcludeFilters?->toArray() ?? [];
+        $this->facetFilters = $facetSettings->FacetFilters?->toArray() ?? [];
     }
 
     /**
@@ -1109,5 +1133,35 @@ abstract class Options implements TranslatorAwareInterface
         $delimiter = $facetSettings->Advanced_Settings->limitDelimiter ?? '::';
         $limitConf = $limits ? $limits->get($limit) : '';
         return array_map('trim', explode($delimiter, $limitConf ?? ''));
+    }
+
+    /**
+     * Is FacetFilters and ExcludeFilters enabled in advanced search?
+     *
+     * @return bool
+     */
+    public function getFilterFacetsInAdvanced(): bool
+    {
+        return $this->filterFacetsInAdvanced;
+    }
+
+    /**
+     * Get exclude filters.
+     *
+     * @return array
+     */
+    public function getExcludeFilters(): array
+    {
+        return $this->excludeFilters;
+    }
+
+    /**
+     * Get facet filters.
+     *
+     * @return array
+     */
+    public function getFacetFilters(): array
+    {
+        return $this->facetFilters;
     }
 }
