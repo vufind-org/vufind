@@ -178,7 +178,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $excludes = $page
             ->findAll('css', '#modal #facet-list-count .exclude');
-        $this->assertCount($exclusionActive ? $limit * 2 : 0, excludes);
+        $this->assertCount($exclusionActive ? $limit * 2 : 0, $excludes);
 
         // sort by title
         $this->clickCss($page, '[data-sort="index"]');
