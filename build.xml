@@ -46,6 +46,7 @@
   <property name="solr_startup_sleep" value="0" />
   <property name="solr_additional_jvm_options" value="-Dlog4j2.formatMsgNoLookups=true" />
   <property name="solr_version" value="9.1.1" />
+  <property name="solr_port" value="8983" />
   <property name="skip_phpdoc" value="false" />
   <property name="phpdoc_version" value="3.3.1" />
   <property name="html_validator" value="" /><!-- set to base address of NU Validator (e.g. http://localhost:8888/) for HTML validation during Mink tests -->
@@ -53,6 +54,8 @@
   <property name="html_validator_log_file" value="" /><!-- set to a file name to log HTML validation messages to -->
   <property name="html_validator_quiet" value="" /><!-- set to 1 to prevent the HTML validation from outputting results to the console  -->
   <property name="phpunit_html_validation_params" value="VUFIND_HTML_VALIDATOR=${html_validator} VUFIND_HTML_VALIDATOR_FAIL_TESTS=${html_validator_fail_tests} VUFIND_HTML_VALIDATOR_LOG_FILE=${html_validator_log_file} VUFIND_HTML_VALIDATOR_QUIET=${html_validator_quiet}" />
+  <property name="phpunit_remote_coverage" value="" /><!-- set to 1 to enable code coverage for Mink tests  -->
+  <property name="retain_coverage_files" value="false" /><!-- set to true to keep temporary coverage files from Mink tests -->
 
   <property name="version" value="9.0.3" />
 
@@ -96,10 +99,8 @@
     <phingcall target="php-cs-fixer-dryrun"/>
     <phingcall target="phpunit"/>
     <phingcall target="phpdoc"/>
-    <phingcall target="phpcpd"/>
     <phingcall target="phpmd"/>
     <phingcall target="pdepend"/>
-    <phingcall target="phploc"/>
     <phingcall target="eslint-report"/>
     <phingcall target="jshint-report"/>
     <phingcall target="phpstan-checkstyle"/>
@@ -117,6 +118,7 @@
     <phingcall target="eslint"/>
     <phingcall target="jshint"/>
     <phingcall target="checkLessToSass"/>
+    <phingcall target="checkSassBuild"/>
   </target>
 
   <!-- Quality Assurance PHP Tasks -->
@@ -132,19 +134,9 @@
     <exec command="${srcdir}/vendor/bin/phpmd ${srcdir}/module xml ${srcdir}/tests/phpmd.xml --exclude ${srcdir}/module/VuFind/tests,${srcdir}/module/VuFindSearch/tests --reportfile ${builddir}/reports/phpmd.xml" />
   </target>
 
-  <!-- Measure project with phploc -->
-  <target name="phploc">
-    <exec command="${srcdir}/vendor/bin/phploc --log-csv ${builddir}/reports/phploc.csv ${srcdir}/module" />
-  </target>
-
   <!-- PHP_Depend code analysis -->
   <target name="pdepend">
     <exec command="${srcdir}/vendor/bin/pdepend --jdepend-xml=${builddir}/reports/jdepend.xml --jdepend-chart=${builddir}/reports/dependencies.svg --overview-pyramid=${builddir}/reports/pdepend-pyramid.svg ${srcdir}/module" />
-  </target>
-
-  <!-- PHP copy-and-paste detection -->
-  <target name="phpcpd">
-    <exec command="${srcdir}/vendor/bin/phpcpd --log-pmd ${builddir}/reports/pmd-cpd.xml --exclude tests ${srcdir}/module" />
   </target>
 
   <!-- PHP CodeSniffer -->
@@ -195,9 +187,14 @@
     <exec command="npx jshint --config=${srcdir}/tests/jshint.json --exclude=themes/*/js/vendor --reporter=checkstyle ${srcdir}/themes &gt; ${builddir}/reports/jshint-checkstyle.xml" />
   </target>
 
-  <!-- Run LessToSass, error if there are uncommitted changes (used by Travis) -->
+  <!-- Run Sass build, error if it fails -->
+  <target name="checkSassBuild">
+    <exec command="npm run check:scss" checkreturn="true" passthru="true" />
+  </target>
+
+  <!-- Run LessToSass, error if there are uncommitted changes (used by continuous integration) -->
   <target name="checkLessToSass">
-    <exec command="grunt lessToSass" checkreturn="true" passthru="true" />
+    <exec command="npm run lessToSass" checkreturn="true" passthru="true" />
     <exec command="git diff --exit-code *.scss" checkreturn="true" passthru="true" />
   </target>
 
@@ -238,17 +235,58 @@
 
   <!-- PHPUnit -->
   <target name="phpunit" description="Run tests">
-    <exec dir="${srcdir}/module/VuFind/tests" command="XDEBUG_MODE=coverage VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} ${phpunit_html_validation_params} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${localdir} VUFIND_URL=${vufindurl} ${phpunit_command} --log-junit ${builddir}/reports/phpunit.xml --coverage-clover ${builddir}/reports/coverage/clover.xml --coverage-html ${builddir}/reports/coverage/ ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+    <!-- Clean up any previous tmp files but keep the directory if it exists to avoid changing its permissions -->
+    <property name="coveragedir" value="${builddir}/reports/coverage" />
+    <if>
+      <available file="${coveragedir}/tmp" type="dir" />
+      <then>
+        <delete>
+          <fileset dir="${coveragedir}/tmp">
+            <include name="**/*" />
+          </fileset>
+        </delete>
+      </then>
+      <else>
+        <mkdir dir="${coveragedir}/tmp" />
+      </else>
+    </if>
+
+    <!-- Run tests -->
+    <if>
+      <istrue value="${phpunit_remote_coverage}" />
+      <then>
+        <property name="paramCoverageDir" value="VUFIND_REMOTE_COVERAGE_DIR=${coveragedir}/tmp" />
+      </then>
+      <else>
+        <property name="paramCoverageDir" value="" />
+      </else>
+    </if>
+    <exec dir="${srcdir}/module/VuFind/tests" command="XDEBUG_MODE=coverage VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} ${phpunit_html_validation_params} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${localdir} VUFIND_URL=${vufindurl} SOLR_PORT=${solr_port} ${paramCoverageDir} ${phpunit_command} --log-junit ${builddir}/reports/phpunit.xml --coverage-php ${coveragedir}/tmp/unit.cov ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+
+    <!-- Produce coverage reports -->
+    <exec command="${srcdir}/vendor/bin/phpcov merge --clover ${coveragedir}/clover.xml --html ${coveragedir} ${coveragedir}/tmp" passthru="true" checkreturn="true" />
+
+    <!-- Clean up any tmp files unless told not to, but keep the directory to avoid changing its permissions -->
+    <if>
+      <isfalse value="${retain_coverage_files}" />
+      <then>
+        <delete>
+          <fileset dir="${coveragedir}/tmp">
+            <include name="**/*" />
+          </fileset>
+        </delete>
+      </then>
+    </if>
   </target>
 
   <!-- PHPUnit without logging output -->
   <target name="phpunitfast" description="Run tests">
-    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} ${phpunit_html_validation_params} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${localdir} VUFIND_URL=${vufindurl} ${phpunit_command} ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} ${phpunit_html_validation_params} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${localdir} VUFIND_URL=${vufindurl} SOLR_PORT=${solr_port} ${phpunit_command} ${phpunit_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
   <!-- PHPUnit without logging output, stopping at first error or failure -->
   <target name="phpunitfaster" description="Run tests until first failure">
-    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} ${phpunit_html_validation_params} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${localdir} VUFIND_URL=${vufindurl} ${phpunit_command} --stop-on-failure ${phpunit_extra_params}" passthru="true" checkreturn="true" />
+    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_MINK_DRIVER=${mink_driver} VUFIND_SCREENSHOT_DIR=${screenshot_dir} ${phpunit_html_validation_params} VUFIND_SELENIUM_BROWSER=${selenium_browser} VUFIND_SNOOZE_MULTIPLIER=${snooze_multiplier} VUFIND_LOCAL_DIR=${localdir} VUFIND_URL=${vufindurl} SOLR_PORT=${solr_port} ${phpunit_command} --stop-on-failure ${phpunit_extra_params}" passthru="true" checkreturn="true" />
   </target>
 
   <target name="installsolr" description="Install Solr">
@@ -351,7 +389,7 @@
 
   <!-- Install and Activate VuFind -->
   <target name="startup" description="install and activate demo">
-    <property name="solr_pid_file" value="${localdir}/solr-8983.pid" />
+    <property name="solr_pid_file" value="${localdir}/solr-${solr_port}.pid" />
     <!-- fail if the system is already running -->
     <if>
       <available file="${solr_pid_file}" />
@@ -359,17 +397,22 @@
         <fail>Solr PID file (${solr_pid_file}) detected. Is the system already running?</fail>
       </then>
     </if>
-
-    <!-- fail if a local config.ini already exists -->
-    <property name="local_config_ini" value="${srcdir}/local/config/vufind/config.ini" />
     <if>
-      <available file="${local_config_ini}" />
+      <available file="${srcdir}/env.bat" />
       <then>
-        <fail>${local_config_ini} already exists</fail>
+        <fail>Environment file (env.bat) detected. Is the system already running?</fail>
+      </then>
+    </if>
+    <if>
+      <available file="${srcdir}/env.sh" />
+      <then>
+        <fail>Environment file (env.sh) detected. Is the system already running?</fail>
       </then>
     </if>
 
-    <!-- run extra cleanup action, if any -->
+    <phingcall target="check_local_config" />
+
+    <!-- run extra startup action, if any -->
     <if>
       <istrue value="${extra_startup_command}" />
       <then>
@@ -379,10 +422,10 @@
 
     <!-- set up appropriate read/write permissions for Apache -->
     <exec command="chmod -R a+w ${localdir}/cache" />
+    <exec command="touch ${srcdir}/vufind-exception.log" />
+    <exec command="chmod a+w ${srcdir}/vufind-exception.log" />
 
-    <!-- Generate basic configuration -->
-    <php expression="end(explode('/', '${vufindurl}'))" returnProperty="basepath" />
-    <exec command="php ${srcdir}/install.php --basepath=/${basepath} --non-interactive" passthru="true" checkreturn="true" />
+    <phingcall target="configure_install" />
 
     <!-- Activate Selenium (if a path has been provided) -->
     <if>
@@ -397,53 +440,82 @@
       <istrue value="${apachectl}" />
       <then>
         <copy file="${localdir}/httpd-vufind.conf" tofile="${apacheconfdir}/vufindtest.conf" />
+        <if>
+          <istrue value="${phpunit_remote_coverage}" />
+          <then>
+            <reflexive file="${apacheconfdir}/vufindtest.conf">
+              <filterchain>
+                <replaceregexp>
+                  <regexp pattern="#SetEnv VUFIND_CODE_COVERAGE 1" replace="SetEnv VUFIND_CODE_COVERAGE 1" />
+                </replaceregexp>
+              </filterchain>
+            </reflexive>
+          </then>
+        </if>
         <exec command="${apachectl} restart" passthru="true" />
       </then>
     </if>
 
     <!-- build and configure the requested database type -->
+    <phingcall target="setup_database" />
+
+    <!-- start Solr -->
+    <phingcall target="setup_solr" />
+
+    <phingcall target="import_biblios" />
+    <phingcall target="import_authorities" />
+    <phingcall target="build_alphabrowse" />
+  </target>
+
+  <!-- A helper task to check for existing configuration -->
+  <target name="check_local_config" description="check for local configuration and fail if it exists">
+    <!-- fail if a local config.ini already exists -->
+    <property name="local_config_ini" value="${localdir}/config/vufind/config.ini" />
+    <if>
+      <available file="${local_config_ini}" />
+      <then>
+        <fail>${local_config_ini} already exists</fail>
+      </then>
+    </if>
+  </target>
+
+  <!-- Setup basic configuration and run the install command -->
+  <target name="configure_install" description="configure and run installation">
+    <phingcall target="check_local_config" />
+
+    <!-- Generate basic configuration -->
+    <php expression="end(explode('/', '${vufindurl}'))" returnProperty="basepath" />
+    <exec command="php ${srcdir}/install.php --basepath=/${basepath} --non-interactive --solr-port=${solr_port}" passthru="true" checkreturn="true" />
+
+    <!-- Update config.ini to activate DB connection, exception logging and test mode -->
     <if>
       <equals arg1="${dbtype}" arg2="pgsql" />
       <then>
-        <!-- build database -->
-        <exec command="sudo su -c &quot;psql -c \&quot;DROP DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" />
-        <exec command="sudo su -c &quot;psql -c \&quot;DROP USER ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" />
-        <exec command="sudo su -c &quot;psql -c \&quot;CREATE DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
-        <exec command="sudo su -c &quot;psql -c \&quot;CREATE USER ${vufinddbuser} PASSWORD '${vufinddbpass}';\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
-        <exec command="sudo su -c &quot;psql -c \&quot;GRANT ALL ON DATABASE ${vufinddb} TO ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
-        <!--<exec command="sudo su -c &quot;psql -c \&quot;select 'grant SELECT,INSERT,UPDATE,DELETE on '||schemaname||'.'||tablename||' to ${vufinddbuser};' from pg_tables where schemaname in ('${vufinddb}') order by schemaname, tablename;\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />-->
-        <exec command="PGPASSWORD=${vufinddbpass} psql -U ${vufinddbuser} -f ${srcdir}/module/VuFind/sql/pgsql.sql ${vufinddb}" checkreturn="true" />
-
-        <!-- configure VuFind -->
         <property name="db_connection_string" value="pgsql://${vufinddbuser}:${vufinddbpass}@${pgsqlhost}/${vufinddb}" />
       </then>
       <else>
-        <!-- build database -->
-        <exec command="mysqladmin -f -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} drop ${vufinddb}" />
-        <exec command="mysqladmin -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} create ${vufinddb}" checkreturn="true" />
-        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;DROP USER '${vufinddbuser}'@'${mysqlhost}'&quot;" />
-        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;CREATE USER '${vufinddbuser}'@'${mysqlhost}' IDENTIFIED BY '${vufinddbpass}'&quot;" checkreturn="true" />
-        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;GRANT SELECT,INSERT,UPDATE,DELETE ON ${vufinddb}.* TO '${vufinddbuser}'@'${mysqlhost}' WITH GRANT OPTION&quot;" checkreturn="true" />
-        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;FLUSH PRIVILEGES&quot;" checkreturn="true" />
-        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -D ${vufinddb} &lt; ${srcdir}/module/VuFind/sql/mysql.sql" checkreturn="true" />
-
-        <!-- configure VuFind -->
         <property name="db_connection_string" value="mysql://${vufinddbuser}:${vufinddbpass}@${mysqlhost}/${vufinddb}" />
       </else>
     </if>
 
-    <!-- Update config.ini to activate DB connection, exception logging and test mode -->
     <copy file="${srcdir}/config/vufind/config.ini" tofile="${localdir}/config/vufind/config.ini">
       <filterchain>
         <replaceregexp>
           <regexp pattern="mysql://root@localhost/vufind" replace="${db_connection_string}" />
           <regexp pattern=";file\s+= /var/log/vufind.log:alert,error,notice,debug" replace="file = ${srcdir}/vufind-exception.log:alert-5,error-5" />
           <regexp pattern="(\[System\]\s+)" replace="\1runningTestSuite=1" />
+          <regexp pattern="(url\s+= http://localhost):8983/solr" replace="\1:${solr_port}/solr" />
         </replaceregexp>
       </filterchain>
     </copy>
-    <exec command="touch ${srcdir}/vufind-exception.log" />
-    <exec command="chmod a+w ${srcdir}/vufind-exception.log" />
+
+    <copy file="${srcdir}/config/vufind/Search2.ini" tofile="${localdir}/config/vufind/Search2.ini">
+      <filterchain>
+        <replaceregexp>
+          <regexp pattern="(url\s+= http://localhost):8983/solr" replace="\1:${solr_port}/solr" />
+        </replaceregexp>
+      </filterchain>
+    </copy>
 
     <if>
       <not><istrue value="${disable_csp}" /></not>
@@ -459,8 +531,48 @@
       </then>
     </if>
 
-    <!-- start Solr (use restart in case of old PID files) -->
-    <exec command="SOLR_PID_DIR=${localdir} VUFIND_HOME=${srcdir} SOLR_ADDITIONAL_JVM_OPTIONS=${solr_additional_jvm_options} ${srcdir}/solr.sh restart" passthru="true" checkreturn="true" />
+    <!-- Add a local translation for tests -->
+    <if>
+      <not>
+        <available file="${localdir}/languages" type="dir" />
+      </not>
+      <then>
+        <mkdir dir="${localdir}/languages" />
+      </then>
+    </if>
+    <append destFile="${localdir}/languages/en.ini" text="location_main = Main Library${line.separator}" />
+  </target>
+
+  <target name="setup_database" description="setup demo database">
+    <if>
+      <equals arg1="${dbtype}" arg2="pgsql" />
+      <then>
+        <!-- build database -->
+        <exec command="sudo su -c &quot;psql -c \&quot;DROP DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" />
+        <exec command="sudo su -c &quot;psql -c \&quot;DROP USER ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" />
+        <exec command="sudo su -c &quot;psql -c \&quot;CREATE DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
+        <exec command="sudo su -c &quot;psql -c \&quot;CREATE USER ${vufinddbuser} PASSWORD '${vufinddbpass}';\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
+        <exec command="sudo su -c &quot;psql -c \&quot;GRANT ALL ON DATABASE ${vufinddb} TO ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
+        <!--<exec command="sudo su -c &quot;psql -c \&quot;select 'grant SELECT,INSERT,UPDATE,DELETE on '||schemaname||'.'||tablename||' to ${vufinddbuser};' from pg_tables where schemaname in ('${vufinddb}') order by schemaname, tablename;\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />-->
+        <exec command="PGPASSWORD=${vufinddbpass} psql -U ${vufinddbuser} -f ${srcdir}/module/VuFind/sql/pgsql.sql ${vufinddb}" checkreturn="true" />
+      </then>
+      <else>
+        <!-- build database -->
+        <exec command="mysqladmin -f -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} drop ${vufinddb}" />
+        <exec command="mysqladmin -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} create ${vufinddb}" checkreturn="true" />
+        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;DROP USER '${vufinddbuser}'@'${mysqlhost}'&quot;" />
+        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;CREATE USER '${vufinddbuser}'@'${mysqlhost}' IDENTIFIED BY '${vufinddbpass}'&quot;" checkreturn="true" />
+        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;GRANT SELECT,INSERT,UPDATE,DELETE ON ${vufinddb}.* TO '${vufinddbuser}'@'${mysqlhost}' WITH GRANT OPTION&quot;" checkreturn="true" />
+        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;FLUSH PRIVILEGES&quot;" checkreturn="true" />
+        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -D ${vufinddb} &lt; ${srcdir}/module/VuFind/sql/mysql.sql" checkreturn="true" />
+      </else>
+    </if>
+  </target>
+
+  <!-- Set up Solr -->
+  <target name="setup_solr">
+    <!-- Start Solr using restart in case of old PID files -->
+    <exec command="SOLR_PID_DIR=${localdir} VUFIND_HOME=${srcdir} SOLR_ADDITIONAL_JVM_OPTIONS=${solr_additional_jvm_options} SOLR_PORT=${solr_port} ${srcdir}/solr.sh restart" passthru="true" checkreturn="true" />
     <!-- fail if Solr did not start up successfully: -->
     <if>
       <not><available file="${solr_pid_file}" /></not>
@@ -479,10 +591,6 @@
         <exec command="sleep ${solr_startup_sleep}" />
       </else>
     </if>
-
-    <phingcall target="import_biblios" />
-    <phingcall target="import_authorities" />
-    <phingcall target="build_alphabrowse" />
   </target>
 
   <!-- Import test biblio data -->
@@ -548,7 +656,7 @@ ${git_status}
     </if>
 
     <!-- stop Solr -->
-    <exec command="SOLR_PID_DIR=${localdir} VUFIND_HOME=${srcdir} SOLR_ADDITIONAL_JVM_OPTIONS=${solr_additional_jvm_options} ${srcdir}/solr.sh stop" passthru="true" />
+    <exec command="SOLR_PID_DIR=${localdir} VUFIND_HOME=${srcdir} SOLR_ADDITIONAL_JVM_OPTIONS=${solr_additional_jvm_options} SOLR_PORT=${solr_port} ${srcdir}/solr.sh stop" passthru="true" />
 
     <!-- run extra cleanup action, if any -->
     <if>
@@ -569,6 +677,18 @@ ${git_status}
     </if>
 
     <!-- delete the configuration, sample index, logs and cache data -->
+    <if>
+      <available file="${srcdir}/env.bat" />
+      <then>
+        <delete file="${srcdir}/env.bat" failonerror="true" />
+      </then>
+    </if>
+    <if>
+      <available file="${srcdir}/env.sh" />
+      <then>
+        <delete file="${srcdir}/env.sh" failonerror="true" />
+      </then>
+    </if>
     <if>
       <available file="${srcdir}/import/solrmarc.log" />
       <then>
@@ -609,6 +729,50 @@ ${git_status}
       </then>
     </if>
     <exec command="git reset --hard" passthru="true" />
+  </target>
+
+  <!-- Reset database and configuration of the demo setup -->
+  <target name="reset_setup" description="reset configuration and database of demo">
+    <property name="solr_pid_file" value="${localdir}/solr-${solr_port}.pid" />
+    <!-- fail if the system is not already running -->
+    <if>
+      <not><available file="${solr_pid_file}" /></not>
+      <then>
+        <fail>Solr PID file (${solr_pid_file}) not detected. Is the demo system not running?</fail>
+      </then>
+    </if>
+
+    <delete>
+      <fileset dir="${localdir}/config/vufind">
+        <patternset>
+          <include name="*.ini" />
+          <include name="*.ini.bak" />
+          <include name="*.json" />
+          <include name="*.json.bak" />
+          <include name="*.key" />
+          <include name="*.key.bak" />
+          <include name="*.yaml" />
+          <include name="*.yaml.bak" />
+        </patternset>
+      </fileset>
+    </delete>
+    <delete>
+      <fileset dir="${localdir}/cache">
+        <include name="**/*" />
+      </fileset>
+    </delete>
+    <delete>
+      <fileset dir="${localdir}/languages">
+        <include name="*" />
+      </fileset>
+    </delete>
+    <delete file="${srcdir}/env.bat" />
+    <delete file="${srcdir}/env.sh" />
+    <delete file="${localdir}/import/import.properties" />
+    <delete file="${localdir}/import/import_auth.properties" />
+
+    <phingcall target="configure_install" />
+    <phingcall target="setup_database" />
   </target>
 
   <!-- Prepare VuFind for distribution -->

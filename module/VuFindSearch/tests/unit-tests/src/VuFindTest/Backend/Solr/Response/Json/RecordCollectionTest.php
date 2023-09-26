@@ -3,7 +3,7 @@
 /**
  * Unit tests for simple JSON-based record collection.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -33,6 +33,8 @@ use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
 use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
 use VuFindTest\RecordDriver\TestHarness;
+
+use function in_array;
 
 /**
  * Unit tests for simple JSON-based record collection.

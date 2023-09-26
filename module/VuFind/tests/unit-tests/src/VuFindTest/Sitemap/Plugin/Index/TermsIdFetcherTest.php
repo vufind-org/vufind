@@ -3,7 +3,7 @@
 /**
  * GetIdsWithTermsCommand Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -34,6 +34,8 @@ use VuFindSearch\Backend\Solr\Response\Json\Terms;
 use VuFindSearch\Command\GetUniqueKeyCommand;
 use VuFindSearch\Command\TermsCommand;
 use VuFindSearch\Service;
+
+use function array_slice;
 
 /**
  * GetIdsWithTermsCommand Test Class

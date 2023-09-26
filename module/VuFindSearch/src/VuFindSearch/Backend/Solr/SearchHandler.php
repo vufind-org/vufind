@@ -3,7 +3,7 @@
 /**
  * VuFind SearchHandler.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -30,6 +30,10 @@
  */
 
 namespace VuFindSearch\Backend\Solr;
+
+use function chr;
+use function in_array;
+use function intval;
 
 /**
  * VuFind SearchHandler.
@@ -159,7 +163,7 @@ class SearchHandler
                     $boostQuery[] = $value;
                 } elseif ($name === 'bf') {
                     // BF parameter may contain multiple space-separated functions
-                    // with individual boosts.  We need to parse this into _val_
+                    // with individual boosts. We need to parse this into _val_
                     // query components:
                     foreach (explode(' ', $value) as $boostFunction) {
                         if ($boostFunction) {
@@ -382,7 +386,7 @@ class SearchHandler
             ];
             // If we're skipping tokenization, we just want to pass $lookfor through
             // unmodified (it's probably an advanced search that won't benefit from
-            // tokenization).  We'll just set all possible values to the same thing,
+            // tokenization). We'll just set all possible values to the same thing,
             // except that we'll try to do the "one phrase" in quotes if possible.
             // IMPORTANT: If we detect a boolean NOT, we MUST omit the quotes. We
             // also omit quotes if the phrase is already quoted or if there is no
@@ -448,6 +452,9 @@ class SearchHandler
                     $operation[2],
                     $string
                 );
+                break;
+            case 'prepend':
+                $string = $operation[1] . $string;
                 break;
             case 'ucfirst':
                 $string = ucfirst($string);

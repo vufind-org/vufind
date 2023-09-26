@@ -3,7 +3,7 @@
 /**
  * Trait to add configurable verbosity settings to loggers
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -28,6 +28,8 @@
  */
 
 namespace VuFind\Log\Writer;
+
+use function is_array;
 
 /**
  * Trait to add configurable verbosity settings to loggers

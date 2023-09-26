@@ -3,7 +3,7 @@
 /**
  * ResultFeed Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -45,6 +45,7 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\LiveDetectionTrait;
     use \VuFindTest\Feature\LiveSolrTrait;
     use \VuFindTest\Feature\ViewTrait;
+    use \VuFindTest\Feature\TranslatorTrait;
 
     /**
      * Standard setup method.
@@ -90,31 +91,6 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Mock out the translator.
-     *
-     * @return \Laminas\I18n\Translator\TranslatorInterface
-     */
-    protected function getMockTranslator()
-    {
-        $translations = [
-            'Results for' => 'Results for',
-            'showing_results_of_html' => 'Showing <strong>%%start%% - %%end%%'
-                . '</strong> results of <strong>%%total%%</strong>',
-        ];
-        $mock = $this->getMockBuilder(\Laminas\I18n\Translator\TranslatorInterface::class)
-            ->getMock();
-        $mock->expects($this->any())->method('translate')
-            ->will(
-                $this->returnCallback(
-                    function ($str, $params, $default) use ($translations) {
-                        return $translations[$str] ?? $default ?? $str;
-                    }
-                )
-            );
-        return $mock;
-    }
-
-    /**
      * Test feed generation
      *
      * @return void
@@ -135,7 +111,16 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
 
         $helper = new ResultFeed();
         $helper->registerExtensions(new \VuFindTest\Container\MockContainer($this));
-        $helper->setTranslator($this->getMockTranslator());
+        $translator = $this->getMockTranslator(
+            [
+                'default' => [
+                    'Results for' => 'Results for',
+                    'showing_results_of_html' => 'Showing <strong>%%start%% - %%end%%'
+                        . '</strong> results of <strong>%%total%%</strong>',
+                ],
+            ]
+        );
+        $helper->setTranslator($translator);
         $helper->setView($this->getPhpRenderer($this->getPlugins()));
         $feed = $helper($results, '/test/path');
         $this->assertIsObject($feed);

@@ -3,7 +3,7 @@
 /**
  * MergeMarc command test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -104,7 +104,7 @@ class MergeMarcCommandTest extends \PHPUnit\Framework\TestCase
         $command = new MergeMarcCommand();
         $commandTester = new CommandTester($command);
         $directory = $this->getFixtureDir('VuFindConsole') . 'bad-xml';
-        $filename = realpath($directory . "/bad.xml");
+        $filename = realpath($directory . '/bad.xml');
         $expected = "Problem loading XML file: $filename\n"
             . "Premature end of data in tag open-without-close line 1 in $filename";
         $this->expectExceptionMessage($expected);

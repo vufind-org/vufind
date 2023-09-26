@@ -3,7 +3,7 @@
 /**
  * Solr Autocomplete Module
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -29,6 +29,10 @@
  */
 
 namespace VuFind\Autocomplete;
+
+use function count;
+use function is_array;
+use function is_object;
 
 /**
  * Solr Autocomplete Module
@@ -175,9 +179,9 @@ class Solr implements AutocompleteInterface
     {
         // Modify the query so it makes a nice, truncated autocomplete query:
         $forbidden = [':', '(', ')', '*', '+', '"', "'"];
-        $query = str_replace($forbidden, " ", $query);
-        if (substr($query, -1) != " ") {
-            $query .= "*";
+        $query = str_replace($forbidden, ' ', $query);
+        if (substr($query, -1) != ' ') {
+            $query .= '*';
         }
         return $query;
     }
@@ -302,7 +306,7 @@ class Solr implements AutocompleteInterface
     }
 
     /**
-     * Set the display field list.  Useful for child classes.
+     * Set the display field list. Useful for child classes.
      *
      * @param array $new Display field list.
      *
@@ -314,7 +318,7 @@ class Solr implements AutocompleteInterface
     }
 
     /**
-     * Set the sort field list.  Useful for child classes.
+     * Set the sort field list. Useful for child classes.
      *
      * @param string $new Sort field list.
      *

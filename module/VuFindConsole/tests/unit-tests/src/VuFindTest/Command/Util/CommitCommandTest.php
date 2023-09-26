@@ -3,7 +3,7 @@
 /**
  * CommitCommand test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -59,6 +59,6 @@ class CommitCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(['core' => 'foo']);
         $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals("", $commandTester->getDisplay());
+        $this->assertEquals('', $commandTester->getDisplay());
     }
 }

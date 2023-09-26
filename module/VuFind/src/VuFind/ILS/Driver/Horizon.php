@@ -3,7 +3,7 @@
 /**
  * Horizon ILS Driver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -34,6 +34,10 @@ use Laminas\Log\LoggerAwareInterface;
 use PDO;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Log\LoggerAwareTrait;
+
+use function count;
+use function in_array;
+use function intval;
 
 /**
  * Horizon ILS Driver
@@ -118,22 +122,22 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      */
     protected function buildSqlFromArray($sql)
     {
-        $modifier = isset($sql['modifier']) ? $sql['modifier'] . " " : "";
+        $modifier = isset($sql['modifier']) ? $sql['modifier'] . ' ' : '';
 
         // Put String Together
-        $sqlString = "select " . $modifier . implode(", ", $sql['expressions']);
-        $sqlString .= " from " . implode(", ", $sql['from']);
+        $sqlString = 'select ' . $modifier . implode(', ', $sql['expressions']);
+        $sqlString .= ' from ' . implode(', ', $sql['from']);
         $sqlString .= (!empty($sql['join']))
-            ? " join " . implode(" join ", $sql['join']) : "";
+            ? ' join ' . implode(' join ', $sql['join']) : '';
         $sqlString .= (!empty($sql['innerJoin']))
-            ? " inner join " . implode(" inner join ", $sql['innerJoin']) : "";
+            ? ' inner join ' . implode(' inner join ', $sql['innerJoin']) : '';
         $sqlString .= (!empty($sql['leftOuterJoin']))
-            ? " left outer join "
-                . implode(" left outer join ", $sql['leftOuterJoin'])
-            : "";
-        $sqlString .= " where " . implode(" AND ", $sql['where']);
+            ? ' left outer join '
+                . implode(' left outer join ', $sql['leftOuterJoin'])
+            : '';
+        $sqlString .= ' where ' . implode(' AND ', $sql['where']);
         $sqlString .= (!empty($sql['order']))
-            ? " ORDER BY " . implode(", ", $sql['order']) : "";
+            ? ' ORDER BY ' . implode(', ', $sql['order']) : '';
 
         return $sqlString;
     }
@@ -228,45 +232,45 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
         // import/marc.properties
         // Expressions
         $sqlExpressions = [
-            "i.item# as ITEM_ID",
-            "i.item_status as STATUS_CODE",
-            "ist.descr as STATUS",
-            "l.name as LOCATION",
-            "i.call_reconstructed as CALLNUMBER",
-            "i.ibarcode as ITEM_BARCODE",
-            "convert(varchar(10), " .
+            'i.item# as ITEM_ID',
+            'i.item_status as STATUS_CODE',
+            'ist.descr as STATUS',
+            'l.name as LOCATION',
+            'i.call_reconstructed as CALLNUMBER',
+            'i.ibarcode as ITEM_BARCODE',
+            'convert(varchar(10), ' .
             "        dateadd(dd,i.due_date,'jan 1 1970'), " .
-            "        101) as DUEDATE",
-            "i.copy_reconstructed as NUMBER",
-            "convert(varchar(10), " .
+            '        101) as DUEDATE',
+            'i.copy_reconstructed as NUMBER',
+            'convert(varchar(10), ' .
             "        dateadd(dd,ch.cki_date,'jan 1 1970'), " .
-            "        101) as RETURNDATE",
-            "(select count(*)
+            '        101) as RETURNDATE',
+            '(select count(*)
                 from request r
                where r.bib# = i.bib#
-                 and r.reactivate_date = NULL) as REQUEST",
-            "i.notes as NOTES",
-            "ist.available_for_request IS_HOLDABLE",
+                 and r.reactivate_date = NULL) as REQUEST',
+            'i.notes as NOTES',
+            'ist.available_for_request IS_HOLDABLE',
 
         ];
 
         // From
-        $sqlFrom = ["item i"];
+        $sqlFrom = ['item i'];
 
         // inner Join
         $sqlInnerJoin = [
-            "item_status ist on i.item_status = ist.item_status",
-            "location l on i.location = l.location",
+            'item_status ist on i.item_status = ist.item_status',
+            'location l on i.location = l.location',
         ];
 
         $sqlLeftOuterJoin = [
-           "circ_history ch on ch.item# = i.item#",
+           'circ_history ch on ch.item# = i.item#',
         ];
 
         // Where
         $sqlWhere = [
-            "i.bib# = " . addslashes($id),
-            "i.staff_only = 0",
+            'i.bib# = ' . addslashes($id),
+            'i.staff_only = 0',
         ];
 
         $sqlArray = [
@@ -425,24 +429,24 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
         // Query holding information based on id field defined in
         // import/marc.properties
         // Expressions
-        $sqlExpressions = ["i.bib# as ID",
-                                "i.item_status as STATUS_CODE",
-                                "ist.descr as STATUS",
-                                "l.name as LOCATION",
-                                "i.call_reconstructed as CALLNUMBER"];
+        $sqlExpressions = ['i.bib# as ID',
+                                'i.item_status as STATUS_CODE',
+                                'ist.descr as STATUS',
+                                'l.name as LOCATION',
+                                'i.call_reconstructed as CALLNUMBER'];
 
         // From
-        $sqlFrom = ["item i"];
+        $sqlFrom = ['item i'];
 
         // inner Join
-        $sqlInnerJoin = ["item_status ist on i.item_status = ist.item_status",
-                              "location l on i.location = l.location"];
+        $sqlInnerJoin = ['item_status ist on i.item_status = ist.item_status',
+                              'location l on i.location = l.location'];
 
         $bibIDs = implode(',', $idList);
 
         // Where
-        $sqlWhere = ["i.bib# in (" . $bibIDs . ")",
-                          "i.staff_only = 0"];
+        $sqlWhere = ['i.bib# in (' . $bibIDs . ')',
+                          'i.staff_only = 0'];
 
         $sqlArray = [
             'expressions' => $sqlExpressions,
@@ -525,14 +529,14 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      */
     public function patronLogin($username, $password)
     {
-        $sql = "select name_reconstructed as FULLNAME, " .
-            "email_address as EMAIL " .
-            "from borrower " .
-            "left outer join borrower_address on " .
-                "borrower_address.borrower# = borrower.borrower# " .
-            "inner join borrower_barcode on " .
-                "borrower.borrower# = borrower_barcode.borrower# " .
-            "where borrower_barcode.bbarcode = " .
+        $sql = 'select name_reconstructed as FULLNAME, ' .
+            'email_address as EMAIL ' .
+            'from borrower ' .
+            'left outer join borrower_address on ' .
+                'borrower_address.borrower# = borrower.borrower# ' .
+            'inner join borrower_barcode on ' .
+                'borrower.borrower# = borrower_barcode.borrower# ' .
+            'where borrower_barcode.bbarcode = ' .
                 "'" . addslashes($username) . "' " .
             "and pin# = '" . addslashes($password) . "'";
 
@@ -576,40 +580,40 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
     {
         // Expressions
         $sqlExpressions = [
-            "r.bib#           as BIB_NUM",
-            "r.request#       as REQNUM",
-            "r.item#          as ITEM_ID",
-            "r.bib_queue_ord  as POSITION",
-            "l.name           as LOCATION",
-            "r.request_status as STATUS",
-            "case when r.request_status = 1 " .
-                "then 0 " .
-                "else 1 " .
-                "end          as SORT",
-            "t.processed      as TITLE",
-            "p.pubdate        as PUBLICATION_YEAR",
-            "i.volume         as VOLUME",
+            'r.bib#           as BIB_NUM',
+            'r.request#       as REQNUM',
+            'r.item#          as ITEM_ID',
+            'r.bib_queue_ord  as POSITION',
+            'l.name           as LOCATION',
+            'r.request_status as STATUS',
+            'case when r.request_status = 1 ' .
+                'then 0 ' .
+                'else 1 ' .
+                'end          as SORT',
+            't.processed      as TITLE',
+            'p.pubdate        as PUBLICATION_YEAR',
+            'i.volume         as VOLUME',
             "convert(varchar(12),dateadd(dd, r.hold_exp_date, '1 jan 1970')) " .
-                             "as HOLD_EXPIRE",
+                             'as HOLD_EXPIRE',
             "convert(varchar(12),dateadd(dd, r.expire_date, '1 jan 1970'))   " .
-                             "as REQUEST_EXPIRE",
+                             'as REQUEST_EXPIRE',
             "convert(varchar(12),dateadd(dd, r.request_date, '1 jan 1970'))  " .
-                             "as CREATED",
+                             'as CREATED',
         ];
 
         // From
-        $sqlFrom = ["request r"];
+        $sqlFrom = ['request r'];
 
         // Join
         $sqlJoin = [
-            "borrower_barcode bb on bb.borrower# = r.borrower#",
-            "location l          on l.location = r.pickup_location",
-            "title t             on t.bib# = r.bib#",
+            'borrower_barcode bb on bb.borrower# = r.borrower#',
+            'location l          on l.location = r.pickup_location',
+            'title t             on t.bib# = r.bib#',
         ];
 
         $sqlLeftOuterJoin = [
-            "item i             on i.item# = r.item#",
-            "pubdate_inverted p on p.bib# = r.bib#",
+            'item i             on i.item# = r.item#',
+            'pubdate_inverted p on p.bib# = r.bib#',
         ];
 
         // Where
@@ -618,8 +622,8 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
         ];
 
         $sqlOrder = [
-            "SORT",
-            "t.processed",
+            'SORT',
+            't.processed',
         ];
 
         $sqlArray = [
@@ -652,14 +656,14 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             // Convert Horizon Format to display format
             if (!empty($row['HOLD_EXPIRE'])) {
                 $expire = $this->dateFormat->convertToDisplayDate(
-                    "M d Y",
+                    'M d Y',
                     trim($row['HOLD_EXPIRE'])
                 );
             } elseif (!empty($row['REQUEST_EXPIRE'])) {
                 // If there is no Hold Expiration date fall back to the
                 // Request Expiration date.
                 $expire = $this->dateFormat->convertToDisplayDate(
-                    "M d Y",
+                    'M d Y',
                     trim($row['REQUEST_EXPIRE'])
                 );
             } elseif ($row['STATUS'] == 2) {
@@ -671,7 +675,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             }
             if (!empty($row['CREATED'])) {
                 $create = $this->dateFormat->convertToDisplayDate(
-                    "M d Y",
+                    'M d Y',
                     trim($row['CREATED'])
                 );
             }
@@ -740,65 +744,65 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      */
     public function getMyFines($patron)
     {
-        $sql = "   select bu.amount as AMOUNT " .
-               "        , coalesce( " .
-               "              convert(varchar(10), " .
+        $sql = '   select bu.amount as AMOUNT ' .
+               '        , coalesce( ' .
+               '              convert(varchar(10), ' .
                "                      dateadd(dd, i.last_cko_date, '01jan70'), " .
-               "                      101), " .
-               "              convert(varchar(10), " .
+               '                      101), ' .
+               '              convert(varchar(10), ' .
                "                      dateadd(dd, bu2.date, '01jan70'), " .
-               "                      101)) as CHECKOUT " .
-               "        , bl.descr as FINE " .
-               "        , (  select sum(b2.amount) " .
-               "               from burb b2 " .
-               "              where b2.reference# = bu.reference# " .
-               "           group by b2.reference#) as BALANCE " .
-               "        , convert(varchar(10), " .
+               '                      101)) as CHECKOUT ' .
+               '        , bl.descr as FINE ' .
+               '        , (  select sum(b2.amount) ' .
+               '               from burb b2 ' .
+               '              where b2.reference# = bu.reference# ' .
+               '           group by b2.reference#) as BALANCE ' .
+               '        , convert(varchar(10), ' .
                "                  dateadd(dd, bu.date, '01jan70'), " .
-               "                  101) as CREATEDATE " .
-               "        , coalesce( " .
-               "              convert(varchar(10), " .
+               '                  101) as CREATEDATE ' .
+               '        , coalesce( ' .
+               '              convert(varchar(10), ' .
                "                      dateadd(dd, i.due_date, '01jan70'), " .
-               "                      101), " .
-               "              convert(varchar(10), " .
+               '                      101), ' .
+               '              convert(varchar(10), ' .
                "                      dateadd(dd, bu3.date, '01jan70'), " .
-               "                      101)) as DUEDATE " .
-               "        , i2.bib# as ID " .
-               "        , coalesce (t.processed, bu4.comment) as TITLE " .
-               "        , case when bl.amount_type = 0 " .
-               "               then 0 " .
-               "               else 1 " .
-               "          end as FEEBLOCK " .
-               "     from burb bu " .
-               "     join block bl " .
-               "       on bl.block = bu.block " .
-               "     join borrower_barcode bb " .
-               "       on bb.borrower# = bu.borrower# " .
-               "left join item i " .
-               "       on i.item# = bu.item# " .
-               "      and i.borrower# = bu.borrower# " .
-               "left join item i2 " .
-               "       on i2.item# = bu.item# " .
-               "left join burb bu2 " .
-               "       on bu2.reference# = bu.reference# " .
+               '                      101)) as DUEDATE ' .
+               '        , i2.bib# as ID ' .
+               '        , coalesce (t.processed, bu4.comment) as TITLE ' .
+               '        , case when bl.amount_type = 0 ' .
+               '               then 0 ' .
+               '               else 1 ' .
+               '          end as FEEBLOCK ' .
+               '     from burb bu ' .
+               '     join block bl ' .
+               '       on bl.block = bu.block ' .
+               '     join borrower_barcode bb ' .
+               '       on bb.borrower# = bu.borrower# ' .
+               'left join item i ' .
+               '       on i.item# = bu.item# ' .
+               '      and i.borrower# = bu.borrower# ' .
+               'left join item i2 ' .
+               '       on i2.item# = bu.item# ' .
+               'left join burb bu2 ' .
+               '       on bu2.reference# = bu.reference# ' .
                "      and bu2.block = 'infocko' " .
-               "left join burb bu3 " .
-               "       on bu3.reference# = bu.reference# " .
+               'left join burb bu3 ' .
+               '       on bu3.reference# = bu.reference# ' .
                "      and bu3.block = 'infodue' " .
-               "left join title t " .
-               "       on t.bib# = i2.bib# " .
-               "left join burb bu4 " .
-               "       on bu4.reference# = bu.reference# " .
-               "      and bu4.ord = 0 " .
+               'left join title t ' .
+               '       on t.bib# = i2.bib# ' .
+               'left join burb bu4 ' .
+               '       on bu4.reference# = bu.reference# ' .
+               '      and bu4.ord = 0 ' .
                "      and bu4.block in ('l', 'LostPro','fine','he') " .
                "    where bb.bbarcode = '" . addslashes($patron['id']) . "' " .
-               "      and bu.ord = 0 " .
-               "      and bl.pac_display = 1 " .
-               " order by FEEBLOCK desc " .
-               "        , bu.item# " .
-               "        , TITLE " .
-               "        , bu.block " .
-               "        , bu.date";
+               '      and bu.ord = 0 ' .
+               '      and bl.pac_display = 1 ' .
+               ' order by FEEBLOCK desc ' .
+               '        , bu.item# ' .
+               '        , TITLE ' .
+               '        , bu.block ' .
+               '        , bu.date';
 
         try {
             $sqlStmt = $this->db->query($sql);
@@ -839,16 +843,16 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
     public function getMyProfile($patron)
     {
         $profile = [];
-        $sql = "select name_reconstructed as FULLNAME, address1 as ADDRESS1, " .
-            "city_st.descr as ADDRESS2, postal_code as ZIP, phone_no as PHONE " .
-            "from borrower " .
-            "left outer join borrower_phone on " .
-                "borrower_phone.borrower#=borrower.borrower# " .
-            "inner join borrower_address on " .
-                "borrower_address.borrower#=borrower.borrower# " .
-            "inner join city_st on city_st.city_st=borrower_address.city_st " .
-            "inner join borrower_barcode on " .
-            "borrower_barcode.borrower# = borrower.borrower# " .
+        $sql = 'select name_reconstructed as FULLNAME, address1 as ADDRESS1, ' .
+            'city_st.descr as ADDRESS2, postal_code as ZIP, phone_no as PHONE ' .
+            'from borrower ' .
+            'left outer join borrower_phone on ' .
+                'borrower_phone.borrower#=borrower.borrower# ' .
+            'inner join borrower_address on ' .
+                'borrower_address.borrower#=borrower.borrower# ' .
+            'inner join city_st on city_st.city_st=borrower_address.city_st ' .
+            'inner join borrower_barcode on ' .
+            'borrower_barcode.borrower# = borrower.borrower# ' .
             "where borrower_barcode.bbarcode = '" . addslashes($patron['id']) . "'";
 
         try {
@@ -892,32 +896,32 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
         // Expressions
         $sqlExpressions = [
             "convert(varchar(12), dateadd(dd, i.due_date, '01 jan 1970')) " .
-                            "as DUEDATE",
-            "i.bib#          as BIB_NUM",
-            "i.ibarcode      as ITEM_BARCODE",
-            "i.n_renewals    as RENEW",
-            "r.bib_queue_ord as REQUEST",
-            "i.volume        as VOLUME",
-            "p.pubdate       as PUBLICATION_YEAR",
-            "t.processed     as TITLE",
-            "i.item#         as ITEM_NUM",
+                            'as DUEDATE',
+            'i.bib#          as BIB_NUM',
+            'i.ibarcode      as ITEM_BARCODE',
+            'i.n_renewals    as RENEW',
+            'r.bib_queue_ord as REQUEST',
+            'i.volume        as VOLUME',
+            'p.pubdate       as PUBLICATION_YEAR',
+            't.processed     as TITLE',
+            'i.item#         as ITEM_NUM',
         ];
 
         // From
-        $sqlFrom = ["circ c"];
+        $sqlFrom = ['circ c'];
 
         // Join
         $sqlJoin = [
-            "item i on i.item#=c.item#",
-            "borrower b on b.borrower# = c.borrower#",
-            "borrower_barcode bb on bb.borrower# = c.borrower#",
-            "title t on t.bib# = i.bib#",
+            'item i on i.item#=c.item#',
+            'borrower b on b.borrower# = c.borrower#',
+            'borrower_barcode bb on bb.borrower# = c.borrower#',
+            'title t on t.bib# = i.bib#',
         ];
 
         // Left Outer Join
         $sqlLeftOuterJoin = [
-            "request r on r.item#=c.item#",
-            "pubdate_inverted p on p.bib# = i.bib#",
+            'request r on r.item#=c.item#',
+            'pubdate_inverted p on p.bib# = i.bib#',
         ];
 
         // Where
@@ -926,8 +930,8 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
 
         // Order by
         $sqlOrder = [
-            "i.due_date",
-            "t.processed",
+            'i.due_date',
+            't.processed',
         ];
 
         $sqlArray = [
@@ -957,19 +961,19 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
         // Convert Horizon Format to display format
         if (!empty($row['DUEDATE'])) {
             $dueDate = $this->dateFormat->convertToDisplayDate(
-                "M d Y",
+                'M d Y',
                 trim($row['DUEDATE'])
             );
             $now          = time();
             $dueTimeStamp = $this->dateFormat->convertFromDisplayDate(
-                "U",
+                'U',
                 $dueDate
             );
             if (is_numeric($dueTimeStamp)) {
                 if ($now > $dueTimeStamp) {
-                    $dueStatus = "overdue";
+                    $dueStatus = 'overdue';
                 } elseif ($now > $dueTimeStamp - (1 * 24 * 60 * 60)) {
-                    $dueStatus = "due";
+                    $dueStatus = 'due';
                 }
             }
         }
@@ -1059,21 +1063,21 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
         // This functionality first appeared in Horizon 7.4 - check our version
-        $hzVersionRequired = "7.4.0.0";
+        $hzVersionRequired = '7.4.0.0';
         if ($this->checkHzVersion($hzVersionRequired)) {
             // Set the Sybase or MSSQL rowcount limit (TODO: account for $page)
             $limitsql = "set rowcount {$limit}";
             // for Sybase ASE 12.5 : "set rowcount $limit"
 
             // This is the actual query for IDs.
-            $newsql = "  select nb.bib# "
-                    . "    from new_bib nb "
-                    . "    join bib_control bc "
-                    . "      on bc.bib# = nb.bib# "
-                    . "     and bc.staff_only = 0 "
-                    . "   where nb.date >= "
+            $newsql = '  select nb.bib# '
+                    . '    from new_bib nb '
+                    . '    join bib_control bc '
+                    . '      on bc.bib# = nb.bib# '
+                    . '     and bc.staff_only = 0 '
+                    . '   where nb.date >= '
                     . "         datediff(dd, '01JAN1970', getdate()) - {$daysOld} "
-                    . "order by nb.date desc ";
+                    . 'order by nb.date desc ';
 
             $results = [];
 
@@ -1113,7 +1117,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      */
     protected function checkHzVersion($hzVersionRequired)
     {
-        $checkHzVersionSQL = "select database_revision from matham";
+        $checkHzVersionSQL = 'select database_revision from matham';
 
         $hzVersionFound = '';
         try {
@@ -1164,9 +1168,9 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
     {
         $list = [];
 
-        $sql = "select bc.bib#" .
-            "  from bib_control bc" .
-            " where bc.staff_only = 1";
+        $sql = 'select bc.bib#' .
+            '  from bib_control bc' .
+            ' where bc.staff_only = 1';
         try {
             $sqlStmt = $this->db->query($sql);
             foreach ($sqlStmt as $row) {

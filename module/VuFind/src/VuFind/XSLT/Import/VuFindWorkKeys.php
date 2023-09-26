@@ -3,7 +3,7 @@
 /**
  * XSLT importer support methods for work key generation.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (c) Demian Katz 2020.
  *
@@ -31,6 +31,8 @@ namespace VuFind\XSLT\Import;
 
 use DOMDocument;
 use Normalizer;
+
+use function in_array;
 
 /**
  * XSLT importer support methods for work key generation.

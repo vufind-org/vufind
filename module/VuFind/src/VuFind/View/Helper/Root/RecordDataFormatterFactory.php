@@ -3,7 +3,7 @@
 /**
  * Factory for record driver data formatting view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -35,6 +35,8 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+
+use function count;
 
 /**
  * Factory for record driver data formatting view helper

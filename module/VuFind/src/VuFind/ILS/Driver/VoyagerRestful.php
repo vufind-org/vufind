@@ -3,7 +3,7 @@
 /**
  * Voyager ILS Driver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  * Copyright (C) The National Library of Finland 2014-2016.
@@ -37,6 +37,10 @@ use PDO;
 use PDOException;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
+
+use function count;
+use function in_array;
+use function is_callable;
 
 /**
  * Voyager Restful ILS Driver
@@ -684,10 +688,10 @@ class VoyagerRestful extends Voyager implements
      * @param array $patron      Patron information returned by the patronLogin
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
-     * in the context of placing or editing a hold.  When placing a hold, it contains
-     * most of the same values passed to placeHold, minus the patron data.  When
+     * in the context of placing or editing a hold. When placing a hold, it contains
+     * most of the same values passed to placeHold, minus the patron data. When
      * editing a hold it contains all the hold information returned by getMyHolds.
-     * May be used to limit the pickup options or may be ignored.  The driver must
+     * May be used to limit the pickup options or may be ignored. The driver must
      * not add new options to the return array based on this data or other areas of
      * VuFind may behave incorrectly.
      *
@@ -714,23 +718,23 @@ class VoyagerRestful extends Voyager implements
                 && $this->pickupLocationsInRequestGroup
                 && !empty($holdDetails['requestGroupId'])
             ) {
-                $sql = "SELECT CIRC_POLICY_LOCS.LOCATION_ID as location_id, " .
-                    "NVL(LOCATION.LOCATION_DISPLAY_NAME, LOCATION.LOCATION_NAME) " .
-                    "as location_name from " .
+                $sql = 'SELECT CIRC_POLICY_LOCS.LOCATION_ID as location_id, ' .
+                    'NVL(LOCATION.LOCATION_DISPLAY_NAME, LOCATION.LOCATION_NAME) ' .
+                    'as location_name from ' .
                     $this->dbName . ".CIRC_POLICY_LOCS, $this->dbName.LOCATION, " .
                     "$this->dbName.REQUEST_GROUP_LOCATION rgl " .
                     "where CIRC_POLICY_LOCS.PICKUP_LOCATION = 'Y' " .
-                    "and CIRC_POLICY_LOCS.LOCATION_ID = LOCATION.LOCATION_ID " .
-                    "and rgl.GROUP_ID=:requestGroupId " .
-                    "and rgl.LOCATION_ID = LOCATION.LOCATION_ID";
+                    'and CIRC_POLICY_LOCS.LOCATION_ID = LOCATION.LOCATION_ID ' .
+                    'and rgl.GROUP_ID=:requestGroupId ' .
+                    'and rgl.LOCATION_ID = LOCATION.LOCATION_ID';
                 $params['requestGroupId'] = $holdDetails['requestGroupId'];
             } else {
-                $sql = "SELECT CIRC_POLICY_LOCS.LOCATION_ID as location_id, " .
-                    "NVL(LOCATION.LOCATION_DISPLAY_NAME, LOCATION.LOCATION_NAME) " .
-                    "as location_name from " .
+                $sql = 'SELECT CIRC_POLICY_LOCS.LOCATION_ID as location_id, ' .
+                    'NVL(LOCATION.LOCATION_DISPLAY_NAME, LOCATION.LOCATION_NAME) ' .
+                    'as location_name from ' .
                     $this->dbName . ".CIRC_POLICY_LOCS, $this->dbName.LOCATION " .
                     "where CIRC_POLICY_LOCS.PICKUP_LOCATION = 'Y' " .
-                    "and CIRC_POLICY_LOCS.LOCATION_ID = LOCATION.LOCATION_ID";
+                    'and CIRC_POLICY_LOCS.LOCATION_ID = LOCATION.LOCATION_ID';
             }
 
             try {
@@ -787,7 +791,7 @@ class VoyagerRestful extends Voyager implements
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
      * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.  May be used to limit the pickup options
+     * placeHold, minus the patron data. May be used to limit the pickup options
      * or may be ignored.
      *
      * @return false|string      The default pickup location for the patron or false
@@ -809,7 +813,7 @@ class VoyagerRestful extends Voyager implements
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
      * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.  May be used to limit the request group
+     * placeHold, minus the patron data. May be used to limit the request group
      * options or may be ignored.
      *
      * @return false|string      The default request group for the patron or false if
@@ -856,7 +860,7 @@ class VoyagerRestful extends Voyager implements
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
      * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.  May be used to limit the request group
+     * placeHold, minus the patron data. May be used to limit the request group
      * options or may be ignored.
      *
      * @return array False if request groups not in use or an array of
@@ -1158,7 +1162,7 @@ class VoyagerRestful extends Voyager implements
             $xmlString .= '</' . $root . '>';
         }
 
-        $xmlComplete = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" . $xmlString;
+        $xmlComplete = '<?xml version="1.0" encoding="UTF-8"?>' . $xmlString;
 
         return $xmlComplete;
     }
@@ -1258,7 +1262,7 @@ class VoyagerRestful extends Voyager implements
     /**
      * Renew My Items
      *
-     * Function for attempting to renew a patron's items.  The data in
+     * Function for attempting to renew a patron's items. The data in
      * $renewDetails['details'] is determined by getRenewDetails().
      *
      * @param array $renewDetails An array of data required for renewing items
@@ -1829,7 +1833,7 @@ class VoyagerRestful extends Voyager implements
         ];
 
         $sql = $this->buildSqlFromArray($sqlArray);
-        $outersql = "select count(avail.item_id) CNT from (${sql['string']}) avail" .
+        $outersql = "select count(avail.item_id) CNT from ({$sql['string']}) avail" .
             ' where avail.STATUS=1'; // 1 = not charged
 
         try {
@@ -1864,14 +1868,14 @@ class VoyagerRestful extends Voyager implements
         // We need to significantly change the where clauses to account for remote
         // holds
         $sqlArray['where'] = [
-            "HOLD_RECALL.PATRON_ID = :id",
-            "HOLD_RECALL.HOLD_RECALL_ID = HOLD_RECALL_ITEMS.HOLD_RECALL_ID(+)",
-            "HOLD_RECALL_ITEMS.ITEM_ID = MFHD_ITEM.ITEM_ID(+)",
-            "(HOLD_RECALL_ITEMS.HOLD_RECALL_STATUS IS NULL OR " .
-            "HOLD_RECALL_ITEMS.HOLD_RECALL_STATUS < 3)",
-            "HOLD_RECALL.BIB_ID = BIB_TEXT.BIB_ID(+)",
-            "HOLD_RECALL.REQUEST_GROUP_ID = REQUEST_GROUP.GROUP_ID(+)",
-            "HOLD_RECALL.HOLDING_DB_ID = VOYAGER_DATABASES.DB_ID(+)",
+            'HOLD_RECALL.PATRON_ID = :id',
+            'HOLD_RECALL.HOLD_RECALL_ID = HOLD_RECALL_ITEMS.HOLD_RECALL_ID(+)',
+            'HOLD_RECALL_ITEMS.ITEM_ID = MFHD_ITEM.ITEM_ID(+)',
+            '(HOLD_RECALL_ITEMS.HOLD_RECALL_STATUS IS NULL OR ' .
+            'HOLD_RECALL_ITEMS.HOLD_RECALL_STATUS < 3)',
+            'HOLD_RECALL.BIB_ID = BIB_TEXT.BIB_ID(+)',
+            'HOLD_RECALL.REQUEST_GROUP_ID = REQUEST_GROUP.GROUP_ID(+)',
+            'HOLD_RECALL.HOLDING_DB_ID = VOYAGER_DATABASES.DB_ID(+)',
         ];
 
         return $sqlArray;
@@ -2698,7 +2702,7 @@ class VoyagerRestful extends Voyager implements
             return $data;
         }
 
-        if (strpos($patron['id'], '.') === false) {
+        if (!str_contains($patron['id'], '.')) {
             $this->debug(
                 "getUBRequestDetails: no prefix in patron id '{$patron['id']}'"
             );
@@ -3440,7 +3444,7 @@ class VoyagerRestful extends Voyager implements
 
     /**
      * Helper method to determine whether or not a certain method can be
-     * called on this driver.  Required method for any smart drivers.
+     * called on this driver. Required method for any smart drivers.
      *
      * @param string $method The name of the called method.
      * @param array  $params Array of passed parameters

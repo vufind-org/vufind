@@ -3,7 +3,7 @@
 /**
  * Admin Tag Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,6 +28,11 @@
  */
 
 namespace VuFindAdmin\Controller;
+
+use function count;
+use function intval;
+use function is_array;
+use function is_object;
 
 /**
  * Class controls distribution of tags and resource tags.
@@ -124,7 +129,7 @@ class TagsController extends AbstractAdmin
 
         $origin = $this->getParam('origin');
 
-        $action = ("list" == $origin) ? 'List' : 'Manage';
+        $action = ('list' == $origin) ? 'List' : 'Manage';
 
         $originUrl = $this->url()
             ->fromRoute('admin/tags', ['action' => $action]);
@@ -143,7 +148,7 @@ class TagsController extends AbstractAdmin
 
         // Delete All
         if (
-            "manage" == $origin
+            'manage' == $origin
             || null !== $this->getRequest()->getPost('deleteFilter')
             || null !== $this->getRequest()->getQuery('deleteFilter')
         ) {
@@ -263,7 +268,7 @@ class TagsController extends AbstractAdmin
             'data' => [
                 'confirm' => $newUrl,
                 'cancel' => $originUrl,
-                'title' => "confirm_delete_tags_brief",
+                'title' => 'confirm_delete_tags_brief',
                 'messages' => $this->getConfirmDeleteMessages($count),
                 'ids' => $ids,
                 'extras' => [
@@ -300,7 +305,7 @@ class TagsController extends AbstractAdmin
             'data' => [
                 'confirm' => $newUrl,
                 'cancel' => $originUrl,
-                'title' => "confirm_delete_tags_brief",
+                'title' => 'confirm_delete_tags_brief',
                 'messages' => $this->getConfirmDeleteMessages($count),
                 'extras' => [
                     'origin' => 'manage',
@@ -367,7 +372,7 @@ class TagsController extends AbstractAdmin
      */
     protected function convertFilter($value)
     {
-        return ("ALL" !== $value && "" !== $value && null !== $value)
+        return ('ALL' !== $value && '' !== $value && null !== $value)
             ? $value : null;
     }
 
@@ -380,7 +385,7 @@ class TagsController extends AbstractAdmin
      */
     protected function getResourceTags($prioritizePost = true)
     {
-        $currentPage = $this->getParam('page', $prioritizePost, "1");
+        $currentPage = $this->getParam('page', $prioritizePost, '1');
         $resourceTags = $this->getTable('ResourceTags');
         $tags = $resourceTags->getResourceTags(
             $this->convertFilter($this->getParam('user_id', $prioritizePost)),

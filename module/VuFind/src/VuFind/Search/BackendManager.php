@@ -3,7 +3,7 @@
 /**
  * Manager for search backends.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -36,6 +36,9 @@ use SplObjectStorage;
 use UnexpectedValueException;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Service;
+
+use function gettype;
+use function is_object;
 
 /**
  * Manager for search backends.
@@ -111,7 +114,7 @@ class BackendManager
             throw new UnexpectedValueException(
                 sprintf(
                     'Object of class %s does not implement the expected interface',
-                    get_class($backend)
+                    $backend::class
                 )
             );
         }

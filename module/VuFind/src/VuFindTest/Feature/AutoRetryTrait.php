@@ -6,7 +6,7 @@
  *
  * Inspired by discussion here at https://stackoverflow.com/questions/7705169
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -34,6 +34,10 @@ namespace VuFindTest\Feature;
 
 use PHPUnit\Framework\SkippedTestError;
 use PHPUnit\Util\Test;
+
+use function call_user_func;
+use function get_class;
+use function is_callable;
 
 /**
  * Trait introducing an annotation that can be used to auto-retry tests that may
@@ -102,7 +106,7 @@ trait AutoRetryTrait
                 return;
             } catch (\Exception $e) {
                 // Don't retry skipped tests!
-                if (get_class($e) == SkippedTestError::class) {
+                if ($e::class == SkippedTestError::class) {
                     throw $e;
                 }
                 // Execute callbacks for interrupted test, unless this is the

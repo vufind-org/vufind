@@ -3,7 +3,7 @@
 /**
  * SRU Search Interface
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Andrew Nagy 2008.
  *
@@ -32,6 +32,8 @@ namespace VuFindSearch\Backend\SRU;
 use VuFind\XSLT\Processor as XSLTProcessor;
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Backend\Exception\HttpErrorException;
+
+use function is_array;
 
 /**
  * SRU Search Interface
@@ -232,7 +234,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
-     * Process an SRU response.  Returns either the raw XML string or a
+     * Process an SRU response. Returns either the raw XML string or a
      * SimpleXMLElement based on the contents of the class' raw property.
      *
      * @param string $response SRU response

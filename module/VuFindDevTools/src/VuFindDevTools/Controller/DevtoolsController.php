@@ -3,7 +3,7 @@
 /**
  * Development Tools Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -34,6 +34,8 @@ use VuFind\I18n\Locale\LocaleSettings;
 use VuFind\I18n\Translator\Loader\ExtendedIni;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFindDevTools\LanguageHelper;
+
+use function is_callable;
 
 /**
  * Development Tools Controller

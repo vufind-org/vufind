@@ -3,7 +3,7 @@
 /**
  * Google cover content loader.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -29,6 +29,10 @@
 
 namespace VuFind\Content\Covers;
 
+use VuFind\Exception\HttpDownloadException;
+
+use function is_callable;
+
 /**
  * Google cover content loader.
  *
@@ -38,9 +42,9 @@ namespace VuFind\Content\Covers;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Google extends \VuFind\Content\AbstractCover implements \VuFindHttp\HttpServiceAwareInterface
+class Google extends \VuFind\Content\AbstractCover implements \VuFind\Http\CachingDownloaderAwareInterface
 {
-    use \VuFindHttp\HttpServiceAwareTrait;
+    use \VuFind\Http\CachingDownloaderAwareTrait;
 
     /**
      * Constructor
@@ -48,21 +52,7 @@ class Google extends \VuFind\Content\AbstractCover implements \VuFindHttp\HttpSe
     public function __construct()
     {
         $this->supportsIsbn = true;
-    }
-
-    /**
-     * Get an HTTP client
-     *
-     * @param string $url URL for client to use
-     *
-     * @return \Laminas\Http\Client
-     */
-    protected function getHttpClient($url = null)
-    {
-        if (null === $this->httpService) {
-            throw new \Exception('HTTP service missing.');
-        }
-        return $this->httpService->createClient($url);
+        $this->cacheOptionsSection = 'GoogleCover';
     }
 
     /**
@@ -87,24 +77,52 @@ class Google extends \VuFind\Content\AbstractCover implements \VuFindHttp\HttpSe
         // Construct the request URL and make the HTTP request:
         $url = 'https://books.google.com/books?jscmd=viewapi&' .
                'bibkeys=ISBN:' . $ids['isbn']->get13() . '&callback=addTheCover';
-        $result = $this->getHttpClient($url)->send();
 
-        // If the request was successful and we can extract a valid response...
-        if (
-            $result->isSuccess()
-            && preg_match('/^[^{]*({.*})[^}]*$/', $result->getBody(), $matches)
-        ) {
+        $decodeCallback = function (\Laminas\Http\Response $response, $url) {
+            if (
+                !preg_match(
+                    '/^[^{]*({.*})[^}]*$/',
+                    $response->getBody(),
+                    $matches
+                )
+            ) {
+                throw new HttpDownloadException(
+                    'Invalid response body (raw)',
+                    $url,
+                    $response->getStatusCode(),
+                    $response->getHeaders(),
+                    $response->getBody()
+                );
+            }
+
             // convert \x26 or \u0026 to &
             $json = json_decode(
                 str_replace(['\\x26', '\\u0026'], '&', $matches[1]),
                 true
             );
 
-            // find the first thumbnail URL and process it:
-            foreach ((array)$json as $current) {
-                if (isset($current['thumbnail_url'])) {
-                    return $current['thumbnail_url'];
-                }
+            if ($json === null) {
+                throw new HttpDownloadException(
+                    'Invalid response body (json)',
+                    $url,
+                    $response->getStatusCode(),
+                    $response->getHeaders(),
+                    $response->getBody()
+                );
+            }
+
+            return $json;
+        };
+
+        if (!isset($this->cachingDownloader)) {
+            throw new \Exception('CachingDownloader initialization failed.');
+        }
+
+        $json = $this->cachingDownloader->download($url, [], $decodeCallback);
+        // find the first thumbnail URL and process it:
+        foreach ((array)$json as $current) {
+            if (isset($current['thumbnail_url'])) {
+                return $current['thumbnail_url'];
             }
         }
         return false;

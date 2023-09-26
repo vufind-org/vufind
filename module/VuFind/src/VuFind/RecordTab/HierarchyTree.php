@@ -3,7 +3,7 @@
 /**
  * HierarchyTree tab
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,6 +28,9 @@
  */
 
 namespace VuFind\RecordTab;
+
+use function count;
+use function is_object;
 
 /**
  * HierarchyTree tab

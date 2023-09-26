@@ -6,7 +6,7 @@
  * See https://vufind.org/wiki/indexing:deduplication for details on how this is
  * used.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  * Copyright (C) The National Library of Finland 2013-2020.
@@ -39,6 +39,8 @@ use Laminas\EventManager\SharedEventManagerInterface;
 use Psr\Container\ContainerInterface;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Service;
+
+use function in_array;
 
 /**
  * Solr merged record handling listener.

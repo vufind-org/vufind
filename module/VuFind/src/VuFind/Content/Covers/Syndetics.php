@@ -3,7 +3,7 @@
 /**
  * Syndetics cover content loader.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -85,7 +85,7 @@ class Syndetics extends \VuFind\Content\AbstractCover
 
         $url = $this->useSSL
             ? 'https://secure.syndetics.com' : 'http://syndetics.com';
-        $url .= "/index.aspx?type=xw12";
+        $url .= '/index.aspx?type=xw12';
         if (isset($ids['isbn']) && $ids['isbn']->isValid()) {
             $isbn = $ids['isbn']->get13();
             $url .= "&isbn={$isbn}";

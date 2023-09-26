@@ -3,7 +3,7 @@
 /**
  * Recaptcha service
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -29,6 +29,11 @@
 
 namespace VuFind\Service;
 
+use Laminas\ReCaptcha\ReCaptcha as LaminasReCaptcha;
+
+use function func_get_args;
+use function is_callable;
+
 /**
  * Recaptcha service
  *
@@ -38,8 +43,39 @@ namespace VuFind\Service;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ReCaptcha extends \Laminas\ReCaptcha\ReCaptcha
+class ReCaptcha
 {
+    /**
+     * Proxied helper
+     *
+     * @var LaminasRecaptcha
+     */
+    protected $recaptcha;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->recaptcha = new LaminasReCaptcha(...func_get_args());
+    }
+
+    /**
+     * Proxy calls to the Laminas ReCaptcha object.
+     *
+     * @param string $method Method to call
+     * @param array  $args   Method arguments
+     *
+     * @return mixed
+     */
+    public function __call($method, $args)
+    {
+        if (is_callable([$this->recaptcha, $method])) {
+            return $this->recaptcha->$method(...$args);
+        }
+        throw new \Exception("Unsupported method: $method");
+    }
+
     /**
      * Get the HTML code for the captcha
      *
@@ -52,26 +88,12 @@ class ReCaptcha extends \Laminas\ReCaptcha\ReCaptcha
     public function getHtml()
     {
         // Get standard HTML
-        $html = parent::getHtml();
+        $html = $this->recaptcha->getHtml();
 
-        // Override placeholder div with richer version:
-        $div = '<div class="g-recaptcha" data-sitekey="' . $this->siteKey . '"';
-        foreach ($this->options as $key => $option) {
-            if ($key == 'lang') {
-                continue;
-            }
-            $div .= ' data-' . $key . '="' . $option . '"';
-        }
-        $div .= '>';
-        $divregex = '/<div[^>]*id=[\'"]recaptcha_widget[\'"][^>]*>/';
-
+        // Disable script tag (it is handled by \VuFind\Captcha\ReCaptcha, and
+        // we don't want to load duplicate Javascript).
         $scriptRegex = '|<script[^>]*></script>|';
         $scriptReplacement = ''; // remove
-
-        return preg_replace(
-            [$divregex, $scriptRegex],
-            [$div, $scriptReplacement],
-            $html
-        );
+        return preg_replace($scriptRegex, $scriptReplacement, $html);
     }
 }

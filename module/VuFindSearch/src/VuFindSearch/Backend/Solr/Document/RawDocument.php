@@ -3,7 +3,7 @@
 /**
  * SOLR "raw document" class for submitting any type of data.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -86,7 +86,7 @@ class RawDocument implements DocumentInterface
     public function getContentType(): string
     {
         return $this->mime
-            . (empty($this->encoding) ? '' : "; charset=" . $this->encoding);
+            . (empty($this->encoding) ? '' : '; charset=' . $this->encoding);
     }
 
     /**

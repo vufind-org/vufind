@@ -3,7 +3,7 @@
 /**
  * Hierarchy Tree Renderer for the JS_Tree plugin
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -30,6 +30,10 @@
 namespace VuFind\Hierarchy\TreeRenderer;
 
 use Laminas\Mvc\Controller\Plugin\Url as UrlPlugin;
+
+use function count;
+use function in_array;
+use function strlen;
 
 /**
  * Hierarchy Tree Renderer

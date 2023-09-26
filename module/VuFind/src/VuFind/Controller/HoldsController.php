@@ -3,7 +3,7 @@
 /**
  * Holds Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2021.
@@ -35,6 +35,10 @@ use Laminas\Cache\Storage\StorageInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Validator\CsrfInterface;
+
+use function count;
+use function in_array;
+use function is_array;
 
 /**
  * Controller for the user holds area.

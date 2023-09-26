@@ -3,7 +3,7 @@
 /**
  * Piwik view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2014-2018.
  *
@@ -28,6 +28,9 @@
  */
 
 namespace VuFind\View\Helper\Root;
+
+use function is_array;
+use function strlen;
 
 /**
  * Piwik Web Analytics view helper

@@ -3,7 +3,7 @@
 /**
  * OpenUrl view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -30,6 +30,10 @@
 namespace VuFind\View\Helper\Root;
 
 use VuFind\Resolver\Driver\PluginManager;
+
+use function count;
+use function in_array;
+use function is_callable;
 
 /**
  * OpenUrl view helper
@@ -160,7 +164,7 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
             $imageOpenUrl = $params['openUrlImageBasedOverride']
                 ? $params['openUrlImageBasedOverride'] : $params['openUrl'];
             $params['openUrlImageBasedSrc'] = $base
-                . ((false === strpos($base, '?')) ? '?' : '&')
+                . ((!str_contains($base, '?')) ? '?' : '&')
                 . $imageOpenUrl;
         }
 
@@ -191,7 +195,7 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
         // ini values 'true'/'false' are provided via ini reader as 1/0
         // only check embedAutoLoad for area if the current area passed checkContext
         if (
-            !($embedAutoLoad === "1" || $embedAutoLoad === "0")
+            !($embedAutoLoad === '1' || $embedAutoLoad === '0')
             && !empty($this->area)
         ) {
             // embedAutoLoad is neither true nor false, so check if it contains an

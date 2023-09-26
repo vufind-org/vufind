@@ -3,7 +3,7 @@
 /**
  * VTLS Virtua Driver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) University of Southern Queensland 2008.
  *
@@ -30,6 +30,11 @@
 namespace VuFind\ILS\Driver;
 
 use VuFind\Exception\ILS as ILSException;
+
+use function count;
+use function in_array;
+use function is_array;
+use function strlen;
 
 /**
  * VTLS Virtua Driver
@@ -103,58 +108,58 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         $holding = [];
 
         // Strip off the prefix from vtls exports
-        $db_id = str_replace("vtls", "", $id);
+        $db_id = str_replace('vtls', '', $id);
 
         // Build SQL Statement
-        $sql = "SELECT d.itemid AS item_id, c.due_date, s.name AS status, " .
-                      "s.status_code, l.name AS location, " .
-                      "SUBSTR(d.location, 0, 1) as camp_id, " .
+        $sql = 'SELECT d.itemid AS item_id, c.due_date, s.name AS status, ' .
+                      's.status_code, l.name AS location, ' .
+                      'SUBSTR(d.location, 0, 1) as camp_id, ' .
                       "DECODE(h.req_num, null, 'N', 'Y') AS reserve, " .
-                      "b.call_number AS bib_call_num, " .
-                      "i.call_number AS item_call_num " .
-               "FROM dbadmin.itemdetl2 d, dbadmin.location l, " .
-                    "dbadmin.statdetl sd, dbadmin.item_status s, " .
-                    "dbadmin.circdetl c, dbadmin.bibliographic_fields b, " .
-                    "dbadmin.item_call_number i, " .
+                      'b.call_number AS bib_call_num, ' .
+                      'i.call_number AS item_call_num ' .
+               'FROM dbadmin.itemdetl2 d, dbadmin.location l, ' .
+                    'dbadmin.statdetl sd, dbadmin.item_status s, ' .
+                    'dbadmin.circdetl c, dbadmin.bibliographic_fields b, ' .
+                    'dbadmin.item_call_number i, ' .
 
-                    "(SELECT d1.itemid, MAX(h1.request_control_number) AS req_num " .
-                    " FROM   dbadmin.itemdetl2 d1, dbadmin.hlrcdetl h1 " .
-                    " WHERE (d1.itemid = h1.itemid " .
-                    "    OR (d1.bibid  = h1.bibid " .
-                    "        AND " .
-                    "        h1.itemid is null)) " .
-                    "   AND  d1.bibid  = :bib_id " .
-                    " GROUP BY d1.itemid " .
-                    ") h " .
+                    '(SELECT d1.itemid, MAX(h1.request_control_number) AS req_num ' .
+                    ' FROM   dbadmin.itemdetl2 d1, dbadmin.hlrcdetl h1 ' .
+                    ' WHERE (d1.itemid = h1.itemid ' .
+                    '    OR (d1.bibid  = h1.bibid ' .
+                    '        AND ' .
+                    '        h1.itemid is null)) ' .
+                    '   AND  d1.bibid  = :bib_id ' .
+                    ' GROUP BY d1.itemid ' .
+                    ') h ' .
 
-               "WHERE d.location = l.location_id " .
-               "AND   d.itemid   = sd.itemid (+) " .
-               "AND   sd.stat    = s.status_code (+) " .
-               "AND   d.itemid   = c.itemid (+) " .
-               "AND   d.itemid   = h.itemid (+) " .
-               "AND   d.itemid   = i.itemid (+) " .
-               "AND   d.bibid    = b.bib_id " .
-               "AND   d.bibid    = :bib_id";
+               'WHERE d.location = l.location_id ' .
+               'AND   d.itemid   = sd.itemid (+) ' .
+               'AND   sd.stat    = s.status_code (+) ' .
+               'AND   d.itemid   = c.itemid (+) ' .
+               'AND   d.itemid   = h.itemid (+) ' .
+               'AND   d.itemid   = i.itemid (+) ' .
+               'AND   d.bibid    = b.bib_id ' .
+               'AND   d.bibid    = :bib_id';
 
         // Bind our bib_id and execute
-        $fields = ["bib_id:string" => $db_id];
+        $fields = ['bib_id:string' => $db_id];
         $result = $this->db->simpleSelect($sql, $fields);
 
         // If there are no results, lets try again because it has no items
         if (count($result) == 0) {
-            $sql = "SELECT b.call_number " .
-                   "FROM dbadmin.bibliographic_fields b " .
-                   "WHERE b.bib_id = :bib_id";
+            $sql = 'SELECT b.call_number ' .
+                   'FROM dbadmin.bibliographic_fields b ' .
+                   'WHERE b.bib_id = :bib_id';
             $result = $this->db->simpleSelect($sql, $fields);
 
             if (count($result) > 0) {
                 $new_holding = [
                     'id'           => $id,
                     'availability' => false,
-                    'reserve'      => "Y",
+                    'reserve'      => 'Y',
                     'status'       => null,
-                    'location'     => "Toowoomba",
-                    'campus'       => "Toowoomba",
+                    'location'     => 'Toowoomba',
+                    'campus'       => 'Toowoomba',
                     'callnumber'   => $result[0]['CALL_NUMBER'],
                     ];
 
@@ -162,26 +167,26 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                     case 'ELECTRONIC RESOURCE':
                         $new_holding['availability'] = true;
                         $new_holding['status']       = null;
-                        $new_holding['location']     = "Online";
-                        $new_holding['reserve']      = "N";
+                        $new_holding['location']     = 'Online';
+                        $new_holding['reserve']      = 'N';
                         $holding[] = $new_holding;
                         return $holding;
                         break;
                     case 'ON ORDER':
-                        $new_holding['status']       = "ON ORDER";
-                        $new_holding['location']     = "Pending...";
+                        $new_holding['status']       = 'ON ORDER';
+                        $new_holding['location']     = 'Pending...';
                         $holding[] = $new_holding;
                         return $holding;
                         break;
                     case 'ORDER CANCELLED':
-                        $new_holding['status']       = "ORDER CANCELLED";
-                        $new_holding['location']     = "None";
+                        $new_holding['status']       = 'ORDER CANCELLED';
+                        $new_holding['location']     = 'None';
                         $holding[] = $new_holding;
                         return $holding;
                         break;
                     case 'MISSING':
-                        $new_holding['status']       = "MISSING";
-                        $new_holding['location']     = "Unknown";
+                        $new_holding['status']       = 'MISSING';
+                        $new_holding['location']     = 'Unknown';
                         $holding[] = $new_holding;
                         return $holding;
                         break;
@@ -190,11 +195,11 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                         // Still haven't found it. Let's check if it has a serials
                         // holding location
                         $call_number = $result[0]['CALL_NUMBER'];
-                        $sql = "SELECT l.name, " .
-                            "SUBSTR(l.location_id, 0, 1) as camp_id " .
-                            "FROM dbadmin.holdlink h, location l " .
-                            "WHERE h.location = l.location_id " .
-                            "AND h.bibid = :bib_id";
+                        $sql = 'SELECT l.name, ' .
+                            'SUBSTR(l.location_id, 0, 1) as camp_id ' .
+                            'FROM dbadmin.holdlink h, location l ' .
+                            'WHERE h.location = l.location_id ' .
+                            'AND h.bibid = :bib_id';
                         $result = $this->db->simpleSelect($sql, $fields);
 
                         if (count($result) > 0) {
@@ -203,21 +208,21 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                                 // TODO: create a configuration file mechanism for
                                 // specifying locations so we can eliminate these
                                 // hard-coded USQ-specific values.
-                                switch ($r["CAMP_ID"]) {
+                                switch ($r['CAMP_ID']) {
                                     case 4:
-                                        $campus = "Fraser Coast";
+                                        $campus = 'Fraser Coast';
                                         break;
                                     case 5:
-                                        $campus = "Springfield";
+                                        $campus = 'Springfield';
                                         break;
                                     default:
-                                        $campus = "Toowoomba";
+                                        $campus = 'Toowoomba';
                                         break;
                                 }
 
-                                $tmp_holding['status']     = "Not For Loan";
+                                $tmp_holding['status']     = 'Not For Loan';
                                 $tmp_holding['location']   = $r['NAME'];
-                                $tmp_holding['reserve']    = "N";
+                                $tmp_holding['reserve']    = 'N';
                                 $tmp_holding['campus']     = $campus;
                                 $tmp_holding['callnumber'] = $call_number;
                                 $holding[] = $tmp_holding;
@@ -239,15 +244,15 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         foreach ($result as $row) {
             // TODO: create a configuration file mechanism for specifying locations
             // so we can eliminate these hard-coded USQ-specific values.
-            switch ($row["CAMP_ID"]) {
+            switch ($row['CAMP_ID']) {
                 case 4:
-                    $campus = "Fraser Coast";
+                    $campus = 'Fraser Coast';
                     break;
                 case 5:
-                    $campus = "Springfield";
+                    $campus = 'Springfield';
                     break;
                 default:
-                    $campus = "Toowoomba";
+                    $campus = 'Toowoomba';
                     break;
             }
 
@@ -273,7 +278,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                     case '5401':  // 'Staff Use'
                         $available = false;
                         break;
-                // Otherwise it's available
+                        // Otherwise it's available
                     case '7200':  // 'External Loan Only'
                     case '3100':  // 'In Library use only'
                     case '2700':  // 'Limited Loan'
@@ -341,62 +346,62 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     public function getHolding($id, array $patron = null, array $options = [])
     {
         // Strip off the prefix from vtls exports
-        $db_id = str_replace("vtls", "", $id);
-        $fields = ["bib_id:string" => $db_id];
+        $db_id = str_replace('vtls', '', $id);
+        $fields = ['bib_id:string' => $db_id];
 
-        $holds = "SELECT d1.itemid, MAX(h1.request_control_number) AS req_num " .
-            "FROM   dbadmin.itemdetl2 d1, dbadmin.hlrcdetl h1 " .
-            "WHERE  d1.itemid = h1.itemid " .
-            "AND    d1.bibid  = :bib_id " .
-            "GROUP BY d1.itemid";
+        $holds = 'SELECT d1.itemid, MAX(h1.request_control_number) AS req_num ' .
+            'FROM   dbadmin.itemdetl2 d1, dbadmin.hlrcdetl h1 ' .
+            'WHERE  d1.itemid = h1.itemid ' .
+            'AND    d1.bibid  = :bib_id ' .
+            'GROUP BY d1.itemid';
 
-        $bib_reqs = "SELECT h.bibid, count(*) as bib_req " .
-            "FROM   hlrcdetl h " .
-            "WHERE  h.itemid = 0 " .
-            "GROUP BY h.bibid";
+        $bib_reqs = 'SELECT h.bibid, count(*) as bib_req ' .
+            'FROM   hlrcdetl h ' .
+            'WHERE  h.itemid = 0 ' .
+            'GROUP BY h.bibid';
 
-        $item_reqs = "SELECT h.itemid, count(*) as item_req " .
-            "FROM   hlrcdetl h " .
-            "WHERE  h.itemid <> 0 " .
-            "GROUP BY h.itemid";
+        $item_reqs = 'SELECT h.itemid, count(*) as item_req ' .
+            'FROM   hlrcdetl h ' .
+            'WHERE  h.itemid <> 0 ' .
+            'GROUP BY h.itemid';
 
-        $issues = "SELECT MAX(s.issue_id) AS latest_issue, h.bibid " .
-            "FROM   serials_issue s, holdlink h " .
-            "WHERE  h.bibid      = :bib_id " .
-            "AND    h.holdingsid = s.holdingsid " .
-            "GROUP BY h.bibid";
+        $issues = 'SELECT MAX(s.issue_id) AS latest_issue, h.bibid ' .
+            'FROM   serials_issue s, holdlink h ' .
+            'WHERE  h.bibid      = :bib_id ' .
+            'AND    h.holdingsid = s.holdingsid ' .
+            'GROUP BY h.bibid';
 
-        $reserve_class = "SELECT DISTINCT item_id, item_class " .
-            " FROM reserve_item_v";
+        $reserve_class = 'SELECT DISTINCT item_id, item_class ' .
+            ' FROM reserve_item_v';
 
         // Build SQL Statement
-        $sql = "SELECT d.itemid as item_id, d.copyno, d.barcode, c.due_date, " .
-            "s.name as status, s.status_code, " .
-            "l.name as location, l.location_id, b.call_number as bib_call_num, " .
-            "i.call_number as item_call_num, " .
-            "iss.latest_issue, r.item_class as reserve_item_class, " .
-            "ic.item_class, d.units, " .
-            "br.bib_req, ir.item_req " .
-            "FROM   dbadmin.itemdetl2 d, dbadmin.location l, " .
-            "dbadmin.statdetl sd, dbadmin.item_status s, " .
-            "dbadmin.circdetl c, dbadmin.bibliographic_fields b, " .
-            "dbadmin.item_call_number i, item_class_v ic, " .
+        $sql = 'SELECT d.itemid as item_id, d.copyno, d.barcode, c.due_date, ' .
+            's.name as status, s.status_code, ' .
+            'l.name as location, l.location_id, b.call_number as bib_call_num, ' .
+            'i.call_number as item_call_num, ' .
+            'iss.latest_issue, r.item_class as reserve_item_class, ' .
+            'ic.item_class, d.units, ' .
+            'br.bib_req, ir.item_req ' .
+            'FROM   dbadmin.itemdetl2 d, dbadmin.location l, ' .
+            'dbadmin.statdetl sd, dbadmin.item_status s, ' .
+            'dbadmin.circdetl c, dbadmin.bibliographic_fields b, ' .
+            'dbadmin.item_call_number i, item_class_v ic, ' .
             "($holds) h, ($bib_reqs) br, ($item_reqs) ir, ($issues) iss, " .
             "($reserve_class) r " .
-            "WHERE  d.location  = l.location_id " .
-            "AND    d.itemclass = ic.item_class_id " .
-            "AND    d.itemid    = sd.itemid (+) " .
-            "AND    sd.stat     = s.status_code (+) " .
-            "AND    d.itemid    = c.itemid (+) " .
-            "AND    d.itemid    = h.itemid (+) " .
-            "AND    d.bibid     = br.bibid (+) " .
-            "AND    d.itemid    = ir.itemid (+) " .
-            "AND    d.itemid    = i.itemid (+) " .
-            "AND    d.itemid    = r.item_id (+) " .
-            "AND    d.bibid     = iss.bibid (+) " .
-            "AND    d.bibid     = b.bib_id " .
-            "AND    d.bibid     = :bib_id " .
-            "ORDER BY l.location_id, d.units_sort_form desc, d.copyno";
+            'WHERE  d.location  = l.location_id ' .
+            'AND    d.itemclass = ic.item_class_id ' .
+            'AND    d.itemid    = sd.itemid (+) ' .
+            'AND    sd.stat     = s.status_code (+) ' .
+            'AND    d.itemid    = c.itemid (+) ' .
+            'AND    d.itemid    = h.itemid (+) ' .
+            'AND    d.bibid     = br.bibid (+) ' .
+            'AND    d.itemid    = ir.itemid (+) ' .
+            'AND    d.itemid    = i.itemid (+) ' .
+            'AND    d.itemid    = r.item_id (+) ' .
+            'AND    d.bibid     = iss.bibid (+) ' .
+            'AND    d.bibid     = b.bib_id ' .
+            'AND    d.bibid     = :bib_id ' .
+            'ORDER BY l.location_id, d.units_sort_form desc, d.copyno';
         //print "<div style='display:none;'>$sql</div>";
 
         $result = $this->db->simpleSelect($sql, $fields);
@@ -445,20 +450,20 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             }
 
             $temp = [
-                "id"            => $id,
-                "availability"  => $available,
-                "status"        => $row['STATUS'],
-                "status_code"   => $row['STATUS_CODE'],
-                "location"      => $row['LOCATION'],
-                "location_code" => $row['LOCATION_ID'],
-                "reserve"       => $row['ITEM_REQ'] + $row['BIB_REQ'],
-                "callnumber"    => $call_num,
-                "duedate"       => $row['DUE_DATE'],
-                "number"        => $row['COPYNO'],
-                "barcode"       => $row['BARCODE'],
-                "itemclass"     => $row['ITEM_CLASS'],
-                "units"         => $row['UNITS'],
-                "resitemclass"  => $row['RESERVE_ITEM_CLASS'],
+                'id'            => $id,
+                'availability'  => $available,
+                'status'        => $row['STATUS'],
+                'status_code'   => $row['STATUS_CODE'],
+                'location'      => $row['LOCATION'],
+                'location_code' => $row['LOCATION_ID'],
+                'reserve'       => $row['ITEM_REQ'] + $row['BIB_REQ'],
+                'callnumber'    => $call_num,
+                'duedate'       => $row['DUE_DATE'],
+                'number'        => $row['COPYNO'],
+                'barcode'       => $row['BARCODE'],
+                'itemclass'     => $row['ITEM_CLASS'],
+                'units'         => $row['UNITS'],
+                'resitemclass'  => $row['RESERVE_ITEM_CLASS'],
                 ];
 
             // Add to the holdings array
@@ -485,11 +490,11 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     protected function checkHoldAllowed($patron_id, $holdings)
     {
         // Get the patron type
-        $sql = "SELECT p.patron_type_id " .
-            "FROM   patron_type_patron p, patron_barcode b " .
-            "WHERE  b.patron_id = p.patron_id " .
-            "AND    b.barcode   = :patron";
-        $fields = ["patron:string" => $patron_id];
+        $sql = 'SELECT p.patron_type_id ' .
+            'FROM   patron_type_patron p, patron_barcode b ' .
+            'WHERE  b.patron_id = p.patron_id ' .
+            'AND    b.barcode   = :patron';
+        $fields = ['patron:string' => $patron_id];
         $result = $this->db->simpleSelect($sql, $fields);
 
         // We should have 1 row and only 1 row.
@@ -514,7 +519,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             '4' => ['UF', 'PF', 'AF'],
             ];
         // Where is the patron from?
-        $location = "";
+        $location = '';
         foreach ($type_list as $loc => $patron_types) {
             if (in_array($patron_type, $patron_types)) {
                 $location = $loc;
@@ -523,12 +528,12 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         // Requestable Statuses
         // TODO: Make this configurable through Virtua.ini.
         $status_list = [
-            "4401", // At Repair
-            "4705", // ON HOLD
-            "5400", // Being Processed
-            "5401", // On Display
-            "5402", // 24 Hour Hold
-            "5700",  // IN TRANSIT
+            '4401', // At Repair
+            '4705', // ON HOLD
+            '5400', // Being Processed
+            '5401', // On Display
+            '5402', // 24 Hour Hold
+            '5700',  // IN TRANSIT
             ];
         // Who can place reservations on available items
         $available_locs = [
@@ -575,7 +580,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                 // Everyone else we need to do some lookups
 
                 // Can't find their location?
-                if ($location == "") {
+                if ($location == '') {
                     $h['req_allowed'] = false;
                 } else {
                     // Known location
@@ -583,7 +588,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                     // Details about this item -- note that we use 1/0 for
                     // $item_is_out since digits display better in on screen
                     // debugging than booleans.
-                    $item_is_out      = $h['duedate'] ? "1" : "0";
+                    $item_is_out      = $h['duedate'] ? '1' : '0';
                     $item_loc_code    = substr($h['location_code'], 0, 1);
                     $item_stat_code   = $h['status_code'];
 
@@ -678,151 +683,150 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
 
         // Handle empty patterns
         if (count($data) == 0) {
-            return "";
+            return '';
         }
 
         // Test the first element
         $is_chrono = strpos($data['pattern'][0], '(');
-        $return_string = "";
+        $return_string = '';
 
         // NON chrono
         if ($is_chrono === false) {
             $i = 0;
             foreach ($data['pattern'] as $d) {
-                $return_string .= $d . " " . $data['data'][$i] . " ";
+                $return_string .= $d . ' ' . $data['data'][$i] . ' ';
                 $i++;
             }
-
-        // Chrono
-        // Important note: strtotime() expects
-        // 01/02/2000 = 2nd Jan 2000
-        // 01-02-2000 = 1st Feb 2000 <= Use hyphens
         } else {
-            $pattern = implode("", $data['pattern']);
+            // Chrono
+            // Important note: strtotime() expects
+            // 01/02/2000 = 2nd Jan 2000
+            // 01-02-2000 = 1st Feb 2000 <= Use hyphens
+            $pattern = implode('', $data['pattern']);
             switch (strtolower(trim($pattern))) {
                 // Error case
-                case "":
+                case '':
                     return null;
                     break;
                     // Year only
-                case "(year)":
-                    return $data['data'][0] . " ";
+                case '(year)':
+                    return $data['data'][0] . ' ';
                     break;
                     // Year + Month
-                case "(year)(month)":
-                    $months = explode("-", $data['data'][1]);
+                case '(year)(month)':
+                    $months = explode('-', $data['data'][1]);
                     $m = count($months);
-                    $years  = explode("-", $data['data'][0]);
+                    $years  = explode('-', $data['data'][0]);
                     $y = count($years);
                     $my = $m . $y;
 
-                    $start_time = strtotime("01-" . $months[0] . "-" . $years[0]);
-                    $end_string = "F Y";
+                    $start_time = strtotime('01-' . $months[0] . '-' . $years[0]);
+                    $end_string = 'F Y';
 
                     switch ($my) {
                         // January 2000 - February 2001
-                        case "22":
-                            $start_string = "F Y";
+                        case '22':
+                            $start_string = 'F Y';
                             $end_time
-                                = strtotime("01-" . $months[1] . "-" . $years[1]);
+                                = strtotime('01-' . $months[1] . '-' . $years[1]);
                             break;
                             // January - February 2000
-                        case "21":
-                            $start_string = "F";
+                        case '21':
+                            $start_string = 'F';
                             $end_time
-                                = strtotime("01-" . $months[1] . "-" . $years[0]);
+                                = strtotime('01-' . $months[1] . '-' . $years[0]);
                             break;
                             // January 2000
-                        case "11":
-                            $start_string = "F Y";
+                        case '11':
+                            $start_string = 'F Y';
                             $end_time = null;
                             break;
                             // January 2000 - January 2001
-                        case "12":
-                            $start_string = "F Y";
+                        case '12':
+                            $start_string = 'F Y';
                             $end_time
-                                = strtotime("01-" . $months[0] . "-" . $years[1]);
+                                = strtotime('01-' . $months[0] . '-' . $years[1]);
                             break;
                     }
                     if ($end_time != null) {
-                        return date($start_string, $start_time) . " - " .
+                        return date($start_string, $start_time) . ' - ' .
                             date($end_string, $end_time);
                     } else {
                         return date($start_string, $start_time);
                     }
                     break;
                     // Year + Month + Day
-                case "(year)(month)(day)":
-                    $days   = explode("-", $data['data'][2]);
+                case '(year)(month)(day)':
+                    $days   = explode('-', $data['data'][2]);
                     $d = count($days);
-                    $months = explode("-", $data['data'][1]);
+                    $months = explode('-', $data['data'][1]);
                     $m = count($months);
-                    $years  = explode("-", $data['data'][0]);
+                    $years  = explode('-', $data['data'][0]);
                     $y = count($years);
                     $dmy = $d . $m . $y;
 
                     $start_time
-                        = strtotime($days[0] . "-" . $months[0] . "-" . $years[0]);
-                    $end_string = "jS F Y";
+                        = strtotime($days[0] . '-' . $months[0] . '-' . $years[0]);
+                    $end_string = 'jS F Y';
 
                     switch ($dmy) {
                         // 01 January 2000
-                        case "111":
-                            $start_string = "jS F Y";
+                        case '111':
+                            $start_string = 'jS F Y';
                             $end_time = null;
                             break;
                             // 01 January 2000 - 01 January 2001
-                        case "112":
-                            $start_string = "jS F Y";
+                        case '112':
+                            $start_string = 'jS F Y';
                             $end_time = strtotime(
-                                $days[0] . "-" . $months[0] . "-" . $years[1]
+                                $days[0] . '-' . $months[0] . '-' . $years[1]
                             );
                             break;
                             // 01 January - 01 February 2000
-                        case "121":
-                            $start_string = "jS F";
+                        case '121':
+                            $start_string = 'jS F';
                             $end_time = strtotime(
-                                $days[0] . "-" . $months[1] . "-" . $years[0]
+                                $days[0] . '-' . $months[1] . '-' . $years[0]
                             );
                             break;
                             // 01 January 2000 - 01 February 2001
-                        case "122":
-                            $start_string = "jS F Y";
+                        case '122':
+                            $start_string = 'jS F Y';
                             $end_time = strtotime(
-                                $days[0] . "-" . $months[1] . "-" . $years[1]
+                                $days[0] . '-' . $months[1] . '-' . $years[1]
                             );
                             break;
                             // 01 - 02 January 2000
-                        case "211":
-                            $start_string = "jS";
+                        case '211':
+                            $start_string = 'jS';
                             $end_time = strtotime(
-                                $days[1] . "-" . $months[0] . "-" . $years[0]
+                                $days[1] . '-' . $months[0] . '-' . $years[0]
                             );
                             break;
                             // 01 January 2000 - 02 January 2001
-                        case "212":
-                            $start_string = "jS F Y";
+                        case '212':
+                            $start_string = 'jS F Y';
                             $end_time = strtotime(
-                                $days[1] . "-" . $months[0] . "-" . $years[1]
+                                $days[1] . '-' . $months[0] . '-' . $years[1]
                             );
                             break;
                             // 01 January - 02 February 2000
-                        case "221":
-                            $start_string = "jS F";
+                        case '221':
+                            $start_string = 'jS F';
                             $end_time = strtotime(
-                                $days[1] . "-" . $months[1] . "-" . $years[0]
+                                $days[1] . '-' . $months[1] . '-' . $years[0]
                             );
                             break;
                             // 01 January 2000 - 02 February 2001
-                        case "222":
-                            $start_string = "jS F Y";
+                        case '222':
+                            $start_string = 'jS F Y';
                             $end_time = strtotime(
-                                $days[1] . "-" . $months[1] . "-" . $years[1]
+                                $days[1] . '-' . $months[1] . '-' . $years[1]
                             );
                             break;
                     }
                     if ($end_time != null) {
-                        return date($start_string, $start_time) . " - " .
+                        return date($start_string, $start_time) . ' - ' .
                             date($end_string, $end_time);
                     } else {
                         return date($start_string, $start_time);
@@ -831,7 +835,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                 default:
                     $i = 0;
                     foreach ($data['pattern'] as $d) {
-                        $return_string .= $d . " " . $data['data'][$i] . " ";
+                        $return_string .= $d . ' ' . $data['data'][$i] . ' ';
                         $i++;
                     }
                     break;
@@ -855,7 +859,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      */
     protected function renderSubPattern($data)
     {
-        $return_string = "";
+        $return_string = '';
         $sub_pattern = [];
         $i = 0;
         foreach ($data['pattern'] as $p) {
@@ -903,7 +907,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         $i = 0;
         foreach ($data['data'] as $d) {
             switch ($data['pattern_code'][$i]) {
-                case "z":
+                case 'z':
                     $return['notes'][] = $d;
                     break;
                 default:
@@ -979,7 +983,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         foreach ($holdings_marc as $row) {
             if (
                 $row['SUBFIELD_DATA'] != null
-                && trim($row['SUBFIELD_DATA']) != ""
+                && trim($row['SUBFIELD_DATA']) != ''
             ) {
                 $data_set[$row['FIELD_SEQUENCE']][] = [
                     'tag'  => trim($row['FIELD_TAG']),
@@ -1006,7 +1010,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                     $sort = explode('.', $subfield['data']);
                     $sort_rule  = $sort[0];
                     $sort_order = $sort[1] ?? 0;
-                    $sort_order = sprintf("%05d", $sort_order);
+                    $sort_order = sprintf('%05d', $sort_order);
                 } else {
                     // Everything else goes in the data bucket
                     $data[] = [
@@ -1015,7 +1019,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                     ];
                 }
             }
-            $sort_set[$sort_rule . "." . $sort_order] = [
+            $sort_set[$sort_rule . '.' . $sort_order] = [
                 'tag'  => $tag,
                 'data' => $data,
             ];
@@ -1063,15 +1067,15 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     public function getPurchaseHistory($id)
     {
         // Strip off the prefix from vtls exports
-        $db_id = str_replace("vtls", "", $id);
-        $fields = ["bib_id:string" => $db_id];
+        $db_id = str_replace('vtls', '', $id);
+        $fields = ['bib_id:string' => $db_id];
 
         // Let's go check if this bib id is for a serial
-        $sql = "SELECT h.holdingsid, l.name " .
-            "FROM dbadmin.holdlink h, dbadmin.location l " .
-            "WHERE h.bibid   = :bib_id " .
-            "AND h.masked    = 0 " .
-            "AND h.location  = l.location_id";
+        $sql = 'SELECT h.holdingsid, l.name ' .
+            'FROM dbadmin.holdlink h, dbadmin.location l ' .
+            'WHERE h.bibid   = :bib_id ' .
+            'AND h.masked    = 0 ' .
+            'AND h.location  = l.location_id';
 
         $result = $this->db->simpleSelect($sql, $fields);
 
@@ -1080,16 +1084,16 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             return [];
         }
 
-        $sql = "SELECT * " .
-            "FROM dbadmin.iso_2709 i " .
-            "WHERE i.id = :hid " .
-            "AND i.idtype = 104 " .
+        $sql = 'SELECT * ' .
+            'FROM dbadmin.iso_2709 i ' .
+            'WHERE i.id = :hid ' .
+            'AND i.idtype = 104 ' .
             "AND i.field_tag in ('853', '863', '866') " .
-            "ORDER BY i.field_sequence, i.subfield_sequence";
+            'ORDER BY i.field_sequence, i.subfield_sequence';
 
         $data = [];
         foreach ($result as $row) {
-            $fields = ["hid:string" => $row['HOLDINGSID']];
+            $fields = ['hid:string' => $row['HOLDINGSID']];
             $hresult = $this->db->simpleSelect($sql, $fields);
             $data[$row['NAME']] = $this->renderSerialHoldings($hresult);
         }
@@ -1105,11 +1109,11 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      */
     public function getAll853()
     {
-        $sql = "SELECT * " .
-            "FROM dbadmin.iso_2709 i " .
-            "WHERE i.idtype = 104 " .
+        $sql = 'SELECT * ' .
+            'FROM dbadmin.iso_2709 i ' .
+            'WHERE i.idtype = 104 ' .
             "AND i.field_tag in ('853') " .
-            "ORDER BY i.field_sequence, i.subfield_sequence";
+            'ORDER BY i.field_sequence, i.subfield_sequence';
         $hresult = $this->db->simpleSelect($sql);
         if (count($hresult) == 0) {
             return null;
@@ -1119,9 +1123,9 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         foreach ($hresult as $row) {
             if (
                 $row['SUBFIELD_DATA'] != null
-                && trim($row['SUBFIELD_DATA']) != ""
+                && trim($row['SUBFIELD_DATA']) != ''
             ) {
-                $data_set[$row['ID'] . "_" . $row['FIELD_SEQUENCE']][] = [
+                $data_set[$row['ID'] . '_' . $row['FIELD_SEQUENCE']][] = [
                     'id'   => trim($row['ID']),
                     'code' => trim($row['SUBFIELD_CODE']),
                     'data' => trim($row['SUBFIELD_DATA']),
@@ -1147,21 +1151,21 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      */
     public function patronLogin($barcode, $password)
     {
-        $sql = "SELECT i.id, b.barcode, i.subfield_data AS password, p.name, " .
-            "p.e_mail_address_primary, p.department " .
-            "FROM dbadmin.iso_2709 i, dbadmin.patron p, dbadmin.patron_barcode b " .
-            "WHERE i.idtype        = 105 " .
+        $sql = 'SELECT i.id, b.barcode, i.subfield_data AS password, p.name, ' .
+            'p.e_mail_address_primary, p.department ' .
+            'FROM dbadmin.iso_2709 i, dbadmin.patron p, dbadmin.patron_barcode b ' .
+            'WHERE i.idtype        = 105 ' .
             "AND   i.field_tag     = '015' " .
             "AND   i.subfield_code = 'b' " .
-            "AND   p.patron_id     = i.id " .
-            "AND   b.patron_id     = i.id " .
-            "AND   i.id = ( " .
-            "  SELECT p.patron_id AS id " .
-            "  FROM   dbadmin.patron_barcode p " .
-            "  WHERE  UPPER(p.barcode)    = UPPER(:barcode) " .
-            ")";
+            'AND   p.patron_id     = i.id ' .
+            'AND   b.patron_id     = i.id ' .
+            'AND   i.id = ( ' .
+            '  SELECT p.patron_id AS id ' .
+            '  FROM   dbadmin.patron_barcode p ' .
+            '  WHERE  UPPER(p.barcode)    = UPPER(:barcode) ' .
+            ')';
 
-        $fields = ["barcode:string" => $barcode];
+        $fields = ['barcode:string' => $barcode];
         $result = $this->db->simpleSelect($sql, $fields);
 
         if (count($result) > 0) {
@@ -1208,15 +1212,15 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      */
     public function getMyProfile($patron)
     {
-        $sql = "SELECT p.name, p.street_address_1, p.street_address_2, p.city, " .
-            "p.postal_code, p.telephone_primary, t.name as patron_type " .
-            "FROM  dbadmin.patron_type_patron pt, dbadmin.patron p, " .
-            "dbadmin.patron_type t " .
-            "WHERE p.patron_id      = pt.patron_id " .
-            "AND   t.patron_type_id = pt.patron_type_id " .
-            "AND   p.patron_id      = :patron_id";
+        $sql = 'SELECT p.name, p.street_address_1, p.street_address_2, p.city, ' .
+            'p.postal_code, p.telephone_primary, t.name as patron_type ' .
+            'FROM  dbadmin.patron_type_patron pt, dbadmin.patron p, ' .
+            'dbadmin.patron_type t ' .
+            'WHERE p.patron_id      = pt.patron_id ' .
+            'AND   t.patron_type_id = pt.patron_type_id ' .
+            'AND   p.patron_id      = :patron_id';
 
-        $fields = ["patron_id:string" => $patron['id']];
+        $fields = ['patron_id:string' => $patron['id']];
         $result = $this->db->simpleSelect($sql, $fields);
 
         if (count($result) > 0) {
@@ -1240,7 +1244,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
 
             if ($result[0]['CITY'] != null) {
                 if (strlen($patron['address2']) > 0) {
-                    $patron['address2'] .= ", " . trim($result[0]['CITY']);
+                    $patron['address2'] .= ', ' . trim($result[0]['CITY']);
                 } else {
                     $patron['address2'] = trim($result[0]['CITY']);
                 }
@@ -1267,26 +1271,26 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     {
         $fineList = [];
 
-        $sql = "SELECT a.assessment_amount fine_amount, f.description, " .
-            "a.balance, a.item_due_date due_date, i.bibid bib_id " .
-            "FROM  patron_account a, fine_code_v f, itemdetl2 i " .
-            "WHERE a.state        = 0 " .
-            "AND   a.balance      > 0 " .
-            "AND   a.itemid       = i.itemid " .
-            "AND   a.fine_code_id = f.fine_code_id " .
-            "AND   a.patron_id    = :patron_id";
+        $sql = 'SELECT a.assessment_amount fine_amount, f.description, ' .
+            'a.balance, a.item_due_date due_date, i.bibid bib_id ' .
+            'FROM  patron_account a, fine_code_v f, itemdetl2 i ' .
+            'WHERE a.state        = 0 ' .
+            'AND   a.balance      > 0 ' .
+            'AND   a.itemid       = i.itemid ' .
+            'AND   a.fine_code_id = f.fine_code_id ' .
+            'AND   a.patron_id    = :patron_id';
 
-        $fields = ["patron_id:string" => $patron['id']];
+        $fields = ['patron_id:string' => $patron['id']];
         $result = $this->db->simpleSelect($sql, $fields);
 
         if (count($result) > 0) {
             foreach ($result as $row) {
                 $fineList[] = [
-                    "amount"   => $row['FINE_AMOUNT'] * 100,
-                    "fine"     => $row['DESCRIPTION'],
-                    "balance"  => $row['BALANCE'] * 100,
-                    "duedate"  => $row['DUE_DATE'],
-                    "id"       => "vtls" . sprintf("%09d", (int)$row['BIB_ID']),
+                    'amount'   => $row['FINE_AMOUNT'] * 100,
+                    'fine'     => $row['DESCRIPTION'],
+                    'balance'  => $row['BALANCE'] * 100,
+                    'duedate'  => $row['DUE_DATE'],
+                    'id'       => 'vtls' . sprintf('%09d', (int)$row['BIB_ID']),
                     ];
             }
         }
@@ -1308,23 +1312,23 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     {
         $holdList = [];
 
-        $sql = "SELECT h.bibid, l.name pickup_location, h.pickup_any_location, " .
-            "h.date_last_needed, h.date_placed, h.request_control_number " .
-            "FROM  dbadmin.hlrcdetl h, dbadmin.location l " .
-            "WHERE h.pickup_location = l.location_id " .
-            "AND   h.patron_id       = :patron_id";
+        $sql = 'SELECT h.bibid, l.name pickup_location, h.pickup_any_location, ' .
+            'h.date_last_needed, h.date_placed, h.request_control_number ' .
+            'FROM  dbadmin.hlrcdetl h, dbadmin.location l ' .
+            'WHERE h.pickup_location = l.location_id ' .
+            'AND   h.patron_id       = :patron_id';
 
-        $fields = ["patron_id:string" => $patron['id']];
+        $fields = ['patron_id:string' => $patron['id']];
         $result = $this->db->simpleSelect($sql, $fields);
 
         if (count($result) > 0) {
             foreach ($result as $row) {
                 $holdList[] = [
-                    "id"       => "vtls" . sprintf("%09d", (int)$row['BIBID']),
-                    "location" => $row['PICKUP_LOCATION'],
-                    "expire"   => $row['DATE_LAST_NEEDED'],
-                    "create"   => $row['DATE_PLACED'],
-                    "reqnum"   => $row['REQUEST_CONTROL_NUMBER'],
+                    'id'       => 'vtls' . sprintf('%09d', (int)$row['BIBID']),
+                    'location' => $row['PICKUP_LOCATION'],
+                    'expire'   => $row['DATE_LAST_NEEDED'],
+                    'create'   => $row['DATE_PLACED'],
+                    'reqnum'   => $row['REQUEST_CONTROL_NUMBER'],
                     ];
             }
         }
@@ -1347,25 +1351,25 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     {
         $transList = [];
 
-        $bib_reqs = "SELECT h.bibid, count(*) as bib_req " .
-            "FROM   hlrcdetl h " .
-            "WHERE  h.itemid = 0 " .
-            "GROUP BY h.bibid";
-        $item_reqs = "SELECT h.itemid, count(*) as item_req " .
-            "FROM   hlrcdetl h " .
-            "WHERE  h.itemid <> 0 " .
-            "GROUP BY h.itemid";
+        $bib_reqs = 'SELECT h.bibid, count(*) as bib_req ' .
+            'FROM   hlrcdetl h ' .
+            'WHERE  h.itemid = 0 ' .
+            'GROUP BY h.bibid';
+        $item_reqs = 'SELECT h.itemid, count(*) as item_req ' .
+            'FROM   hlrcdetl h ' .
+            'WHERE  h.itemid <> 0 ' .
+            'GROUP BY h.itemid';
 
-        $sql = "SELECT i.bibid, i.itemid, c.due_date, i.barcode, " .
-            "c.renew_count, (br.bib_req + ir.item_req) as req_count " .
+        $sql = 'SELECT i.bibid, i.itemid, c.due_date, i.barcode, ' .
+            'c.renew_count, (br.bib_req + ir.item_req) as req_count ' .
             "FROM   circdetl c, itemdetl2 i, ($bib_reqs) br, ($item_reqs) ir " .
-            "WHERE  c.itemid    = i.itemid " .
-            "AND    i.bibid     = br.bibid (+) " .
-            "AND    i.itemid    = ir.itemid (+) " .
-            "AND    c.patron_id = :patron_id " .
-            "ORDER BY c.due_date";
+            'WHERE  c.itemid    = i.itemid ' .
+            'AND    i.bibid     = br.bibid (+) ' .
+            'AND    i.itemid    = ir.itemid (+) ' .
+            'AND    c.patron_id = :patron_id ' .
+            'ORDER BY c.due_date';
 
-        $fields = ["patron_id:string" => $patron['id']];
+        $fields = ['patron_id:string' => $patron['id']];
         $result = $this->db->simpleSelect($sql, $fields);
 
         if (count($result) > 0) {
@@ -1376,7 +1380,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                     'renew'   => $row['RENEW_COUNT'],
                     'request' => $row['REQ_COUNT'],
                     // IDs need to show as 'vtls000589589'
-                    'id'      => "vtls" . sprintf("%09d", (int)$row['BIBID']),
+                    'id'      => 'vtls' . sprintf('%09d', (int)$row['BIBID']),
                     ];
             }
         }
@@ -1395,11 +1399,11 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     {
         $courseList = [];
 
-        $sql = "SELECT DISTINCT l.course_id " .
-            "FROM reserve_list_v l, reserve_item_v i " .
-            "WHERE l.Reserve_list_id = i.Reserve_list_id " .
-            "AND SYSDATE BETWEEN i.Begin_date AND i.End_date " .
-            "ORDER BY l.course_id";
+        $sql = 'SELECT DISTINCT l.course_id ' .
+            'FROM reserve_list_v l, reserve_item_v i ' .
+            'WHERE l.Reserve_list_id = i.Reserve_list_id ' .
+            'AND SYSDATE BETWEEN i.Begin_date AND i.End_date ' .
+            'ORDER BY l.course_id';
         $result = $this->db->simpleSelect($sql);
 
         if (count($result) > 0) {
@@ -1429,18 +1433,18 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     {
         $recordList = [];
 
-        $sql = "SELECT DISTINCT d.bibid " .
-            "FROM reserve_item_v i, reserve_list_v l, itemdetl2 d " .
-            "WHERE i.Reserve_list_id = l.Reserve_list_id " .
-            "AND SYSDATE BETWEEN i.Begin_date AND i.End_date " .
-            "AND i.Item_id = d.itemid " .
-            "AND l.Course_id = :course";
-        $fields = ["course:string" => $course];
+        $sql = 'SELECT DISTINCT d.bibid ' .
+            'FROM reserve_item_v i, reserve_list_v l, itemdetl2 d ' .
+            'WHERE i.Reserve_list_id = l.Reserve_list_id ' .
+            'AND SYSDATE BETWEEN i.Begin_date AND i.End_date ' .
+            'AND i.Item_id = d.itemid ' .
+            'AND l.Course_id = :course';
+        $fields = ['course:string' => $course];
         $result = $this->db->simpleSelect($sql, $fields);
 
         if (count($result) > 0) {
             foreach ($result as $row) {
-                $recordList[] = "vtls" . sprintf("%09d", (int)$row['BIBID']);
+                $recordList[] = 'vtls' . sprintf('%09d', (int)$row['BIBID']);
             }
         }
 
@@ -1464,8 +1468,8 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         } else {
             $time = strtotime('now');
         }
-        $today = date("d-m-Y", $time);
-        $time_format = "H:i:s";
+        $today = date('d-m-Y', $time);
+        $time_format = 'H:i:s';
 
         // Fix Date Handling
         $this->db->simpleSql(
@@ -1473,10 +1477,10 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         );
 
         // Normal opening hours
-        $sql = "SELECT campus, open_time, close_time, status " .
-            "FROM usq_sr_open_normal n " .
-            "WHERE UPPER(dayofweek) = UPPER(:dow)";
-        $fields = ["dow:string" => date("l", $time)];
+        $sql = 'SELECT campus, open_time, close_time, status ' .
+            'FROM usq_sr_open_normal n ' .
+            'WHERE UPPER(dayofweek) = UPPER(:dow)';
+        $fields = ['dow:string' => date('l', $time)];
         $result = $this->db->simpleSelect($sql, $fields);
         if (count($result) == 0) {
             return [];
@@ -1496,23 +1500,23 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         }
 
         // Opening hours exceptions
-        $day  = strtolower(date("D", $time));
+        $day  = strtolower(date('D', $time));
         // Lowest priority row (numericaly, ie. 1 = most important)
-        $priority = "SELECT e.campus, MIN(e.priority) as priority " .
-            "FROM   usq_sr_open_except e " .
+        $priority = 'SELECT e.campus, MIN(e.priority) as priority ' .
+            'FROM   usq_sr_open_except e ' .
             "WHERE to_date(:today,'dd/mm/yyyy') " .
-            "BETWEEN e.except_date_from AND e.except_date_to " .
+            'BETWEEN e.except_date_from AND e.except_date_to ' .
             "  AND app_$day = 1 " .
-            "GROUP BY e.campus";
+            'GROUP BY e.campus';
         // Retrieve Exceptions
-        $sql = "SELECT e.campus, e.open_time, e.close_time, e.status, e.reason " .
+        $sql = 'SELECT e.campus, e.open_time, e.close_time, e.status, e.reason ' .
             "FROM ($priority) p, usq_sr_open_except e " .
-            "WHERE e.campus   = p.campus " .
-            "AND   e.priority = p.priority " .
+            'WHERE e.campus   = p.campus ' .
+            'AND   e.priority = p.priority ' .
             "AND   to_date(:today,'dd/mm/yyyy') " .
-            "BETWEEN e.except_date_from AND e.except_date_to " .
+            'BETWEEN e.except_date_from AND e.except_date_to ' .
             "AND   app_$day = 1";
-        $fields = ["today:string" => date("d/m/Y", $time)];
+        $fields = ['today:string' => date('d/m/Y', $time)];
         $exceptions = $this->db->simpleSelect($sql, $fields);
 
         foreach ($exceptions as $row) {
@@ -1552,7 +1556,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         $last_date = $holdDetails['requiredBy'];
 
         // Assume an error response:
-        $response = ['success' => false, 'status' => "hold_error_fail"];
+        $response = ['success' => false, 'status' => 'hold_error_fail'];
 
         // Validate input
         //  * Request level
@@ -1582,32 +1586,32 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         // Still here? Guess the request is valid, lets send it to virtua
         $virtua_url = $this->getApiBaseUrl() . '?' .
             // Standard stuff
-            "search=NOSRCH&function=REQUESTS&reqreqtype=0&reqtype=0" .
-            "&reqscr=2&reqreqlevel=2&reqidtype=127&reqmincircperiod=" .
+            'search=NOSRCH&function=REQUESTS&reqreqtype=0&reqtype=0' .
+            '&reqscr=2&reqreqlevel=2&reqidtype=127&reqmincircperiod=' .
             // Item ID
             "&reqidno=$item_id" .
             // Patron barcode
             "&reqpatronbarcode=$patron_id" .
             // Request Level
-            "&reqautoadjustlevel=" . $allowed_req_levels[$req_level] .
+            '&reqautoadjustlevel=' . $allowed_req_levels[$req_level] .
             // Pickup location
-            "&reqpickuplocation=" . $allowed_pickup_locs[$pickup_loc] .
+            '&reqpickuplocation=' . $allowed_pickup_locs[$pickup_loc] .
             // Last Date
-            "&reqexpireday=" . date("j", $ts_last_date) .
-            "&reqexpiremonth=" . date("n", $ts_last_date) .
-            "&reqexpireyear=" . date("Y", $ts_last_date);
+            '&reqexpireday=' . date('j', $ts_last_date) .
+            '&reqexpiremonth=' . date('n', $ts_last_date) .
+            '&reqexpireyear=' . date('Y', $ts_last_date);
 
         // Get the response
         $result = $this->httpRequest($virtua_url);
 
         // Look for an error message
-        $error_message = "Your request was not processed.";
+        $error_message = 'Your request was not processed.';
         $test = strpos($result, $error_message);
 
         // If we succeeded, override the default fail message with success:
         if ($test === false) {
             $response['success'] = true;
-            $response['status'] = "hold_success";
+            $response['status'] = 'hold_success';
         }
 
         return $response;
@@ -1665,8 +1669,8 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     {
         $virtua_url = $this->getApiBaseUrl() . '?' .
             // Standard stuff
-            "search=NOSRCH&function=REQUESTS&reqreqtype=1&reqtype=0" .
-            "&reqscr=4&reqreqlevel=2&reqidtype=127" .
+            'search=NOSRCH&function=REQUESTS&reqreqtype=1&reqtype=0' .
+            '&reqscr=4&reqreqlevel=2&reqidtype=127' .
             //"&reqidno=1000651541" .
             "&reqctrlnum=$request_number";
 
@@ -1679,7 +1683,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         }
 
         // Look for an error message
-        $error_message = "Your request could not be deleted.";
+        $error_message = 'Your request could not be deleted.';
         $test = strpos($result, $error_message);
 
         // Return true unless we find the error
@@ -1702,20 +1706,20 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     {
         $virtua_url = $this->getApiBaseUrl();
         $postParams = [
-            "SourceScreen" => "INITREQ",
-            "conf" => ".&#047;chameleon.conf",
-            "elementcount" => "1",
-            "function" => "PATRONATTEMPT",
-            "host" => $this->config['Catalog']['host_string'],
-            "lng" => $this->getConfiguredLanguage(),
-            "login" => "1",
-            "pos" => "1",
-            "rootsearch" => "KEYWORD",
-            "search" => "NOSRCH",
-            "skin" => "homepage",
-            "patronid" => $patron['cat_username'],
-            "patronpassword" => $patron['cat_password'],
-            "patronhost" => $this->config['Catalog']['patron_host'],
+            'SourceScreen' => 'INITREQ',
+            'conf' => '.&#047;chameleon.conf',
+            'elementcount' => '1',
+            'function' => 'PATRONATTEMPT',
+            'host' => $this->config['Catalog']['host_string'],
+            'lng' => $this->getConfiguredLanguage(),
+            'login' => '1',
+            'pos' => '1',
+            'rootsearch' => 'KEYWORD',
+            'search' => 'NOSRCH',
+            'skin' => 'homepage',
+            'patronid' => $patron['cat_username'],
+            'patronpassword' => $patron['cat_password'],
+            'patronhost' => $this->config['Catalog']['patron_host'],
         ];
 
         // Get the response
@@ -1753,7 +1757,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     /**
      * Renew My Items
      *
-     * Function for attempting to renew a patron's items.  The data in
+     * Function for attempting to renew a patron's items. The data in
      * $renewDetails['details'] is determined by getRenewDetails().
      *
      * @param array $renewDetails An array of data required for renewing items
@@ -1781,24 +1785,24 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
 
         // Have to use raw post data because of the way
         //   virtua expects the barcodes to come across.
-        $post_data  = "function=" . "RENEWAL";
-        $post_data .= "&search=" . "PATRON";
-        $post_data .= "&sessionid=" . "$session_id";
-        $post_data .= "&skin=" . "homepage";
-        $post_data .= "&lng=" . $this->getConfiguredLanguage();
-        $post_data .= "&inst=" . "consortium";
-        $post_data .= "&conf=" . urlencode(".&#047;chameleon.conf");
-        $post_data .= "&u1=" . "12";
-        $post_data .= "&SourceScreen=" . "PATRONACTIVITY";
-        $post_data .= "&pos=" . "1";
-        $post_data .= "&patronid=" . $patron['cat_username'];
-        $post_data .= "&patronhost="
+        $post_data  = 'function=' . 'RENEWAL';
+        $post_data .= '&search=' . 'PATRON';
+        $post_data .= '&sessionid=' . "$session_id";
+        $post_data .= '&skin=' . 'homepage';
+        $post_data .= '&lng=' . $this->getConfiguredLanguage();
+        $post_data .= '&inst=' . 'consortium';
+        $post_data .= '&conf=' . urlencode('.&#047;chameleon.conf');
+        $post_data .= '&u1=' . '12';
+        $post_data .= '&SourceScreen=' . 'PATRONACTIVITY';
+        $post_data .= '&pos=' . '1';
+        $post_data .= '&patronid=' . $patron['cat_username'];
+        $post_data .= '&patronhost='
             . urlencode($this->config['Catalog']['patron_host']);
-        $post_data .= "&host="
+        $post_data .= '&host='
             . urlencode($this->config['Catalog']['host_string']);
-        $post_data .= "&itembarcode=" . implode("&itembarcode=", $item_list);
-        $post_data .= "&submit=" . "Renew";
-        $post_data .= "&reset=" . "Clear";
+        $post_data .= '&itembarcode=' . implode('&itembarcode=', $item_list);
+        $post_data .= '&submit=' . 'Renew';
+        $post_data .= '&reset=' . 'Clear';
 
         $result = $this->httpRequest($virtua_url, null, $post_data);
 
@@ -1813,10 +1817,10 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                 // Yes, so check if the due date changed
                 if ($row['duedate'] != $initial[$row['barcode']]['duedate']) {
                     $row['error'] = false;
-                    $row['renew_text'] = "Item successfully renewed.";
+                    $row['renew_text'] = 'Item successfully renewed.';
                 } else {
                     $row['error'] = true;
-                    $row['renew_text'] = "Item renewal failed.";
+                    $row['renew_text'] = 'Item renewal failed.';
                 }
                 $return[] = $row;
             } else {
@@ -1836,9 +1840,9 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     {
         $list = [];
 
-        $sql = "select auth_id " .
-            "from state_record_authority " .
-            "WHERE STATE_ID = 1";
+        $sql = 'select auth_id ' .
+            'from state_record_authority ' .
+            'WHERE STATE_ID = 1';
 
         $result = $this->db->simpleSelect($sql);
 
@@ -1849,7 +1853,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         }
 
         foreach ($result as $row) {
-            $list[] = 'vtls' . str_pad($row['AUTH_ID'], 9, "0", STR_PAD_LEFT);
+            $list[] = 'vtls' . str_pad($row['AUTH_ID'], 9, '0', STR_PAD_LEFT);
         }
         return $list;
     }
@@ -1880,7 +1884,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     }
 
     /**
-     * Support method -- perform an HTTP request.  This will be a GET request unless
+     * Support method -- perform an HTTP request. This will be a GET request unless
      * either $postParams or $rawPost is set to a non-null value.
      *
      * @param string $url        Target URL for request

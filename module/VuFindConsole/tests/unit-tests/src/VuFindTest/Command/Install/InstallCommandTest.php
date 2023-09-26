@@ -3,7 +3,7 @@
 /**
  * Install command test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -55,9 +55,10 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
         $expectedBaseDir = realpath(__DIR__ . '/../../../../../../../../');
         $localFixtures = $expectedBaseDir . '/module/VuFindConsole/tests/fixtures';
         $command = $this->getMockCommand(
-            ['buildDirs', 'getApacheLocation', 'getInput', 'writeFileToDisk']
+            ['backUpFile', 'buildDirs', 'getApacheLocation', 'getInput', 'writeFileToDisk']
         );
-        $command->expects($this->exactly(3))->method('getInput')
+        $command->expects($this->exactly(3))->method('backUpFile')->will($this->returnValue(true));
+        $command->expects($this->exactly(4))->method('getInput')
             ->withConsecutive(
                 [
                     $this->isInstanceOf(InputInterface::class),
@@ -74,8 +75,13 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
                     $this->isInstanceOf(InputInterface::class),
                     $this->isInstanceOf(OutputInterface::class),
                     'What base path should be used in VuFind\'s URL? [/vufind] ',
+                ],
+                [
+                    $this->isInstanceOf(InputInterface::class),
+                    $this->isInstanceOf(OutputInterface::class),
+                    'What port number should Solr use? [8983] ',
                 ]
-            )->willReturnOnConsecutiveCalls($localFixtures, '', '/bar');
+            )->willReturnOnConsecutiveCalls($localFixtures, '', '/bar', '8080');
         $expectedDirs = [
             $localFixtures,
             $localFixtures . '/cache',
@@ -87,10 +93,13 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo($expectedDirs))
             ->will($this->returnValue(true));
         $expectedEnvBat = "@set VUFIND_HOME=$expectedBaseDir\n"
-            . "@set VUFIND_LOCAL_DIR=$localFixtures\n";
-        $command->expects($this->exactly(4))->method('writeFileToDisk')
+            . "@set VUFIND_LOCAL_DIR=$localFixtures\n"
+            . "@set SOLR_PORT=8080\n";
+        $expectedEnvSh = str_replace('@set', 'export', $expectedEnvBat);
+        $command->expects($this->exactly(5))->method('writeFileToDisk')
             ->withConsecutive(
                 ["$expectedBaseDir/env.bat", $expectedEnvBat],
+                ["$expectedBaseDir/env.sh", $expectedEnvSh],
                 ["$localFixtures/import/import.properties"],
                 ["$localFixtures/import/import_auth.properties"],
                 ["$localFixtures/httpd-vufind.conf"]
@@ -109,7 +118,7 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
             Apache configuration written to $localFixtures/httpd-vufind.conf.
 
             You now need to load this configuration into Apache.
-            Once the configuration is linked, restart Apache.  You should now be able
+            Once the configuration is linked, restart Apache. You should now be able
             to access VuFind at http://localhost/bar
 
             For proper use of command line tools, you should also ensure that your
@@ -134,7 +143,7 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
         $expectedBaseDir = realpath(__DIR__ . '/../../../../../../../../');
         $localFixtures = $expectedBaseDir . '/module/VuFindConsole/tests/fixtures';
         $command = $this->getMockCommand(
-            ['buildDirs', 'getApacheLocation', 'getInput', 'writeFileToDisk']
+            ['backUpFile', 'buildDirs', 'getApacheLocation', 'getInput', 'writeFileToDisk']
         );
         $expectedDirs = [
             $localFixtures,
@@ -143,14 +152,18 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
             $localFixtures . '/harvest',
             $localFixtures . '/import',
         ];
+        $command->expects($this->exactly(3))->method('backUpFile')->will($this->returnValue(true));
         $command->expects($this->once())->method('buildDirs')
             ->with($this->equalTo($expectedDirs))
             ->will($this->returnValue(true));
         $expectedEnvBat = "@set VUFIND_HOME=$expectedBaseDir\n"
-            . "@set VUFIND_LOCAL_DIR=$localFixtures\n";
-        $command->expects($this->exactly(4))->method('writeFileToDisk')
+            . "@set VUFIND_LOCAL_DIR=$localFixtures\n"
+            . "@set SOLR_PORT=8983\n";
+        $expectedEnvSh = str_replace('@set', 'export', $expectedEnvBat);
+        $command->expects($this->exactly(5))->method('writeFileToDisk')
             ->withConsecutive(
                 ["$expectedBaseDir/env.bat", $expectedEnvBat],
+                ["$expectedBaseDir/env.sh", $expectedEnvSh],
                 ["$localFixtures/import/import.properties"],
                 ["$localFixtures/import/import_auth.properties"],
                 ["$localFixtures/httpd-vufind.conf"]
@@ -166,7 +179,7 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
             Apache configuration written to $localFixtures/httpd-vufind.conf.
 
             You now need to load this configuration into Apache.
-            Once the configuration is linked, restart Apache.  You should now be able
+            Once the configuration is linked, restart Apache. You should now be able
             to access VuFind at http://localhost/vufind
 
             For proper use of command line tools, you should also ensure that your
@@ -179,6 +192,32 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
             trim($commandTester->getDisplay())
         );
         $this->assertEquals(0, $commandTester->getStatusCode());
+    }
+
+    /**
+     * Test that providing an invalid Solr port number causes an error.
+     *
+     * @return void
+     */
+    public function testInvalidSolrPort()
+    {
+        $expectedBaseDir = realpath(__DIR__ . '/../../../../../../../../');
+        $command = $this->getMockCommand(
+            ['backUpFile', 'buildDirs', 'getApacheLocation', 'getInput', 'writeFileToDisk']
+        );
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(
+            ['--solr-port' => 'bad']
+        );
+        $expectedOutput = <<<EXPECTED
+            VuFind has been found in $expectedBaseDir.
+            Solr port must be a number.
+            EXPECTED;
+        $this->assertEquals(
+            $expectedOutput,
+            trim($commandTester->getDisplay())
+        );
+        $this->assertEquals(1, $commandTester->getStatusCode());
     }
 
     /**

@@ -3,7 +3,7 @@
 /**
  * Config Factory Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -32,6 +32,8 @@ namespace VuFindTest\Config;
 use VuFind\Config\PathResolver;
 use VuFindTest\Feature\FixtureTrait;
 use VuFindTest\Feature\PathResolverTrait;
+
+use function count;
 
 /**
  * Config Factory Test Class

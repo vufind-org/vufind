@@ -3,7 +3,7 @@
 /**
  * Record driver plugin manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -31,6 +31,8 @@ namespace VuFind\RecordDriver;
 
 use Laminas\ServiceManager\Factory\InvokableFactory;
 
+use function is_callable;
+
 /**
  * Record driver plugin manager
  *
@@ -51,7 +53,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'browzine' => BrowZine::class,
         'eds' => EDS::class,
         'eit' => EIT::class,
+        'epf' => EPF::class,
         'libguides' => LibGuides::class,
+        'libguidesaz' => LibGuidesAZ::class,
         'missing' => Missing::class,
         'pazpar2' => Pazpar2::class,
         'primo' => Primo::class,
@@ -89,7 +93,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         BrowZine::class => InvokableFactory::class,
         EDS::class => NameBasedConfigFactory::class,
         EIT::class => NameBasedConfigFactory::class,
+        EPF::class => NameBasedConfigFactory::class,
         LibGuides::class => InvokableFactory::class,
+        LibGuidesAZ::class => InvokableFactory::class,
         Missing::class => AbstractBaseFactory::class,
         Pazpar2::class => NameBasedConfigFactory::class,
         Primo::class => NameBasedConfigFactory::class,

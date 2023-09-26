@@ -3,7 +3,7 @@
 /**
  * Database authentication class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -38,6 +38,9 @@ use VuFind\Db\Table\User as UserTable;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
 
+use function in_array;
+use function is_object;
+
 /**
  * Database authentication class
  *
@@ -66,7 +69,7 @@ class Database extends AbstractBase
     protected $password;
 
     /**
-     * Attempt to authenticate the current user.  Throws exception if login fails.
+     * Attempt to authenticate the current user. Throws exception if login fails.
      *
      * @param Request $request Request object containing account credentials.
      *

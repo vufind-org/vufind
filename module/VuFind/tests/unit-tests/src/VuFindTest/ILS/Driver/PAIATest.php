@@ -3,7 +3,7 @@
 /**
  * ILS driver test
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -57,6 +57,10 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
             [
                 'baseUrl'            => 'http://paia.gbv.de/',
                 'grantType'          => 'password',
+                'accountBlockNotificationsForMissingScopes' => [
+                    'update_patron' => 'ILSMessages::no_update_patron_scope',
+                    'read_notifications' => 'ILSMessages::no_read_notifications_scope',
+                ],
             ],
     ];
 
@@ -299,9 +303,9 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
         'details' => [
             'http://uri.gbv.de/document/opac-de-830:bar:830$22061137' => [
                 'success' => true,
-                'new_date' => "07-18-2016",
+                'new_date' => '07-18-2016',
                 'item_id' => 0,
-                'sysMessage' => "Successfully renewed",
+                'sysMessage' => 'Successfully renewed',
             ],
         ],
     ];
@@ -313,21 +317,21 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
 
     protected $pwchangeTestResult = [
         'success' => true,
-        'status' => "Successfully changed",
+        'status' => 'Successfully changed',
     ];
 
     protected $profileTestResult = [
-        'firstname' => "Susan Q.",
-        'lastname' => "Nothing",
-        'address1' => "No street at all 8, D-21073 Hamburg",
+        'firstname' => 'Susan Q.',
+        'lastname' => 'Nothing',
+        'address1' => 'No street at all 8, D-21073 Hamburg',
         'address2' => null,
         'city' => null,
         'country' => null,
         'zip' => null,
         'phone' => null,
-        'group' => "de-830:user-type:2",
+        'group' => 'de-830:user-type:2',
         'mobile_phone' => null,
-        'expires' => "12-31-9999",
+        'expires' => '12-31-9999',
         'statuscode' => 0,
         'canWrite' => true,
     ];
@@ -368,11 +372,11 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     public function testChangePassword()
     {
         $changePasswordTestdata = [
-            "patron" => [
-                "cat_username" => "08301001001",
+            'patron' => [
+                'cat_username' => '08301001001',
              ],
-             "oldPassword" => "oldsecret",
-             "newPassword" => "newsecret",
+             'oldPassword' => 'oldsecret',
+             'newPassword' => 'newsecret',
         ];
 
         $conn = $this->createMockConnector('changePassword.json');
@@ -514,9 +518,9 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     public function testPlaceHold()
     {
         $sr_request = [
-            "item_id"     => "http://uri.gbv.de/document/opac-de-830:bar:830$24014292",
-            "patron" => [
-                "cat_username" => "08301001001",
+            'item_id'     => 'http://uri.gbv.de/document/opac-de-830:bar:830$24014292',
+            'patron' => [
+                'cat_username' => '08301001001',
             ],
         ];
 
@@ -533,9 +537,9 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     public function testPlaceStorageRetrievalRequest()
     {
         $sr_request = [
-            "item_id"     => "http://uri.gbv.de/document/opac-de-830:bar:830$24014292",
-            "patron" => [
-                "cat_username" => "08301001001",
+            'item_id'     => 'http://uri.gbv.de/document/opac-de-830:bar:830$24014292',
+            'patron' => [
+                'cat_username' => '08301001001',
             ],
         ];
 
@@ -552,11 +556,11 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     public function testRenew()
     {
         $renew_request = [
-            "details" => [
-                "item"     => "http://uri.gbv.de/document/opac-de-830:bar:830$22061137",
+            'details' => [
+                'item'     => 'http://uri.gbv.de/document/opac-de-830:bar:830$22061137',
             ],
-            "patron" => [
-                "cat_username" => "08301001001",
+            'patron' => [
+                'cat_username' => '08301001001',
             ],
         ];
 
@@ -573,6 +577,22 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
 
             $this->assertEquals($this->failedRenewTestResult, $result_fail);
         */
+    }
+
+    /**
+     * Test getAccountBlocks
+     *
+     * @return void
+     */
+    public function testGetAccountBlocks()
+    {
+        $patron = [];
+        $paia = $this->createMockConnector();
+        $blocks = $paia->getAccountBlocks($patron);
+        $this->assertEquals([
+            'ILSMessages::no_update_patron_scope',
+            'ILSMessages::no_read_notifications_scope',
+        ], $blocks);
     }
 
     /**

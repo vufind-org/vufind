@@ -89,7 +89,7 @@
     <p>
       <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->user]); ?>
     </p>
-    <table class="table table-striped">
+    <table class="table table-striped catalog-profile">
       <?=
         $this->renderArray(
             $arrTemplate,
@@ -110,11 +110,33 @@
         );
       ?>
     </table>
+    <?php
+      $proxyValues = [];
+      if (!empty($this->proxiedUsers)) {
+        $proxyValues['proxy_list_for'] = $this->proxiedUsers;
+      }
+      if (!empty($this->proxyingUsers)) {
+        $proxyValues['proxy_list_by'] = $this->proxyingUsers;
+      }
+    ?>
+    <?php if (!empty($proxyValues)): ?>
+      <h3><?=$this->transEsc('proxy_list_heading')?></h3>
+      <p><?=$this->transEsc('proxy_list_description')?></p>
+      <?php foreach ($proxyValues as $proxyHeading => $proxyValueGroup): ?>
+        <h4><?=$this->transEsc($proxyHeading)?></h4>
+        <?php natsort($proxyValueGroup); ?>
+        <ul>
+          <?php foreach ($proxyValueGroup as $proxyValue): ?>
+            <li><?=$this->escapeHtml($proxyValue)?></li>
+          <?php endforeach; ?>
+        </ul>
+      <?php endforeach; ?>
+    <?php endif; ?>
   <?php elseif ('ils-none' !== $this->ils()->getOfflineMode() && $this->patronLoginView && !empty($this->patronLoginView->getTemplate())): ?>
     <?=$this->partial($this->patronLoginView);?>
   <?php endif; ?>
 </div>
 
-<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
-  <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'profile'])?>
+<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
+  <?=$this->context($this)->renderInContext('myresearch/menu.phtml', ['active' => 'profile'])?>
 </div>

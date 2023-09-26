@@ -26,7 +26,8 @@
     <?php foreach ($this->libraryCards as $record): ?>
       <tr>
         <td><?=$this->escapeHtml($record['card_name'])?></td>
-        <?php $username = $record['cat_username']; if ($this->multipleTargets): ?>
+        <?php $username = $record['cat_username']; ?>
+        <?php if ($this->multipleTargets): ?>
           <?php $target = ''; ?>
           <?php if (strstr($username, '.')): ?>
             <?php [$target, $username] = explode('.', $username, 2); ?>
@@ -59,20 +60,20 @@
 
   <div class="btn-group">
     <?php if ($this->allowConnectingCards): ?>
-      <a href="<?=$this->url('librarycards-connectcardlogin') ?>" class="btn btn-link">
+      <a href="<?=$this->url('librarycards-connectcardlogin') ?>" class="add-card-login btn btn-link">
         <?=$this->icon('ui-add') ?>
-        <?=$this->transEsc('Add a Library Card using login')?>
+        <span class="icon-link__label"><?=$this->transEsc('Add a Library Card using login')?></span>
       </a>
     <?php endif;?>
     <?php if ($this->auth()->getManager()->allowsUserIlsLogin()): ?>
-      <a href="<?=$this->url('editLibraryCard') ?>NEW" class="btn btn-link">
+      <a href="<?=$this->url('editLibraryCard') ?>NEW" class="add-card btn btn-link">
         <?=$this->icon('ui-add') ?>
-        <?=$this->transEsc('Add a Library Card')?>
+        <span class="icon-link__label"><?=$this->transEsc('Add a Library Card')?></span>
       </a>
     <?php endif; ?>
   </div>
 </div>
 
-<div class="<?=$this->layoutClass('sidebar')?>">
-  <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'librarycards'])?>
+<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
+  <?=$this->context($this)->renderInContext('myresearch/menu.phtml', ['active' => 'librarycards'])?>
 </div>

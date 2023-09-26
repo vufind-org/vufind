@@ -3,7 +3,7 @@
 /**
  * Simple JSON-based record collection.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -30,6 +30,8 @@
 namespace VuFindSearch\Backend\Solr\Response\Json;
 
 use VuFindSearch\Response\AbstractRecordCollection;
+
+use function array_key_exists;
 
 /**
  * Simple JSON-based record collection.

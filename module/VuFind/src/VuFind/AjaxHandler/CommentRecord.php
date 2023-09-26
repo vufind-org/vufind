@@ -3,7 +3,7 @@
 /**
  * AJAX handler to comment on a record.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -36,6 +36,8 @@ use VuFind\Db\Row\User;
 use VuFind\Db\Table\Resource;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Loader as RecordLoader;
+
+use function intval;
 
 /**
  * AJAX handler to comment on a record.

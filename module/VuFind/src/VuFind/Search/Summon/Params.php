@@ -3,7 +3,7 @@
 /**
  * Summon Search Parameters
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -311,7 +311,7 @@ class Params extends \VuFind\Search\Base\Params
                         // Special case -- support a checkbox for excluding
                         // newspapers:
                         $params
-                            ->add('filters', "ContentType,Newspaper Article,true");
+                            ->add('filters', 'ContentType,Newspaper Article,true');
                     } elseif ($range = SolrUtils::parseRange($filt['value'])) {
                         // Special case -- range query (translate [x TO y] syntax):
                         $from = SummonQuery::escapeParam($range['from']);

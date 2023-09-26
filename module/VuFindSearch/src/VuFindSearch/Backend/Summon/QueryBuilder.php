@@ -3,7 +3,7 @@
 /**
  * Summon QueryBuilder.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -36,6 +36,8 @@ use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
+
+use function count;
 
 /**
  * Summon QueryBuilder.
@@ -117,10 +119,10 @@ class QueryBuilder
                 }
                 // Is this an exclusion (NOT) group or a normal group?
                 if ($params->isNegated()) {
-                    $excludes[] = join(" OR ", $thisGroup);
+                    $excludes[] = implode(' OR ', $thisGroup);
                 } else {
                     $groups[]
-                        = join(" " . $params->getOperator() . " ", $thisGroup);
+                        = implode(' ' . $params->getOperator() . ' ', $thisGroup);
                 }
             } else {
                 // Basic Search
@@ -132,11 +134,11 @@ class QueryBuilder
         $queryStr = '';
         if (count($groups) > 0) {
             $queryStr
-                .= "(" . join(") " . $query->getOperator() . " (", $groups) . ")";
+                .= '(' . implode(') ' . $query->getOperator() . ' (', $groups) . ')';
         }
         // and concatenate exclusion after that
         if (count($excludes) > 0) {
-            $queryStr .= " NOT ((" . join(") OR (", $excludes) . "))";
+            $queryStr .= ' NOT ((' . implode(') OR (', $excludes) . '))';
         }
 
         return $queryStr;

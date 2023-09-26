@@ -3,7 +3,7 @@
 /**
  * BackendException.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -30,6 +30,8 @@
 namespace VuFindSearch\Backend\Exception;
 
 use VuFindSearch\Exception\RuntimeException;
+
+use function in_array;
 
 /**
  * BackendException.

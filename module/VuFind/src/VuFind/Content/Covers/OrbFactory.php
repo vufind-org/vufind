@@ -3,7 +3,7 @@
 /**
  * Orb cover loader factory
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -69,8 +69,8 @@ class OrbFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
+        $configPluginManager = $container->get(\VuFind\Config\PluginManager::class);
+        $config = $configPluginManager->get('config');
         $url = $config->Orb->url ?? 'api.base-orb.fr/v1';
         if (!isset($config->Orb->user)) {
             throw new \Exception("Orb 'user' not set in VuFind config");
@@ -78,6 +78,9 @@ class OrbFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         if (!isset($config->Orb->key)) {
             throw new \Exception("Orb 'key' not set in VuFind config");
         }
-        return new $requestedName($url, $config->Orb->user, $config->Orb->key);
+        $orb = new $requestedName($url, $config->Orb->user, $config->Orb->key);
+        $cachingDownloader = $container->get(\VuFind\Http\CachingDownloader::class);
+        $orb->setCachingDownloader($cachingDownloader);
+        return $orb;
     }
 }

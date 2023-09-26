@@ -3,7 +3,7 @@
 /**
  * SyndeticsPlus view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -52,7 +52,7 @@ class SyndeticsPlus extends \Laminas\View\Helper\AbstractHelper
      *
      * @param \Laminas\Config\Config $config Syndetics configuration (should contain
      * 'plus' boolean value (true if Syndetics Plus is enabled) and 'plus_id' string
-     * value (Syndetics Plus user ID).  If these values are absent, SyndeticsPlus
+     * value (Syndetics Plus user ID). If these values are absent, SyndeticsPlus
      * will be disabled.
      */
     public function __construct($config)
@@ -81,7 +81,7 @@ class SyndeticsPlus extends \Laminas\View\Helper\AbstractHelper
         if (isset($this->config->plus_id)) {
             $baseUrl = (isset($this->config->use_ssl) && $this->config->use_ssl)
                 ? 'https://secure.syndetics.com' : 'http://plus.syndetics.com';
-            return $baseUrl . "/widget.php?id="
+            return $baseUrl . '/widget.php?id='
                 . urlencode($this->config->plus_id);
         }
 

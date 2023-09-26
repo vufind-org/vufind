@@ -3,7 +3,7 @@
 /**
  * "Similar items" channel provider.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016, 2022.
  *
@@ -36,6 +36,9 @@ use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Results;
 use VuFindSearch\Command\RetrieveCommand;
 use VuFindSearch\Command\SimilarCommand;
+
+use function count;
+use function is_object;
 
 /**
  * "Similar items" channel provider.

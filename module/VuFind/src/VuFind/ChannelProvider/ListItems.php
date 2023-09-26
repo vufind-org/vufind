@@ -3,7 +3,7 @@
 /**
  * "List items" channel provider.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -33,6 +33,8 @@ use Laminas\Mvc\Controller\Plugin\Url;
 use Laminas\Stdlib\Parameters;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Results;
+
+use function count;
 
 /**
  * "List items" channel provider.

@@ -3,12 +3,12 @@
 /**
  * Mobile Device Detection Wrapper
  *
- * PHP version 7
+ * PHP version 8
  *
  * This file is a wrapper around the mobileesp library for browser detection.
  * We chose mobileesp as VuFind's default option because it is fairly robust
- * and has an Apache license which allows free redistribution.  However, it
- * is not the only option available.  You can override this file in your local
+ * and has an Apache license which allows free redistribution. However, it
+ * is not the only option available. You can override this file in your local
  * directory if you wish to customize the detection functionality.
  *
  * Copyright (C) Villanova University 2009.

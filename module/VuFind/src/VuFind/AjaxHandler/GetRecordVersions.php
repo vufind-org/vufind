@@ -3,7 +3,7 @@
 /**
  * AJAX handler for fetching versions link
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2019.
  *
@@ -34,6 +34,9 @@ use VuFind\Record\Loader;
 use VuFind\RecordTab\TabManager;
 use VuFind\Session\Settings as SessionSettings;
 use VuFind\View\Helper\Root\Record;
+
+use function count;
+use function is_array;
 
 /**
  * AJAX handler for fetching versions link

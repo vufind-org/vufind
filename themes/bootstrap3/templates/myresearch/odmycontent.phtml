@@ -24,10 +24,11 @@
   <?php elseif (count($this->checkouts) == 0): ?>
       <div class="well"> <?=$this->transEsc('od_none_found')?></div>
   <?php else:
-      $i = 0; foreach ($this->checkouts as $resource):
-      $od_id = $resource['record']->getOverdriveID();
-      $rec_id = $resource['record']->getUniqueID();
-      $coverDetails = $this->record($resource['record'])->getCoverDetails('checkedout', 'small', $this->recordLinker()->getUrl($resource['record']));
+      $i = 0;
+      foreach ($this->checkouts as $resource):
+          $od_id = $resource['record']->getOverdriveID();
+          $rec_id = $resource['record']->getUniqueID();
+          $coverDetails = $this->record($resource['record'])->getCoverDetails('checkedout', 'small', $this->recordLinker()->getUrl($resource['record']));
           $cover = $coverDetails['html'];
           $thumbnail = false;
           $thumbnailAlignment = $this->record($resource['record'])->getThumbnailAlignment('account');
@@ -101,7 +102,8 @@
   <?php else: ?>
     <ul class="record-list">
       <?php
-        $i = 0; foreach ($this->holds as $resource):
+        $i = 0;
+        foreach ($this->holds as $resource):
           $od_id = $resource['record']->getOverdriveID();
           $rec_id = $resource['record']->getUniqueID();
           $coverDetails = $this->record($resource['record'])->getCoverDetails('checkedout', 'small', $this->recordLinker()->getUrl($resource['record']));
@@ -129,8 +131,8 @@
                   <?=$this->escapeHtml($resource['record']->getTitle() . ' ' . $resource['record']->getSubtitle() . ' ' . $resource['record']->getTitleSection())?>
                 </a>
               </h4>
-              <?php $listAuthors = $resource['record']->getPrimaryAuthors();
-                if (!empty($listAuthors)): ?>
+              <?php $listAuthors = $resource['record']->getPrimaryAuthors(); ?>
+              <?php if (!empty($listAuthors)): ?>
                   <?=$this->transEsc('by')?>:
                   <a href="<?=$this->record($resource['record'])->getLink('author', $listAuthors[0])?>"><?=$this->escapeHtml($listAuthors[0])?></a><?php if (count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?>
                 <?php endif; ?><br>
@@ -164,6 +166,6 @@
 -->
 </div>
 
-<div class="<?=$this->layoutClass('sidebar')?>">
-  <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'dgcontent'])?>
+<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
+  <?=$this->context($this)->renderInContext('myresearch/menu.phtml', ['active' => 'dgcontent'])?>
 </div>

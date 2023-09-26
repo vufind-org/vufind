@@ -3,7 +3,7 @@
 /**
  * Unit tests for SOLR search handler.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -119,14 +119,15 @@ class SearchHandlerTest extends TestCase
             'CustomMunge' => [
                 'callnumber_exact' => [
                     ['uppercase'],
-                    ['preg_replace', '/[ "]/', ""],
-                    ['preg_replace', '/\*+$/', ""],
+                    ['preg_replace', '/[ "]/', ''],
+                    ['preg_replace', '/\*+$/', ''],
                 ],
                 'callnumber_fuzzy' => [
                     ['uppercase'],
-                    ['preg_replace', '/[ "]/', ""],
-                    ['preg_replace', '/\*+$/', ""],
+                    ['preg_replace', '/[ "]/', ''],
+                    ['preg_replace', '/\*+$/', ''],
                     ['append', '*'],
+                    ['prepend', '^'],
                 ],
             ],
             'QueryFields' => [
@@ -143,7 +144,7 @@ class SearchHandlerTest extends TestCase
 
         $hndl = new SearchHandler($spec);
         $this->assertEquals(
-            '(callnumber:(ABC123)^1000 OR callnumber:(ABC123*) OR dewey-full:(ABC123)^1000 OR dewey-full:(ABC123*))',
+            '(callnumber:(ABC123)^1000 OR callnumber:(^ABC123*) OR dewey-full:(ABC123)^1000 OR dewey-full:(^ABC123*))',
             $hndl->createSimpleQueryString('abc"123*')
         );
     }
@@ -159,8 +160,8 @@ class SearchHandlerTest extends TestCase
         $spec = [
             'DismaxMunge' => [
                 ['uppercase'],
-                ['preg_replace', '/[ "]/', ""],
-                ['preg_replace', '/\*+$/', ""],
+                ['preg_replace', '/[ "]/', ''],
+                ['preg_replace', '/\*+$/', ''],
             ],
             'DismaxFields' => ['callnumber'],
             'DismaxHandler' => 'dismax',

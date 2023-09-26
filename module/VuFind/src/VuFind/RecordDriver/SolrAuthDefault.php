@@ -3,7 +3,7 @@
 /**
  * Model for Solr authority records.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -28,6 +28,8 @@
  */
 
 namespace VuFind\RecordDriver;
+
+use function is_array;
 
 /**
  * Model for Solr authority records.

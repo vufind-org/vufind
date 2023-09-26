@@ -3,7 +3,7 @@
 /**
  * Blender aspect of the Search Multi-class (Options)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2015-2022.
  *
@@ -69,7 +69,7 @@ class Options extends \VuFind\Search\Solr\Options
      */
     public function getSearchAction()
     {
-        return 'search-blended';
+        return 'blender-results';
     }
 
     /**
@@ -80,7 +80,7 @@ class Options extends \VuFind\Search\Solr\Options
      */
     public function getAdvancedSearchAction()
     {
-        return false;
+        return $this->advancedHandlers ? 'blender-advanced' : false;
     }
 
     /**

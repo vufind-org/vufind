@@ -3,7 +3,7 @@
 /**
  * Map Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -51,8 +51,8 @@ class MapTest extends \PHPUnit\Framework\TestCase
     {
         $mapTabDisplay = true;
         $basemapOptions = [
-            'basemap_url' => "www.foo.com",
-            'basemap_attribution' => "bar",
+            'basemap_url' => 'www.foo.com',
+            'basemap_attribution' => 'bar',
         ];
         $mapTabOptions = [
             'displayCoords' => true,
@@ -107,7 +107,7 @@ class MapTest extends \PHPUnit\Framework\TestCase
     public function testGetBasemap(): void
     {
         $obj = $this->getMap();
-        $expected = ["www.foo.com","bar"];
+        $expected = ['www.foo.com','bar'];
         $this->assertSame($expected, $obj->getBasemap());
     }
 
@@ -124,7 +124,7 @@ class MapTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $recordDriver->expects($this->exactly(2))->method('tryMethod')
             ->with($this->equalTo('getGeoLocation'))
-            ->willReturnOnConsecutiveCalls("555", null);
+            ->willReturnOnConsecutiveCalls('555', null);
         $obj->setRecordDriver($recordDriver);
         $this->assertTrue($obj->isActive());
         $this->assertFalse($obj->isActive());
@@ -138,7 +138,7 @@ class MapTest extends \PHPUnit\Framework\TestCase
     public function testGetDisplayCoords(): void
     {
         $obj = $this->getMap();
-        $coordinates = ["00 00 56 56", "45 56 87 89"];
+        $coordinates = ['00 00 56 56', '45 56 87 89'];
         $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -146,7 +146,7 @@ class MapTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo('getDisplayCoordinates'))
             ->will($this->returnValue($coordinates));
         $obj->setRecordDriver($recordDriver);
-        $value = ["56 00", "89 87 45 56"];
+        $value = ['56 00', '89 87 45 56'];
         $this->assertSame($value, $obj->getDisplayCoords());
     }
 
@@ -158,7 +158,7 @@ class MapTest extends \PHPUnit\Framework\TestCase
     public function testGetGeoLocationCoords(): void
     {
         $obj = $this->getMap();
-        $coordinates = ["ENVELOPE(25.8,43.9,5.0,4.6)"];
+        $coordinates = ['ENVELOPE(25.8,43.9,5.0,4.6)'];
         $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -178,17 +178,17 @@ class MapTest extends \PHPUnit\Framework\TestCase
     public function testGetMapTabData(): void
     {
         $obj = $this->getMap();
-        $coordinates = ["ENVELOPE(25.8,43.9,5.0,4.6)"];
-        $displayCoord = ["45 56 87 89"];
+        $coordinates = ['ENVELOPE(25.8,43.9,5.0,4.6)'];
+        $displayCoord = ['45 56 87 89'];
         $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
             ->disableOriginalConstructor()
             ->getMock();
         $recordDriver->expects($this->exactly(2))->method('tryMethod')
-            ->withConsecutive(["getGeoLocation"], ["getDisplayCoordinates"])
+            ->withConsecutive(['getGeoLocation'], ['getDisplayCoordinates'])
             ->willReturnOnConsecutiveCalls($coordinates, $displayCoord);
 
         $obj->setRecordDriver($recordDriver);
-        $expected = [[25.8,4.6,43.9,5.0,'',"89 87 45 56"]];
+        $expected = [[25.8,4.6,43.9,5.0,'','89 87 45 56']];
         $this->assertSame($expected, $obj->getMapTabData());
     }
 }

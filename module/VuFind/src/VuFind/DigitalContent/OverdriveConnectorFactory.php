@@ -3,7 +3,7 @@
 /**
  * Overdrive Connector factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -102,7 +102,7 @@ class OverdriveConnectorFactory implements
         $connector->setCacheStorage(
             $container->get(\VuFind\Cache\Manager::class)->getCache(
                 'object',
-                "Overdrive"
+                'Overdrive'
             )
         );
 

@@ -3,7 +3,7 @@
 /**
  * Content pages generator plugin
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2021.
  *
@@ -32,6 +32,8 @@ namespace VuFind\Sitemap\Plugin;
 use Laminas\Config\Config;
 use Laminas\Router\RouteStackInterface;
 use VuFindTheme\ThemeInfo;
+
+use function in_array;
 
 /**
  * Content pages generator plugin

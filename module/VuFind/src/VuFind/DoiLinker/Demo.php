@@ -3,7 +3,7 @@
 /**
  * Demo (fake data) DOI linker
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2023.
  *
@@ -28,6 +28,8 @@
  */
 
 namespace VuFind\DoiLinker;
+
+use function count;
 
 /**
  * Demo (fake data) DOI linker
@@ -64,9 +66,9 @@ class Demo implements DoiLinkerInterface
         foreach ($doiArray as $doi) {
             $icon = $this->icons[rand(0, count($this->icons) - 1)];
             $response[$doi][] = [
-                'link' => "https://vufind.org",
+                'link' => 'https://vufind.org',
                 'label' => "Demonstrating DOI link for $doi with icon "
-                    . ($icon ?? "[null]"),
+                    . ($icon ?? '[null]'),
                 'localIcon' => $icon,
             ];
         }

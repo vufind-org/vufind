@@ -3,7 +3,7 @@
 /**
  * SwitchType Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -49,8 +49,8 @@ class SwitchTypeTest extends \PHPUnit\Framework\TestCase
      */
     public function newHandlerNameProvider(): array
     {
-        return ['Test1' => ["foo:bar", "bar"],
-                'Test2' => ["foo", "All Fields"],
+        return ['Test1' => ['foo:bar', 'bar'],
+                'Test2' => ['foo', 'All Fields'],
             ];
     }
 
@@ -78,9 +78,9 @@ class SwitchTypeTest extends \PHPUnit\Framework\TestCase
      */
     public function newHandlerProvider(): array
     {
-        return ['Test1' => ["foo:bar", "foo", false],
-                'Test2' => ["", "foo", "AllFields"],
-                'Test3' => ["foo:bar", "abc", "foo"],
+        return ['Test1' => ['foo:bar', 'foo', false],
+                'Test2' => ['', 'foo', 'AllFields'],
+                'Test3' => ['foo:bar', 'abc', 'foo'],
             ];
     }
 
@@ -122,7 +122,7 @@ class SwitchTypeTest extends \PHPUnit\Framework\TestCase
     public function testGetResults(): void
     {
         $obj = new SwitchType();
-        $obj->setConfig("foo");
+        $obj->setConfig('foo');
         $results = $this->getMockBuilder(\VuFind\Search\Base\Results::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -132,7 +132,7 @@ class SwitchTypeTest extends \PHPUnit\Framework\TestCase
         $results->expects($this->once())->method('getParams')
             ->will($this->returnValue($parms));
         $parms->expects($this->once())->method('getSearchHandler')
-            ->will($this->returnValue("bar"));
+            ->will($this->returnValue('bar'));
         $obj->process($results);
         $this->assertSame($results, $obj->getResults());
     }

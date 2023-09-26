@@ -3,7 +3,7 @@
 /**
  * Abstract authentication base class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -33,6 +33,9 @@ namespace VuFind\Auth;
 use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Db\Row\User;
 use VuFind\Exception\Auth as AuthException;
+
+use function get_class;
+use function in_array;
 
 /**
  * Abstract authentication base class
@@ -68,7 +71,7 @@ abstract class AbstractBase implements
     protected $config = null;
 
     /**
-     * Get configuration (load automatically if not previously set).  Throw an
+     * Get configuration (load automatically if not previously set). Throw an
      * exception if the configuration is invalid.
      *
      * @throws AuthException
@@ -157,7 +160,7 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Validate configuration parameters.  This is a support method for getConfig(),
+     * Validate configuration parameters. This is a support method for getConfig(),
      * so the configuration MUST be accessed using $this->config; do not call
      * $this->getConfig() from within this method!
      *
@@ -170,7 +173,7 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Attempt to authenticate the current user.  Throws exception if login fails.
+     * Attempt to authenticate the current user. Throws exception if login fails.
      *
      * @param Request $request Request object containing account credentials.
      *
@@ -246,7 +249,7 @@ abstract class AbstractBase implements
 
     /**
      * Get the URL to establish a session (needed when the internal VuFind login
-     * form is inadequate).  Returns false when no session initiator is needed.
+     * form is inadequate). Returns false when no session initiator is needed.
      *
      * @param string $target Full URL where external authentication method should
      * send user after login (some drivers may override this).

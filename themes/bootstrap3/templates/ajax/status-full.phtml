@@ -4,9 +4,15 @@
     <th><?=$this->transEsc('Call Number')?></th>
     <th><?=$this->transEsc('Status')?></th>
   </tr>
-  <?php $i = 0; foreach ($this->statusItems as $item): ?>
-    <?php if (++$i == 5) break; // Show no more than 5 items ?>
-    <?php $callNumPrefix = !empty($item['callnumber_prefix']) ? $item['callnumber_prefix'] . ' ' : '';?>
+  <?php $i = 0; ?>
+  <?php foreach ($this->statusItems as $item): ?>
+    <?php
+      if (++$i == 5) {
+        // Show no more than 5 items
+        break;
+      }
+      $callNumPrefix = !empty($item['callnumber_prefix']) ? $item['callnumber_prefix'] . ' ' : '';
+    ?>
     <tr>
       <td class="fullLocation">
         <?php $locationText = $this->transEscWithPrefix('location_', $item['location']); ?>
@@ -25,11 +31,24 @@
       </td>
       <td class="fullAvailability">
         <?php if ($item['use_unknown_message'] ?? false): ?>
-          <span><?=$this->transEsc("status_unknown_message")?></span>
-        <?php elseif ($item['availability']): ?>
-          <span class="text-success"><?=($item['reserve'] == 'Y') ? $this->transEsc("On Reserve") : $this->transEsc("Available")?></span>
-        <?php else: ?>
+          <span class="text-muted"><?=$this->transEsc('status_unknown_message')?></span>
+        <?php elseif ((int)$item['availability'] === \VuFind\ILS\Logic\ItemStatus::STATUS_UNAVAILABLE): ?>
           <span class="text-danger"><?=$this->transEsc($item['status'])?></span>
+        <?php elseif ((int)$item['availability'] === \VuFind\ILS\Logic\ItemStatus::STATUS_UNCERTAIN): ?>
+          <span class="text-warning"><?=$this->transEsc($item['status'])?></span>
+        <?php else: ?>
+          <span class="text-success">
+            <?php
+              if ($item['reserve'] === 'Y') {
+                $status = 'On Reserve';
+              } elseif (is_int($item['availability']) && !empty($item['status'])) {
+                $status = $item['status'];
+              } else {
+                $status = 'Available';
+              }
+            ?>
+            <?=$this->transEsc($status)?>
+          </span>
         <?php endif; ?>
       </td>
     </tr>

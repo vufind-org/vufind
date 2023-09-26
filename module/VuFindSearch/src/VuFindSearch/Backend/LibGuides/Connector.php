@@ -3,7 +3,7 @@
 /**
  * LibGuides connector.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -31,6 +31,10 @@
 namespace VuFindSearch\Backend\LibGuides;
 
 use Laminas\Http\Client as HttpClient;
+
+use function array_slice;
+use function count;
+use function strlen;
 
 /**
  * LibGuides connector.
@@ -89,8 +93,8 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         $this->apiVersion = $apiVersion;
         if (empty($baseUrl)) {
             $this->host = ($this->apiVersion < 2)
-                ? "http://api.libguides.com/api_search.php?"
-                : "http://lgapi.libapps.com/widgets.php?";
+                ? 'http://api.libguides.com/api_search.php?'
+                : 'http://lgapi.libapps.com/widgets.php?';
         } else {
             // Ensure appropriate number of question marks:
             $this->host = rtrim($baseUrl, '?') . '?';
@@ -100,7 +104,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
-     * Execute a search.  adds all the querystring parameters into
+     * Execute a search. Adds all the querystring parameters into
      * $this->client and returns the parsed response
      *
      * @param array $params    Incoming search parameters.

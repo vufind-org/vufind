@@ -1,4 +1,5 @@
-<?php $summonTopics = $this->recommend->getResults(); if (!empty($summonTopics)): $summonTopics = current($summonTopics); ?>
+<?php $summonTopics = $this->recommend->getResults(); ?>
+<?php if (!empty($summonTopics)): $summonTopics = current($summonTopics); ?>
 <div class="authorbox">
   <p><b><?=$this->transEsc('Suggested Topics')?></b></p>
   <?php if (isset($summonTopics['title'])): ?>

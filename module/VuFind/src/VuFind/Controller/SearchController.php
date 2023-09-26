@@ -3,7 +3,7 @@
 /**
  * Default Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -32,6 +32,10 @@ namespace VuFind\Controller;
 use VuFind\Exception\Mail as MailException;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
 
+use function array_slice;
+use function count;
+use function is_object;
+
 /**
  * Redirects the user to the appropriate default VuFind action.
  *
@@ -43,25 +47,6 @@ use VuFind\Search\Factory\UrlQueryHelperFactory;
  */
 class SearchController extends AbstractSolrSearch
 {
-    /**
-     * Blended search action.
-     *
-     * @return mixed
-     */
-    public function blendedAction()
-    {
-        $saveId = $this->searchClassId;
-        try {
-            $this->searchClassId = 'Blender';
-            $view = $this->resultsAction();
-        } catch (\Exception $e) {
-            $this->searchClassId = $saveId;
-            throw $e;
-        }
-        $this->searchClassId = $saveId;
-        return $view;
-    }
-
     /**
      * Show facet list for Solr-driven collections.
      *
@@ -190,7 +175,7 @@ class SearchController extends AbstractSolrSearch
                 $this->flashMessenger()->addMessage('email_success', 'success');
                 return $this->redirect()->toUrl($view->url);
             } catch (MailException $e) {
-                $this->flashMessenger()->addMessage($e->getMessage(), 'error');
+                $this->flashMessenger()->addMessage($e->getDisplayMessage(), 'error');
             }
         }
         return $view;
@@ -545,7 +530,6 @@ class SearchController extends AbstractSolrSearch
     {
         $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
             ->get('config');
-        return isset($config->Record->next_prev_navigation)
-            && $config->Record->next_prev_navigation;
+        return $config->Record->next_prev_navigation ?? false;
     }
 }

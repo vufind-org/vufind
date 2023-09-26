@@ -3,7 +3,7 @@
 /**
  * AlphaBrowse Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -300,7 +300,7 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
         $target = 'Solr'
     ) {
         return function ($command) use ($class, $args, $target) {
-            return get_class($command) === $class
+            return $command::class === $class
                 && $command->getArguments() == $args
                 && $command->getTargetIdentifier() === $target;
         };

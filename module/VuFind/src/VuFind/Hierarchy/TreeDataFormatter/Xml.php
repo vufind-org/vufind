@@ -3,7 +3,7 @@
 /**
  * Hierarchy Tree Data Formatter (XML)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2015.
  *
@@ -63,7 +63,7 @@ class Xml extends AbstractBase
      */
     protected function formatNode($record, $parentID = null)
     {
-        $isCollection = $this->isCollection($record) ? "true" : "false";
+        $isCollection = $this->isCollection($record) ? 'true' : 'false';
         return '<item id="' . htmlspecialchars($record->id)
             . '" isCollection="' . $isCollection . '">'
             . '<content><name>'

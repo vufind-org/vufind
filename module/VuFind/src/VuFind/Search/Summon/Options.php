@@ -3,7 +3,7 @@
 /**
  * Summon Search Options
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -28,6 +28,8 @@
  */
 
 namespace VuFind\Search\Summon;
+
+use function count;
 
 /**
  * Summon Search Options
@@ -89,7 +91,7 @@ class Options extends \VuFind\Search\Base\Options
         }
         if (isset($searchSettings->General->limit_options)) {
             $this->limitOptions
-                = explode(",", $searchSettings->General->limit_options);
+                = explode(',', $searchSettings->General->limit_options);
         }
 
         // Set up highlighting preference

@@ -3,7 +3,7 @@
 /**
  * Facebook authentication module.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -66,7 +66,7 @@ class Facebook extends AbstractBase implements
     }
 
     /**
-     * Validate configuration parameters.  This is a support method for getConfig(),
+     * Validate configuration parameters. This is a support method for getConfig(),
      * so the configuration MUST be accessed using $this->config; do not call
      * $this->getConfig() from within this method!
      *
@@ -91,7 +91,7 @@ class Facebook extends AbstractBase implements
     }
 
     /**
-     * Attempt to authenticate the current user.  Throws exception if login fails.
+     * Attempt to authenticate the current user. Throws exception if login fails.
      *
      * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.
@@ -133,7 +133,7 @@ class Facebook extends AbstractBase implements
 
     /**
      * Get the URL to establish a session (needed when the internal VuFind login
-     * form is inadequate).  Returns false when no session initiator is needed.
+     * form is inadequate). Returns false when no session initiator is needed.
      *
      * @param string $target Full URL where external authentication method should
      * send user after login (some drivers may override this).
@@ -145,7 +145,7 @@ class Facebook extends AbstractBase implements
         $base = 'https://www.facebook.com/dialog/oauth';
         // Adding the auth_method setting makes it possible to handle logins when
         // using an auth method that proxies others (e.g. ChoiceAuth)
-        $target .= ((strpos($target, '?') !== false) ? '&' : '?')
+        $target .= ((str_contains($target, '?')) ? '&' : '?')
             . 'auth_method=Facebook';
         $this->session->lastUri = $target;
         return $base . '?client_id='

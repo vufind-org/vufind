@@ -3,7 +3,7 @@
 /**
  * AlphaBrowse Module Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -34,6 +34,9 @@ use Laminas\Config\Config;
 use Laminas\View\Model\ViewModel;
 use VuFind\Exception\BadRequest;
 use VuFindSearch\ParamBag;
+
+use function in_array;
+use function intval;
 
 /**
  * AlphabrowseController Class

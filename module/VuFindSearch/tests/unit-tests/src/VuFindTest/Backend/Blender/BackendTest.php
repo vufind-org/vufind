@@ -3,7 +3,7 @@
 /**
  * Unit tests for Blender backend.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2022.
  *
@@ -45,6 +45,10 @@ use VuFindSearch\Backend\Solr\Response\Json\RecordCollection as SolrRecordCollec
 use VuFindSearch\Command\SearchCommand;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
+
+use function array_slice;
+use function count;
+use function in_array;
 
 /**
  * Unit tests for Blender backend.
@@ -1203,7 +1207,7 @@ class BackendTest extends TestCase
             $params = [],
             $method = 'GET',
             $message = null,
-            $messageFormat = ""
+            $messageFormat = ''
         ) use ($fixture) {
             if ('' === $fixture) {
                 throw new BackendException('Simulated EDS failure');

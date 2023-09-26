@@ -3,7 +3,7 @@
 /**
  * PrintArrayHtml Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Michigan State University 2023.
  *
@@ -31,6 +31,8 @@ namespace VuFindTest\View\Helper\Root;
 
 use VuFind\View\Helper\Root\PrintArrayHtml;
 use VuFindTest\Unit\AbstractMakeTagTest;
+
+use function call_user_func;
 
 /**
  * PrintArrayHtml Test Class
@@ -72,7 +74,7 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
             ],
             [ // Set 1
                 [
-                    'KeyA' => "ValueA",
+                    'KeyA' => 'ValueA',
                 ],
                 <<<END
                     <span class="term">KeyA:</span> <span class="detail">ValueA</span><br>
@@ -80,7 +82,7 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
                     END,
             ],
             [ // Set 2
-                "Value0",
+                'Value0',
                 <<<END
                     <span class="detail">Value0</span><br>
 
@@ -88,7 +90,7 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
             ],
             [ // Set 3
                 [
-                    0 => "Value0",
+                    0 => 'Value0',
                 ],
                 <<<END
                     <span class="detail">Value0</span><br>
@@ -97,8 +99,8 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
             ],
             [ // Set 4
                 [
-                    0 => "Value0",
-                    1 => "Value1",
+                    0 => 'Value0',
+                    1 => 'Value1',
                 ],
                 <<<END
                     <span class="detail">Value0</span><br>
@@ -117,9 +119,9 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
             ],
             [ // Set 6
                 [
-                    "KeyA" => [
-                        0 => "Value0",
-                        1 => "Value1",
+                    'KeyA' => [
+                        0 => 'Value0',
+                        1 => 'Value1',
                     ],
                 ],
                 <<<END
@@ -132,8 +134,8 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
             [ // Set 7
                 [
                     0 => [
-                        0 => "Value0",
-                        1 => "Value1",
+                        0 => 'Value0',
+                        1 => 'Value1',
                     ],
                 ],
                 <<<END
@@ -144,13 +146,13 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
             ],
             [ // Set 8
                 [
-                    "KeyA" => [
-                        0 => "Value0",
-                        1 => "Value1",
+                    'KeyA' => [
+                        0 => 'Value0',
+                        1 => 'Value1',
                     ],
-                    "KeyB" => [
-                        "KeyX" => "Value2",
-                        "KeyY" => "Value3",
+                    'KeyB' => [
+                        'KeyX' => 'Value2',
+                        'KeyY' => 'Value3',
                     ],
                 ],
                 <<<END
@@ -166,14 +168,14 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
             [ // Set 9
                 [
                     0 => [
-                        0 => "Value0",
-                        1 => "Value1",
+                        0 => 'Value0',
+                        1 => 'Value1',
                     ],
                     1 => [
-                        "KeyX" => "Value2",
-                        "KeyY" => "Value3",
+                        'KeyX' => 'Value2',
+                        'KeyY' => 'Value3',
                     ],
-                    2 => "Value4",
+                    2 => 'Value4',
                 ],
                 <<<END
                     &ndash;&ensp;<span class="detail">Value0</span><br>
@@ -186,13 +188,13 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
             ],
             [ // Set 10
                 [
-                    "KeyA" => [
-                        0 => "Value0",
-                        1 => "Value1",
+                    'KeyA' => [
+                        0 => 'Value0',
+                        1 => 'Value1',
                     ],
-                    "KeyB" => [
-                        0 => ["KeyW" => "Value2", "KeyX" => "Value3"],
-                        1 => ["KeyY" => "Value4", "KeyZ" => "Value5"],
+                    'KeyB' => [
+                        0 => ['KeyW' => 'Value2', 'KeyX' => 'Value3'],
+                        1 => ['KeyY' => 'Value4', 'KeyZ' => 'Value5'],
                     ],
                 ],
                 <<<END
@@ -209,21 +211,21 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
             ],
             [ // Set 11
                 [
-                    "KeyA" => [
-                        0 => "Value0",
-                        1 => "Value1",
+                    'KeyA' => [
+                        0 => 'Value0',
+                        1 => 'Value1',
                     ],
-                    "001" => [
-                        0 => "Value2",
-                        1 => "Value3",
+                    '001' => [
+                        0 => 'Value2',
+                        1 => 'Value3',
                     ],
-                    "100" => [
-                        0 => "Value4",
-                        1 => "Value5",
+                    '100' => [
+                        0 => 'Value4',
+                        1 => 'Value5',
                     ],
                     101 => [
-                        "KeyB" => "Value6",
-                        200 => "Value7",
+                        'KeyB' => 'Value6',
+                        200 => 'Value7',
                     ],
                 ],
                 <<<END
@@ -244,15 +246,15 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
             ],
             [ // Set 12
                 [
-                    "001" => ["Value0"],
-                    "002" => [
-                        "020" => ["Value1"],
-                        "040" => ["Value2"],
-                        200 => ["Value3"],
-                        "201" => ["Value4"],
+                    '001' => ['Value0'],
+                    '002' => [
+                        '020' => ['Value1'],
+                        '040' => ['Value2'],
+                        200 => ['Value3'],
+                        '201' => ['Value4'],
                     ],
-                    "003" => ["Value5"],
-                    "100" => ["Value6"],
+                    '003' => ['Value5'],
+                    '100' => ['Value6'],
                 ],
                 <<<END
                     <span class="term">001:</span> <span class="detail">Value0</span><br>
@@ -268,10 +270,10 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
             ],
             [ // Set 13
                 [
-                    ["001" => ["Value0"]],
-                    ["002" => ["Value1"]],
-                    ["049" => ["Value2"]],
-                    ["100" => ["Value3"]],
+                    ['001' => ['Value0']],
+                    ['002' => ['Value1']],
+                    ['049' => ['Value2']],
+                    ['100' => ['Value3']],
                 ],
                 <<<END
                     &ndash;&ensp;<span class="term">001:</span> <span class="detail">Value0</span><br>
@@ -283,7 +285,7 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
             ],
             [ // Set 14
                 [
-                    "KeyA" => [0 => "Value0"],
+                    'KeyA' => [0 => 'Value0'],
                 ],
                 <<<END
                     <span class="term">KeyA:</span> <span class="detail">Value0</span><br>
@@ -292,7 +294,7 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
             ],
             [ // Set 15
                 [
-                    "KeyA" => ["000" => "Value0"],
+                    'KeyA' => ['000' => 'Value0'],
                 ],
                 <<<END
                     <span class="term">KeyA:</span><br>
@@ -302,7 +304,7 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
             ],
             [ // Set 16
                 [
-                    "KeyA" => [0 => [0 => "Value0"]],
+                    'KeyA' => [0 => [0 => 'Value0']],
                 ],
                 <<<END
                     <span class="term">KeyA:</span><br>
@@ -312,7 +314,7 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
             ],
             [ // Set 17
                 [
-                    "KeyA" => [0 => [0 => [0 => [0 => "Value0"]]]],
+                    'KeyA' => [0 => [0 => [0 => [0 => 'Value0']]]],
                 ],
                 <<<END
                     <span class="term">KeyA:</span><br>
@@ -322,10 +324,10 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
             ],
             [ // Set 18
                 [
-                    "KeyA" => [
-                        0 => [0 => "Value0"],
-                        1 => [0 => "Value1"],
-                        2 => [0 => "Value2"],
+                    'KeyA' => [
+                        0 => [0 => 'Value0'],
+                        1 => [0 => 'Value1'],
+                        2 => [0 => 'Value2'],
                     ],
                 ],
                 <<<END
@@ -338,14 +340,14 @@ class PrintArrayHtmlTest extends AbstractMakeTagTest
             ],
             [ // Set 19
                 [
-                    "KeyA" => [
+                    'KeyA' => [
                         0 => [
-                            0 => ["Value0"],
-                            1 => ["Value1"],
+                            0 => ['Value0'],
+                            1 => ['Value1'],
                         ],
                         1 => [
-                            0 => "Value2",
-                            1 => "Value3",
+                            0 => 'Value2',
+                            1 => 'Value3',
                         ],
                     ],
                 ],

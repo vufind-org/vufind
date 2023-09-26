@@ -3,7 +3,7 @@
 /**
  * Captcha view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -29,6 +29,8 @@
  */
 
 namespace VuFind\View\Helper\Root;
+
+use function count;
 
 /**
  * Captcha view helper
@@ -93,7 +95,7 @@ class Captcha extends \Laminas\View\Helper\AbstractHelper
     {
         return $this->renderClassTemplate(
             'Captcha/%s',
-            strtolower(get_class($captcha)),
+            strtolower($captcha::class),
             ['captcha' => $captcha]
         );
     }

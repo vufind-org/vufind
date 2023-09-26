@@ -3,7 +3,7 @@
 /**
  * Dynamic Book Cover Generator
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2014.
  *
@@ -32,6 +32,8 @@ namespace VuFind\Cover;
 use VuFind\Cover\Layer\LayerInterface;
 use VuFind\Cover\Layer\PluginManager as LayerManager;
 use VuFindTheme\ThemeInfo;
+
+use function count;
 
 /**
  * Dynamic Book Cover Generator

@@ -3,7 +3,7 @@
 /**
  * MarkdownFactory Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2020.
  *
@@ -138,6 +138,11 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
                     'tag' => 'div',
                     'attributes' => 'class:table-responsive,title:table',
                 ],
+                'alignment_attributes' => [
+                    'left' => 'class:left,align:left',
+                    'center' => 'class:center, align: center',
+                    'right' => 'class:right',
+                ],
             ],
             'VuFindTest\Markdown\ExampleExtension' => [
                 'config_key' => 'example',
@@ -150,6 +155,7 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
             'HeadingPermalink' => [
                 'min_heading_level' => '3',
                 'max_heading_level' => '4',
+                'apply_id_to_heading' => 'true',
             ],
         ];
         $customEnvironment2 = [
@@ -170,6 +176,19 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
                     'attributes' => [
                         'class' => 'table-responsive',
                         'title' => 'table',
+                    ],
+                ],
+                'alignment_attributes' => [
+                    'left' => [
+                        'class' => 'left',
+                        'align' => 'left',
+                    ],
+                    'center' => [
+                        'class' => 'center',
+                        'align' => 'center',
+                    ],
+                    'right' => [
+                        'class' => 'right',
                     ],
                 ],
             ],
@@ -200,6 +219,8 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
                 'title' => 'Permalink',
                 'symbol' => '¶',
                 'aria_hidden' => true,
+                'apply_id_to_heading' => true,
+                'heading_class' => '',
             ],
         ];
 
@@ -288,7 +309,7 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
             $result = $this->getMarkdownEnvironmentExtensions($test['config']);
             $result = array_map(
                 function ($extension) {
-                    return get_class($extension);
+                    return $extension::class;
                 },
                 $result
             );

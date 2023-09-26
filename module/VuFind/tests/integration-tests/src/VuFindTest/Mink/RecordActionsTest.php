@@ -3,7 +3,7 @@
 /**
  * Mink record actions test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011-2023.
  *
@@ -30,6 +30,10 @@
 
 namespace VuFindTest\Mink;
 
+use function count;
+use function intval;
+use function strlen;
+
 /**
  * Mink record actions test class.
  *
@@ -45,6 +49,7 @@ namespace VuFindTest\Mink;
  */
 final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
 {
+    use \VuFindTest\Feature\AutocompleteTrait;
     use \VuFindTest\Feature\LiveDatabaseTrait;
     use \VuFindTest\Feature\UserCreationTrait;
 
@@ -138,6 +143,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test adding comments on records (with Captcha enabled).
      *
      * @return void
+     *
+     * @depends testAddComment
      */
     public function testAddCommentWithCaptcha()
     {
@@ -201,6 +208,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * @retryCallback removeUsername2
      *
      * @return void
+     *
+     * @depends testAddComment
      */
     public function testAddTag()
     {
@@ -285,6 +294,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test searching for one of the tags created above.
      *
      * @return void
+     *
+     * @depends testAddTag
      */
     public function testTagSearch()
     {
@@ -305,9 +316,45 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test that default autocomplete behavior is correct on a non-default search handler.
+     *
+     * @return void
+     *
+     * @depends testAddTag
+     */
+    public function testTagAutocomplete(): void
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Home');
+        $page = $session->getPage();
+        $this->findCss($page, '#searchForm_type')
+            ->setValue('tag');
+        $this->findCss($page, '#searchForm_lookfor')
+            ->setValue('fiv');
+        $acItem = $this->getAndAssertFirstAutocompleteValue($page, 'five');
+        $acItem->click();
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            $this->getVuFindUrl() . '/Search/Results?lookfor=five&type=tag',
+            $session->getCurrentUrl()
+        );
+        $expected = 'Showing 1 - 1 results of 1 for search \'five\'';
+        $this->assertEquals(
+            $expected,
+            substr(
+                $this->findCss($page, '.search-stats')->getText(),
+                0,
+                strlen($expected)
+            )
+        );
+    }
+
+    /**
      * Test adding case sensitive tags on records.
      *
      * @return void
+     *
+     * @depends testAddTag
      */
     public function testAddSensitiveTag()
     {
@@ -640,27 +687,34 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Add comment with rating
         $this->clickCss($page, '.record-tabs .usercomments a');
+        $this->waitForPageLoad($page);
         $this->findCss($page, '.comment-form');
         $this->findCss($page, 'form.comment-form [name="comment"]')->setValue('one');
         $this->clickCss($page, 'form.comment-form div.star-rating label', null, 10);
         // Check that "Clear" link is present before submitting:
         $this->findCss($page, 'form.comment-form a');
         $this->clickCss($page, 'form.comment-form .btn-primary');
-        // Check result
-        $this->waitForPageLoad($page);
-        $inputs = $page->findAll('css', $checked);
-        $this->assertCount(1, $inputs);
-        $this->assertEquals('80', $inputs[0]->getValue());
+        // Check result (wait for the value to update):
+        $this->assertEqualsWithTimeout(
+            [1, '80'],
+            function () use ($page, $checked) {
+                $inputs = $page->findAll('css', $checked);
+                return [count($inputs), $inputs ? $inputs[0]->getValue() : null];
+            }
+        );
         if ($allowRemove) {
             // Clear rating when adding another comment
             $this->findCss($page, 'form.comment-form [name="comment"]')->setValue('two');
             $this->clickCss($page, 'form.comment-form a');
             $this->clickCss($page, 'form.comment-form .btn-primary');
-            // Check result
-            $this->waitForPageLoad($page);
-            $inputs = $page->findAll('css', $checked);
-            $this->assertCount(1, $inputs);
-            $this->assertEquals('70', $inputs[0]->getValue());
+            // Check result (wait for the value to update):
+            $this->assertEqualsWithTimeout(
+                [1, '70'],
+                function () use ($page, $checked) {
+                    $inputs = $page->findAll('css', $checked);
+                    return [count($inputs), $inputs ? $inputs[0]->getValue() : null];
+                }
+            );
         } else {
             // Check that the "Clear" link is no longer available:
             $this->unFindCss($page, 'form.comment-form a');

@@ -125,10 +125,10 @@ VuFind.register('lightbox', function Lightbox() {
       $(forms[i]).on('submit', _formSubmit);
     }
     // Select all checkboxes
-    $('#modal').find('.checkbox-select-all').change(function lbSelectAllCheckboxes() {
+    $('#modal').find('.checkbox-select-all').on("change", function lbSelectAllCheckboxes() {
       $(this).closest('.modal-body').find('.checkbox-select-item').prop('checked', this.checked);
     });
-    $('#modal').find('.checkbox-select-item').change(function lbSelectAllDisable() {
+    $('#modal').find('.checkbox-select-item').on("change", function lbSelectAllDisable() {
       $(this).closest('.modal-body').find('.checkbox-select-all').prop('checked', false);
     });
     // Recaptcha
@@ -430,24 +430,24 @@ VuFind.register('lightbox', function Lightbox() {
   function bind(el) {
     var target = el || document;
     $(target).find('a[data-lightbox]')
-      .unbind('click', _constrainLink)
+      .off('click', _constrainLink)
       .on('click', _constrainLink);
     $(target).find('form[data-lightbox]')
-      .unbind('submit', _formSubmit)
+      .off('submit', _formSubmit)
       .on('submit', _formSubmit);
 
     // Handle submit buttons attached to a form as well as those in a form. Store
     // information about which button was clicked here as checking focused button
     // doesn't work on all browsers and platforms.
     $('form[data-lightbox]').each(function bindFormSubmitsLightbox(i, form) {
-      $(form).find('[type=submit]').click(_storeClickedStatus);
-      $('[type="submit"][form="' + form.id + '"]').click(_storeClickedStatus);
+      $(form).find('[type=submit]').on("click", _storeClickedStatus);
+      $('[type="submit"][form="' + form.id + '"]').on("click", _storeClickedStatus);
     });
 
     // Display images in the lightbox
     $('[data-lightbox-image]', el).each(function lightboxOpenImage(i, link) {
-      $(link).unbind("click", _constrainLink);
-      $(link).bind("click", function lightboxImageRender(event) {
+      $(link).off("click", _constrainLink);
+      $(link).on("click", function lightboxImageRender(event) {
         event.preventDefault();
         var url = link.dataset.lightboxHref || link.href || link.src;
         var imageCheck = $.ajax({

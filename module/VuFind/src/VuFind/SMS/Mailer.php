@@ -3,7 +3,7 @@
 /**
  * VuFind Mailer Class for SMS messages
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2009.
  *
@@ -29,7 +29,10 @@
 
 namespace VuFind\SMS;
 
-use VuFind\Exception\Mail as MailException;
+use VuFind\Exception\SMS as SMSException;
+
+use function count;
+use function in_array;
 
 /**
  * VuFind Mailer Class for SMS messages
@@ -111,7 +114,7 @@ class Mailer extends AbstractBase
     }
 
     /**
-     * Get a list of carriers supported by the module.  Returned as an array of
+     * Get a list of carriers supported by the module. Returned as an array of
      * associative arrays indexed by carrier ID and containing "name" and "domain"
      * keys.
      *
@@ -130,14 +133,17 @@ class Mailer extends AbstractBase
      * @param string $from     The email address to use as sender
      * @param string $message  The message to send
      *
-     * @throws \VuFind\Exception\Mail
+     * @throws \VuFind\Exception\SMS
      * @return void
      */
     public function text($provider, $to, $from, $message)
     {
         $knownCarriers = array_keys($this->carriers);
         if (empty($provider) || !in_array($provider, $knownCarriers)) {
-            throw new MailException('Unknown Carrier');
+            throw new SMSException(
+                'Unknown Carrier',
+                SMSException::ERROR_UNKNOWN_CARRIER
+            );
         }
 
         $to = $this->filterPhoneNumber($to)

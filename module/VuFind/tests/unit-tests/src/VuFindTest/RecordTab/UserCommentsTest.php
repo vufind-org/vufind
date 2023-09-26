@@ -3,7 +3,7 @@
 /**
  * UserComments Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -50,7 +50,7 @@ class UserCommentsTest extends \PHPUnit\Framework\TestCase
     public function testGetDescription(): void
     {
         $obj = new UserComments();
-        $this->assertSame("Comments", $obj->getDescription());
+        $this->assertSame('Comments', $obj->getDescription());
     }
 
     /**

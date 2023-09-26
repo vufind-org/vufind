@@ -3,7 +3,7 @@
 /**
  * GetRecordCover AJAX handler.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -35,6 +35,8 @@ use VuFind\Cache\CacheTrait;
 use VuFind\Cover\Router as CoverRouter;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Session\Settings as SessionSettings;
+
+use function in_array;
 
 /**
  * GetRecordCover AJAX handler.

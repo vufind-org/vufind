@@ -3,7 +3,7 @@
 /**
  * Authentication manager test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -35,6 +35,8 @@ use VuFind\Auth\Manager;
 use VuFind\Auth\PluginManager;
 use VuFind\Db\Row\User as UserRow;
 use VuFind\Db\Table\User as UserTable;
+
+use function get_class;
 
 /**
  * Authentication manager test class.

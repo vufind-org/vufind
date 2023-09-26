@@ -3,7 +3,7 @@
 /**
  * VuFind Theme Public Resource Handler (for CSS, JS, etc.)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,6 +28,10 @@
  */
 
 namespace VuFindTheme;
+
+use function count;
+use function in_array;
+use function is_array;
 
 /**
  * VuFind Theme Public Resource Handler (for CSS, JS, etc.)
@@ -64,7 +68,7 @@ class ResourceContainer
     /**
      * Favicon
      *
-     * @var string
+     * @var string|array|null
      */
     protected $favicon = null;
 
@@ -121,7 +125,7 @@ class ResourceContainer
         } elseif ($js === []) {
             return;
         } else {
-            throw new \Exception("Invalid JS entry format: " . print_r($js, true));
+            throw new \Exception('Invalid JS entry format: ' . print_r($js, true));
         }
     }
 
@@ -347,7 +351,7 @@ class ResourceContainer
     /**
      * Set the favicon.
      *
-     * @param string $favicon New favicon path.
+     * @param string|array $favicon New favicon path.
      *
      * @return void
      */
@@ -359,7 +363,7 @@ class ResourceContainer
     /**
      * Get the favicon (null for none).
      *
-     * @return string
+     * @return string|array|null
      */
     public function getFavicon()
     {

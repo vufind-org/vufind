@@ -3,7 +3,7 @@
 /**
  * Command to fetch a query builder object from a backend (if supported).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -30,6 +30,8 @@
 namespace VuFindSearch\Command;
 
 use VuFindSearch\Backend\BackendInterface;
+
+use function is_callable;
 
 /**
  * Command to fetch a query builder object from a backend (if supported).

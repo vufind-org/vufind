@@ -3,7 +3,7 @@
 /**
  * CSV Importer Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -32,6 +32,8 @@ namespace VuFindTest\CSV;
 use VuFind\CSV\Importer;
 use VuFindSearch\Backend\Solr\Document\RawJSONDocument;
 use VuFindTest\Container\MockContainer;
+
+use function array_slice;
 
 /**
  * CSV Importer Test Class

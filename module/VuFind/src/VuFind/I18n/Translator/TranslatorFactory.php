@@ -3,7 +3,7 @@
 /**
  * Translator factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -36,6 +36,8 @@ use Laminas\ServiceManager\Factory\DelegatorFactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\I18n\Locale\LocaleSettings;
+
+use function extension_loaded;
 
 /**
  * Translator factory.
@@ -109,7 +111,7 @@ class TranslatorFactory implements DelegatorFactoryInterface
             // note of it:
             $logger = $container->get(\VuFind\Log\Logger::class);
             $logger->debug(
-                'Problem loading cache: ' . get_class($e) . ' exception: '
+                'Problem loading cache: ' . $e::class . ' exception: '
                 . $e->getMessage()
             );
         }

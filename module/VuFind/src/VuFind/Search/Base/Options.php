@@ -3,7 +3,7 @@
 /**
  * Abstract options search model.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -31,6 +31,13 @@ namespace VuFind\Search\Base;
 
 use Laminas\Config\Config;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+
+use function count;
+use function get_class;
+use function in_array;
+use function intval;
+use function is_array;
+use function is_string;
 
 /**
  * Abstract options search model.
@@ -258,6 +265,13 @@ abstract class Options implements TranslatorAwareInterface
     protected $autocompleteAutoSubmit = true;
 
     /**
+     * Autocomplete query formatting rules
+     *
+     * @var array
+     */
+    protected $autocompleteFormattingRules = [];
+
+    /**
      * Configuration file to read global settings from
      *
      * @var string
@@ -283,7 +297,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @var string
      */
-    protected $listviewOption = "full";
+    protected $listviewOption = 'full';
 
     /**
      * Configuration loader
@@ -802,6 +816,16 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
+     * Get autocomplete query formatting rules.
+     *
+     * @return array
+     */
+    public function getAutocompleteFormattingRules(): array
+    {
+        return $this->autocompleteFormattingRules;
+    }
+
+    /**
      * Get a string of the listviewOption (full or tab).
      *
      * @return string
@@ -935,8 +959,7 @@ abstract class Options implements TranslatorAwareInterface
 
     /**
      * If there is a limit to how many search results a user can access, this
-     * method will return that limit.  If there is no limit, this will return
-     * -1.
+     * method will return that limit. If there is no limit, this will return -1.
      *
      * @return int
      */
@@ -964,7 +987,7 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
-     * Load all recommendation settings from the relevant ini file.  Returns an
+     * Load all recommendation settings from the relevant ini file. Returns an
      * associative array where the key is the location of the recommendations (top
      * or side) and the value is the settings found in the file (which may be either
      * a single string or an array of strings).
@@ -1048,6 +1071,19 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
+     * Get the search class ID for identifying search box options; this is normally
+     * the same as the current search class ID, but some "special purpose" search
+     * namespaces (e.g. SolrAuthor) need to point to a different ID for search box
+     * generation
+     *
+     * @return string
+     */
+    public function getSearchBoxSearchClassId(): string
+    {
+        return $this->getSearchClassId();
+    }
+
+    /**
      * Should we include first/last options in result scroller navigation?
      *
      * @return bool
@@ -1092,6 +1128,10 @@ abstract class Options implements TranslatorAwareInterface
             ?? $this->autocompleteEnabled;
         $this->autocompleteAutoSubmit = $searchSettings->Autocomplete->auto_submit
             ?? $this->autocompleteAutoSubmit;
+        $formattingRules = $searchSettings->Autocomplete->formatting_rule ?? [];
+        if (!is_string($formattingRules) && count($formattingRules) > 0) {
+            $this->autocompleteFormattingRules = $formattingRules->toArray();
+        }
     }
 
     /**

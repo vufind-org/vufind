@@ -3,7 +3,7 @@
 /**
  * JSON-based record collection for records from multiple sources.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2022.
  *
@@ -30,6 +30,13 @@
 namespace VuFindSearch\Backend\Blender\Response\Json;
 
 use VuFindSearch\Response\RecordInterface;
+
+use function array_slice;
+use function count;
+use function in_array;
+use function intval;
+use function is_array;
+use function is_string;
 
 /**
  * JSON-based record collection for records from multiple sources.

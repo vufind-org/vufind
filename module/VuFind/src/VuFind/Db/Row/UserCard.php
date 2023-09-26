@@ -3,7 +3,7 @@
 /**
  * Row Definition for user_card
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2015.
  *

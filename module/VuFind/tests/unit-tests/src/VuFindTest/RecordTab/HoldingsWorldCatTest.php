@@ -3,7 +3,7 @@
 /**
  * HoldingsWorldCat Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -64,7 +64,7 @@ class HoldingsWorldCatTest extends \PHPUnit\Framework\TestCase
      */
     public function isActiveProvider(): array
     {
-        return ['Enabed' => ["foo", true], 'Not Enabled' => ["", false]];
+        return ['Enabed' => ['foo', true], 'Not Enabled' => ['', false]];
     }
 
     /**
@@ -107,7 +107,7 @@ class HoldingsWorldCatTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $recordDriver->expects($this->once())->method('tryMethod')
             ->with($this->equalTo('getCleanOCLCNum'))
-            ->will($this->returnValue("bar"));
+            ->will($this->returnValue('bar'));
         $obj->setRecordDriver($recordDriver);
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
             ->disableOriginalConstructor()
@@ -115,9 +115,9 @@ class HoldingsWorldCatTest extends \PHPUnit\Framework\TestCase
         $commandObj->expects($this->any())->method('getResult')
             ->will($this->returnValue(true));
         $checkCommand = function ($command) {
-            return get_class($command) === \VuFindSearch\Backend\WorldCat\Command\GetHoldingsCommand::class
-                    && $command->getArguments()[0] === "bar"
-                    && $command->getTargetIdentifier() === "WorldCat";
+            return $command::class === \VuFindSearch\Backend\WorldCat\Command\GetHoldingsCommand::class
+                    && $command->getArguments()[0] === 'bar'
+                    && $command->getTargetIdentifier() === 'WorldCat';
         };
         $searchObj->expects($this->any())->method('invoke')
             ->with($this->callback($checkCommand))

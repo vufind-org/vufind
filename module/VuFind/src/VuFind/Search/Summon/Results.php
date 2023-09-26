@@ -3,7 +3,7 @@
 /**
  * Summon Search Results
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011, 2022.
  *
@@ -30,6 +30,9 @@
 namespace VuFind\Search\Summon;
 
 use VuFindSearch\Command\SearchCommand;
+
+use function in_array;
+use function is_array;
 
 /**
  * Summon Search Parameters
@@ -151,7 +154,7 @@ class Results extends \VuFind\Search\Base\Results
             ? $this->getParams()->getFacetConfig()
             : $this->stripFilterParameters($filter);
 
-        // We want to sort the facets to match the order in the .ini file.  Let's
+        // We want to sort the facets to match the order in the .ini file. Let's
         // create a lookup array to determine order:
         $order = array_flip(array_keys($filter));
 
@@ -242,7 +245,7 @@ class Results extends \VuFind\Search\Base\Results
             }
 
             // We need to check two things to determine if the current
-            // value is an applied filter.  First, is the current field
+            // value is an applied filter. First, is the current field
             // present in the filter list?  Second, is the current value
             // an active filter for the current field?
             $orField = '~' . $field;

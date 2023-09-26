@@ -3,7 +3,7 @@
 /**
  * ILS authentication module.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -33,6 +33,8 @@ namespace VuFind\Auth;
 use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
+
+use function get_class;
 
 /**
  * ILS authentication module.
@@ -108,7 +110,7 @@ class ILS extends AbstractBase
     }
 
     /**
-     * Attempt to authenticate the current user.  Throws exception if login fails.
+     * Attempt to authenticate the current user. Throws exception if login fails.
      *
      * @param Request $request Request object containing account credentials.
      *

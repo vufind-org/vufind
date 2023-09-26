@@ -3,7 +3,7 @@
 /**
  * Table Definition for user_resource
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -33,6 +33,8 @@ use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 use VuFind\Db\Row\RowGateway;
+
+use function is_array;
 
 /**
  * Table Definition for user_resource
@@ -152,7 +154,7 @@ class UserResource extends Gateway
     }
 
     /**
-     * Unlink rows for the specified resource.  This will also automatically remove
+     * Unlink rows for the specified resource. This will also automatically remove
      * any tags associated with the relationship.
      *
      * @param string|array $resource_id ID (or array of IDs) of resource(s) to

@@ -4,7 +4,7 @@
  * Functions to add basic MARC-driven functionality to a record driver not already
  * powered by the standard index spec. Depends upon MarcReaderTrait.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -31,6 +31,8 @@
 
 namespace VuFind\RecordDriver\Feature;
 
+use function strlen;
+
 /**
  * Functions to add basic MARC-driven functionality to a record driver not already
  * powered by the standard index spec. Depends upon MarcReaderTrait.
@@ -55,7 +57,7 @@ trait MarcBasicTrait
             $this->getFieldArray('773', ['z'])
         );
         foreach ($isbn as $key => $num) {
-            $isbn[$key] = str_replace("-", "", $num);
+            $isbn[$key] = str_replace('-', '', $num);
         }
         $isbn = array_unique($isbn);
         return $isbn;
@@ -228,7 +230,7 @@ trait MarcBasicTrait
 
     /**
      * Get the date coverage for a record which spans a period of time (i.e. a
-     * journal).  Use getPublicationDates for publication dates of particular
+     * journal). Use getPublicationDates for publication dates of particular
      * monographic items.
      *
      * @return array

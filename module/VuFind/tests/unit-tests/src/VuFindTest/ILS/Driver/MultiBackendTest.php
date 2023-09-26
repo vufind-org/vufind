@@ -3,7 +3,7 @@
 /**
  * ILS driver test
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  * Copyright (C) The National Library of Finland 2014-2021.
@@ -34,6 +34,10 @@ namespace VuFindTest\ILS\Driver;
 use Laminas\Config\Exception\RuntimeException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Driver\MultiBackend;
+
+use function call_user_func_array;
+use function count;
+use function in_array;
 
 /**
  * ILS driver test
@@ -318,8 +322,8 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
 
         // Empty source must not add prefixes
         $expected = [
-            'id' => "record1",
-            'cat_username' => "record2",
+            'id' => 'record1',
+            'cat_username' => 'record2',
         ];
         $result = $this->callMethod($driver, 'addIdPrefixes', [$data, '']);
         $this->assertEquals($expected, $result);
@@ -393,7 +397,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         $data = "$source.record";
         $result
             = $this->callMethod($driver, 'stripIdPrefixes', [$data, $source]);
-        $this->assertEquals("record", $result);
+        $this->assertEquals('record', $result);
 
         $expected = [
             'id' => 'record1',
@@ -447,7 +451,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
             'test' => ["$source.foo", "$source.bar"],
         ];
         $expected = [
-            'id' => "record1",
+            'id' => 'record1',
             'test' => ["$source.foo", "$source.bar"],
         ];
         $result = $this->callMethod(
@@ -548,7 +552,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
             ->getHolding('d1.123456', ['cat_username' => 'test.patron']);
         $this->assertEquals($expectedReturn, $return);
 
-        $return = $driver->getHolding("fail.123456");
+        $return = $driver->getHolding('fail.123456');
         $this->assertEquals([], $return);
 
         $return = $driver->getHolding('d1.654321');
@@ -779,17 +783,17 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         ];
         $expectedReturn = [
             [
-                ['id' => "d1.123456", 'status' => 'in'],
-                ['id' => "d1.123456", 'status' => 'out'],
+                ['id' => 'd1.123456', 'status' => 'in'],
+                ['id' => 'd1.123456', 'status' => 'out'],
             ],
             [
-                ['id' => "d1.098765", 'status' => 'out'],
+                ['id' => 'd1.098765', 'status' => 'out'],
             ],
             [
-                ['id' => "d2.654321", 'status' => 'out'],
+                ['id' => 'd2.654321', 'status' => 'out'],
             ],
             [
-                ['id' => "d2.567890", 'status' => 'in'],
+                ['id' => 'd2.567890', 'status' => 'in'],
             ],
         ];
         $return = $driver->getStatuses($ids);
@@ -821,17 +825,17 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         ];
         $expectedReturn = [
             [
-                ['id' => "d1.123456", 'status' => 'in'],
-                ['id' => "d1.123456", 'status' => 'out'],
+                ['id' => 'd1.123456', 'status' => 'in'],
+                ['id' => 'd1.123456', 'status' => 'out'],
             ],
             [
-                ['id' => "d1.098765", 'status' => 'out'],
+                ['id' => 'd1.098765', 'status' => 'out'],
             ],
             [
-                ['id' => "d3.654321", 'error' => 'An error has occurred'],
+                ['id' => 'd3.654321', 'error' => 'An error has occurred'],
             ],
             [
-                ['id' => "d3.567890", 'error' => 'An error has occurred'],
+                ['id' => 'd3.567890', 'error' => 'An error has occurred'],
             ],
         ];
         $return = $driver->getStatuses($ids);
@@ -849,9 +853,9 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
     public function testGetLocalId()
     {
         $driver = $this->getDriver();
-        $term = "source.local";
+        $term = 'source.local';
         $return = $this->callMethod($driver, 'getLocalId', [$term]);
-        $this->assertEquals("local", $return);
+        $this->assertEquals('local', $return);
     }
 
     /**
@@ -1183,7 +1187,7 @@ class MultiBackendTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->expectException(\VuFind\Exception\ILS::class);
-        $driver->patronLogin("bad", "info");
+        $driver->patronLogin('bad', 'info');
     }
 
     /**

@@ -3,7 +3,7 @@
 /**
  * OAI Server class for Authority core
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -63,7 +63,7 @@ class Auth extends Base
     }
 
     /**
-     * Load data from the OAI section of config.ini.  (This is called by the
+     * Load data from the OAI section of config.ini. (This is called by the
      * constructor and is only a separate method to allow easy override by child
      * classes).
      *

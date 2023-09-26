@@ -3,7 +3,7 @@
 /**
  * Console command: notify users of scheduled searches.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -41,6 +41,9 @@ use VuFind\I18n\Locale\LocaleSettings;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Mailer\Mailer;
 use VuFind\Search\Results\PluginManager as ResultsManager;
+
+use function count;
+use function in_array;
 
 /**
  * Console command: notify users of scheduled searches.

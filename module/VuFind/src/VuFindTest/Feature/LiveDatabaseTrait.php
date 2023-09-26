@@ -5,7 +5,7 @@
  * functionality depends upon the LiveDetectionTrait for identification of a live
  * test environment.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -30,6 +30,8 @@
  */
 
 namespace VuFindTest\Feature;
+
+use function count;
 
 /**
  * Mix-in for accessing a real database during testing.

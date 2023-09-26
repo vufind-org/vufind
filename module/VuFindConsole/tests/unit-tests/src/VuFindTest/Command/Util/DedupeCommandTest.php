@@ -3,7 +3,7 @@
 /**
  * DedupeCommand test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -125,7 +125,7 @@ class DedupeCommandTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals("", $commandTester->getDisplay());
+        $this->assertEquals('', $commandTester->getDisplay());
     }
 
     /**
@@ -155,6 +155,6 @@ class DedupeCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
         $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals("", $commandTester->getDisplay());
+        $this->assertEquals('', $commandTester->getDisplay());
     }
 }

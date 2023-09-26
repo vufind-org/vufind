@@ -3,7 +3,7 @@
 /**
  * Marker interface for classes that depend on the \VuFind\Db\Table\PluginManager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -41,7 +41,7 @@ namespace VuFind\Db\Table;
 interface DbTableAwareInterface
 {
     /**
-     * Get the plugin manager.  Throw an exception if it is missing.
+     * Get the plugin manager. Throw an exception if it is missing.
      *
      * @throws \Exception
      * @return PluginManager

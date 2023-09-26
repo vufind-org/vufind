@@ -3,7 +3,7 @@
 /**
  * Fake database row to represent a user in privacy mode.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2015.
  *
@@ -28,6 +28,8 @@
  */
 
 namespace VuFind\Db\Row;
+
+use function array_key_exists;
 
 /**
  * Fake database row to represent a user in privacy mode.

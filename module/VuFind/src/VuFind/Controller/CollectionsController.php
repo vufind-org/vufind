@@ -3,7 +3,7 @@
 /**
  * Collections Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010, 2022.
  *
@@ -33,6 +33,9 @@ use Laminas\Config\Config;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFindSearch\Command\SearchCommand;
 use VuFindSearch\Query\Query;
+
+use function array_slice;
+use function count;
 
 /**
  * Collections Controller
@@ -116,7 +119,7 @@ class CollectionsController extends AbstractBase implements
     protected function showBrowseAlphabetic()
     {
         // Process incoming parameters:
-        $source = "hierarchy";
+        $source = 'hierarchy';
         $from = $this->params()->fromQuery('from', '');
         $page = $this->params()->fromQuery('page', 0);
         $limit = $this->getBrowseLimit();
@@ -151,9 +154,9 @@ class CollectionsController extends AbstractBase implements
         $delimiter = $this->getBrowseDelimiter();
         foreach ($result['Browse']['items'] as $rkey => $collection) {
             $collectionIdNamePair
-                = explode($delimiter, $collection["heading"]);
+                = explode($delimiter, $collection['heading']);
             $finalresult[$rkey]['displayText'] = $collectionIdNamePair[0];
-            $finalresult[$rkey]['count'] = $collection["count"];
+            $finalresult[$rkey]['count'] = $collection['count'];
             $finalresult[$rkey]['value'] = $collectionIdNamePair[1];
         }
         $view->result = $finalresult;
@@ -175,7 +178,7 @@ class CollectionsController extends AbstractBase implements
         $appliedFilters = $this->params()->fromQuery('filter', []);
         $limit = $this->getBrowseLimit();
 
-        $browseField = "hierarchy_browse";
+        $browseField = 'hierarchy_browse';
 
         $searchObject = $this->serviceLocator
             ->get(\VuFind\Search\Results\PluginManager::class)->get('Solr');
@@ -309,7 +312,7 @@ class CollectionsController extends AbstractBase implements
     {
         $valNormalized = iconv('UTF-8', 'US-ASCII//TRANSLIT//IGNORE', $val);
         $valNormalized = strtolower($valNormalized);
-        $valNormalized = preg_replace("/[^a-zA-Z0-9\s]/", "", $valNormalized);
+        $valNormalized = preg_replace("/[^a-zA-Z0-9\s]/", '', $valNormalized);
         $valNormalized = trim($valNormalized);
         return $valNormalized;
     }

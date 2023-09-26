@@ -3,7 +3,7 @@
 /**
  * Recommend test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -37,6 +37,8 @@ use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFind\Search\Solr\Results;
 use VuFind\Session\Settings;
 use VuFind\View\Helper\Root\Recommend as RecommendHelper;
+
+use function count;
 
 /**
  * Recommend test class.

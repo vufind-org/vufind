@@ -3,7 +3,7 @@
 /**
  * HTTP POST log writer
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -30,6 +30,8 @@
 namespace VuFind\Log\Writer;
 
 use Laminas\Http\Client;
+
+use function is_array;
 
 /**
  * This class extends the Laminas Logging to sent POST messages over HTTP

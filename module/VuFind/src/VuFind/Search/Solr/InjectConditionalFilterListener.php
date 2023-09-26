@@ -3,7 +3,7 @@
 /**
  * Conditional Filter listener.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -33,6 +33,8 @@ use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
 use VuFindSearch\Service;
+
+use function is_array;
 
 /**
  * Conditional Filter listener.

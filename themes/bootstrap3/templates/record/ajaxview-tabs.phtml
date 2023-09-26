@@ -28,7 +28,7 @@
   <?php if (!empty($list)): ?>
     <li<?php if ($this->defaultTab === 'related'): ?> class="active"<?php endif; ?>>
       <a id="related_<?=$idSuffixEsc?>" class="list-tab-toggle loaded" data-toggle="tab" data-target="#related_<?=$idSuffixEsc?>-content" class="noajax">
-        <?=$this->transEsc("Related Items")?>
+        <?=$this->transEsc('Related Items')?>
       </a>
     </li>
   <?php endif; ?>
@@ -42,8 +42,12 @@
           $tab_classes[] = 'active';
         }
       }
-      if (!$obj->isVisible()) { $tab_classes[] = 'hidden'; }
-      if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
+      if (!$obj->isVisible()) {
+        $tab_classes[] = 'hidden';
+      }
+      if (!$obj->supportsAjax()) {
+        $tab_classes[] = 'noajax';
+      }
     ?>
     <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
       <a id="<?=$this->escapeHtmlAttr(strtolower($tab))?>_<?=$idSuffixEsc?>" class="list-tab-toggle" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, $tab))?>#tabnav" data-toggle="tab" data-target="#<?=strtolower($tab)?>_<?=$idSuffixEsc?>-content"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>><?=$this->transEsc($desc)?></a>

@@ -3,7 +3,7 @@
 /**
  * Database authentication test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -270,8 +270,8 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
     public function getTestCreateWithUsernamePolicyData(): array
     {
         $defaultConfig = [
-            'username_pattern' => "([\\x21\\x23-\\x2B\\x2D-\\x2F\\x3D\\x3F\\x40"
-            . "\\x5E-\\x60\\x7B-\\x7E\\p{L}\\p{Nd}]+)",
+            'username_pattern' => '([\\x21\\x23-\\x2B\\x2D-\\x2F\\x3D\\x3F\\x40'
+            . '\\x5E-\\x60\\x7B-\\x7E\\p{L}\\p{Nd}]+)',
         ];
         $numericConfig = [
             'minimum_username_length' => 4,

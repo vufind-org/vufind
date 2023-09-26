@@ -3,7 +3,7 @@
 /**
  * PermissionManager Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -49,10 +49,10 @@ class PermissionManagerTest extends \PHPUnit\Framework\TestCase
      */
     protected $permissionConfig = [
         'permission.all' => [
-            'permission' => "everyone",
+            'permission' => 'everyone',
         ],
         'permission.nobody' => [
-            'permission' => "nobody",
+            'permission' => 'nobody',
         ],
         'permission.empty' => [
         ],

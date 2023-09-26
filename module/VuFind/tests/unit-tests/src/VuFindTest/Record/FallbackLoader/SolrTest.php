@@ -3,7 +3,7 @@
 /**
  * Solr fallback loader test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021, 2022.
  *
@@ -66,8 +66,8 @@ class SolrTest extends \PHPUnit\Framework\TestCase
         $commandObj->expects($this->once())->method('getResult')
             ->will($this->returnValue($collection));
         $checkCommand = function ($command) {
-            return get_class($command) === \VuFindSearch\Command\SearchCommand::class
-                && $command->getTargetIdentifier() === "Solr"
+            return $command::class === \VuFindSearch\Command\SearchCommand::class
+                && $command->getTargetIdentifier() === 'Solr'
                 && $command->getArguments()[0]->getString() ===
                 'previous_id_str_mv:"oldId"';
         };

@@ -24,7 +24,6 @@ VuFind.register('itemStatuses', function ItemStatuses() {
   function displayItemStatus(result, el) {
     const $item = $(el); // todo: remove jQuery
 
-    $item.addClass('js-item-done').removeClass('js-item-pending');
     $item.find('.status').empty().append(result.availability_message);
     $item.find('.ajax-availability').removeClass('ajax-availability hidden');
     if (typeof(result.error) != 'undefined'
@@ -87,6 +86,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
           : result.location
       );
     }
+    $item.addClass('js-item-done').removeClass('js-item-pending');
   }
 
   function itemStatusAjaxSuccess(items, response) {

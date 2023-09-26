@@ -3,7 +3,7 @@
 /**
  * EuropeanaResults Recommendations Module
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -31,6 +31,10 @@
 namespace VuFind\Recommend;
 
 use Laminas\Feed\Reader\Reader as FeedReader;
+
+use function count;
+use function intval;
+use function is_object;
 
 /**
  * EuropeanaResults Recommendations Module
@@ -155,7 +159,7 @@ class EuropeanaResults implements
         if (!empty($this->excludeProviders)) {
             $this->excludeProviders = explode(',', $this->excludeProviders);
         }
-        $this->searchSite = "Europeana.eu";
+        $this->searchSite = 'Europeana.eu';
     }
 
     /**
@@ -171,7 +175,7 @@ class EuropeanaResults implements
     protected function getURL($targetUrl, $requestParam, $excludeProviders)
     {
         // build url
-        $url = $targetUrl . "?" . $requestParam . "=" . $this->lookfor;
+        $url = $targetUrl . '?' . $requestParam . '=' . $this->lookfor;
         // add providers to ignore
         foreach ($excludeProviders as $provider) {
             $provider = trim($provider);
@@ -216,7 +220,7 @@ class EuropeanaResults implements
     }
 
     /**
-     * Called after the Search Results object has performed its main search.  This
+     * Called after the Search Results object has performed its main search. This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
      *

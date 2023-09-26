@@ -37,7 +37,7 @@
             <div class="form-group">
               <label class="control-label" for="edit_tags<?=$current['listId'] ?>"><?=$this->transEsc('Tags') ?>:</label>
               <input type="text" name="tags<?=$current['listId'] ?>" id="edit_tags<?=$current['listId'] ?>" class="form-control" value="<?=$this->escapeHtmlAttr($current['tags'])?>">
-              <span class="help-block"><?=$this->transEsc("add_tag_note") ?></span>
+              <span class="help-block"><?=$this->transEsc('add_tag_note') ?></span>
             </div>
           <?php endif; ?>
           <div class="form-group">
@@ -70,6 +70,6 @@
   <?php endif; ?>
   </form>
 </div>
-<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
-  <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => empty($listID) ? 'favorites' : 'list' . $listID])?>
+<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
+  <?=$this->context($this)->renderInContext('myresearch/menu.phtml', ['active' => empty($listID) ? 'favorites' : 'list' . $listID])?>
 </div>

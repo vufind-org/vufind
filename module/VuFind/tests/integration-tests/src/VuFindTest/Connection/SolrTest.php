@@ -3,7 +3,7 @@
 /**
  * Solr Connection Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -30,6 +30,9 @@
 namespace VuFindTest\Integration\Connection;
 
 use VuFindSearch\ParamBag;
+
+use function count;
+use function in_array;
 
 /**
  * Solr Connection Test Class

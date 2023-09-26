@@ -3,7 +3,7 @@
 /**
  * Auth handler plugin manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -59,6 +59,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'multiauth' => MultiAuth::class,
         'multiils' => MultiILS::class,
         'shibboleth' => Shibboleth::class,
+        'simulatedsso' => SimulatedSSO::class,
         'sip2' => SIP2::class,
         // for legacy 1.x compatibility
         'db' => Database::class,
@@ -82,6 +83,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         MultiAuth::class => MultiAuthFactory::class,
         MultiILS::class => ILSFactory::class,
         Shibboleth::class => ShibbolethFactory::class,
+        SimulatedSSO::class => SimulatedSSOFactory::class,
         SIP2::class => InvokableFactory::class,
     ];
 

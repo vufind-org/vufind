@@ -3,7 +3,7 @@
 /**
  * Class TemplateBased
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2020.
  *
@@ -28,6 +28,8 @@
  */
 
 namespace VuFind\ContentBlock;
+
+use function is_callable;
 
 /**
  * Class TemplateBased

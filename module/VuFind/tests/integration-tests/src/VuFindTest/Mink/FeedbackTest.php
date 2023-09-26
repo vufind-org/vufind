@@ -3,7 +3,7 @@
 /**
  * Mink Feedback module test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -95,7 +95,7 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, '#modal .form-control[name="name"]')->setValue('Me');
         $this->findCss($page, '#modal .form-control[name="email"]')
             ->setValue('test@test.com');
-        $this->findCss($page, "#modal #form_FeedbackSite_message")
+        $this->findCss($page, '#modal #form_FeedbackSite_message')
             ->setValue('test test test');
         $this->clickCss($page, '#modal input[type="submit"]');
     }

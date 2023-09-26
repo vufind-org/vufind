@@ -75,8 +75,12 @@ module.exports = function(grunt) {
     scss: {
       sass: {
         options: {
-          style: 'compress'
+          outputStyle: 'compressed',
         }
+      }
+    },
+    'check:scss': {
+      sass: {
       }
     },
 
@@ -87,7 +91,7 @@ module.exports = function(grunt) {
           {
             expand: true,
             cwd: 'themes/bootstrap3/less',
-            src: ['*.less', 'components/*.less'],
+            src: ['*.less', 'components/**/*.less', 'mixins/**/*.less'],
             ext: '.scss',
             dest: 'themes/bootstrap3/scss'
           },
@@ -203,35 +207,12 @@ module.exports = function(grunt) {
   });
 
   grunt.registerMultiTask('scss', function sassScan() {
-    var sassConfig = {},
-      path = require('path'),
-      themeList = fs.readdirSync(path.resolve('themes')).filter(function (theme) {
-        return fs.existsSync(path.resolve('themes/' + theme + '/scss/compiled.scss'));
-      });
+    grunt.config.set('sass', getSassConfig(this.data.options, false));
+    grunt.task.run('sass');
+  });
 
-    for (var i in themeList) {
-      var config = {
-        options: {
-          implementation: require("node-sass"),
-          outputStyle: 'compressed'
-        },
-        files: [{
-          expand: true,
-          cwd: path.join('themes', themeList[i], 'scss'),
-          src: ['compiled.scss'],
-          dest: path.join('themes', themeList[i], 'css'),
-          ext: '.css'
-        }]
-      };
-      for (var key in this.data.options) {
-        config.options[key] = this.data.options[key] + '';
-      }
-      config.options.includePaths = getLoadPaths('themes/' + themeList[i] + '/scss/compiled.scss');
-
-      sassConfig[themeList[i]] = config;
-    }
-
-    grunt.config.set('sass', sassConfig);
+  grunt.registerMultiTask('check:scss', function sassCheck() {
+    grunt.config.set('sass', getSassConfig(this.data.options, true));
     grunt.task.run('sass');
   });
 
@@ -241,10 +222,45 @@ module.exports = function(grunt) {
     - grunt less        = compile and compress all themes' LESS files to css.
     - grunt scss        = compile and map all themes' SASS files to css.
     - grunt lessdev     = compile and map all themes' LESS files to css.
+    - grunt check:scss  = check all themes' SASS files.
     - grunt watch:[cmd] = continuous monitor source files and run command when changes are detected.
     - grunt watch:less
     - grunt watch:scss
     - grunt watch:lessdev
     - grunt lessToSass  = transpile all LESS files to SASS.`);
   });
+
+  function getSassConfig(additionalOptions, checkOnly) {
+    var sassConfig = {},
+      path = require('path'),
+      themeList = fs.readdirSync(path.resolve('themes')).filter(function (theme) {
+        return fs.existsSync(path.resolve('themes/' + theme + '/scss/compiled.scss'));
+      });
+
+    for (var i in themeList) {
+      if (Object.prototype.hasOwnProperty.call(themeList, i)) {
+        var config = {
+          options: {
+            implementation: require("node-sass"),
+          },
+          files: [{
+            expand: true,
+            cwd: path.join('themes', themeList[i], 'scss'),
+            src: ['compiled.scss'],
+            dest: checkOnly ? null : path.join('themes', themeList[i], 'css'),
+            ext: '.css'
+          }]
+        };
+        for (var key in additionalOptions) {
+          if (Object.prototype.hasOwnProperty.call(additionalOptions, key)) {
+            config.options[key] = additionalOptions[key];
+          }
+        }
+        config.options.includePaths = getLoadPaths('themes/' + themeList[i] + '/scss/compiled.scss');
+
+        sassConfig[themeList[i]] = config;
+      }
+    }
+    return sassConfig;
+  }
 };

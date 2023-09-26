@@ -3,7 +3,7 @@
 /**
  * Primo Central connector.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -35,6 +35,12 @@
 namespace VuFindSearch\Backend\Primo;
 
 use Laminas\Http\Client as HttpClient;
+
+use function array_key_exists;
+use function count;
+use function in_array;
+use function is_array;
+use function strlen;
 
 /**
  * Primo Central connector.
@@ -158,17 +164,17 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     {
         // defaults for params
         $args = [
-            "phrase" => false,
-            "onCampus" => true,
-            "didYouMean" => false,
-            "filterList" => null,
-            "pcAvailability" => false,
-            "pageNumber" => 1,
-            "limit" => 20,
-            "sort" => null,
-            "highlight" => false,
-            "highlightStart" => '',
-            "highlightEnd" => '',
+            'phrase' => false,
+            'onCampus' => true,
+            'didYouMean' => false,
+            'filterList' => null,
+            'pcAvailability' => false,
+            'pageNumber' => 1,
+            'limit' => 20,
+            'sort' => null,
+            'highlight' => false,
+            'highlightStart' => '',
+            'highlightEnd' => '',
         ];
         if (isset($params)) {
             $args = array_merge($args, $params);
@@ -203,37 +209,37 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         //   to primo and they will interpret it correctly.
         //   leaving this flag in b/c it's not hurting anything, but we
         //   don't currently have a situation where we need to use "exact"
-        $precision = "contains";
-        if ($args["phrase"]) {
-            $precision = "exact";
+        $precision = 'contains';
+        if ($args['phrase']) {
+            $precision = 'exact';
         }
         // determine which primo index to search
 
         //default index is any and initialize lookfor to an empty string
-        $lookin  = "any";
-        $lookfor = "";
+        $lookin  = 'any';
+        $lookfor = '';
 
         if (is_array($terms)) {
             foreach ($terms as $thisTerm) {
                 //set the index to search
                 switch ($thisTerm['index']) {
-                    case "AllFields":
-                        $lookin = "any";
+                    case 'AllFields':
+                        $lookin = 'any';
                         break;
-                    case "Title":
-                        $lookin = "title";
+                    case 'Title':
+                        $lookin = 'title';
                         break;
-                    case "Author":
-                        $lookin = "creator";
+                    case 'Author':
+                        $lookin = 'creator';
                         break;
-                    case "Subject":
-                        $lookin = "sub";
+                    case 'Subject':
+                        $lookin = 'sub';
                         break;
-                    case "Abstract":
-                        $lookin = "desc";
+                    case 'Abstract':
+                        $lookin = 'desc';
                         break;
-                    case "ISSN":
-                        $lookin = "issn";
+                    case 'ISSN':
+                        $lookin = 'issn';
                         break;
                 }
 
@@ -258,17 +264,17 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             $qs[] = "institution=$institution";
 
             // QUERYSTRING: onCampus
-            if ($args["onCampus"]) {
-                $qs[] = "onCampus=true";
+            if ($args['onCampus']) {
+                $qs[] = 'onCampus=true';
             } else {
-                $qs[] = "onCampus=false";
+                $qs[] = 'onCampus=false';
             }
 
             // QUERYSTRING: didYouMean
-            if ($args["didYouMean"]) {
-                $qs[] = "dym=true";
+            if ($args['didYouMean']) {
+                $qs[] = 'dym=true';
             } else {
-                $qs[] = "dym=false";
+                $qs[] = 'dym=false';
             }
 
             // QUERYSTRING: query (filter list)
@@ -276,8 +282,8 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             //   - provide additional support / processing for [x to y] limits?
             //   - sys/Summon.php messes with publication date to enable date
             //     range facet control in the interface. look for injectPubDate
-            if (!empty($args["filterList"])) {
-                foreach ($args["filterList"] as $facet => $values) {
+            if (!empty($args['filterList'])) {
+                foreach ($args['filterList'] as $facet => $values) {
                     $facetOp = 'AND';
                     if (isset($values['values'])) {
                         $facetOp = $values['facetOp'];
@@ -310,25 +316,25 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             // By setting this value to true, also matches, which
             // are NOT available via Holdingsfile are returned
             // (yes, right, set this to true - thats ExLibris Logic)
-            if ($args["pcAvailability"]) {
-                $qs[] = "pcAvailability=true";
+            if ($args['pcAvailability']) {
+                $qs[] = 'pcAvailability=true';
             }
 
             // QUERYSTRING: indx (start record)
-            $recordStart = ($args["pageNumber"] - 1) * $args['limit'] + 1;
+            $recordStart = ($args['pageNumber'] - 1) * $args['limit'] + 1;
             $qs[] = "indx=$recordStart";
 
             // TODO: put bulksize in conf file?  set a reasonable cap...
             //   or is it better to grab each set of 20 through this api module?
             //   Look at how vufind/Summon does this...
             // QUERYSTRING: bulkSize (limit, # of records to return)
-            $qs[] = "bulkSize=" . $args["limit"];
+            $qs[] = 'bulkSize=' . $args['limit'];
 
             // QUERYSTRING: sort
             // Looks like the possible values are "popularity" or "scdate"
             // omit the field for default sorting
-            if (isset($args["sort"]) && ($args["sort"] != 'relevance')) {
-                $qs[] = "sortField=" . $args["sort"];
+            if (isset($args['sort']) && ($args['sort'] != 'relevance')) {
+                $qs[] = 'sortField=' . $args['sort'];
             }
 
             // Highlighting
@@ -336,7 +342,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
 
             // QUERYSTRING: loc
             // all primocentral queries need this
-            $qs[] = "loc=adaptor,primo_central_multiple_fe";
+            $qs[] = 'loc=adaptor,primo_central_multiple_fe';
 
             // Send Request
             $result = $this->call(implode('&', $qs), $args);
@@ -415,14 +421,14 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         }
 
         // some useful data about these results
-        $totalhitsarray = $sxe->xpath("//@TOTALHITS");
+        $totalhitsarray = $sxe->xpath('//@TOTALHITS');
 
         // if totalhits is missing but we have a message, this is an error
         // situation.
         if (!isset($totalhitsarray[0])) {
-            $messages = $sxe->xpath("//@MESSAGE");
+            $messages = $sxe->xpath('//@MESSAGE');
             $message = isset($messages[0])
-                ? (string)$messages[0] : "TOTALHITS attribute missing.";
+                ? (string)$messages[0] : 'TOTALHITS attribute missing.';
             throw new \Exception($message);
         } else {
             $totalhits = (int)$totalhitsarray[0];
@@ -649,15 +655,15 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             . urlencode(addcslashes($recordId, '":()'));
         $qs[] = "institution=$inst_code";
         $qs[] = 'onCampus=' . ($onCampus ? 'true' : 'false');
-        $qs[] = "indx=1";
-        $qs[] = "bulkSize=1";
-        $qs[] = "loc=adaptor,primo_central_multiple_fe";
+        $qs[] = 'indx=1';
+        $qs[] = 'bulkSize=1';
+        $qs[] = 'loc=adaptor,primo_central_multiple_fe';
         // pcAvailability=true is needed for records, which
         // are NOT in the PrimoCentral Holdingsfile.
         // It won't hurt to have this parameter always set to true.
         // But it'd hurt to have it not set in case you want to get
         // a record, which is not in the Holdingsfile.
-        $qs[] = "pcAvailability=true";
+        $qs[] = 'pcAvailability=true';
 
         // Send Request
         $result = $this->call(implode('&', $qs));
@@ -689,15 +695,15 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             $qs[] = 'query=rid,contains,' . urlencode(implode(' OR ', $recordIds));
             $qs[] = "institution=$inst_code";
             $qs[] = 'onCampus=' . ($onCampus ? 'true' : 'false');
-            $qs[] = "indx=1";
-            $qs[] = "bulkSize=" . count($recordIds);
-            $qs[] = "loc=adaptor,primo_central_multiple_fe";
+            $qs[] = 'indx=1';
+            $qs[] = 'bulkSize=' . count($recordIds);
+            $qs[] = 'loc=adaptor,primo_central_multiple_fe';
             // pcAvailability=true is needed for records, which
             // are NOT in the PrimoCentral Holdingsfile.
             // It won't hurt to have this parameter always set to true.
             // But it'd hurt to have it not set in case you want to get
             // a record, which is not in the Holdingsfile.
-            $qs[] = "pcAvailability=true";
+            $qs[] = 'pcAvailability=true';
 
             // Send Request
             $result = $this->call(implode('&', $qs));
@@ -759,7 +765,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
                         // Account for double tags. Yes, it's possible.
                         $value = preg_replace(
                             $this->highlightRegEx,
-                            "$1",
+                            '$1',
                             $value
                         );
                         $highlightedValues[] = $value;
@@ -774,13 +780,13 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             foreach ($values as &$value) {
                 $value = preg_replace(
                     $this->highlightRegEx,
-                    "$1",
+                    '$1',
                     $value
                 );
                 // Account for double tags. Yes, it's possible.
                 $value = preg_replace(
                     $this->highlightRegEx,
-                    "$1",
+                    '$1',
                     $value
                 );
             }

@@ -3,7 +3,7 @@
 /**
  * Class MarkdownFactory
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2020.
  *
@@ -39,6 +39,8 @@ use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
 use League\CommonMark\MarkdownConverter;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+
+use function count;
 
 /**
  * VuFind Markdown Service factory.
@@ -187,7 +189,7 @@ class MarkdownFactory implements FactoryInterface
      */
     protected function getExtensionClass(string $extension): string
     {
-        $extensionClass = (strpos($extension, '\\') !== false)
+        $extensionClass = (str_contains($extension, '\\'))
             ? $extension
             : sprintf(
                 'League\CommonMark\Extension\%s\%sExtension',
@@ -269,6 +271,7 @@ class MarkdownFactory implements FactoryInterface
             ['external_link', 'open_in_new_window'],
             ['footnote', 'container_add_hr'],
             ['heading_permalink', 'aria_hidden'],
+            ['heading_permalink', 'apply_id_to_heading'],
         ];
         foreach ($boolSettingKeys as $key) {
             if (isset($config[$key[0]][$key[1]])) {
@@ -290,20 +293,31 @@ class MarkdownFactory implements FactoryInterface
                 $config[$key[0]][$key[1]] = (int)$config[$key[0]][$key[1]];
             }
         }
-        $tableWrapAttributes = [];
-        if (isset($config['table']['wrap']['attributes'])) {
-            $tableWrapAttributes = array_map(
+
+        $parseAttributes = function (string $attributes): array {
+            $attributes = array_map(
                 'trim',
-                explode(',', $config['table']['wrap']['attributes'])
+                explode(',', $attributes)
             );
-            $config['table']['wrap']['attributes'] = [];
-        }
-        foreach ($tableWrapAttributes as $attribute) {
-            $parts = array_map('trim', explode(':', $attribute));
-            if (2 === count($parts)) {
-                $config['table']['wrap']['attributes'][$parts[0]] = $parts[1];
+            $attributesArray = [];
+            foreach ($attributes as $attribute) {
+                $parts = array_map('trim', explode(':', $attribute));
+                if (2 === count($parts)) {
+                    $attributesArray[$parts[0]] = $parts[1];
+                }
             }
+            return $attributesArray;
+        };
+        $attributesConfigKeys = [
+            ['wrap', 'attributes'],
+            ['alignment_attributes', 'left'],
+            ['alignment_attributes', 'center'],
+            ['alignment_attributes', 'right'],
+        ];
+        foreach ($attributesConfigKeys as $keys) {
+            $config['table'][$keys[0]][$keys[1]] = $parseAttributes($config['table'][$keys[0]][$keys[1]] ?? '');
         }
+
         return $config;
     }
 

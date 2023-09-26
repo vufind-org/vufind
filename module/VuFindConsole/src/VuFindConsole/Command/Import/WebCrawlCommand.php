@@ -3,7 +3,7 @@
 /**
  * Console command: web crawler
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -205,7 +205,7 @@ class WebCrawlCommand extends Command
                     }
                 } catch (\Exception $e) {
                     if ($verbose) {
-                        $output->writeln(get_class($e) . ': ' . $e->getMessage());
+                        $output->writeln($e::class . ': ' . $e->getMessage());
                     }
                     $retVal = false;
                 }
@@ -230,7 +230,7 @@ class WebCrawlCommand extends Command
         $index = $input->getOption('index');
 
         // Get the time we started indexing -- we'll delete records older than this
-        // date after everything is finished.  Note that we subtract a few seconds
+        // date after everything is finished. Note that we subtract a few seconds
         // for safety.
         $startTime = date('Y-m-d\TH:i:s\Z', time() - 5);
 
@@ -250,7 +250,7 @@ class WebCrawlCommand extends Command
             );
         }
         if ($error) {
-            $output->writeln("Error encountered during harvest.");
+            $output->writeln('Error encountered during harvest.');
         }
 
         // Skip Solr operations if we're in test mode.

@@ -3,7 +3,7 @@
 /**
  * SwitchTab Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -53,48 +53,48 @@ class SwitchTabTest extends \PHPUnit\Framework\TestCase
             'First tab selected' => [
                 [
                     [
-                        "id" => "A01",
-                        "class" => "class01",
-                        "label" => "label01",
-                        "permission" => "permission01",
-                        "selected" => true,
-                        "url" => "http://newurl1",
+                        'id' => 'A01',
+                        'class' => 'class01',
+                        'label' => 'label01',
+                        'permission' => 'permission01',
+                        'selected' => true,
+                        'url' => 'http://newurl1',
                     ],
                     [
-                        "id" => "A02",
-                        "class" => "class02",
-                        "label" => "label02",
-                        "permission" => "permission02",
-                        "selected" => false,
-                        "url" => "http://newurl2",
+                        'id' => 'A02',
+                        'class' => 'class02',
+                        'label' => 'label02',
+                        'permission' => 'permission02',
+                        'selected' => false,
+                        'url' => 'http://newurl2',
                     ],
                 ],
                 [
-                    "id" => "A01",
-                    "class" => "class01",
-                    "label" => "label01",
-                    "permission" => "permission01",
-                    "selected" => true,
-                    "url" => "http://newurl1",
+                    'id' => 'A01',
+                    'class' => 'class01',
+                    'label' => 'label01',
+                    'permission' => 'permission01',
+                    'selected' => true,
+                    'url' => 'http://newurl1',
                 ],
             ],
             'No tab selected' => [
                 [
                     [
-                        "id" => "A01",
-                        "class" => "class01",
-                        "label" => "label01",
-                        "permission" => "permission01",
-                        "selected" => false,
-                        "url" => "http://newurl1",
+                        'id' => 'A01',
+                        'class' => 'class01',
+                        'label' => 'label01',
+                        'permission' => 'permission01',
+                        'selected' => false,
+                        'url' => 'http://newurl1',
                     ],
                     [
-                        "id" => "A02",
-                        "class" => "class02",
-                        "label" => "label02",
-                        "permission" => "permission02",
-                        "selected" => false,
-                        "url" => "http://newurl2",
+                        'id' => 'A02',
+                        'class' => 'class02',
+                        'label' => 'label02',
+                        'permission' => 'permission02',
+                        'selected' => false,
+                        'url' => 'http://newurl2',
                     ],
                 ],
                 null,
@@ -129,30 +129,30 @@ class SwitchTabTest extends \PHPUnit\Framework\TestCase
             'Test1' => [
                 [
                     [
-                        "id" => "A01",
-                        "class" => "class01",
-                        "label" => "label01",
-                        "permission" => "permission01",
-                        "selected" => true,
-                        "url" => "http://newurl1",
+                        'id' => 'A01',
+                        'class' => 'class01',
+                        'label' => 'label01',
+                        'permission' => 'permission01',
+                        'selected' => true,
+                        'url' => 'http://newurl1',
                     ],
                     [
-                        "id" => "A02",
-                        "class" => "class02",
-                        "label" => "label02",
-                        "permission" => "permission02",
-                        "selected" => false,
-                        "url" => "http://newurl2",
+                        'id' => 'A02',
+                        'class' => 'class02',
+                        'label' => 'label02',
+                        'permission' => 'permission02',
+                        'selected' => false,
+                        'url' => 'http://newurl2',
                     ],
                 ],
                 [
                     [
-                        "id" => "A02",
-                        "class" => "class02",
-                        "label" => "label02",
-                        "permission" => "permission02",
-                        "selected" => false,
-                        "url" => "http://newurl2",
+                        'id' => 'A02',
+                        'class' => 'class02',
+                        'label' => 'label02',
+                        'permission' => 'permission02',
+                        'selected' => false,
+                        'url' => 'http://newurl2',
                     ],
                 ],
             ],
@@ -183,7 +183,7 @@ class SwitchTabTest extends \PHPUnit\Framework\TestCase
     public function testSetConfig(): void
     {
         $obj = new SwitchTab();
-        $this->assertNull($obj->setConfig(""));
+        $this->assertNull($obj->setConfig(''));
     }
 
     /**

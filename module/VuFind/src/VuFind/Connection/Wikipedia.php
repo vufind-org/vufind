@@ -3,7 +3,7 @@
 /**
  * Wikipedia connection class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -30,6 +30,10 @@
 namespace VuFind\Connection;
 
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+
+use function count;
+use function is_array;
+use function strlen;
 
 /**
  * Wikipedia connection class
@@ -151,25 +155,25 @@ class Wikipedia implements TranslatorAwareInterface
 
         // Look through every row of the infobox
         foreach ($infobox as $row) {
-            $data  = explode("=", $row);
+            $data  = explode('=', $row);
             $key   = trim(array_shift($data));
-            $value = trim(join("=", $data));
+            $value = trim(implode('=', $data));
 
             // At the moment we only want stuff related to the image.
             switch (strtolower($key)) {
-                case "img":
-                case "image":
-                case "image:":
-                case "image_name":
-                case "imagem":
+                case 'img':
+                case 'image':
+                case 'image:':
+                case 'image_name':
+                case 'imagem':
                 case 'imagen':
                 case 'immagine':
                     $imageName = str_replace(' ', '_', $value);
                     break;
-                case "caption":
-                case "img_capt":
-                case "image_caption":
-                case "legenda":
+                case 'caption':
+                case 'img_capt':
+                case 'image_caption':
+                case 'legenda':
                 case 'textoimagen':
                     $imageCaption = $value;
                     break;
@@ -203,7 +207,7 @@ class Wikipedia implements TranslatorAwareInterface
             foreach ($infoboxTags as $tag) {
                 if (substr($m, 0, strlen($tag) + 1) == '{' . $tag) {
                     // We found an infobox!!
-                    return "{" . $m . "}";
+                    return '{' . $m . '}';
                 }
             }
         }
@@ -257,12 +261,12 @@ class Wikipedia implements TranslatorAwareInterface
         //    ... unless there's a better pattern? TODO
         // eg. [[File:Johann Sebastian Bach.jpg|thumb|Bach in a 1748 portrait by
         //     [[Elias Gottlob Haussmann|Haussmann]]]]
-        $open    = "\\[";
-        $close   = "\\]";
-        $content = "(?>[^\\[\\]]+)";  // Anything but [ or ]
+        $open    = '\\[';
+        $close   = '\\]';
+        $content = '(?>[^\\[\\]]+)';  // Anything but [ or ]
         // We can either find content or recursive brackets:
         $recursive_match = "($content|(?R))*";
-        $body .= "[[file:bad]]";
+        $body .= '[[file:bad]]';
         preg_match_all("/{$open}{$recursive_match}{$close}/Us", $body, $new_matches);
         // Loop through every match (link) we found
         if (is_array($new_matches)) {
@@ -270,10 +274,10 @@ class Wikipedia implements TranslatorAwareInterface
                 foreach ((array)$nm as $n) {
                     // If it's a file link get rid of it
                     if (
-                        strtolower(substr($n, 0, 7)) == "[[file:"
-                        || strtolower(substr($n, 0, 8)) == "[[image:"
+                        strtolower(substr($n, 0, 7)) == '[[file:'
+                        || strtolower(substr($n, 0, 8)) == '[[image:'
                     ) {
-                        $body = str_replace($n, "", $body);
+                        $body = str_replace($n, '', $body);
                     }
                 }
             }
@@ -291,7 +295,7 @@ class Wikipedia implements TranslatorAwareInterface
     protected function sanitizeWikipediaBody($body)
     {
         // Cull our content back to everything before the first heading
-        $body = trim(substr($body, 0, strpos($body, "==")));
+        $body = trim(substr($body, 0, strpos($body, '==')));
 
         // Strip out links
         $body = $this->stripImageAndFileLinks($body);
@@ -310,7 +314,7 @@ class Wikipedia implements TranslatorAwareInterface
 
         // Fix pronunciation guides
         $pattern[] = '/({{)pron-en\|([^}]*)(}})/Us';
-        $replacement[] = $this->translate('pronounced') . " /$2/";
+        $replacement[] = $this->translate('pronounced') . ' /$2/';
 
         // Fix dashes
         $pattern[] = '/{{ndash}}/';
@@ -318,13 +322,13 @@ class Wikipedia implements TranslatorAwareInterface
 
         // Removes citations
         $pattern[] = '/({{)[^}]*(}})/Us';
-        $replacement[] = "";
+        $replacement[] = '';
         //  <ref ... > ... </ref> OR <ref> ... </ref>
         $pattern[] = '/<ref[^\/]*>.*<\/ref>/Us';
-        $replacement[] = "";
+        $replacement[] = '';
         //    <ref ... />
         $pattern[] = '/<ref.*\/>/Us';
-        $replacement[] = "";
+        $replacement[] = '';
 
         // Removes comments followed by carriage returns to avoid excess whitespace
         $pattern[] = '/<!--.*-->\n*/Us';
@@ -335,7 +339,7 @@ class Wikipedia implements TranslatorAwareInterface
         $replacement[] = '<strong>$1</strong>';
 
         // Trim leading newlines (which can result from leftovers after stripping
-        // other items above).  We want this to be greedy.
+        // other items above). We want this to be greedy.
         $pattern[] = '/^\n*/s';
         $replacement[] = '';
 

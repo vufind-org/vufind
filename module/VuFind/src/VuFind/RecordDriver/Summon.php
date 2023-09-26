@@ -3,7 +3,7 @@
 /**
  * Model for Summon records.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,6 +28,11 @@
  */
 
 namespace VuFind\RecordDriver;
+
+use function count;
+use function intval;
+use function is_array;
+use function strlen;
 
 /**
  * Model for Summon records.
@@ -62,7 +67,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
     protected $dateConverter = null;
 
     /**
-     * Get all subject headings associated with this record.  Each heading is
+     * Get all subject headings associated with this record. Each heading is
      * returned as an array of chunks, increasing from least specific to most
      * specific.
      *
@@ -386,7 +391,7 @@ class Summon extends DefaultRecord implements Feature\PreviousUniqueIdInterface
     }
 
     /**
-     * Get an array of all series names containing the record.  Array entries may
+     * Get an array of all series names containing the record. Array entries may
      * be either the name string, or an associative array with 'name' and 'number'
      * keys.
      *

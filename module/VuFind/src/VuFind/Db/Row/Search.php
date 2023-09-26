@@ -3,7 +3,7 @@
 /**
  * Row Definition for search
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -30,6 +30,8 @@
 namespace VuFind\Db\Row;
 
 use VuFind\Crypt\HMAC;
+
+use function is_resource;
 
 /**
  * Row Definition for search

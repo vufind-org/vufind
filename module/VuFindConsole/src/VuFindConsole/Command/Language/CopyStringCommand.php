@@ -3,7 +3,7 @@
 /**
  * Language command: copy string.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -97,11 +97,11 @@ class CopyStringCommand extends AbstractCommand
      */
     protected function addLineToFile($filename, $key, $value)
     {
-        $fHandle = fopen($filename, "a");
+        $fHandle = fopen($filename, 'a');
         if (!$fHandle) {
             throw new \Exception('Cannot open ' . $filename . ' for writing.');
         }
-        fputs($fHandle, "\n$key = \"" . $value . "\"\n");
+        fwrite($fHandle, "\n$key = \"" . $value . "\"\n");
         fclose($fHandle);
     }
 

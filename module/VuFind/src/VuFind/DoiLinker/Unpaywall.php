@@ -3,7 +3,7 @@
 /**
  * Unpaywall DOI linker
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -74,11 +74,11 @@ class Unpaywall implements
     {
         if (!isset($config->unpaywall_email)) {
             throw new \Exception(
-                "Missing configuration for Unpaywall DOI linker: unpaywall_email"
+                'Missing configuration for Unpaywall DOI linker: unpaywall_email'
             );
         }
         $this->email = $config->unpaywall_email;
-        $this->apiUrl = $config->unpaywall_api_url ?? "https://api.unpaywall.org/v2";
+        $this->apiUrl = $config->unpaywall_api_url ?? 'https://api.unpaywall.org/v2';
     }
 
     /**
@@ -125,7 +125,7 @@ class Unpaywall implements
      */
     protected function callApi($doi)
     {
-        $url = $this->apiUrl . "/" . urlencode($doi) . "?"
+        $url = $this->apiUrl . '/' . urlencode($doi) . '?'
             . http_build_query(['email' => $this->email]);
         $client = $this->httpService->createClient($url);
         $response = $client->send();

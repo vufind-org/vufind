@@ -3,7 +3,7 @@
 /**
  * Admin Configuration Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -81,18 +81,16 @@ class ConfigController extends AbstractAdmin
             // Failure -- leave $success set to false.
         }
         if ($success) {
-            $this->flashMessenger()
-                ->addMessage('Auto-configuration enabled.', 'success');
+            $this->flashMessenger()->addSuccessMessage('Auto-configuration enabled.');
 
             // Reload config now that it has been edited (otherwise, old setting
             // will persist in cache):
             $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
                 ->reload('config');
         } else {
-            $this->flashMessenger()->addMessage(
+            $this->flashMessenger()->addErrorMessage(
                 'Could not enable auto-configuration; check permissions on '
-                . $configFile . '.',
-                'error'
+                . $configFile . '.'
             );
         }
         return $this->forwardTo('AdminConfig', 'Home');

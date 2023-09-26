@@ -3,7 +3,7 @@
 /**
  * Aleph ILS driver test
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -70,7 +70,7 @@ class AlephTest extends \VuFindTest\Unit\ILSDriverTestCase
             [
                 'cat_username' => 'my_login',
                 'cat_password' => 'my_password',
-                'id' => "patron_id",
+                'id' => 'patron_id',
             ]
         );
         $expected = [

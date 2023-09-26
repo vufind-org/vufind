@@ -3,7 +3,7 @@
 /**
  * Record Driver Marc Advanced Trait Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2021.
  *
@@ -55,10 +55,13 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
     {
         $record = new \VuFind\Marc\MarcReader($this->getFixture($fixture));
         $obj = $this->getMockBuilder(SolrMarc::class)
-            ->onlyMethods(['getMarcReader'])->getMock();
+            ->onlyMethods(['getMarcReader', 'getUniqueId'])->getMock();
         $obj->expects($this->any())
             ->method('getMarcReader')
             ->will($this->returnValue($record));
+        $obj->expects($this->any())
+            ->method('getUniqueId')
+            ->will($this->returnValue('123'));
         return $obj;
     }
 

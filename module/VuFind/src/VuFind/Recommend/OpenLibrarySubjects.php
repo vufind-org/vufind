@@ -3,7 +3,7 @@
 /**
  * OpenLibrarySubjects Recommendations Module
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -32,6 +32,9 @@ namespace VuFind\Recommend;
 
 use VuFind\Connection\OpenLibrary;
 use VuFind\Solr\Utils as SolrUtils;
+
+use function intval;
+use function is_object;
 
 /**
  * OpenLibrarySubjects Recommendations Module
@@ -124,7 +127,7 @@ class OpenLibrarySubjects implements
         if (isset($params[3])) {
             $this->subjectTypes = explode(',', $params[3]);
         } else {
-            $this->subjectTypes = ["topic"];
+            $this->subjectTypes = ['topic'];
         }
 
         // A 4th parameter is not specified in searches.ini, if it exists
@@ -164,7 +167,7 @@ class OpenLibrarySubjects implements
     }
 
     /**
-     * Called after the Search Results object has performed its main search.  This
+     * Called after the Search Results object has performed its main search. This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
      *

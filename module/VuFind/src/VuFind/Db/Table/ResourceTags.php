@@ -3,7 +3,7 @@
 /**
  * Table Definition for resource_tags
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -33,6 +33,10 @@ use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 use VuFind\Db\Row\RowGateway;
+
+use function count;
+use function in_array;
+use function is_array;
 
 /**
  * Table Definition for resource_tags
@@ -226,23 +230,14 @@ class ResourceTags extends Gateway
             $publicOnly,
             $andTags
         ) {
-            $columns = [Select::SQL_STAR];
-            if ($andTags) {
-                $columns['tag_cnt'] = new Expression(
-                    'COUNT(DISTINCT(?))',
-                    ['resource_tags.tag_id'],
-                    [Expression::TYPE_IDENTIFIER]
-                );
-            }
-            $select->columns($columns);
+            $select->columns(
+                ['id' => new Expression('min(resource_tags.id)'), 'list_id']
+            );
 
             $select->join(
                 ['t' => 'tags'],
                 'resource_tags.tag_id = t.id',
-                [
-                    'tag' =>
-                        $this->caseSensitive ? 'tag' : new Expression('lower(tag)'),
-                ]
+                []
             );
             $select->join(
                 ['l' => 'user_list'],
@@ -290,7 +285,7 @@ class ResourceTags extends Gateway
             if ($tag && $andTags) {
                 // Use AND operator for tags
                 $select->having->literal(
-                    'tag_cnt = ?',
+                    'count(distinct(resource_tags.tag_id)) = ?',
                     count(array_unique($tag))
                 );
             }
@@ -515,7 +510,7 @@ class ResourceTags extends Gateway
             $select->join(
                 ['r' => 'resource'],
                 'resource_tags.resource_id = r.id',
-                ["title" => "title"]
+                ['title' => 'title']
             );
             if (null !== $userId) {
                 $select->where->equalTo('resource_tags.user_id', $userId);
@@ -640,7 +635,7 @@ class ResourceTags extends Gateway
             $select->join(
                 ['u' => 'user'],
                 'resource_tags.user_id = u.id',
-                ["username" => "username"]
+                ['username' => 'username']
             );
             if (null !== $userId) {
                 $select->where->equalTo('resource_tags.user_id', $userId);
@@ -700,7 +695,7 @@ class ResourceTags extends Gateway
     ) {
         $order = (null !== $order)
             ? [$order]
-            : ["username", "tag", "title"];
+            : ['username', 'tag', 'title'];
 
         $sql = $this->getSql();
         $select = $sql->select();
@@ -715,12 +710,12 @@ class ResourceTags extends Gateway
         $select->join(
             ['u' => 'user'],
             'resource_tags.user_id = u.id',
-            ["username" => "username"]
+            ['username' => 'username']
         );
         $select->join(
             ['r' => 'resource'],
             'resource_tags.resource_id = r.id',
-            ["title" => "title"]
+            ['title' => 'title']
         );
         if (null !== $userId) {
             $select->where->equalTo('resource_tags.user_id', $userId);

@@ -3,7 +3,7 @@
 /**
  * RecordDataFormatter Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -32,6 +32,8 @@ namespace VuFindTest\View\Helper\Root;
 use Psr\Container\ContainerInterface;
 use VuFind\View\Helper\Root\RecordDataFormatter;
 use VuFind\View\Helper\Root\RecordDataFormatterFactory;
+
+use function count;
 
 /**
  * RecordDataFormatter Test Class

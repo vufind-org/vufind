@@ -3,7 +3,7 @@
 /**
  * Factory for Shibboleth authentication module.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -47,7 +47,7 @@ use VuFind\Auth\Shibboleth\SingleIdPConfigurationLoader;
  */
 class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
-    public const SHIBBOLETH_CONFIG_FILE_NAME = "Shibboleth";
+    public const SHIBBOLETH_CONFIG_FILE_NAME = 'Shibboleth';
 
     /**
      * Create an object

@@ -3,7 +3,7 @@
 /**
  * Next/previous navigation test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -52,7 +52,7 @@ class NextPrevNavTest extends \VuFindTest\Integration\MinkTestCase
     public function testEmptySearchResultsCauseNoProblems()
     {
         $this->changeConfigs(
-            ["config" => ["Record" => ["next_prev_navigation" => true, "first_last_navigation" => true]]]
+            ['config' => ['Record' => ['next_prev_navigation' => true, 'first_last_navigation' => true]]]
         );
 
         // when a search returns no results
@@ -60,16 +60,16 @@ class NextPrevNavTest extends \VuFindTest\Integration\MinkTestCase
         $session = $this->getMinkSession();
         $page = $session->getPage();
 
-        $session->visit($this->getVuFindUrl() . "/Search/Results?lookfor=__ReturnNoResults__&type=AllField");
-        $this->assertEquals($this->findCss($page, ".search-stats > h2")->getText(), "No Results!");
+        $session->visit($this->getVuFindUrl() . '/Search/Results?lookfor=__ReturnNoResults__&type=AllField');
+        $this->assertEquals($this->findCss($page, '.search-stats > h2')->getText(), 'No Results!');
 
         // collection should render as normal
-        $session->visit($this->getVuFindUrl() . "/Record/geo20001");
+        $session->visit($this->getVuFindUrl() . '/Record/geo20001');
 
         // should fail if exception is thrown
         $this->assertStringContainsString(
-            "Test Publication 20001",
-            $this->findCss($page, "div.media-body > h1[property=name]")->getText()
+            'Test Publication 20001',
+            $this->findCss($page, 'div.media-body > h1[property=name]')->getText()
         );
     }
 }

@@ -3,7 +3,7 @@
 /**
  * Mink account actions test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  * Copyright (C) The National Library of Finland 2022.
@@ -32,6 +32,8 @@
 namespace VuFindTest\Mink;
 
 use VuFind\Db\Table\User;
+
+use function count;
 
 /**
  * Mink account actions test class.
@@ -240,7 +242,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
             $page,
             [
                 'username' => 'username2',
-                'email' => "username2@ignore.com",
+                'email' => 'username2@ignore.com',
             ]
         );
         $this->clickCss($page, '.modal-body .btn.btn-primary');

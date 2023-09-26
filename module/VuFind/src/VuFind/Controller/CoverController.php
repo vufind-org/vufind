@@ -3,7 +3,7 @@
 /**
  * Cover Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -181,7 +181,7 @@ class CoverController extends \Laminas\Mvc\Controller\AbstractActionController
         $coverImageTtl = (60 * 60 * 24 * 14); // 14 days
         $headers->addHeaderLine(
             'Cache-Control',
-            "maxage=" . $coverImageTtl
+            'maxage=' . $coverImageTtl
         );
         $headers->addHeaderLine(
             'Pragma',

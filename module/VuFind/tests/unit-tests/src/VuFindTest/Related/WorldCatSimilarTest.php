@@ -3,7 +3,7 @@
 /**
  * WorldCat Similar Related Items Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010, 2022.
  *
@@ -100,8 +100,8 @@ class WorldCatSimilarTest extends \PHPUnit\Framework\TestCase
             $expectedTerms = '(srw.dd any "fakedc" or srw.au all "fakepa" or '
                 . 'srw.su all "fakesh1a fakesh1b" or srw.su all "fakesh2" or '
                 . 'srw.ti any "faketitle") not srw.no all "fakeid"';
-            return get_class($command) === \VuFindSearch\Command\SearchCommand::class
-                && $command->getTargetIdentifier() === "WorldCat"
+            return $command::class === \VuFindSearch\Command\SearchCommand::class
+                && $command->getTargetIdentifier() === 'WorldCat'
                 && $command->getArguments()[0]->getAllTerms() === $expectedTerms
                 && $command->getArguments()[1] === 0
                 && $command->getArguments()[2] === 5;

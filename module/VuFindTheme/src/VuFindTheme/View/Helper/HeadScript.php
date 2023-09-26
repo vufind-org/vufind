@@ -3,7 +3,7 @@
 /**
  * Head script view helper (extended for VuFind's theme system)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -30,6 +30,8 @@
 namespace VuFindTheme\View\Helper;
 
 use VuFindTheme\ThemeInfo;
+
+use function array_key_exists;
 
 /**
  * Head script view helper (extended for VuFind's theme system)

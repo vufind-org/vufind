@@ -3,7 +3,7 @@
 /**
  * SummonResults Recommendations Module
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -40,7 +40,7 @@ namespace VuFind\Recommend;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class SummonResults extends SearchObject
+class SummonResults extends AbstractSearchObject
 {
     /**
      * Get the search class ID to use for building search objects.

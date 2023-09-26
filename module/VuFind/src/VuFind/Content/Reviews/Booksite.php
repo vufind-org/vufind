@@ -3,7 +3,7 @@
 /**
  * Booksite review content loader.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -90,13 +90,13 @@ class Booksite extends \VuFind\Content\AbstractBase
         $response = $this->getHttpClient($url)->send();
         if (!$response->isSuccess()) {
             $this->logWarning(
-                "Reviews: " . $response->getStatusCode() . " "
+                'Reviews: ' . $response->getStatusCode() . ' '
                 . $response->getReasonPhrase() . " $url"
             );
             return $reviews;    // still empty
         }
         $this->debug(
-            "Reviews: " . $response->getStatusCode() . " "
+            'Reviews: ' . $response->getStatusCode() . ' '
             . $response->getReasonPhrase() . " $url"
         );
 

@@ -3,7 +3,7 @@
 /**
  * ContentPages Plugin Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -34,6 +34,8 @@ use VuFind\Sitemap\Plugin\ContentPages;
 use VuFind\Sitemap\Plugin\ContentPagesFactory;
 use VuFindTest\Container\MockContainer;
 use VuFindTheme\ThemeInfo;
+
+use function func_get_args;
 
 /**
  * ContentPages Plugin Test Class

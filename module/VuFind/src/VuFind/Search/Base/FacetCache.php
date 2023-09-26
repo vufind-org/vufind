@@ -3,7 +3,7 @@
 /**
  * Abstract Base FacetCache.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -30,6 +30,8 @@
 namespace VuFind\Search\Base;
 
 use VuFind\Cache\Manager as CacheManager;
+
+use function in_array;
 
 /**
  * Solr FacetCache Factory.

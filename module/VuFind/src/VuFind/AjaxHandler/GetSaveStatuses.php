@@ -3,7 +3,7 @@
 /**
  * "Get Save Statuses" AJAX handler
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -34,6 +34,9 @@ use Laminas\Mvc\Controller\Plugin\Url;
 use VuFind\Db\Row\User;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Session\Settings as SessionSettings;
+
+use function count;
+use function is_array;
 
 /**
  * "Get Save Statuses" AJAX handler

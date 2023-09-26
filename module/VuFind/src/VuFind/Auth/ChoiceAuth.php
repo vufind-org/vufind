@@ -3,7 +3,7 @@
 /**
  * MultiAuth Authentication plugin
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -32,6 +32,12 @@ namespace VuFind\Auth;
 use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Db\Row\User;
 use VuFind\Exception\Auth as AuthException;
+
+use function call_user_func_array;
+use function func_get_args;
+use function in_array;
+use function is_callable;
+use function strlen;
 
 /**
  * ChoiceAuth Authentication plugin
@@ -91,7 +97,7 @@ class ChoiceAuth extends AbstractBase
     }
 
     /**
-     * Validate configuration parameters.  This is a support method for getConfig(),
+     * Validate configuration parameters. This is a support method for getConfig(),
      * so the configuration MUST be accessed using $this->config; do not call
      * $this->getConfig() from within this method!
      *
@@ -105,8 +111,8 @@ class ChoiceAuth extends AbstractBase
             || !strlen($this->config->ChoiceAuth->choice_order)
         ) {
             throw new AuthException(
-                "One or more ChoiceAuth parameters are missing. " .
-                "Check your config.ini!"
+                'One or more ChoiceAuth parameters are missing. ' .
+                'Check your config.ini!'
             );
         }
     }
@@ -155,7 +161,7 @@ class ChoiceAuth extends AbstractBase
     }
 
     /**
-     * Attempt to authenticate the current user.  Throws exception if login fails.
+     * Attempt to authenticate the current user. Throws exception if login fails.
      *
      * @param Request $request Request object containing account credentials.
      *
@@ -267,7 +273,7 @@ class ChoiceAuth extends AbstractBase
 
     /**
      * Get the URL to establish a session (needed when the internal VuFind login
-     * form is inadequate).  Returns false when no session initiator is needed.
+     * form is inadequate). Returns false when no session initiator is needed.
      *
      * @param string $target Full URL where external authentication strategy should
      * send user after login (some drivers may override this).

@@ -3,7 +3,7 @@
 /**
  * VuFind Cache Key Generator Trait
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Leipzig University Library 2016.
  *
@@ -28,6 +28,8 @@
  */
 
 namespace VuFind\Cache;
+
+use function get_class;
 
 /**
  * VuFind Cache Key Generator Trait
@@ -69,7 +71,7 @@ trait KeyGeneratorTrait
             // transformed key should match the custom pattern.
             $key = preg_replace(
                 "/([^a-z0-9_\+\-])+/Di",
-                "",
+                '',
                 $key
             );
         }

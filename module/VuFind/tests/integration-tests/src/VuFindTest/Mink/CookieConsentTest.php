@@ -3,9 +3,9 @@
 /**
  * Mink cookie consent test class.
  *
- * PHP version 7
+ * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022.
+ * Copyright (C) The National Library of Finland 2022-2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -42,9 +42,6 @@ use Behat\Mink\Element\Element;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  * @retry    4
- *
- * @skip_html_validation true
- * @todo                 Enable HTML validation when vanilla-cookieconsent is upgraded
  */
 final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
 {
@@ -116,7 +113,7 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Open settings:
-        $this->clickCss($page, '#cm__desc a');
+        $this->clickSettings($page);
         $this->waitStatement('$(".pm .pm__title").text() === "Cookie Settings"');
         $this->waitStatement('$(".pm__section-title").length === 2');
         $this->waitStatement(
@@ -127,7 +124,7 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Save without allowing analytics:
-        $this->clickCss($page, '.pm__btn');
+        $this->clickAcceptEssential($page);
         // Verify that there's no Matomo consent:
         $this->waitStatement(
             "window._paq[window._paq.length-1][0] !== 'setCookieConsentGiven'"
@@ -137,9 +134,10 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitStatement('VuFind.cookie.isCategoryAccepted("essential")');
 
         // Open settings again and accept only essential cookies:
-        $this->clickCss($page, '#cm__desc a');
+        $this->clickSettings($page);
         $this->waitStatement('$(".pm .pm__title").text() === "Cookie Settings"');
-        $this->clickCss($page, '.pm__btn.pm__btn--secondary');
+        $this->clickSave($page);
+
         // Verify that there's no Matomo consent:
         $this->waitStatement(
             "window._paq[window._paq.length-1][0] !== 'setCookieConsentGiven'"
@@ -147,31 +145,31 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitStatement('!VuFind.cookie.isServiceAllowed("matomo")');
 
         // Open settings again and toggle analytics:
-        $this->clickCss($page, '#cm__desc a');
+        $this->clickSettings($page);
         $this->waitStatement('$(".pm .pm__title").text() === "Cookie Settings"');
         $this->clickCss($page, '.section__toggle', null, 1);
-        $this->clickCss($page, '.pm__btn.pm__btn--secondary');
+        $this->clickSave($page);
         // Verify that there's Matomo consent:
         $this->waitStatement(
             "window._paq[window._paq.length-1][0] === 'setCookieConsentGiven'"
         );
         $this->waitStatement('VuFind.cookie.isServiceAllowed("matomo")');
-        $this->waitStatement("window._paq.pop()");
+        $this->waitStatement('window._paq.pop()');
 
         // Open settings again and accept only essential cookies:
-        $this->clickCss($page, '#cm__desc a');
+        $this->clickSettings($page);
         $this->waitStatement('$(".pm .pm__title").text() === "Cookie Settings"');
-        $this->clickCss($page, '.pm__btn');
+        $this->clickAcceptEssential($page);
         $this->waitStatement(
             "window._paq[window._paq.length-1][0] !== 'setCookieConsentGiven'"
         );
         $this->waitStatement('!VuFind.cookie.isServiceAllowed("matomo")');
-        $this->waitStatement("window._paq.pop()");
+        $this->waitStatement('window._paq.pop()');
 
         // Open settings again and accept all cookies:
-        $this->clickCss($page, '#cm__desc a');
+        $this->clickSettings($page);
         $this->waitStatement('$(".pm .pm__title").text() === "Cookie Settings"');
-        $this->clickCss($page, '.pm__btn', null, 1);
+        $this->clickAcceptAll($page);
         $this->waitStatement(
             "window._paq[window._paq.length-1][0] === 'setCookieConsentGiven'"
         );
@@ -190,5 +188,53 @@ final class CookieConsentTest extends \VuFindTest\Integration\MinkTestCase
         $page = $session->getPage();
         $this->waitForPageLoad($page);
         return $page;
+    }
+
+    /**
+     * Click the "Accept All Cookies" button
+     *
+     * @param Element $page Page
+     *
+     * @return void
+     */
+    protected function clickAcceptAll(Element $page): void
+    {
+        $this->clickCss($page, '.pm__btn');
+    }
+
+    /**
+     * Click the "Accept Only Essential Cookies" button
+     *
+     * @param Element $page Page
+     *
+     * @return void
+     */
+    protected function clickAcceptEssential(Element $page): void
+    {
+        $this->clickCss($page, '.pm__btn', null, 1);
+    }
+
+    /**
+     * Click the Settings button
+     *
+     * @param Element $page Page
+     *
+     * @return void
+     */
+    protected function clickSettings(Element $page): void
+    {
+        $this->clickCss($page, '#cm__desc a');
+    }
+
+    /**
+     * Click the Save button
+     *
+     * @param Element $page Page
+     *
+     * @return void
+     */
+    protected function clickSave(Element $page): void
+    {
+        $this->clickCss($page, '.pm__btn.pm__btn--secondary');
     }
 }

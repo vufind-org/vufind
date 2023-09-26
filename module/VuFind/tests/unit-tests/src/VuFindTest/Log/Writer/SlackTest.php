@@ -3,7 +3,7 @@
 /**
  * Slack Log Writer Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -55,9 +55,9 @@ class SlackTest extends \PHPUnit\Framework\TestCase
         $fakeUri = 'http://fake';
         $expectedBody = json_encode(
             [
-                "channel" => "#test",
-                "username" => "TestName",
-                "text" => ":rotating_light: Formatted message." . PHP_EOL,
+                'channel' => '#test',
+                'username' => 'TestName',
+                'text' => ':rotating_light: Formatted message.' . PHP_EOL,
             ]
         );
         $message = ['message' => 'test', 'priority' => 1];

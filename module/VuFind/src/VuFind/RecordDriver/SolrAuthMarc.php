@@ -3,7 +3,7 @@
 /**
  * Model for MARC authority records in Solr.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2015.
@@ -66,7 +66,7 @@ class SolrAuthMarc extends SolrAuthDefault
     }
 
     /**
-     * Get a raw LCCN (not normalized).  Returns false if none available.
+     * Get a raw LCCN (not normalized). Returns false if none available.
      *
      * @return string|bool
      */

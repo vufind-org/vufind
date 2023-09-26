@@ -3,7 +3,7 @@
 /**
  * VF Configuration Upgrade Tool
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -32,6 +32,10 @@ namespace VuFind\Config;
 use Composer\Semver\Comparator;
 use VuFind\Config\Writer as ConfigWriter;
 use VuFind\Exception\FileAccess as FileAccessException;
+
+use function count;
+use function in_array;
+use function is_array;
 
 /**
  * Class to upgrade previous VuFind configurations to the current version
@@ -224,7 +228,7 @@ class Upgrade
     {
         foreach ($custom_ini as $k => $v) {
             // Make a recursive call if we need to merge array values into an
-            // existing key...  otherwise just drop the value in place.
+            // existing key... otherwise just drop the value in place.
             if (is_array($v) && isset($config_ini[$k])) {
                 $config_ini[$k] = self::iniMerge($config_ini[$k], $custom_ini[$k]);
             } else {
@@ -245,10 +249,10 @@ class Upgrade
         $oldIni = $this->oldDir . '/config.ini';
         $mainArray = file_exists($oldIni) ? parse_ini_file($oldIni, true) : [];
 
-        // Merge in local overrides as needed.  VuFind 2 structures configurations
+        // Merge in local overrides as needed. VuFind 2 structures configurations
         // differently, so people who used this mechanism will need to refactor
         // their configurations to take advantage of the new "local directory"
-        // feature.  For now, we'll just merge everything to avoid losing settings.
+        // feature. For now, we'll just merge everything to avoid losing settings.
         if (
             isset($mainArray['Extra_Config'])
             && isset($mainArray['Extra_Config']['local_overrides'])
@@ -295,7 +299,7 @@ class Upgrade
      */
     protected function loadConfigs()
     {
-        // Configuration files to load.  Note that config.ini must always be loaded
+        // Configuration files to load. Note that config.ini must always be loaded
         // first so that getOldConfigPath can work properly!
         $configs = ['config.ini'];
         foreach (glob($this->rawDir . '/*.ini') as $ini) {
@@ -421,7 +425,7 @@ class Upgrade
         // same, we don't need to copy anything!
         if (
             file_exists($src) && file_exists($raw)
-            && md5(file_get_contents($src)) == md5(file_get_contents($raw))
+            && md5(file_get_contents($src)) === md5(file_get_contents($raw))
         ) {
             return;
         }
@@ -465,10 +469,10 @@ class Upgrade
                 unset($this->newConfigs['config.ini']['Site'][$setting]);
             } else {
                 $this->addWarning(
-                    "WARNING: This version of VuFind does not support "
+                    'WARNING: This version of VuFind does not support '
                     . "the {$theme} theme. Your config.ini [Site] {$setting} setting"
                     . " has been reset to the default: {$default}. You may need to "
-                    . "reimplement your custom theme."
+                    . 'reimplement your custom theme.'
                 );
                 $this->newConfigs['config.ini']['Site'][$setting] = $default;
             }
@@ -700,7 +704,7 @@ class Upgrade
         // Update Syndetics config:
         if (isset($newConfig['Syndetics']['url'])) {
             $newConfig['Syndetics']['use_ssl']
-                = (strpos($newConfig['Syndetics']['url'], 'https://') === false)
+                = (!str_contains($newConfig['Syndetics']['url'], 'https://'))
                 ? '' : 1;
             unset($newConfig['Syndetics']['url']);
         }
@@ -1056,7 +1060,7 @@ class Upgrade
             $specialFacets = $cfg['special_facets'] ?? null;
             if (empty($specialFacets)) {
                 $cfg['special_facets'] = 'checkboxes:Summon';
-            } elseif (false === strpos('checkboxes', (string)$specialFacets)) {
+            } elseif (!str_contains('checkboxes', (string)$specialFacets)) {
                 $cfg['special_facets'] .= ',checkboxes:Summon';
             }
         }
@@ -1325,7 +1329,7 @@ class Upgrade
         }
 
         // VuFind 1.x uses *_local.yaml files as overrides; VuFind 2.x uses files
-        // with the same filename in the local directory.  Copy any old override
+        // with the same filename in the local directory. Copy any old override
         // files into the new expected location:
         $files = ['searchspecs', 'authsearchspecs', 'reservessearchspecs'];
         foreach ($files as $file) {
@@ -1351,13 +1355,13 @@ class Upgrade
     {
         $driver = $this->newConfigs['config.ini']['Catalog']['driver'] ?? '';
         if (empty($driver)) {
-            $this->addWarning("WARNING: Could not find ILS driver setting.");
+            $this->addWarning('WARNING: Could not find ILS driver setting.');
         } elseif ('Sample' == $driver) {
             // No configuration file for Sample driver
         } elseif (!file_exists($this->oldDir . '/' . $driver . '.ini')) {
             $this->addWarning(
                 "WARNING: Could not find {$driver}.ini file; "
-                . "check your ILS driver configuration."
+                . 'check your ILS driver configuration.'
             );
         } else {
             $this->saveUnmodifiedConfig($driver . '.ini');
@@ -1381,7 +1385,7 @@ class Upgrade
      * addressed in one place.
      *
      * This gets called from updateConfig(), which gets called before other
-     * configuration upgrade routines.  This means that we need to modify the
+     * configuration upgrade routines. This means that we need to modify the
      * config.ini settings in the newConfigs property (since it is currently
      * being worked on and will be written to disk shortly), but we need to
      * modify the searches.ini/facets.ini settings in the oldConfigs property
@@ -1501,7 +1505,7 @@ class Upgrade
                     }
                     // Currently, this data structure doesn't support arrays very
                     // well, since it can't distinguish which line of the array
-                    // corresponds with which comments.  For now, we just append all
+                    // corresponds with which comments. For now, we just append all
                     // the preceding and inline comments together for arrays.  Since
                     // we rarely use arrays in the config.ini file, this isn't a big
                     // concern, but we should improve it if we ever need to.

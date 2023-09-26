@@ -3,7 +3,7 @@
 /**
  * QR Code Generator
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -38,6 +38,9 @@ use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelMedium;
 use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelQuartile;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
+
+use function intval;
+use function strlen;
 
 /**
  * QR Code Generator

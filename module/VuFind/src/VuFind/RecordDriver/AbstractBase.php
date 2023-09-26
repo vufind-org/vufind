@@ -3,7 +3,7 @@
 /**
  * Abstract base record model.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -30,6 +30,8 @@
 namespace VuFind\RecordDriver;
 
 use VuFind\XSLT\Import\VuFind as ArticleStripper;
+
+use function is_callable;
 
 /**
  * Abstract base record model.
@@ -105,7 +107,7 @@ abstract class AbstractBase implements
      *
      * @param mixed $data Raw data representing the record; Record Model
      * objects are normally constructed by Record Driver objects using data
-     * passed in from a Search Results object.  The exact nature of the data may
+     * passed in from a Search Results object. The exact nature of the data may
      * vary depending on the data source -- the important thing is that the
      * Record Driver + Search Results objects work together correctly.
      *
@@ -430,7 +432,7 @@ abstract class AbstractBase implements
 
     /**
      * Get an array of strings representing citation formats supported
-     * by this record's data (empty if none).  For possible legal values,
+     * by this record's data (empty if none). For possible legal values,
      * see /application/themes/root/helpers/Citation.php.
      *
      * @return array Strings representing citation formats.

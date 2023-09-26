@@ -3,7 +3,7 @@
 /**
  * CookieConsent view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2022.
  *
@@ -33,6 +33,9 @@ use VuFind\Cookie\CookieManager;
 use VuFind\Date\Converter as DateConverter;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
+
+use function in_array;
+use function is_string;
 
 /**
  * CookieConsent view helper

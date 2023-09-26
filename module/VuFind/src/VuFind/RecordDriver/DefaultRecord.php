@@ -3,7 +3,7 @@
 /**
  * Default model for records
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -31,6 +31,11 @@ namespace VuFind\RecordDriver;
 
 use VuFind\View\Helper\Root\RecordLinker;
 use VuFindCode\ISBN;
+
+use function count;
+use function in_array;
+use function is_array;
+use function strlen;
 
 /**
  * Default model for records
@@ -85,7 +90,7 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
-     * Get all subject headings associated with this record.  Each heading is
+     * Get all subject headings associated with this record. Each heading is
      * returned as an array of chunks, increasing from least specific to most
      * specific.
      *
@@ -411,7 +416,7 @@ class DefaultRecord extends AbstractBase
 
     /**
      * Get the date coverage for a record which spans a period of time (i.e. a
-     * journal).  Use getPublicationDates for publication dates of particular
+     * journal). Use getPublicationDates for publication dates of particular
      * monographic items.
      *
      * @return array
@@ -676,14 +681,14 @@ class DefaultRecord extends AbstractBase
         // If there is a forward slash (/) in the string, remove it, and remove all
         // characters to the right of the forward slash.
         if (strpos($raw, '/') > 0) {
-            $tmpArray = explode("/", $raw);
+            $tmpArray = explode('/', $raw);
             $raw = $tmpArray[0];
         }
         /* If there is a hyphen in the string:
             a. Remove it.
             b. Inspect the substring following (to the right of) the (removed)
                hyphen. Then (and assuming that steps 1 and 2 have been carried out):
-                    i.  All these characters should be digits, and there should be
+                    i. All these characters should be digits, and there should be
                     six or less.
                     ii. If the length of the substring is less than 6, left-fill the
                     substring with zeros until  the length is six.
@@ -691,8 +696,8 @@ class DefaultRecord extends AbstractBase
         if (strpos($raw, '-') > 0) {
             // haven't checked for i. above. If they aren't all digits, there is
             // nothing that can be done, so might as well leave it.
-            $tmpArray = explode("-", $raw);
-            $raw = $tmpArray[0] . str_pad($tmpArray[1], 6, "0", STR_PAD_LEFT);
+            $tmpArray = explode('-', $raw);
+            $raw = $tmpArray[0] . str_pad($tmpArray[1], 6, '0', STR_PAD_LEFT);
         }
         return $raw;
     }
@@ -727,7 +732,7 @@ class DefaultRecord extends AbstractBase
         // If we have multiple formats, Book, Journal and Article are most
         // important...
         $formats = $this->getFormats();
-        if (in_array('Book', $formats)) {
+        if (in_array('Book', $formats) || in_array('eBook', $formats)) {
             return 'Book';
         } elseif (in_array('Article', $formats)) {
             return 'Article';
@@ -824,6 +829,10 @@ class DefaultRecord extends AbstractBase
         $publishers = $this->getPublishers();
         if (count($publishers) > 0) {
             $params['rft.pub'] = $publishers[0];
+        }
+        $placesOfPublication = $this->getPlacesOfPublication();
+        if (count($placesOfPublication) > 0) {
+            $params['rft.place'] = $placesOfPublication[0];
         }
         $params['rft.edition'] = $this->getEdition();
         $params['rft.isbn'] = (string)$this->getCleanISBN();
@@ -954,7 +963,7 @@ class DefaultRecord extends AbstractBase
                 $query[] = urlencode($key) . '=' . urlencode($sub);
             }
         }
-        return implode("&", $query);
+        return implode('&', $query);
     }
 
     /**
@@ -1180,7 +1189,7 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
-     * Get an array of all series names containing the record.  Array entries may
+     * Get an array of all series names containing the record. Array entries may
      * be either the name string, or an associative array with 'name' and 'number'
      * keys.
      *
@@ -1582,7 +1591,7 @@ class DefaultRecord extends AbstractBase
 
     /**
      * Get an array of strings representing citation formats supported
-     * by this record's data (empty if none).  For possible legal values,
+     * by this record's data (empty if none). For possible legal values,
      * see /application/themes/root/helpers/Citation.php, getCitation()
      * method.
      *

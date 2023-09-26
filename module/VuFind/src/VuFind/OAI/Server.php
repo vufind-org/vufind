@@ -3,7 +3,7 @@
 /**
  * OAI Server class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2018-2019.
@@ -35,6 +35,11 @@ use SimpleXMLElement;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\SimpleXML;
 use VuFindApi\Formatter\RecordFormatter;
+
+use function count;
+use function in_array;
+use function intval;
+use function strlen;
 
 /**
  * OAI Server class
@@ -346,7 +351,7 @@ class Server
      */
     protected function attachDeleted($xml, $tracker, $headerOnly = false)
     {
-        // Deleted records only have a header, no metadata.  However, depending
+        // Deleted records only have a header, no metadata. However, depending
         // on the context we are attaching them, they may or may not need a
         // <record> tag wrapping the header.
         $record = $headerOnly ? $xml : $xml->addChild('record');
@@ -663,7 +668,7 @@ class Server
     }
 
     /**
-     * Load data from the OAI section of config.ini.  (This is called by the
+     * Load data from the OAI section of config.ini. (This is called by the
      * constructor and is only a separate method to allow easy override by child
      * classes).
      *
@@ -798,7 +803,7 @@ class Server
             return $this->showError($parts[0], $parts[1]);
         }
 
-        // Normalize the provided dates into Unix timestamps.  Depending on whether
+        // Normalize the provided dates into Unix timestamps. Depending on whether
         // they come from the OAI-PMH request or the database, the format may be
         // slightly different; this ensures they are reduced to a consistent value!
         $from = $this->normalizeDate($params['from']);
@@ -918,7 +923,7 @@ class Server
 
         // Load set field if applicable:
         if (null !== $this->setField) {
-            // If we got this far, we can load all available set values.  For now,
+            // If we got this far, we can load all available set values. For now,
             // we'll assume that this list is short enough to load in one response;
             // it may be necessary to implement a resumption token mechanism if this
             // proves not to be the case:
@@ -1150,11 +1155,11 @@ class Server
      */
     protected function isBadDate($from, $until)
     {
-        $dt = \DateTime::createFromFormat("Y-m-d", substr($until, 0, 10));
+        $dt = \DateTime::createFromFormat('Y-m-d', substr($until, 0, 10));
         if ($dt === false || array_sum($dt->getLastErrors())) {
             return true;
         }
-        $dt = \DateTime::createFromFormat("Y-m-d", substr($from, 0, 10));
+        $dt = \DateTime::createFromFormat('Y-m-d', substr($from, 0, 10));
         if ($dt === false || array_sum($dt->getLastErrors())) {
             return true;
         }

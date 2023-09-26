@@ -3,7 +3,7 @@
 /**
  * Book Bag / Bulk Action Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -33,6 +33,9 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
+
+use function is_array;
+use function strlen;
 
 /**
  * Book Bag / Bulk Action Controller
@@ -170,9 +173,9 @@ class CartController extends AbstractBase
             } else {
                 $addItems = $this->getCart()->addItems($ids);
                 if (!$addItems['success']) {
-                    $msg = $this->translate('bookbag_full_msg') . ". "
-                        . $addItems['notAdded'] . " "
-                        . $this->translate('items_already_in_bookbag') . ".";
+                    $msg = $this->translate('bookbag_full_msg') . '. '
+                        . $addItems['notAdded'] . ' '
+                        . $this->translate('items_already_in_bookbag') . '.';
                     $this->flashMessenger()->addMessage($msg, 'info');
                 }
             }
@@ -290,7 +293,7 @@ class CartController extends AbstractBase
                 );
                 return $this->redirectToSource('success', 'bulk_email_success');
             } catch (MailException $e) {
-                $this->flashMessenger()->addMessage($e->getMessage(), 'error');
+                $this->flashMessenger()->addMessage($e->getDisplayMessage(), 'error');
             }
         }
 
@@ -387,7 +390,7 @@ class CartController extends AbstractBase
         $view = $this->createViewModel();
         $view->records = $this->getRecordLoader()->loadBatch($ids);
 
-        // Assign the list of legal export options.  We'll filter them down based
+        // Assign the list of legal export options. We'll filter them down based
         // on what the selected records actually support.
         $view->exportOptions = $export->getFormatsForRecords($view->records);
 
@@ -510,7 +513,7 @@ class CartController extends AbstractBase
 
         // If we entered the controller in the expected way (i.e. via the
         // myresearchbulk action), we should have a source set in the followup
-        // memory.  If that's missing for some reason, just forward to MyResearch.
+        // memory. If that's missing for some reason, just forward to MyResearch.
         if (isset($this->session->url)) {
             $target = $this->session->url;
             unset($this->session->url);

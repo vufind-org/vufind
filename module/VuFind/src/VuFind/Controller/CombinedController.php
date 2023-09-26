@@ -3,7 +3,7 @@
 /**
  * Combined Search Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -31,6 +31,11 @@ namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Search\SearchRunner;
+
+use function count;
+use function in_array;
+use function intval;
+use function is_array;
 
 /**
  * Redirects the user to the appropriate default VuFind action.
@@ -265,7 +270,7 @@ class CombinedController extends AbstractSearch
                     ->toUrl($base . '?' . http_build_query($params));
             case 'External':
                 $lookfor = $this->params()->fromQuery('lookfor');
-                $finalTarget = (false === strpos($target, '%%lookfor%%'))
+                $finalTarget = (!str_contains($target, '%%lookfor%%'))
                     ? $target . urlencode($lookfor)
                     : str_replace('%%lookfor%%', urlencode($lookfor), $target);
                 return $this->redirect()->toUrl($finalTarget);

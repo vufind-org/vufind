@@ -3,7 +3,7 @@
 /**
  * Mink test class for visualization view.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  *

@@ -3,7 +3,7 @@
 /**
  * Primo Central Record Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -67,7 +67,6 @@ class PrimorecordController extends AbstractRecord
     {
         $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
             ->get('Primo');
-        return isset($config->Record->next_prev_navigation)
-            && $config->Record->next_prev_navigation;
+        return $config->Record->next_prev_navigation ?? false;
     }
 }
