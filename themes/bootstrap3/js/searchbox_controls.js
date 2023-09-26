@@ -4,6 +4,10 @@ VuFind.register("searchbox_controls", function SearchboxControls() {
   function _setupSearchResetButton() {
     const queryInput = document.getElementById("searchForm_lookfor");
     const resetButton = document.getElementById("searchForm-reset");
+    if (queryInput === null || resetButton === null) {
+      // missing controls; nothing to do here (may happen on advanced search page, for example):
+      return;
+    }
 
     if (queryInput.value !== "") {
       resetButton.classList.remove("hidden");
