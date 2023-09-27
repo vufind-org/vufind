@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for CombinedDriver ILS driver.
+ * Factory for ComposedDriver ILS driver.
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for CombinedDriver ILS driver.
+ * Factory for ComposedDriver ILS driver.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -46,7 +46,7 @@ use Psr\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class CombinedDriverFactory implements FactoryInterface
+class ComposedDriverFactory implements FactoryInterface
 {
     /**
      * Create an object

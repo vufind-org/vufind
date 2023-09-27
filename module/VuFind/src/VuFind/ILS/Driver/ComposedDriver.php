@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Combined Driver.
+ * Composed Driver.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use function func_get_args;
 use function in_array;
 
 /**
- * Combined Driver.
+ * Composed Driver.
  *
  * ILS Driver for VuFind to use multiple drivers for different tasks and
  * combine their results.
@@ -49,7 +49,7 @@ use function in_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class CombinedDriver extends AbstractMultiDriver
+class ComposedDriver extends AbstractMultiDriver
 {
     /**
      * Name of the main driver

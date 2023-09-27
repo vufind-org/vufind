@@ -30,7 +30,7 @@
 namespace VuFindTest\ILS\Driver;
 
 use Laminas\Config\Exception\RuntimeException;
-use VuFind\ILS\Driver\CombinedDriver;
+use VuFind\ILS\Driver\ComposedDriver;
 use VuFind\ILS\Logic\ItemStatus;
 
 use function call_user_func_array;
@@ -45,7 +45,7 @@ use function call_user_func_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class CombinedDriverTest extends AbstractMultiDriverTest
+class ComposedDriverTest extends AbstractMultiDriverTest
 {
     /**
      * Test that driver handles missing main ILS driver configuration properly.
@@ -86,7 +86,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
 
         ];
 
-        $combinedDriver = $this->initSimpleMethodTest(
+        $composedDriver = $this->initSimpleMethodTest(
             'cancelHolds',
             [
                 [
@@ -104,7 +104,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             ]
         );
 
-        $result = $combinedDriver->cancelHolds(
+        $result = $composedDriver->cancelHolds(
             [
                 'patron' => $this->getPatron('username'),
                 'details' => ['1', '2'],
@@ -132,7 +132,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
 
         ];
 
-        $combinedDriver = $this->initSimpleMethodTest(
+        $composedDriver = $this->initSimpleMethodTest(
             'cancelHolds',
             [
                 [
@@ -155,7 +155,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             ]
         );
 
-        $result = $combinedDriver->cancelHolds(
+        $result = $composedDriver->cancelHolds(
             [
                 'patron' => $this->getPatron('username'),
                 'details' => ['1', '2'],
@@ -183,7 +183,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
 
         ];
 
-        $combinedDriver = $this->initSimpleMethodTest(
+        $composedDriver = $this->initSimpleMethodTest(
             'cancelHolds',
             [
                 [
@@ -208,7 +208,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             ]
         );
 
-        $result = $combinedDriver->cancelHolds(
+        $result = $composedDriver->cancelHolds(
             [
                 'patron' => $this->getPatron('username'),
                 'details' => ['1', '2'],
@@ -238,7 +238,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             'lastname' => 'Doe',
         ];
 
-        $combinedDriver = $this->initSimpleMethodTest(
+        $composedDriver = $this->initSimpleMethodTest(
             'getMyProfile',
             [$this->getPatron('username')],
             [
@@ -262,7 +262,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             ]
         );
 
-        $result = $combinedDriver->getMyProfile(
+        $result = $composedDriver->getMyProfile(
             $this->getPatron('username')
         );
         $this->assertEquals($expected, $result);
@@ -295,7 +295,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             'city' => 'Springfield',
         ];
 
-        $combinedDriver = $this->initSimpleMethodTest(
+        $composedDriver = $this->initSimpleMethodTest(
             'getMyProfile',
             [$this->getPatron('username')],
             [
@@ -322,7 +322,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             ]
         );
 
-        $result = $combinedDriver->getMyProfile(
+        $result = $composedDriver->getMyProfile(
             $this->getPatron('username')
         );
         $this->assertEquals($expected, $result);
@@ -349,7 +349,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             'lastname' => 'Doe',
         ];
 
-        $combinedDriver = $this->initSimpleMethodTest(
+        $composedDriver = $this->initSimpleMethodTest(
             'getMyProfile',
             [$this->getPatron('username')],
             [
@@ -374,7 +374,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             ]
         );
 
-        $result = $combinedDriver->getMyProfile(
+        $result = $composedDriver->getMyProfile(
             $this->getPatron('username')
         );
         $this->assertEquals($expected, $result);
@@ -407,7 +407,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             'city' => 'Springfield',
         ];
 
-        $combinedDriver = $this->initSimpleMethodTest(
+        $composedDriver = $this->initSimpleMethodTest(
             'getMyProfile',
             [$this->getPatron('username')],
             [
@@ -435,7 +435,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             ]
         );
 
-        $result = $combinedDriver->getMyProfile(
+        $result = $composedDriver->getMyProfile(
             $this->getPatron('username')
         );
         $this->assertEquals($expected, $result);
@@ -455,7 +455,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             ],
         ];
 
-        $combinedDriver = $this->initSimpleMethodTest(
+        $composedDriver = $this->initSimpleMethodTest(
             'getHolding',
             [
                 '123456',
@@ -475,7 +475,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             ]
         );
 
-        $result = $combinedDriver->getHolding(
+        $result = $composedDriver->getHolding(
             '123456'
         );
         $this->assertEquals($expected, $result);
@@ -502,7 +502,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             ],
         ];
 
-        $combinedDriver = $this->initSimpleMethodTest(
+        $composedDriver = $this->initSimpleMethodTest(
             'getHolding',
             [
                 '123456',
@@ -522,7 +522,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             ]
         );
 
-        $result = $combinedDriver->getHolding(
+        $result = $composedDriver->getHolding(
             '123456'
         );
         $this->assertEquals($expected, $result);
@@ -542,7 +542,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             ],
         ];
 
-        $combinedDriver = $this->initSimpleMethodTest(
+        $composedDriver = $this->initSimpleMethodTest(
             'getHolding',
             [
                 '123456',
@@ -564,7 +564,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             ]
         );
 
-        $result = $combinedDriver->getHolding(
+        $result = $composedDriver->getHolding(
             '123456'
         );
         $this->assertEquals($expected, $result);
@@ -591,7 +591,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             ],
         ];
 
-        $combinedDriver = $this->initSimpleMethodTest(
+        $composedDriver = $this->initSimpleMethodTest(
             'getHolding',
             [
                 '123456',
@@ -613,7 +613,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             ]
         );
 
-        $result = $combinedDriver->getHolding(
+        $result = $composedDriver->getHolding(
             '123456'
         );
         $this->assertEquals($expected, $result);
@@ -700,7 +700,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             ],
         ];
 
-        $combinedDriver = $this->initSimpleMethodTest(
+        $composedDriver = $this->initSimpleMethodTest(
             'getHolding',
             [
                 '123456',
@@ -736,7 +736,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             ]
         );
 
-        $result = $combinedDriver->getHolding(
+        $result = $composedDriver->getHolding(
             '123456'
         );
         $this->assertEquals($expected, $result);
@@ -833,7 +833,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             ],
         ];
 
-        $combinedDriver = $this->initSimpleMethodTest(
+        $composedDriver = $this->initSimpleMethodTest(
             'getHolding',
             [
                 '123456',
@@ -869,7 +869,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             ]
         );
 
-        $result = $combinedDriver->getHolding(
+        $result = $composedDriver->getHolding(
             '123456'
         );
         $this->assertEquals($expected, $result);
@@ -955,7 +955,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             ],
         ];
 
-        $combinedDriver = $this->initSimpleMethodTest(
+        $composedDriver = $this->initSimpleMethodTest(
             'getHolding',
             [
                 '123456',
@@ -992,7 +992,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             ]
         );
 
-        $result = $combinedDriver->getHolding(
+        $result = $composedDriver->getHolding(
             '123456'
         );
         $this->assertEquals($expected, $result);
@@ -1089,7 +1089,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             ],
         ];
 
-        $combinedDriver = $this->initSimpleMethodTest(
+        $composedDriver = $this->initSimpleMethodTest(
             'getHolding',
             [
                 '123456',
@@ -1126,7 +1126,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             ]
         );
 
-        $result = $combinedDriver->getHolding(
+        $result = $composedDriver->getHolding(
             '123456'
         );
         $this->assertEquals($expected, $result);
@@ -1173,7 +1173,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             ],
         ];
 
-        $combinedDriver = $this->initSimpleMethodTest(
+        $composedDriver = $this->initSimpleMethodTest(
             'getMyFines',
             [$this->getPatron('username')],
             [
@@ -1202,7 +1202,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             ]
         );
 
-        $result = $combinedDriver->getMyFines(
+        $result = $composedDriver->getMyFines(
             $this->getPatron('username')
         );
         $this->assertEquals($expected, $result);
@@ -1265,7 +1265,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             ],
         ];
 
-        $combinedDriver = $this->initSimpleMethodTest(
+        $composedDriver = $this->initSimpleMethodTest(
             'getStatuses',
             [['123456', '654321']],
             [],
@@ -1293,7 +1293,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             ]
         );
 
-        $result = $combinedDriver->getStatuses(
+        $result = $composedDriver->getStatuses(
             ['123456', '654321']
         );
         $this->assertEquals($expected, $result);
@@ -1388,7 +1388,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             ],
         ];
 
-        $combinedDriver = $this->initSimpleMethodTest(
+        $composedDriver = $this->initSimpleMethodTest(
             'getStatuses',
             [['123456', '654321']],
             [
@@ -1422,7 +1422,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             ]
         );
 
-        $result = $combinedDriver->getStatuses(
+        $result = $composedDriver->getStatuses(
             ['123456', '654321']
         );
         $this->assertEquals($expected, $result);
@@ -1485,7 +1485,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             ],
         ];
 
-        $combinedDriver = $this->initSimpleMethodTest(
+        $composedDriver = $this->initSimpleMethodTest(
             'getStatuses',
             [['123456', '654321']],
             [
@@ -1515,7 +1515,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             ]
         );
 
-        $result = $combinedDriver->getStatuses(
+        $result = $composedDriver->getStatuses(
             ['123456', '654321']
         );
         $this->assertEquals($expected, $result);
@@ -1610,7 +1610,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             ],
         ];
 
-        $combinedDriver = $this->initSimpleMethodTest(
+        $composedDriver = $this->initSimpleMethodTest(
             'getStatuses',
             [['123456', '654321']],
             [
@@ -1645,20 +1645,20 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             ]
         );
 
-        $result = $combinedDriver->getStatuses(
+        $result = $composedDriver->getStatuses(
             ['123456', '654321']
         );
         $this->assertEquals($expected, $result);
     }
 
     /**
-     * Method to get an initialized Combined Driver.
+     * Method to get an initialized Compsed Driver.
      *
      * @param array   $constructorArgs   Optional constructor arguments
      * @param array   $drivers           List of used drivers
      * @param ?string $driversConfigPath Optional driver config path
      *
-     * @return mixed A Combined instance.
+     * @return mixed A ComposedDriver instance.
      */
     protected function initDriver($constructorArgs = [], $drivers = [], $driversConfigPath = null)
     {
@@ -1674,15 +1674,15 @@ class CombinedDriverTest extends AbstractMultiDriverTest
     }
 
     /**
-     * Method to get a raw CombinedDriver instance.
+     * Method to get a raw ComposedDriver instance.
      *
      * @param array $constructorArgs Optional constructor arguments
      *
-     * @return mixed A CombinedDriver instance.
+     * @return mixed A ComposedDriver instance.
      */
     protected function getDriver($constructorArgs = [])
     {
-        $driver = new CombinedDriver(
+        $driver = new ComposedDriver(
             $constructorArgs['configLoader'] ?? $this->getMockConfigPluginManager([], ['config' => 'values']),
             $constructorArgs['driverManager'] ?? $this->getMockSM()
         );
@@ -1690,7 +1690,7 @@ class CombinedDriverTest extends AbstractMultiDriverTest
     }
 
     /**
-     * Initialize a CombinedDriver driver for a simple method test
+     * Initialize a ComposedDriver driver for a simple method test
      *
      * @param string $function       Function name
      * @param array  $params         Function parameters
@@ -1714,13 +1714,13 @@ class CombinedDriverTest extends AbstractMultiDriverTest
             )->will($this->returnValue($driverConfig['return']));
             $drivers[$diverName] = $driver;
         }
-        $combinedDriver = $this->getMultiDriverForDrivers(
+        $composedDriver = $this->getMultiDriverForDrivers(
             $drivers,
             $this->any()
         );
-        $config = $this->getProperty($combinedDriver, 'config');
+        $config = $this->getProperty($composedDriver, 'config');
         $config[$function] = $functionConfig;
-        $this->setProperty($combinedDriver, 'config', $config);
-        return $combinedDriver;
+        $this->setProperty($composedDriver, 'config', $config);
+        return $composedDriver;
     }
 }
