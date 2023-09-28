@@ -15,7 +15,31 @@
     ? $this->url($advancedSearchAction, [], ['query' => ['edit' => $results->getSearchId()]])
     : false;
 ?>
-<?php if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
+<?php
+    $classId = $this->escapeHtml($domId ?? 'combined_' . $searchClassId);
+    $countsJs = <<<JS
+        function updateJumpLink_$classId() {
+          let count = $recordTotal;
+          count = count.toLocaleString();
+
+          const template = document.createElement('template');
+          template.innerHTML = "<span class='record-total'>(" + count + ")</span>";
+          const span = template.content.children[0];
+
+          const link = document.querySelector('.combined-jump-links .$classId');
+          link.append(span);
+        }
+
+        if (document.readyState != 'loading') {
+          updateJumpLink_$classId();
+        }
+        else {
+          document.addEventListener('DOMContentLoaded', updateJumpLink_$classId);
+        }
+        JS;
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $countsJs, 'SET')?>
+<?php if ($currentSearch['more_link'] ?? false): ?>
   <div class="pull-right flip">
     <a href="<?=$moreUrl?>" class="btn btn-link icon-link">
       <?=$this->icon('options', 'icon-link__icon') ?>
@@ -85,7 +109,7 @@
     ];
   ?>
   <?=$this->render('search/list-' . $viewType . '.phtml', $viewParams)?>
-  <?php if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
+  <?php if ($currentSearch['more_link'] ?? false): ?>
     <p class="more_link_bottom">
       <a class="icon-link" href="<?=$moreUrl?>">
         <span class="icon-link__label"><?=$this->transEsc($currentSearch['more_link'])?></span>
