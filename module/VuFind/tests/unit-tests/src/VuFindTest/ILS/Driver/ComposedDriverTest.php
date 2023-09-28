@@ -706,7 +706,10 @@ class ComposedDriverTest extends AbstractMultiDriverTest
                 '123456',
             ],
             [
-                'merge_key' => 'item_id',
+                'merge_keys' => [
+                    'd3' => 'item_id',
+                    'd4' => 'item_id',
+                ],
                 'support_drivers' => [
                     'd3' => 'location',
                     'd4' => 'summary,item_notes',
@@ -839,7 +842,10 @@ class ComposedDriverTest extends AbstractMultiDriverTest
                 '123456',
             ],
             [
-                'merge_key' => 'item_id',
+                'merge_keys' => [
+                    'd3' => 'item_id',
+                    'd4' => 'item_id',
+                ],
                 'support_drivers' => [
                     'd3' => 'location',
                     'd4' => 'summary,item_notes',
@@ -962,7 +968,10 @@ class ComposedDriverTest extends AbstractMultiDriverTest
             ],
             [
                 'main_driver' => 'd2',
-                'merge_key' => 'item_id',
+                'merge_keys' => [
+                    'd3' => 'item_id',
+                    'd4' => 'item_id',
+                ],
                 'support_drivers' => [
                     'd3' => 'location',
                     'd4' => 'summary,item_notes',
@@ -1096,7 +1105,10 @@ class ComposedDriverTest extends AbstractMultiDriverTest
             ],
             [
                 'main_driver' => 'd2',
-                'merge_key' => 'item_id',
+                'merge_keys' => [
+                    'd3' => 'item_id',
+                    'd4' => 'item_id',
+                ],
                 'support_drivers' => [
                     'd3' => 'location',
                     'd4' => 'summary,item_notes',
@@ -1178,7 +1190,9 @@ class ComposedDriverTest extends AbstractMultiDriverTest
             [$this->getPatron('username')],
             [
                 'main_driver' => 'd2',
-                'merge_key' => 'id',
+                'merge_keys' => [
+                    'd3' => 'id',
+                ],
                 'support_drivers' => [
                     'd3' => 'title',
                 ],
@@ -1392,7 +1406,10 @@ class ComposedDriverTest extends AbstractMultiDriverTest
             'getStatuses',
             [['123456', '654321']],
             [
-                'merge_key' => 'callnumber',
+                'merge_keys' => [
+                    'd3' => 'callnumber',
+                    'd4' => 'callnumber',
+                ],
                 'support_drivers' => [
                     'd3' => 'location',
                     'd4' => 'reserve',
@@ -1615,7 +1632,10 @@ class ComposedDriverTest extends AbstractMultiDriverTest
             [['123456', '654321']],
             [
                 'main_driver' => 'd2',
-                'merge_key' => 'callnumber',
+                'merge_keys' => [
+                    'd3' => 'callnumber',
+                    'd4' => 'callnumber',
+                ],
                 'support_drivers' => [
                     'd3' => 'location',
                     'd4' => 'reserve',

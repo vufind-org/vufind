@@ -169,7 +169,7 @@ class ComposedDriver extends AbstractMultiDriver
      */
     public function checkILLRequestIsValid($id, $data, $patron)
     {
-        return $this->defaultCall('checkILLRequestIsValid', func_get_args(), false);
+        return $this->defaultCall('checkILLRequestIsValid', func_get_args());
     }
 
     /**
@@ -187,7 +187,7 @@ class ComposedDriver extends AbstractMultiDriver
      */
     public function checkRequestIsValid($id, $data, $patron)
     {
-        return $this->defaultCall('checkRequestIsValid', func_get_args(), false);
+        return $this->defaultCall('checkRequestIsValid', func_get_args());
     }
 
     /**
@@ -205,7 +205,7 @@ class ComposedDriver extends AbstractMultiDriver
      */
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
     {
-        return $this->defaultCall('checkStorageRetrievalRequestIsValid', func_get_args(), false);
+        return $this->defaultCall('checkStorageRetrievalRequestIsValid', func_get_args());
     }
 
     /**
@@ -234,7 +234,7 @@ class ComposedDriver extends AbstractMultiDriver
      */
     public function getAccountBlocks($patron)
     {
-        return $this->defaultCall('getAccountBlocks', func_get_args(), false);
+        return $this->defaultCall('getAccountBlocks', func_get_args());
     }
 
     /**
@@ -252,7 +252,7 @@ class ComposedDriver extends AbstractMultiDriver
      */
     public function getCancelHoldDetails($hold, $patron = [])
     {
-        return $this->defaultCall('getCancelHoldDetails', func_get_args(), [], true);
+        return $this->defaultCall('getCancelHoldDetails', func_get_args());
     }
 
     /**
@@ -368,7 +368,7 @@ class ComposedDriver extends AbstractMultiDriver
      */
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
-        return $this->defaultCall('getDefaultPickUpLocation', func_get_args(), [], true);
+        return $this->defaultCall('getDefaultPickUpLocation', func_get_args());
     }
 
     /**
@@ -403,7 +403,7 @@ class ComposedDriver extends AbstractMultiDriver
      * @param array $holdInfo Contains most of the same values passed to
      * placeHold, minus the patron data.
      *
-     * @return int
+     * @return int|null
      */
     public function getHoldDefaultRequiredDate($patron, $holdInfo)
     {
@@ -465,7 +465,7 @@ class ComposedDriver extends AbstractMultiDriver
      */
     public function getILLPickupLibraries($id, $patron)
     {
-        return $this->defaultCall('getILLPickupLibraries', func_get_args(), false);
+        return $this->defaultCall('getILLPickupLibraries', func_get_args());
     }
 
     /**
@@ -483,7 +483,7 @@ class ComposedDriver extends AbstractMultiDriver
      */
     public function getILLPickupLocations($id, $pickupLib, $patron)
     {
-        return $this->defaultCall('getILLPickupLocations', func_get_args(), false);
+        return $this->defaultCall('getILLPickupLocations', func_get_args());
     }
 
     /**
@@ -712,7 +712,7 @@ class ComposedDriver extends AbstractMultiDriver
      */
     public function getRequestBlocks($patron)
     {
-        return $this->defaultCall('getRequestBlocks', func_get_args(), false);
+        return $this->defaultCall('getRequestBlocks', func_get_args());
     }
 
     /**
@@ -796,7 +796,7 @@ class ComposedDriver extends AbstractMultiDriver
      *
      * @return array
      */
-    public function getUrlsForRecord(string $id): array
+    public function getUrlsForRecord($id)
     {
         return $this->defaultCall('getUrlsForRecord', func_get_args());
     }
@@ -1007,7 +1007,7 @@ class ComposedDriver extends AbstractMultiDriver
      */
     public function getDefaultRequestGroup($patron, $holdDetails = null)
     {
-        return $this->defaultCall('getDefaultRequestGroup', func_get_args(), [], true);
+        return $this->defaultCall('getDefaultRequestGroup', func_get_args());
     }
 
     /**
@@ -1022,7 +1022,7 @@ class ComposedDriver extends AbstractMultiDriver
      */
     public function __call($methodName, $params)
     {
-        return $this->defaultCall($methodName, $params, null, true);
+        return $this->defaultCall($methodName, $params);
     }
 
     /**
@@ -1056,23 +1056,18 @@ class ComposedDriver extends AbstractMultiDriver
     /**
      * Simply calls the method for the specified main driver
      *
-     * @param string $methodName                   Name of the method to be called
-     * @param array  $params                       Arguments for the method call
-     * @param mixed  $defaultResult                Default value used if method is not supported
-     * @param bool   $throwExceptionIfNotSupported If an exception should be thrown if the method is not supported
+     * @param string $methodName Name of the method to be called
+     * @param array  $params     Arguments for the method call
      *
      * @return mixed
      */
-    protected function defaultCall($methodName, $params, $defaultResult = [], $throwExceptionIfNotSupported = false)
+    protected function defaultCall($methodName, $params)
     {
         if ($this->supportsMethod($methodName, $params)) {
             $driverName = $this->getMainDriverNameForMethod($methodName);
             return $this->callDriverMethod($driverName, $methodName, $params);
         }
-        if ($throwExceptionIfNotSupported) {
-            throw new ILSException('Method "' . $methodName . '" is not supported.');
-        }
-        return $defaultResult;
+        throw new ILSException('Method "' . $methodName . '" is not supported.');
     }
 
     /**
@@ -1127,15 +1122,22 @@ class ComposedDriver extends AbstractMultiDriver
         $mainDriverName = $this->getMainDriverNameForMethod($methodName);
         $mainResult = $this->callDriverMethod($mainDriverName, $methodName, $params);
 
-        if ($mergeKey = $methodConfig['merge_key'] ?? false) {
+        if (!empty($mergeKeys = $methodConfig['merge_keys'] ?? [])) {
             $supportConfig = $methodConfig['support_drivers'] ?? [];
             $supportDriverNames = array_keys($supportConfig) ?? [];
 
             // get support results
             $supportResult = array_map(
-                function ($driverName) use ($params, $mergeKey, $methodName, $supportConfig, $optionalResultSubfields) {
+                function ($driverName) use (
+                    $params,
+                    $mergeKeys,
+                    $methodName,
+                    $supportConfig,
+                    $optionalResultSubfields
+                ) {
                     $result = $this->callDriverMethod($driverName, $methodName, $params);
                     $result = $this->extractResultSubfields($result, $optionalResultSubfields);
+                    $mergeKey = $mergeKeys[$driverName];
                     // extract support keys
                     $supportEntry = array_map(
                         function ($fullEntry) use ($mergeKey, $supportConfig, $driverName) {
@@ -1144,13 +1146,13 @@ class ComposedDriver extends AbstractMultiDriver
                         },
                         $result
                     );
-                    return  $this->extractKey($supportEntry, $mergeKey);
+                    return $this->extractKey($supportEntry, $mergeKey);
                 },
-                $supportDriverNames
+                array_combine($supportDriverNames, $supportDriverNames)
             );
 
             // merge results
-            $mainResult = $this->mergeInSubfields($mainResult, $supportResult, $mergeKey, $optionalResultSubfields);
+            $mainResult = $this->mergeInSubfields($mainResult, $supportResult, $mergeKeys, $optionalResultSubfields);
         }
         return $mainResult;
     }
@@ -1178,8 +1180,9 @@ class ComposedDriver extends AbstractMultiDriver
         // get main results
         $mainDriverName = $this->getMainDriverNameForMethod($methodName);
         $mainResult = $this->callDriverMethod($mainDriverName, $methodName, $params);
+        $subMergeKeys = $methodConfig['merge_keys'] ?? [];
 
-        if ($subMergeKey = $methodConfig['merge_key'] ?? false) {
+        if (!empty($subMergeKeys)) {
             $supportConfig = $methodConfig['support_drivers'] ?? [];
             $supportDriverNames = array_keys($supportConfig) ?? [];
 
@@ -1188,7 +1191,7 @@ class ComposedDriver extends AbstractMultiDriver
                 function ($driverName) use (
                     $params,
                     $baseMergeKey,
-                    $subMergeKey,
+                    $subMergeKeys,
                     $methodName,
                     $supportConfig,
                     $optionalResultSubfields
@@ -1197,12 +1200,13 @@ class ComposedDriver extends AbstractMultiDriver
                     return array_map(
                         function ($result) use (
                             $baseMergeKey,
-                            $subMergeKey,
+                            $subMergeKeys,
                             $supportConfig,
                             $driverName,
                             $optionalResultSubfields
                         ) {
                             $result = $this->extractResultSubfields($result, $optionalResultSubfields);
+                            $subMergeKey = $subMergeKeys[$driverName];
                             // extract support keys
                             $supportEntry = array_map(
                                 function ($fullEntry) use ($subMergeKey, $supportConfig, $driverName, $baseMergeKey) {
@@ -1219,7 +1223,7 @@ class ComposedDriver extends AbstractMultiDriver
                         $results
                     );
                 },
-                $supportDriverNames
+                array_combine($supportDriverNames, $supportDriverNames)
             );
 
             // merge all single results
@@ -1237,7 +1241,7 @@ class ComposedDriver extends AbstractMultiDriver
                     $res[] = $this->mergeInSubfields(
                         $mainResult[$i],
                         $supportResult,
-                        $subMergeKey,
+                        $subMergeKeys,
                         $optionalResultSubfields
                     );
                 }
@@ -1274,14 +1278,14 @@ class ComposedDriver extends AbstractMultiDriver
     /**
      * Merges results where the result can be split into named subfields.
      *
-     * @param $mainResult              array  Result of the main driver
-     * @param $supportResult           array  Result of a support driver
-     * @param $mergeKey                string Merge key
-     * @param $optionalResultSubfields array  Keys of possible result subfields
+     * @param $mainResult              array Result of the main driver
+     * @param $supportResults          array Result of a support driver
+     * @param $mergeKeys               array Merge keys
+     * @param $optionalResultSubfields array Keys of possible result subfields
      *
      * @return array
      */
-    protected function mergeInSubfields($mainResult, $supportResult, $mergeKey, $optionalResultSubfields)
+    protected function mergeInSubfields($mainResult, $supportResults, $mergeKeys, $optionalResultSubfields)
     {
         $includesSubfields = false;
         foreach ($optionalResultSubfields as $subfield) {
@@ -1289,10 +1293,10 @@ class ComposedDriver extends AbstractMultiDriver
         }
         if ($includesSubfields) {
             foreach ($optionalResultSubfields as $key) {
-                $mainResult[$key] = $this->mergeAssociativeArrays($mainResult[$key], $supportResult, $mergeKey);
+                $mainResult[$key] = $this->mergeAssociativeArrays($mainResult[$key], $supportResults, $mergeKeys);
             }
         } else {
-            $mainResult = $this->mergeAssociativeArrays($mainResult, $supportResult, $mergeKey);
+            $mainResult = $this->mergeAssociativeArrays($mainResult, $supportResults, $mergeKeys);
         }
         return $mainResult;
     }
@@ -1300,18 +1304,19 @@ class ComposedDriver extends AbstractMultiDriver
     /**
      * Merges results of the main and the support drivers on the specified key
      *
-     * @param array  $mainResult     Result of main driver
-     * @param array  $supportResults Results of support drivers
-     * @param string $mergeKey       Key on which the results are merged
+     * @param array $mainResult     Result of main driver
+     * @param array $supportResults Results of support drivers
+     * @param array $mergeKeys      Key on which the results are merged
      *
      * @return array
      */
-    protected function mergeAssociativeArrays($mainResult, $supportResults, $mergeKey)
+    protected function mergeAssociativeArrays($mainResult, $supportResults, $mergeKeys)
     {
         $res = [];
         foreach ($mainResult as $mainEntry) {
-            if ($mainEntry[$mergeKey]) {
-                foreach ($supportResults as $supportResult) {
+            foreach ($supportResults as $driverName => $supportResult) {
+                $mergeKey = $mergeKeys[$driverName] ?? null;
+                if ($mergeKey !== null && $mainEntry[$mergeKey]) {
                     // merge entries that match on $mergeKey
                     $supportEntry = $supportResult[$mainEntry[$mergeKey]] ?? [];
                     if (!empty($supportEntry)) {
