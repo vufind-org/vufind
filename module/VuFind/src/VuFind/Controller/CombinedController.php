@@ -129,6 +129,7 @@ class CombinedController extends AbstractSearch
                     && $cart->isActive(),
                 'showBulkOptions' => $currentOptions->supportsCart()
                     && ($general->Site->showBulkOptions ?? false),
+                'domId' => 'combined_' . str_replace(':', '____', $sectionId),
             ];
             // Load custom CSS, if necessary:
             $html = ($this->getViewRenderer()->plugin('headLink'))();

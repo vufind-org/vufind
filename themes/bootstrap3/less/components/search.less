@@ -429,6 +429,25 @@ body.rtl {
   margin-right: 1rem;
 }
 
+.combined-jump-links {
+  margin-left: 1rem;
+  margin-right: 1rem;
+
+  ul {
+    display: inline;
+    list-style: none;
+    padding-left: 0;
+
+    li {
+      display: inline;
+      white-space: nowrap;
+      &:not(:first-child):before {
+        content: '\2013'; // n-dash
+      }
+    }
+  }
+}
+
 .combined-column {
   margin-left: 1rem;
   margin-right: 1rem;
