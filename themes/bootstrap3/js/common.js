@@ -204,13 +204,12 @@ var VuFind = (function VuFind() {
         }
         _element.setAttribute(key, newAttrs.join(" "));
       });
-      return _element;
     }
 
     if (typeof attrs == "string") {
-      element = addAttrs(element, { class: attrs });
+      addAttrs(element, { class: attrs });
     } else if (Object.keys(attrs).length > 0) {
-      element = addAttrs(element, attrs);
+      addAttrs(element, attrs);
     }
     _iconsCache[cacheKey] = element;
     return returnElement ? element.cloneNode(true) : element.outerHTML;
