@@ -91,7 +91,10 @@
 }
 
 .top-facets-contents {
+  display: block;
   margin: 2px 0;
+  padding: 0;
+  list-style: none;
 }
 .top-facets .facet,
 .top-facets > strong {
