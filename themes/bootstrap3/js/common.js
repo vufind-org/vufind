@@ -12,7 +12,8 @@ var VuFind = (function VuFind() {
   var _icons = {};
   var _translations = {};
 
-  var _elementBase = null;
+  var _elementBase;
+  var _iconsCache = {};
 
   // Emit a custom event
   // Recommendation: prefix with vf-
@@ -161,6 +162,7 @@ var VuFind = (function VuFind() {
     }
   };
 
+
   /**
    * Get an icon identified by a name.
    *
@@ -178,6 +180,16 @@ var VuFind = (function VuFind() {
       console.error("JS icon missing: " + name);
       return name;
     }
+    const cacheKey = `${name}||${JSON.stringify(attrs)}`;
+    if (_iconsCache[cacheKey]) {
+      return returnElement
+        ? _iconsCache[cacheKey].cloneNode(true)
+        : _iconsCache[cacheKey].outerHTML;
+    }
+    if (!_elementBase) {
+      _elementBase = document.createElement('div');  
+    }
+
     const clone = _elementBase.cloneNode();
     clone.insertAdjacentHTML('afterbegin', _icons[name]);
     let element = clone.firstChild;
@@ -185,9 +197,16 @@ var VuFind = (function VuFind() {
     // Add additional attributes
     function addAttrs(_element, _attrs = {}) {
       Object.keys(_attrs).forEach(key => {
-        const oldAttributes = _element.getAttribute(key);
-        const newAttributes = `${_attrs[key]} ${oldAttributes || ''}`;
-        _element.setAttribute(key, newAttributes.trim());
+        let newAttrs = _attrs[key].split(" ");
+        const oldAttrs = _element.getAttribute(key);
+        if (oldAttrs !== null) {
+          newAttrs = [...newAttrs, ...oldAttrs.split(" ")];
+          // Remove duplicate values
+          newAttrs = newAttrs.filter((item, pos) => {
+            return newAttrs.indexOf(item) === pos;
+          });
+        }
+        _element.setAttribute(key, newAttrs.join(" "));
       });
       return _element;
     }
@@ -197,7 +216,8 @@ var VuFind = (function VuFind() {
     } else if (Object.keys(attrs).length > 0) {
       element = addAttrs(element, attrs);
     }
-    return returnElement ? element : element.outerHTML;
+    _iconsCache[cacheKey] = element;
+    return returnElement ? element.cloneNode(true) : element.outerHTML;
   };
   // Icon shortcut methods
   var spinner = function spinner(extraClass = "") {
