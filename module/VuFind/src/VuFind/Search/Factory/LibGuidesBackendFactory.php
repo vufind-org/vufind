@@ -132,7 +132,7 @@ class LibGuidesBackendFactory extends AbstractBackendFactory
         $baseUrl = $this->libGuidesConfig->General->baseUrl ?? null;
 
         // Optionally parse the resource description
-        $displayDescription = $this->libGuidesConfig->General->displayDescription ?? null;
+        $displayDescription = $this->libGuidesConfig->General->displayDescription ?? false;
 
         // Create connector:
         $connector = new Connector(
