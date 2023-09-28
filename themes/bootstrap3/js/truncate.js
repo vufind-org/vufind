@@ -79,9 +79,7 @@ VuFind.register('truncate', function Truncate() {
           // Use first child as the height element if available
           var heightElem = container.children().first();
           var display = heightElem.css('display');
-          if ((heightElem.is('div') || heightElem.is('span'))
-            && (display === 'block' || display === 'inline-block')
-          ) {
+          if (display === 'block' || display === 'inline-block') {
             rowHeight = parseFloat(heightElem.outerHeight());
           } else {
             rowHeight = parseFloat(heightElem.css('line-height').replace('px', ''));
