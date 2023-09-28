@@ -162,14 +162,13 @@ var VuFind = (function VuFind() {
     }
   };
 
-
   /**
    * Get an icon identified by a name.
    *
    * @param {string} name          Name of the icon to create
    * @param {Object} attrs         Object containing attributes,
    *                               key is the attribute of an HTMLElement,
-   *                               value is the values to add
+   *                               value is the values to add for the attribute.
    * @param {bool}   returnElement [Optional] Should the function return an HTMLElement.
    *                               Default is false.
    *
@@ -185,9 +184,6 @@ var VuFind = (function VuFind() {
       return returnElement
         ? _iconsCache[cacheKey].cloneNode(true)
         : _iconsCache[cacheKey].outerHTML;
-    }
-    if (!_elementBase) {
-      _elementBase = document.createElement('div');  
     }
 
     const clone = _elementBase.cloneNode();
