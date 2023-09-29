@@ -57,9 +57,11 @@
   <?php /* LESS and SEE MORE links */ ?>
   <?php if (isset($i) && $i >= $this->facets_before_more): ?>
     <?php if ($this->showMoreInLightbox === 'more' && $facetLightbox): ?>
-      <a class="facet narrow-toggle all-facets" data-lightbox href="<?=$moreUrl ?>" rel="nofollow">
-        <span class="text"><?=$this->transEsc('see_all_ellipsis')?></span>
-      </a>
+      <li class="facet__list__item">
+        <a class="facet narrow-toggle all-facets" data-lightbox href="<?=$moreUrl ?>" rel="nofollow">
+          <span class="text"><?=$this->transEsc('see_all_ellipsis')?></span>
+        </a>
+      </li>
     <?php endif; ?>
   <?php endif; ?>
 </ul>
