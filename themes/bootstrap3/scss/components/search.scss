@@ -413,7 +413,7 @@ body.rtl {
         padding: 0 .5rem;
         white-space: nowrap;
       }
-    }  
+    }
   }
 }
 
@@ -566,7 +566,7 @@ body.rtl {
     }
     .filter-value {
       display: inline-block;
-      margin-block: 2px;
+      margin-block: 3px;
       padding: 2px 8px;
       font-weight: 600;
       color: #fff;
@@ -588,6 +588,7 @@ body.rtl {
     }
     .title-value-pair {
       display: inline-block;
+      margin-inline-end: 0.5rem;
     }
   }
 }
