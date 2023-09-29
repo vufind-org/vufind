@@ -217,11 +217,9 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             // Extract the description.
             if ($this->displayDescription) {
                 $descriptionCount = preg_match_all($descriptionRegex, $itemMatches[1][$i], $descriptionMatches);
-                if ($descriptionCount > 1) {
-                    throw new \Exception('LibGuides result item included more than one description: ' .
-                        $itemMatches[1][$i]);
+                if ($descriptionCount >= 1) {
+                    $item['description'] = $descriptionMatches[1][0];
                 }
-                $item['description'] = $descriptionMatches[1][0];
             }
 
             $items[] = $item;
