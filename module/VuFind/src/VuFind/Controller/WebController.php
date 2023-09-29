@@ -63,9 +63,10 @@ class WebController extends AbstractSearch
      */
     protected function processJumpTo($results)
     {
+        $blockJumpto = $this->params()->fromQuery('blockJumpto', false);
         // Missing/invalid parameter?  Ignore it:
         $jumpto = $this->params()->fromQuery('jumpto');
-        if (empty($jumpto) || !is_numeric($jumpto)) {
+        if ($blockJumpto || empty($jumpto) || !is_numeric($jumpto)) {
             return false;
         }
 

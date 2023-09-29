@@ -320,7 +320,7 @@ class CombinedController extends AbstractSearch
 
         // Always disable 'jumpto' setting, as it does not make sense to
         // load a record view in the context of combined search.
-        $query->jumpto = false;
+        $query->blockJumpto = true;
 
         // Override the search type:
         $query->type = $searchType;
