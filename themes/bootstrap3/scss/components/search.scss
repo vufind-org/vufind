@@ -424,6 +424,30 @@ body.rtl {
   padding: 0;
 }
 
+.combined-search-container.grid {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
+.combined-jump-links {
+  margin-left: 1rem;
+  margin-right: 1rem;
+
+  ul {
+    display: inline;
+    list-style: none;
+    padding-left: 0;
+
+    li {
+      display: inline;
+      white-space: nowrap;
+      &:not(:first-child):before {
+        content: '\2013'; // n-dash
+      }
+    }
+  }
+}
+
 .combined-column {
   margin-left: 1rem;
   margin-right: 1rem;
@@ -434,6 +458,15 @@ body.rtl {
   .combined-search-container {
     display: flex;
     padding-left: 1rem;
+
+    &.grid {
+      display: grid;
+      column-gap: 1rem;
+      padding-right: 1rem;
+      margin-left: 0;
+      margin-right: 0;
+      // grid-template-columns is set dynamically in stack-grid.phtml.
+    }
 
     .result { margin-left: 0; }
     .result-body {
