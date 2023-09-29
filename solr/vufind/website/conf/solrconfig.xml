@@ -275,11 +275,6 @@
     handleSelect=false will use solr1.1 style error formatting
     -->
   <requestDispatcher handleSelect="true" >
-    <!--Make sure your system has some authentication before enabling remote streaming!  -->
-    <requestParsers enableRemoteStreaming="true"
-                    multipartUploadLimitInKB="2048000"
-                    formdataUploadLimitInKB="2048"/>
-
     <!-- Set HTTP caching related parameters (for proxy caches and clients).
 
          To get the behaviour of Solr 1.2 (ie: no caching related headers)
