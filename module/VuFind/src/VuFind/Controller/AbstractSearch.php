@@ -453,9 +453,8 @@ class AbstractSearch extends AbstractBase
     protected function processJumpTo($results)
     {
         // Missing/invalid parameter?  Ignore it:
-        $blockJumpto = $this->params()->fromQuery('blockJumpto', false);
         $jumpto = $this->params()->fromQuery('jumpto');
-        if ($blockJumpto || empty($jumpto) || !is_numeric($jumpto)) {
+        if (empty($jumpto) || !is_numeric($jumpto)) {
             return false;
         }
 
@@ -473,9 +472,9 @@ class AbstractSearch extends AbstractBase
      */
     protected function processJumpToOnlyResult($results)
     {
-        $blockJumpto = $this->params()->fromQuery('blockJumpto', false);
+        $jumpto = $this->params()->fromQuery('jumpto', true);
         if (
-            !$blockJumpto
+            $jumpto
             && ($this->getConfig()->Record->jump_to_single_search_result ?? false)
             && $results->getResultTotal() == 1
             && $recordList = $results->getResults()
