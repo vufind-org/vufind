@@ -214,7 +214,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
                 'title' => $linkMatches[2][0],
             ];
 
-            // Extract the descrpition.
+            // Extract the description.
             if ($this->displayDescription) {
                 $descriptionCount = preg_match_all($descriptionRegex, $itemMatches[1][$i], $descriptionMatches);
                 if ($descriptionCount > 1) {
