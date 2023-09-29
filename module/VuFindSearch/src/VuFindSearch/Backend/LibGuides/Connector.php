@@ -260,7 +260,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
                 'list_format' => 1,
                 'output_format' => 1,
                 'load_type' => 2,
-                'enable_description' => 1,
+                'enable_description' => $this->displayDescription ? 1 : 0,
                 'enable_group_search_limit' => 0,
                 'enable_subject_search_limit' => 0,
                 'widget_embed_type' => 2,
