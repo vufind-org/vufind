@@ -225,6 +225,15 @@ class CombinedController extends AbstractSearch
         $settings = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
             ->get('config');
 
+        // Identify if any modules use include_recommendations_side
+        $anySideRecommendations = false;
+        foreach ($config as $subconfig) {
+            if ($subconfig['include_recommendations_side'] ?? false) {
+                $anySideRecommendations = true;
+                break;
+            }
+        }
+
         // Build view model:
         return $this->createViewModel(
             [
@@ -237,6 +246,7 @@ class CombinedController extends AbstractSearch
                 'supportsCart' => $supportsCart,
                 'supportsCartOptions' => $supportsCartOptions,
                 'showBulkOptions' => $settings->Site->showBulkOptions ?? false,
+                'anySideRecommendations' => $anySideRecommendations,
             ]
         );
     }
@@ -325,15 +335,18 @@ class CombinedController extends AbstractSearch
         // Override the search type:
         $query->type = $searchType;
 
-        // Always leave noresults active (useful for 0-hit searches) and
-        // side inactive (no room to display) but display or hide top based
-        // on include_recommendations setting.
-        if ($settings['include_recommendations'] ?? false) {
-            $query->noRecommend = 'side';
-            if (is_array($settings['include_recommendations'])) {
-                $query->recommendOverride
-                    = ['top' => $settings['include_recommendations']];
+        // Always leave noresults active (useful for 0-hit searches).
+        // Display or hide top based on include_recommendations setting.
+        // Display or hide top based on include_recommendations_side setting.
+        if (($settings['include_recommendations'] ?? false) || ($settings['include_recommendations_side'] ?? false)) {
+            $recommendOverride = [];
+            if (is_array($settings['include_recommendations'] ?? null)) {
+                $recommendOverride['top'] = $settings['include_recommendations'];
             }
+            if (is_array($settings['include_recommendations_side'] ?? null)) {
+                $recommendOverride['side'] = $settings['include_recommendations_side'];
+            }
+            $query->recommendOverride = $recommendOverride;
         } else {
             $query->noRecommend = 'top,side';
         }

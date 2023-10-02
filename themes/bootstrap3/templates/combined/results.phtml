@@ -73,7 +73,21 @@
       'showBulkOptions' => $this->showBulkOptions,
     ];
   ?>
-  <?=$this->context($this)->renderInContext('combined/stack-' . $placement . '.phtml', $viewParams); ?>
+
+  <?php if ($anySideRecommendations ?? false): ?>
+    <div class="<?=$this->layoutClass('mainbody')?>">
+      <?=$this->context($this)->renderInContext('combined/stack-' . $placement . '.phtml', $viewParams); ?>
+    </div>
+
+    <div class="<?=$this->layoutClass('sidebar')?>" id="search-sidebar">
+      <?php /* foreach ($this->results->getRecommendations('side') as $index => $current): ?>
+        <?=$this->recommend($current, 'side', $index)?>
+      <?php endforeach; */ ?>
+    </div>
+  <?php else: ?>
+    <?=$this->context($this)->renderInContext('combined/stack-' . $placement . '.phtml', $viewParams); ?>
+  <?php endif; ?>
+
   <?php $recs = $combinedResults->getRecommendations('bottom'); ?>
   <?php if (!empty($recs)): ?>
     <div>
