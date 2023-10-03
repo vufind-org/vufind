@@ -351,7 +351,7 @@ class CombinedController extends AbstractSearch
             $noRecommend[] = 'side';
         }
         $query->recommendOverride = $recommendOverride;
-        $query->noRecommend = count($noRecommend) ? join(",", $noRecommend) : false;
+        $query->noRecommend = count($noRecommend) ? implode(",", $noRecommend) : false;
     }
 
     /**
