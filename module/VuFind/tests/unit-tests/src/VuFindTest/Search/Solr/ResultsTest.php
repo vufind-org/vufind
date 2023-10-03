@@ -473,7 +473,6 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
             [
                 'format' => 'Format',
                 'building' => 'Building',
-                'media_type_str_mv' => 'media_type_str_mv',
             ]
         );
 
@@ -612,7 +611,6 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
             [
                 'format' => 'Format',
                 'building' => 'Building',
-                'media_type_str_mv' => 'media_type_str_mv',
             ]
         );
 
