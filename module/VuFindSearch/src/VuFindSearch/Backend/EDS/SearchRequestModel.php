@@ -29,6 +29,10 @@
 
 namespace VuFindSearch\Backend\EDS;
 
+use function count;
+use function intval;
+use function strlen;
+
 /**
  * EBSCO EDS API Search Model
  *
@@ -262,7 +266,7 @@ class SearchRequestModel
         }
 
         if (isset($this->expanders) && 0 < count($this->expanders)) {
-            $qs['expander'] = implode(",", $this->expanders);
+            $qs['expander'] = implode(',', $this->expanders);
         }
 
         if (isset($this->view)) {
@@ -483,7 +487,7 @@ class SearchRequestModel
      */
     public static function escapeSpecialCharacters($value)
     {
-        return addcslashes($value, ":,");
+        return addcslashes($value, ':,');
     }
 
     /**
@@ -495,7 +499,7 @@ class SearchRequestModel
      */
     public static function escapeSpecialCharactersForActions($value)
     {
-        return addcslashes($value, ":,()");
+        return addcslashes($value, ':,()');
     }
 
     /**

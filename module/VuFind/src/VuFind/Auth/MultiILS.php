@@ -35,6 +35,8 @@ namespace VuFind\Auth;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\ILS\Driver\MultiBackend;
 
+use function in_array;
+
 /**
  * Multiple ILS authentication module that works with MultiBackend driver
  *
@@ -49,7 +51,7 @@ use VuFind\ILS\Driver\MultiBackend;
 class MultiILS extends ILS
 {
     /**
-     * Attempt to authenticate the current user.  Throws exception if login fails.
+     * Attempt to authenticate the current user. Throws exception if login fails.
      *
      * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.

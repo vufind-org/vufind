@@ -37,6 +37,10 @@ use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\Search\Base\HierarchicalFacetHelperInterface;
 use VuFind\Search\UrlQueryHelper;
 
+use function array_slice;
+use function count;
+use function is_string;
+
 /**
  * Functions for manipulating facets
  *

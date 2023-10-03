@@ -31,6 +31,11 @@ namespace VuFind\XSLT\Import;
 
 use DOMDocument;
 
+use function count;
+use function in_array;
+use function is_callable;
+use function strlen;
+
 /**
  * XSLT support class -- all methods of this class must be public and static;
  * they will be automatically made available to your XSL stylesheet for use
@@ -203,7 +208,7 @@ class VuFind
     public static function getApertureCommand(
         $input,
         $output,
-        $method = "webcrawler"
+        $method = 'webcrawler'
     ) {
         // get the path to our sh/bat from the config
         $settings = static::getConfig('fulltext');
@@ -213,7 +218,7 @@ class VuFind
         $cmd = $settings->Aperture->webcrawler;
 
         // if we're using another method - substitute that into the path
-        $cmd = ($method != "webcrawler")
+        $cmd = ($method != 'webcrawler')
             ? str_replace('webcrawler', $method, $cmd) : $cmd;
 
         // return the full command
@@ -236,7 +241,7 @@ class VuFind
     /**
      * Harvest the contents of a document file (PDF, Word, etc.) using Aperture.
      * This method will only work if Aperture is properly configured in the
-     * fulltext.ini file.  Without proper configuration, this will simply return an
+     * fulltext.ini file. Without proper configuration, this will simply return an
      * empty string.
      *
      * @param string $url    URL of file to retrieve.
@@ -244,7 +249,7 @@ class VuFind
      *
      * @return string        text contents of file.
      */
-    public static function harvestWithAperture($url, $method = "webcrawler")
+    public static function harvestWithAperture($url, $method = 'webcrawler')
     {
         // Build a filename for temporary XML storage:
         $xmlFile = tempnam('/tmp', 'apt');
@@ -306,7 +311,7 @@ class VuFind
     /**
      * Harvest the contents of a document file (PDF, Word, etc.) using Tika.
      * This method will only work if Tika is properly configured in the
-     * fulltext.ini file.  Without proper configuration, this will simply return an
+     * fulltext.ini file. Without proper configuration, this will simply return an
      * empty string.
      *
      * @param string $url URL of file to retrieve.
@@ -314,7 +319,7 @@ class VuFind
      *
      * @return string     text contents of file.
      */
-    public static function harvestWithTika($url, $arg = "--text")
+    public static function harvestWithTika($url, $arg = '--text')
     {
         // Build a filename for temporary XML storage:
         $outputFile = tempnam('/tmp', 'tika');
@@ -345,7 +350,7 @@ class VuFind
      */
     public static function mapString($in, $filename)
     {
-        // Load the translation map and send back the appropriate value.  Note
+        // Load the translation map and send back the appropriate value. Note
         // that PHP's parse_ini_file() function is not compatible with SolrMarc's
         // style of properties map, so we are parsing this manually.
         $map = [];
@@ -387,7 +392,7 @@ class VuFind
     }
 
     /**
-     * Convert provided nodes into XML and return as text.  This is useful for
+     * Convert provided nodes into XML and return as text. This is useful for
      * populating the fullrecord field with the raw input XML.
      *
      * @param array $in array of DOMElement objects.
@@ -414,7 +419,7 @@ class VuFind
 
     /**
      * Remove a given tag from the provided nodes, then convert
-     * into XML and return as text.  This is useful for
+     * into XML and return as text. This is useful for
      * populating the fullrecord field with the raw input XML but
      * allow for removal of certain elements (eg: full text field).
      *

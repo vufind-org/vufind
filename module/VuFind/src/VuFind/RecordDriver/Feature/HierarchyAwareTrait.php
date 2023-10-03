@@ -29,6 +29,9 @@
 
 namespace VuFind\RecordDriver\Feature;
 
+use function count;
+use function in_array;
+
 /**
  * Hierarchy support for record drivers.
  *
@@ -58,7 +61,7 @@ trait HierarchyAwareTrait
     protected $hierarchyDriver = null;
 
     /**
-     * Get a hierarchy driver appropriate to the current object.  (May be false if
+     * Get a hierarchy driver appropriate to the current object. (May be false if
      * disabled/unavailable).
      *
      * @return \VuFind\Hierarchy\Driver\AbstractBase|bool

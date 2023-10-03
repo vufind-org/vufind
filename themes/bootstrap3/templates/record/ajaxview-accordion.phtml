@@ -51,7 +51,7 @@
       <div id="related_<?=$idSuffixEsc?>" class="list-tab-toggle panel-heading loaded" data-toggle="collapse" data-parent="#accordion_<?=$idSuffixEsc?>" data-target="#related_<?=$idSuffixEsc?>-content">
         <h4 class="panel-title">
           <a class="accordion-toggle">
-            <?=$this->transEsc("Related Items")?>
+            <?=$this->transEsc('Related Items')?>
           </a>
         </h4>
       </div>
@@ -69,9 +69,15 @@
       <?php // add current tab to breadcrumbs if applicable:
         $desc = $obj->getDescription();
         $tab_classes = [];
-        if (!$obj->isVisible()) { $tab_classes[] = 'hidden'; }
-        if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
-        if ($this->defaultTab === strtolower($tab)) { $tab_classes[] = 'default'; }
+        if (!$obj->isVisible()) {
+          $tab_classes[] = 'hidden';
+        }
+        if (!$obj->supportsAjax()) {
+          $tab_classes[] = 'noajax';
+        }
+        if ($this->defaultTab === strtolower($tab)) {
+          $tab_classes[] = 'default';
+        }
       ?>
       <div class="panel panel-default <?=implode(' ', $tab_classes) ?>">
         <div id="<?=$this->escapeHtmlAttr(strtolower($tab))?>_<?=$idSuffixEsc?>" class="list-tab-toggle panel-heading" data-toggle="collapse" data-parent="#accordion_<?=$idSuffixEsc?>" data-target="#<?=strtolower($tab)?>_<?=$idSuffixEsc?>-content"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>>

@@ -24,7 +24,7 @@
         ?>
         <div id="facet_<?=$this->escapeHtml($field)?>_container" role="listbox" class="home-facet <?=$this->escapeHtmlAttr($field)?> hide">
           <h2><?=$labelHeading?></h2>
-          <div id="facet_<?=$this->escapeHtml($field)?>" class="jstree-facet"
+          <div id="facet_<?=$this->escapeHtml($field)?>" class="jstree-facet facet-tree"
               data-source="<?=$this->escapeHtml($this->searchClassId)?>"
               data-facet="<?=$this->escapeHtml($field)?>"
               data-path="<?=$this->url($basicSearch)?>"
@@ -57,17 +57,24 @@
 
                 // Convenience variable:
                 $currentListLength = count($sortedList);
+                $i = 0;
               ?>
-              <?php $i = 0; foreach ($sortedList as $url => $value):
+              <?php foreach ($sortedList as $url => $value): ?>
+                <?php
                   // Special case: custom URLs for collections...
                   if ($field == 'hierarchy_top_title') {
                       $url = $this->url('collections-bytitle') . '?title=' . urlencode($value);
                   }
                 ?>
                 <li><a href="<?=$url?>"><?=$this->escapeHtml(empty($value) ? '-' : $value)?></a></li>
-                <?php if (++$i >= $currentListLength) break; // end of list? bail out! ?>
+                <?php
+                  if (++$i >= $currentListLength) {
+                    // end of list? bail out!
+                    break;
+                  }
+                ?>
                 <?php if ($i >= $maxListLength): // list too long? show more link! ?>
-                  <li><a href="<?=$moreUrl?>"><strong><?=$this->transEsc("more_options_ellipsis")?></strong></a></li>
+                  <li><a href="<?=$moreUrl?>"><strong><?=$this->transEsc('more_options_ellipsis')?></strong></a></li>
                   <?php break; ?>
                 <?php elseif ($i % $columnSize === 0): // end of column? insert break! ?>
                   </ul><ul class="home-facet-list">

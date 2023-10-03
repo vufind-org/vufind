@@ -32,6 +32,12 @@ namespace VuFind\Search\Base;
 use Laminas\Config\Config;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
+use function count;
+use function get_class;
+use function in_array;
+use function intval;
+use function is_array;
+
 /**
  * Abstract options search model.
  *
@@ -283,7 +289,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @var string
      */
-    protected $listviewOption = "full";
+    protected $listviewOption = 'full';
 
     /**
      * Configuration loader
@@ -959,8 +965,7 @@ abstract class Options implements TranslatorAwareInterface
 
     /**
      * If there is a limit to how many search results a user can access, this
-     * method will return that limit.  If there is no limit, this will return
-     * -1.
+     * method will return that limit. If there is no limit, this will return -1.
      *
      * @return int
      */
@@ -988,7 +993,7 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
-     * Load all recommendation settings from the relevant ini file.  Returns an
+     * Load all recommendation settings from the relevant ini file. Returns an
      * associative array where the key is the location of the recommendations (top
      * or side) and the value is the settings found in the file (which may be either
      * a single string or an array of strings).

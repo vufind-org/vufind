@@ -1,4 +1,4 @@
-/* https://github.com/vufind-org/autocomplete.js (v2.1.5) (2023-04-13) */
+/* https://github.com/vufind-org/autocomplete.js (v2.1.7) (2023-06-21) */
 function Autocomplete(_settings) {
   const _DEFAULTS = {
     delay: 250,
@@ -25,10 +25,14 @@ function Autocomplete(_settings) {
       const args = [].slice.call(arguments);
 
       clearTimeout(timeout);
-      timeout = setTimeout(function() {
+      timeout = setTimeout(function () {
         func.apply(context, args);
       }, delay);
     };
+  }
+
+  function randomID() {
+    return Math.random().toString(16).slice(-6);
   }
 
   function _align(input) {
@@ -94,9 +98,16 @@ function Autocomplete(_settings) {
     _hide();
   }
 
-  function _renderItem(item, input) {
+  function _renderItem(item, input, index = null) {
     let el = document.createElement("div");
+    el.setAttribute("role", "option");
+    el.setAttribute("aria-selected", false);
     el.classList.add("ac-item");
+    el.setAttribute(
+      "id",
+      input.getAttribute("id") + "__" + (index === null ? randomID() : index),
+    );
+
     if (typeof item === "string" || typeof item === "number") {
       el.innerHTML = item;
     } else if (typeof item._header !== "undefined") {
@@ -120,7 +131,7 @@ function Autocomplete(_settings) {
     }
     el.addEventListener(
       "mousedown",
-      e => {
+      (e) => {
         if (e.which === 1) {
           e.preventDefault();
           _selectItem(item, input);
@@ -138,19 +149,19 @@ function Autocomplete(_settings) {
     if (items.length > settings.limit) {
       items = items.slice(0, settings.limit);
     }
-    const listEls = items.map(item => _renderItem(item, input));
+    const listEls = items.map((item, index) => _renderItem(item, input, index));
     list.innerHTML = "";
-    listEls.map(el => list.appendChild(el));
+    listEls.map((el) => list.appendChild(el));
 
     // Setup keyboard information
-    _currentItems = items.slice().filter(item => {
+    _currentItems = items.slice().filter((item) => {
       return (
         typeof item._header === "undefined" &&
         typeof item._disabled === "undefined"
       );
     });
     _currentListEls = listEls.filter(
-      el =>
+      (el) =>
         !el.classList.contains("ac-header") &&
         !el.classList.contains("ac-disabled")
     );
@@ -185,46 +196,55 @@ function Autocomplete(_settings) {
     }
     switch (event.which) {
       // arrow keys through items
-      case 38: // up key
+      case 38: // UP key
         event.preventDefault();
-        if (_currentIndex === -1) {
-          return;
+        if (_currentIndex > -1) {
+          _currentListEls[_currentIndex].classList.remove("is-selected");
+          _currentListEls[_currentIndex].setAttribute("aria-selected", false);
         }
-        _currentListEls[_currentIndex].classList.remove("is-selected");
         _currentIndex -= 1;
-        if (_currentIndex === -1) {
-          return;
+        if (_currentIndex <= -2) {
+          _currentIndex = _currentItems.length - 1;
         }
-        _currentListEls[_currentIndex].classList.add("is-selected");
         break;
-      case 40: // down key
+      case 40: // DOWN key
         event.preventDefault();
         if (lastInput === false) {
           _search(handler, input);
           return;
         }
-        if (_currentIndex === _currentItems.length - 1) {
-          return;
-        }
         if (_currentIndex > -1) {
           _currentListEls[_currentIndex].classList.remove("is-selected");
+          _currentListEls[_currentIndex].setAttribute("aria-selected", false);
         }
         _currentIndex += 1;
-        _currentListEls[_currentIndex].classList.add("is-selected");
-        break;
-      // enter to nav or populate
-      case 9:
-      case 13:
-        if (_currentIndex === -1) {
-          return;
+        if (_currentIndex >= _currentItems.length) {
+          _currentIndex = -1;
         }
-        event.preventDefault();
-        _selectItem(_currentItems[_currentIndex], input);
         break;
-      // hide on escape
+      // ENTER to nav or populate
+      case 13:
+        if (_currentIndex > -1) {
+          event.preventDefault();
+          _selectItem(_currentItems[_currentIndex], input);
+        }
+        break;
+      // hide on ESCAPE
       case 27:
         _hide();
         break;
+    }
+
+    if (_currentIndex > -1) {
+      input.setAttribute(
+        "aria-activedescendant",
+        _currentListEls[_currentIndex].getAttribute("id"),
+      );
+
+      _currentListEls[_currentIndex].classList.add("is-selected");
+      _currentListEls[_currentIndex].setAttribute("aria-selected", true);
+    } else {
+      input.removeAttribute("aria-activedescendant");
     }
   }
 
@@ -243,6 +263,7 @@ function Autocomplete(_settings) {
       list = document.querySelector(".autocomplete-results");
       if (!list) {
         list = document.createElement("div");
+        list.setAttribute("id", "ac-" + randomID());
         list.classList.add("autocomplete-results");
         document.body.appendChild(list);
         window.addEventListener(
@@ -258,17 +279,27 @@ function Autocomplete(_settings) {
       }
     }
 
+    // Aria
+    list.setAttribute("role", "listbox");
+    input.setAttribute("role", "combobox");
+    input.setAttribute("aria-autocomplete", "both");
+    input.setAttribute("aria-controls", list.getAttribute("id"));
+    input.setAttribute("enterkeyhint", "search"); // phone keyboard hint
+    input.setAttribute("autocapitalize", "off");  // disable browser tinkering
+    input.setAttribute("autocomplete", "off");    // ^
+    input.setAttribute("autocorrect", "off");     // ^
+    input.setAttribute("spellcheck", "false");    // ^
+
     // Activation / De-activation
-    input.setAttribute("autocomplete", "off");
-    input.addEventListener("focus", _ => _search(handler, input), false);
+    input.addEventListener("focus", (_) => _search(handler, input), false);
     input.addEventListener("blur", _hide, false);
 
     // Input typing
     const debounceSearch = _debounce(_search, settings.delay);
     input.addEventListener(
       "input",
-      event => {
-        let loadingEl = _renderItem({ _header: settings.loadingString });
+      (event) => {
+        let loadingEl = _renderItem({ _header: settings.loadingString }, input);
         list.innerHTML = loadingEl.outerHTML;
         _show(input);
         _align(input);
@@ -288,7 +319,7 @@ function Autocomplete(_settings) {
     // Checking control characters
     input.addEventListener(
       "keydown",
-      event => _keydown(handler, input, event),
+      (event) => _keydown(handler, input, event),
       false
     );
 

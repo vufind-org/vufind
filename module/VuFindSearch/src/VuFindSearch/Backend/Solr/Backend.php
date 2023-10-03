@@ -35,6 +35,7 @@ use VuFindSearch\Backend\Exception\RemoteErrorException;
 use VuFindSearch\Backend\Solr\Document\DocumentInterface;
 use VuFindSearch\Backend\Solr\Response\Json\Terms;
 use VuFindSearch\Exception\InvalidArgumentException;
+use VuFindSearch\Feature\ExtraRequestDetailsInterface;
 use VuFindSearch\Feature\GetIdsInterface;
 use VuFindSearch\Feature\RandomInterface;
 use VuFindSearch\Feature\RetrieveBatchInterface;
@@ -44,6 +45,9 @@ use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Response\RecordCollectionInterface;
+
+use function count;
+use function is_int;
 
 /**
  * SOLR backend.
@@ -58,6 +62,7 @@ class Backend extends AbstractBackend implements
     SimilarInterface,
     RetrieveBatchInterface,
     RandomInterface,
+    ExtraRequestDetailsInterface,
     GetIdsInterface,
     WorkExpressionsInterface
 {
@@ -160,6 +165,28 @@ class Backend extends AbstractBackend implements
         $params->set('start', $offset);
         $params->mergeWith($this->getQueryBuilder()->build($query));
         return $this->connector->search($params);
+    }
+
+    /**
+     * Returns some extra details about the search.
+     *
+     * @return array
+     */
+    public function getExtraRequestDetails()
+    {
+        return [
+            'solrRequestUrl' => $this->connector->getLastUrl(),
+        ];
+    }
+
+    /**
+     * Clears all accumulated extra request details
+     *
+     * @return void
+     */
+    public function resetExtraRequestDetails()
+    {
+        $this->connector->resetLastUrl();
     }
 
     /**
@@ -586,9 +613,9 @@ class Backend extends AbstractBackend implements
             || strstr($error, 'couldn\'t find a browse index')
         ) {
             throw new RemoteErrorException(
-                "Alphabetic Browse index missing.  See " .
-                "https://vufind.org/wiki/indexing:alphabetical_heading_browse for " .
-                "details on generating the index.",
+                'Alphabetic Browse index missing.  See ' .
+                'https://vufind.org/wiki/indexing:alphabetical_heading_browse for ' .
+                'details on generating the index.',
                 $e->getCode(),
                 $e->getResponse(),
                 $e->getPrevious()

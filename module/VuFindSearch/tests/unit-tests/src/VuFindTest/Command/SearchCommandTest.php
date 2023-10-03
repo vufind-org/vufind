@@ -173,6 +173,25 @@ class SearchCommandTest extends TestCase
     }
 
     /**
+     * Test extra request details
+     *
+     * @return void
+     */
+    public function testExtraRequestDetails(): void
+    {
+        $backendId = 'bar';
+        $backend = $this
+            ->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
+            ->disableOriginalConstructor()->getMock();
+        $backend->expects($this->once())->method('getIdentifier')
+            ->will($this->returnValue($backendId));
+        $backend->expects($this->once())->method('getExtraRequestDetails')
+            ->will($this->returnValue(['foo' => 'bar']));
+        $command = $this->getCommand();
+        $this->assertEqualsCanonicalizing(['foo' => 'bar'], $command->execute($backend)->getExtraRequestDetails());
+    }
+
+    /**
      * Get test SearchCommand Object
      *
      * @return SearchCommand
