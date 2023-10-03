@@ -225,12 +225,11 @@ class CombinedController extends AbstractSearch
         $settings = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
             ->get('config');
 
-        // Identify if any modules use include_recommendations_side
-        $anySideRecommendations = false;
-        foreach ($config as $subconfig) {
-            if ($subconfig['include_recommendations_side'] ?? false) {
-                $anySideRecommendations = true;
-                break;
+        // Identify if any modules use include_recommendations_side.
+        $columnSideRecommendations = [];
+        foreach ($config as $column => $subconfig) {
+            foreach ($subconfig['include_recommendations_side'] ?? [] as $recommendation) {
+                $columnSideRecommendations[] = strtok($recommendation, ':');
             }
         }
 
@@ -246,7 +245,7 @@ class CombinedController extends AbstractSearch
                 'supportsCart' => $supportsCart,
                 'supportsCartOptions' => $supportsCartOptions,
                 'showBulkOptions' => $settings->Site->showBulkOptions ?? false,
-                'anySideRecommendations' => $anySideRecommendations,
+                'columnSideRecommendations' => $columnSideRecommendations,
             ]
         );
     }
