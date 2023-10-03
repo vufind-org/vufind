@@ -81,7 +81,6 @@ class Options extends \VuFind\Search\Base\Options
         $recommend = [];
         $config = $this->configLoader->get('combined');
         foreach (['top', 'bottom'] as $location) {
-            // foreach (['top', 'bottom', 'side'] as $location) {
             if (isset($config->RecommendationModules->$location)) {
                 $recommend[$location]
                     = $config->RecommendationModules->$location->toArray();
