@@ -9,12 +9,18 @@
 
   .collapse,
   .collapsing,
-  & > .facet {
+  &.full-facet-list .facet {
     position: relative;
     border-left: 1px solid @list-group-border;
     border-right: 1px solid @list-group-border;
   }
-  & > .facet:first-child { border-top: 1px solid @list-group-border; }
+  &.full-facet-list :first-child .facet { border-top: 1px solid @list-group-border; }
+}
+
+.facet__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .facet,
