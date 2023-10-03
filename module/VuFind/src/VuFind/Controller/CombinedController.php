@@ -338,18 +338,20 @@ class CombinedController extends AbstractSearch
         // Always leave noresults active (useful for 0-hit searches).
         // Display or hide top based on include_recommendations setting.
         // Display or hide side based on include_recommendations_side setting.
-        if (($settings['include_recommendations'] ?? false) || ($settings['include_recommendations_side'] ?? false)) {
-            $recommendOverride = [];
-            if (is_array($settings['include_recommendations'] ?? null)) {
-                $recommendOverride['top'] = $settings['include_recommendations'];
-            }
-            if (is_array($settings['include_recommendations_side'] ?? null)) {
-                $recommendOverride['side'] = $settings['include_recommendations_side'];
-            }
-            $query->recommendOverride = $recommendOverride;
+        $recommendOverride = [];
+        $noRecommend = [];
+        if (is_array($settings['include_recommendations'] ?? false)) {
+            $recommendOverride['top'] = $settings['include_recommendations'];
         } else {
-            $query->noRecommend = 'top,side';
+            $noRecommend[] = 'top';
         }
+        if (is_array($settings['include_recommendations_side'] ?? false)) {
+            $recommendOverride['side'] = $settings['include_recommendations_side'];
+        } else {
+            $noRecommend[] = 'side';
+        }
+        $query->recommendOverride = $recommendOverride;
+        $query->noRecommend = count($noRecommend) ? join(",", $noRecommend) : false;
     }
 
     /**
