@@ -389,7 +389,7 @@ class HierarchicalFacetHelper implements
      *
      * @return array
      */
-    public function filterFacets($facets, $filters, $excludeFilters)
+    public function filterFacets($facets, $filters, $excludeFilters): array
     {
         if (!empty($filters)) {
             foreach ($facets as $key => &$facet) {

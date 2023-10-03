@@ -419,6 +419,261 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test exclude filters
+     *
+     * @return void
+     */
+    public function testExcludeFilters()
+    {
+        $config = $this->getMockConfigPluginManager(
+            [
+                'facets' => [
+                    'SpecialFacets' => [
+                        'hierarchical' => [
+                            'building',
+                            'format',
+                        ],
+                    ],
+                    'ExcludeFilters' => [
+                        'format' => [
+                            '1/Book/AudioBook/',
+                        ],
+                    ],
+                ],
+            ]
+        );
+
+        $results = $this->getResultsFromResponse(
+            [
+                'response' => [
+                    'numFound' => 7,
+                ],
+                'facet_counts' => [
+                    'facet_fields' => [
+                        'building' => [
+                            ['0/Helsinki/', 25],
+                            ['1/Helsinki/NatLibFi/', 15],
+                            ['1/Helsinki/Library/', 15],
+                        ],
+                        'format' => [
+                            ['0/Book/', 123],
+                            ['1/Book/AudioBook/', 25],
+                            ['1/Book/EBook/', 12],
+                            ['1/Book/ColoringBook/', 12],
+                        ],
+                    ],
+                ],
+            ],
+            $this->getParams(null, $config)
+        );
+
+        $results->setHierarchicalFacetHelper(new HierarchicalFacetHelper());
+
+        $facets = $results->getFacetList(
+            [
+                'format' => 'Format',
+                'building' => 'Building',
+                'media_type_str_mv' => 'media_type_str_mv',
+            ]
+        );
+
+        $this->assertEquals(
+            [
+                'format' => [
+                    'label' => 'Format',
+                    'list' => [
+                        [
+                            'value' => '0/Book/',
+                            'displayText' => new TranslatableString(
+                                '0/Book/',
+                                'Book'
+                            ),
+                            'count' => 123,
+                            'operator' => 'AND',
+                            'isApplied' => false,
+                        ],
+                        [
+                            'value' => '1/Book/EBook/',
+                            'displayText' => new TranslatableString(
+                                '1/Book/EBook/',
+                                'EBook'
+                            ),
+                            'count' => 12,
+                            'operator' => 'AND',
+                            'isApplied' => false,
+                        ],
+                        [
+                            'value' => '1/Book/ColoringBook/',
+                            'displayText' => new TranslatableString(
+                                '1/Book/ColoringBook/',
+                                'ColoringBook'
+                            ),
+                            'count' => 12,
+                            'operator' => 'AND',
+                            'isApplied' => false,
+                        ],
+                    ],
+                ],
+                'building' => [
+                    'label' => 'Building',
+                    'list' => [
+                        [
+                            'value' => '0/Helsinki/',
+                            'displayText' => new TranslatableString(
+                                '0/Helsinki/',
+                                'Helsinki'
+                            ),
+                            'count' => 25,
+                            'operator' => 'AND',
+                            'isApplied' => false,
+                        ],
+                        [
+                            'value' => '1/Helsinki/NatLibFi/',
+                            'displayText' => new TranslatableString(
+                                '1/Helsinki/NatLibFi/',
+                                'NatLibFi'
+                            ),
+                            'count' => 15,
+                            'operator' => 'AND',
+                            'isApplied' => false,
+                        ],
+                        [
+                            'value' => '1/Helsinki/Library/',
+                            'displayText' => new TranslatableString(
+                                '1/Helsinki/Library/',
+                                'Library'
+                            ),
+                            'count' => 15,
+                            'operator' => 'AND',
+                            'isApplied' => false,
+                        ],
+                    ],
+                ],
+            ],
+            $facets
+        );
+    }
+
+    /**
+     * Test facet filters
+     *
+     * @return void
+     */
+    public function testFacetFilters()
+    {
+        $config = $this->getMockConfigPluginManager(
+            [
+                'facets' => [
+                    'SpecialFacets' => [
+                        'hierarchical' => [
+                            'building',
+                            'format',
+                        ],
+                    ],
+                    'FacetFilters' => [
+                        'format' => [
+                            '1/Book/AudioBook/',
+                        ],
+                        'building' => [
+                            '1/Helsinki/Library',
+                        ],
+                    ],
+                ],
+            ]
+        );
+
+        $results = $this->getResultsFromResponse(
+            [
+                'response' => [
+                    'numFound' => 7,
+                ],
+                'facet_counts' => [
+                    'facet_fields' => [
+                        'building' => [
+                            ['0/Helsinki/', 25],
+                            ['1/Helsinki/NatLibFi/', 15],
+                            ['1/Helsinki/Library/', 15],
+                        ],
+                        'format' => [
+                            ['0/Book/', 123],
+                            ['1/Book/AudioBook/', 25],
+                            ['1/Book/EBook/', 12],
+                            ['1/Book/ColoringBook/', 12],
+                        ],
+                    ],
+                ],
+            ],
+            $this->getParams(null, $config)
+        );
+
+        $results->setHierarchicalFacetHelper(new HierarchicalFacetHelper());
+
+        $facets = $results->getFacetList(
+            [
+                'format' => 'Format',
+                'building' => 'Building',
+                'media_type_str_mv' => 'media_type_str_mv',
+            ]
+        );
+
+        $this->assertEquals(
+            [
+                'format' => [
+                    'label' => 'Format',
+                    'list' => [
+                        [
+                            'value' => '0/Book/',
+                            'displayText' => new TranslatableString(
+                                '0/Book/',
+                                'Book'
+                            ),
+                            'count' => 123,
+                            'operator' => 'AND',
+                            'isApplied' => false,
+                        ],
+                        [
+                            'value' => '1/Book/AudioBook/',
+                            'displayText' => new TranslatableString(
+                                '1/Book/AudioBook/',
+                                'AudioBook'
+                            ),
+                            'count' => 25,
+                            'operator' => 'AND',
+                            'isApplied' => false,
+                        ],
+                    ],
+                ],
+                'building' => [
+                    'label' => 'Building',
+                    'list' => [
+                        [
+                            'value' => '0/Helsinki/',
+                            'displayText' => new TranslatableString(
+                                '0/Helsinki/',
+                                'Helsinki'
+                            ),
+                            'count' => 25,
+                            'operator' => 'AND',
+                            'isApplied' => false,
+                        ],
+                        [
+                            'value' => '1/Helsinki/Library/',
+                            'displayText' => new TranslatableString(
+                                '1/Helsinki/Library/',
+                                'Library'
+                            ),
+                            'count' => 15,
+                            'operator' => 'AND',
+                            'isApplied' => false,
+                        ],
+                    ],
+                ],
+            ],
+            $facets
+        );
+    }
+
+    /**
      * Get Results object
      *
      * @param Params        $params        Params object

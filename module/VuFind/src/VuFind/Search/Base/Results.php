@@ -858,6 +858,18 @@ abstract class Results
                     'isApplied'
                 );
             }
+            if ($hierarchical && method_exists($this->hierarchicalFacetHelper, 'filterFacets')) {
+                $excludeFilters = $this->getOptions()->getExcludeFilters();
+                $facetFilters = $this->getOptions()->getFacetFilters();
+                if (empty($excludeFilters[$field]) && empty($facetFilters[$field])) {
+                    continue;
+                }
+                $result[$field]['list'] = $this->hierarchicalFacetHelper->filterFacets(
+                    $result[$field]['list'],
+                    $facetFilters[$field] ?? [],
+                    $excludeFilters[$field] ?? []
+                );
+            }
         }
         return $result;
     }
