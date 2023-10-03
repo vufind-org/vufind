@@ -40,6 +40,7 @@ use VuFind\Search\UrlQueryHelper;
 use function array_slice;
 use function count;
 use function is_string;
+use function strlen;
 
 /**
  * Functions for manipulating facets
