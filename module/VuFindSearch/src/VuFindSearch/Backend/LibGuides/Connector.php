@@ -218,7 +218,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             if ($this->displayDescription) {
                 $descriptionCount = preg_match_all($descriptionRegex, $itemMatches[1][$i], $descriptionMatches);
                 if ($descriptionCount >= 1) {
-                    $item['description'] = $descriptionMatches[1][0];
+                    $item['description'] = strip_tags(html_entity_decode($descriptionMatches[1][0]));
                 }
             }
 
