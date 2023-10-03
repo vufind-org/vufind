@@ -32,32 +32,36 @@
     }
   }
 ?>
-<div<?php if ($truncateSettings): ?> class="truncate-facets" data-truncate="<?=$this->htmlSafeJsonEncode($truncateSettings)?>"<?php endif; ?>>
+<ul <?php if ($truncateSettings): ?>class="facet__list truncate-facets" data-truncate="<?=$this->htmlSafeJsonEncode($truncateSettings)?>"<?php else: ?>class="facet__list"<?php endif; ?>>
   <?php foreach ($this->cluster['list'] as $i => $thisFacet): ?>
-    <?php if ($i == $this->facets_before_more): ?>
-      <?php if ($alwaysUseLightbox): ?>
-        <a class="facet narrow-toggle more-facets" data-lightbox href="<?=$moreUrl ?>" rel="nofollow">
-          <span class="text"><?=$this->transEsc('more_ellipsis')?></span>
-        </a>
-        <?php break; ?>
+    <li class="facet__list__item">
+      <?php if ($i == $this->facets_before_more): ?>
+        <?php if ($alwaysUseLightbox): ?>
+          <a class="facet narrow-toggle more-facets" data-lightbox href="<?=$moreUrl ?>" rel="nofollow">
+            <span class="text"><?=$this->transEsc('more_ellipsis')?></span>
+          </a>
+          <?php break; ?>
+        <?php endif; ?>
       <?php endif; ?>
-    <?php endif; ?>
-    <?=$this->render('Recommend/SideFacets/single-facet.phtml', [
-      'exclude' => $this->allowExclude,
-      'facet' => $thisFacet,
-      'group' => $this->title,
-      'url' => $this->results->getUrlQuery(),
-      'urlBase' => '',
-    ]) ?>
+
+      <?=$this->render('Recommend/SideFacets/single-facet.phtml', [
+        'exclude' => $this->allowExclude,
+        'facet' => $thisFacet,
+        'group' => $this->title,
+        'url' => $this->results->getUrlQuery(),
+        'urlBase' => '',
+      ]) ?>
+    </li>
   <?php endforeach; ?>
 
   <?php /* LESS and SEE MORE links */ ?>
   <?php if (isset($i) && $i >= $this->facets_before_more): ?>
     <?php if ($this->showMoreInLightbox === 'more' && $facetLightbox): ?>
-      <a class="facet narrow-toggle all-facets" data-lightbox href="<?=$moreUrl ?>" rel="nofollow">
-        <span class="text"><?=$this->transEsc('see_all_ellipsis')?></span>
-      </a>
+      <li class="facet__list__item">
+        <a class="facet narrow-toggle all-facets" data-lightbox href="<?=$moreUrl ?>" rel="nofollow">
+          <span class="text"><?=$this->transEsc('see_all_ellipsis')?></span>
+        </a>
+      </li>
     <?php endif; ?>
   <?php endif; ?>
-
-</div>
+</ul>

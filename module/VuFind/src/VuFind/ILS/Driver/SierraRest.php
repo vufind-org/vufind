@@ -899,7 +899,7 @@ class SierraRest extends AbstractBase implements
                 'offset' => $offset,
                 'sortField' => 'outDate',
                 'sortOrder' => $sortOrder,
-                'fields' => 'item,outDate',
+                'fields' => 'bib,item,outDate',
             ],
             'GET',
             $patron
@@ -1688,7 +1688,7 @@ class SierraRest extends AbstractBase implements
      */
     protected function extractVolume($item)
     {
-        foreach ($item['varFields'] as $varField) {
+        foreach ($item['varFields'] ?? [] as $varField) {
             if ($varField['fieldTag'] == 'v') {
                 return trim($varField['content']);
             }
@@ -3265,10 +3265,17 @@ class SierraRest extends AbstractBase implements
         if (!$transactions) {
             return [];
         }
-        // Fetch items
+        // Fetch items and collect bib id mappings if available:
         $itemIds = [];
+        $bibIdsToItems = [];
         foreach ($transactions as $transaction) {
-            $itemIds[] = $this->extractId($transaction['item']);
+            $itemId = $this->extractId($transaction['item']);
+            $itemIds[] = $itemId;
+            // Historical transactions include the bib id. Collect them here so that
+            // we can get the bib data even if the item doesn't exist anymore:
+            if ($bibId = $transaction['bib'] ?? null) {
+                $bibIdsToItems[$this->extractId($bibId)][$itemId] = true;
+            }
         }
         $itemsResult = $this->makeRequest(
             [$this->apiBase, 'items'],
@@ -3279,15 +3286,17 @@ class SierraRest extends AbstractBase implements
             'GET',
             $patron
         );
+        // Map items to an array and collect further bib id mappings:
         $items = [];
-        $bibIdsToItems = [];
         foreach ($itemsResult['entries'] as $item) {
-            $items[(string)$item['id']] = $item;
-            if (!empty($item['bibIds'][0])) {
-                $bibIdsToItems[(string)$item['bibIds'][0]] = (string)$item['id'];
+            $itemId = (string)$item['id'];
+            $items[$itemId] = $item;
+            if ($bibId = (string)($item['bibIds'][0] ?? '')) {
+                // Collect all item id's for each bib:
+                $bibIdsToItems[$bibId][$itemId] = true;
             }
         }
-        // Fetch bibs for the items
+        // Fetch bibs for the items:
         $bibsResult = $this->makeRequest(
             [$this->apiBase, 'bibs'],
             [
@@ -3298,8 +3307,10 @@ class SierraRest extends AbstractBase implements
             $patron
         );
         foreach ($bibsResult['entries'] as $bib) {
-            // Add bib data to the items
-            $items[$bibIdsToItems[(string)$bib['id']]]['bib'] = $bib;
+            // Add bib data to the items:
+            foreach (array_keys($bibIdsToItems[(string)$bib['id']]) as $itemId) {
+                $items[$itemId]['bib'] = $bib;
+            }
         }
 
         return $items;
