@@ -413,7 +413,7 @@ body.rtl {
         padding: 0 .5rem;
         white-space: nowrap;
       }
-    }  
+    }
   }
 }
 
@@ -518,7 +518,7 @@ body.rtl {
   display: flex;
   gap: 1rem;
   align-items: start;
-  margin-block: 0.5rem;
+  margin-block-start: 0.5rem;
 
   .retain-filters {
     float: right;
@@ -544,6 +544,7 @@ body.rtl {
   }
   .filters {
     flex: 10 1 auto;
+    margin-block-start: 0.25rem;
 
     .collapse {
       display: none;
@@ -565,7 +566,7 @@ body.rtl {
     }
     .filter-value {
       display: inline-block;
-      margin: 5px;
+      margin-block: 5px;
       padding: 2px 8px;
       font-weight: 600;
       color: #fff;
@@ -587,6 +588,7 @@ body.rtl {
     }
     .title-value-pair {
       display: inline-block;
+      margin-inline-end: 0.5rem;
     }
   }
 }
@@ -599,6 +601,7 @@ body.rtl {
   gap: 0.25rem;
 
   margin-bottom: 4px;
+  margin-top: 4px;
   padding: .5rem 1rem;
   border: 0;
   color: #555;
