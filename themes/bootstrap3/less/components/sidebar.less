@@ -9,12 +9,18 @@
 
   .collapse,
   .collapsing,
-  & > .facet {
+  &.full-facet-list .facet {
     position: relative;
     border-left: 1px solid @list-group-border;
     border-right: 1px solid @list-group-border;
   }
-  & > .facet:first-child { border-top: 1px solid @list-group-border; }
+  &.full-facet-list :first-child .facet { border-top: 1px solid @list-group-border; }
+}
+
+.facet__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .facet,
@@ -31,7 +37,7 @@
   display: flex;
   align-items: center;
 
-  .text, .hierarchical-facet-anchor {
+  .text {
     display: flex;
     gap: 0.25rem;
     align-items: center;
@@ -86,9 +92,15 @@
   color: #fff;
   background-color: #000;
 }
+.facet .text {
+  overflow: hidden;
+}
 
 .top-facets-contents {
+  display: block;
   margin: 2px 0;
+  padding: 0;
+  list-style: none;
 }
 .top-facets .facet,
 .top-facets > strong {
@@ -183,4 +195,92 @@ h3.facet-title {
 @media (min-width: 768px) {
   .author-facets { display: flex; }
   .author-list { flex: 0 1 100%; }
+}
+
+.facet-tree {
+  padding-left: 0;
+
+  ul {
+    padding: 0;
+    width: 100%;
+  }
+
+  li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    // Ensure that there is enough room for a button focus outline:
+    padding-left: .2rem;
+
+    .facet-tree__toggle-expanded {
+      flex: 1 1;
+      border: 0;
+      background: none;
+      max-width: 1.5em;
+
+      &:hover {
+        background-color: @list-group-hover-bg;
+      }
+
+      &[aria-expanded=false] {
+        .facet-tree__collapse {
+          display: none;
+        }
+        & ~ ul {
+          display: none;
+        }
+      }
+      &[aria-expanded=true] .facet-tree__expand {
+        display: none;
+      }
+    }
+
+    .facet-tree__item-container {
+      // Leave space for the open/close icon (see above):
+      width: calc(100% - 1.5em);
+
+      .text {
+        // Leave space for the badge:
+        width: calc(100% - 1.5em);
+      }
+
+      &--exclude .text {
+        // Leave space for the badge and exclude link:
+        width: calc(100% - 3.0em);
+      }
+
+      .facet-value {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        display: inline;
+      }
+    }
+
+    // Child items:
+    ul {
+      padding-left: 1rem;
+      flex: 1;
+      .facet {
+        // Smaller padding to make the list a bit more condensed:
+        padding-top: 0.3rem;
+        padding-bottom: 0.3rem;
+      }
+    }
+  }
+
+  .facet {
+    border: 0;
+    padding-left: .1rem;
+  }
+
+  // Top level bottom border:
+  & > ul > li, .more-less-btn-wrapper {
+    border-bottom: 1px solid @list-group-border;
+  }
+  // Make the first child level start a bit higher to counter the padding of top
+  // level items:
+  & > ul > li > ul {
+    margin-top: -0.2rem;
+  }
 }

@@ -703,6 +703,22 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test the getProxyingUsers method.
+     *
+     * @return void
+     */
+    public function testGetProxyingUsers(): void
+    {
+        $this->createConnector('get-proxying-users');
+        $patron = [
+            'id' => 'fakeid',
+        ];
+        $result = $this->driver->getProxyingUsers($patron);
+        $expected = ['foo' => 'Lastname, Proxity P.'];
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
      * Get expected result of get-holding fixture (shared by multiple tests).
      *
      * @return array
@@ -715,7 +731,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                 'callnumber' => 'PS2394 .M643 1883',
                 'id' => 'foo',
                 'item_id' => 'itemid',
-                'holding_id' => 'holdingid',
+                'holdings_id' => 'holdingid',
                 'number' => 1,
                 'enumchron' => '',
                 'barcode' => 'barcode-test',
@@ -780,7 +796,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                 'callnumber' => 'PS2394 .M643 1883',
                 'id' => 'instanceid',
                 'item_id' => 'itemid',
-                'holding_id' => 'holdingid',
+                'holdings_id' => 'holdingid',
                 'number' => 1,
                 'enumchron' => '',
                 'barcode' => 'barcode-test',
@@ -818,7 +834,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                 'callnumber' => 'PS2394 .M643 1883',
                 'id' => 'instanceid',
                 'item_id' => 'itemid',
-                'holding_id' => 'holdingid',
+                'holdings_id' => 'holdingid',
                 'number' => 1,
                 'enumchron' => '',
                 'barcode' => 'barcode-test',
@@ -854,7 +870,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                 'callnumber' => 'PS2394 .M643 1883',
                 'id' => 'instanceid',
                 'item_id' => 'itemid',
-                'holding_id' => 'holdingid',
+                'holdings_id' => 'holdingid',
                 'number' => 1,
                 'enumchron' => '',
                 'barcode' => 'barcode-test',
@@ -892,7 +908,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                 'callnumber' => 'PS2394 .M643 1883',
                 'id' => 'instanceid',
                 'item_id' => 'itemid2',
-                'holding_id' => 'holdingid',
+                'holdings_id' => 'holdingid',
                 'number' => 1,
                 'enumchron' => 'v.2',
                 'barcode' => 'barcode-test2',
@@ -915,7 +931,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                 'callnumber' => 'PS2394 .M643 1883',
                 'id' => 'instanceid',
                 'item_id' => 'itemid',
-                'holding_id' => 'holdingid',
+                'holdings_id' => 'holdingid',
                 'number' => 2,
                 'enumchron' => 'v.100',
                 'barcode' => 'barcode-test',
