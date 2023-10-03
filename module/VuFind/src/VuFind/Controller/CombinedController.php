@@ -337,7 +337,7 @@ class CombinedController extends AbstractSearch
 
         // Always leave noresults active (useful for 0-hit searches).
         // Display or hide top based on include_recommendations setting.
-        // Display or hide top based on include_recommendations_side setting.
+        // Display or hide side based on include_recommendations_side setting.
         if (($settings['include_recommendations'] ?? false) || ($settings['include_recommendations_side'] ?? false)) {
             $recommendOverride = [];
             if (is_array($settings['include_recommendations'] ?? null)) {
