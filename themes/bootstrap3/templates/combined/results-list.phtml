@@ -69,7 +69,7 @@
         <?=$this->recommend($current)?>
       <?php endforeach; ?>
       <?php foreach (($side = $results->getRecommendations('side')) as $current):
-        $recommendationClass = array_reverse(explode('\\', $current::class))[0];
+        $recommendationClass = str_replace('\\', '_', $current::class);
         $recommendationJs = <<<JS
             function addRecommendation_$recommendationClass() {
               const recommendationContainer = document.querySelector('#search-sidebar .recommendation_container__$recommendationClass');
