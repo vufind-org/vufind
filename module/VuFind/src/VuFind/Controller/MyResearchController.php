@@ -32,6 +32,7 @@
 namespace VuFind\Controller;
 
 use Laminas\View\Model\ViewModel;
+use VuFind\Controller\Feature\MultiPageSelectionTrait;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
 use VuFind\Exception\AuthInProgress as AuthInProgressException;
@@ -65,6 +66,7 @@ class MyResearchController extends AbstractBase
 {
     use Feature\CatchIlsExceptionsTrait;
     use \VuFind\ILS\Logic\SummaryTrait;
+    use MultiPageSelectionTrait;
 
     /**
      * Permission that must be granted to access this module (false for no
@@ -787,9 +789,7 @@ class MyResearchController extends AbstractBase
             : $this->url()->fromRoute('userList', ['id' => $listID]);
 
         // Fail if we have nothing to delete:
-        $ids = null === $this->params()->fromPost('selectAll')
-            ? $this->params()->fromPost('ids')
-            : $this->params()->fromPost('idsAll');
+        $ids = $this->getSelectedIds();
         if (!is_array($ids) || empty($ids)) {
             $this->flashMessenger()->addMessage('bulk_noitems_advice', 'error');
             return $this->redirect()->toUrl($newUrl);

@@ -90,6 +90,13 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
     protected $facets;
 
     /**
+     * All ids
+     *
+     * @var array
+     */
+    protected $allIds;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Params $params        Object representing user
@@ -207,6 +214,9 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
             $this->getParams()->getSort()
         );
         $this->resultTotal = count($rawResults);
+        $this->allIds = array_map(function ($result) {
+            return $result['source'] . '|' . $result['record_id'];
+        }, $rawResults->toArray());
 
         // Apply offset and limit if necessary!
         $limit = $this->getParams()->getLimit();
@@ -265,5 +275,15 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
                 ? null : $this->listTable->getExisting($listId);
         }
         return $this->list;
+    }
+
+    /**
+     * Get all ids.
+     *
+     * @return array
+     */
+    public function getAllIds()
+    {
+        return $this->allIds;
     }
 }
