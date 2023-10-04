@@ -193,7 +193,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
 });
 
 function registerSideFacetTruncation() {
-  VuFind.truncate.initTruncate('.truncate-facets', '.facet');
+  VuFind.truncate.initTruncate('.truncate-facets', '.facet__list__item');
   // Only top level is truncatable with hierarchical facets:
   VuFind.truncate.initTruncate('.truncate-hierarchical-facets', '> ul > li');
 }

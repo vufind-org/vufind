@@ -35,6 +35,7 @@ use VuFind\I18n\TranslatableString;
 use VuFind\Search\QueryAdapter;
 use VuFind\Solr\Utils as SolrUtils;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
+use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
 
@@ -1912,7 +1913,7 @@ class Params
     /**
      * Return search query object.
      *
-     * @return \VuFindSearch\Query\AbstractQuery
+     * @return AbstractQuery
      */
     public function getQuery()
     {
@@ -1920,6 +1921,21 @@ class Params
             return new Query($this->overrideQuery);
         }
         return $this->query;
+    }
+
+    /**
+     * Set search query object.
+     *
+     * @param AbstractQuery $query Query
+     *
+     * @return void
+     */
+    public function setQuery(AbstractQuery $query): void
+    {
+        if ($this->overrideQuery) {
+            $this->overrideQuery = false;
+        }
+        $this->query = $query;
     }
 
     /**

@@ -42,9 +42,10 @@ return [
         ['file' => 'lib/ajax_request_queue.js', 'priority' => 230],
         ['file' => 'common.js', 'priority' => 310],
         ['file' => 'lightbox.js', 'priority' => 320],
-        ['file' => 'truncate.js', 'priority' => 330],
-        ['file' => 'trigger_print.js', 'priority' => 340],
-        ['file' => 'observer_manager.js', 'priority' => 350],
+        ['file' => 'searchbox_controls.js', 'priority' => 330],
+        ['file' => 'truncate.js', 'priority' => 340],
+        ['file' => 'trigger_print.js', 'priority' => 350],
+        ['file' => 'observer_manager.js', 'priority' => 360],
     ],
     /**
      * Configuration for a single or multiple favicons.
@@ -112,6 +113,10 @@ return [
             'Collapse' => [
                 'template' => 'collapse',
             ],
+            // Unicode symbol characters. Icons are defined as hex code points.
+            'Unicode' => [
+                'template' => 'unicode',
+            ],
             /* For an example of an images set, see Bootprint's theme.config.php. */
         ],
         'aliases' => [
@@ -155,9 +160,9 @@ return [
             'external-link' => 'FontAwesome:link',
             'facet-applied' => 'FontAwesome:check',
             'facet-checked' => 'FontAwesome:check-square-o',
-            'facet-collapse' => 'FontAwesome:caret-down',
+            'facet-collapse' => 'Unicode:25BD',
             'facet-exclude' => 'FontAwesome:times',
-            'facet-expand' => 'FontAwesome:caret-right',
+            'facet-expand' => 'Unicode:25B6',
             'facet-noncollapsible' => 'FontAwesome:none',
             'facet-unchecked' => 'FontAwesome:square-o',
             'feedback' => 'FontAwesome:envelope',

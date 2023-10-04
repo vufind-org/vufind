@@ -60,6 +60,9 @@
       <?php endforeach; ?>
     </div>
   <?php endif; ?>
+  <?php if ($config['Layout']['jump_links'] ?? false): ?>
+    <?=$this->render('combined/jump-links.phtml', ['combinedResults' => $this->combinedResults])?>
+  <?php endif; ?>
   <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => ''])?>
   <?php
     $viewParams = [

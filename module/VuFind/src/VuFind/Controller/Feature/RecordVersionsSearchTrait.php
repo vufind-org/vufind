@@ -30,6 +30,8 @@
 
 namespace VuFind\Controller\Feature;
 
+use VuFindSearch\Query\WorkKeysQuery;
+
 use function is_callable;
 
 /**
@@ -60,14 +62,13 @@ trait RecordVersionsSearchTrait
             return $this->forwardTo('Search', 'Home');
         }
 
-        $query = $this->getRequest()->getQuery();
-        $query->lookfor = $versionsHelper->getSearchStringFromWorkKeys($keyData['keys']);
-        $query->type = $versionsHelper->getWorkKeysSearchType();
+        $query = new WorkKeysQuery(null, $keyData['keys']);
 
         // Don't save to history -- history page doesn't handle correctly:
         $this->saveToHistory = false;
 
-        $callback = function ($runner, $params, $searchId) {
+        $callback = function ($runner, $params, $searchId) use ($query) {
+            $params->setQuery($query);
             $defaultCallback = is_callable([$this, 'getSearchSetupCallback'])
                 ? $this->getSearchSetupCallback() : null;
             if (is_callable($defaultCallback)) {
@@ -86,7 +87,8 @@ trait RecordVersionsSearchTrait
             // won't in RSS mode):
             $view->results->getUrlQuery()
                 ->setDefaultParameter('id', $keyData['id'])
-                ->setDefaultParameter('keys', $keyData['keys'])
+                // original keys from the query, if it had any:
+                ->setDefaultParameter('keys', $this->params()->fromQuery('keys'))
                 ->setSuppressQuery(true);
             $view->driver = $keyData['driver'];
         }
