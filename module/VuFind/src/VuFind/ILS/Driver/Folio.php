@@ -692,7 +692,7 @@ class Folio extends AbstractAPI implements
         return $callNumberData + [
             'id' => $bibId,
             'item_id' => $item->id,
-            'holding_id' => $holdingDetails['id'],
+            'holdings_id' => $holdingDetails['id'],
             'number' => $number,
             'enumchron' => $enum,
             'barcode' => $item->barcode ?? '',

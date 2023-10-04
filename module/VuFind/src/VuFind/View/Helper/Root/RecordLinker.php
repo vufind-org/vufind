@@ -35,6 +35,7 @@ use VuFind\RecordDriver\AbstractBase as AbstractRecord;
 
 use function is_array;
 use function is_string;
+use function strlen;
 
 /**
  * Record linker view helper
@@ -304,7 +305,13 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
         ];
 
         $urlHelper = $this->getView()->plugin('url');
-        return $urlHelper($route, [], ['query' => $urlParams]);
+        $url = $urlHelper($route, [], ['query' => $urlParams]);
+        if (strlen($url) > 2048) {
+            // URL too long, leave out keys (we'll use the record ID primarily anyway):
+            unset($urlParams['keys']);
+            $url = $urlHelper($route, [], ['query' => $urlParams]);
+        }
+        return $url;
     }
 
     /**

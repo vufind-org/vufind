@@ -104,11 +104,22 @@ class Suggester
         $searcher = $request->get('searcher', 'Solr');
         $hiddenFilters = $request->get('hiddenFilters', []);
 
-        // If we're using a combined search box, we need to override the searcher
-        // and type settings.
-        if (substr($type, 0, 7) == 'VuFind:') {
+        if (str_starts_with($type, 'VuFind:')) {
+            // If we're using a combined search box, we need to override the searcher
+            // and type settings.
             [, $tmp] = explode(':', $type, 2);
             [$searcher, $type] = explode('|', $tmp, 2);
+        } elseif (
+            str_starts_with($type, 'External:')
+            && str_contains($type, '/Alphabrowse')
+        ) {
+            // If includeAlphaBrowse is turned on in searchbox.ini, we should use a
+            // special prefix to allow configuration of alphabrowse-specific handlers
+            [, $tmp] = explode('?', $type, 2);
+            parse_str($tmp, $browseQuery);
+            if (!empty($browseQuery['source'])) {
+                $type = 'alphabrowse_' . $browseQuery['source'];
+            }
         }
 
         // get Autocomplete_Type config
