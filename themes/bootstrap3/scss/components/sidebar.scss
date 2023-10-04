@@ -197,13 +197,8 @@ h3.facet-title {
   .author-list { flex: 0 1 100%; }
 }
 
-.facet-tree {
+.facet__tree {
   padding-left: 0;
-
-  ul {
-    padding: 0;
-    width: 100%;
-  }
 
   li {
     display: flex;
@@ -212,7 +207,7 @@ h3.facet-title {
     // Ensure that there is enough room for a button focus outline:
     padding-left: .2rem;
 
-    .facet-tree__toggle-expanded {
+    .facet__tree__toggle-expanded {
       flex: 1 1;
       border: 0;
       background: none;
@@ -223,19 +218,19 @@ h3.facet-title {
       }
 
       &[aria-expanded=false] {
-        .facet-tree__collapse {
+        .facet__tree__collapse {
           display: none;
         }
         & ~ ul {
           display: none;
         }
       }
-      &[aria-expanded=true] .facet-tree__expand {
+      &[aria-expanded=true] .facet__tree__expand {
         display: none;
       }
     }
 
-    .facet-tree__item-container {
+    .facet__tree__item-container {
       // Leave space for the open/close icon (see above):
       width: calc(100% - 1.5em);
 
@@ -275,12 +270,12 @@ h3.facet-title {
   }
 
   // Top level bottom border:
-  & > ul > li, .more-less-btn-wrapper {
+  & > li, .more-less-btn-wrapper {
     border-bottom: 1px solid $list-group-border;
   }
   // Make the first child level start a bit higher to counter the padding of top
   // level items:
-  & > ul > li > ul {
+  & > li > ul {
     margin-top: -0.2rem;
   }
 }

@@ -29,11 +29,11 @@ $thumbnail-width-large:  160px;
   list-style: none;
 }
 // Reset styling of hierarchical facets on the home page:
-.home-facet.facet-tree li {
+.home-facet.facet__tree li {
   line-height: inherit;
   padding-top: 0;
   padding-bottom: 0;
-  .facet-tree__toggle-expanded {
+  .facet__tree__toggle-expanded {
     line-height: inherit;
     padding-top: 0;
     padding-bottom: 0;

@@ -19,14 +19,11 @@
     'wrapper-tagname' => 'div',
   ];
 ?>
-<div class="facet-tree<?php if ($truncateSettings): ?> truncate-hierarchical-facets" data-truncate="<?=$this->htmlSafeJsonEncode($truncateSettings)?><?php endif; ?>">
-  <ul>
-    <?=$this->render('Recommend/SideFacets/hierarchical-facet-level.phtml', [
-      'allowExclude' => $this->allowExclude,
-      'facetList' => $this->cluster['list'],
-      'group' => $this->title,
-      'url' => $this->results->getUrlQuery(),
-      'urlBase' => '',
-    ]) ?>
-  </ul>
-</div>
+<ul class="facet__tree<?php if ($truncateSettings): ?> truncate-hierarchical-facets" data-truncate="<?=$this->htmlSafeJsonEncode($truncateSettings)?><?php endif; ?>">
+  <?=$this->render('Recommend/SideFacets/hierarchical-facet-level.phtml', [
+    'allowExclude' => $this->allowExclude,
+    'facetList' => $this->cluster['list'],
+    'group' => $this->title,
+    'url' => $this->results->getUrlQuery(),
+  ]) ?>
+</ul>

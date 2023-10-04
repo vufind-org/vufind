@@ -10,7 +10,7 @@
     <?php foreach ($facetList as $field => $details): ?>
       <?php $isHierarchy = in_array($field, $hierarchicalFacets ?? []); ?>
       <?php $labelHeading = $this->transEsc('home_browse_by_facet', ['%%facet%%' => $this->translate($details['label'])]); ?>
-      <div class="home-facet <?=$this->escapeHtmlAttr($field) ?><?=$isHierarchy ? ' facet-tree' : ''?>">
+      <div class="home-facet <?=$this->escapeHtmlAttr($field) ?><?=$isHierarchy ? ' facet__tree' : ''?>">
         <h2><?=$labelHeading?></h2>
         <div class="home-facet-container">
           <ul class="home-facet-list">
