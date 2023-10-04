@@ -200,6 +200,11 @@ h3.facet-title {
 .facet__tree {
   padding-left: 0;
 
+  // Constrain the width of lower levels to avoid overflow:
+  ul {
+    width: 100%;
+  }
+
   li {
     display: flex;
     flex-wrap: wrap;
