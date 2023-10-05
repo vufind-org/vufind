@@ -470,7 +470,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
 });
 
 function registerSideFacetTruncation() {
-  VuFind.truncate.initTruncate('.truncate-facets', '.facet');
+  VuFind.truncate.initTruncate('.truncate-facets', '.facet__list__item');
 }
 
 VuFind.listen('VuFind.sidefacets.loaded', registerSideFacetTruncation);

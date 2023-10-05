@@ -626,10 +626,10 @@ class UrlQueryHelper
         foreach ($a as $key => $value) {
             if (is_array($value)) {
                 foreach ($value as $current) {
-                    $parts[] = urlencode($key . '[]') . '=' . urlencode($current);
+                    $parts[] = urlencode($key . '[]') . '=' . urlencode($current ?? '');
                 }
             } else {
-                $parts[] = urlencode($key) . '=' . urlencode($value);
+                $parts[] = urlencode($key) . '=' . urlencode($value ?? '');
             }
         }
         $retVal = implode('&', $parts);

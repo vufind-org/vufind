@@ -1,16 +1,18 @@
-<div class="full-facet-list facet-group<?php if(!$active): ?> hidden<?php endif; ?>" id="facet-list-<?=$this->escapeHtmlAttr($key) ?>">
+<ul class="full-facet-list facet__list facet-group<?php if(!$active): ?> hidden<?php endif; ?>" id="facet-list-<?=$this->escapeHtmlAttr($key) ?>">
   <?php if ($active): ?>
     <?php if ($this->page > 1 && !$this->inLightbox && !$this->ajaxLightbox): ?>
       <a href="<?=$this->escapeHtmlAttr($urlBase . '&facetpage=' . ($this->page - 1) . '&facetsort=' . urlencode($this->sort) . '&contains=' . urlencode($this->contains))?>" class="facet js-facet-prev-page" data-page="<?=($this->page + 1) ?>" data-sort="<?=$this->sort ?>" data-limit="<?=count($this->data) ?>"><?=$this->translate('prev_ellipsis') ?></a>
     <?php endif; ?>
     <?php foreach ($this->data as $item): ?>
-      <?=$this->render('Recommend/SideFacets/single-facet.phtml', [
-        'exclude' => $this->exclude,
-        'facet' => $item,
-        'group' => $this->facet,
-        'url' => $this->results->getUrlQuery(),
-        'urlBase' => $this->searchAction,
-      ]) ?>
+      <li>
+        <?=$this->render('Recommend/SideFacets/single-facet.phtml', [
+          'exclude' => $this->exclude,
+          'facet' => $item,
+          'group' => $this->facet,
+          'url' => $this->results->getUrlQuery(),
+          'urlBase' => $this->searchAction,
+        ]) ?>
+      </li>
     <?php endforeach; ?>
   <?php endif; ?>
   <?php if ($this->anotherPage): ?>
@@ -18,4 +20,4 @@
       <span class="text"><?=$this->translate('more_ellipsis') ?></span>
     </a>
   <?php endif; ?>
-</div>
+</ul>

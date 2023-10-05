@@ -138,15 +138,20 @@ class ImportLokaliseCommand extends AbstractCommand
             if (!file_exists($targetFile)) {
                 $parts = explode('-', $targetFile);
                 if (count($parts) > 1) {
-                    array_pop($parts);
-                    $revisedTargetFile = implode('-', $parts) . '.ini';
-                    $matchingSourceFile = preg_replace(
-                        '/^' . preg_quote($targetDir, '/') . '/',
-                        $sourceDir,
-                        $revisedTargetFile
-                    );
-                    if (!in_array($matchingSourceFile, $sourceFiles)) {
-                        $targetFile = $revisedTargetFile;
+                    $lastPart = array_pop($parts);
+                    // If there's a slash in the last part, this means there's a hyphen
+                    // in a directory name somewhere. We should only process further if
+                    // the hyphen is in the FILENAME.
+                    if (!str_contains($lastPart, '/')) {
+                        $revisedTargetFile = implode('-', $parts) . '.ini';
+                        $matchingSourceFile = preg_replace(
+                            '/^' . preg_quote($targetDir, '/') . '/',
+                            $sourceDir,
+                            $revisedTargetFile
+                        );
+                        if (!in_array($matchingSourceFile, $sourceFiles)) {
+                            $targetFile = $revisedTargetFile;
+                        }
                     }
                 }
             }
