@@ -1,0 +1,17 @@
+<div class="eds-databases">
+  <?php $databases = $this->recommend->getResults(); ?>
+  <?php if (!empty($databases)): ?>
+    <h4><?=$this->transEsc('eds_databases')?></h4>
+    <div class="list-group">
+      <?php foreach ($databases as $database): ?>
+        <div class="list-group-item">
+          <span>
+            <a href="<?=$database->url?>" class="title">
+              <?=$this->escapeHtml($database->name)?>
+            </a>
+          </span>
+        </div>
+      <?php endforeach; ?>
+    </div>
+  <?php endif ?>
+</div>
