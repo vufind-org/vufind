@@ -481,7 +481,8 @@ class Options extends \VuFind\Search\Base\Options
         // Set up highlighting preference
         if (isset($this->searchSettings->General->highlighting)) {
             // For legacy config compatibility, support the "n" value to disable highlighting:
-            $this->highlight = (strtolower($this->searchSettings->General->highlighting) === 'n')
+            $falsyStrings = ['n', 'false'];
+            $this->highlight = in_array(strtolower($this->searchSettings->General->highlighting), $falsyStrings)
                 ? false
                 : (bool)$this->searchSettings->General->highlighting;
         }
