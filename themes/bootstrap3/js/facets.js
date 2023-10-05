@@ -70,7 +70,8 @@ VuFind.register('facetList', function FacetList() {
     });
 
     $('#btn-reset-contains').on('click', function onResetClick() {
-      $('.ajax_param[data-name="contains"]').val('');
+      // if you use .val('') here, it won't work in a lightbox.
+      $('.ajax_param[data-name="contains"]').attr('value', '');
       updateContent({facetpage: 1});
     });
   }
