@@ -35,7 +35,7 @@
       <div class="btn-group">
         <form>
           <input class="ajax_param" data-name="contains" class="form-control" type="text" value="<?=htmlspecialchars($this->contains)?>" aria-label="<?=$this->transEscAttr('search_terms')?>">
-          <button id="btn-reset-contains" type="reset" role="button" aria-label="<?=$this->transEsc('searchform_reset_button')?>"><?=$this->icon('trash')?></button>
+          <button id="btn-reset-contains" type="reset" role="button" aria-label="<?=$this->transEsc('searchform_reset_button')?>"><?=$this->icon('ui-reset-search')?></button>
 
           <?php $ajaxParams = ['facet' => $this->facet, 'facetexclude' => $this->exclude, 'facetop' => $this->operator, 'facetpage' => $this->page, 'facetsort' => $this->sort, 'urlBase' => $urlBase, 'searchAction' => $searchAction, 'ajaxLightbox' => intval($this->ajaxLightbox || $this->inLightbox)]; ?>
           <input class="ajax_params" type="hidden" data-params="<?=$this->htmlSafeJsonEncode($ajaxParams)?>">
