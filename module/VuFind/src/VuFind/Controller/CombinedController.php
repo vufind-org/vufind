@@ -229,10 +229,12 @@ class CombinedController extends AbstractSearch
         $columnSideRecommendations = [];
         $recommendationManager = $this->serviceLocator->get(\VuFind\Recommend\PluginManager::class);
         foreach ($config as $subconfig) {
-            foreach ($subconfig['include_recommendations_side'] ?? [] as $recommendation) {
-                $recommendationModuleName = strtok($recommendation, ':');
-                $recommendationModule = $recommendationManager->get($recommendationModuleName);
-                $columnSideRecommendations[] = str_replace('\\', '_', $recommendationModule::class);
+            if (is_array($subconfig['include_recommendations_side'] ?? false)) {
+                foreach ($subconfig['include_recommendations_side'] as $recommendation) {
+                    $recommendationModuleName = strtok($recommendation, ':');
+                    $recommendationModule = $recommendationManager->get($recommendationModuleName);
+                    $columnSideRecommendations[] = str_replace('\\', '_', $recommendationModule::class);
+                }
             }
         }
 
