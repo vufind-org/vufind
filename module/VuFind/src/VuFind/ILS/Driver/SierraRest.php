@@ -1433,7 +1433,7 @@ class SierraRest extends AbstractBase implements
 
         // Make sure pickup location is valid
         if (!$this->pickUpLocationIsValid($pickUpLocation, $patron, $holdDetails)) {
-            return $this->holdError('hold_invalid_pickup');
+            return $this->holdError('hold_invalid_pickup', false);
         }
 
         $request = [
@@ -2818,16 +2818,16 @@ class SierraRest extends AbstractBase implements
      *
      * Returns a Hold Error Message
      *
-     * @param string $msg An error message string
+     * @param string $msg    An error message string
+     * @param bool   $ilsMsg Whether the error is an ILS error message (needs formatting and any translations prefix)
      *
      * @return array An array with a success (boolean) and sysMessage key
      */
-    protected function holdError($msg)
+    protected function holdError($msg, bool $ilsMsg = true)
     {
-        $msg = $this->formatErrorMessage($msg);
         return [
             'success' => false,
-            'sysMessage' => $msg,
+            'sysMessage' => $ilsMsg ? $this->formatErrorMessage($msg) : $msg,
         ];
     }
 
@@ -2855,7 +2855,7 @@ class SierraRest extends AbstractBase implements
             },
             $msg
         );
-        return $msg;
+        return ($this->config['Catalog']['translationPrefix'] ?? '') . $msg;
     }
 
     /**
