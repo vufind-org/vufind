@@ -68,7 +68,7 @@
       <?php foreach (($top = $results->getRecommendations('top')) as $current): ?>
         <?=$this->recommend($current)?>
       <?php endforeach; ?>
-      <?php foreach (($side = $results->getRecommendations('side')) as $current):
+      <?php foreach (($results->getRecommendations('side')) as $current):
         $recommendationClass = str_replace('\\', '_', $current::class);
         $recommendationJs = <<<JS
             function addRecommendation_$recommendationClass() {
