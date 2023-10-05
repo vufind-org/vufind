@@ -32,6 +32,7 @@
 namespace VuFind\Search\EDS;
 
 use function count;
+use function in_array;
 use function is_callable;
 
 /**
