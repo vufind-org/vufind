@@ -73,7 +73,17 @@
         $recommendationJs = <<<JS
             function addRecommendation_$recommendationClass() {
               const recommendationContainer = document.querySelector('#search-sidebar .recommendation_container__$recommendationClass');
+              if (!recommendationContainer) {
+                console.error("Cannot find recommendation container for $recommendationClass");
+                return;
+              }
+
               const recommendation = document.getElementById('recommendation__$recommendationClass');
+              if (!recommendation) {
+                console.error("Cannot find recommendation for $recommendationClass");
+                return;
+              }
+
               recommendationContainer.append(recommendation);
               recommendation.style.display = 'inherit';
             }
