@@ -380,6 +380,24 @@ revoked boolean NOT NULL DEFAULT '0',
 PRIMARY KEY (id, type)
 );
 
+--
+-- Table structure for table `login_token`
+--
+
+DROP TABLE IF EXISTS "login_token";
+
+CREATE TABLE login_token (
+  id serial PRIMARY KEY,
+  user_id int NOT NULL,
+  token varchar(255) NOT NULL,
+  series varchar(255) NOT NULL,
+  last_login timestamp NOT NULL,
+  browser varchar(255),
+  platform varchar(255),
+  expires int NOT NULL,
+  last_session_id varchar(255)
+);
+
 -- --------------------------------------------------------
 
 --

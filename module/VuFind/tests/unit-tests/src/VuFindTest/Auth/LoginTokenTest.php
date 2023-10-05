@@ -65,10 +65,69 @@ class LoginTokenTest extends \PHPUnit\Framework\TestCase
               'loginToken' => '222;0;111'
             ]
         );
-        $loginToken = $this->getLoginToken($cookieManager);
-        
+        $mockToken = $this->getMockLoginToken();
+        $userTable = $this->getMockUserTable();
+        $userTable->expects($this->once())->method('getById')
+            ->with($this->equalTo(0))
+            ->will($this->returnValue($this->getMockUser()));
+        $tokenTable = $this->getMockLoginTokenTable();
+        $tokenTable->expects($this->once())->method('matchToken')
+            ->will($this->returnValue($mockToken));
+        $loginToken = $this->getLoginToken($cookieManager, $tokenTable, $userTable);
 
-        $this->assertEquals($user, $loginToken->tokenLogin('123'));
+        // Expect exception due to browscap.ini requirements
+        $this->expectException(\VuFind\Exception\Auth::class);
+        $loginToken->tokenLogin('123');
+    }
+
+    /**
+     * Test logging in with invalid token
+     *
+     * @return void
+     */
+    public function testTokenLoginInvalidToken()
+    {
+        $user = $this->getMockUser();
+        $cookieManager = $this->getCookieManager(
+            [
+              'loginToken' => '222;0;111'
+            ]
+        );
+        $mockToken = $this->getMockLoginToken();
+        $userTable = $this->getMockUserTable();
+        $userTable->expects($this->once())->method('getById')
+            ->with($this->equalTo(0))
+            ->will($this->returnValue($this->getMockUser()));
+        $tokenTable = $this->getMockLoginTokenTable();
+        $tokenTable->expects($this->once())->method('matchToken')
+            ->will($this->throwException(new \VuFind\Exception\LoginToken));
+        $tokenTable->expects($this->once())->method('getByUserId')
+            ->will($this->returnValue($mockToken));
+        $loginToken = $this->getLoginToken($cookieManager, $tokenTable, $userTable);
+        $this->assertNull($loginToken->tokenLogin('123'));        
+    }
+
+
+    /**
+     * Test failed login
+     *
+     * @return void
+     */
+    public function testTokenLoginFail()
+    {
+        $user = $this->getMockUser();
+        $userTable = $this->getMockUserTable();
+        $cookieManager = $this->getCookieManager(
+            [
+              'loginToken' => '222;0;111'
+            ]
+        );
+        $token = $this->getMockLoginToken();
+        $tokenTable = $this->getMockLoginTokenTable();
+        $tokenTable->expects($this->once())->method('matchToken')
+            ->will($this->returnValue(false));
+        $loginToken = $this->getLoginToken($cookieManager, $tokenTable, $userTable);
+        $this->assertNull($loginToken->tokenLogin('123'));
     }
 
     /**
@@ -81,10 +140,6 @@ class LoginTokenTest extends \PHPUnit\Framework\TestCase
         $table = $this->getMockBuilder(\VuFind\Db\Table\User::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $table->expects($this->once())->method('getById')
-            ->with($this->equalTo(0))
-            ->will($this->returnValue($this->getMockUser()));
-
         return $table;
     }
 
@@ -128,7 +183,6 @@ class LoginTokenTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValueMap($tokenData));
         $token->method('offsetGet')
             ->will($this->returnValueMap($tokenData));
-
         return $token;
     }
 
@@ -139,13 +193,9 @@ class LoginTokenTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockLoginTokenTable()
     {
-        $mockToken = $this->getMockLoginToken();
         $table = $this->getMockBuilder(\VuFind\Db\Table\LoginToken::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $table->expects($this->once())->method('matchToken')
-            ->with($this->equalTo(['token' => '111', 'user_id' => 0, 'series' => '222']))
-            ->will($this->returnValue($mockToken));
         return $table;
     }
 
@@ -171,14 +221,14 @@ class LoginTokenTest extends \PHPUnit\Framework\TestCase
      * Get login token
      *
      * @param CookieManager $cookieManager cookie manager
+     * @param LoginToken    $tokenTable    Login token table
+     * @param USer          $userTable     User table
      *
      * @return LoginToken
      */
-    protected function getLoginToken($cookieManager)
+    protected function getLoginToken($cookieManager, $tokenTable, $userTable)
     {
         $config = new Config([]);
-        $userTable = $this->getMockUserTable();
-        $loginTokenTable = $this->getMockLoginTokenTable();
         $sessionManager = new SessionManager();
         $mailer = $this->getMockBuilder(\VuFind\Mailer\Mailer::class)
             ->disableOriginalConstructor()
@@ -189,7 +239,7 @@ class LoginTokenTest extends \PHPUnit\Framework\TestCase
         return new LoginToken(
             $config,
             $userTable,
-            $loginTokenTable,
+            $tokenTable,
             $cookieManager,
             $sessionManager,
             $mailer,
