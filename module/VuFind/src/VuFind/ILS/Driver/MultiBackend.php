@@ -128,9 +128,8 @@ class MultiBackend extends AbstractMultiDriver
         \VuFind\Auth\ILSAuthenticator $ilsAuth,
         PluginManager $dm
     ) {
-        $this->configLoader = $configLoader;
+        parent::__construct($configLoader, $dm);
         $this->ilsAuth = $ilsAuth;
-        $this->driverManager = $dm;
     }
 
     /**

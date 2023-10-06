@@ -33,7 +33,6 @@
 namespace VuFindTest\ILS\Driver;
 
 use Laminas\Config\Exception\RuntimeException;
-use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Driver\AbstractMultiDriver;
 
 use function call_user_func_array;
@@ -213,47 +212,6 @@ abstract class AbstractMultiDriverTest extends \PHPUnit\Framework\TestCase
         );
         $val = $this->callMethod($driver, 'getDriverConfig', ['bad']);
         $this->assertEquals([], $val);
-    }
-
-    /**
-     * Get a mock ILS authenticator
-     *
-     * @param string $userSource Source id, if the authenticator should emulate a
-     * situation where a user has logged in. Set to null for the attempt to cause an
-     * exception.
-     *
-     * @return \VuFind\Auth\ILSAuthenticator
-     */
-    protected function getMockILSAuthenticator($userSource = '')
-    {
-        $mockAuth = $this->getMockBuilder(\VuFind\Auth\ILSAuthenticator::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        if ($userSource) {
-            $mockAuth->expects($this->any())
-                ->method('storedCatalogLogin')
-                ->will(
-                    $this->returnValue($this->getPatron('username', $userSource))
-                );
-            $mockAuth->expects($this->any())
-                ->method('getStoredCatalogCredentials')
-                ->will(
-                    $this->returnValue($this->getPatron('username', $userSource))
-                );
-        } elseif (null === $userSource) {
-            $e = new ILSException('Simulated exception from ILSAuthenticator');
-            $mockAuth->expects($this->any())
-                ->method('storedCatalogLogin')
-                ->will(
-                    $this->throwException($e)
-                );
-            $mockAuth->expects($this->any())
-                ->method('getStoredCatalogCredentials')
-                ->will(
-                    $this->throwException($e)
-                );
-        }
-        return $mockAuth;
     }
 
     /**

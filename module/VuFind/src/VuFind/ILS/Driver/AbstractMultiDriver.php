@@ -93,6 +93,20 @@ abstract class AbstractMultiDriver extends AbstractBase implements \Laminas\Log\
     protected $driverManager;
 
     /**
+     * Constructor
+     *
+     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
+     * @param PluginManager                $dm           ILS driver manager
+     */
+    public function __construct(
+        \VuFind\Config\PluginManager $configLoader,
+        PluginManager $dm
+    ) {
+        $this->configLoader = $configLoader;
+        $this->driverManager = $dm;
+    }
+
+    /**
      * Initialize the driver.
      *
      * Validate configuration and perform all resource-intensive tasks needed to

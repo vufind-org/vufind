@@ -87,7 +87,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Aleph::class => AlephFactory::class,
         Alma::class => DriverWithDateConverterFactory::class,
         Amicus::class => InvokableFactory::class,
-        ComposedDriver::class => ComposedDriverFactory::class,
+        ComposedDriver::class => AbstractMultiDriverFactory::class,
         DAIA::class => DriverWithDateConverterFactory::class,
         Demo::class => DemoFactory::class,
         Evergreen::class => DriverWithDateConverterFactory::class,
