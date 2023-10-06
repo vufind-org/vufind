@@ -45,7 +45,9 @@ use function is_array;
  */
 abstract class Base implements LoggerAwareInterface
 {
-    use \VuFind\Log\LoggerAwareTrait { debug as public debugTrait; }
+    use \VuFind\Log\LoggerAwareTrait {
+        debug as public debugTrait;
+    }
 
     /**
      * A boolean value determining whether to print debug information
