@@ -61,9 +61,9 @@ class Syndetics extends \VuFind\Content\AbstractCover implements \VuFind\Http\Ca
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $config Syndetics configuration
+     * @param ?\Laminas\Config\Config $config Syndetics configuration
      */
-    public function __construct($config)
+    public function __construct(?\Laminas\Config\Config $config = null)
     {
         $this->useSSL = $config->use_ssl ?? false;
         $this->useSyndeticsCoverImageFallback = $config->use_syndetics_cover_image_fallback ?? false;
