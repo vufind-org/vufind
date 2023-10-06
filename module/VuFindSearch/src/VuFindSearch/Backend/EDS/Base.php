@@ -30,8 +30,9 @@
 
 namespace VuFindSearch\Backend\EDS;
 
-use function is_array;
 use Laminas\Log\LoggerAwareInterface;
+
+use function is_array;
 
 /**
  * EBSCO Search API abstract base class
@@ -54,7 +55,7 @@ abstract class Base implements LoggerAwareInterface
      * @deprecated Set the logging level in the Logging section of config.ini.
      */
     protected $debug = false;
-    
+
     /**
      * EDS or EPF API host.
      *
@@ -159,7 +160,7 @@ abstract class Base implements LoggerAwareInterface
             $this->debugTrait($msg);
         }
     }
-    
+
     /**
      * Obtain edsapi search critera and application related settings
      *
