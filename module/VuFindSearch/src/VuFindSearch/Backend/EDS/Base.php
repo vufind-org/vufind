@@ -45,18 +45,7 @@ use function is_array;
  */
 abstract class Base implements LoggerAwareInterface
 {
-    use \VuFind\Log\LoggerAwareTrait {
-        debug as public debugTrait;
-    }
-
-    /**
-     * A boolean value determining whether to print debug information
-     *
-     * @var bool
-     *
-     * @deprecated Set the logging level in the Logging section of config.ini.
-     */
-    protected $debug = false;
+    use \VuFind\Log\LoggerAwareTrait;
 
     /**
      * EDS or EPF API host.
@@ -115,7 +104,6 @@ abstract class Base implements LoggerAwareInterface
      * @param array $settings Associative array of setting to use in
      *                        conjunction with the EDS API
      *    <ul>
-     *      <li>debug - boolean to control debug mode</li>
      *      <li>orgid - Organization making calls to the EDS API </li>
      *      <li>search_http_method - HTTP method for search API calls</li>
      *    </ul>
@@ -133,9 +121,6 @@ abstract class Base implements LoggerAwareInterface
                         break;
                     case 'session_url':
                         $this->sessionHost = $value;
-                        break;
-                    case 'debug':
-                        $this->debug = $value;
                         break;
                     case 'orgid':
                         $this->orgId = $value;
@@ -158,9 +143,7 @@ abstract class Base implements LoggerAwareInterface
      */
     protected function debugPrint($msg)
     {
-        if ($this->debug) {
-            $this->debugTrait($msg);
-        }
+        $this->debug($msg);
     }
 
     /**
@@ -173,7 +156,7 @@ abstract class Base implements LoggerAwareInterface
      */
     public function info($authenticationToken = null, $sessionToken = null)
     {
-        $this->debugTrait('Info');
+        $this->debug('Info');
         $url = $this->apiHost . '/info';
         $headers = $this->setTokens($authenticationToken, $sessionToken);
         return $this->call($url, $headers);
@@ -193,7 +176,7 @@ abstract class Base implements LoggerAwareInterface
         $isGuest = null,
         $authToken = null
     ) {
-        $this->debugTrait(
+        $this->debug(
             'Create Session for profile: '
             . "$profile, guest: $isGuest, authToken: $authToken "
         );
@@ -261,7 +244,7 @@ abstract class Base implements LoggerAwareInterface
         $highlightTerms = null,
         $extraQueryParams = []
     ) {
-        $this->debugTrait(
+        $this->debug(
             "Get Record. an: $an, dbid: $dbId, $highlightTerms: $highlightTerms"
         );
         $qs = $extraQueryParams + ['an' => $an, 'dbid' => $dbId];
@@ -288,7 +271,7 @@ abstract class Base implements LoggerAwareInterface
         $authenticationToken,
         $sessionToken
     ) {
-        $this->debugTrait(
+        $this->debug(
             "Get Record. pubId: $pubId"
         );
         $qs = ['id' => $pubId];
@@ -312,7 +295,7 @@ abstract class Base implements LoggerAwareInterface
         $method = $this->searchHttpMethod;
         $json = $method === 'GET' ? null : $query->convertToSearchRequestJSON();
         $qs = $method === 'GET' ? $query->convertToQueryStringParameterArray() : [];
-        $this->debugTrait(
+        $this->debug(
             'Query: ' . ($method === 'GET' ? print_r($qs, true) : $json)
         );
         $url = $this->apiHost . '/search';
@@ -365,7 +348,7 @@ abstract class Base implements LoggerAwareInterface
 
         $url = $data['url'] . '?' . http_build_query($params);
 
-        $this->debugTrait('Autocomplete URL: ' . $url);
+        $this->debug('Autocomplete URL: ' . $url);
         $response = $this->call($url, null, null, 'GET', null);
         return $raw ? $response : $this->parseAutocomplete($response);
     }
@@ -386,7 +369,7 @@ abstract class Base implements LoggerAwareInterface
         $orgid = null,
         $params = null
     ) {
-        $this->debugTrait(
+        $this->debug(
             "Authenticating: username: $username, password: XXXXXXX, orgid: $orgid"
         );
         $url = $this->authHost . '/uidauth';
@@ -471,7 +454,7 @@ abstract class Base implements LoggerAwareInterface
         // Build Query String Parameters
         $queryParameters = $this->createQSFromArray($params);
         $queryString = implode('&', $queryParameters);
-        $this->debugTrait("Querystring to use: $queryString ");
+        $this->debug("Querystring to use: $queryString ");
         // Build headers
         $headers = [
             'Accept' => $this->accept,
