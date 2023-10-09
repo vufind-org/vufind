@@ -63,7 +63,7 @@ class SyndeticsTest extends \PHPUnit\Framework\TestCase
     ): Syndetics {
         $loader = new Syndetics(new Config([
             'use_ssl' => false,
-            'use_syndetics_cover_image_fallback' => $useSyndeticsCoverImageFallback
+            'use_syndetics_cover_image_fallback' => $useSyndeticsCoverImageFallback,
         ]));
         if ($fixtureFile) {
             $mockDownloader = $this->getMockBuilder(CachingDownloader::class)
