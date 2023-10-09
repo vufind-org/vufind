@@ -148,16 +148,12 @@ class Syndetics extends \VuFind\Content\AbstractCover implements \VuFind\Http\Ca
      */
     protected function getImageFilenameFromSize($size)
     {
-        switch ($size) {
-            case 'small':
-                return 'SC.GIF';
-            case 'medium':
-                return 'MC.GIF';
-            case 'large':
-                return 'LC.JPG';
-            default:
-                return false;
-        }
+        return match ($size) {
+            'small' => 'SC.GIF',
+            'medium' => 'MC.GIF',
+            'large' => 'LC.JPG',
+            default => false,
+        };
     }
 
     /**
@@ -188,18 +184,14 @@ class Syndetics extends \VuFind\Content\AbstractCover implements \VuFind\Http\Ca
      */
     protected function getImageFilenameFromMetadata($xmldoc, $size)
     {
-        switch ($size) {
-            case 'small':
-                $elementName = 'SC';
-                break;
-            case 'medium':
-                $elementName = 'MC';
-                break;
-            case 'large':
-                $elementName = 'LC';
-                break;
-            default:
-                return false;
+        $elementName = match ($size) {
+            'small' => 'SC',
+            'medium' => 'MC',
+            'large' => 'LC',
+            default => false,
+        };
+        if ($elementName == false) {
+            return false;
         }
         $nodes = $xmldoc->getElementsByTagName($elementName);
         if ($nodes->length == 0) {
