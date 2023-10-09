@@ -121,11 +121,16 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     protected function getDriver($overrides = [])
     {
         // "Mock out" tag functionality to avoid database access:
-        $methods = [
-            'getBuildings', 'getDeduplicatedAuthors', 'getContainerTitle', 'getTags',
+        $onlyMethods = [
+            'getBuildings', 'getDeduplicatedAuthors', 'getContainerTitle', 'getTags', 'getSummary',
+        ];
+        $addMethods = [
+            'getFullTitle', 'getFullTitleAltScript', 'getAltFullTitle', 'getBuildingsAltScript',
+            'getNotExistingAltScript', 'getSummaryAltScript',
         ];
         $record = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
-            ->onlyMethods($methods)
+            ->onlyMethods($onlyMethods)
+            ->addMethods($addMethods)
             ->getMock();
         $record->expects($this->any())->method('getTags')
             ->will($this->returnValue([]));
@@ -144,6 +149,22 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         ];
         $record->expects($this->once())->method('getDeduplicatedAuthors')
             ->will($this->returnValue($authors));
+
+        // Functions for testing combine alt
+        $record->expects($this->any())->method('getFullTitle')
+            ->will($this->returnValue(['Standard Title']));
+        $record->expects($this->any())->method('getFullTitleAltScript')
+            ->will($this->returnValue('Alternative Title'));
+        $record->expects($this->any())->method('getAltFullTitle')
+            ->will($this->returnValue('Other Alternative Title'));
+        $record->expects($this->any())->method('getBuildingsAltScript')
+            ->will($this->returnValue(null));
+        $record->expects($this->any())->method('getNotExistingAltScript')
+            ->will($this->returnValue('Alternative Value'));
+        $record->expects($this->any())->method('getSummary')
+        ->will($this->returnValue(null));
+        $record->expects($this->any())->method('getSummaryAltScript')
+            ->will($this->returnValue('Alternative Summary'));
 
         // Load record data from fixture file:
         $fixture = $this->getJsonFixture('misc/testbug2.json');
@@ -349,6 +370,43 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
                 ];
             },
         ];
+        $spec['CombineAlt'] = [
+            'dataMethod' => 'getFullTitle',
+            'renderType' => 'CombineAlt',
+            'pos' => 4000,
+        ];
+        $spec['CombineAltPrioritizeAlt'] = [
+            'dataMethod' => 'getFullTitle',
+            'renderType' => 'CombineAlt',
+            'pos' => 4001,
+            'prioritizeAlt' => true,
+        ];
+        $spec['CombineAltDataMethod'] = [
+            'dataMethod' => 'getFullTitle',
+            'renderType' => 'CombineAlt',
+            'pos' => 4002,
+            'altDataMethod' => 'getAltFullTitle',
+        ];
+        $spec['CombineAltNoAltFunction'] = [
+            'dataMethod' => 'getFormats',
+            'renderType' => 'CombineAlt',
+            'pos' => 4003,
+        ];
+        $spec['CombineAltNoAltValue'] = [
+            'dataMethod' => 'getBuildings',
+            'renderType' => 'CombineAlt',
+            'pos' => 4004,
+        ];
+        $spec['CombineAltNoStdFunction'] = [
+            'dataMethod' => 'getNotExisting',
+            'renderType' => 'CombineAlt',
+            'pos' => 4005,
+        ];
+        $spec['CombineAltNoStdValue'] = [
+            'dataMethod' => 'getSummary',
+            'renderType' => 'CombineAlt',
+            'pos' => 4006,
+        ];
         $expected = [
             'Building' => 'prefix_0',
             'Published in' => '0',
@@ -369,6 +427,13 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'c' => 'c',
             'a' => 'a',
             'b' => 'b',
+            'CombineAlt' => 'Standard Title Alternative Title',
+            'CombineAltPrioritizeAlt' => 'Alternative Title Standard Title',
+            'CombineAltDataMethod' => 'Standard Title Other Alternative Title',
+            'CombineAltNoAltFunction' => 'Book',
+            'CombineAltNoAltValue' => '0',
+            'CombineAltNoStdFunction' => 'Alternative Value',
+            'CombineAltNoStdValue' => 'Alternative Summary',
         ];
         // Call the method specified by the data provider
         $results = $this->$function($driver, $spec);
