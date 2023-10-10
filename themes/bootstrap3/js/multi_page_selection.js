@@ -27,8 +27,8 @@ VuFind.register("multiPageSelection", function MultiPageSelection() {
     if (data.checkedDefault !== undefined) {
       form.querySelector('.checked_default').checked = data.checkedDefault;
     }
-    if (data.selectAllChecked !== undefined) {
-      form.querySelector('.checkbox-select-all').checked = data.selectAllChecked;
+    if (data.selectAllGlobalChecked !== undefined) {
+      form.querySelector('.checkbox-select-all-global').checked = data.selectAllGlobalChecked;
     }
   }
 
@@ -47,11 +47,52 @@ VuFind.register("multiPageSelection", function MultiPageSelection() {
       }
     });
     _sessionSet(form, 'nonDefaultIds', nonDefaultIds);
-    let selectAllChecked = form.querySelector('.checkbox-select-all').checked;
-    _sessionSet(form, 'selectAllChecked', selectAllChecked);
+    let selectAllGlobalChecked = form.querySelector('.checkbox-select-all-global').checked;
+    _sessionSet(form, 'selectAllGlobalChecked', selectAllGlobalChecked);
     _writeToForm(form, {
       'ids': nonDefaultIds,
       'checkedDefault': checkedDefault
+    });
+  }
+
+  function _selectAllCheckboxes(checkbox) {
+    var $form = checkbox.form ? $(checkbox.form) : $(checkbox).closest('form');
+    if (checkbox.checked) {
+      $form.find('.checkbox-select-item:not(:checked)').trigger('click');
+    } else {
+      $form.find('.checkbox-select-item:checked').trigger('click');
+      $form.find('.checkbox-select-all:checked').trigger('click');
+      $form.find('.checkbox-select-all-global:checked').trigger('click');
+    }
+    $('[form="' + $form.attr('id') + '"]').prop('checked', checkbox.checked);
+    $form.find('.checkbox-select-all').prop('checked', checkbox.checked);
+    $('.checkbox-select-all[form="' + $form.attr('id') + '"]').prop('checked', checkbox.checked);
+  }
+
+  function _setupCheckboxes() {
+    $('.checkbox-select-all').on('change', function selectAll() {
+      _selectAllCheckboxes(this);
+    });
+    $('.checkbox-select-all-global').on('change', function selectAllGlobal() {
+      _selectAllCheckboxes(this);
+      var $form = this.form ? $(this.form) : $(this).closest('form');
+      if (this.checked) {
+        $form.find('.checkbox-select-all-global:not(:checked)').trigger('click');
+      }
+      $form.find('.checkbox-select-all-global').prop('checked', this.checked);
+      $('.checkbox-select-all-global[form="' + $form.attr('id') + '"]').prop('checked', this.checked);
+    });
+    $('.checkbox-select-item').on('change', function selectAllDisable() {
+      var $form = this.form ? $(this.form) : $(this).closest('form');
+      if ($form.length === 0) {
+        return;
+      }
+      if (!$(this).prop('checked')) {
+        $form.find('.checkbox-select-all').prop('checked', false);
+        $form.find('.checkbox-select-all-global').prop('checked', false);
+        $('.checkbox-select-all[form="' + $form.attr('id') + '"]').prop('checked', false);
+        $('.checkbox-select-all-global[form="' + $form.attr('id') + '"]').prop('checked', false);
+      }
     });
   }
 
@@ -71,7 +112,7 @@ VuFind.register("multiPageSelection", function MultiPageSelection() {
 
     let nonDefaultIds = _sessionGet(form, 'nonDefaultIds') || [];
     let checkedDefault = _sessionGet(form, 'checkedDefault') || false;
-    let selectAllChecked = _sessionGet(form, 'selectAllChecked') || false;
+    let selectAllGlobalChecked = _sessionGet(form, 'selectAllGlobalChecked') || false;
 
     form.querySelectorAll('.checkbox-select-item').forEach(itemCheckbox => {
       itemCheckbox.checked = nonDefaultIds.includes(itemCheckbox.value) ? !checkedDefault : checkedDefault;
@@ -82,10 +123,10 @@ VuFind.register("multiPageSelection", function MultiPageSelection() {
     _writeToForm(form, {
       'ids': nonDefaultIds,
       'checkedDefault': checkedDefault,
-      'selectAllChecked': selectAllChecked
+      'selectAllGlobalChecked': selectAllGlobalChecked
     });
 
-    form.querySelector('.checkbox-select-all').addEventListener('change', (event) => {
+    form.querySelector('.checkbox-select-all-global').addEventListener('change', (event) => {
       _changeDefault(form, event.currentTarget.checked);
       _writeState(form);
     });
@@ -118,6 +159,7 @@ VuFind.register("multiPageSelection", function MultiPageSelection() {
   }
 
   function init() {
+    _setupCheckboxes();
     document.querySelectorAll('.multi-page-selection').forEach( multiPageForm => {
       _setupForm(multiPageForm);
     });
