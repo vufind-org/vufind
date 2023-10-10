@@ -28,7 +28,10 @@ VuFind.register("multiPageSelection", function MultiPageSelection() {
       form.querySelector('.checked_default').checked = data.checkedDefault;
     }
     if (data.selectAllGlobalChecked !== undefined) {
-      form.querySelector('.checkbox-select-all-global').checked = data.selectAllGlobalChecked;
+      let checkboxSelectAllGlobal = form.querySelector('.checkbox-select-all-global');
+      if (checkboxSelectAllGlobal != null) {
+        form.querySelector('.checkbox-select-all-global').checked = data.selectAllGlobalChecked;
+      }
     }
   }
 
@@ -47,8 +50,10 @@ VuFind.register("multiPageSelection", function MultiPageSelection() {
       }
     });
     _sessionSet(form, 'nonDefaultIds', nonDefaultIds);
-    let selectAllGlobalChecked = form.querySelector('.checkbox-select-all-global').checked;
-    _sessionSet(form, 'selectAllGlobalChecked', selectAllGlobalChecked);
+    let checkboxSelectAllGlobal = form.querySelector('.checkbox-select-all-global');
+    if (checkboxSelectAllGlobal != null) {
+      _sessionSet(form, 'selectAllGlobalChecked', checkboxSelectAllGlobal.checked);
+    }
     _writeToForm(form, {
       'ids': nonDefaultIds,
       'checkedDefault': checkedDefault
@@ -126,10 +131,14 @@ VuFind.register("multiPageSelection", function MultiPageSelection() {
       'selectAllGlobalChecked': selectAllGlobalChecked
     });
 
-    form.querySelector('.checkbox-select-all-global').addEventListener('change', (event) => {
-      _changeDefault(form, event.currentTarget.checked);
-      _writeState(form);
-    });
+    let checkboxSelectAllGlobal = form.querySelector('.checkbox-select-all-global');
+    if (checkboxSelectAllGlobal != null) {
+      checkboxSelectAllGlobal.addEventListener('change', (event) => {
+        _changeDefault(form, event.currentTarget.checked);
+        _writeState(form);
+      });
+    }
+
     window.addEventListener('beforeunload', () => _writeState(form));
   }
 

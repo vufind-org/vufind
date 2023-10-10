@@ -4,14 +4,19 @@
 <?php endif; ?>
 <?php $user = $this->auth()->isLoggedIn(); ?>
 <nav class="bulkActionButtons">
-  <div class="bulk-checkbox">
-    <input type="checkbox" name="selectAll" class="checkbox-select-all" id="myresearchCheckAll">
-    <label for="myresearchCheckAll"><?=$this->transEsc('select_all_on_page')?></label>
-  </div>
-  <div class="bulk-checkbox">
-    <input type="checkbox" name="selectAllGlobal" class="checkbox-select-all-global" id="myresearchCheckAllGlobal">
-    <label for="myresearchCheckAllGlobal"><?=$this->transEsc('select_all')?></label>
-  </div>
+  <?php $checkboxSelectAllType = $this->config()->get('config')['Social']['checkbox_select_all_type']; ?>
+  <?php if(in_array($checkboxSelectAllType, ['on_page', 'both'])): ?>
+    <div class="bulk-checkbox">
+      <input type="checkbox" name="selectAll" class="checkbox-select-all" id="myresearchCheckAll">
+      <label for="myresearchCheckAll"><?=$this->transEsc('select_all_on_page')?></label>
+    </div>
+  <?php endif; ?>
+  <?php if(in_array($checkboxSelectAllType, ['global', 'both'])): ?>
+    <div class="bulk-checkbox">
+      <input type="checkbox" name="selectAllGlobal" class="checkbox-select-all-global" id="myresearchCheckAllGlobal">
+      <label for="myresearchCheckAllGlobal"><?=$this->transEsc('select_all')?></label>
+    </div>
+  <?php endif; ?>
   <ul class="action-toolbar">
     <li><button class="toolbar-btn" type="submit" name="email" value="1" title="<?=$this->transEscAttr('email_selected')?>"><?=$this->icon('send-email') ?> <?=$this->transEsc('Email') ?></button>
     </li>
