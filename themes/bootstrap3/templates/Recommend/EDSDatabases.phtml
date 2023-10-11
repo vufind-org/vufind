@@ -9,7 +9,8 @@
       <?php foreach ($databases as $database): ?>
         <div class="list-group-item">
           <span>
-            <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($database->url))?>" class="title">
+            <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($database->url))?>" class="title" target="_blank">
+              <?=$this->icon('external-link') ?>
               <?=$this->escapeHtml($database->name)?>
             </a>
           </span>
