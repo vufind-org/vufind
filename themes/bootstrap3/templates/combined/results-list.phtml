@@ -68,12 +68,22 @@
       <?php foreach (($top = $results->getRecommendations('top')) as $current): ?>
         <?=$this->recommend($current)?>
       <?php endforeach; ?>
-      <?php foreach (($side = $results->getRecommendations('side')) as $current):
+      <?php foreach (($results->getRecommendations('side')) as $current):
         $recommendationClass = str_replace('\\', '_', $current::class);
         $recommendationJs = <<<JS
             function addRecommendation_$recommendationClass() {
               const recommendationContainer = document.querySelector('#search-sidebar .recommendation_container__$recommendationClass');
+              if (!recommendationContainer) {
+                console.error("Cannot find recommendation container for $recommendationClass");
+                return;
+              }
+
               const recommendation = document.getElementById('recommendation__$recommendationClass');
+              if (!recommendation) {
+                console.error("Cannot find recommendation for $recommendationClass");
+                return;
+              }
+
               recommendationContainer.append(recommendation);
               recommendation.style.display = 'inherit';
             }
