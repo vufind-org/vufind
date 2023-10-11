@@ -9,7 +9,7 @@
       <?php foreach ($databases as $database): ?>
         <div class="list-group-item">
           <span>
-            <a href="<?=$this->escapeHtmlAttr($database->url)?>" class="title">
+            <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($database->url))?>" class="title">
               <?=$this->escapeHtml($database->name)?>
             </a>
           </span>
