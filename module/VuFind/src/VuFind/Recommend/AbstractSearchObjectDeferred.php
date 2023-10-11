@@ -139,6 +139,11 @@ abstract class AbstractSearchObjectDeferred implements RecommendInterface
         $this->lookfor
             = $request->get(empty($settings[0]) ? 'lookfor' : $settings[0], '');
         $settings[0] = 'lookfor';
+
+        // If lookfor has somehow been set as an array, collapse it into a string:
+        if (is_array($this->lookfor)) {
+            $this->lookfor = implode(' ', $this->lookfor);
+        }
     }
 
     /**
