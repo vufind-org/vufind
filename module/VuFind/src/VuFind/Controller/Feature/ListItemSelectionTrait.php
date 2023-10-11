@@ -51,11 +51,11 @@ trait ListItemSelectionTrait
     {
         $checkedDefault = $this->params()->fromPost('checked_default') !== null;
         $nonDefaultIds = $this->params()->fromPost('non_default_ids');
-        $AllIdsGlobal = $this->params()->fromPost('all_ids_global', '[]');
+        $allIdsGlobal = $this->params()->fromPost('all_ids_global', '[]');
         if ($nonDefaultIds !== null) {
             $nonDefaultIds = json_decode($nonDefaultIds);
             return array_values(array_filter(
-                json_decode($AllIdsGlobal),
+                json_decode($allIdsGlobal),
                 function ($id) use ($checkedDefault, $nonDefaultIds) {
                     $nonDefaultId = in_array($id, $nonDefaultIds);
                     return $checkedDefault ^ $nonDefaultId;
