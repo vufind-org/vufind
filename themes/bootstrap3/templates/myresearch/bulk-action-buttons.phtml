@@ -4,14 +4,18 @@
 <?php endif; ?>
 <?php $user = $this->auth()->isLoggedIn(); ?>
 <nav class="bulkActionButtons">
-  <?php $checkboxSelectAllType = $this->config()->get('config')['Social']['checkbox_select_all_type']; ?>
+  <?php
+  $socialConfig = $this->config()->get('config')['Social'];
+  $multiPageSelection = $socialConfig['multi_page_selection'] ?? false;
+  $checkboxSelectAllType = $socialConfig['checkbox_select_all_type'] ?? 'none';
+  ?>
   <?php if(in_array($checkboxSelectAllType, ['on_page', 'both'])): ?>
     <div class="bulk-checkbox">
       <input type="checkbox" name="selectAll" class="checkbox-select-all" id="myresearchCheckAll">
       <label for="myresearchCheckAll"><?=$this->transEsc('select_all_on_page')?></label>
     </div>
   <?php endif; ?>
-  <?php if(in_array($checkboxSelectAllType, ['global', 'both'])): ?>
+  <?php if($multiPageSelection && in_array($checkboxSelectAllType, ['global', 'both'])): ?>
     <div class="bulk-checkbox">
       <input type="checkbox" name="selectAllGlobal" class="checkbox-select-all-global" id="myresearchCheckAllGlobal">
       <label for="myresearchCheckAllGlobal"><?=$this->transEsc('select_all')?></label>

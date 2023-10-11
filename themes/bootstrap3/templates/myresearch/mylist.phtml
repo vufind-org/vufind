@@ -88,9 +88,9 @@
   <?php endif; ?>
   <?php if ($recordTotal > 0): ?>
     <?php $multiPageSelection = $this->config()->get('config')['Social']['multi_page_selection'] ? ' multi-page-selection' : ''; ?>
-    <form class="form-inline<?= $multiPageSelection ?>" id="mps-favorites<?= ($list && !empty($list->id)) ? '-' . $list->id : ''?>" method="post" name="bulkActionForm" action="<?=$this->url('cart-myresearchbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
+    <form class="form-inline<?= $multiPageSelection ?>" id="form-favorites<?= ($list && !empty($list->id)) ? '-' . $list->id : ''?>" method="post" name="bulkActionForm" action="<?=$this->url('cart-myresearchbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
       <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', ['idPrefix' => '', 'list' => $list ?? null, 'account' => $this->account])?>
-      <input class="hidden mps-all-ids" type="text" name="mps_all_ids" value="<?= $this->escapeHtmlAttr(json_encode($this->results->getAllIds())) ?>">
+      <input class="hidden all-ids-global" type="text" name="all_ids_global" value="<?= $this->escapeHtmlAttr(json_encode($this->results->getAllIds())) ?>">
       <ul class="record-list">
         <?php foreach ($this->results->getResults() as $i => $current): ?>
           <?=$this->record($current)->getListEntry($list, $user)?>

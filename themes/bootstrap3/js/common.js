@@ -466,7 +466,7 @@ function resetCaptcha($form) {
 }
 
 function bulkFormHandler(event, data) {
-  if (VuFind.multiPageSelection.getAllSelected(event.target).length === 0) {
+  if (VuFind.listItemSelection.getAllSelected(event.target).length === 0) {
     VuFind.lightbox.alert(VuFind.translate('bulk_noitems_advice'), 'danger');
     return false;
   }

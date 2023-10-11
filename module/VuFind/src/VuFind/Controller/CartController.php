@@ -31,7 +31,7 @@ namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container;
-use VuFind\Controller\Feature\MultiPageSelectionTrait;
+use VuFind\Controller\Feature\ListItemSelectionTrait;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
 
@@ -49,7 +49,7 @@ use function strlen;
  */
 class CartController extends AbstractBase
 {
-    use MultiPageSelectionTrait;
+    use ListItemSelectionTrait;
 
     /**
      * Session container

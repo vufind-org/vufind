@@ -163,7 +163,7 @@ VuFind.register('cart', function Cart() {
       : $(_form);
     $("#updateCart, #bottom_updateCart").off("click").on("click", function cartUpdate() {
       var elId = this.id;
-      var selected = VuFind.multiPageSelection.getAllSelected($form[0]);
+      var selected = VuFind.listItemSelection.getAllSelected($form[0]);
       if (selected.length > 0) {
         var orig = getFullItems();
         $(selected).each(function cartCheckedItemsAdd() {

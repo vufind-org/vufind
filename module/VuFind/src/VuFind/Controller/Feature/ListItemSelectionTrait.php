@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Multi Page Selection
+ * List Item Selection
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Controller\Feature;
 use function in_array;
 
 /**
- * Multi Page Selection
+ * List Item Selection
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -40,7 +40,7 @@ use function in_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-trait MultiPageSelectionTrait
+trait ListItemSelectionTrait
 {
     /**
      * Get selected ids
@@ -51,11 +51,11 @@ trait MultiPageSelectionTrait
     {
         $checkedDefault = $this->params()->fromPost('checked_default') !== null;
         $nonDefaultIds = $this->params()->fromPost('non_default_ids');
-        $mpsAllIds = $this->params()->fromPost('mps_all_ids', '[]');
+        $AllIdsGlobal = $this->params()->fromPost('all_ids_global', '[]');
         if ($nonDefaultIds !== null) {
             $nonDefaultIds = json_decode($nonDefaultIds);
             return array_values(array_filter(
-                json_decode($mpsAllIds),
+                json_decode($AllIdsGlobal),
                 function ($id) use ($checkedDefault, $nonDefaultIds) {
                     $nonDefaultId = in_array($id, $nonDefaultIds);
                     return $checkedDefault ^ $nonDefaultId;
