@@ -31,6 +31,8 @@
 
 namespace VuFind\Recommend;
 
+use function is_array;
+
 /**
  * Abstract SearchObjectDeferred Recommendations Module (needs to be extended to use
  * a particular search object).
