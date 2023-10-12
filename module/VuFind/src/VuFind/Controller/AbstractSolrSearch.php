@@ -163,8 +163,8 @@ class AbstractSolrSearch extends AbstractSearch
         $facetHelper = $this->serviceLocator
             ->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class);
         $options = $this->getOptionsForClass();
-        $facetFilters = $options->getFacetFilters();
-        $excludeFilters = $options->getExcludeFilters();
+        $facetFilters = $options->getHierarchicalFacetFilters();
+        $excludeFilters = $options->getExcludeHierarchicalFilters();
         foreach ($facetList as $facet => &$list) {
             // Hierarchical facets: format display texts and sort facets
             // to a flat array according to the hierarchy

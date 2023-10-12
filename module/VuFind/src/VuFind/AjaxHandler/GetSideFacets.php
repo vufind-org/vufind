@@ -302,8 +302,8 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
                 'top' === $sortOptions[$facet]
             );
         }
-        $facetFilters = $options->getFacetFilters();
-        $excludeFilters = $options->getExcludeFilters();
+        $facetFilters = $options->getHierarchicalFacetFilters();
+        $excludeFilters = $options->getExcludeHierarchicalFilters();
         $result = $this->facetHelper->buildFacetArray(
             $facet,
             $facetList,

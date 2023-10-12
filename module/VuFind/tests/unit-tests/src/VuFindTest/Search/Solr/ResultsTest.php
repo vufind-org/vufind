@@ -436,7 +436,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                             'format',
                         ],
                     ],
-                    'ExcludeFilters' => [
+                    'ExcludeHierarchicalFilters' => [
                         'format' => [
                             '1/Book/AudioBook/',
                         ],
@@ -571,7 +571,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                             'format',
                         ],
                     ],
-                    'FacetFilters' => [
+                    'HierarchicalFacetFilters' => [
                         'format' => [
                             '1/Book/AudioBook/',
                         ],

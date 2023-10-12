@@ -313,7 +313,8 @@ abstract class Options implements TranslatorAwareInterface
     protected $firstlastNavigation = false;
 
     /**
-     * Should FacetFilters and ExcludeFilters apply in advanced search
+     * Should HierarchicalFacetFilters and ExcludeHierarchicalFilters
+     * apply in advanced search
      *
      * @var bool
      */
@@ -355,9 +356,12 @@ abstract class Options implements TranslatorAwareInterface
                 }
             }
         }
-        $this->filterFacetsInAdvanced = !empty($facetSettings->Advanced_Settings->enable_filters);
-        $this->excludeFilters = $facetSettings?->ExcludeFilters?->toArray() ?? [];
-        $this->facetFilters = $facetSettings?->FacetFilters?->toArray() ?? [];
+        $this->filterFacetsInAdvanced
+            = !empty($facetSettings->Advanced_Settings->enable_filters);
+        $this->excludeFilters
+            = $facetSettings?->ExcludeHierarchicalFilters?->toArray() ?? [];
+        $this->facetFilters
+            = $facetSettings?->HierarchicalFacetFilters?->toArray() ?? [];
     }
 
     /**
@@ -1155,7 +1159,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return array
      */
-    public function getExcludeFilters(): array
+    public function getExcludeHierarchicalFilters(): array
     {
         return $this->excludeFilters;
     }
@@ -1165,7 +1169,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return array
      */
-    public function getFacetFilters(): array
+    public function getHierarchicalFacetFilters(): array
     {
         return $this->facetFilters;
     }
