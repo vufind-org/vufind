@@ -313,7 +313,7 @@ abstract class Options implements TranslatorAwareInterface
     protected $firstlastNavigation = false;
 
     /**
-     * Should HierarchicalFacetFilters and ExcludeHierarchicalFilters
+     * Should HierarchicalFacetFilters and HierarchicalExcludeFilters
      * apply in advanced search
      *
      * @var bool
@@ -359,7 +359,7 @@ abstract class Options implements TranslatorAwareInterface
         $this->filterFacetsInAdvanced
             = !empty($facetSettings->Advanced_Settings->enable_filters);
         $this->excludeFilters
-            = $facetSettings?->ExcludeHierarchicalFilters?->toArray() ?? [];
+            = $facetSettings?->HierarchicalExcludeFilters?->toArray() ?? [];
         $this->facetFilters
             = $facetSettings?->HierarchicalFacetFilters?->toArray() ?? [];
     }
@@ -1159,7 +1159,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return array
      */
-    public function getExcludeHierarchicalFilters(): array
+    public function getHierarchicalExcludeFilters(): array
     {
         return $this->excludeFilters;
     }

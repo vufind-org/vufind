@@ -436,7 +436,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                             'format',
                         ],
                     ],
-                    'ExcludeHierarchicalFilters' => [
+                    'HierarchicalExcludeFilters' => [
                         'format' => [
                             '1/Book/AudioBook/',
                         ],
