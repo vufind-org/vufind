@@ -100,14 +100,15 @@ class RecordDataFormatter extends AbstractHelper
      * Should we allow a value? (Always accepts non-empty values; for empty
      * values, allows zero when configured to do so).
      *
-     * @param mixed $value   Data to check for zero value.
-     * @param array $options Rendering options.
+     * @param mixed $value            Data to check for zero value.
+     * @param array $options          Rendering options.
+     * @param array $ignoreCombineAlt If value should always be allowed when renderType is CombineAlt
      *
      * @return bool
      */
-    protected function allowValue($value, $options)
+    protected function allowValue($value, $options, $ignoreCombineAlt = false)
     {
-        if (!empty($value) || ($options['renderType'] ?? 'Simple') == 'CombineAlt') {
+        if (!empty($value) || ($ignoreCombineAlt && ($options['renderType'] ?? 'Simple') == 'CombineAlt')) {
             return true;
         }
         $allowZero = $options['allowZero'] ?? true;
@@ -126,7 +127,7 @@ class RecordDataFormatter extends AbstractHelper
     protected function render($field, $data, $options)
     {
         // Check whether the data is worth rendering.
-        if (!$this->allowValue($data, $options)) {
+        if (!$this->allowValue($data, $options, true)) {
             return null;
         }
 
@@ -407,6 +408,11 @@ class RecordDataFormatter extends AbstractHelper
         $altData = $this->extractData($altOptions);
 
         $altValue = $altData != null ? $this->$method($altData, $altOptions) : null;
+
+        // check if both values are not allowed
+        if (!$this->allowValue($stdValue, $options) && !$this->allowValue($altValue, $options)) {
+            return null;
+        }
 
         // render both values
         $helper = $this->getView()->plugin('record');
