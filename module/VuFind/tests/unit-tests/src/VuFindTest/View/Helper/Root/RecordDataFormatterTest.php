@@ -30,6 +30,7 @@
 namespace VuFindTest\View\Helper\Root;
 
 use Psr\Container\ContainerInterface;
+use VuFind\RecordDriver\Response\PublicationDetails;
 use VuFind\View\Helper\Root\RecordDataFormatter;
 use VuFind\View\Helper\Root\RecordDataFormatterFactory;
 
@@ -122,11 +123,12 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     {
         // "Mock out" tag functionality to avoid database access:
         $onlyMethods = [
-            'getBuildings', 'getDeduplicatedAuthors', 'getContainerTitle', 'getTags', 'getSummary',
+            'getBuildings', 'getDeduplicatedAuthors', 'getContainerTitle', 'getTags', 'getSummary', 'getNewerTitles',
         ];
         $addMethods = [
             'getFullTitle', 'getFullTitleAltScript', 'getAltFullTitle', 'getBuildingsAltScript',
-            'getNotExistingAltScript', 'getSummaryAltScript',
+            'getNotExistingAltScript', 'getSummaryAltScript', 'getNewerTitlesAltScript',
+            'getPublicationDetailsAltScript',
         ];
         $record = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
             ->onlyMethods($onlyMethods)
@@ -165,6 +167,14 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         ->will($this->returnValue(null));
         $record->expects($this->any())->method('getSummaryAltScript')
             ->will($this->returnValue('Alternative Summary'));
+        $record->expects($this->any())->method('getPublicationDetailsAltScript')
+            ->will($this->returnValue([
+                new PublicationDetails('Alt Place', 'Alt Name', 'Alt Date'),
+            ]));
+        $record->expects($this->any())->method('getNewerTitles')
+            ->will($this->returnValue(['New Title', 'Second New Title']));
+        $record->expects($this->any())->method('getNewerTitlesAltScript')
+            ->will($this->returnValue(['Alt New Title', 'Second Alt New Title']));
 
         // Load record data from fixture file:
         $fixture = $this->getJsonFixture('misc/testbug2.json');
@@ -407,9 +417,22 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'renderType' => 'CombineAlt',
             'pos' => 4006,
         ];
+        $spec['CombineAltArray'] = [
+            'dataMethod' => 'getNewerTitles',
+            'renderType' => 'CombineAlt',
+            'pos' => 4007,
+        ];
+        $spec['CombineAltRenderTemplate'] = [
+            'dataMethod' => 'getPublicationDetails',
+            'renderType' => 'CombineAlt',
+            'combineAltRenderType' => 'RecordDriverTemplate',
+            'template' => 'data-publicationDetails.phtml',
+            'pos' => 4008,
+        ];
         $expected = [
             'Building' => 'prefix_0',
             'Published in' => '0',
+            'New Title' => 'New TitleSecond New Title',
             'Main Author' => 'Vico, Giambattista, 1668-1744.',
             'Other Authors' => 'Pandolfi, Claudia.',
             'Format' => 'Book',
@@ -434,6 +457,8 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'CombineAltNoAltValue' => '0',
             'CombineAltNoStdFunction' => 'Alternative Value',
             'CombineAltNoStdValue' => 'Alternative Summary',
+            'CombineAltArray' => 'New TitleSecond New Title Alt New TitleSecond Alt New Title',
+            'CombineAltRenderTemplate' => 'Centro di Studi Vichiani, 1992 Alt Place Alt Name Alt Date',
         ];
         // Call the method specified by the data provider
         $results = $this->$function($driver, $spec);
