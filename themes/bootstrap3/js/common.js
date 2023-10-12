@@ -119,10 +119,6 @@ var VuFind = (function VuFind() {
   };
 
   var init = function init() {
-    // Create a template element for icon function
-    if (!_elementBase) {
-      _elementBase = document.createElement('div');
-    }
     for (var i = 0; i < _submodules.length; i++) {
       if (this[_submodules[i]].init) {
         this[_submodules[i]].init();
@@ -165,19 +161,23 @@ var VuFind = (function VuFind() {
   /**
    * Get an icon identified by a name.
    *
-   * @param {string} name          Name of the icon to create
+   * @param {String} name          Name of the icon to create
    * @param {Object} attrs         Object containing attributes,
    *                               key is the attribute of an HTMLElement,
    *                               value is the values to add for the attribute.
-   * @param {bool}   returnElement [Optional] Should the function return an HTMLElement.
+   * @param {Boolean}   returnElement [Optional] Should the function return an HTMLElement.
    *                               Default is false.
    *
-   * @returns {string|HTMLElement}
+   * @returns {String|HTMLElement}
    */
   var icon = function icon(name, attrs = {}, returnElement = false) {
     if (typeof _icons[name] == "undefined") {
       console.error("JS icon missing: " + name);
       return name;
+    }
+    // Create a template element for icon function
+    if (!_elementBase) {
+      _elementBase = document.createElement('div');
     }
     const cacheKey = `${name}||${JSON.stringify(attrs)}`;
     if (_iconsCache[cacheKey]) {
@@ -193,16 +193,14 @@ var VuFind = (function VuFind() {
     // Add additional attributes
     function addAttrs(_element, _attrs = {}) {
       Object.keys(_attrs).forEach(key => {
-        let newAttrs = _attrs[key].split(" ");
-        const oldAttrs = _element.getAttribute(key);
-        if (oldAttrs !== null) {
-          newAttrs = [...newAttrs, ...oldAttrs.split(" ")];
-          // Remove duplicate values
-          newAttrs = newAttrs.filter((item, pos) => {
-            return newAttrs.indexOf(item) === pos;
-          });
+        if (key !== 'class') {
+          _element.setAttribute(key, _attrs[key]);
+          return;
         }
-        _element.setAttribute(key, newAttrs.join(" "));
+        let newAttrs = _attrs[key].split(" ");
+        const oldAttrs = _element.getAttribute(key) || [];
+        const newAttrsSet = new Set([...newAttrs, ...oldAttrs.split(" ")]);
+        _element.className = Array.from(newAttrsSet).join(" ");
       });
     }
 
