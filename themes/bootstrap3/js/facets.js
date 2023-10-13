@@ -60,13 +60,13 @@ VuFind.register('facetList', function FacetList() {
   // Useful function to delay callbacks, e.g. when using a keyup event
   // to detect when the user stops typing.
   // See also: https://stackoverflow.com/questions/1909441/how-to-delay-the-keyup-handler-until-the-user-stops-typing
-  var keyupCallbackTimeout = null;
+  var inputCallbackTimeout = null;
   function registerCallbacks() {
     $('.facet-lightbox-filter').removeClass('hidden');
 
-    $('.ajax_param[data-name="contains"]').on('keyup', function onKeyupChangeFacetList() {
-      clearTimeout(keyupCallbackTimeout);
-      keyupCallbackTimeout = setTimeout(function onKeyupTimeout() {
+    $('.ajax_param[data-name="contains"]').on('input', function onInputChangeFacetList() {
+      clearTimeout(inputCallbackTimeout);
+      inputCallbackTimeout = setTimeout(function onInputTimeout() {
         updateContent({facetpage: 1});
       }, 500);
     });
