@@ -286,11 +286,71 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test filtering the expanded facets in the lightbox
+     * Test filtering and unfiltering the expanded facets in the lightbox
      *
      * @return void
      */
-    public function testFacetLightboxFiltering(): void
+    public function testFacetLightboxFilteringAndClearing(): void
+    {
+        $this->changeConfigs(
+            [
+                'facets' => [
+                    'Results_Settings' => [
+                        'showMoreInLightbox[*]' => true,
+                    ],
+                ],
+            ]
+        );
+        $page = $this->performSearch('building:weird_ids.mrc');
+        // Open the genre facet
+        $genreMore = $this->findCss($page, '#side-collapse-genre_facet .more-facets');
+        $genreMore->click();
+        $this->waitForPageLoad($page);
+        // Filter to values containing the letter "d" -- this should eliminate "Fiction"
+        // from the list:
+        $this->findCssAndSetValue($page, '#modal input[data-name="contains"]', 'd');
+        $this->snooze(1);
+        $this->assertEquals(
+            'Weird IDs 9 results 9 '
+            . 'The Study Of P|pes 1 results 1 '
+            . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 results 1 '
+            . 'The Study of "Important" Things 1 results 1 '
+            . 'The Study of %\'s? 1 results 1 '
+            . 'The Study of +\'s? 1 results 1 '
+            . 'The Study of @Twitter #test 1 results 1 '
+            . 'The Study of Back S\ashes 1 results 1 '
+            . 'The Study of Cold Hard Ca$h 1 results 1 '
+            . 'The Study of Forward S/ashes 1 results 1 '
+            . 'The Study of Things & Combinations <HTML Edition> 1 results 1',
+            $this->findCss($page, '#modal #facet-list-count')->getText()
+        );
+
+        // now clear the filter
+        $this->clickCss($page, '#modal button[type="reset"]');
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            'Weird IDs 9 results 9 '
+            . 'Fiction 7 results 7 '
+            . 'The Study Of P|pes 1 results 1 '
+            . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 results 1 '
+            . 'The Study of "Important" Things 1 results 1 '
+            . 'The Study of %\'s? 1 results 1 '
+            . 'The Study of +\'s? 1 results 1 '
+            . 'The Study of @Twitter #test 1 results 1 '
+            . 'The Study of Back S\ashes 1 results 1 '
+            . 'The Study of Cold Hard Ca$h 1 results 1 '
+            . 'The Study of Forward S/ashes 1 results 1 '
+            . 'The Study of Things & Combinations <HTML Edition> 1 results 1',
+            $this->findCss($page, '#modal #facet-list-count')->getText()
+        );
+    }
+
+    /**
+     * Test filtering and sorting the expanded facets in the lightbox
+     *
+     * @return void
+     */
+    public function testFacetLightboxFilteringAndSorting(): void
     {
         $this->changeConfigs(
             [
