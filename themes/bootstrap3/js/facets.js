@@ -62,6 +62,8 @@ VuFind.register('facetList', function FacetList() {
   // See also: https://stackoverflow.com/questions/1909441/how-to-delay-the-keyup-handler-until-the-user-stops-typing
   var keyupCallbackTimeout = null;
   function registerCallbacks() {
+    $('.facet-lightbox-filter').removeClass('hidden');
+
     $('.ajax_param[data-name="contains"]').on('keyup', function onKeyupChangeFacetList() {
       clearTimeout(keyupCallbackTimeout);
       keyupCallbackTimeout = setTimeout(function onKeyupTimeout() {

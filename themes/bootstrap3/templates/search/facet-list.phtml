@@ -31,8 +31,8 @@
     </div>
 
     <?php if (method_exists($this->results->getParams(), 'setFacetContains')): ?>
-      <label><?=$this->transEsc('Filter') ?></label>
-      <div class="btn-group">
+      <label class="facet lightbox-filter hidden"><?=$this->transEsc('Filter') ?></label>
+      <div class="btn-group facet-lightbox-filter hidden">
         <form>
           <input class="ajax_param" data-name="contains" class="form-control" type="text" value="<?=htmlspecialchars($this->contains)?>" aria-label="<?=$this->transEscAttr('search_terms')?>">
           <button id="btn-reset-contains" type="reset" role="button" aria-label="<?=$this->transEsc('searchform_reset_button')?>"><?=$this->icon('ui-reset-search')?></button>
