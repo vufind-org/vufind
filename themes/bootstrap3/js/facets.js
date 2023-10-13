@@ -3,6 +3,18 @@
 
 /* --- Facet List --- */
 VuFind.register('facetList', function FacetList() {
+  function getCurrentContainsValue() {
+    const containsEl = document.querySelector('.ajax_param[data-name="contains"]');
+    return containsEl ? containsEl.value : null;
+  }
+
+  function setCurrentContainsValue(val) {
+    const containsEl = document.querySelector('.ajax_param[data-name="contains"]');
+    if (containsEl) {
+      containsEl.value = val;
+    }
+  }
+
   function overrideHref(selector, overrideParams = {}) {
     $(selector).each(function overrideHrefEach() {
       let dummyDomain = 'https://www.example.org'; // we need this since the URL class cannot parse relative URLs
@@ -17,7 +29,7 @@ VuFind.register('facetList', function FacetList() {
   }
 
   function updateHrefContains() {
-    let overrideParams = { contains: $('.ajax_param[data-name="contains"]').val() };
+    let overrideParams = { contains: getCurrentContainsValue() };
     overrideHref('.js-facet-sort', overrideParams);
     overrideHref('.js-facet-next-page', overrideParams);
     overrideHref('.js-facet-prev-page', overrideParams);
@@ -33,7 +45,7 @@ VuFind.register('facetList', function FacetList() {
       }
       url += '&' + encodeURIComponent(key) + '=' + encodeURIComponent(val);
     }
-    let contains = $('.ajax_param[data-name="contains"]').val();
+    let contains = getCurrentContainsValue();
     if (contains) {
       url += '&contains=' + encodeURIComponent(contains);
     }
@@ -72,8 +84,7 @@ VuFind.register('facetList', function FacetList() {
     });
 
     $('#btn-reset-contains').on('click', function onResetClick() {
-      // if you use .val('') here, it won't work in a lightbox.
-      $('.ajax_param[data-name="contains"]').attr('value', '');
+      setCurrentContainsValue('');
       updateContent({facetpage: 1});
     });
   }
