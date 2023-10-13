@@ -309,8 +309,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         // Filter to values containing the letter "d" -- this should eliminate "Fiction"
         // from the list:
         $this->findCssAndSetValue($page, '#modal input[data-name="contains"]', 'd');
-        $this->snooze(1);
-        $this->assertEquals(
+        $this->assertEqualsWithTimeout(
             'Weird IDs 9 results 9 '
             . 'The Study Of P|pes 1 results 1 '
             . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 results 1 '
@@ -322,7 +321,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             . 'The Study of Cold Hard Ca$h 1 results 1 '
             . 'The Study of Forward S/ashes 1 results 1 '
             . 'The Study of Things & Combinations <HTML Edition> 1 results 1',
-            $this->findCss($page, '#modal #facet-list-count')->getText()
+            function () use ($page) {
+                return $this->findCss($page, '#modal #facet-list-count')->getText();
+            }
         );
 
         // now clear the filter
@@ -369,8 +370,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         // Filter to values containing the letter "d" -- this should eliminate "Fiction"
         // from the list:
         $this->findCssAndSetValue($page, '#modal input[data-name="contains"]', 'd');
-        $this->snooze(1);
-        $this->assertEquals(
+        $this->assertEqualsWithTimeout(
             'Weird IDs 9 results 9 '
             . 'The Study Of P|pes 1 results 1 '
             . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 results 1 '
@@ -382,7 +382,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             . 'The Study of Cold Hard Ca$h 1 results 1 '
             . 'The Study of Forward S/ashes 1 results 1 '
             . 'The Study of Things & Combinations <HTML Edition> 1 results 1',
-            $this->findCss($page, '#modal #facet-list-count')->getText()
+            function () use ($page) {
+                return $this->findCss($page, '#modal #facet-list-count')->getText();
+            }
         );
 
         // sort by title
