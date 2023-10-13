@@ -436,7 +436,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
       $('.full-facet-list').addClass('hidden');
       sortButtons.removeClass('active');
     }
-    sortButtons.click(function facetSortButton() {
+    sortButtons.on('click', function facetSortButton() {
       sortAjax(this);
       $(this).addClass('active');
       return false;
