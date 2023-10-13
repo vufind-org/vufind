@@ -51,7 +51,7 @@ class Google extends \VuFind\Content\AbstractCover implements \VuFind\Http\Cachi
      */
     public function __construct()
     {
-        $this->supportsIsbn = true;
+        $this->supportsIsbn = $this->supportsOclc = true;
         $this->cacheOptionsSection = 'GoogleCover';
     }
 
@@ -69,14 +69,21 @@ class Google extends \VuFind\Content\AbstractCover implements \VuFind\Http\Cachi
      */
     public function getUrl($key, $size, $ids)
     {
-        // Don't bother trying if we can't read JSON or ISBN is missing:
-        if (!is_callable('json_decode') || !isset($ids['isbn'])) {
+        // Don't bother trying if we can't read JSON or ISBN and OCLC are missing:
+        if (!is_callable('json_decode') || (!isset($ids['isbn']) && !isset($ids['oclc']))) {
             return false;
         }
 
         // Construct the request URL and make the HTTP request:
+        if (isset($ids['isbn']) && $ids['isbn']->isValid()) {
+            $ident = "ISBN:{$ids['isbn']->get13()}";
+        } elseif (isset($ids['oclc'])) {
+            $ident = "OCLC:{$ids['oclc']}";
+        } else {
+            return false;
+        }
         $url = 'https://books.google.com/books?jscmd=viewapi&' .
-               'bibkeys=ISBN:' . $ids['isbn']->get13() . '&callback=addTheCover';
+               'bibkeys=' . $ident . '&callback=addTheCover';
 
         $decodeCallback = function (\Laminas\Http\Response $response, $url) {
             if (
@@ -122,7 +129,11 @@ class Google extends \VuFind\Content\AbstractCover implements \VuFind\Http\Cachi
         // find the first thumbnail URL and process it:
         foreach ((array)$json as $current) {
             if (isset($current['thumbnail_url'])) {
-                return $current['thumbnail_url'];
+                $imageUrl = $current['thumbnail_url'];
+                if ($size == 'medium' || $size == 'large') {
+                    $imageUrl = str_replace('zoom=5', 'zoom=1', $imageUrl);
+                }
+                return $imageUrl;
             }
         }
         return false;
