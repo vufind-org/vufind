@@ -284,3 +284,20 @@ h3.facet-title {
     margin-top: -0.2rem;
   }
 }
+
+.facet-lightbox-filter {
+  fieldset {
+    display: flex;
+    padding: 0;
+    gap: 4px;
+    width: auto;
+    legend {
+      width: auto;
+      display: inline;
+      border: 0;
+      font-size: inherit;
+      font-weight: 700;
+      float: left;
+    }
+  }
+}
