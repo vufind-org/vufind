@@ -389,8 +389,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 
         // sort by title
         $this->clickCss($page, '[data-sort="index"]');
-        $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertEqualsWithTimeout(
             'The Study Of P|pes 1 results 1 '
             . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 results 1 '
             . 'The Study of "Important" Things 1 results 1 '
@@ -402,13 +401,14 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             . 'The Study of Forward S/ashes 1 results 1 '
             . 'The Study of Things & Combinations <HTML Edition> 1 results 1 '
             . 'Weird IDs 9 results 9',
-            $this->findCss($page, '#modal #facet-list-index')->getText()
+            function () use ($page) {
+                return $this->findCss($page, '#modal #facet-list-index')->getText();
+            }
         );
 
         // now clear the filter
         $this->clickCss($page, '#modal button[type="reset"]');
-        $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertEqualsWithTimeout(
             'Fiction 7 results 7 '
             . 'The Study Of P|pes 1 results 1 '
             . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 results 1 '
@@ -421,13 +421,14 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             . 'The Study of Forward S/ashes 1 results 1 '
             . 'The Study of Things & Combinations <HTML Edition> 1 results 1 '
             . 'Weird IDs 9 results 9',
-            $this->findCss($page, '#modal #facet-list-index')->getText()
+            function () use ($page) {
+                return $this->findCss($page, '#modal #facet-list-index')->getText();
+            }
         );
 
         // ...and restore the original sort
         $this->clickCss($page, '[data-sort="count"]');
-        $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertEqualsWithTimeout(
             'Weird IDs 9 results 9 '
             . 'Fiction 7 results 7 '
             . 'The Study Of P|pes 1 results 1 '
@@ -440,7 +441,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             . 'The Study of Cold Hard Ca$h 1 results 1 '
             . 'The Study of Forward S/ashes 1 results 1 '
             . 'The Study of Things & Combinations <HTML Edition> 1 results 1',
-            $this->findCss($page, '#modal #facet-list-count')->getText()
+            function () use ($page) {
+                return $this->findCss($page, '#modal #facet-list-count')->getText();
+            }
         );
     }
 
