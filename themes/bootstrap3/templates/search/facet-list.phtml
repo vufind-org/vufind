@@ -26,7 +26,7 @@
     <label><?=$this->translate('Sort') ?></label>
     <div class="btn-group">
       <?php foreach ($this->sortOptions as $key => $sort): ?>
-        <a href="<?=$this->escapeHtmlAttr($urlBase . '&facetpage=1&facetsort=' . urlencode($key) . '&contains=' . urlencode($contains)) ?>" class="btn btn-default js-facet-sort<?php if($this->sort == $key): ?> active<?php endif; ?>" data-sort="<?=$key ?>"><?=$this->translate($sort) ?></a>
+        <a href="<?=$this->escapeHtmlAttr($urlBase . '&facetpage=1&facetsort=' . urlencode($key) . '&contains=' . urlencode($contains)) ?>" class="btn btn-default js-facet-sort<?php if($this->sort == $key): ?> active<?php endif; ?>" data-sort="<?=$key ?>" data-lightbox-ignore><?=$this->translate($sort) ?></a>
       <?php endforeach; ?>
     </div>
 

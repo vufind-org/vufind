@@ -60,7 +60,7 @@ VuFind.register('facetList', function FacetList() {
     $('#facet-info-result').html(VuFind.loading());
     getContent(overrideParams).then(html => {
       let htmlList = '';
-      $(html).find('.full-facet-list').each(function itemEach() {
+      $(VuFind.updateCspNonce(html)).find('.full-facet-list').each(function itemEach() {
         htmlList += $(this).prop('outerHTML');
       });
       $('#facet-info-result').html(htmlList);
