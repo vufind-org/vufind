@@ -65,7 +65,6 @@ VuFind.register('facetList', function FacetList() {
       });
       $('#facet-info-result').html(htmlList);
       updateHrefContains();
-      VuFind.lightbox_facets.setup();
     });
   }
 
