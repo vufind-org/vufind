@@ -1413,11 +1413,11 @@ class Folio extends AbstractAPI implements
      * Get latest version of a $moduleName enabled for a tenant.
      * Result is cached.
      *
-     * @param $moduleName module name
+     * @param string $moduleName module name
      *
-     * @return module version or 0 if no module found
+     * @return int module version or 0 if no module found
      */
-    private function getModuleVersion($moduleName)
+    protected function getModuleVersion(string $moduleName): int
     {
         $cacheKey = 'module_version:' . $moduleName;
         $version = $this->getCachedData($cacheKey);
