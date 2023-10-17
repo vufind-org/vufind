@@ -1485,7 +1485,7 @@ class Folio extends AbstractAPI implements
                 ? 'Page' : $default_request,
             'requesterId' => $holdDetails['patron']['id'],
             'requestDate' => date('c'),
-            $fulfillmentKey => 'Hold Shelf'
+            $fulfillmentKey => 'Hold Shelf',
             'requestExpirationDate' => $requiredBy,
             'pickupServicePointId' => $holdDetails['pickUpLocation'],
         ];
