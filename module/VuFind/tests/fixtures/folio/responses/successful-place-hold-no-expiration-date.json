@@ -6,14 +6,14 @@
         "expectedMethod": "GET",
         "expectedPath": "\/_\/proxy\/tenants\/config_tenant\/modules?filter=mod-circulation&latest=1",
         "expectedParams": [],
-        "body": [ {"id":"mod-circulation-23.5.7"} ],
+        "body": [ {"id":"mod-circulation-24.0.0"} ],
         "bodyType": "json",
         "code": 200
     },
     {
         "expectedMethod": "POST",
         "expectedPath": "/circulation/requests",
-        "expectedParamsRegEx": "/{\"itemId\":\"record1\",\"requestType\":\"Page\",\"requesterId\":\"foo\",\"requestDate\":\".*\",\"fulfilmentPreference\":\"Hold Shelf\",\"requestExpirationDate\":null,\"pickupServicePointId\":\"desk1\"}/",
+        "expectedParamsRegEx": "/{\"itemId\":\"record1\",\"requestType\":\"Page\",\"requesterId\":\"foo\",\"requestDate\":\".*\",\"fulfillmentPreference\":\"Hold Shelf\",\"requestExpirationDate\":null,\"pickupServicePointId\":\"desk1\"}/",
         "body": "{ \"status\": \"success\" }"
     }
 ]
