@@ -1408,36 +1408,36 @@ class Folio extends AbstractAPI implements
         }
         return $holds;
     }
-	
-	/**
-	* Get latest version of a $moduleName enabled for a tenant.
-	* Result is cached.
-	* 
-	* @param $moduleName module name
-	* @return module version or 0 if no module found
-	*/
-	private function getModuleVersion($moduleName)
-	{
-		$cacheKey = 'module_version:'.$moduleName;
-		$version = $this->getCachedData($cacheKey);	
-		if ($version===null) {
-			// get latest version of a module enabled for a tenant
-			$response = $this->makeRequest (
-				'GET',
-				'/_/proxy/tenants/'.$this->tenant.'/modules?filter='.$moduleName.'&latest=1'
-			);
-			
-			//get version major from json result
-			preg_match_all('!\d+!', $response->getBody(), $matches); 
-			if (count($matches[0])==0) {
-				$version = 0;
-			} else {
-				$version = $matches[0][0];
-			}
-		}
-		$this->putCachedData($cacheKey, $version);
+
+    /**
+     * Get latest version of a $moduleName enabled for a tenant.
+     * Result is cached.
+     *
+     * @param $moduleName module name
+     * @return module version or 0 if no module found
+     */
+    private function getModuleVersion($moduleName)
+    {
+        $cacheKey = 'module_version:' . $moduleName;
+        $version = $this->getCachedData($cacheKey);
+        if ($version === null) {
+            // get latest version of a module enabled for a tenant
+            $response = $this->makeRequest(
+                'GET',
+                '/_/proxy/tenants/' . $this->tenant . '/modules?filter=' . $moduleName . '&latest=1'
+            );
+
+            //get version major from json result
+            preg_match_all('!\d+!', $response->getBody(), $matches);
+            if (count($matches[0]) == 0) {
+                $version = 0;
+            } else {
+                $version = $matches[0][0];
+            }
+        }
+        $this->putCachedData($cacheKey, $version);
         return $version;
-	}
+    }
 
     /**
      * Place Hold
@@ -1485,12 +1485,11 @@ class Folio extends AbstractAPI implements
             'requestExpirationDate' => $requiredBy,
             'pickupServicePointId' => $holdDetails['pickUpLocation'],
         ];
-		if ($this->getModuleVersion('mod-circulation') >= 24) {
-			$requestBody['fulfillmentPreference'] = 'Hold Shelf';
-		}
-		else {
-			$requestBody['fulfilmentPreference'] = 'Hold Shelf';
-		}
+        if ($this->getModuleVersion('mod-circulation') >= 24) {
+            $requestBody['fulfillmentPreference'] = 'Hold Shelf';
+        } else {
+            $requestBody['fulfilmentPreference'] = 'Hold Shelf';
+        }
         if (!empty($holdDetails['proxiedUser'])) {
             $requestBody['requesterId'] = $holdDetails['proxiedUser'];
             $requestBody['proxyUserId'] = $holdDetails['patron']['id'];
