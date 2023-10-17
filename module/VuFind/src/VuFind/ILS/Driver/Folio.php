@@ -1410,14 +1410,14 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Get latest version of a $moduleName enabled for a tenant.
+     * Get latest major version of a $moduleName enabled for a tenant.
      * Result is cached.
      *
      * @param string $moduleName module name
      *
      * @return int module version or 0 if no module found
      */
-    protected function getModuleVersion(string $moduleName): int
+    protected function getModuleMajorVersion(string $moduleName): int
     {
         $cacheKey = 'module_version:' . $moduleName;
         $version = $this->getCachedData($cacheKey);
@@ -1482,7 +1482,7 @@ class Folio extends AbstractAPI implements
             $baseParams = ['itemId' => $holdDetails['item_id']];
         }
         // Account for an API spelling change introduced in mod-circulation v24:
-        $fulfillmentKey = $this->getModuleVersion('mod-circulation') >= 24
+        $fulfillmentKey = $this->getModuleMajorVersion('mod-circulation') >= 24
             ? 'fulfillmentPreference' : 'fulfilmentPreference';
         $requestBody = $baseParams + [
             'requestType' => $holdDetails['status'] == 'Available'
