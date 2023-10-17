@@ -1428,12 +1428,13 @@ class Folio extends AbstractAPI implements
                 '/_/proxy/tenants/' . $this->tenant . '/modules?filter=' . $moduleName . '&latest=1'
             );
 
-            //get version major from json result
-            preg_match_all('!\d+!', $response->getBody(), $matches);
-            if (count($matches[0]) == 0) {
-                $version = 0;
-            } else {
-                $version = $matches[0][0];
+            // get version major from json result
+            $versions = json_decode($response->getBody());
+            $latest = $versions[0]->id ?? "0";
+            preg_match_all('!\d+!', $latest, $matches);
+            $version = (int)($matches[0][0] ?? 0);
+            if ($version === 0) {
+                $this->debug('Unable to find version in ' . $response->getBody());
             }
             $this->putCachedData($cacheKey, $version);
         }
