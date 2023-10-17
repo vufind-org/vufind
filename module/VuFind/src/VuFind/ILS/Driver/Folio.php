@@ -1414,6 +1414,7 @@ class Folio extends AbstractAPI implements
      * Result is cached.
      *
      * @param $moduleName module name
+     *
      * @return module version or 0 if no module found
      */
     private function getModuleVersion($moduleName)
