@@ -1435,8 +1435,10 @@ class Folio extends AbstractAPI implements
             $version = (int)($matches[0][0] ?? 0);
             if ($version === 0) {
                 $this->debug('Unable to find version in ' . $response->getBody());
+            } else {
+                // Only cache non-zero values, so we don't persist an error condition:
+                $this->putCachedData($cacheKey, $version);
             }
-            $this->putCachedData($cacheKey, $version);
         }
         return $version;
     }
