@@ -523,8 +523,8 @@ class Folio extends AbstractAPI implements
                 $code = $location->code;
                 $locationMap[$location->id] = compact('name', 'code');
             }
+            $this->putCachedData($cacheKey, $locationMap);
         }
-        $this->putCachedData($cacheKey, $locationMap);
         return $locationMap;
     }
 
