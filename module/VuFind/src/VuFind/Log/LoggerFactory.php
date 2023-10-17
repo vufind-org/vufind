@@ -341,10 +341,11 @@ class LoggerFactory implements FactoryInterface
             '<pre>%timestamp% %priorityName%: %message%</pre>' . PHP_EOL
         );
         $writer->setFormatter($formatter);
+        $level = (is_int($debug) ? $debug : '5');
         $this->addWriters(
             $logger,
             $writer,
-            'debug-' . (is_int($debug) ? $debug : '5')
+            "debug-$level,notice-$level,error-$level,alert-$level"
         );
     }
 
