@@ -1434,8 +1434,8 @@ class Folio extends AbstractAPI implements
             } else {
                 $version = $matches[0][0];
             }
+            $this->putCachedData($cacheKey, $version);
         }
-        $this->putCachedData($cacheKey, $version);
         return $version;
     }
 
@@ -1477,19 +1477,18 @@ class Folio extends AbstractAPI implements
             // applying the latest hotfix is a better solution!
             $baseParams = ['itemId' => $holdDetails['item_id']];
         }
+        // Account for an API spelling change introduced in mod-circulation v24:
+        $fulfillmentKey = $this->getModuleVersion('mod-circulation') >= 24
+            ? 'fulfillmentPreference' : 'fulfilmentPreference';
         $requestBody = $baseParams + [
             'requestType' => $holdDetails['status'] == 'Available'
                 ? 'Page' : $default_request,
             'requesterId' => $holdDetails['patron']['id'],
             'requestDate' => date('c'),
+            $fulfillmentKey => 'Hold Shelf'
             'requestExpirationDate' => $requiredBy,
             'pickupServicePointId' => $holdDetails['pickUpLocation'],
         ];
-        if ($this->getModuleVersion('mod-circulation') >= 24) {
-            $requestBody['fulfillmentPreference'] = 'Hold Shelf';
-        } else {
-            $requestBody['fulfilmentPreference'] = 'Hold Shelf';
-        }
         if (!empty($holdDetails['proxiedUser'])) {
             $requestBody['requesterId'] = $holdDetails['proxiedUser'];
             $requestBody['proxyUserId'] = $holdDetails['patron']['id'];
