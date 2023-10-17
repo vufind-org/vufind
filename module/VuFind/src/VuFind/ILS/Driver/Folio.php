@@ -1430,7 +1430,7 @@ class Folio extends AbstractAPI implements
 
             // get version major from json result
             $versions = json_decode($response->getBody());
-            $latest = $versions[0]->id ?? "0";
+            $latest = $versions[0]->id ?? '0';
             preg_match_all('!\d+!', $latest, $matches);
             $version = (int)($matches[0][0] ?? 0);
             if ($version === 0) {
