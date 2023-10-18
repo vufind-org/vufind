@@ -340,6 +340,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Data provider for testTagSearchSort
+     *
+     * @return array
      */
     public function getTagSearchSortData(): array
     {
