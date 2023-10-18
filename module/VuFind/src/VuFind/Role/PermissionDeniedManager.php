@@ -30,6 +30,8 @@
 
 namespace VuFind\Role;
 
+use function count;
+
 /**
  * Permission Manager
  *

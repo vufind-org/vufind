@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /*global deparam, getUrlRoot, recaptchaOnLoad, resetCaptcha, syn_get_widget, userIsLoggedIn, VuFind, setupJumpMenus, setupCarousels */
+=======
+/*global deparam, getUrlRoot, recaptchaOnLoad, resetCaptcha, syn_get_widget, userIsLoggedIn, VuFind, setupJumpMenus, escapeHtmlAttr */
+>>>>>>> origin/dev
 /*exported ajaxTagUpdate, recordDocReady, refreshTagListCallback, addRecordRating */
 
 /**
@@ -295,7 +299,7 @@ function ajaxTagUpdate(_link, tag, _remove) {
 }
 
 function getNewRecordTab(tabid) {
-  return $('<div class="tab-pane ' + tabid + '-tab">' + VuFind.loading() + '</div>');
+  return $('<div class="tab-pane ' + escapeHtmlAttr(tabid) + '-tab" aria-labelledby="record-tab-' + escapeHtmlAttr(tabid) + '">' + VuFind.loading() + '</div>');
 }
 
 function backgroundLoadTab(tabid) {

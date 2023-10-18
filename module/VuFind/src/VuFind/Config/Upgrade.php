@@ -33,6 +33,10 @@ use Composer\Semver\Comparator;
 use VuFind\Config\Writer as ConfigWriter;
 use VuFind\Exception\FileAccess as FileAccessException;
 
+use function count;
+use function in_array;
+use function is_array;
+
 /**
  * Class to upgrade previous VuFind configurations to the current version
  *

@@ -36,6 +36,12 @@ namespace VuFindSearch\Backend\Primo;
 
 use Laminas\Http\Client as HttpClient;
 
+use function array_key_exists;
+use function count;
+use function in_array;
+use function is_array;
+use function strlen;
+
 /**
  * Primo Central connector.
  *

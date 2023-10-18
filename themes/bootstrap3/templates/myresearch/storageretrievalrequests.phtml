@@ -53,7 +53,7 @@
             <div class="checkbox">
               <input type="hidden" name="cancelAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>">
               <label class="pull-left flip">
-                <input type="checkbox" name="cancelSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" id="checkbox_<?=$safeId?>">
+                <input type="checkbox" name="cancelSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" id="checkbox_<?=$safeId?>" aria-label="<?=$this->transEscAttr('select_item_storage_retrieval_request_cancel')?>">
               </label>
             </div>
           <?php endif; ?>
@@ -138,7 +138,7 @@
               <?=$thumbnail ?>
             <?php endif ?>
           </div>
-          <?=$resource->tryMethod('supportsCoinsOpenUrl') ? '<span class="Z3988" title="' . $this->escapeHtmlAttr($resource->getCoinsOpenUrl()) . '"></span>' : ''?>
+          <?=$resource->tryMethod('supportsCoinsOpenUrl') ? '<span class="Z3988" aria-hidden="true" title="' . $this->escapeHtmlAttr($resource->getCoinsOpenUrl()) . '"></span>' : ''?>
         </li>
       <?php endforeach; ?>
     </ul>

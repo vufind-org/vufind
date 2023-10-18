@@ -35,6 +35,8 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
+use function strlen;
+
 /**
  * Factory for OAI harvest command.
  *

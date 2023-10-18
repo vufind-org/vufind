@@ -34,6 +34,9 @@ namespace VuFindAdmin\Controller;
 use Laminas\Db\Sql\Select;
 use VuFind\Db\Table\Feedback;
 
+use function count;
+use function is_array;
+
 /**
  * Class FeedbackController
  *

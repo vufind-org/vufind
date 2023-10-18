@@ -30,6 +30,8 @@
 
 namespace VuFind;
 
+use function array_key_exists;
+
 /**
  * Base class for loading images (shared by Cover\Loader and QRCode\Loader)
  *

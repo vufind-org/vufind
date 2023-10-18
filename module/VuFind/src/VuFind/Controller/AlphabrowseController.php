@@ -35,6 +35,9 @@ use Laminas\View\Model\ViewModel;
 use VuFind\Exception\BadRequest;
 use VuFindSearch\ParamBag;
 
+use function in_array;
+use function intval;
+
 /**
  * AlphabrowseController Class
  *

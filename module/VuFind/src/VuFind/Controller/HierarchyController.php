@@ -29,6 +29,9 @@
 
 namespace VuFind\Controller;
 
+use function array_slice;
+use function count;
+
 /**
  * Hierarchy Controller
  *
