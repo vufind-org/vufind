@@ -47,25 +47,7 @@ use function count;
  */
 class SearchSortTest extends \VuFindTest\Integration\MinkTestCase
 {
-    /**
-     * Selector for sort control
-     *
-     * @var string
-     */
-    protected $sortControlSelector = '#sort_options_1';
-
-    /**
-     * VuFind default sort options
-     *
-     * @var string[]
-     */
-    protected $defaultSortOptions = [
-        'Relevance',
-        'Date Descending',
-        'Date Ascending',
-        'Call Number',
-        'Author',
-    ];
+    use \VuFindTest\Feature\SearchSortTrait;
 
     /**
      * Test that an invalid sort option sends us to the default value.
@@ -102,12 +84,12 @@ class SearchSortTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertSortControl($page, 'title');
 
         // Check expected first and last record on first page:
-        $this->assertResultTitles($page, 'Test Publication 20001', 'Test Publication 20020');
+        $this->assertResultTitles($page, 20, 'Test Publication 20001', 'Test Publication 20020');
 
         // Go to second page:
         $this->clickCss($page, '.pagination li > a');
         $this->waitForPageLoad($page);
-        $this->assertResultTitles($page, 'Test Publication 20021', 'Test Publication 20040');
+        $this->assertResultTitles($page, 20, 'Test Publication 20021', 'Test Publication 20040');
 
         // Change sort to title reversed (last option) and verify:
         $this->clickCss($page, $this->sortControlSelector . ' option', null, count($this->defaultSortOptions) + 1);
@@ -115,7 +97,7 @@ class SearchSortTest extends \VuFindTest\Integration\MinkTestCase
         // Check current sort:
         $this->assertSortControl($page, 'title desc');
         // Check expected first and last record (page should be reset):
-        $this->assertResultTitles($page, 'Test Publication 20177', 'Test Publication 201738');
+        $this->assertResultTitles($page, 20, 'Test Publication 20177', 'Test Publication 201738');
         // Check that url no longer contains the page parameter:
         $this->assertStringNotContainsString('&page', $this->getCurrentQueryString());
     }
@@ -158,30 +140,12 @@ class SearchSortTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function assertSortControl(Element $page, string $active)
     {
-        $sort = $this->findCss($page, $this->sortControlSelector);
-        $this->assertEquals((string)$active, $sort->getValue());
+        $this->assertSelectedSort($page, $active);
         $optionElements = $page->findAll('css', $this->sortControlSelector . ' option');
         $callback = function (Element $element): string {
             return $element->getText();
         };
         $actualOptions = array_map($callback, $optionElements);
         $this->assertEquals([...$this->defaultSortOptions, 'Title', 'Title Reversed'], $actualOptions);
-    }
-
-    /**
-     * Check that first and last record of the results are correct
-     *
-     * @param Element $page  Current page
-     * @param string  $first Expected first title
-     * @param string  $last  Expected last title
-     *
-     * @return void
-     */
-    protected function assertResultTitles($page, string $first, string $last): void
-    {
-        $titles = $page->findAll('css', '.result a.title');
-        $this->assertCount(20, $titles);
-        $this->assertEquals($first, $titles[0]->getText());
-        $this->assertEquals($last, $titles[19]->getText());
     }
 }

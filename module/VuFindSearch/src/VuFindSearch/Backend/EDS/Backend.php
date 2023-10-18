@@ -201,21 +201,21 @@ class Backend extends AbstractBackend
         // process EDS API communication tokens.
         $authenticationToken = $this->getAuthenticationToken();
         $sessionToken = $this->getSessionToken();
-        $this->debugPrint(
+        $this->debug(
             "Authentication Token: $authenticationToken, SessionToken: $sessionToken"
         );
 
         // create query parameters from VuFind data
         $queryString = $query->getAllTerms();
         $paramsStr = implode('&', null !== $params ? $params->request() : []);
-        $this->debugPrint(
+        $this->debug(
             "Query: $queryString, Limit: $limit, Offset: $offset, "
             . "Params: $paramsStr"
         );
 
         $baseParams = $this->getQueryBuilder()->build($query);
         $paramsStr = implode('&', $baseParams->request());
-        $this->debugPrint("BaseParams: $paramsStr ");
+        $this->debug("BaseParams: $paramsStr ");
         if (null !== $params) {
             $baseParams->mergeWith($params);
         }
@@ -225,7 +225,7 @@ class Backend extends AbstractBackend
 
         $searchModel = $this->paramBagToEBSCOSearchModel($baseParams);
         $qs = $searchModel->convertToQueryString();
-        $this->debugPrint("Search Model query string: $qs");
+        $this->debug("Search Model query string: $qs");
         try {
             $response = $this->client
                 ->search($searchModel, $authenticationToken, $sessionToken);
@@ -277,7 +277,7 @@ class Backend extends AbstractBackend
                     break;
             }
         } catch (Exception $e) {
-            $this->debugPrint('Exception found: ' . $e->getMessage());
+            $this->debug('Exception found: ' . $e->getMessage());
             throw new BackendException($e->getMessage(), $e->getCode(), $e);
         }
         $collection = $this->createRecordCollection($response);
@@ -505,7 +505,7 @@ class Backend extends AbstractBackend
         if (isset($authTokenData)) {
             $currentToken = $authTokenData['token'] ?? '';
             $expirationTime = $authTokenData['expiration'] ?? 0;
-            $this->debugPrint(
+            $this->debug(
                 'Cached Authentication data: '
                 . "$currentToken, expiration time: $expirationTime"
             );
@@ -522,7 +522,7 @@ class Backend extends AbstractBackend
         $password = $this->password;
         $orgId = $this->orgId;
         if (!empty($username) && !empty($password)) {
-            $this->debugPrint(
+            $this->debug(
                 'Calling Authenticate with username: '
                 . "$username, password: XXXXXXXX, orgid: $orgId "
             );
@@ -590,15 +590,17 @@ class Backend extends AbstractBackend
     }
 
     /**
-     * Print a message if debug is enabled.
+     * Print a message.
      *
      * @param string $msg Message to print
      *
      * @return void
+     *
+     * @deprecated Use $this->debug directly.
      */
     protected function debugPrint($msg)
     {
-        $this->log('debug', "$msg\n");
+        $this->debug($msg);
     }
 
     /**
@@ -669,7 +671,7 @@ class Backend extends AbstractBackend
         } catch (ApiException $e) {
             $errorCode = $e->getApiErrorCode();
             $desc = $e->getApiErrorDescription();
-            $this->debugPrint(
+            $this->debug(
                 'Error in create session request. Error code: '
                 . "$errorCode, message: $desc, e: $e"
             );
