@@ -210,10 +210,10 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Add tags to a record
      *
-     * @param Element $page  Page object
-     * @param string  $tags  Tag(s) to add
-     * @param ?string $user  Username to log in with (null if already logged in)
-     * @param ?string $pass  Password to log in with (null if already logged in)
+     * @param Element $page Page object
+     * @param string  $tags Tag(s) to add
+     * @param ?string $user Username to log in with (null if already logged in)
+     * @param ?string $pass Password to log in with (null if already logged in)
      *
      * @return void
      */
