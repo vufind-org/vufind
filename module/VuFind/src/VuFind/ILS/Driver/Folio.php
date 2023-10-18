@@ -1410,6 +1410,40 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Get latest major version of a $moduleName enabled for a tenant.
+     * Result is cached.
+     *
+     * @param string $moduleName module name
+     *
+     * @return int module version or 0 if no module found
+     */
+    protected function getModuleMajorVersion(string $moduleName): int
+    {
+        $cacheKey = 'module_version:' . $moduleName;
+        $version = $this->getCachedData($cacheKey);
+        if ($version === null) {
+            // get latest version of a module enabled for a tenant
+            $response = $this->makeRequest(
+                'GET',
+                '/_/proxy/tenants/' . $this->tenant . '/modules?filter=' . $moduleName . '&latest=1'
+            );
+
+            // get version major from json result
+            $versions = json_decode($response->getBody());
+            $latest = $versions[0]->id ?? '0';
+            preg_match_all('!\d+!', $latest, $matches);
+            $version = (int)($matches[0][0] ?? 0);
+            if ($version === 0) {
+                $this->debug('Unable to find version in ' . $response->getBody());
+            } else {
+                // Only cache non-zero values, so we don't persist an error condition:
+                $this->putCachedData($cacheKey, $version);
+            }
+        }
+        return $version;
+    }
+
+    /**
      * Place Hold
      *
      * Attempts to place a hold or recall on a particular item and returns
@@ -1447,12 +1481,15 @@ class Folio extends AbstractAPI implements
             // applying the latest hotfix is a better solution!
             $baseParams = ['itemId' => $holdDetails['item_id']];
         }
+        // Account for an API spelling change introduced in mod-circulation v24:
+        $fulfillmentKey = $this->getModuleMajorVersion('mod-circulation') >= 24
+            ? 'fulfillmentPreference' : 'fulfilmentPreference';
         $requestBody = $baseParams + [
             'requestType' => $holdDetails['status'] == 'Available'
                 ? 'Page' : $default_request,
             'requesterId' => $holdDetails['patron']['id'],
             'requestDate' => date('c'),
-            'fulfilmentPreference' => 'Hold Shelf',
+            $fulfillmentKey => 'Hold Shelf',
             'requestExpirationDate' => $requiredBy,
             'pickupServicePointId' => $holdDetails['pickUpLocation'],
         ];
