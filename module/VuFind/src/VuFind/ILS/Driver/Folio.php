@@ -254,7 +254,12 @@ class Folio extends AbstractAPI implements
             'username' => $this->config['API']['username'],
             'password' => $this->config['API']['password'],
         ];
-        $response = $this->makeRequest('POST', '/authn/login', json_encode($auth));
+        $response = $this->makeRequest(
+            method: 'POST',
+            path: '/authn/login',
+            params: json_encode($auth),
+            debugParams: '{"username":"...","password":"..."}'
+        );
         $this->token = $response->getHeaders()->get('X-Okapi-Token')
             ->getFieldValue();
         $this->sessionCache->folio_token = $this->token;
