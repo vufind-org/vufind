@@ -71,7 +71,7 @@ class ResourceTags implements EntityInterface
      *          options={"default"="CURRENT_TIMESTAMP"}
      * )
      */
-    protected $posted = 'CURRENT_TIMESTAMP';
+    protected $posted;
 
     /**
      * Resource ID.
@@ -124,6 +124,15 @@ class ResourceTags implements EntityInterface
      * })
      */
     protected $user;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        // Set the default value as a \DateTime object
+        $this->posted = new \DateTime();
+    }
 
     /**
      * Id getter
@@ -197,9 +206,9 @@ class ResourceTags implements EntityInterface
     /**
      * List getter
      *
-     * @return UserList
+     * @return ?UserList
      */
-    public function getList(): UserList
+    public function getList(): ?UserList
     {
         return $this->list;
     }

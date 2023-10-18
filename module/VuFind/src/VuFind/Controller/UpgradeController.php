@@ -576,7 +576,7 @@ class UpgradeController extends AbstractBase
                 $this->getRequest()->getQuery()->set('anonymousCnt', $anonymousTags);
                 return $this->redirect()->toRoute('upgrade-fixanonymoustags');
             }
-            $dupeTags = $this->getTable('Tags')->getDuplicates();
+            $dupeTags = $tagService->getDuplicates();
             if (count($dupeTags) > 0 && !isset($this->cookie->skipDupeTags)) {
                 return $this->redirect()->toRoute('upgrade-fixduplicatetags');
             }
@@ -744,7 +744,7 @@ class UpgradeController extends AbstractBase
 
         // Handle submit action:
         if ($this->formWasSubmitted('submit')) {
-            $this->getTable('Tags')->fixDuplicateTags();
+            $this->getDbService(\VuFind\Db\Service\TagService::class)->fixDuplicateTags();
             return $this->forwardTo('Upgrade', 'FixDatabase');
         }
 

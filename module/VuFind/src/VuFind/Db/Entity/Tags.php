@@ -77,4 +77,27 @@ class Tags implements EntityInterface
     {
         return $this->id;
     }
+
+    /**
+     * Tag setter
+     *
+     * @param string $tag Tag
+     *
+     * @return Tags
+     */
+    public function setTag(string $tag): Tags
+    {
+        $this->tag = $tag;
+        return $this;
+    }
+
+    /**
+     * Tag getter
+     *
+     * @return string
+     */
+    public function getTag(): string
+    {
+        return $this->tag;
+    }
 }

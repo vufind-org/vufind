@@ -246,11 +246,11 @@ class TagsController extends AbstractAdmin
 
         $tagId = intval($this->getParam('tag_id'));
         if ($tagId) {
-            $tag = $this->getTable('tags')->select(['id' => $tagId])->current();
+            $tag = $this->tagService->getEntityById(\VuFind\Db\Entity\Tags::class, $tagId);
             if (!is_object($tag)) {
                 throw new \Exception("Unexpected error retrieving tag $tagId");
             }
-            $tagMsg = "{$tag->tag} ({$tag->id})";
+            $tagMsg = "{$tag->getTag()} ({$tag->getId()})";
         }
 
         $resourceId = intval($this->getParam('resource_id'));

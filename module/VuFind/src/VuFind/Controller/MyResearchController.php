@@ -1066,7 +1066,7 @@ class MyResearchController extends AbstractBase
             if ($this->listTagsEnabled()) {
                 if ($list = $results->getListObject()) {
                     foreach ($list->getListTags() as $tag) {
-                        $listTags[$tag->id] = $tag->tag;
+                        $listTags[$tag['id']] = $tag['tag'];
                     }
                 }
             }

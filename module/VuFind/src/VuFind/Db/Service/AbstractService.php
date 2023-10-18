@@ -110,4 +110,35 @@ abstract class AbstractService
         $this->entityManager->remove($entity);
         $this->entityManager->flush();
     }
+
+    /**
+     * Retrieve an entity by id.
+     *
+     * @param string $entityClass Entity class.
+     * @param int    $id          Id of the entity to be retrieved
+     *
+     * @return ?object
+     */
+    public function getEntityById($entityClass, $id)
+    {
+        return $this->entityManager->find(
+            $this->getEntityClass($entityClass),
+            $id
+        );
+    }
+
+    /**
+     * Get the row count of a given entity.
+     *
+     * @param string $entityClass Entity class.
+     *
+     * @return int
+     */
+    public function getRowCountForTable($entityClass)
+    {
+        $dql = 'SELECT COUNT(e) FROM ' . $this->getEntityClass($entityClass) . ' e ';
+        $query = $this->entityManager->createQuery($dql);
+        $count = $query->getSingleScalarResult();
+        return $count;
+    }
 }

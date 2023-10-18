@@ -190,8 +190,10 @@ abstract class AbstractBase implements
         $sort = 'count',
         $ownerId = null
     ) {
-        $tags = $this->getDbTable('Tags');
-        return $tags->getForResource(
+        $tagService = $this->getDbService(
+            \VuFind\Db\Service\TagService::class
+        );
+        return $tagService->getForResource(
             $this->getUniqueId(),
             $this->getSourceIdentifier(),
             0,

@@ -32,7 +32,7 @@ namespace VuFind\AjaxHandler;
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\View\Renderer\RendererInterface;
 use VuFind\Db\Row\User;
-use VuFind\Db\Table\Tags;
+use VuFind\Db\Service\TagService as TagService;
 
 /**
  * AJAX handler to get all tags for a record as HTML.
@@ -46,11 +46,11 @@ use VuFind\Db\Table\Tags;
 class GetRecordTags extends AbstractBase
 {
     /**
-     * Tags database table
+     * Tags database service
      *
-     * @var Tags
+     * @var TagService
      */
-    protected $table;
+    protected $tagService;
 
     /**
      * Logged in user (or false)
@@ -69,13 +69,13 @@ class GetRecordTags extends AbstractBase
     /**
      * Constructor
      *
-     * @param Tags              $table    Tags table
-     * @param User|bool         $user     Logged in user (or false)
-     * @param RendererInterface $renderer View renderer
+     * @param TagService        $tagService Tags database service
+     * @param User|bool         $user       Logged in user (or false)
+     * @param RendererInterface $renderer   View renderer
      */
-    public function __construct(Tags $table, $user, RendererInterface $renderer)
+    public function __construct(TagService $tagService, $user, RendererInterface $renderer)
     {
-        $this->table = $table;
+        $this->tagService = $tagService;
         $this->user = $user;
         $this->renderer = $renderer;
     }
@@ -92,7 +92,7 @@ class GetRecordTags extends AbstractBase
         $is_me_id = !$this->user ? null : $this->user->id;
 
         // Retrieve from database:
-        $tags = $this->table->getForResource(
+        $tags = $this->tagService->getForResource(
             $params->fromQuery('id'),
             $params->fromQuery('source', DEFAULT_SEARCH_BACKEND),
             0,
@@ -106,9 +106,9 @@ class GetRecordTags extends AbstractBase
         $tagList = [];
         foreach ($tags as $tag) {
             $tagList[] = [
-                'tag'   => $tag->tag,
-                'cnt'   => $tag->cnt,
-                'is_me' => !empty($tag->is_me),
+                'tag'   => $tag['tag'],
+                'cnt'   => $tag['cnt'],
+                'is_me' => !empty($tag['is_me']),
             ];
         }
 

@@ -330,7 +330,7 @@ class BrowseController extends AbstractBase implements
 
         if ($this->params()->fromQuery('findby')) {
             $params = $this->getRequest()->getQuery()->toArray();
-            $tagTable = $this->getTable('Tags');
+            $tagService = $this->getDbService(\VuFind\Db\Service\TagService::class);
             // Special case -- display alphabet selection if necessary:
             if ($params['findby'] == 'alphabetical') {
                 $legalLetters = $this->getAlphabetList();
@@ -340,7 +340,7 @@ class BrowseController extends AbstractBase implements
                     // Note -- this does not need to be escaped because
                     // $params['query'] has already been validated against
                     // the getAlphabetList() method below!
-                    $tags = $tagTable->matchText($params['query']);
+                    $tags = $tagService->matchText($params['query']);
                     $tagList = [];
                     foreach ($tags as $tag) {
                         if ($tag['cnt'] > 0) {
@@ -359,15 +359,10 @@ class BrowseController extends AbstractBase implements
                 }
             } else {
                 // Default case: always display tag list for non-alphabetical modes:
-                $callback = function ($select) {
-                    // Discard user list tags
-                    $select->where->isNotNull('resource_tags.resource_id');
-                };
-
-                $tagList = $tagTable->getTagList(
+                $tagList = $tagService->getTagList(
                     $params['findby'],
                     $this->config->Browse->result_limit,
-                    $callback
+                    ['rt.resource is NOT NULL']
                 );
                 $resultList = [];
                 foreach ($tagList as $i => $tag) {

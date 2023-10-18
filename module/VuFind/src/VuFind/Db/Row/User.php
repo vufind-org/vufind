@@ -246,11 +246,11 @@ class User extends RowGateway implements
      * @param string $source     Filter for tags tied to a specific record source.
      * (null for no filter).
      *
-     * @return \Laminas\Db\ResultSet\AbstractResultSet
+     * @return array
      */
     public function getTags($resourceId = null, $listId = null, $source = null)
     {
-        return $this->getDbTable('Tags')
+        return $this->getDbService(\VuFind\Db\Service\TagService::class)
             ->getListTagsForUser($this->id, $resourceId, $listId, $source);
     }
 
@@ -259,11 +259,11 @@ class User extends RowGateway implements
      *
      * @param int $listId List id
      *
-     * @return \Laminas\Db\ResultSet\AbstractResultSet
+     * @return array
      */
     public function getListTags($listId)
     {
-        return $this->getDbTable('Tags')
+        return $this->getDbService(\VuFind\Db\Service\TagService::class)
             ->getForList($listId, $this->id);
     }
 
@@ -297,10 +297,10 @@ class User extends RowGateway implements
         $tagStr = '';
         if (count($tags) > 0) {
             foreach ($tags as $tag) {
-                if (strstr($tag->tag, ' ')) {
-                    $tagStr .= "\"$tag->tag\" ";
+                if (strstr($tag['tag'], ' ')) {
+                    $tagStr .= '"' . $tag['tag'] . '" ';
                 } else {
-                    $tagStr .= "$tag->tag ";
+                    $tagStr .= $tag['tag'] . ' ';
                 }
             }
         }

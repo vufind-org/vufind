@@ -171,12 +171,11 @@ class UserList extends RowGateway implements
     {
         $tagText = trim($tagText);
         if (!empty($tagText)) {
-            $tags = $this->getDbTable('tags');
-            $tag = $tags->getByText($tagText);
-            $linker = $this->getDbTable('resourcetags');
-            $linker->createLink(
+            $tagService = $this->getDbService(\VuFind\Db\Service\TagService::class);
+            $tag = $tagService->getByText($tagText);
+            $tagService->createLink(
+                $tag,
                 null,
-                $tag->id,
                 $user->id,
                 $this->id
             );

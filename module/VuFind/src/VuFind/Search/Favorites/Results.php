@@ -151,11 +151,11 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
                         }
                         foreach ($tags as $tag) {
                             $this->facets[$field]['list'][] = [
-                                'value' => $tag->tag,
-                                'displayText' => $tag->tag,
-                                'count' => $tag->cnt,
+                                'value' => $tag['tag'],
+                                'displayText' => $tag['tag'],
+                                'count' => $tag['cnt'],
                                 'isApplied' => $this->getParams()
-                                    ->hasFilter("$field:" . $tag->tag),
+                                    ->hasFilter("$field:" . $tag['tag']),
                             ];
                         }
                         break;

@@ -67,7 +67,11 @@ class ResultsFactory extends \VuFind\Search\Results\ResultsFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $tm = $container->get(\VuFind\Db\Table\PluginManager::class);
-        return parent::__invoke($container, $requestedName, [$tm->get('Tags')]);
+        $sm = $container->get(\VuFind\Db\Service\PluginManager::class);
+        return parent::__invoke(
+            $container,
+            $requestedName,
+            [$sm->get(\VuFind\Db\Service\TagService::class)]
+        );
     }
 }

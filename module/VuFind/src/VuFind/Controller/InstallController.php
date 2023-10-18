@@ -243,8 +243,8 @@ class InstallController extends AbstractBase
     {
         try {
             // Try to read the tags table just to see if we can connect to the DB:
-            $tags = $this->getTable('Tags');
-            $tags->getByText('test', false);
+            $tagService = $this->getDbService(\VuFind\Db\Service\TagService::class);
+            $tagService->getByText('test', false);
             $status = true;
         } catch (\Exception $e) {
             $status = false;

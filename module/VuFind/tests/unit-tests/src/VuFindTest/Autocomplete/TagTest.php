@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2011.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -43,48 +43,33 @@ use VuFind\Autocomplete\Tag;
 class TagTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test that missing plugin manager causes exception.
-     *
-     * @return void
-     */
-    public function testMissingDependency()
-    {
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('DB table manager missing.');
-
-        $tag = new Tag();
-        $tag->getSuggestions('foo');
-    }
-
-    /**
      * Test real suggestions.
      *
      * @return void
      */
     public function testSuggestions()
     {
-        // Fake DB response:
+        // Real object to test:
+        $tag = new Tag($this->getTagServiceMock());
+        $this->assertEquals(['bar1', 'bar2'], $tag->getSuggestions('foo'));
+    }
+
+    /**
+     * Get tagService mock.
+     *
+     * @return MockObject
+     */
+    public function getTagServiceMock()
+    {
+        $tagService = $this->getMockBuilder(\VuFind\Db\Service\TagService::class)
+            ->disableOriginalConstructor()->onlyMethods(['matchText'])->getMock();
         $tags = [
             ['tag' => 'bar1'],
             ['tag' => 'bar2'],
         ];
-
-        // Fake services:
-        $tagTable = $this->getMockBuilder(\VuFind\Db\Table\Tags::class)
-            ->disableOriginalConstructor()->onlyMethods(['matchText'])->getMock();
-        $tagTable->expects($this->once())->method('matchText')
+        $tagService->expects($this->once())->method('matchText')
             ->with($this->equalTo('foo'))
             ->will($this->returnValue($tags));
-        $tableManager = $this->getMockBuilder(\VuFind\Db\Table\PluginManager::class)
-            ->disableOriginalConstructor()->onlyMethods(['get'])->getMock();
-        $tableManager->expects($this->once())->method('get')
-            ->with($this->equalTo('Tags'))
-            ->will($this->returnValue($tagTable));
-
-        // Real object to test:
-        $tag = new Tag();
-        $tag->setDbTableManager($tableManager);
-
-        $this->assertEquals(['bar1', 'bar2'], $tag->getSuggestions('foo'));
+        return $tagService;
     }
 }
