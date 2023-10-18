@@ -264,13 +264,6 @@ VuFind.register('cart', function Cart() {
       trigger: 'manual',
       placement: $(document.body).hasClass('rtl') ? 'left' : 'right'
     });
-    /* Accessibility: inform screen reader about changes */
-    var cart = document.getElementById("cartSummary");
-    if (cart !== null && cart !== undefined) {
-      cart.setAttribute("aria-live", "polite");
-      cart.setAttribute("aria-atomic", "true");
-    }
-    /* Accessibility: inform screen reader about changes - END */
     updateCount();
   }
 
