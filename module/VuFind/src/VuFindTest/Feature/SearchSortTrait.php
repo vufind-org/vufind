@@ -34,14 +34,13 @@ namespace VuFindTest\Feature;
 use Behat\Mink\Element\Element;
 
 /**
- * Test for sorting of search results.
+ * Trait for working with sorting of search results.
  *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
- * @retry    4
  */
 trait SearchSortTrait
 {
