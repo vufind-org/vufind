@@ -3,7 +3,7 @@
 /**
  * Test functionality of the home page facets.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -67,7 +67,7 @@ class HomePageFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $session->visit($this->getVuFindUrl() . '/Search/Home');
         $page = $session->getPage();
         $this->waitForPageLoad($page);
-        $container = $this->findCss($page, "#facet_hierarchical_facet_str_mv");
+        $container = $this->findCss($page, '#facet_hierarchical_facet_str_mv');
         $this->assertEquals('level1a level1z', $container->getText());
     }
 }

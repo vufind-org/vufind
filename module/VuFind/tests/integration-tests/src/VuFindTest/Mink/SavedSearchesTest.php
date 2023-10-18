@@ -3,7 +3,7 @@
 /**
  * Mink saved searches test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -158,7 +158,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         // in our search history.
         $this->findAndAssertLink($page, 'Search History')->click();
         $this->waitForPageLoad($page);
-        $this->assertSavedSearchList(["test"], $page);
+        $this->assertSavedSearchList(['test'], $page);
     }
 
     /**
@@ -371,7 +371,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
 
         // Now confirm that we have the expected text:
         $link = $this->findCss($page, '.searchtools .manageSchedule');
-        $this->assertEquals("Alert schedule: None", $link->getText());
+        $this->assertEquals('Alert schedule: None', $link->getText());
         $link->click();
         $this->waitForPageLoad($page);
 
@@ -389,7 +389,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         // Let's confirm that if we repeat the search, the alert will now be set:
         $page = $this->performSearch('employment');
         $link = $this->findCss($page, '.searchtools .manageSchedule');
-        $this->assertEquals("Alert schedule: Weekly", $link->getText());
+        $this->assertEquals('Alert schedule: Weekly', $link->getText());
     }
 
     /**
@@ -409,7 +409,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         // We are not logged in, so we won't see the appropriate alert schedule yet
         // (it's always "None" for logged-out users).
         $link = $this->findCss($page, '.searchtools .manageSchedule');
-        $this->assertEquals("Alert schedule: None", $link->getText());
+        $this->assertEquals('Alert schedule: None', $link->getText());
         $link->click();
         $this->waitForPageLoad($page);
 
@@ -471,7 +471,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         // look at! From previous tests, we expect to have two in our history, but
         // the important one ("employment") should be first, which enables us to
         // safely rely on the final assertion below.
-        $this->assertSavedSearchList(["employment", "test"], $page);
+        $this->assertSavedSearchList(['employment', 'test'], $page);
         $this->assertCount(
             2,
             $page->findAll('css', '#saved-searches ' . $scheduleSelector)

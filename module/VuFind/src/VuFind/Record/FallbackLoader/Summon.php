@@ -3,7 +3,7 @@
 /**
  * Summon record fallback loader
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018, 2022.
  *
@@ -32,6 +32,8 @@ namespace VuFind\Record\FallbackLoader;
 use SerialsSolutions\Summon\Laminas as Connector;
 use VuFindSearch\Command\RetrieveCommand;
 use VuFindSearch\ParamBag;
+
+use function strlen;
 
 /**
  * Summon record fallback loader

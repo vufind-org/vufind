@@ -20,7 +20,7 @@
   <?php endif ?>
   <div class="media-body">
     <div class="result-body">
-      <div>
+      <h2>
         <a href="<?=$this->escapeHtmlAttr($recordLinker->getUrl($this->driver))?>" class="title getFull" data-view="<?=isset($this->params) ? $this->params->getOptions()->getListViewOption() : 'list' ?>">
           <?=$this->record($this->driver)->getTitleHtml()?>
         </a>
@@ -29,36 +29,43 @@
             <?=$this->escapeHtml($altTitle)?>
           </div>
         <?php endforeach; ?>
-      </div>
 
+        <?php if (!$this->driver->isCollection()): ?>
+          <?php $summAuthors = $this->driver->getPrimaryAuthorsWithHighlighting(); ?>
+          <?php if (!empty($summAuthors)): ?>
+            <span class="authors">
+              <?=$this->transEsc('by')?>
+              <?php $authorCount = count($summAuthors); ?>
+              <?php foreach ($summAuthors as $i => $summAuthor): ?>
+                <a href="<?=$this->record($this->driver)->getLink('author', $this->highlight($summAuthor, null, true, false))?>" class="result-author"><?=$this->highlight(rtrim($summAuthor, ','))?></a><?=$i + 1 < $authorCount ? ',' : ''?>
+              <?php endforeach; ?>
+            </span>
+          <?php endif; ?>
+        <?php endif; ?>
+      </h2>
       <div>
         <?php if ($this->driver->isCollection()): ?>
           <?=implode('<br>', array_map([$this, 'escapeHtml'], $this->driver->getSummary())); ?>
         <?php else: ?>
-          <?php $summAuthors = $this->driver->getPrimaryAuthorsWithHighlighting(); if (!empty($summAuthors)): ?>
-            <?=$this->transEsc('by')?>
-            <?php $authorCount = count($summAuthors); foreach ($summAuthors as $i => $summAuthor): ?>
-              <a href="<?=$this->record($this->driver)->getLink('author', $this->highlight($summAuthor, null, true, false))?>" class="result-author"><?=$this->highlight(rtrim($summAuthor, ','))?></a><?=$i + 1 < $authorCount ? ',' : ''?>
-            <?php endforeach; ?>
-          <?php endif; ?>
-
-          <?php $journalTitle = $this->driver->getContainerTitle(); $summDate = $this->driver->getPublicationDates(); ?>
+          <?php
+            $journalTitle = $this->driver->getContainerTitle();
+            $summDate = $this->driver->getPublicationDates();
+          ?>
           <?php if (!empty($journalTitle)): ?>
-            <?=!empty($summAuthor) ? '<br>' : ''?>
             <?=$this->transEsc('Published in')?>
             <?php $containerSource = $this->driver->getSourceIdentifier(); ?>
             <?php $containerID = $this->driver->getContainerRecordID(); ?>
             <?php /* TODO: handle highlighting more elegantly here: */?>
-            <a href="<?=($containerID ? $this->escapeHtmlAttr($recordLinker->getUrl("$containerSource|$containerID")) : $this->record($this->driver)->getLink('journaltitle', str_replace(['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'], '', $journalTitle)))?>"><?=$this->highlight($journalTitle) ?></a>
+            <a class="container-link" href="<?=($containerID ? $this->escapeHtmlAttr($recordLinker->getUrl("$containerSource|$containerID")) : $this->record($this->driver)->getLink('journaltitle', str_replace(['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'], '', $journalTitle)))?>"><?=$this->highlight($journalTitle) ?></a>
             <?=!empty($summDate) ? ' (' . $this->escapeHtml($summDate[0]) . ')' : ''?>
           <?php elseif (!empty($summDate)): ?>
-            <?=!empty($summAuthor) ? '<br>' : ''?>
             <?=$this->transEsc('Published') . ' ' . $this->escapeHtml($summDate[0])?>
           <?php endif; ?>
-          <?php $summInCollection = $this->driver->getContainingCollections(); if (!empty($summInCollection)): ?>
+          <?php $summInCollection = $this->driver->getContainingCollections(); ?>
+          <?php if (!empty($summInCollection)): ?>
             <?php foreach ($summInCollection as $collId => $collText): ?>
               <div>
-                <b><?=$this->transEsc("in_collection_label")?></b>
+                <b><?=$this->transEsc('in_collection_label')?></b>
                 <a class="collectionLinkText" href="<?=$this->record($this->driver)->getLink('collection', $collId)?>">
                   <?=$this->escapeHtml($collText)?>
                 </a>
@@ -119,7 +126,8 @@
           </span>
           <div class="locationDetails"></div>
         <?php else: ?>
-          <?php $summCallNo = $this->driver->getCallNumber(); if (!empty($summCallNo)): ?>
+          <?php $summCallNo = $this->driver->getCallNumber(); ?>
+          <?php if (!empty($summCallNo)): ?>
             <strong><?=$this->transEsc('Call Number')?>:</strong> <?=$this->escapeHtml($summCallNo)?>
           <?php endif; ?>
         <?php endif; ?>
@@ -133,8 +141,8 @@
         $doiActive = $doi->isActive();
         // Account for replace_other_urls setting
         $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
-
-        if ($openUrlActive || $doiActive || !empty($urls)): ?>
+      ?>
+      <?php if ($openUrlActive || $doiActive || !empty($urls)): ?>
         <?php if ($openUrlActive): ?>
           <br>
           <?=$openUrl->renderTemplate()?>
@@ -143,9 +151,9 @@
           <br>
           <?=$doi->renderTemplate()?>
         <?php endif; ?>
-        <?php if (!is_array($urls)) $urls = [];
-          if (!$this->driver->isCollection()):
-            foreach ($urls as $current): ?>
+        <?php $urls = is_array($urls) ? $urls : []; ?>
+        <?php if (!$this->driver->isCollection()): ?>
+          <?php foreach ($urls as $current): ?>
               <a class="fulltext icon-link" href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" target="new">
                 <?=$this->icon('external-link', 'icon-link__icon') ?>
                 <span class="icon-link__label"><?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></span>
@@ -188,12 +196,13 @@
         <?php endif; ?>
         <?php /* Saved lists */ ?>
         <div class="savedLists">
-          <strong><?=$this->transEsc("Saved in")?>:</strong>
+          <strong><?=$this->transEsc('Saved in')?>:</strong>
         </div>
       <?php endif; ?>
 
       <?php /* Hierarchy tree link */ ?>
-      <?php $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>
+      <?php $trees = $this->driver->tryMethod('getHierarchyTrees'); ?>
+      <?php if (!empty($trees)): ?>
         <?php foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
           <div class="hierarchyTreeLink">
             <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId">
@@ -205,7 +214,7 @@
         <?php endforeach; ?>
       <?php endif; ?>
 
-      <?=$this->driver->supportsCoinsOpenUrl() ? '<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>' : ''?>
+      <?=$this->driver->supportsCoinsOpenUrl() ? '<span class="Z3988" aria-hidden="true" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>' : ''?>
     </div>
   </div>
   <?php if ($thumbnail && $thumbnailAlignment == 'right'): ?>

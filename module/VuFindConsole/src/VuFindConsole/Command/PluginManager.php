@@ -3,7 +3,7 @@
 /**
  * Console command plugin manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -67,6 +67,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'language/addusingtemplate' => Language\AddUsingTemplateCommand::class,
         'language/copystring' => Language\CopyStringCommand::class,
         'language/delete' => Language\DeleteCommand::class,
+        'language/importlokalise' => Language\ImportLokaliseCommand::class,
         'language/normalize' => Language\NormalizeCommand::class,
         'scheduledsearch/notify' => ScheduledSearch\NotifyCommand::class,
         'util/cleanuprecordcache' => Util\CleanUpRecordCacheCommand::class,
@@ -125,6 +126,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             Language\AbstractCommandFactory::class,
         Language\CopyStringCommand::class => Language\AbstractCommandFactory::class,
         Language\DeleteCommand::class => Language\AbstractCommandFactory::class,
+        Language\ImportLokaliseCommand::class => Language\AbstractCommandFactory::class,
         Language\NormalizeCommand::class => Language\AbstractCommandFactory::class,
         ScheduledSearch\NotifyCommand::class =>
             ScheduledSearch\NotifyCommandFactory::class,

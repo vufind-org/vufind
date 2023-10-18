@@ -3,7 +3,7 @@
 /**
  * Unit tests for Image CAPTCHA handler factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -28,6 +28,8 @@
  */
 
 namespace VuFindTest\Captcha;
+
+use function func_get_args;
 
 /**
  * Unit tests for Image CAPTCHA handler factory.
@@ -93,7 +95,7 @@ class ImageFactoryTest extends \PHPUnit\Framework\TestCase
                 $this->constructorArgs = func_get_args();
             }
         };
-        $result = $factory($container, get_class($fakeImage));
+        $result = $factory($container, $fakeImage::class);
         $expectedFont = APPLICATION_PATH
         . '/vendor/webfontkit/open-sans/fonts/opensans-regular.ttf';
         $this->assertFileExists($expectedFont);

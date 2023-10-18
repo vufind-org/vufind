@@ -3,7 +3,7 @@
 /**
  * Hierarchy Tree Renderer
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,6 +28,8 @@
  */
 
 namespace VuFind\Hierarchy\TreeRenderer;
+
+use function is_object;
 
 /**
  * Hierarchy Tree Renderer

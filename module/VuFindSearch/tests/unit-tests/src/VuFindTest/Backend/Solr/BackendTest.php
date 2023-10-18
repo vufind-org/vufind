@@ -3,7 +3,7 @@
 /**
  * Unit tests for SOLR backend.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -31,6 +31,7 @@ namespace VuFindTest\Backend\Solr;
 
 use InvalidArgumentException;
 use Laminas\Http\Response;
+use Laminas\Uri\Http;
 use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Exception\RemoteErrorException;
 use VuFindSearch\Backend\Solr\Backend;
@@ -39,6 +40,8 @@ use VuFindSearch\Backend\Solr\HandlerMap;
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
+
+use function count;
 
 /**
  * Unit tests for SOLR backend.
@@ -606,6 +609,51 @@ class BackendTest extends TestCase
         $this->assertEquals(
             ['core' => 'biblio'],
             $backend->writeDocument($doc, 60)
+        );
+    }
+
+    /**
+     * Test extra request details
+     *
+     * @return void
+     */
+    public function testExtraRequestDetails()
+    {
+        $solrUri = new Http('https://www.someExampleSolr.com');
+        $connector = $this->getConnectorMock(['getLastUrl']);
+        $connector->expects($this->once())->method('getLastUrl')
+            ->will($this->returnValue($solrUri));
+        $backend = new Backend($connector);
+        $this->assertEquals(
+            ['solrRequestUrl' => $solrUri],
+            $backend->getExtraRequestDetails()
+        );
+    }
+
+    /**
+     * Test reset extra request details
+     *
+     * @return void
+     */
+    public function testResetExtraRequestDetails()
+    {
+        $solrUri = new Http('https://www.someExampleSolr.com');
+        $connector = $this->getConnectorMock(['getLastUrl', 'resetLastUrl']);
+        $connector->expects($this->once())->method('resetLastUrl');
+        $connector->expects($this->exactly(2))->method('getLastUrl')
+            ->willReturnOnConsecutiveCalls(
+                $this->returnValue($solrUri),
+                $this->returnValue(null)
+            );
+        $backend = new Backend($connector);
+        $this->assertEquals(
+            ['solrRequestUrl' => $solrUri],
+            $backend->getExtraRequestDetails()
+        );
+        $backend->resetExtraRequestDetails();
+        $this->assertEquals(
+            ['solrRequestUrl' => null],
+            $backend->getExtraRequestDetails()
         );
     }
 

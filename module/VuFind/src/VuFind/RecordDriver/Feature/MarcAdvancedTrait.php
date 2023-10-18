@@ -4,7 +4,7 @@
  * Functions to add advanced MARC-driven functionality to a record driver already
  * powered by the standard index spec. Depends upon MarcReaderTrait.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  * Copyright (C) The National Library of Finland 2020.
@@ -34,6 +34,10 @@ namespace VuFind\RecordDriver\Feature;
 
 use VuFind\View\Helper\Root\RecordLinker;
 use VuFind\XSLT\Processor as XSLTProcessor;
+
+use function count;
+use function in_array;
+use function is_array;
 
 /**
  * Functions to add advanced MARC-driven functionality to a record driver already
@@ -102,7 +106,7 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Get all subject headings associated with this record.  Each heading is
+     * Get all subject headings associated with this record. Each heading is
      * returned as an array of chunks, increasing from least specific to most
      * specific.
      *
@@ -192,21 +196,21 @@ trait MarcAdvancedTrait
 
         switch ($biblioLevel) {
             case 'M': // Monograph
-                return "Monograph";
+                return 'Monograph';
             case 'S': // Serial
-                return "Serial";
+                return 'Serial';
             case 'A': // Monograph Part
-                return "MonographPart";
+                return 'MonographPart';
             case 'B': // Serial Part
-                return "SerialPart";
+                return 'SerialPart';
             case 'C': // Collection
-                return "Collection";
+                return 'Collection';
             case 'D': // Collection Part
-                return "CollectionPart";
+                return 'CollectionPart';
             case 'I': // Integrating Resource
-                return "IntegratingResource";
+                return 'IntegratingResource';
             default:
-                return "Unknown";
+                return 'Unknown';
         }
     }
 
@@ -413,7 +417,7 @@ trait MarcAdvancedTrait
     }
 
     /**
-     * Get an array of all series names containing the record.  Array entries may
+     * Get an array of all series names containing the record. Array entries may
      * be either the name string, or an associative array with 'name' and 'number'
      * keys.
      *
@@ -953,7 +957,7 @@ trait MarcAdvancedTrait
             }
 
             // Set up proper namespacing and extract just the <record> tag:
-            $xml->record->addAttribute('xmlns', "http://www.loc.gov/MARC21/slim");
+            $xml->record->addAttribute('xmlns', 'http://www.loc.gov/MARC21/slim');
             // There's a quirk in SimpleXML that strips the first namespace
             // declaration, hence the double xmlns: prefix:
             $xml->record->addAttribute(

@@ -3,7 +3,7 @@
 /**
  * 360Link Link Resolver Driver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Royal Holloway, University of London
  *
@@ -138,25 +138,25 @@ class Threesixtylink extends AbstractBase
                     $record['service_type'] = 'getHolding';
                 }
                 $elems = $xpath->query(
-                    ".//ssopenurl:holdingData/ssopenurl:providerName",
+                    './/ssopenurl:holdingData/ssopenurl:providerName',
                     $linkGroup
                 );
                 $title = $elems->item(0)->textContent;
                 $elems = $xpath->query(
-                    ".//ssopenurl:holdingData/ssopenurl:databaseName",
+                    './/ssopenurl:holdingData/ssopenurl:databaseName',
                     $linkGroup
                 );
                 $title .= ' - ' . $elems->item(0)->textContent;
                 $record['title'] = $title;
                 $elems = $xpath->query(
-                    ".//ssopenurl:holdingData/ssopenurl:startDate",
+                    './/ssopenurl:holdingData/ssopenurl:startDate',
                     $linkGroup
                 );
                 if ($elems->length > 0) {
                     $record['coverage'] = $elems->item(0)->textContent . ' - ';
                 }
                 $elems = $xpath->query(
-                    ".//ssopenurl:holdingData/ssopenurl:endDate",
+                    './/ssopenurl:holdingData/ssopenurl:endDate',
                     $linkGroup
                 );
                 if ($elems->length > 0) {

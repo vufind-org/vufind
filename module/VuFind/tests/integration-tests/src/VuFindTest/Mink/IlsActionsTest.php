@@ -3,7 +3,7 @@
 /**
  * Mink ILS actions test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Mink;
 
+use Behat\Mink\Element\DocumentElement;
 use Behat\Mink\Element\Element;
 
 /**
@@ -196,7 +197,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Test that control becomes active if we click a checkbox (but don't
         // actually cancel anything yet).
-        $this->clickCss($page, "#checkbox_testsample1");
+        $this->clickCss($page, '#checkbox_testsample1');
         $this->clickCss($page, '#cancelSelected');
         $this->clickButtonGroupLink($page, 'No');
         $this->assertEquals(
@@ -339,12 +340,12 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, 'input.btn.btn-primary');
 
         // Confirm that login form is disabled:
-        $this->unFindCss($page, "#profile_cat_username");
+        $this->unFindCss($page, '#profile_cat_username');
         $this->assertEquals(
-            "Connection to the library management system failed. "
-            . "Information related to your library account cannot be displayed. "
-            . "If the problem persists, please contact your library.",
-            $this->findCss($page, "div.alert-warning")->getText()
+            'Connection to the library management system failed. '
+            . 'Information related to your library account cannot be displayed. '
+            . 'If the problem persists, please contact your library.',
+            $this->findCss($page, 'div.alert-warning')->getText()
         );
 
         // Clean up the user account so we can sign up again in the next test:
@@ -578,6 +579,143 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
             'Renewal Successful',
             $this->findCss($page, '.alert.alert-success')->getText()
         );
+    }
+
+    /**
+     * Test loan history.
+     *
+     * @depends testProfile
+     *
+     * @return void
+     */
+    public function testLoanHistory(): void
+    {
+        $this->changeConfigs(
+            [
+                'config' => $this->getConfigIniOverrides(),
+                'Demo' => $this->getDemoIniOverrides(),
+            ]
+        );
+
+        $page = $this->goToLoanHistory();
+
+        // Test sorting
+        $titles = [
+            'Journal of rational emotive therapy : the journal of the Institute for Rational-Emotive Therapy.',
+            'Rational living.',
+        ];
+        foreach ($titles as $index => $title) {
+            $this->assertEquals(
+                $title,
+                $this->findCss($page, 'ul.record-list li a.title', null, $index)->getText()
+            );
+        }
+        $this->clickCss($page, '#sort_options_1 option', null, 2);
+        $this->waitForPageLoad($page);
+        foreach (array_reverse($titles) as $index => $title) {
+            $this->assertEquals(
+                $title,
+                $this->findCss($page, 'ul.record-list li a.title', null, $index)->getText()
+            );
+        }
+
+        // Test submitting with no selected checkboxes:
+        $this->clickCss($page, '#purgeSelected');
+        $this->clickButtonGroupLink($page, 'Yes');
+        $this->assertEquals(
+            'No Items were Selected',
+            $this->findCss($page, '.alert.alert-danger')->getText()
+        );
+
+        // Purge one:
+        $this->clickCss($page, '.checkbox-select-item');
+        $this->clickCss($page, '#purgeSelected');
+        $this->clickButtonGroupLink($page, 'Yes');
+        $this->assertEquals(
+            'Selected loans have been purged from your loan history',
+            $this->findCss($page, '.alert.alert-info')->getText()
+        );
+        $this->findCss($page, '.checkbox-select-item');
+        $this->unFindCss($page, '.checkbox-select-item', null, 1);
+
+        // Purge all:
+        $this->clickCss($page, '#purgeAll');
+        $this->clickButtonGroupLink($page, 'Yes');
+        $this->assertEquals(
+            'Your loan history has been purged',
+            $this->findCss($page, '.alert.alert-info')->getText()
+        );
+        $this->unFindCss($page, '.checkbox-select-item');
+    }
+
+    /**
+     * Data provider for testLoanHistoryWithPurgeDisabled
+     *
+     * @return array
+     */
+    public function loanHistoryWithPurgeDisabledProvider(): array
+    {
+        return [
+            [false, false],
+            [false, true],
+            [true, false],
+        ];
+    }
+
+    /**
+     * Test transaction history with purge option(s) disabled.
+     *
+     * @param bool $selected Whether to enable Purge Selected
+     * @param bool $all      Whether to enable Purge All
+     *
+     * @return void
+     *
+     * @dataProvider loanHistoryWithPurgeDisabledProvider
+     * @depends      testProfile
+     */
+    public function testLoanHistoryWithPurgeDisabled(bool $selected, bool $all): void
+    {
+        $demoConfig = $this->getDemoIniOverrides();
+        $demoConfig['TransactionHistory']['purgeSelected'] = $selected;
+        $demoConfig['TransactionHistory']['purgeAll'] = $all;
+        $this->changeConfigs(
+            [
+                'config' => $this->getConfigIniOverrides(),
+                'Demo' => $demoConfig,
+            ]
+        );
+
+        $page = $this->goToLoanHistory();
+
+        if ($selected) {
+            $this->findCss($page, '#purgeSelected');
+        } else {
+            $this->unFindCss($page, '#purgeSelected');
+        }
+        if ($all) {
+            $this->findCss($page, '#purgeAll');
+        } else {
+            $this->unFindCss($page, '#purgeAll');
+        }
+    }
+
+    /**
+     * Log in and open loan history page
+     *
+     * @return DocumentElement
+     */
+    protected function goToLoanHistory(): DocumentElement
+    {
+        // Go to user profile screen:
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Checkouts/History');
+        $page = $session->getPage();
+
+        // Log in
+        $this->fillInLoginForm($page, 'username1', 'test', false);
+        $this->submitLoginForm($page, false);
+
+        return $page;
     }
 
     /**

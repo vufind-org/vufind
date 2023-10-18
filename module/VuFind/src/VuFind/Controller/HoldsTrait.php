@@ -3,7 +3,7 @@
 /**
  * Holds trait (for subclasses of AbstractRecord)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,6 +28,10 @@
  */
 
 namespace VuFind\Controller;
+
+use function count;
+use function in_array;
+use function is_array;
 
 /**
  * Holds trait (for subclasses of AbstractRecord)
@@ -98,7 +102,7 @@ trait HoldsTrait
             $gatheredDetails
         ) : [];
         $extraHoldFields = isset($checkHolds['extraHoldFields'])
-            ? explode(":", $checkHolds['extraHoldFields']) : [];
+            ? explode(':', $checkHolds['extraHoldFields']) : [];
 
         $requestGroupNeeded = in_array('requestGroup', $extraHoldFields)
             && !empty($requestGroups)

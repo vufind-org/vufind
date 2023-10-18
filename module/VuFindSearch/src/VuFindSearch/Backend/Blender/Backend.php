@@ -3,7 +3,7 @@
 /**
  * Blender backend.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2019-2022.
  *
@@ -40,6 +40,9 @@ use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Response\RecordCollectionInterface;
 use VuFindSearch\Response\RecordInterface;
+
+use function count;
+use function intval;
 
 /**
  * Blender backend.

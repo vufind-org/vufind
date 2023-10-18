@@ -3,10 +3,11 @@
 /**
  * VuFind Locale Settings
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018,
- *               Leipzig University Library <info@ub.uni-leipzig.de> 2018.
+ * Copyright (C) Leipzig University Library <info@ub.uni-leipzig.de> 2018.
+ * Copyright (C) The National Library of Finland 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,6 +26,7 @@
  * @package  I18n\Locale
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
@@ -33,6 +35,9 @@ namespace VuFind\I18n\Locale;
 
 use Laminas\Config\Config;
 
+use function array_key_exists;
+use function in_array;
+
 /**
  * VuFind Locale Settings
  *
@@ -40,6 +45,7 @@ use Laminas\Config\Config;
  * @package  I18n\Locale
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Sebastian Kehr <kehr@ub.uni-leipzig.de>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
@@ -210,7 +216,15 @@ class LocaleSettings
      */
     protected function parseFallbackLocales(Config $config): array
     {
-        return array_unique([$config->Site->language, 'en']);
+        $value = trim($config->Site->fallback_languages ?? '', ',');
+        $languages = $value ? array_map('trim', explode(',', $value)) : [];
+        return array_unique(
+            [
+                ...$languages,
+                $config->Site->language,
+                'en',
+            ]
+        );
     }
 
     /**

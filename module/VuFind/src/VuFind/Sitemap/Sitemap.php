@@ -3,7 +3,7 @@
 /**
  * Class for representing sitemap files
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,6 +28,8 @@
  */
 
 namespace VuFind\Sitemap;
+
+use function is_array;
 
 /**
  * Class for representing sitemap files
@@ -94,7 +96,7 @@ class Sitemap extends AbstractFile
         }
         $alternativeLinks = '';
         if ($languages) {
-            $lngParam = strpos($link, '?') === false ? '?lng=' : '&lng=';
+            $lngParam = !str_contains($link, '?') ? '?lng=' : '&lng=';
             $links = [];
             foreach ($languages as $sitemapLng => $vufindLng) {
                 $lngLink = $vufindLng

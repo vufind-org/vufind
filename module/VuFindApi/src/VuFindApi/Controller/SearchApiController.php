@@ -3,7 +3,7 @@
 /**
  * Search API Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2015-2016.
  *
@@ -32,6 +32,9 @@ namespace VuFindApi\Controller;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFindApi\Formatter\FacetFormatter;
 use VuFindApi\Formatter\RecordFormatter;
+
+use function count;
+use function is_array;
 
 /**
  * Search API Controller

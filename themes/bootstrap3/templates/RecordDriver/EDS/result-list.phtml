@@ -31,8 +31,10 @@
             if (!empty($item)): ?>
               <div class="resultItemLine1">
                 <?php if ('Ti' == $item['Group']): ?>
-                  <a href="<?=$this->escapeHtmlAttr($recordLinker->getUrl($this->driver))?>" class="title getFull _record_link"  data-view="<?=$this->escapeHtmlAttr($this->params->getOptions()->getListViewOption())?>">
-                  <?=$item['Data']?> </a>
+                  <h2>
+                    <a href="<?=$this->escapeHtmlAttr($recordLinker->getUrl($this->driver))?>" class="title getFull _record_link"  data-view="<?=$this->escapeHtmlAttr($this->params->getOptions()->getListViewOption())?>">
+                    <?=$item['Data']?> </a>
+                  </h2>
                 <?php else:?>
                   <p>
                     <b><?=$this->transEsc($item['Label'])?>:</b>
@@ -77,33 +79,15 @@
         <?php endif; ?>
       </div>
 
-      <?php if ($this->driver->hasHTMLFullTextAvailable()): ?>
-        <a href="<?=$this->escapeHtmlAttr($recordLinker->getUrl($this->driver)) ?>#html" class="icon--eds html fulltext _record_link" target="_blank">
-          <?=$this->transEsc('HTML Full Text')?>
-        </a>
-        &nbsp; &nbsp;
-      <?php endif; ?>
-
-      <?php if ($this->driver->hasLinkedFullTextAvailable()): ?>
-        <a href="<?=$this->escapeHtmlAttr($recordLinker->getTabUrl($this->driver, 'LinkedText')) ?>" class="fulltext" target="_blank">
-          <?=$this->transEsc('Linked Full Text')?>
-        </a>
-      <?php endif; ?>
-
-      <?php if ($this->driver->hasPdfAvailable()): ?>
-        <a href="<?=$this->escapeHtmlAttr($recordLinker->getTabUrl($this->driver, 'PDF')) ?>" class="icon--eds pdf fulltext" target="_blank">
-          <?=$this->transEsc('PDF Full Text')?>
-        </a>
-      <?php endif; ?>
-
-      <?php if ($this->driver->hasEpubAvailable()): ?>
-        <a href="<?=$this->escapeHtmlAttr($recordLinker->getTabUrl($this->driver, 'Epub')) ?>" class="icon--eds epub fulltext" target="_blank">
-          <?=$this->transEsc('ePub Full Text')?>
-        </a>
-      <?php endif; ?>
+      <?=$this->record($this->driver)->renderTemplate(
+                'result-list/full-text-links.phtml',
+                ['recordLinker' => $recordLinker]
+            );
+      ?>
 
       <?php /* Links from DOI linker */ ?>
-      <?php $doi = $this->doi($this->driver, 'results'); if ($doi->isActive()):?>
+      <?php $doi = $this->doi($this->driver, 'results'); ?>
+      <?php if ($doi->isActive()): ?>
         <div><?=$doi->renderTemplate()?></div>
       <?php endif; ?>
     </div>
@@ -120,12 +104,13 @@
 
         <?php /* Saved lists */ ?>
         <div class="savedLists alert alert-info hidden">
-          <strong><?=$this->transEsc("Saved in")?>:</strong>
+          <strong><?=$this->transEsc('Saved in')?>:</strong>
         </div>
       <?php endif; ?>
 
       <?php /* Hierarchy tree link */ ?>
-      <?php $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>
+      <?php $trees = $this->driver->tryMethod('getHierarchyTrees'); ?>
+      <?php if (!empty($trees)): ?>
         <?php foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
           <div class="hierarchyTreeLink">
             <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId">
@@ -137,7 +122,7 @@
         <?php endforeach; ?>
       <?php endif; ?>
 
-      <?=(!$restrictedView && $this->driver->supportsCoinsOpenUrl()) ? '<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>' : ''?>
+      <?=(!$restrictedView && $this->driver->supportsCoinsOpenUrl()) ? '<span class="Z3988" aria-hidden="true" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>' : ''?>
     </div>
   </div>
   <?php if ($thumbnail && $thumbnailAlignment == 'right'): ?>

@@ -3,7 +3,7 @@
 /**
  * VuFind Action Helper - Database upgrade tools
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -33,6 +33,10 @@ namespace VuFind\Controller\Plugin;
 use Laminas\Db\Adapter\Adapter as DbAdapter;
 use Laminas\Db\Metadata\Source\Factory as DbMetadataSourceFactory;
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
+
+use function count;
+use function in_array;
+use function is_object;
 
 /**
  * Action helper to perform database upgrades
@@ -346,10 +350,10 @@ class DbUpgrade extends AbstractPlugin
 
                 // Change column to appropriate character encoding:
                 $sql = "ALTER TABLE `$table` MODIFY `$column` " . $details['Type']
-                    . " COLLATE " . $newSettings['collation']
+                    . ' COLLATE ' . $newSettings['collation']
                     . (strtoupper($details['Null']) == 'NO' ? ' NOT NULL' : '')
                     . $currentDefault
-                    . ";";
+                    . ';';
                 $sqlcommands .= $this->query($sql, $logsql);
             }
             // Adjust table character set and collation:
@@ -824,7 +828,7 @@ class DbUpgrade extends AbstractPlugin
             }
         }
 
-        preg_match("/.* DEFAULT (.*)$/", $sql, $matches);
+        preg_match('/.* DEFAULT (.*)$/', $sql, $matches);
         $expectedDefault = $matches[1] ?? null;
         if (null !== $expectedDefault) {
             $expectedDefault = trim(rtrim($expectedDefault, ','), "'");
@@ -852,7 +856,7 @@ class DbUpgrade extends AbstractPlugin
 
     /**
      * Given a table column object, return true if the object's type matches the
-     * specified $type parameter.  Return false if there is a mismatch that will
+     * specified $type parameter. Return false if there is a mismatch that will
      * require table structure updates.
      *
      * @param \Laminas\Db\Metadata\Object\ColumnObject $column       Object to check

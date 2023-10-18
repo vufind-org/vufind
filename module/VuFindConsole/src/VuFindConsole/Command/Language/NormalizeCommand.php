@@ -3,7 +3,7 @@
 /**
  * Language command: normalize file or directory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -73,7 +73,7 @@ class NormalizeCommand extends AbstractCommand
             )->addArgument(
                 'target',
                 InputArgument::REQUIRED,
-                "a file or directory to normalize"
+                'a file or directory to normalize'
             );
     }
 

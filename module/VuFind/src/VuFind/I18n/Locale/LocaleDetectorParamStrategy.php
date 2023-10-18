@@ -3,7 +3,7 @@
 /**
  * Locale Detector Strategy for VuFind POST Parameter
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018,
  *               Leipzig University Library <info@ub.uni-leipzig.de> 2018.
@@ -33,6 +33,8 @@ namespace VuFind\I18n\Locale;
 
 use SlmLocale\LocaleEvent;
 use SlmLocale\Strategy\AbstractStrategy;
+
+use function in_array;
 
 /**
  * Locale Detector Strategy for VuFind POST Parameter

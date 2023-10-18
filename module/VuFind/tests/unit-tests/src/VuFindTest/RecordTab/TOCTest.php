@@ -3,7 +3,7 @@
 /**
  * TOC Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -61,7 +61,7 @@ class TOCTest extends \PHPUnit\Framework\TestCase
      */
     public function isActiveProvider(): array
     {
-        return ['Enabled' => ["foo", true], 'Not Enabled' => ["", false]];
+        return ['Enabled' => ['foo', true], 'Not Enabled' => ['', false]];
     }
 
     /**
@@ -81,7 +81,7 @@ class TOCTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $recordDriver->expects($this->any())->method('tryMethod')
             ->withConsecutive([$this->equalTo('getTOC')], [$this->equalTo('getCleanISBN')])
-            ->willReturnOnConsecutiveCalls($this->returnValue($toc), $this->returnValue("bar"));
+            ->willReturnOnConsecutiveCalls($this->returnValue($toc), $this->returnValue('bar'));
         $obj = new TOC();
         $obj->setRecordDriver($recordDriver);
         $this->assertSame($expectedResult, $obj->isActive());

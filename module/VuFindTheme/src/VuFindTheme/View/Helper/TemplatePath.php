@@ -3,7 +3,7 @@
 /**
  * Helper to get path to a template from another theme (for including)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *

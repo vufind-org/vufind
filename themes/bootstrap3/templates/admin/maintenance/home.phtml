@@ -29,8 +29,17 @@
     <?php endforeach; ?>
     <input type="submit" name="submit" value="<?=$this->transEscAttr('Submit')?>" class="btn btn-danger">
   </form>
+
+  <?php if (!empty($scripts)): ?>
+    <h3>Scripts</h3>
+    <ul>
+      <?php foreach ($scripts as $script => $details): ?>
+        <li><a href="<?=$this->url('admin/script', ['name' => $script])?>"><?=$this->escapeHtml($details['label'] ?? $script)?></a></li>
+      <?php endforeach; ?>
+    </ul>
+  <?php endif; ?>
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>">
-  <?=$this->render("admin/menu.phtml")?>
+  <?=$this->render('admin/menu.phtml')?>
 </div>

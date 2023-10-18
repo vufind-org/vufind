@@ -3,7 +3,7 @@
 /**
  * Laminas\Feed\Renderer\Feed extension for Open Search
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Deutsches Archäologisches Institut 2015.
  *

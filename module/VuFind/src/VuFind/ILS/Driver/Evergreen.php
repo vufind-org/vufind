@@ -3,7 +3,7 @@
 /**
  * Evergreen ILS Driver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -33,6 +33,8 @@ namespace VuFind\ILS\Driver;
 use PDO;
 use PDOException;
 use VuFind\Exception\ILS as ILSException;
+
+use function count;
 
 /**
  * VuFind Connector for Evergreen
@@ -284,10 +286,10 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
             }
 
             if ($row['due_year']) {
-                $due_date = $row['due_year'] . "-" . $row['due_month'] . "-" .
+                $due_date = $row['due_year'] . '-' . $row['due_month'] . '-' .
                             $row['due_day'];
             } else {
-                $due_date = "";
+                $due_date = '';
             }
             $holding[] = [
                 'id' => $id,
@@ -349,10 +351,10 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
             HERE;
         if (is_numeric($barcode)) {
             // A barcode was supplied as ID
-            $sql .= "AND card.barcode = ?";
+            $sql .= 'AND card.barcode = ?';
         } else {
             // A username was supplied as ID
-            $sql .= "AND usr.usrname = ?";
+            $sql .= 'AND usr.usrname = ?';
         }
 
         try {
@@ -396,25 +398,25 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
     {
         $transList = [];
 
-        $sql = "select call_number.record as bib_id, " .
-               "circulation.due_date as due_date, " .
-               "circulation.target_copy as item_id, " .
-               "circulation.renewal_remaining as renewal_remaining, " .
-               "aou_circ.name as borrowing_location, " .
-               "aou_own.name as owning_library, " .
-               "copy.barcode as barcode " .
+        $sql = 'select call_number.record as bib_id, ' .
+               'circulation.due_date as due_date, ' .
+               'circulation.target_copy as item_id, ' .
+               'circulation.renewal_remaining as renewal_remaining, ' .
+               'aou_circ.name as borrowing_location, ' .
+               'aou_own.name as owning_library, ' .
+               'copy.barcode as barcode ' .
                "from $this->dbName.action.circulation " .
                "join $this->dbName.asset.copy ON " .
-               " (circulation.target_copy = copy.id) " .
+               ' (circulation.target_copy = copy.id) ' .
                "join $this->dbName.asset.call_number ON " .
-               "  (copy.call_number = call_number.id) " .
+               '  (copy.call_number = call_number.id) ' .
                "join $this->dbName.actor.org_unit aou_circ ON " .
-               "  (circulation.circ_lib = aou_circ.id) " .
+               '  (circulation.circ_lib = aou_circ.id) ' .
                "join $this->dbName.actor.org_unit aou_own ON " .
-               "  (call_number.owning_lib = aou_own.id) " .
+               '  (call_number.owning_lib = aou_own.id) ' .
                "where circulation.usr = '" . $patron['id'] . "' " .
-               "and circulation.checkin_time is null " .
-               "and circulation.xact_finish is null";
+               'and circulation.checkin_time is null ' .
+               'and circulation.xact_finish is null';
 
         try {
             $sqlStmt = $this->db->prepare($sql);
@@ -423,11 +425,11 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
                 $due_date = $this->formatDate($row['due_date']);
                 $_due_time = new \DateTime($row['due_date']);
-                if ($_due_time->format('H:i:s') == "23:59:59") {
-                    $dueTime = ""; // don't display due time for non-hourly loans
+                if ($_due_time->format('H:i:s') == '23:59:59') {
+                    $dueTime = ''; // don't display due time for non-hourly loans
                 } else {
                     $dueTime = $this->dateConverter->convertToDisplayTime(
-                        "Y-m-d H:i",
+                        'Y-m-d H:i',
                         $row['due_date']
                     );
                 }
@@ -484,25 +486,25 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
     {
         $fineList = [];
 
-        $sql = "select billable_xact_summary.total_owed * 100 as total_owed, " .
-               "billable_xact_summary.balance_owed * 100 as balance_owed, " .
-               "billable_xact_summary.last_billing_type, " .
-               "billable_xact_summary.last_billing_ts, " .
-               "billable_circulations.create_time as checkout_time, " .
-               "billable_circulations.due_date, " .
-               "billable_circulations.target_copy, " .
-               "call_number.record " .
+        $sql = 'select billable_xact_summary.total_owed * 100 as total_owed, ' .
+               'billable_xact_summary.balance_owed * 100 as balance_owed, ' .
+               'billable_xact_summary.last_billing_type, ' .
+               'billable_xact_summary.last_billing_ts, ' .
+               'billable_circulations.create_time as checkout_time, ' .
+               'billable_circulations.due_date, ' .
+               'billable_circulations.target_copy, ' .
+               'call_number.record ' .
                "from $this->dbName.money.billable_xact_summary " .
                "LEFT JOIN $this->dbName.action.billable_circulations " .
-               "ON (billable_xact_summary.id = billable_circulations.id " .
-               " and billable_circulations.xact_finish is null) " .
+               'ON (billable_xact_summary.id = billable_circulations.id ' .
+               ' and billable_circulations.xact_finish is null) ' .
                "LEFT JOIN $this->dbName.asset.copy ON " .
-               "  (billable_circulations.target_copy = copy.id) " .
+               '  (billable_circulations.target_copy = copy.id) ' .
                "LEFT JOIN $this->dbName.asset.call_number ON " .
-               "  (copy.call_number = call_number.id) " .
+               '  (copy.call_number = call_number.id) ' .
                "where billable_xact_summary.usr = '" . $patron['id'] . "' " .
-               "and billable_xact_summary.total_owed <> 0 " .
-               "and billable_xact_summary.xact_finish is null";
+               'and billable_xact_summary.total_owed <> 0 ' .
+               'and billable_xact_summary.xact_finish is null';
 
         try {
             $sqlStmt = $this->db->prepare($sql);
@@ -540,21 +542,21 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
     {
         $holdList = [];
 
-        $sql = "select ahr.hold_type, bib_record, " .
-               "ahr.id as hold_id, " .
-               "expire_time, request_time, shelf_time, capture_time, " .
-               "shelf_time, shelf_expire_time, frozen, thaw_date, " .
-               "org_unit.name as lib_name, acp.status as copy_status " .
+        $sql = 'select ahr.hold_type, bib_record, ' .
+               'ahr.id as hold_id, ' .
+               'expire_time, request_time, shelf_time, capture_time, ' .
+               'shelf_time, shelf_expire_time, frozen, thaw_date, ' .
+               'org_unit.name as lib_name, acp.status as copy_status ' .
                "from $this->dbName.action.hold_request ahr " .
                "join $this->dbName.actor.org_unit on " .
-               "  (ahr.pickup_lib = org_unit.id) " .
+               '  (ahr.pickup_lib = org_unit.id) ' .
                "join $this->dbName.reporter.hold_request_record rhrr on " .
-               "  (rhrr.id = ahr.id) " .
+               '  (rhrr.id = ahr.id) ' .
                "left join $this->dbName.asset.copy acp on " .
-               "  (acp.id = ahr.current_copy) " .
+               '  (acp.id = ahr.current_copy) ' .
                "where ahr.usr = '" . $patron['id'] . "' " .
-               "and ahr.fulfillment_time is null " .
-               "and ahr.cancel_time is null";
+               'and ahr.fulfillment_time is null ' .
+               'and ahr.cancel_time is null';
 
         try {
             $sqlStmt = $this->db->prepare($sql);
@@ -725,10 +727,10 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
         $enddate = date('Y-m-d', strtotime('now'));
         $startdate = date('Y-m-d', strtotime("-$daysOld day"));
 
-        $sql = "select count(distinct copy.id) as count " .
-               "from asset.copy " .
+        $sql = 'select count(distinct copy.id) as count ' .
+               'from asset.copy ' .
                "where copy.create_date >= '$startdate' " .
-               "and copy.status = 0 " .
+               'and copy.status = 0 ' .
                "and copy.create_date < '$enddate' LIMIT 50";
 
         try {
@@ -746,10 +748,10 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
         //$startRow = (($page-1)*$limit)+1;
         //$endRow = ($page*$limit);
 
-        $sql = "select copy.id, call_number.record from asset.copy " .
-               "join asset.call_number on (call_number.id = copy.call_number) " .
+        $sql = 'select copy.id, call_number.record from asset.copy ' .
+               'join asset.call_number on (call_number.id = copy.call_number) ' .
                "where copy.create_date >= '$startdate' " .
-               "and copy.status = 0 " .
+               'and copy.status = 0 ' .
                "and copy.create_date < '$enddate' LIMIT 50";
 
         try {
@@ -803,9 +805,9 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
     {
         $list = [];
 
-        $sql = "select copy.id as id " .
+        $sql = 'select copy.id as id ' .
                "from $this->dbName.asset " .
-               "where copy.opac_visible = false";
+               'where copy.opac_visible = false';
 
         try {
             $sqlStmt = $this->db->prepare($sql);

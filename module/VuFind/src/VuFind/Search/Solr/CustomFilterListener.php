@@ -6,7 +6,7 @@
  * This can translate a simple filter into a complex set of filters, and it can
  * "invert" filters by applying Solr filters only when a VuFind filter is absent.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *

@@ -3,7 +3,7 @@
 /**
  * Hold Logic Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -32,6 +32,9 @@ namespace VuFind\ILS\Logic;
 
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Connection as ILSConnection;
+
+use function in_array;
+use function is_array;
 
 /**
  * Hold Logic Class
@@ -113,7 +116,7 @@ class Holds
      * @param array $holdings An associative array of location => item array
      *
      * @return array          An associative array keyed by location with each
-     * entry being an array with 'notes', 'summary' and 'items' keys.  The 'notes'
+     * entry being an array with 'notes', 'summary' and 'items' keys. The 'notes'
      * and 'summary' arrays are note/summary information collected from within the
      * items.
      */
@@ -226,9 +229,9 @@ class Holds
 
         $mode = $this->catalog->getHoldsMode();
 
-        if ($mode == "disabled") {
+        if ($mode == 'disabled') {
             $holdings = $this->standardHoldings($result);
-        } elseif ($mode == "driver") {
+        } elseif ($mode == 'driver') {
             $holdings = $this->driverHoldings($result, $config, !empty($blocks));
         } else {
             $holdings = $this->generateHoldings($result, $mode, $config);
@@ -361,16 +364,16 @@ class Holds
                             ? $copy['holdOverride'] : $type;
 
                         switch ($currentType) {
-                            case "all":
+                            case 'all':
                                 $addlink = true; // always provide link
                                 break;
-                            case "holds":
+                            case 'holds':
                                 $addlink = $copy['availability'];
                                 break;
-                            case "recalls":
+                            case 'recalls':
                                 $addlink = !$copy['availability'];
                                 break;
-                            case "availability":
+                            case 'availability':
                                 $addlink = !$copy['availability']
                                     && ($any_available == false);
                                 break;
@@ -381,7 +384,7 @@ class Holds
                         // If a valid holdable status has been set, use it to
                         // determine if a hold link is created
                         if ($addlink && ($copy['is_holdable'] ?? true)) {
-                            if ($holdConfig['function'] == "getHoldLink") {
+                            if ($holdConfig['function'] == 'getHoldLink') {
                                 /* Build opac link */
                                 $holdings[$location_key][$copy_key]['link']
                                     = $this->catalog->getHoldLink(
@@ -539,19 +542,19 @@ class Holds
         foreach ($details as $key => $param) {
             $needle = in_array($key, $HMACKeys);
             if ($needle) {
-                $queryString[] = $key . "=" . urlencode($param);
+                $queryString[] = $key . '=' . urlencode($param);
             }
         }
 
         // Add HMAC
-        $queryString[] = "hashKey=" . urlencode($HMACkey);
+        $queryString[] = 'hashKey=' . urlencode($HMACkey);
         $queryString = implode('&', $queryString);
 
         // Build Params
         return [
             'action' => $action, 'record' => $details['id'],
             'source' => $details['source'] ?? DEFAULT_SEARCH_BACKEND,
-            'query' => $queryString, 'anchor' => "#tabnav",
+            'query' => $queryString, 'anchor' => '#tabnav',
         ];
     }
 
@@ -568,10 +571,10 @@ class Holds
         $grouping = $this->config->Catalog->holdings_grouping
             ?? 'holdings_id,location';
 
-        $groupKey = "";
+        $groupKey = '';
 
         // Multiple keys may be used here (delimited by comma)
-        foreach (array_map('trim', explode(",", $grouping)) as $key) {
+        foreach (array_map('trim', explode(',', $grouping)) as $key) {
             // backwards-compatibility:
             // The config.ini file originally expected only
             //   two possible settings: holdings_id and location_name.
@@ -580,12 +583,12 @@ class Holds
             // From now on, we will expect (via config.ini documentation)
             //   the value of 'location', but still continue to honor
             //   'location_name'.
-            if ($key == "location_name") {
-                $key = "location";
+            if ($key == 'location_name') {
+                $key = 'location';
             }
 
             if (isset($copy[$key])) {
-                if ($groupKey != "") {
+                if ($groupKey != '') {
                     $groupKey .= '|';
                 }
                 $groupKey .= $copy[$key];
@@ -593,7 +596,7 @@ class Holds
         }
 
         // default:
-        if ($groupKey == "") {
+        if ($groupKey == '') {
             $groupKey = $copy['location'];
         }
 

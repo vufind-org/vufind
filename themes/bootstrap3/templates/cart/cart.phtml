@@ -10,53 +10,64 @@
 <form class="form-inline" action="<?=$this->url('cart-processor')?>" method="post"  name="cartForm" data-lightbox-onsubmit="cartFormHandler">
   <input type="hidden" id="dropdown_value">
   <?php if (!$this->cart()->isEmpty()): ?>
-    <div class="cart-controls clearfix">
-      <div class="checkbox pull-left flip">
+    <div class="cart-controls">
+      <div class="checkbox">
         <label>
           <input type="checkbox" name="selectAll" class="checkbox-select-all">
-          <?=$this->transEsc('select_page')?>
+          <?=$this->transEsc('select_page_cart')?>
         </label>
       </div>
-      <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
-        <button type="submit" class="toolbar-btn" name="saveCart" title="<?=$this->transEscAttr('bookbag_save')?>" value="1">
-          <?=$this->icon('user-list-add', 'icon-link__icon') ?>
-          <span class="icon-link__label"><?=$this->transEsc('Save')?></span>
-        </button>
-      <?php endif; ?>
-      <button type="submit" class="toolbar-btn" name="email" title="<?=$this->transEscAttr('bookbag_email')?>" value="1">
-        <?=$this->icon('send-email', 'icon-link__icon') ?>
-        <span class="icon-link__label"><?=$this->transEsc('Email')?></span>
-      </button>
-      <?php $exportOptions = $this->export()->getActiveFormats('bulk'); if (count($exportOptions) > 0): ?>
-        <button type="submit" class="toolbar-btn" name="export" title="<?=$this->transEscAttr('bookbag_export')?>" value="1">
-          <?=$this->icon('export', 'icon-link__icon') ?>
-          <span class="icon-link__label"><?=$this->transEsc('Export')?></span>
-        </button>
-      <?php endif; ?>
-      <button type="submit" class="toolbar-btn" name="print" title="<?=$this->transEscAttr('print_selected')?>" value="1">
-        <?=$this->icon('print', 'icon-link__icon') ?>
-        <span class="icon-link__label"><?=$this->transEsc('Print')?></span>
-      </button>
-      <div class="btn-group" id="cartDelete">
-        <button type="submit" name="delete" class="toolbar-btn dropdown-toggle" data-toggle="dropdown" id="cart-delete-label" value="1">
-          <?=$this->icon('cart-remove', 'icon-link__icon') ?>
-          <span class="icon-link__label"><?=$this->transEsc('Delete')?></span>
-        </button>
-        <ul class="dropdown-menu" role="menu" aria-labelledby="cart-delete-label">
-          <li><a id="cart-confirm-delete" title="<?=$this->transEscAttr('confirm_delete')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
-          <li><a><?=$this->transEsc('confirm_dialog_no')?></a></li>
-        </ul>
-      </div>
-      <div class="btn-group">
-        <button type="submit" class="toolbar-btn dropdown-toggle" name="empty" data-toggle="dropdown" id="cart-empty-label" value="1">
-          <?=$this->icon('cart-empty', 'icon-link__icon') ?>
-          <span class="icon-link__label"><?=$this->transEsc('Empty Book Bag')?></span>
-        </button>
-        <ul class="dropdown-menu" role="menu" aria-labelledby="cart-empty-label">
-          <li><a id="cart-confirm-empty" title="<?=$this->transEscAttr('bookbag_confirm_empty')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
-          <li><a id="cart-refuse-empty"><?=$this->transEsc('confirm_dialog_no')?></a></li>
-        </ul>
-      </div>
+      <ul class="cart-control-btns">
+        <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
+          <li>
+            <button type="submit" class="toolbar-btn" name="saveCart" title="<?=$this->transEscAttr('bookbag_save')?>" value="1">
+              <?=$this->icon('user-list-add', 'icon-link__icon') ?>
+              <span class="icon-link__label"><?=$this->transEsc('Save')?></span>
+            </button>
+          </li>
+        <?php endif; ?>
+        <li>
+          <button type="submit" class="toolbar-btn" name="email" title="<?=$this->transEscAttr('bookbag_email')?>" value="1">
+            <?=$this->icon('send-email', 'icon-link__icon') ?>
+            <span class="icon-link__label"><?=$this->transEsc('Email')?></span>
+          </button>
+        </li>
+        <?php $exportOptions = $this->export()->getActiveFormats('bulk'); ?>
+        <?php if (count($exportOptions) > 0): ?>
+          <li>
+            <button type="submit" class="toolbar-btn" name="export" title="<?=$this->transEscAttr('bookbag_export')?>" value="1">
+              <?=$this->icon('export', 'icon-link__icon') ?>
+              <span class="icon-link__label"><?=$this->transEsc('Export')?></span>
+            </button>
+          </li>
+        <?php endif; ?>
+        <li>
+          <button type="submit" class="toolbar-btn" name="print" title="<?=$this->transEscAttr('print_selected')?>" value="1">
+            <?=$this->icon('print', 'icon-link__icon') ?>
+            <span class="icon-link__label"><?=$this->transEsc('Print')?></span>
+          </button>
+        </li>
+        <li class="btn-group" id="cartDelete">
+          <button type="submit" name="delete" class="toolbar-btn dropdown-toggle" data-toggle="dropdown" id="cart-delete-label" value="1">
+            <?=$this->icon('cart-remove', 'icon-link__icon') ?>
+            <span class="icon-link__label"><?=$this->transEsc('Delete')?></span>
+          </button>
+          <ul class="dropdown-menu" role="menu" aria-labelledby="cart-delete-label">
+            <li><a id="cart-confirm-delete" title="<?=$this->transEscAttr('confirm_delete')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+            <li><a><?=$this->transEsc('confirm_dialog_no')?></a></li>
+          </ul>
+        </li>
+        <li class="btn-group">
+          <button type="submit" class="toolbar-btn dropdown-toggle" name="empty" data-toggle="dropdown" id="cart-empty-label" value="1">
+            <?=$this->icon('cart-empty', 'icon-link__icon') ?>
+            <span class="icon-link__label"><?=$this->transEsc('Empty Book Bag')?></span>
+          </button>
+          <ul class="dropdown-menu" role="menu" aria-labelledby="cart-empty-label">
+            <li><a id="cart-confirm-empty" title="<?=$this->transEscAttr('bookbag_confirm_empty')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+            <li><a id="cart-refuse-empty"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+          </ul>
+        </li>
+      </ul>
     </div>
   <?php endif; ?>
   <?=$this->render('cart/contents.phtml')?>

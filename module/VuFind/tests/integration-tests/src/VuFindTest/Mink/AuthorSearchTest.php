@@ -3,7 +3,7 @@
 /**
  * Mink author search test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2023.
  *
@@ -52,7 +52,7 @@ class AuthorSearchTest extends \VuFindTest\Integration\MinkTestCase
         $facets = $this->findCss($page, '#side-collapse-building a')->getText();
         // We'll check for a known count from a known MARC file to confirm that
         // results came back.
-        $this->assertStringContainsString("author_relators.mrc 10", $facets);
+        $this->assertStringContainsString('author_relators.mrc 10', $facets);
     }
 
     /**
@@ -66,6 +66,6 @@ class AuthorSearchTest extends \VuFindTest\Integration\MinkTestCase
         $facets = $this->findCss($page, '#side-collapse-building a')->getText();
         // We'll check for a known count from a known MARC file to confirm that
         // results came back.
-        $this->assertStringContainsString("author_relators.mrc 11", $facets);
+        $this->assertStringContainsString('author_relators.mrc 11', $facets);
     }
 }

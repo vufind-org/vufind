@@ -3,7 +3,7 @@
 /**
  * Checklist class (used for checking off a list of values)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -28,6 +28,8 @@
  */
 
 namespace VuFind\Record;
+
+use function count;
 
 /**
  * Checklist class (used for checking off a list of values)

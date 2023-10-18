@@ -3,7 +3,7 @@
 /**
  * Console command: switch database encryption algorithm.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -40,6 +40,8 @@ use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
 use VuFind\Db\Table\User as UserTable;
+
+use function count;
 
 /**
  * Console command: switch database encryption algorithm.

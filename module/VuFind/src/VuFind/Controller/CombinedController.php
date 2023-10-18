@@ -3,7 +3,7 @@
 /**
  * Combined Search Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -31,6 +31,11 @@ namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Search\SearchRunner;
+
+use function count;
+use function in_array;
+use function intval;
+use function is_array;
 
 /**
  * Redirects the user to the appropriate default VuFind action.
@@ -124,6 +129,7 @@ class CombinedController extends AbstractSearch
                     && $cart->isActive(),
                 'showBulkOptions' => $currentOptions->supportsCart()
                     && ($general->Site->showBulkOptions ?? false),
+                'domId' => 'combined_' . str_replace(':', '____', $sectionId),
             ];
             // Load custom CSS, if necessary:
             $html = ($this->getViewRenderer()->plugin('headLink'))();
@@ -211,13 +217,26 @@ class CombinedController extends AbstractSearch
         $columnConfig = intval($config['Layout']['columns'] ?? $actualMaxColumns);
         $columns = min($columnConfig, $actualMaxColumns);
         $placement = $config['Layout']['stack_placement'] ?? 'distributed';
-        if (!in_array($placement, ['distributed', 'left', 'right'])) {
+        if (!in_array($placement, ['distributed', 'left', 'right', 'grid'])) {
             $placement = 'distributed';
         }
 
         // Get default config for showBulkOptions
         $settings = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
             ->get('config');
+
+        // Identify if any modules use include_recommendations_side.
+        $columnSideRecommendations = [];
+        $recommendationManager = $this->serviceLocator->get(\VuFind\Recommend\PluginManager::class);
+        foreach ($config as $subconfig) {
+            if (is_array($subconfig['include_recommendations_side'] ?? false)) {
+                foreach ($subconfig['include_recommendations_side'] as $recommendation) {
+                    $recommendationModuleName = strtok($recommendation, ':');
+                    $recommendationModule = $recommendationManager->get($recommendationModuleName);
+                    $columnSideRecommendations[] = str_replace('\\', '_', $recommendationModule::class);
+                }
+            }
+        }
 
         // Build view model:
         return $this->createViewModel(
@@ -231,6 +250,7 @@ class CombinedController extends AbstractSearch
                 'supportsCart' => $supportsCart,
                 'supportsCartOptions' => $supportsCartOptions,
                 'showBulkOptions' => $settings->Site->showBulkOptions ?? false,
+                'columnSideRecommendations' => $columnSideRecommendations,
             ]
         );
     }
@@ -265,7 +285,7 @@ class CombinedController extends AbstractSearch
                     ->toUrl($base . '?' . http_build_query($params));
             case 'External':
                 $lookfor = $this->params()->fromQuery('lookfor');
-                $finalTarget = (false === strpos($target, '%%lookfor%%'))
+                $finalTarget = (!str_contains($target, '%%lookfor%%'))
                     ? $target . urlencode($lookfor)
                     : str_replace('%%lookfor%%', urlencode($lookfor), $target);
                 return $this->redirect()->toUrl($finalTarget);
@@ -319,18 +339,23 @@ class CombinedController extends AbstractSearch
         // Override the search type:
         $query->type = $searchType;
 
-        // Always leave noresults active (useful for 0-hit searches) and
-        // side inactive (no room to display) but display or hide top based
-        // on include_recommendations setting.
-        if ($settings['include_recommendations'] ?? false) {
-            $query->noRecommend = 'side';
-            if (is_array($settings['include_recommendations'])) {
-                $query->recommendOverride
-                    = ['top' => $settings['include_recommendations']];
-            }
+        // Always leave noresults active (useful for 0-hit searches).
+        // Display or hide top based on include_recommendations setting.
+        // Display or hide side based on include_recommendations_side setting.
+        $recommendOverride = [];
+        $noRecommend = [];
+        if (is_array($settings['include_recommendations'] ?? false)) {
+            $recommendOverride['top'] = $settings['include_recommendations'];
         } else {
-            $query->noRecommend = 'top,side';
+            $noRecommend[] = 'top';
         }
+        if (is_array($settings['include_recommendations_side'] ?? false)) {
+            $recommendOverride['side'] = $settings['include_recommendations_side'];
+        } else {
+            $noRecommend[] = 'side';
+        }
+        $query->recommendOverride = $recommendOverride;
+        $query->noRecommend = count($noRecommend) ? implode(',', $noRecommend) : false;
     }
 
     /**

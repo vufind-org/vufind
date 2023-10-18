@@ -3,7 +3,7 @@
 /**
  * EBSCO EDS API Connector
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) EBSCO Industries 2013
  *
@@ -97,10 +97,10 @@ class Connector extends Base implements LoggerAwareInterface
         $queryString,
         $headers,
         $messageBody = null,
-        $messageFormat = "application/json; charset=utf-8",
+        $messageFormat = 'application/json; charset=utf-8',
         $cacheable = true
     ) {
-        $this->debugPrint("{$method}: {$baseUrl}?{$queryString}");
+        $this->debug("{$method}: {$baseUrl}?{$queryString}");
 
         $this->client->resetParameters();
 
@@ -135,21 +135,5 @@ class Connector extends Base implements LoggerAwareInterface
             $this->putCachedData($cacheKey, $resultBody);
         }
         return $resultBody;
-    }
-
-    /**
-     * Print a message if debug is enabled.
-     *
-     * @param string $msg Message to print
-     *
-     * @return void
-     */
-    protected function debugPrint($msg)
-    {
-        if ($this->logger) {
-            $this->logger->debug("$msg\n");
-        } else {
-            parent::debugPrint($msg);
-        }
     }
 }

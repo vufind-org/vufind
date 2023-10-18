@@ -3,7 +3,7 @@
 /**
  * Abstract base CAPTCHA
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -30,6 +30,8 @@
 namespace VuFind\Captcha;
 
 use Laminas\Mvc\Controller\Plugin\Params;
+
+use function get_class;
 
 /**
  * Abstract base CAPTCHA

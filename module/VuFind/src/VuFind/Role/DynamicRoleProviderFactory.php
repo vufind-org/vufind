@@ -3,7 +3,7 @@
 /**
  * VuFind dynamic role provider factory.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -32,6 +32,8 @@ namespace VuFind\Role;
 use Laminas\ServiceManager\Config;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
+
+use function in_array;
 
 /**
  * VuFind dynamic role provider factory.

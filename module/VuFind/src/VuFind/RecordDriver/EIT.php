@@ -3,7 +3,7 @@
 /**
  * Model for records retrieved via EBSCO's EIT API.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Julia Bauder 2013.
  *
@@ -28,6 +28,10 @@
  */
 
 namespace VuFind\RecordDriver;
+
+use function in_array;
+use function is_array;
+use function strlen;
 
 /**
  * Model for records retrieved via EBSCO's EIT API.
@@ -59,7 +63,7 @@ class EIT extends DefaultRecord
      *
      * @param mixed $data Raw data representing the record; Record Model
      * objects are normally constructed by Record Driver objects using data
-     * passed in from a Search Results object.  The exact nature of the data may
+     * passed in from a Search Results object. The exact nature of the data may
      * vary depending on the data source -- the important thing is that the
      * Record Driver + Search Results objects work together correctly.
      *
@@ -81,7 +85,7 @@ class EIT extends DefaultRecord
     }
 
     /**
-     * Get all subject headings associated with this record.  Each heading is
+     * Get all subject headings associated with this record. Each heading is
      * returned as an array of chunks, increasing from least specific to most
      * specific.
      *
@@ -151,7 +155,7 @@ class EIT extends DefaultRecord
 
     /**
      * Get the date coverage for a record which spans a period of time (i.e. a
-     * journal).  Use getPublicationDates for publication dates of particular
+     * journal). Use getPublicationDates for publication dates of particular
      * monographic items.
      *
      * @return array
@@ -438,7 +442,7 @@ class EIT extends DefaultRecord
     protected function getCoinsID()
     {
         // Added at Richard and Leslie's request, to facilitate ILL
-        return parent::getCoinsID() . ".ebsco";
+        return parent::getCoinsID() . '.ebsco';
     }
 
     /**

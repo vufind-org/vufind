@@ -3,7 +3,7 @@
 /**
  * VuFind Translate Adapter ExtendedIni
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -117,6 +117,10 @@ class ExtendedIni implements FileLoaderInterface
      */
     public function load($locale, $filename)
     {
+        if ($locale == 'debug') {
+            return null;
+        }
+
         // Reset the loaded files list:
         $this->resetLoadedFiles();
 

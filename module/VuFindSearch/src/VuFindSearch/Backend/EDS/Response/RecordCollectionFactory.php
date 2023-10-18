@@ -3,7 +3,7 @@
 /**
  * Factory for record collection.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) EBSCO Industries 2013
  *
@@ -31,6 +31,11 @@ namespace VuFindSearch\Backend\EDS\Response;
 
 use VuFindSearch\Exception\InvalidArgumentException;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
+
+use function call_user_func;
+use function gettype;
+use function is_array;
+use function is_callable;
 
 /**
  * Factory for record collection.

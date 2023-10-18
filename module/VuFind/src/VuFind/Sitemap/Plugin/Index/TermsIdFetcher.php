@@ -3,7 +3,7 @@
 /**
  * Plugin to get IDs for a sitemap from a backend using terms (if supported).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -31,6 +31,8 @@ namespace VuFind\Sitemap\Plugin\Index;
 
 use VuFindSearch\Command\GetUniqueKeyCommand;
 use VuFindSearch\Command\TermsCommand;
+
+use function count;
 
 /**
  * Plugin to get IDs for a sitemap from a backend using terms (if supported).

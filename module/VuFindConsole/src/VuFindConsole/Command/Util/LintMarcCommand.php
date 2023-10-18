@@ -3,7 +3,7 @@
 /**
  * Console command: Lint MARC records.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -35,6 +35,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Marc\MarcCollectionFile;
 use VuFind\Marc\MarcLint;
+
+use function count;
 
 /**
  * Console command: Lint MARC records.

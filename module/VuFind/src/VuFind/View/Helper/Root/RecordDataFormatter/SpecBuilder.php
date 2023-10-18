@@ -3,7 +3,7 @@
 /**
  * Specification builder for record driver data formatting view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -29,6 +29,8 @@
 
 namespace VuFind\View\Helper\Root\RecordDataFormatter;
 
+use function array_key_exists;
+
 /**
  * Specification builder for record driver data formatting view helper
  *
@@ -53,6 +55,11 @@ class SpecBuilder
      * @var int
      */
     protected $maxPos = 0;
+
+    /**
+     * If alternative script should be prioritized by combine alt render method
+     */
+    protected $defaultPrioritizeAlt = false;
 
     /**
      * Constructor
@@ -107,6 +114,24 @@ class SpecBuilder
     }
 
     /**
+     * Construct a combine alt template spec line.
+     *
+     * @param string $key        Label to associate with this spec line
+     * @param string $dataMethod Method of data retrieval for rendering element
+     * @param array  $options    Additional options
+     *
+     * @return void
+     */
+    public function setCombineAltLine($key, $dataMethod, $options = [])
+    {
+
+        if ($this->defaultPrioritizeAlt && !array_key_exists('prioritizeAlt', $options)) {
+            $options['prioritizeAlt'] = true;
+        }
+        $this->setLine($key, $dataMethod, 'CombineAlt', $options);
+    }
+
+    /**
      * Construct a record driver template spec line.
      *
      * @param string $key        Label to associate with this spec line
@@ -120,6 +145,18 @@ class SpecBuilder
     {
         $options['template'] = $template;
         $this->setLine($key, $dataMethod, 'RecordDriverTemplate', $options);
+    }
+
+    /**
+     * Set default prioritize alternative scripts
+     *
+     * @param bool $defaultPeferAlt Default prioritize alt
+     *
+     * @return void
+     */
+    public function setDefaultPrioritizeAlt($defaultPeferAlt)
+    {
+        $this->defaultPrioritizeAlt = $defaultPeferAlt;
     }
 
     /**

@@ -3,7 +3,7 @@
 /**
  * Unit tests for WorldCat connector.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -44,22 +44,22 @@ use VuFindSearch\ParamBag;
 class ConnectorTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test "get holdings"
+     * Get a connector with a mock HTTP client.
      *
-     * @return void
+     * @param string $expectedUri URI expected by client.
+     * @param string $body        Response body returned by client.
+     *
+     * @return Connector
      */
-    public function testGetHoldings()
+    protected function getConnectorWithMockClient($expectedUri, $body = '<foo>bar</foo>'): Connector
     {
         $client = $this->createMock(\Laminas\Http\Client::class);
         $connector = new Connector('key', $client);
         $client->expects($this->once())->method('setMethod')
             ->with($this->equalTo('POST'))
             ->will($this->returnValue($client));
-        $expectedUri = 'http://www.worldcat.org/webservices/catalog/content/libraries/baz'
-            . '?wskey=key&servicelevel=full&frbrGrouping=on';
         $client->expects($this->once())->method('setUri')
             ->with($this->equalTo($expectedUri));
-        $body = '<foo>bar</foo>';
         $response = $this->createMock(\Laminas\Http\Response::class);
         $response->expects($this->once())->method('getBody')
             ->will($this->returnValue($body));
@@ -67,6 +67,19 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue(true));
         $client->expects($this->once())->method('send')
             ->will($this->returnValue($response));
+        return $connector;
+    }
+
+    /**
+     * Test "get holdings"
+     *
+     * @return void
+     */
+    public function testGetHoldings()
+    {
+        $expectedUri = 'http://www.worldcat.org/webservices/catalog/content/libraries/baz'
+            . '?wskey=key&servicelevel=full&frbrGrouping=on';
+        $connector = $this->getConnectorWithMockClient($expectedUri);
         $final = $connector->getHoldings('baz');
         $this->assertEquals('bar', (string)$final);
     }
@@ -102,22 +115,9 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetRecord()
     {
-        $client = $this->createMock(\Laminas\Http\Client::class);
-        $connector = new Connector('key', $client);
-        $client->expects($this->once())->method('setMethod')
-            ->with($this->equalTo('POST'))
-            ->will($this->returnValue($client));
         $expectedUri = 'http://www.worldcat.org/webservices/catalog/content/baz?servicelevel=full&wskey=key';
-        $client->expects($this->once())->method('setUri')
-            ->with($this->equalTo($expectedUri));
         $body = '<foo>bar</foo>';
-        $response = $this->createMock(\Laminas\Http\Response::class);
-        $response->expects($this->once())->method('getBody')
-            ->will($this->returnValue($body));
-        $response->expects($this->any())->method('isSuccess')
-            ->will($this->returnValue(true));
-        $client->expects($this->once())->method('send')
-            ->will($this->returnValue($response));
+        $connector = $this->getConnectorWithMockClient($expectedUri, $body);
         $final = $connector->getRecord('baz');
         $this->assertEquals($body, $final['docs'][0]);
     }
@@ -129,22 +129,9 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetRecordWithError()
     {
-        $client = $this->createMock(\Laminas\Http\Client::class);
-        $connector = new Connector('key', $client);
-        $client->expects($this->once())->method('setMethod')
-            ->with($this->equalTo('POST'))
-            ->will($this->returnValue($client));
         $expectedUri = 'http://www.worldcat.org/webservices/catalog/content/baz?servicelevel=full&wskey=key';
-        $client->expects($this->once())->method('setUri')
-            ->with($this->equalTo($expectedUri));
         $body = '<foo><diagnostic>bad</diagnostic></foo>';
-        $response = $this->createMock(\Laminas\Http\Response::class);
-        $response->expects($this->once())->method('getBody')
-            ->will($this->returnValue($body));
-        $response->expects($this->any())->method('isSuccess')
-            ->will($this->returnValue(true));
-        $client->expects($this->once())->method('send')
-            ->will($this->returnValue($response));
+        $connector = $this->getConnectorWithMockClient($expectedUri, $body);
         $final = $connector->getRecord('baz');
         $this->assertEquals([], $final['docs']);
     }
@@ -156,24 +143,11 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
      */
     public function testSearch()
     {
-        $client = $this->createMock(\Laminas\Http\Client::class);
-        $connector = new Connector('key', $client);
-        $client->expects($this->once())->method('setMethod')
-            ->with($this->equalTo('POST'))
-            ->will($this->returnValue($client));
         $expectedUri = 'http://www.worldcat.org/webservices/catalog/search/sru?version=1.1&x=y'
             . '&startRecord=0&maximumRecords=20&servicelevel=full&wskey=key';
-        $client->expects($this->once())->method('setUri')
-            ->with($this->equalTo($expectedUri));
         $body = '<foo>,<numberOfRecords>1</numberOfRecords><records><record><recordData>bar</recordData>'
             . '</record></records></foo>';
-        $response = $this->createMock(\Laminas\Http\Response::class);
-        $response->expects($this->once())->method('getBody')
-            ->will($this->returnValue($body));
-        $response->expects($this->any())->method('isSuccess')
-            ->will($this->returnValue(true));
-        $client->expects($this->once())->method('send')
-            ->will($this->returnValue($response));
+        $connector = $this->getConnectorWithMockClient($expectedUri, $body);
         $final = $connector->search(new ParamBag(['x' => 'y']), 0, 20);
         $this->assertEquals('<recordData>bar</recordData>', $final['docs'][0]);
         $this->assertEquals(1, $final['total']);

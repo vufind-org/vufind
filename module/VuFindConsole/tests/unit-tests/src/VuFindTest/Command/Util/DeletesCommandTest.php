@@ -3,7 +3,7 @@
 /**
  * DeletesCommand test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -114,7 +114,31 @@ class DeletesCommandTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals("", $commandTester->getDisplay());
+        $this->assertEquals('', $commandTester->getDisplay());
+    }
+
+    /**
+     * Test success with a flat file, ID prefix and default index.
+     *
+     * @return void
+     */
+    public function testSuccessWithFlatFileIdPrefixAndDefaultIndex()
+    {
+        $writer = $this->getMockWriter();
+        $writer->expects($this->once())->method('deleteRecords')
+            ->with($this->equalTo('Solr'), $this->equalTo(['x.rec1', 'x.rec2', 'x.rec3']));
+        $command = new DeletesCommand($writer);
+        $commandTester = new CommandTester($command);
+        $fixture = $this->getFixtureDir('VuFindConsole') . 'deletes';
+        $commandTester->execute(
+            [
+                'filename' => $fixture,
+                'format' => 'flat',
+                '--id-prefix' => 'x.',
+            ]
+        );
+        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertEquals('', $commandTester->getDisplay());
     }
 
     /**
@@ -137,6 +161,6 @@ class DeletesCommandTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals("", $commandTester->getDisplay());
+        $this->assertEquals('', $commandTester->getDisplay());
     }
 }

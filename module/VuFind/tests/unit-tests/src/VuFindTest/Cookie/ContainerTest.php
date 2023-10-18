@@ -3,7 +3,7 @@
 /**
  * Cookie Container Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -30,6 +30,8 @@
 namespace VuFindTest\Cookie;
 
 use VuFind\Cookie\Container;
+
+use function in_array;
 
 /**
  * Cookie Container Test Class

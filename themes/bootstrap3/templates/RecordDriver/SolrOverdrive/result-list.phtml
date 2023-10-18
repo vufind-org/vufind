@@ -36,9 +36,11 @@
         <?php if ($this->driver->isCollection()): ?>
           <?=implode('<br>', array_map([$this, 'escapeHtml'], $this->driver->getSummary())); ?>
         <?php else: ?>
-          <?php $summAuthors = $this->driver->getPrimaryAuthorsWithHighlighting(); if (!empty($summAuthors)): ?>
+          <?php $summAuthors = $this->driver->getPrimaryAuthorsWithHighlighting(); ?>
+          <?php if (!empty($summAuthors)): ?>
             <?=$this->transEsc('by')?>
-            <?php $authorCount = count($summAuthors); foreach ($summAuthors as $i => $summAuthor): ?>
+            <?php $authorCount = count($summAuthors); ?>
+            <?php foreach ($summAuthors as $i => $summAuthor): ?>
               <a href="<?=$this->record($this->driver)->getLink('author', $this->highlight($summAuthor, null, true, false))?>" class="result-author"><?=$this->highlight(rtrim($summAuthor, ','))?></a><?=$i + 1 < $authorCount ? ',' : ''?>
             <?php endforeach; ?>
           <?php endif; ?>
@@ -91,9 +93,9 @@
           </div>
         <?php elseif ($avail = $this->driver->getOverdriveAvailability()): ?>
           <div class="availability">
-            <div class='copies'><strong><?= $this->transEsc("od_avail_total")?></strong> <?=$avail->copiesOwned ?></div>
-            <div class='avail'><strong><?= $this->transEsc("od_avail_avail")?></strong> <?=$avail->copiesAvailable ?></div>
-            <div class='holds'><strong><?= $this->transEsc("od_avail_holds")?></strong> <?=$avail->numberOfHolds ?></div>
+            <div class='copies'><strong><?= $this->transEsc('od_avail_total')?></strong> <?=$avail->copiesOwned ?></div>
+            <div class='avail'><strong><?= $this->transEsc('od_avail_avail')?></strong> <?=$avail->copiesAvailable ?></div>
+            <div class='holds'><strong><?= $this->transEsc('od_avail_holds')?></strong> <?=$avail->numberOfHolds ?></div>
           </div>
         <?php endif; ?>
       </div>
@@ -121,13 +123,13 @@
           <br>
           <?=$doi->renderTemplate()?>
         <?php endif; ?>
-        <?php if (!is_array($urls)) $urls = [];
-          if (!$this->driver->isCollection()):
-            foreach ($urls as $current): ?>
-              <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new">
-                <?=$this->icon('external-link') ?>
-                <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?>
-              </a><br>
+        <?php $urls = is_array($urls) ? $urls : []; ?>
+        <?php if (!$this->driver->isCollection()): ?>
+          <?php foreach ($urls as $current): ?>
+            <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new">
+              <?=$this->icon('external-link') ?>
+              <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?>
+            </a><br>
           <?php endforeach; ?>
         <?php endif; ?>
       <?php endif; ?>
@@ -157,12 +159,13 @@
         <?php endif; ?>
         <?php /* Saved lists */ ?>
         <div class="savedLists">
-          <strong><?=$this->transEsc("Saved in")?>:</strong>
+          <strong><?=$this->transEsc('Saved in')?>:</strong>
         </div>
       <?php endif; ?>
 
       <?php /* Hierarchy tree link */ ?>
-      <?php $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>
+      <?php $trees = $this->driver->tryMethod('getHierarchyTrees'); ?>
+      <?php if (!empty($trees)): ?>
         <?php foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
           <div class="hierarchyTreeLink">
             <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId">
@@ -174,7 +177,7 @@
         <?php endforeach; ?>
       <?php endif; ?>
 
-      <?php //$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>':'' ?>
+      <?php //$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" aria-hidden="true" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>':'' ?>
     </div>
   </div>
   <?php if ($thumbnail && $thumbnailAlignment == 'right'): ?>

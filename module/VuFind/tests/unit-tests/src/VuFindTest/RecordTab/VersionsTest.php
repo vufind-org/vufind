@@ -3,7 +3,7 @@
 /**
  * Versions Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -43,6 +43,8 @@ use VuFind\RecordTab\Versions;
  */
 class VersionsTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\TranslatorTrait;
+
     /**
      * Test getting Description.
      *
@@ -61,11 +63,13 @@ class VersionsTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($count));
         $obj = new Versions($config, $som);
         $obj->setRecordDriver($recordDriver);
-        $translator = $this->getMockBuilder(\Laminas\I18n\Translator\TranslatorInterface::class)
-            ->getMock();
-        $translator->expects($this->any())->method('translate')
-            ->with($this->equalTo('other_versions_title'), $this->equalTo('default'))
-            ->will($this->returnValue("Count:%%count%%"));
+        $translator = $this->getMockTranslator(
+            [
+                'default' => [
+                    'other_versions_title' => 'Count:%%count%%',
+                ],
+            ]
+        );
         $obj->setTranslator($translator);
         $obj->getDescription();
         $this->assertEquals("Count:$count", $obj->getDescription());

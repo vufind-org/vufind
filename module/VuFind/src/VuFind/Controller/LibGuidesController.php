@@ -3,7 +3,7 @@
 /**
  * LibGuides Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -62,7 +62,6 @@ class LibGuidesController extends AbstractSearch
     {
         $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
             ->get('LibGuides');
-        return isset($config->Record->next_prev_navigation)
-            && $config->Record->next_prev_navigation;
+        return $config->Record->next_prev_navigation ?? false;
     }
 }

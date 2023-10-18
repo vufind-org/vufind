@@ -3,7 +3,7 @@
 /**
  * Abstract factory for SOLR backends.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -52,6 +52,9 @@ use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
 use VuFindSearch\Backend\Solr\SimilarBuilder;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
+
+use function count;
+use function is_object;
 
 /**
  * Abstract factory for SOLR backends.
@@ -683,7 +686,8 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
         Config $search
     ) {
         $fl = $search->General->highlighting_fields ?? '*';
-        return new InjectHighlightingListener($backend, $fl);
+        $extras = $search->General->extra_hl_params ?? [];
+        return new InjectHighlightingListener($backend, $fl, $extras);
     }
 
     /**

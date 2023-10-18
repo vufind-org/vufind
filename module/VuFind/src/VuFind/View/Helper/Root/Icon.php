@@ -3,7 +3,7 @@
 /**
  * Icon view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -32,6 +32,9 @@ namespace VuFind\View\Helper\Root;
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\View\Helper\AbstractHelper;
 use Laminas\View\Helper\EscapeHtmlAttr;
+
+use function in_array;
+use function is_string;
 
 /**
  * Icon view helper
@@ -140,7 +143,7 @@ class Icon extends AbstractHelper
         $class = null;
 
         // Override set from config (ie. FontAwesome:icon)
-        if (strpos($icon, ':') !== false) {
+        if (str_contains($icon, ':')) {
             $parts = explode(':', $icon, 3);
             $set = $parts[0];
             $icon = $parts[1];
@@ -231,7 +234,7 @@ class Icon extends AbstractHelper
                     array_merge(
                         $this->config['sets'][$set] ?? [],
                         [
-                            'icon' => ($this->esc)($icon),
+                            'icon' => $icon,
                             'attrs' => $this->compileAttrs($attrs),
                             'extra' => $attrs,
                         ]

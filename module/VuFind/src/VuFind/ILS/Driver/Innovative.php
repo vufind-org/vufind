@@ -3,7 +3,7 @@
 /**
  * III ILS Driver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2007.
  *
@@ -30,6 +30,9 @@
 namespace VuFind\ILS\Driver;
 
 use VuFind\Exception\ILS as ILSException;
+
+use function count;
+use function strlen;
 
 /**
  * VuFind Connector for Innovative
@@ -148,17 +151,17 @@ class Innovative extends AbstractBase implements
         // '<table class="bibItems" '
         $r = substr($result, stripos($result, 'bibItems'));
         // strip out the rest of the first table tag.
-        $r = substr($r, strpos($r, ">") + 1);
+        $r = substr($r, strpos($r, '>') + 1);
         // strip out the next table closing tag and everything after it.
-        $r = substr($r, 0, stripos($r, "</table"));
+        $r = substr($r, 0, stripos($r, '</table'));
 
         // $r should only include the holdings table at this point
 
         // split up into strings that contain each table row, excluding the
         // beginning tr tag.
-        $rows = preg_split("/<tr([^>]*)>/", $r);
+        $rows = preg_split('/<tr([^>]*)>/', $r);
         $count = 0;
-        $keys = array_pad([], 10, "");
+        $keys = array_pad([], 10, '');
 
         $loc_col_name      = $this->config['OPAC']['location_column'];
         $call_col_name     = $this->config['OPAC']['call_no_column'];
@@ -172,18 +175,18 @@ class Innovative extends AbstractBase implements
         foreach ($rows as $row) {
             // Split up the contents of the row based on the th or td tag, excluding
             // the tags themselves.
-            $cols = preg_split("/<t(h|d)([^>]*)>/", $row);
+            $cols = preg_split('/<t(h|d)([^>]*)>/', $row);
 
             // for each th or td section, do the following.
-            for ($i = 0; $i < sizeof($cols); $i++) {
+            for ($i = 0; $i < count($cols); $i++) {
                 // replace non blocking space encodings with a space.
-                $cols[$i] = str_replace("&nbsp;", " ", $cols[$i]);
+                $cols[$i] = str_replace('&nbsp;', ' ', $cols[$i]);
                 // remove html comment tags
-                $cols[$i] = preg_replace("/<!--([^(-->)]*)-->/", "", $cols[$i]);
+                $cols[$i] = preg_replace('/<!--([^(-->)]*)-->/', '', $cols[$i]);
                 // Remove closing th or td tag, trim whitespace and decode html
                 // entities
                 $cols[$i] = html_entity_decode(
-                    trim(substr($cols[$i], 0, stripos($cols[$i], "</t")))
+                    trim(substr($cols[$i], 0, stripos($cols[$i], '</t')))
                 );
 
                 // If this is the first row, it is the header row and has the column
@@ -210,10 +213,10 @@ class Innovative extends AbstractBase implements
                     // Look for status information.
                     if (stripos($keys[$i], (string)$status_col_name) > -1) {
                         if (stripos($cols[$i], (string)$stat_avail) > -1) {
-                            $ret[$count - 2]['status'] = "Available On Shelf";
+                            $ret[$count - 2]['status'] = 'Available On Shelf';
                             $ret[$count - 2]['availability'] = 1;
                         } else {
-                            $ret[$count - 2]['status'] = "Available to request";
+                            $ret[$count - 2]['status'] = 'Available to request';
                             $ret[$count - 2]['availability'] = 0;
                         }
                         if (stripos($cols[$i], (string)$stat_due) > -1) {
@@ -224,7 +227,7 @@ class Innovative extends AbstractBase implements
                                         + strlen($stat_due)
                                 )
                             );
-                            $t = substr($t, 0, stripos($t, " "));
+                            $t = substr($t, 0, stripos($t, ' '));
                             $ret[$count - 2]['duedate'] = $t;
                         }
                     }
@@ -376,7 +379,7 @@ class Innovative extends AbstractBase implements
             );
 
             // search for successful response of "RETCOD=0"
-            if (stripos($result, "RETCOD=0") == -1) {
+            if (stripos($result, 'RETCOD=0') == -1) {
                 // pin did not match, can look up specific error to return
                 // more useful info.
                 return null;
@@ -392,9 +395,9 @@ class Innovative extends AbstractBase implements
             $api_data = ['PBARCODE' => false];
 
             foreach ($api_array_lines as $api_line) {
-                $api_line = str_replace("p=", "peq", $api_line);
-                $api_line_arr = explode("=", $api_line);
-                $regex_match = ["/\[(.*?)\]/","/\s/","/#/"];
+                $api_line = str_replace('p=', 'peq', $api_line);
+                $api_line_arr = explode('=', $api_line);
+                $regex_match = ["/\[(.*?)\]/","/\s/",'/#/'];
                 $regex_replace = ['','','NUM'];
                 $key = trim(
                     preg_replace($regex_match, $regex_replace, $api_line_arr[0])
@@ -403,8 +406,8 @@ class Innovative extends AbstractBase implements
             }
 
             if (!$api_data['PBARCODE']) {
-                // no barcode found, can look up specific error to return more
-                // useful info.  this check needs to be modified to handle using
+                // No barcode found, can look up specific error to return more
+                // useful info. This check needs to be modified to handle using
                 // III patron ids also.
                 return null;
             }
@@ -422,10 +425,10 @@ class Innovative extends AbstractBase implements
             $ret['college'] = $api_data['HOMELIBR'];
             $ret['homelib'] = $api_data['HOMELIBR'];
             // replace $ separator in III addresses with newline
-            $ret['address1'] = str_replace("$", ", ", $api_data['ADDRESS']);
-            $ret['address2'] = str_replace("$", ", ", $api_data['ADDRESS2']);
+            $ret['address1'] = str_replace('$', ', ', $api_data['ADDRESS']);
+            $ret['address2'] = str_replace('$', ', ', $api_data['ADDRESS2']);
             preg_match(
-                "/([0-9]{5}|[0-9]{5}-[0-9]{4})[ ]*$/",
+                '/([0-9]{5}|[0-9]{5}-[0-9]{4})[ ]*$/',
                 $api_data['ADDRESS'],
                 $zipmatch
             );

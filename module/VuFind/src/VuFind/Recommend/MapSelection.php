@@ -3,7 +3,7 @@
 /**
  * MapSelection Recommendations Module
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -177,7 +177,7 @@ class MapSelection implements
     /**
      * Process
      *
-     * Called after the Search Results object has performed its main search.  This
+     * Called after the Search Results object has performed its main search. This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
      *
@@ -338,7 +338,7 @@ class MapSelection implements
         $params = $this->searchFilters;
         // Check to makes sure we have a geographic search
         $filters = $params->get('fq');
-        return (!empty($filters) && strpos($filters[0], $this->geoField) !== false)
+        return (!empty($filters) && str_contains($filters[0], $this->geoField))
             ? $this->fetchDataFromSearchService() : [];
     }
 

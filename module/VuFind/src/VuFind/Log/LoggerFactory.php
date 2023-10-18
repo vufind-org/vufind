@@ -3,7 +3,7 @@
 /**
  * Factory for instantiating Logger
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -36,6 +36,9 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+
+use function is_array;
+use function is_int;
 
 /**
  * Factory for instantiating Logger
@@ -181,7 +184,7 @@ class LoggerFactory implements FactoryInterface
         );
         $writer->setContentType('application/json');
         $formatter = new \Laminas\Log\Formatter\Simple(
-            "*%priorityName%*: %message%"
+            '*%priorityName%*: %message%'
         );
         $writer->setFormatter($formatter);
         $this->addWriters($logger, $writer, $filters);
@@ -216,7 +219,7 @@ class LoggerFactory implements FactoryInterface
         );
         $writer->setContentType('application/json');
         $formatter = new \Laminas\Log\Formatter\Simple(
-            "*%priorityName%*: %message%"
+            '*%priorityName%*: %message%'
         );
         $writer->setFormatter($formatter);
         $this->addWriters($logger, $writer, $filters);
@@ -302,6 +305,18 @@ class LoggerFactory implements FactoryInterface
         if (!$hasWriter) {
             $logger->addWriter(new \Laminas\Log\Writer\Noop());
         }
+
+        // Add ReferenceId processor, if applicable:
+        if ($referenceId = $config->Logging->reference_id ?? false) {
+            if ('username' === $referenceId) {
+                $authManager = $container->get(\VuFind\Auth\Manager::class);
+                if ($user = $authManager->isLoggedIn()) {
+                    $processor = new \Laminas\Log\Processor\ReferenceId();
+                    $processor->setReferenceId($user->username);
+                    $logger->addProcessor($processor);
+                }
+            }
+        }
     }
 
     /**
@@ -326,10 +341,11 @@ class LoggerFactory implements FactoryInterface
             '<pre>%timestamp% %priorityName%: %message%</pre>' . PHP_EOL
         );
         $writer->setFormatter($formatter);
+        $level = (is_int($debug) ? $debug : '5');
         $this->addWriters(
             $logger,
             $writer,
-            'debug-' . (is_int($debug) ? $debug : '5')
+            "debug-$level,notice-$level,error-$level,alert-$level"
         );
     }
 
@@ -396,7 +412,7 @@ class LoggerFactory implements FactoryInterface
                     $newWriter->setVerbosity($verbosity);
                 } else {
                     throw new \Exception(
-                        get_class($newWriter) . ' does not support verbosity.'
+                        $newWriter::class . ' does not support verbosity.'
                     );
                 }
             }

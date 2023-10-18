@@ -3,7 +3,7 @@
 /**
  * GoogleAnalytics view helper Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010-2023.
  *
@@ -51,7 +51,7 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
      */
     public function testBasicSetup(): void
     {
-        $expectedUrl = "https&#x3A;&#x2F;&#x2F;www.googletagmanager.com&#x2F;gtag&#x2F;js&#x3F;id&#x3D;myfakekey";
+        $expectedUrl = 'https&#x3A;&#x2F;&#x2F;www.googletagmanager.com&#x2F;gtag&#x2F;js&#x3F;id&#x3D;myfakekey';
         $expected = <<<JS
             <script type="text&#x2F;javascript" async="async" src="$expectedUrl"></script>
             <script type="text&#x2F;javascript">
@@ -78,7 +78,7 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
             'universal' => true,
             'create_options_js' => $createJs,
         ];
-        $expectedUrl = "https&#x3A;&#x2F;&#x2F;www.googletagmanager.com&#x2F;gtag&#x2F;js&#x3F;id&#x3D;myfakekey";
+        $expectedUrl = 'https&#x3A;&#x2F;&#x2F;www.googletagmanager.com&#x2F;gtag&#x2F;js&#x3F;id&#x3D;myfakekey';
         $expected = <<<JS
             <script type="text&#x2F;javascript" async="async" src="$expectedUrl"></script>
             <script type="text&#x2F;javascript">

@@ -3,7 +3,7 @@
 /**
  * CAS authentication module.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -32,6 +32,8 @@ namespace VuFind\Auth;
 
 use VuFind\Exception\Auth as AuthException;
 
+use function constant;
+
 /**
  * CAS authentication module.
  *
@@ -53,7 +55,7 @@ class CAS extends AbstractBase
     protected $phpCASSetup = false;
 
     /**
-     * Validate configuration parameters.  This is a support method for getConfig(),
+     * Validate configuration parameters. This is a support method for getConfig(),
      * so the configuration MUST be accessed using $this->config; do not call
      * $this->getConfig() from within this method!
      *
@@ -107,7 +109,7 @@ class CAS extends AbstractBase
     }
 
     /**
-     * Attempt to authenticate the current user.  Throws exception if login fails.
+     * Attempt to authenticate the current user. Throws exception if login fails.
      *
      * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.
@@ -137,8 +139,8 @@ class CAS extends AbstractBase
 
         // Has the user configured attributes to use for populating the user table?
         $attribsToCheck = [
-            "cat_username", "cat_password", "email", "lastname", "firstname",
-            "college", "major", "home_library",
+            'cat_username', 'cat_password', 'email', 'lastname', 'firstname',
+            'college', 'major', 'home_library',
         ];
         $catPassword = null;
         foreach ($attribsToCheck as $attribute) {
@@ -176,7 +178,7 @@ class CAS extends AbstractBase
 
     /**
      * Get the URL to establish a session (needed when the internal VuFind login
-     * form is inadequate).  Returns false when no session initiator is needed.
+     * form is inadequate). Returns false when no session initiator is needed.
      *
      * @param string $target Full URL where external authentication method should
      * send user after login (some drivers may override this).
@@ -191,7 +193,7 @@ class CAS extends AbstractBase
         } else {
             $casTarget = $target;
         }
-        $append = (strpos($casTarget, '?') !== false) ? '&' : '?';
+        $append = (str_contains($casTarget, '?')) ? '&' : '?';
         $sessionInitiator = $config->CAS->login
             . '?service=' . urlencode($casTarget)
             . urlencode($append . 'auth_method=CAS');
@@ -255,14 +257,14 @@ class CAS extends AbstractBase
         // Now extract user attribute values:
         $cas = $this->getConfig()->CAS;
         foreach ($cas as $key => $value) {
-            if (preg_match("/userattribute_[0-9]{1,}/", $key)) {
+            if (preg_match('/userattribute_[0-9]{1,}/', $key)) {
                 $valueKey = 'userattribute_value_' . substr($key, 14);
                 $sortedUserAttributes[$value] = $cas->$valueKey ?? null;
 
                 // Throw an exception if attributes are missing/empty.
                 if (empty($sortedUserAttributes[$value])) {
                     throw new AuthException(
-                        "User attribute value of " . $value . " is missing!"
+                        'User attribute value of ' . $value . ' is missing!'
                     );
                 }
             }

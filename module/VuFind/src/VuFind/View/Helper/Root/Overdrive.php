@@ -3,7 +3,7 @@
 /**
  * Overdrive view helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -71,15 +71,15 @@ class Overdrive extends \Laminas\View\Helper\AbstractHelper
             return false;
         }
         $config = $this->connector->getConfig();
-        if ($config->showMyContent == "always") {
+        if ($config->showMyContent == 'always') {
             return true;
-        } elseif ($config->showMyContent == "never") {
+        } elseif ($config->showMyContent == 'never') {
             return false;
         } else {
             //assume that it is accessOnly
             $result = $this->connector->getAccess();
 
-            if (!$result->status && $result->code == "od_account_noaccess") {
+            if (!$result->status && $result->code == 'od_account_noaccess') {
                 return false;
             }
             return true;

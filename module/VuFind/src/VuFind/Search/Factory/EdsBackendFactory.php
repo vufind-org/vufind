@@ -3,7 +3,7 @@
 /**
  * Factory for EDS backends.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2013.
  *
@@ -70,6 +70,24 @@ class EdsBackendFactory extends AbstractBackendFactory
     protected $accountData;
 
     /**
+     * Default URL for the EDS Backend.  Set here for the EDS API.
+     *
+     * @var str
+     */
+    protected $defaultApiUrl = 'https://eds-api.ebscohost.com/edsapi/rest';
+
+    /**
+     * Get the service name. This is used for both configuration
+     * and record driver retrieval.
+     *
+     * @return str
+     */
+    protected function getServiceName()
+    {
+        return 'EDS';
+    }
+
+    /**
      * Create service
      *
      * @param ContainerInterface $sm      Service manager
@@ -85,7 +103,7 @@ class EdsBackendFactory extends AbstractBackendFactory
         $this->setup($sm);
         $this->edsConfig = $this->serviceLocator
             ->get(\VuFind\Config\PluginManager::class)
-            ->get('EDS');
+            ->get($this->getServiceName());
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
             $this->logger = $this->serviceLocator->get(\VuFind\Log\Logger::class);
         }
@@ -125,6 +143,7 @@ class EdsBackendFactory extends AbstractBackendFactory
         );
         $backend->setLogger($this->logger);
         $backend->setQueryBuilder($this->createQueryBuilder());
+        $backend->setBackendType($this->getServiceName());
         return $backend;
     }
 
@@ -135,17 +154,7 @@ class EdsBackendFactory extends AbstractBackendFactory
      */
     protected function createConnector()
     {
-        $options = [
-            'search_http_method' => $this->edsConfig->General->search_http_method
-                ?? 'POST',
-        ];
-        if (isset($this->edsConfig->General->api_url)) {
-            $options['api_url'] = $this->edsConfig->General->api_url;
-        }
-        if (isset($this->edsConfig->General->auth_url)) {
-            $options['auth_url'] = $this->edsConfig->General->auth_url;
-        }
-
+        $options = $this->createConnectorOptions();
         $httpOptions = [
             'sslverifypeer'
                 => (bool)($this->edsConfig->General->sslverifypeer ?? true),
@@ -162,6 +171,28 @@ class EdsBackendFactory extends AbstractBackendFactory
             $connector->setCache($cache);
         }
         return $connector;
+    }
+
+    /**
+     * Create the options array for the EDS connector.
+     *
+     * @return array
+     */
+    protected function createConnectorOptions()
+    {
+        $options = [
+            'search_http_method' => $this->edsConfig->General->search_http_method
+                ?? 'POST',
+            'api_url' => $this->edsConfig->General->api_url
+                ?? $this->defaultApiUrl,
+        ];
+        if (isset($this->edsConfig->General->auth_url)) {
+            $options['auth_url'] = $this->edsConfig->General->auth_url;
+        }
+        if (isset($this->edsConfig->General->session_url)) {
+            $options['session_url'] = $this->edsConfig->General->session_url;
+        }
+        return $options;
     }
 
     /**
@@ -185,7 +216,7 @@ class EdsBackendFactory extends AbstractBackendFactory
         $manager = $this->serviceLocator
             ->get(\VuFind\RecordDriver\PluginManager::class);
         $callback = function ($data) use ($manager) {
-            $driver = $manager->get('EDS');
+            $driver = $manager->get($this->getServiceName());
             $driver->setRawData($data);
             return $driver;
         };

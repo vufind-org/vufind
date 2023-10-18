@@ -3,7 +3,7 @@
 /**
  * Class FeedbackController
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2022.
  *
@@ -33,6 +33,9 @@ namespace VuFindAdmin\Controller;
 
 use Laminas\Db\Sql\Select;
 use VuFind\Db\Table\Feedback;
+
+use function count;
+use function is_array;
 
 /**
  * Class FeedbackController
@@ -152,7 +155,7 @@ class FeedbackController extends AbstractAdmin
             'data' => [
                 'confirm' => $newUrl,
                 'cancel' => $originUrl,
-                'title' => "confirm_delete_feedback",
+                'title' => 'confirm_delete_feedback',
                 'messages' => $this->getConfirmDeleteMessages(count($ids)),
                 'ids' => $ids,
                 'extras' => [
@@ -285,7 +288,7 @@ class FeedbackController extends AbstractAdmin
      */
     protected function convertFilter(?string $value): ?string
     {
-        return ("ALL" !== $value && null !== $value)
+        return ('ALL' !== $value && null !== $value)
             ? $value : null;
     }
 

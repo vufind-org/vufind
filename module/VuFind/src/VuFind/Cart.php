@@ -3,7 +3,7 @@
 /**
  * Cart Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -30,6 +30,12 @@
 namespace VuFind;
 
 use VuFind\Cookie\CookieManager;
+
+use function array_slice;
+use function chr;
+use function count;
+use function in_array;
+use function ord;
 
 /**
  * Cart Class

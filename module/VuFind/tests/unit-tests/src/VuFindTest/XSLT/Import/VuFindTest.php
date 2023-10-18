@@ -3,7 +3,7 @@
 /**
  * XSLT helper tests.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -30,6 +30,8 @@
 namespace VuFindTest\XSLT\Import;
 
 use VuFind\XSLT\Import\VuFind;
+
+use function chr;
 
 /**
  * XSLT helper tests.
@@ -328,5 +330,43 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
             $output->saveXML(),
             VuFind::invertNames($input)->saveXML()
         );
+    }
+
+    /**
+     * Data provider for testTitleSortLower().
+     *
+     * @return array
+     */
+    public function titleSortLowerProvider(): array
+    {
+        return [
+            'basic lowercasing' => ['ABCDEF', 'abcdef'],
+            'Latin accent stripping' => ['çèñüĂ', 'cenua'],
+            'Punctuation stripping' => ['this:that:...!>!the other', 'this that the other'],
+            'Japanese text' => ['日本語テキスト', '日本語テキスト'],
+            'Leading bracket' => ['[foo', 'foo'],
+            'Trailing bracket' => ['foo]', 'foo'],
+            'Outer brackets' => ['[foo]', 'foo'],
+            'Stacked outer brackets' => ['[[foo]]', 'foo'],
+            'Tons of brackets' => ['[]foo][[', 'foo'],
+            'Inner brackets' => ['foo[]foo', 'foo foo'],
+            'Trailing whitespace' => ['foo   ', 'foo'],
+            'Trailing punctuation' => ['foo /.', 'foo'],
+        ];
+    }
+
+    /**
+     * Test the titleSortLower helper.
+     *
+     * @param string $input    Input to test
+     * @param string $expected Expected output of test
+     *
+     * @return void
+     *
+     * @dataProvider titleSortLowerProvider
+     */
+    public function testTitleSortLower($input, $expected): void
+    {
+        $this->assertEquals($expected, VuFind::titleSortLower($input));
     }
 }

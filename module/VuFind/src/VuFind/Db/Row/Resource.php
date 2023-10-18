@@ -3,7 +3,7 @@
 /**
  * Row Definition for resource
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -31,6 +31,10 @@ namespace VuFind\Db\Row;
 
 use VuFind\Date\DateException;
 use VuFind\Exception\LoginRequired as LoginRequiredException;
+
+use function intval;
+use function is_object;
+use function strlen;
 
 /**
  * Row Definition for resource
@@ -208,7 +212,7 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
     }
 
     /**
-     * Use a record driver to assign metadata to the current row.  Return the
+     * Use a record driver to assign metadata to the current row. Return the
      * current object to allow fluent interface.
      *
      * @param \VuFind\RecordDriver\AbstractBase $driver    The record driver
@@ -223,7 +227,7 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
             $driver->tryMethod('getSortTitle'),
             0,
             255,
-            "UTF-8"
+            'UTF-8'
         );
         if (empty($this->title)) {
             $this->title = $driver->getBreadcrumb();
@@ -234,7 +238,7 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
             $driver->tryMethod('getPrimaryAuthor'),
             0,
             255,
-            "UTF-8"
+            'UTF-8'
         );
         if (!empty($author)) {
             $this->author = $author;

@@ -3,7 +3,7 @@
 /**
  * ILS driver test
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -758,7 +758,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             $transactions = $this->driver->getMyTransactions(
                 [
                     'cat_username' => 'my_login', 'cat_password' => 'my_password',
-                    'patronAgencyId' => 'Test agency', 'id' => "patron_id",
+                    'patronAgencyId' => 'Test agency', 'id' => 'patron_id',
                 ]
             );
             $this->assertEquals(
@@ -790,7 +790,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             $transactions = $this->driver->getMyTransactions(
                 [
                     'cat_username' => 'my_login', 'cat_password' => 'my_password',
-                    'patronAgencyId' => 'Test agency', 'id' => "patron_id",
+                    'patronAgencyId' => 'Test agency', 'id' => 'patron_id',
                 ]
             );
             $this->assertEquals(
@@ -826,7 +826,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             $transactions = $this->driver->getMyTransactions(
                 [
                     'cat_username' => 'my_login', 'cat_password' => 'my_password',
-                    'patronAgencyId' => 'Test agency', 'id' => "patron_id",
+                    'patronAgencyId' => 'Test agency', 'id' => 'patron_id',
                 ]
             );
             $this->assertEquals(
@@ -850,7 +850,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             $fines = $this->driver->getMyFines(
                 [
                     'cat_username' => 'my_login', 'cat_password' => 'my_password',
-                    'patronAgencyId' => 'Test agency', 'id' => "patron_id",
+                    'patronAgencyId' => 'Test agency', 'id' => 'patron_id',
                 ]
             );
             $this->assertEquals(
@@ -893,7 +893,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             $holds = $this->driver->getMyHolds(
                 [
                     'cat_username' => 'my_login', 'cat_password' => 'my_password',
-                    'patronAgencyId' => 'Test agency', 'id' => "patron_id",
+                    'patronAgencyId' => 'Test agency', 'id' => 'patron_id',
                 ]
             );
             $this->assertEquals(
@@ -917,7 +917,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             $profile = $this->driver->getMyProfile(
                 [
                     'cat_username' => 'my_login', 'cat_password' => 'my_password',
-                    'patronAgencyId' => 'Test agency', 'id' => "patron_id",
+                    'patronAgencyId' => 'Test agency', 'id' => 'patron_id',
                 ]
             );
             $this->assertEquals(
@@ -941,7 +941,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             $storageRetrievals = $this->driver->getMyStorageRetrievalRequests(
                 [
                 'cat_username' => 'my_login', 'cat_password' => 'my_password',
-                'patronAgencyId' => 'Test agency', 'id' => "patron_id",
+                'patronAgencyId' => 'Test agency', 'id' => 'patron_id',
                 ]
             );
             $this->assertEquals(
@@ -1513,7 +1513,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
         $method->setAccessible(true);
         $patron = [
             'cat_username' => 'my_login', 'cat_password' => 'my_password',
-            'patronAgencyId' => 'Test agency', 'id' => "patron_id",
+            'patronAgencyId' => 'Test agency', 'id' => 'patron_id',
         ];
         $this->mockResponse('lookupUserResponse.xml');
         $profile = $this->driver->getMyProfile($patron);

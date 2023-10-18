@@ -3,7 +3,7 @@
 /**
  * AbstractSearch with Solr-specific features added.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,6 +28,8 @@
  */
 
 namespace VuFind\Controller;
+
+use function in_array;
 
 /**
  * AbstractSearch with Solr-specific features added.

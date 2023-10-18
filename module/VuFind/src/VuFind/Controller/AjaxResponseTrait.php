@@ -3,7 +3,7 @@
 /**
  * Trait to allow AJAX response generation.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -31,6 +31,8 @@ namespace VuFind\Controller;
 
 use VuFind\AjaxHandler\AjaxHandlerInterface as Ajax;
 use VuFind\AjaxHandler\PluginManager;
+
+use function count;
 
 /**
  * Trait to allow AJAX response generation.
@@ -186,7 +188,7 @@ trait AjaxResponseTrait
     public static function storeError($errno, $errstr, $errfile, $errline)
     {
         self::$php_errors[] = "ERROR [$errno] - " . $errstr . "<br>\n"
-            . " Occurred in " . $errfile . " on line " . $errline . ".";
+            . ' Occurred in ' . $errfile . ' on line ' . $errline . '.';
         return true;
     }
 }

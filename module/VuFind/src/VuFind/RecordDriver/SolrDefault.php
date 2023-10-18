@@ -4,7 +4,7 @@
  * Default model for Solr records -- used when a more specific model based on
  * the record_format field cannot be found.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010, 2022.
  * Copyright (C) The National Library of Finland 2019.
@@ -33,6 +33,10 @@
 namespace VuFind\RecordDriver;
 
 use VuFindSearch\Command\SearchCommand;
+
+use function count;
+use function in_array;
+use function is_array;
 
 /**
  * Default model for Solr records -- used when a more specific model based on
@@ -68,7 +72,7 @@ class SolrDefault extends DefaultRecord implements
     ];
 
     /**
-     * These Solr fields should NEVER be used for snippets.  (We exclude author
+     * These Solr fields should NEVER be used for snippets. (We exclude author
      * and title because they are already covered by displayed fields; we exclude
      * spelling because it contains lots of fields jammed together and may cause
      * glitchy output; we exclude ID because random numbers are not helpful).

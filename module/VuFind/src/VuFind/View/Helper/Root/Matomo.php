@@ -3,7 +3,7 @@
 /**
  * Matomo web analytics view helper for Matomo versions >= 4
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2014-2021.
  *
@@ -31,6 +31,9 @@ namespace VuFind\View\Helper\Root;
 
 use VuFind\RecordDriver\AbstractBase as RecordDriverBase;
 use VuFind\Search\Base\Results;
+
+use function intval;
+use function is_array;
 
 /**
  * Matomo web analytics view helper for Matomo versions >= 4
@@ -481,7 +484,7 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
                 _paq.push(['setTrackerUrl', '$trackerUrl']);
                 _paq.push(['setSiteId', {$this->siteId}]);
                 var g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-                g.type='text/javascript'; g.async=true; g.src='$url';
+                g.async=true; g.src='$url';
                 g.id = '_matomo_js_script';
                 s.parentNode.insertBefore(g,s);
               }

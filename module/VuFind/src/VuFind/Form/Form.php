@@ -3,7 +3,7 @@
 /**
  * Configurable form.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2018-2021.
  *
@@ -40,6 +40,10 @@ use Laminas\View\HelperPluginManager;
 use VuFind\Config\YamlReader;
 use VuFind\Form\Handler\HandlerInterface;
 use VuFind\Form\Handler\PluginManager as HandlerManager;
+
+use function count;
+use function in_array;
+use function is_array;
 
 /**
  * Configurable form.
@@ -629,18 +633,12 @@ class Form extends \Laminas\Form\Form implements
             'type' => 'text',
             'label' => $this->translate('feedback_name'),
             'group' => '__sender__',
-            'settings' => [
-                'size' => 50,
-            ],
         ];
         $senderEmail = [
             'name' => 'email',
             'type' => 'email',
             'label' => $this->translate('feedback_email'),
             'group' => '__sender__',
-            'settings' => [
-                'size' => 254,
-            ],
         ];
         if ($formConfig['senderInfoRequired'] ?? false) {
             $senderEmail['required'] = $senderName['required'] = true;
@@ -712,18 +710,7 @@ class Form extends \Laminas\Form\Form implements
                 $senderEmail = null;
             }
 
-            // Add default field size settings for fields that don't define them:
-            if (
-                in_array($elementType, ['text', 'url', 'email'])
-                && !isset($element['settings']['size'])
-            ) {
-                $element['settings']['size'] = 50;
-            }
-
             if ($elementType == 'textarea') {
-                if (!isset($element['settings']['cols'])) {
-                    $element['settings']['cols'] = 50;
-                }
                 if (!isset($element['settings']['rows'])) {
                     $element['settings']['rows'] = 8;
                 }

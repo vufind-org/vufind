@@ -3,7 +3,7 @@
 /**
  * Generic base class for Solr commands.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -36,6 +36,9 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Record\Loader;
 use VuFind\Search\Results\PluginManager;
+
+use function count;
+use function in_array;
 
 /**
  * Generic base class for Solr commands.

@@ -3,7 +3,7 @@
 /**
  * VuFind Action Helper - Storage Retrieval Requests Support Methods
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  * Copyright (C) The National Library of Finland 2014.
@@ -30,6 +30,8 @@
  */
 
 namespace VuFind\Controller\Plugin;
+
+use function in_array;
 
 /**
  * Action helper to perform storage retrieval request related actions
@@ -113,7 +115,7 @@ class StorageRetrievalRequests extends AbstractRequestBase
 
         if (!empty($details)) {
             // Confirm?
-            if ($params->fromPost('confirm') === "0") {
+            if ($params->fromPost('confirm') === '0') {
                 $url = $this->getController()->url()
                     ->fromRoute('myresearch-storageretrievalrequests');
                 if ($params->fromPost('cancelAll') !== null) {

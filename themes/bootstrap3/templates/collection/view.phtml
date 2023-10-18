@@ -1,7 +1,7 @@
 <?php
   // Set up standard record scripts:
-  $this->headScript()->appendFile("record.js");
-  $this->headScript()->appendFile("check_save_statuses.js");
+  $this->headScript()->appendFile('record.js');
+  $this->headScript()->appendFile('check_save_statuses.js');
   // Activate Syndetics Plus if necessary:
   if ($this->syndeticsPlus()->isActive()) {
     $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
@@ -57,7 +57,7 @@
           <?php foreach ($this->tabs as $tab => $obj): ?>
             <?php
               $desc = $obj->getDescription();
-              $tabName = preg_replace("/\W/", "-", strtolower($tab));
+              $tabName = preg_replace("/\W/", '-', strtolower($tab));
               $tabClasses = [ 'record-tab', $tabName ];
               if (0 === strcasecmp($this->activeTab, $tab)) {
                 if (!$this->loadInitialTabWithAjax || !$obj->supportsAjax()) {
@@ -66,8 +66,12 @@
                 $tabClasses[] = 'initiallyActive';
                 $activeTabObj = $obj;
               }
-              if (!$obj->isVisible()) { $tabClasses[] = 'hidden'; }
-              if (!$obj->supportsAjax()) { $tabClasses[] = 'noajax'; }
+              if (!$obj->isVisible()) {
+                $tabClasses[] = 'hidden';
+              }
+              if (!$obj->supportsAjax()) {
+                $tabClasses[] = 'noajax';
+              }
             ?>
             <li class="<?=implode(' ', $tabClasses)?>" role="tab" data-tab="<?=$this->escapeHtmlAttr($tabName)?>"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>>
               <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, $tab))?>#tabnav" data-lightbox-ignore>
@@ -87,7 +91,7 @@
       </div>
     <?php endif; ?>
 
-    <?=$this->driver->supportsCoinsOpenURL() ? '<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenURL()) . '"></span>' : ''?>
+    <?=$this->driver->supportsCoinsOpenURL() ? '<span class="Z3988" aria-hidden="true" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenURL()) . '"></span>' : ''?>
   </div>
 </div>
 <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, '$(document).ready(recordDocReady);', 'SET'); ?>

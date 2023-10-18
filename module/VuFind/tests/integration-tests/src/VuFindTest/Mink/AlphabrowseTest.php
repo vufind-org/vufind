@@ -3,7 +3,7 @@
 /**
  * Mink test class for alphabetic browse.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -42,20 +42,58 @@ namespace VuFindTest\Mink;
 class AlphabrowseTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
+     * Data provider for testTitleSearchNormalization
+     *
+     * @return array
+     */
+    public function titleSearchNormalizationProvider(): array
+    {
+        return [
+            'bracket stripping' => ['[arithmetic facts]', 'Arithmetic Facts'],
+            'multi-bracket stripping' => ['[[[[[arithmetic facts]]]]]', 'Arithmetic Facts'],
+            'accent stripping' => ['arithmétic facts', 'Arithmetic Facts'],
+            'punctuation collapsing' => ['arithmetic facts /:/:', 'Arithmetic Facts'],
+            'whitespace collapsing' => ['arithmetic      facts', 'Arithmetic Facts'],
+        ];
+    }
+
+    /**
+     * Test that appropriate normalization is applied to title searches.
+     *
+     * @param string $query              Alphabrowse query to perform
+     * @param string $expectedFirstTitle Expected first title in result list
+     *
+     * @return void
+     *
+     * @dataProvider titleSearchNormalizationProvider
+     */
+    public function testTitleSearchNormalization($query, $expectedFirstTitle): void
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Alphabrowse/Home');
+        $page = $session->getPage();
+        $this->findCssAndSetValue($page, '#alphaBrowseForm_source', 'title');
+        $this->findCssAndSetValue($page, '#alphaBrowseForm_from', $query);
+        $this->clickCss($page, '#alphaBrowseForm .btn-primary');
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            $expectedFirstTitle,
+            $this->findCss($page, 'table.alphabrowse td.title')->getText()
+        );
+    }
+
+    /**
      * Test that extra attributes are escaped correctly.
      *
      * @return void
      */
-    public function testExtraAttributeEscaping()
+    public function testExtraAttributeEscaping(): void
     {
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Alphabrowse/Home?source=lcc&from=PS3552.R878+T47+2011');
         $page = $session->getPage();
         $extras = $this->findCss($page, 'table.alphabrowse td.lcc ~ td');
         $text = $extras->getText();
-        $this->assertTrue(
-            strpos($text, '<HTML> The Basics') !== false,
-            "Could not find '<HTML> The Basics' in '$text'"
-        );
+        $this->assertStringContainsString('<HTML> The Basics', $text);
     }
 }

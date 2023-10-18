@@ -3,7 +3,7 @@
 /**
  * EDS API Options
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) EBSCO Industries 2013
  * Copyright (C) The National Library of Finland 2022
@@ -30,6 +30,10 @@
  */
 
 namespace VuFind\Search\EDS;
+
+use function count;
+use function in_array;
+use function is_callable;
 
 /**
  * EDS API Options
@@ -472,12 +476,16 @@ class Options extends \VuFind\Search\Base\Options
         }
         if (isset($this->searchSettings->General->limit_options)) {
             $this->limitOptions
-                = explode(",", $this->searchSettings->General->limit_options);
+                = explode(',', $this->searchSettings->General->limit_options);
         }
 
         // Set up highlighting preference
         if (isset($this->searchSettings->General->highlighting)) {
-            $this->highlight = $this->searchSettings->General->highlighting;
+            // For legacy config compatibility, support the "n" value to disable highlighting:
+            $falsyStrings = ['n', 'false'];
+            $this->highlight = in_array(strtolower($this->searchSettings->General->highlighting), $falsyStrings)
+                ? false
+                : (bool)$this->searchSettings->General->highlighting;
         }
 
         // Load search preferences:

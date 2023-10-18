@@ -3,7 +3,7 @@
 /**
  * Autocomplete handler plugin manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -32,6 +32,9 @@ namespace VuFind\Autocomplete;
 use Laminas\Stdlib\Parameters;
 use VuFind\Config\PluginManager as ConfigManager;
 use VuFind\Search\Options\PluginManager as OptionsManager;
+
+use function is_callable;
+use function is_object;
 
 /**
  * Autocomplete handler plugin manager
@@ -101,11 +104,22 @@ class Suggester
         $searcher = $request->get('searcher', 'Solr');
         $hiddenFilters = $request->get('hiddenFilters', []);
 
-        // If we're using a combined search box, we need to override the searcher
-        // and type settings.
-        if (substr($type, 0, 7) == 'VuFind:') {
+        if (str_starts_with($type, 'VuFind:')) {
+            // If we're using a combined search box, we need to override the searcher
+            // and type settings.
             [, $tmp] = explode(':', $type, 2);
             [$searcher, $type] = explode('|', $tmp, 2);
+        } elseif (
+            str_starts_with($type, 'External:')
+            && str_contains($type, '/Alphabrowse')
+        ) {
+            // If includeAlphaBrowse is turned on in searchbox.ini, we should use a
+            // special prefix to allow configuration of alphabrowse-specific handlers
+            [, $tmp] = explode('?', $type, 2);
+            parse_str($tmp, $browseQuery);
+            if (!empty($browseQuery['source'])) {
+                $type = 'alphabrowse_' . $browseQuery['source'];
+            }
         }
 
         // get Autocomplete_Type config
@@ -125,7 +139,7 @@ class Suggester
 
         // Get suggestions:
         if ($module) {
-            if (strpos($module, ':') === false) {
+            if (!str_contains($module, ':')) {
                 $module .= ':'; // force colon to avoid warning in explode below
             }
             [$name, $params] = explode(':', $module, 2);

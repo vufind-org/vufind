@@ -33,29 +33,30 @@
   </div>
 <?php endif; ?>
 
-<?=($offlineMode == "ils-offline") ? $this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_holdings_message']) : ''?>
+<?=($offlineMode == 'ils-offline') ? $this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_holdings_message']) : ''?>
 
 <?php if (($this->ils()->getHoldsMode() == 'driver' && !empty($holdings['holdings'])) || $this->ils()->getTitleHoldsMode() == 'driver'): ?>
   <?php if ($account->loginEnabled() && $offlineMode != 'ils-offline'): ?>
     <?php if (!$user): ?>
       <div class="alert alert-info">
-        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, 'Holdings', ['login' => 'true', 'catalogLogin' => 'true']))?>" data-lightbox><?=$this->transEsc("hold_login")?></a>
+        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, 'Holdings', ['login' => 'true', 'catalogLogin' => 'true']))?>" data-lightbox><?=$this->transEsc('hold_login')?></a>
       </div>
     <?php elseif (!$user->cat_username): ?>
       <div class="alert alert-info">
-        <?=$this->translate("hold_profile_html", ['%%url%%' => $this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, 'Holdings', ['catalogLogin' => 'true']))])?>
+        <?=$this->translate('hold_profile_html', ['%%url%%' => $this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, 'Holdings', ['catalogLogin' => 'true']))])?>
       </div>
     <?php endif; ?>
   <?php endif; ?>
 <?php endif; ?>
-<?php $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); if (!empty($holdingTitleHold)): ?>
+<?php $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); ?>
+<?php if (!empty($holdingTitleHold)): ?>
   <a class="placehold icon-link" data-lightbox title="<?=$this->transEscAttr('request_place_text')?>" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holdingTitleHold))?>">
     <?=$this->icon('place-hold', 'icon-link__icon') ?>
     <span class="icon-link__label"><?=$this->transEsc('title_hold_place')?></span>
   </a>
 <?php endif; ?>
 <?php if (!empty($urls) || $openUrlActive || $doiActive): ?>
-  <h3><?=$this->transEsc("Internet")?></h3>
+  <h2><?=$this->transEsc('Internet')?></h2>
   <?php if (!empty($urls)): ?>
     <?php foreach ($urls as $current): ?>
       <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a><br>
@@ -75,14 +76,14 @@
 <?php endif; ?>
 
 <?php foreach ($holdings['holdings'] ?? [] as $holding): ?>
-<h3>
+<h2>
   <?php $locationTextEsc = $this->transEscWithPrefix('location_', $holding['location']); ?>
   <?php if ($holding['locationhref'] ?? false): ?>
     <a href="<?=$this->escapeHtmlAttr($holding['locationhref'])?>" target="_blank"><?=$locationTextEsc?></a>
   <?php else: ?>
     <?=$locationTextEsc?>
   <?php endif; ?>
-</h3>
+</h2>
 <?php
   $truncateSettings = [
     'rows' => $this->config()->getHoldingsItemLimit(),
@@ -90,9 +91,10 @@
 ?>
 <table class="table table-striped truncate-field" data-truncate="<?=$this->htmlSafeJsonEncode($truncateSettings)?>">
   <caption class="sr-only"><?=$this->transEsc('holdings_details_from', ['%%location%%' => $this->transEsc($holding['location'])]) ?></caption>
-  <?php $callNos = $this->tab->getUniqueCallNumbers($holding['items'], true); if (!empty($callNos)): ?>
+  <?php $callNos = $this->tab->getUniqueCallNumbers($holding['items'], true); ?>
+  <?php if (!empty($callNos)): ?>
   <tr>
-    <th><?=$this->transEsc("Call Number")?>: </th>
+    <th><?=$this->transEsc('Call Number')?>: </th>
     <td>
       <?php foreach ($callNos as $callNo): ?>
         <?php if ($this->callnumberHandler): ?>
@@ -108,7 +110,7 @@
   <?php foreach ($holding['textfields'] ?? [] as $textFieldName => $textFields): ?>
     <tr>
       <?php // Translation for summary is a special case for backwards-compatibility ?>
-      <th><?=$textFieldName == 'summary' ? $this->transEsc("Volume Holdings") : $this->transEsc(ucfirst($textFieldName))?>:</th>
+      <th><?=$textFieldName == 'summary' ? $this->transEsc('Volume Holdings') : $this->transEsc(ucfirst($textFieldName))?>:</th>
       <td>
         <?php foreach ($textFields as $current): ?>
           <?=$this->linkify($this->escapeHtml($current))?><br>
@@ -133,7 +135,7 @@
   <?php endforeach; ?>
   <?php if (!empty($holding['purchase_history'])): ?>
     <tr>
-      <th><?=$this->transEsc("Most Recent Received Issues")?>:</th>
+      <th><?=$this->transEsc('Most Recent Received Issues')?>:</th>
       <td>
         <?php foreach ($holding['purchase_history'] as $current): ?>
           <?=$this->escapeHtml($current['issue'])?><br>
@@ -148,7 +150,7 @@
 <?php endif; ?>
 <?php $history = $this->driver->getRealTimeHistory(); ?>
 <?php if (is_array($history) && !empty($history)): ?>
-  <h3><?=$this->transEsc("Most Recent Received Issues")?></h3>
+  <h2><?=$this->transEsc('Most Recent Received Issues')?></h2>
   <table class="table table-striped">
     <?php foreach ($history as $row): ?>
       <tr><td><?=$this->escapeHtml($row['issue'])?></td></tr>

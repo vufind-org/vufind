@@ -3,7 +3,7 @@
 /**
  * Caching Proxy for Cover Images
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2015.
  *
@@ -31,6 +31,8 @@ namespace VuFind\Cover;
 
 use Laminas\Http\Client;
 use Laminas\Http\Response;
+
+use function dirname;
 
 /**
  * Caching Proxy for Cover Images

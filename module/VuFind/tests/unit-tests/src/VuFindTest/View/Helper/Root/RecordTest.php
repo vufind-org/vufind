@@ -3,7 +3,7 @@
 /**
  * Record view helper Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -34,6 +34,8 @@ use Laminas\View\Exception\RuntimeException;
 use VuFind\Cover\Loader;
 use VuFind\View\Helper\Root\Record;
 use VuFindTheme\ThemeInfo;
+
+use function is_array;
 
 /**
  * Record view helper Test Class

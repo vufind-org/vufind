@@ -3,7 +3,7 @@
 /**
  * VuFind Search Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -35,6 +35,10 @@ use Laminas\Stdlib\ResponseInterface as Response;
 use Laminas\View\Model\ViewModel;
 use VuFind\Search\RecommendListener;
 use VuFind\Solr\Utils as SolrUtils;
+
+use function count;
+use function in_array;
+use function intval;
 
 /**
  * VuFind Search Controller
@@ -131,7 +135,7 @@ class AbstractSearch extends AbstractBase
         if (empty($search)) {
             // User is trying to view a saved search from another session
             // (deliberate or expired) or associated with another user.
-            throw new \Exception("Attempt to access invalid search ID");
+            throw new \Exception('Attempt to access invalid search ID');
         }
 
         // If we got this far, the user is allowed to view the search, so we can
@@ -373,7 +377,18 @@ class AbstractSearch extends AbstractBase
         } catch (\VuFindSearch\Backend\Exception\DeepPagingException $e) {
             return $this->redirectToLegalSearchPage($request, $e->getLegalPage());
         }
-        $view->params = $results->getParams();
+        $view->params = $params = $results->getParams();
+
+        // For page parameter being out of results list, we want to redirect to correct page
+        $page = $params->getPage();
+        $totalResults = $results->getResultTotal();
+        $limit = $params->getLimit();
+        $lastPage = $limit ? ceil($totalResults / $limit) : 1;
+        if ($totalResults > 0 && $page > $lastPage) {
+            $queryParams = $request;
+            $queryParams['page'] = $lastPage;
+            return $this->redirect()->toRoute('search-results', [], [ 'query' => $queryParams ]);
+        }
 
         // If we received an EmptySet back, that indicates that the real search
         // failed due to some kind of syntax error, and we should display a
@@ -457,8 +472,12 @@ class AbstractSearch extends AbstractBase
      */
     protected function processJumpToOnlyResult($results)
     {
+        // If jumpto is explicitly disabled (set to false, e.g. by combined search),
+        // we should NEVER jump to a result regardless of other factors.
+        $jumpto = $this->params()->fromQuery('jumpto', true);
         if (
-            ($this->getConfig()->Record->jump_to_single_search_result ?? false)
+            $jumpto
+            && ($this->getConfig()->Record->jump_to_single_search_result ?? false)
             && $results->getResultTotal() == 1
             && $recordList = $results->getResults()
         ) {

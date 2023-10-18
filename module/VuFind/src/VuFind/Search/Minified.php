@@ -3,7 +3,7 @@
 /**
  * VuFind Minified Search Object
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -49,6 +50,7 @@ namespace VuFind\Search;
  * @category VuFind
  * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -125,6 +127,13 @@ class Minified
     public $ex = [];
 
     /**
+     * Search context parameters
+     *
+     * @var array
+     */
+    public $scp = [];
+
+    /**
      * Constructor. Building minified object from the
      *    searchObject passed in. Needs to be kept
      *    up-to-date with the deminify() function on
@@ -153,6 +162,7 @@ class Minified
 
         // Extra data has implementation-specific contents, store as is
         $this->ex = $searchObject->getExtraData();
+        $this->setSearchContextParameters($searchObject);
     }
 
     /**
@@ -212,5 +222,21 @@ class Minified
                     ? 'advanced' : 'basic';
             }
         }
+    }
+
+    /**
+     * Set search context parameters from the search object.
+     * Search context parameters contains i.e page number and results limit per page.
+     *
+     * @param object $searchObject Search Object to minify
+     *
+     * @return void
+     */
+    protected function setSearchContextParameters($searchObject): void
+    {
+        $this->scp = [
+            'page' => $searchObject->getParams()->getPage(),
+            'limit' => $searchObject->getParams()->getLimit(),
+        ];
     }
 }

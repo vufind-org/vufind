@@ -3,7 +3,7 @@
 /**
  * Short link controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -32,6 +32,9 @@ namespace VuFind\Controller;
 use Laminas\Config\Config;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\UrlShortener\UrlShortenerInterface;
+
+use function is_callable;
+use function strlen;
 
 /**
  * Short link controller

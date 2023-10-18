@@ -3,7 +3,7 @@
 /**
  * SOLR backend.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -35,6 +35,7 @@ use VuFindSearch\Backend\Exception\RemoteErrorException;
 use VuFindSearch\Backend\Solr\Document\DocumentInterface;
 use VuFindSearch\Backend\Solr\Response\Json\Terms;
 use VuFindSearch\Exception\InvalidArgumentException;
+use VuFindSearch\Feature\ExtraRequestDetailsInterface;
 use VuFindSearch\Feature\GetIdsInterface;
 use VuFindSearch\Feature\RandomInterface;
 use VuFindSearch\Feature\RetrieveBatchInterface;
@@ -42,8 +43,12 @@ use VuFindSearch\Feature\SimilarInterface;
 use VuFindSearch\Feature\WorkExpressionsInterface;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
+use VuFindSearch\Query\WorkKeysQuery;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Response\RecordCollectionInterface;
+
+use function count;
+use function is_int;
 
 /**
  * SOLR backend.
@@ -58,6 +63,7 @@ class Backend extends AbstractBackend implements
     SimilarInterface,
     RetrieveBatchInterface,
     RandomInterface,
+    ExtraRequestDetailsInterface,
     GetIdsInterface,
     WorkExpressionsInterface
 {
@@ -130,6 +136,9 @@ class Backend extends AbstractBackend implements
         $limit,
         ParamBag $params = null
     ) {
+        if ($query instanceof WorkKeysQuery) {
+            return $this->workExpressions($query->getId(), $query->getWorkKeys(), $params);
+        }
         $json = $this->rawJsonSearch($query, $offset, $limit, $params);
         $collection = $this->createRecordCollection($json);
         $this->injectSourceIdentifier($collection);
@@ -160,6 +169,28 @@ class Backend extends AbstractBackend implements
         $params->set('start', $offset);
         $params->mergeWith($this->getQueryBuilder()->build($query));
         return $this->connector->search($params);
+    }
+
+    /**
+     * Returns some extra details about the search.
+     *
+     * @return array
+     */
+    public function getExtraRequestDetails()
+    {
+        return [
+            'solrRequestUrl' => $this->connector->getLastUrl(),
+        ];
+    }
+
+    /**
+     * Clears all accumulated extra request details
+     *
+     * @return void
+     */
+    public function resetExtraRequestDetails()
+    {
+        $this->connector->resetLastUrl();
     }
 
     /**
@@ -401,12 +432,7 @@ class Backend extends AbstractBackend implements
         $params = $defaultParams ? clone $defaultParams
             : new \VuFindSearch\ParamBag();
         $this->injectResponseWriter($params);
-        $query = [];
-        foreach ($workKeys as $key) {
-            $key = addcslashes($key, '+-&|!(){}[]^"~*?:\\/');
-            $query[] = "work_keys_str_mv:(\"$key\")";
-        }
-        $params->set('q', implode(' OR ', $query));
+        $params->set('q', "{!terms f=work_keys_str_mv separator=\"\u{001f}\"}" . implode("\u{001f}", $workKeys));
         if ($id) {
             $params->add('fq', sprintf('-id:"%s"', addcslashes($id, '"')));
         }
@@ -586,9 +612,9 @@ class Backend extends AbstractBackend implements
             || strstr($error, 'couldn\'t find a browse index')
         ) {
             throw new RemoteErrorException(
-                "Alphabetic Browse index missing.  See " .
-                "https://vufind.org/wiki/indexing:alphabetical_heading_browse for " .
-                "details on generating the index.",
+                'Alphabetic Browse index missing.  See ' .
+                'https://vufind.org/wiki/indexing:alphabetical_heading_browse for ' .
+                'details on generating the index.',
                 $e->getCode(),
                 $e->getResponse(),
                 $e->getPrevious()

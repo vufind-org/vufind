@@ -3,7 +3,7 @@
 /**
  * VuFind XSLT importer
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -33,6 +33,8 @@ use DOMDocument;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFindSearch\Backend\Solr\Document\RawXMLDocument;
 use XSLTProcessor;
+
+use function is_array;
 
 /**
  * VuFind XSLT importer
@@ -136,7 +138,7 @@ class Importer
         // Process and return the XML through the style sheet
         $result = $xsl->transformToXML($xml);
         if (!$result) {
-            throw new \Exception("Problem transforming XML.");
+            throw new \Exception('Problem transforming XML.');
         }
         return $result;
     }
@@ -173,7 +175,7 @@ class Importer
             $truncate = $options['General']['truncate_custom_class'] ?? true;
             foreach ($classes as $class) {
                 // Add a default namespace if none was provided:
-                if (false === strpos($class, '\\')) {
+                if (!str_contains($class, '\\')) {
                     $class = 'VuFind\XSLT\Import\\' . $class;
                 }
                 // If necessary, dynamically generate the truncated version of the

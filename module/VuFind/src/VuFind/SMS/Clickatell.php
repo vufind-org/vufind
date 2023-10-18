@@ -3,7 +3,7 @@
 /**
  * Class for text messaging via Clickatell's HTTP API
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2009.
  *
@@ -29,7 +29,9 @@
 
 namespace VuFind\SMS;
 
-use VuFind\Exception\Mail as MailException;
+use VuFind\Exception\SMS as SMSException;
+
+use function function_exists;
 
 /**
  * Class for text messaging via Clickatell's HTTP API
@@ -79,20 +81,20 @@ class Clickatell extends AbstractBase
         try {
             $result = $this->client->setMethod('GET')->setUri($url)->send();
         } catch (\Exception $e) {
-            throw new MailException($e->getMessage());
+            throw new SMSException($e->getMessage(), SMSException::ERROR_UNKNOWN);
         }
         $response = $result->isSuccess() ? trim($result->getBody()) : '';
         if (empty($response)) {
-            throw new MailException('Problem sending text.');
+            throw new SMSException('Problem sending text.', SMSException::ERROR_UNKNOWN);
         }
         if ('ID:' !== substr($response, 0, 3)) {
-            throw new MailException($response);
+            throw new SMSException($response, SMSException::ERROR_UNKNOWN);
         }
         return true;
     }
 
     /**
-     * Get a list of carriers supported by the module.  Returned as an array of
+     * Get a list of carriers supported by the module. Returned as an array of
      * associative arrays indexed by carrier ID and containing "name" and "domain"
      * keys.
      *
@@ -148,14 +150,14 @@ class Clickatell extends AbstractBase
         // Get base URL:
         $url = isset($this->smsConfig->Clickatell->url)
             ? trim($this->smsConfig->Clickatell->url, '?')
-            : "https://api.clickatell.com/http/sendmsg";
+            : 'https://api.clickatell.com/http/sendmsg';
 
         // Add parameters to URL:
-        $url .= "?api_id=" . urlencode($this->getApiId());
-        $url .= "&user=" . urlencode($this->getApiUsername());
-        $url .= "&password=" . urlencode($this->getApiPassword());
-        $url .= "&to=" . urlencode($this->filterPhoneNumber($to));
-        $url .= "&text=" . urlencode($this->formatMessage($message));
+        $url .= '?api_id=' . urlencode($this->getApiId());
+        $url .= '&user=' . urlencode($this->getApiUsername());
+        $url .= '&password=' . urlencode($this->getApiPassword());
+        $url .= '&to=' . urlencode($this->filterPhoneNumber($to));
+        $url .= '&text=' . urlencode($this->formatMessage($message));
 
         return $url;
     }
@@ -171,9 +173,10 @@ class Clickatell extends AbstractBase
     {
         // Clickatell expects UCS-2 encoding:
         if (!function_exists('iconv')) {
-            // @codeCoverageIgnoreStart
-            throw new MailException('Clickatell requires iconv PHP extension.');
-            // @codeCoverageIgnoreEnd
+            throw new SMSException(
+                'Clickatell requires iconv PHP extension.',
+                SMSException::ERROR_UNKNOWN
+            );
         }
         // Normalize UTF-8 if intl extension is installed:
         if (class_exists('Normalizer')) {

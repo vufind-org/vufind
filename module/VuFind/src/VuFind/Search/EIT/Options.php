@@ -3,7 +3,7 @@
 /**
  * EBSCO EIT API Search Options
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -29,6 +29,8 @@
  */
 
 namespace VuFind\Search\EIT;
+
+use function count;
 
 /**
  * EBSCO EIT Search Options

@@ -46,18 +46,22 @@
 
   // Load Javascript dependencies into header:
   $this->render('search/results-scripts.phtml', compact('displayVersions'));
-  $this->headScript()->appendFile("combined-search.js");
+  $this->headScript()->appendFile('combined-search.js');
   // Style
   $this->headLink()->appendStylesheet('combined-search.css');
 ?>
 <?=$this->flashmessages()?>
 <form id="search-cart-form" class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
-  <?php $recs = $combinedResults->getRecommendations('top'); if (!empty($recs)): ?>
+  <?php $recs = $combinedResults->getRecommendations('top'); ?>
+  <?php if (!empty($recs)): ?>
     <div>
       <?php foreach ($recs as $current): ?>
         <?=$this->recommend($current)?>
       <?php endforeach; ?>
     </div>
+  <?php endif; ?>
+  <?php if ($config['Layout']['jump_links'] ?? false): ?>
+    <?=$this->render('combined/jump-links.phtml', ['combinedResults' => $this->combinedResults])?>
   <?php endif; ?>
   <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => ''])?>
   <?php
@@ -69,7 +73,23 @@
       'showBulkOptions' => $this->showBulkOptions,
     ];
   ?>
-  <?=$this->context($this)->renderInContext('combined/stack-' . $placement . '.phtml', $viewParams); ?>
+
+  <?php if (!empty($columnSideRecommendations)): ?>
+    <div class="<?=$this->layoutClass('mainbody')?>">
+      <?=$this->context($this)->renderInContext('combined/stack-' . $placement . '.phtml', $viewParams); ?>
+    </div>
+
+    <div class="<?=$this->layoutClass('sidebar')?>" id="search-sidebar">
+      <?php foreach ($columnSideRecommendations as $columnSideRecommendation): ?>
+        <div class="recommendation_container__<?=$columnSideRecommendation?>">
+          <?php // Content is added via JS in results-list.phtml. ?>
+        </div>
+      <?php endforeach; ?>
+    </div>
+  <?php else: ?>
+    <?=$this->context($this)->renderInContext('combined/stack-' . $placement . '.phtml', $viewParams); ?>
+  <?php endif; ?>
+
   <?php $recs = $combinedResults->getRecommendations('bottom'); ?>
   <?php if (!empty($recs)): ?>
     <div>

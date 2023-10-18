@@ -3,7 +3,7 @@
 /**
  * Pazpar2 Search Options
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -28,6 +28,8 @@
  */
 
 namespace VuFind\Search\Pazpar2;
+
+use function is_object;
 
 /**
  * Pazpar2 Search Options

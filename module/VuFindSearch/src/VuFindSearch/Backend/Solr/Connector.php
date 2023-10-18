@@ -3,7 +3,7 @@
 /**
  * SOLR connector.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -34,6 +34,7 @@ namespace VuFindSearch\Backend\Solr;
 use Laminas\Http\Client\Adapter\Exception\TimeoutException;
 use Laminas\Http\Client as HttpClient;
 use Laminas\Http\Request;
+use Laminas\Uri\Http;
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Backend\Exception\HttpErrorException;
 use VuFindSearch\Backend\Exception\RemoteErrorException;
@@ -41,6 +42,11 @@ use VuFindSearch\Backend\Exception\RequestErrorException;
 use VuFindSearch\Backend\Solr\Document\DocumentInterface;
 use VuFindSearch\Exception\InvalidArgumentException;
 use VuFindSearch\ParamBag;
+
+use function call_user_func_array;
+use function count;
+use function is_callable;
+use function strlen;
 
 /**
  * SOLR connector.
@@ -96,6 +102,13 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      * @var string
      */
     protected $uniqueKey;
+
+    /**
+     * Url of the last request
+     *
+     * @var ?Http
+     */
+    protected $lastUrl = null;
 
     /**
      * Constructor
@@ -155,6 +168,26 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     public function getUniqueKey()
     {
         return $this->uniqueKey;
+    }
+
+    /**
+     * Get the last request url.
+     *
+     * @return ?Http
+     */
+    public function getLastUrl()
+    {
+        return $this->lastUrl;
+    }
+
+    /**
+     * Clears the last url
+     *
+     * @return void
+     */
+    public function resetLastUrl()
+    {
+        $this->lastUrl = null;
     }
 
     /**
@@ -444,6 +477,8 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         $this->debug(
             sprintf('=> %s %s', $client->getMethod(), $client->getUri())
         );
+
+        $this->lastUrl = $client->getUri();
 
         $time     = microtime(true);
         $response = $client->send();

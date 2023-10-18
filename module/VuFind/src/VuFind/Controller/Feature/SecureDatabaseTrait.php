@@ -3,7 +3,7 @@
 /**
  * VuFind Action Feature Trait - Secure database detection trait
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2023.
  *
@@ -28,6 +28,8 @@
  */
 
 namespace VuFind\Controller\Feature;
+
+use function count;
 
 /**
  * VuFind Action Feature Trait - Configuration file path methods

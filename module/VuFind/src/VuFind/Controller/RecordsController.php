@@ -3,7 +3,7 @@
 /**
  * Records Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -30,6 +30,8 @@
 namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
+
+use function count;
 
 /**
  * Records Controller

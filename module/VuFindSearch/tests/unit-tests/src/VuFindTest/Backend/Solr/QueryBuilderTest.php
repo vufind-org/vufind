@@ -3,7 +3,7 @@
 /**
  * Unit tests for SOLR query builder
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -53,11 +53,11 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     {
         // Set up an array of expected inputs and outputs:
         $tests = [
-            ["", "*:*"],                         // empty query
-            ["()", "*:*"],                       // empty parens
-            ["((()))", "*:*"],                   // nested empty parens
-            ["((())", "*:*"],                    // mismatched parens
-            ["this that ()", "this that"],       // text mixed w/ empty parens
+            ['', '*:*'],                         // empty query
+            ['()', '*:*'],                       // empty parens
+            ['((()))', '*:*'],                   // nested empty parens
+            ['((())', '*:*'],                    // mismatched parens
+            ['this that ()', 'this that'],       // text mixed w/ empty parens
             ['"()"', '"()"'],                    // empty parens in quotes
             ['title - sub', 'title sub'],        // freestanding hyphen
             ['"title - sub"', '"title - sub"'],  // freestanding hyphen in quotes

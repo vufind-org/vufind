@@ -27,7 +27,7 @@ echo '@' . $format . "{\n";
 // Citation key:
 echo $this->driver->getSourceIdentifier() . '-' . $this->driver->getUniqueId() . ",\n";
 
-$title = rtrim($this->driver->getTitle(), " /");
+$title = rtrim($this->driver->getTitle(), ' /');
 echo "title = {{$title}},\n";
 
 if (!empty($journalTitle)) {
@@ -56,7 +56,7 @@ if (!empty($journalTitle)) {
 $series = $this->driver->tryMethod('getSeries');
 if (is_array($series)) {
     foreach ($series as $current) {
-        echo "series = {" . (is_array($current) ? $current['name'] : $current) . "},\n";
+        echo 'series = {' . (is_array($current) ? $current['name'] : $current) . "},\n";
     }
 }
 
@@ -91,10 +91,10 @@ if (is_array($pubPlaces) && is_array($pubDates) && is_array($pubNames)) {
     }
     for ($i = 0; $i < $total; $i++) {
         if (isset($pubPlaces[$i])) {
-            echo "address = {" . rtrim(str_replace(['[', ']'], '', $pubPlaces[$i]), ': ') . "},\n";
+            echo 'address = {' . rtrim(str_replace(['[', ']'], '', $pubPlaces[$i]), ': ') . "},\n";
         }
         if (isset($pubNames[$i])) {
-            echo "publisher = {" . rtrim($pubNames[$i], ", ") . "},\n";
+            echo 'publisher = {' . rtrim($pubNames[$i], ', ') . "},\n";
         }
         $date = trim($pubDates[$i], '[]. ');
         if (strlen($date) > 4) {
@@ -112,7 +112,7 @@ if (!empty($edition)) {
 }
 
 if ($marcPhdField && $subfield = $marc->getSubfield($marcPhdField, 'a')) {
-    echo "school = {" . $subfield . "},\n";
+    echo 'school = {' . $subfield . "},\n";
 }
 
 // Try to find a page count in the physical description:

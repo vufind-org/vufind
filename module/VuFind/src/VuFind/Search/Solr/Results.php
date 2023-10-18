@@ -3,7 +3,7 @@
 /**
  * Solr aspect of the Search Multi-class (Results)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011, 2022.
  *
@@ -33,6 +33,8 @@ use VuFind\Search\Solr\AbstractErrorListener as ErrorListener;
 use VuFindSearch\Command\SearchCommand;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\QueryGroup;
+
+use function count;
 
 /**
  * Solr Search Parameters
@@ -196,6 +198,8 @@ class Results extends \VuFind\Search\Base\Results
                 throw $e;
             }
         }
+
+        $this->extraSearchBackendDetails = $command->getExtraRequestDetails();
 
         $this->responseFacets = $collection->getFacets();
         $this->responseQueryFacets = $collection->getQueryFacets();
@@ -406,7 +410,7 @@ class Results extends \VuFind\Search\Base\Results
 
         // Start building the flare object:
         $flare = new \stdClass();
-        $flare->name = "flare";
+        $flare->name = 'flare';
         $flare->total = $this->resultTotal;
         $flare->children = $this->responsePivotFacets;
         return $flare;

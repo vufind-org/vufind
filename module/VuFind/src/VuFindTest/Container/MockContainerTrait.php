@@ -3,7 +3,7 @@
 /**
  * Trait for implementing containers that produces mock objects.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -30,6 +30,8 @@
 namespace VuFindTest\Container;
 
 use PHPUnit\Framework\TestCase;
+
+use function in_array;
 
 /**
  * Trait for implementing containers that produces mock objects.

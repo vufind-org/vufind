@@ -3,7 +3,7 @@
 /**
  * Blender Options Test
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2022.
  *
@@ -30,6 +30,7 @@
 namespace VuFindTest\Search\Blender;
 
 use VuFind\Search\Blender\Options;
+use VuFindTest\Feature\ConfigPluginManagerTrait;
 
 /**
  * Blender Options Test
@@ -42,17 +43,51 @@ use VuFind\Search\Blender\Options;
  */
 class OptionsTest extends \PHPUnit\Framework\TestCase
 {
+    use ConfigPluginManagerTrait;
+
     /**
-     * Test that the Options object returns correct data.
+     * Data provider for testOptions
+     *
+     * @return array
+     */
+    public function optionsProvider(): array
+    {
+        return [
+            [
+                [],
+                false,
+            ],
+            [
+                [
+                    'Advanced_Searches' => [
+                        'foo' => 'bar',
+                    ],
+                ],
+                'blender-advanced',
+            ],
+        ];
+    }
+
+    /**
+     * Test that the Options object returns correct data .
+     *
+     * @param array        $config    Blender configuration
+     * @param string|false $advAction Expected advanced search action
      *
      * @return void
+     *
+     * @dataProvider optionsProvider
      */
-    public function testOptions(): void
+    public function testOptions(array $config, $advAction): void
     {
-        $configMgr = $this->createMock(\VuFind\Config\PluginManager::class);
+        $configMgr = $this->getMockConfigPluginManager(
+            [
+                'Blender' => $config,
+            ]
+        );
         $options = new Options($configMgr);
-        $this->assertEquals('search-blended', $options->getSearchAction());
-        $this->assertFalse($options->getAdvancedSearchAction());
+        $this->assertEquals('blender-results', $options->getSearchAction());
+        $this->assertEquals($advAction, $options->getAdvancedSearchAction());
         $this->assertFalse($options->getFacetListAction());
     }
 }

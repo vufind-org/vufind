@@ -3,7 +3,7 @@
 /**
  * SOLR QueryBuilder.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -35,6 +35,10 @@ use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
+
+use function in_array;
+use function is_array;
+use function strlen;
 
 /**
  * SOLR QueryBuilder.

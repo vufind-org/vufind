@@ -3,7 +3,7 @@
 /**
  * BrowZine backend.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -35,6 +35,10 @@ use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Response\RecordCollectionInterface;
+
+use function array_slice;
+use function count;
+use function is_array;
 
 /**
  * BrowZine backend.

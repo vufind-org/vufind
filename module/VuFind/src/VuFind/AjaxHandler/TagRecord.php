@@ -3,7 +3,7 @@
 /**
  * AJAX handler to tag/untag a record.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -34,6 +34,8 @@ use VuFind\Db\Row\User;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Loader;
 use VuFind\Tags;
+
+use function strlen;
 
 /**
  * AJAX handler to tag/untag a record.

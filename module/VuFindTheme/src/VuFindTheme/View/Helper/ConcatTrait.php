@@ -4,7 +4,7 @@
  * Trait to add asset pipeline functionality (concatenation / minification) to
  * a HeadLink/HeadScript-style view helper.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  * Copyright (C) The National Library of Finland 2017.
@@ -33,6 +33,11 @@
 namespace VuFindTheme\View\Helper;
 
 use VuFindTheme\ThemeInfo;
+
+use function count;
+use function defined;
+use function in_array;
+use function is_resource;
 
 /**
  * Trait to add asset pipeline functionality (concatenation / minification) to

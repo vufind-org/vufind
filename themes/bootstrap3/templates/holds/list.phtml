@@ -28,7 +28,7 @@
           <div class="checkbox">
             <label>
               <input type="checkbox" name="selectAll" class="checkbox-select-all">
-              <?=$this->transEsc('select_page')?>
+              <?=$this->transEsc('select_all_on_page')?>
             </label>
             <?php if ($this->updateForm): ?>
               <div class="btn-group">
@@ -37,17 +37,17 @@
             <?php endif; ?>
             <?php if ($this->cancelForm): ?>
               <div class="btn-group">
-                <input id="cancelSelected" name="cancelSelected" type="submit" value="<?=$this->transEscAttr("hold_cancel_selected") ?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-lightbox-ignore>
+                <input id="cancelSelected" name="cancelSelected" type="submit" value="<?=$this->transEscAttr('hold_cancel_selected') ?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-lightbox-ignore>
                 <ul class="dropdown-menu">
-                  <li class="disabled"><a><?=$this->transEsc("confirm_hold_cancel_selected_text") ?></a></li>
+                  <li class="disabled"><a><?=$this->transEsc('confirm_hold_cancel_selected_text') ?></a></li>
                   <li><a href="#" id="confirm_cancel_selected_yes"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
                   <li><a href="#" class="confirm_cancel_no"><?=$this->transEsc('confirm_dialog_no')?></a></li>
                 </ul>
               </div>
               <div class="btn-group">
-                <input id="cancelAll" name="cancelAll" type="submit" value="<?=$this->transEscAttr("hold_cancel_all") ?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-lightbox-ignore>
+                <input id="cancelAll" name="cancelAll" type="submit" value="<?=$this->transEscAttr('hold_cancel_all') ?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-lightbox-ignore>
                 <ul class="dropdown-menu">
-                  <li class="disabled"><a><?=$this->transEsc("confirm_hold_cancel_all_text") ?></a></li>
+                  <li class="disabled"><a><?=$this->transEsc('confirm_hold_cancel_all_text') ?></a></li>
                   <li><a href="#" id="confirm_cancel_all_yes"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
                   <li><a href="#" class="confirm_cancel_no"><?=$this->transEsc('confirm_dialog_no')?></a></li>
                 </ul>
@@ -70,7 +70,7 @@
             <?php endif; ?>
             <div class="checkbox">
               <label>
-                <input type="checkbox" name="selectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details'] ?? $ilsDetails['updateDetails']) ?>" id="checkbox_<?=$safeId?>" class="checkbox-select-item">
+                <input type="checkbox" name="selectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details'] ?? $ilsDetails['updateDetails']) ?>" id="checkbox_<?=$safeId?>" class="checkbox-select-item" aria-label="<?=$this->transEscAttr('select_item_hold_cancel')?>">
               </label>
             </div>
           <?php elseif ($this->cancelForm || $this->updateForm): ?>
@@ -98,40 +98,7 @@
               <?=$thumbnail ?>
             <?php endif ?>
             <div class="media-body">
-              <?php
-                // If this is a non-missing Solr record, we should display a link:
-                if (is_a($resource, 'VuFind\\RecordDriver\\SolrDefault') && !is_a($resource, 'VuFind\\RecordDriver\\Missing')) {
-                  $title = $resource->getTitle();
-                  $title = empty($title) ? $this->transEsc('Title not available') : $this->escapeHtml($title);
-                  echo '<a href="' . $this->escapeHtmlAttr($this->recordLinker()->getUrl($resource))
-                    . '" class="title">' . $title . '</a>';
-                } elseif (isset($ilsDetails['title']) && !empty($ilsDetails['title'])) {
-                  // If the record is not available in Solr, perhaps the ILS driver sent us a title we can show...
-                  echo '<span class="title">' . $this->escapeHtml($ilsDetails['title']) . '</span>';
-                } else {
-                  // Last resort -- indicate that no title could be found.
-                  echo $this->transEsc('Title not available');
-                }
-              ?><br>
-              <?php $listAuthors = $resource->getPrimaryAuthors(); if (!empty($listAuthors)): ?>
-                <?=$this->transEsc('by')?>:
-                <a href="<?=$this->record($resource)->getLink('author', $listAuthors[0])?>"><?=$this->escapeHtml($listAuthors[0])?></a><?php if (count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?><br>
-              <?php endif; ?>
-
-              <?php if (count($resource->getFormats()) > 0): ?>
-                <?=$this->record($resource)->getFormatList() ?>
-                <br>
-              <?php endif; ?>
-              <?php if (isset($ilsDetails['volume']) && !empty($ilsDetails['volume'])): ?>
-                <strong><?=$this->transEsc('Volume')?>:</strong> <?=$this->escapeHtml($ilsDetails['volume'])?>
-                <br>
-              <?php endif; ?>
-
-              <?php if (isset($ilsDetails['publication_year']) && !empty($ilsDetails['publication_year'])): ?>
-                <strong><?=$this->transEsc('Year of Publication')?>:</strong> <?=$this->escapeHtml($ilsDetails['publication_year'])?>
-                <br>
-              <?php endif; ?>
-
+              <?=$this->record($resource)->renderTemplate('account-entry.phtml')?>
               <?php if (!empty($ilsDetails['requestGroup'])): ?>
                 <strong><?=$this->transEsc('hold_requested_group') ?>:</strong> <?=$this->transEsc('request_group_' . $ilsDetails['requestGroup'], null, $ilsDetails['requestGroup'])?>
                 <br>
@@ -186,7 +153,7 @@
               <?php elseif (isset($ilsDetails['in_transit']) && $ilsDetails['in_transit']): ?>
                 <div class="text-success"><?=$this->transEsc('request_in_transit') . (is_string($ilsDetails['in_transit']) ? ': ' . $this->transEsc('institution_' . $ilsDetails['in_transit'], [], $ilsDetails['in_transit']) : '') ?></div>
               <?php elseif (isset($ilsDetails['position'])): ?>
-                <p><strong><?=$this->transEsc("hold_queue_position") ?>:</strong> <?=$this->escapeHtml($ilsDetails['position']) ?></p>
+                <p><strong><?=$this->transEsc('hold_queue_position') ?>:</strong> <?=$this->escapeHtml($ilsDetails['position']) ?></p>
               <?php endif; ?>
               <?php if (!empty($ilsDetails['frozen'])): ?>
                 <p>
@@ -200,7 +167,7 @@
                 </p>
               <?php endif; ?>
               <?php if (isset($ilsDetails['cancel_link'])): ?>
-                <p><a href="<?=$this->escapeHtmlAttr($ilsDetails['cancel_link']) ?>"><?=$this->transEsc("hold_cancel") ?></a></p>
+                <p><a href="<?=$this->escapeHtmlAttr($ilsDetails['cancel_link']) ?>"><?=$this->transEsc('hold_cancel') ?></a></p>
               <?php endif; ?>
               <?php if (!empty($ilsDetails['updateDetails'])): ?>
                 <p><a class="hold-edit" href="<?=$this->escapeHtmlAttr($this->url('holds-edit', [], ['query' => ['selectedIDS[]' => $ilsDetails['updateDetails']]])) ?>" data-lightbox><?=$this->transEsc('Edit') ?></a></p>
@@ -208,7 +175,11 @@
               <?php if (isset($this->cancelResults['items'])): ?>
                 <?php foreach ($this->cancelResults['items'] as $itemId => $cancelResult): ?>
                   <?php if ($itemId == $ilsDetails['item_id'] && $cancelResult['success'] == false): ?>
-                    <div class="alert alert-danger"><?=$this->transEsc($cancelResult['status']) ?><?php if ($cancelResult['sysMessage'] ?? false) echo ' : ' . $this->transEsc($cancelResult['sysMessage']); ?></div>
+                    <div class="alert alert-danger"><?=$this->transEsc($cancelResult['status']) ?><?php
+                      if ($cancelResult['sysMessage'] ?? false) {
+                        echo ' : ' . $this->transEsc($cancelResult['sysMessage']);
+                      }
+                    ?></div>
                   <?php endif; ?>
                 <?php endforeach; ?>
               <?php endif; ?>
@@ -216,7 +187,11 @@
               <?php if (isset($ilsDetails['reqnum']) && !empty($this->updateResults[$ilsDetails['reqnum']])): ?>
                 <?php $updateResult = $this->updateResults[$ilsDetails['reqnum']]; ?>
                 <?php if (!$updateResult['success']): ?>
-                  <div class="alert alert-danger"><?=$this->transEsc($updateResult['status']) ?><?php if (!empty($updateResult['sysMessage'])) echo ': ' . $this->transEsc($updateResult['sysMessage']); ?></div>
+                  <div class="alert alert-danger"><?=$this->transEsc($updateResult['status']) ?><?php
+                    if (!empty($updateResult['sysMessage'])) {
+                      echo ': ' . $this->transEsc($updateResult['sysMessage']);
+                    }
+                  ?></div>
                 <?php endif; ?>
               <?php endif; ?>
             </div>
@@ -224,7 +199,7 @@
               <?=$thumbnail ?>
             <?php endif ?>
           </div>
-          <?=$resource->tryMethod('supportsCoinsOpenUrl') ? '<span class="Z3988" title="' . $this->escapeHtmlAttr($resource->getCoinsOpenUrl()) . '"></span>' : ''?>
+          <?=$resource->tryMethod('supportsCoinsOpenUrl') ? '<span class="Z3988" aria-hidden="true" title="' . $this->escapeHtmlAttr($resource->getCoinsOpenUrl()) . '"></span>' : ''?>
         </li>
       <?php endforeach; ?>
     </ul>
@@ -234,8 +209,8 @@
   <?php endif; ?>
 </div>
 
-<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
-  <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'holds'])?>
+<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
+  <?=$this->context($this)->renderInContext('myresearch/menu.phtml', ['active' => 'holds'])?>
 </div>
 
 <?=$this->render('myresearch/notify-account-status.phtml', ['method' => 'holds', 'accountStatus' => $this->accountStatus]); ?>

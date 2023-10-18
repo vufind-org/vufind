@@ -3,7 +3,7 @@
 /**
  * Class to compile a theme hierarchy into a single flat theme.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -28,6 +28,8 @@
  */
 
 namespace VuFindTheme;
+
+use function is_array;
 
 /**
  * Class to compile a theme hierarchy into a single flat theme.

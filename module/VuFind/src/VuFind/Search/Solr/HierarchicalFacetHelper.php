@@ -3,7 +3,7 @@
 /**
  * Facet Helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2014.
  *
@@ -36,6 +36,10 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\Search\Base\HierarchicalFacetHelperInterface;
 use VuFind\Search\UrlQueryHelper;
+
+use function array_slice;
+use function count;
+use function is_string;
 
 /**
  * Functions for manipulating facets

@@ -3,7 +3,7 @@
 /**
  * Similar items carousel tab.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010, 2022.
  *
@@ -57,13 +57,24 @@ class SimilarItemsCarousel extends AbstractBase
     protected $searchService;
 
     /**
+     * Configuration
+     *
+     * @var \Laminas\Config\Config
+     */
+    protected $config;
+
+    /**
      * Constructor
      *
-     * @param \VuFindSearch\Service $search Search service
+     * @param \VuFindSearch\Service   $search Search service
+     * @param ?\Laminas\Config\Config $config Configuration
      */
-    public function __construct(\VuFindSearch\Service $search)
-    {
+    public function __construct(
+        \VuFindSearch\Service $search,
+        ?\Laminas\Config\Config $config = null
+    ) {
         $this->searchService = $search;
+        $this->config = $config;
     }
 
     /**
@@ -85,7 +96,8 @@ class SimilarItemsCarousel extends AbstractBase
     public function getResults()
     {
         $record = $this->getRecordDriver();
-        $params = new \VuFindSearch\ParamBag(['rows' => 40]);
+        $rows = $this->config->Record->similar_carousel_items ?? 40;
+        $params = new \VuFindSearch\ParamBag(['rows' => $rows]);
         $command = new SimilarCommand(
             $record->getSourceIdentifier(),
             $record->getUniqueId(),

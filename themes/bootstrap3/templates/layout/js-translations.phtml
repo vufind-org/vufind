@@ -9,6 +9,7 @@ $this->jsTranslations()->addStrings(
       'bulk_save_success' => 'bulk_save_success',
       'close' => 'close',
       'collection_empty' => 'collection_empty',
+      'del_search_num' => 'del_search_num',
       'eol_ellipsis' => 'eol_ellipsis',
       'error_occurred' => 'An error has occurred',
       'go_to_list' => 'go_to_list',
@@ -27,6 +28,7 @@ $this->jsTranslations()->addStrings(
         'number_thousands_separator', null, ',',
       ],
       'sms_success' => 'sms_success',
+      'toggle_dropdown' => 'toggle_dropdown',
       'No pickup locations available' => 'No pickup locations available',
     ]
 );
@@ -34,13 +36,13 @@ $this->jsTranslations()->addStrings(
 // Add libphonenumber.js strings
 $this->jsTranslations()->addStrings(
     [
-      "Phone number invalid" => 'libphonenumber_invalid',
-      "Invalid country calling code" => 'libphonenumber_invalidcountry',
-      "Invalid region code" => 'libphonenumber_invalidregion',
-      "The string supplied did not seem to be a phone number" => 'libphonenumber_notanumber',
-      "The string supplied is too long to be a phone number" => 'libphonenumber_toolong',
-      "The string supplied is too short to be a phone number" => 'libphonenumber_tooshort',
-      "Phone number too short after IDD" => 'libphonenumber_tooshortidd',
+      'Phone number invalid' => 'libphonenumber_invalid',
+      'Invalid country calling code' => 'libphonenumber_invalidcountry',
+      'Invalid region code' => 'libphonenumber_invalidregion',
+      'The string supplied did not seem to be a phone number' => 'libphonenumber_notanumber',
+      'The string supplied is too long to be a phone number' => 'libphonenumber_toolong',
+      'The string supplied is too short to be a phone number' => 'libphonenumber_tooshort',
+      'Phone number too short after IDD' => 'libphonenumber_tooshortidd',
     ]
 );
 
@@ -50,6 +52,7 @@ if ($cart->isActive()) {
   $this->jsTranslations()->addStrings(
       [
         'addBookBag' => 'Add to Book Bag',
+        'bookbag' => 'Book Bag',
         'bookbagFull' => 'bookbag_full_msg',
         'bookbagMax' => $cart->getMaxSize(),
         'bookbagStatusFull' => 'bookbag_full',

@@ -3,7 +3,7 @@
 /**
  * ILS driver plugin manager
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -84,7 +84,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         Aleph::class => AlephFactory::class,
-        Alma::class => AlmaFactory::class,
+        Alma::class => DriverWithDateConverterFactory::class,
         Amicus::class => InvokableFactory::class,
         DAIA::class => DriverWithDateConverterFactory::class,
         Demo::class => DemoFactory::class,

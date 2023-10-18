@@ -3,7 +3,7 @@
 /**
  * View helper for loading theme-related resources.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,6 +28,10 @@
  */
 
 namespace VuFindTheme\View\Helper;
+
+use function count;
+use function in_array;
+use function is_array;
 
 /**
  * View helper for loading theme-related resources.
@@ -117,16 +121,30 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
             );
         }
 
-        // If we have a favicon, load it now:
+        // Insert link elements for favicons specified in the `favicons` property of theme.config.php.
+        // If `favicon` is a string then treat it as a single file path to an .ico icon.
+        // If `favicon` is an array then treat each item as an assoc array of html attributes and render
+        // a link element for each.
         $favicon = $this->container->getFavicon();
         if (!empty($favicon)) {
             $imageLink = $this->getView()->plugin('imageLink');
-            $headLink(
-                [
-                    'href' => $imageLink($favicon),
-                    'type' => 'image/x-icon', 'rel' => 'shortcut icon',
-                ]
-            );
+            if (is_array($favicon)) {
+                foreach ($favicon as $attrs) {
+                    if (isset($attrs['href'])) {
+                        $attrs['href'] = $imageLink($attrs['href']);
+                    }
+                    $attrs['rel'] ??= 'icon';
+                    $headLink($attrs);
+                }
+            } else {
+                $headLink(
+                    [
+                        'href' => $imageLink($favicon),
+                        'type' => 'image/x-icon',
+                        'rel' => 'icon',
+                    ]
+                );
+            }
         }
     }
 

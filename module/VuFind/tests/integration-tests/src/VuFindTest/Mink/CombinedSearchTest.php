@@ -3,7 +3,7 @@
 /**
  * Mink test class for combined search.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2016.
  *
@@ -74,9 +74,9 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
     protected function assertResultsForDefaultQuery($page)
     {
         $expectedResults = [
-            "#combined_Solr____one" => "Journal of rational emotive therapy : "
-                . "the journal of the Institute for Rational-Emotive Therapy.",
-            "#combined_Solr____two" => "Pluses and Minuses of Pluses and Minuses",
+            '#combined_Solr____one' => 'Journal of rational emotive therapy : '
+                . 'the journal of the Institute for Rational-Emotive Therapy.',
+            '#combined_Solr____two' => 'Pluses and Minuses of Pluses and Minuses',
         ];
         foreach ($expectedResults as $container => $title) {
             $this->assertEquals(

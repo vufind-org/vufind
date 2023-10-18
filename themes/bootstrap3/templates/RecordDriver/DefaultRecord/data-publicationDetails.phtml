@@ -1,15 +1,16 @@
 <?php foreach ($data as $field): ?>
   <span property="publisher" typeof="Organization">
-  <?php $pubPlace = $field->getPlace(); if (!empty($pubPlace)): ?>
+  <?php $pubPlace = $field->getPlace(); ?>
+  <?php if (!empty($pubPlace)): ?>
     <span property="location"><?=$this->escapeHtml($pubPlace)?></span>
   <?php endif; ?>
-  <?php $pubName = $field->getName(); if (!empty($pubName)): ?>
-    <a property="name" href="<?=$this->record($this->driver)->getLink('publisher', $pubName)?>">
-      <?=$this->escapeHtml($pubName)?>
-    </a>
+  <?php $pubName = $field->getName(); ?>
+  <?php if (!empty($pubName)): ?>
+    <a property="name" href="<?=$this->record($this->driver)->getLink('publisher', $pubName)?>"><?=$this->escapeHtml($pubName)?></a>
   <?php endif; ?>
   </span>
-  <?php $pubDate = $field->getDate(); if (!empty($pubDate)): ?>
+  <?php $pubDate = $field->getDate(); ?>
+  <?php if (!empty($pubDate)): ?>
     <span property="datePublished"><?=$this->escapeHtml($pubDate)?></span>
   <?php endif; ?>
   <br>

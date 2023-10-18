@@ -3,7 +3,7 @@
 /**
  * SOLR spellcheck information.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -32,6 +32,9 @@ namespace VuFindSearch\Backend\Solr\Response\Json;
 use ArrayObject;
 use Countable;
 use IteratorAggregate;
+
+use function is_array;
+use function strlen;
 
 /**
  * SOLR spellcheck information.

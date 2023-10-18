@@ -3,7 +3,7 @@
 /**
  * Abstract factory for building AbstractContent tabs.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -35,6 +35,8 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\Config\PluginManager as ConfigManager;
 use VuFind\Content\PluginManager as ContentManager;
+
+use function in_array;
 
 /**
  * Abstract factory for building AbstractContent tabs.

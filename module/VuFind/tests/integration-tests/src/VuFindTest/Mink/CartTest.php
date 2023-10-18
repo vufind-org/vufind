@@ -3,7 +3,7 @@
 /**
  * Mink cart test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -30,6 +30,9 @@
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
+
+use function count;
+use function is_object;
 
 /**
  * Mink cart test class.

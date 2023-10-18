@@ -3,7 +3,7 @@
 /**
  * Language command: add string using template.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -32,6 +32,8 @@ namespace VuFindConsole\Command\Language;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+
+use function strlen;
 
 /**
  * Language command: add string using template.

@@ -3,7 +3,7 @@
 /**
  * MakeTag view helper Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -31,6 +31,8 @@
 namespace VuFindTest\View\Helper\Root;
 
 use VuFind\View\Helper\Root\MakeTag;
+
+use function call_user_func_array;
 
 /**
  * MakeTag view helper Test Class

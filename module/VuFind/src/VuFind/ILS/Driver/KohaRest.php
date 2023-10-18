@@ -3,7 +3,7 @@
 /**
  * VuFind Driver for Koha, using REST API
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2016-2023.
  * Copyright (C) Moravian Library 2019.
@@ -36,6 +36,14 @@ use VuFind\Date\DateException;
 use VuFind\Exception\AuthToken as AuthTokenException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Service\CurrencyFormatter;
+
+use function array_key_exists;
+use function call_user_func;
+use function count;
+use function in_array;
+use function is_array;
+use function is_callable;
+use function is_string;
 
 /**
  * VuFind Driver for Koha, using REST API
@@ -671,7 +679,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     /**
      * Renew My Items
      *
-     * Function for attempting to renew a patron's items.  The data in
+     * Function for attempting to renew a patron's items. The data in
      * $renewDetails['details'] is determined by getRenewDetails().
      *
      * @param array $renewDetails An array of data required for renewing items
@@ -726,6 +734,45 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     public function getMyTransactionHistory($patron, $params)
     {
         return $this->getTransactions($patron, $params, true);
+    }
+
+    /**
+     * Purge Patron Transaction History
+     *
+     * @param array  $patron The patron array from patronLogin
+     * @param ?array $ids    IDs to purge, or null for all
+     *
+     * @throws ILSException
+     * @return array Associative array of the results
+     */
+    public function purgeTransactionHistory(array $patron, ?array $ids): array
+    {
+        if (null !== $ids) {
+            throw new ILSException('Unsupported function');
+        }
+        $result = $this->makeRequest(
+            [
+                'path' => [
+                    'v1', 'contrib', 'kohasuomi', 'patrons', $patron['id'],
+                    'checkouts', 'history',
+                ],
+                'method' => 'DELETE',
+                'errors' => true,
+            ]
+        );
+        if (!in_array($result['code'], [200, 202, 204])) {
+            return  [
+                'success' => false,
+                'status' => 'An error has occurred',
+                'sys_message' => $result['data']['error'] ?? $result['code'],
+            ];
+        }
+
+        return [
+            'success' => true,
+            'status' => 'loan_history_all_purged',
+            'sys_message' => '',
+        ];
     }
 
     /**
@@ -854,10 +901,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @param array $patron      Patron information returned by the patronLogin
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
-     * in the context of placing or editing a hold.  When placing a hold, it contains
-     * most of the same values passed to placeHold, minus the patron data.  When
+     * in the context of placing or editing a hold. When placing a hold, it contains
+     * most of the same values passed to placeHold, minus the patron data. When
      * editing a hold it contains all the hold information returned by getMyHolds.
-     * May be used to limit the pickup options or may be ignored.  The driver must
+     * May be used to limit the pickup options or may be ignored. The driver must
      * not add new options to the return array based on this data or other areas of
      * VuFind may behave incorrectly.
      *
@@ -979,7 +1026,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
      * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.  May be used to limit the pickup options
+     * placeHold, minus the patron data. May be used to limit the pickup options
      * or may be ignored.
      *
      * @return false|string      The default pickup location for the patron or false
@@ -1558,6 +1605,28 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
+     * Provide an array of URL data (in the same format returned by the record
+     * driver's getURLs method) for the specified bibliographic record.
+     *
+     * @param string $id Bibliographic record ID
+     *
+     * @return array
+     */
+    public function getUrlsForRecord(string $id): array
+    {
+        $links = [];
+        $opacUrl = $this->config['Catalog']['opacURL'] ?? false;
+        if ($opacUrl) {
+            $url = strstr($opacUrl, '%%id%%') === false
+                ? $opacUrl . urlencode($id)
+                : str_replace('%%id%%', urlencode($id), $opacUrl);
+            $desc = $this->translate('view_in_opac');
+            $links[] = compact('url', 'desc');
+        }
+        return $links;
+    }
+
+    /**
      * Public Function which retrieves renew, hold and cancel settings from the
      * driver ini file.
      *
@@ -1587,6 +1656,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     '+title' => 'sort_title',
                 ],
                 'default_sort' => '-checkout_date',
+                'purge_all' => $this->config['TransactionHistory']['purgeAll'] ?? true,
             ];
         } elseif ('getMyTransactions' === $function) {
             $limit = $this->config['Loans']['max_page_size'] ?? 100;
@@ -1608,7 +1678,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
 
     /**
      * Helper method to determine whether or not a certain method can be
-     * called on this driver.  Required method for any smart drivers.
+     * called on this driver. Required method for any smart drivers.
      *
      * @param string $method The name of the called method.
      * @param array  $params Array of passed parameters
@@ -1980,7 +2050,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             }
         } else {
             $this->logError(
-                "Unable to determine status for item: " . print_r($item, true)
+                'Unable to determine status for item: ' . print_r($item, true)
             );
         }
 

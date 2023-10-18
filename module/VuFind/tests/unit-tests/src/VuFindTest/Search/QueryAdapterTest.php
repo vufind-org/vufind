@@ -3,7 +3,7 @@
 /**
  * QueryAdapter unit tests.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -31,6 +31,8 @@ namespace VuFindTest\Search;
 
 use VuFind\Search\QueryAdapter;
 use VuFindSearch\Query\Query;
+
+use function count;
 
 /**
  * QueryAdapter unit tests.

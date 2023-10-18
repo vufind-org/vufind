@@ -3,7 +3,7 @@
 /**
  * SolrDefault Record Driver Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -184,7 +184,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetContainerRecordID()
     {
-        $this->assertEquals("", $this->getDriver()->getContainerRecordID());
+        $this->assertEquals('', $this->getDriver()->getContainerRecordID());
     }
 
     /**
@@ -204,7 +204,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetHighlightedTitle()
     {
-        $this->assertEquals("", $this->getDriver()->getHighlightedTitle());
+        $this->assertEquals('', $this->getDriver()->getHighlightedTitle());
     }
 
     /**

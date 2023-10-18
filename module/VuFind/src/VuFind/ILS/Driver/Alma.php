@@ -3,7 +3,7 @@
 /**
  * Alma ILS Driver
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -32,9 +32,16 @@ namespace VuFind\ILS\Driver;
 use Laminas\Http\Headers;
 use SimpleXMLElement;
 use VuFind\Exception\ILS as ILSException;
+use VuFind\I18n\TranslatableString;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
+use VuFind\ILS\Logic\ItemStatus;
 use VuFind\Marc\MarcReader;
+
+use function count;
+use function floatval;
+use function in_array;
+use function is_callable;
 
 /**
  * Alma ILS Driver
@@ -77,24 +84,20 @@ class Alma extends AbstractBase implements
     protected $dateConverter;
 
     /**
-     * Configuration loader
+     * Mappings from location type to item status. Overrides any other item status.
      *
-     * @var \VuFind\Config\PluginManager
+     * @var array
      */
-    protected $configLoader;
+    protected $locationTypeToItemStatus = [];
 
     /**
      * Constructor
      *
-     * @param \VuFind\Date\Converter       $dateConverter Date converter object
-     * @param \VuFind\Config\PluginManager $configLoader  Plugin manager
+     * @param \VuFind\Date\Converter $dateConverter Date converter object
      */
-    public function __construct(
-        \VuFind\Date\Converter $dateConverter,
-        \VuFind\Config\PluginManager $configLoader
-    ) {
+    public function __construct(\VuFind\Date\Converter $dateConverter)
+    {
         $this->dateConverter = $dateConverter;
-        $this->configLoader = $configLoader;
     }
 
     /**
@@ -113,6 +116,11 @@ class Alma extends AbstractBase implements
         }
         $this->baseUrl = $this->config['Catalog']['apiBaseUrl'];
         $this->apiKey = $this->config['Catalog']['apiKey'];
+
+        if (!empty($this->config['Holdings']['locationTypeItemStatus'])) {
+            $this->locationTypeToItemStatus
+                = $this->config['Holdings']['locationTypeItemStatus'];
+        }
     }
 
     /**
@@ -131,7 +139,7 @@ class Alma extends AbstractBase implements
      *                                     to the response.
      *
      * @throws ILSException
-     * @return NULL|SimpleXMLElement
+     * @return null|SimpleXMLElement|array
      */
     protected function makeRequest(
         $path,
@@ -157,7 +165,7 @@ class Alma extends AbstractBase implements
             }
 
             // Create the API URL
-            $url = strpos($path, '://') === false ? $this->baseUrl . $path : $path;
+            $url = !str_contains($path, '://') ? $this->baseUrl . $path : $path;
 
             // Create client with API URL
             $client = $this->httpService->createClient($url);
@@ -201,7 +209,7 @@ class Alma extends AbstractBase implements
 
         $duration = round(microtime(true) - $startTime, 4);
         $urlParams = $client->getRequest()->getQuery()->toString();
-        $fullUrl = $url . (strpos($url, '?') === false ? '?' : '&') . $urlParams;
+        $fullUrl = $url . (!str_contains($url, '?') ? '?' : '&') . $urlParams;
         $this->debug(
             "[$duration] $method request '$fullUrl' results ($statusCode):\n"
             . $answer
@@ -251,15 +259,81 @@ class Alma extends AbstractBase implements
     }
 
     /**
-     * Given an item, return the availability status.
+     * Given an item, return its availability and status.
      *
      * @param \SimpleXMLElement $item Item data
      *
-     * @return bool
+     * @return array Availability and status
      */
-    protected function getAvailabilityFromItem($item)
+    protected function getItemAvailabilityAndStatus(\SimpleXMLElement $item): array
     {
-        return (string)$item->item_data->base_status === '1';
+        // Check location type to status mappings first since they override
+        // everything else:
+        $available = null;
+        $status = null;
+        if ($this->locationTypeToItemStatus) {
+            [$available, $status] = $this->getItemStatusFromLocationTypeMap(
+                $this->getItemLocationType($item)
+            );
+        }
+
+        // Normal checks for status if no mapping found above:
+        if (null === $status) {
+            $status = (string)$item->item_data->base_status[0]->attributes()['desc'];
+            $duedate = $item->item_data->due_date
+                ? $this->parseDate((string)$item->item_data->due_date) : null;
+            if ($duedate && 'Item not in place' === $status) {
+                $status = 'Checked Out';
+            }
+
+            $processType = (string)($item->item_data->process_type ?? '');
+            if ($processType && 'LOAN' !== $processType) {
+                $status = $this->getTranslatableStatusString(
+                    $item->item_data->process_type
+                );
+            }
+        }
+
+        // Normal check for availability if no mapping found above:
+        if (null === $available) {
+            $available = (string)$item->item_data->base_status === '1'
+                ? ItemStatus::STATUS_AVAILABLE
+                : ItemStatus::STATUS_UNAVAILABLE;
+        }
+
+        return [$available, $status];
+    }
+
+    /**
+     * Given an item, return its availability and status based on location type
+     * mappings.
+     *
+     * @param string $locationType Location type
+     *
+     * @return array Availability and status
+     */
+    protected function getItemStatusFromLocationTypeMap(string $locationType): array
+    {
+        if (null === ($setting = $this->locationTypeToItemStatus[$locationType] ?? null)) {
+            return [null, null];
+        }
+        $parts = explode(':', $setting);
+        $available = null;
+        $status = new TranslatableString($parts[0], $parts[0]);
+        if (isset($parts[1])) {
+            switch ($parts[1]) {
+                case 'unavailable':
+                    $available = ItemStatus::STATUS_UNAVAILABLE;
+                    break;
+                case 'uncertain':
+                    $available = ItemStatus::STATUS_UNCERTAIN;
+                    break;
+                default:
+                    $available = ItemStatus::STATUS_AVAILABLE;
+                    break;
+            }
+        }
+        return [$available, $status];
     }
 
     /**
@@ -276,7 +350,7 @@ class Alma extends AbstractBase implements
      * number of items for the given bib id, and the key "holdings" containing an
      * array of holding information each one with these keys: id, source,
      * availability, status, location, reserve, callnumber, duedate, returnDate,
-     * number, barcode, item_notes, item_id, holding_id, addLink, description
+     * number, barcode, item_notes, item_id, holdings_id, addLink, description
      */
     public function getHolding($id, $patron = null, array $options = [])
     {
@@ -293,17 +367,17 @@ class Alma extends AbstractBase implements
         // use a paginator for paging through many items.
         $apiPagingParams = '';
         if ($options['itemLimit'] ?? null) {
-            $apiPagingParams = 'limit=' . urlencode($options['itemLimit'])
+            $apiPagingParams = '&limit=' . urlencode($options['itemLimit'])
                 . '&offset=' . urlencode($options['offset'] ?? 0);
         }
 
         // The path for the API call. We call "ALL" available items, but not at once
         // as a pagination mechanism is used. If paging params are not set for some
         // reason, the first 10 items are called which is the default API behaviour.
-        $itemsPath = '/bibs/' . rawurlencode($id) . '/holdings/ALL/items?'
-            . $apiPagingParams
-            . '&order_by=library,location,enum_a,enum_b&direction=desc'
-            . '&expand=due_date';
+        $itemsPath = '/bibs/' . rawurlencode($id) . '/holdings/ALL/items'
+            . '?order_by=library,location,enum_a,enum_b&direction=desc'
+            . '&expand=due_date'
+            . $apiPagingParams;
 
         if ($items = $this->makeRequest($itemsPath)) {
             // Get the total number of items returned from the API call and set it to
@@ -316,23 +390,11 @@ class Alma extends AbstractBase implements
                 $holdingId = (string)$item->holding_data->holding_id;
                 $itemId = (string)$item->item_data->pid;
                 $barcode = (string)$item->item_data->barcode;
-                $status = (string)$item->item_data->base_status[0]
-                    ->attributes()['desc'];
-                $duedate = $item->item_data->due_date
-                    ? $this->parseDate((string)$item->item_data->due_date) : null;
-                if ($duedate && 'Item not in place' === $status) {
-                    $status = 'Checked Out';
-                }
-
                 $itemNotes = !empty($item->item_data->public_note)
                     ? [(string)$item->item_data->public_note] : null;
-
-                $processType = (string)($item->item_data->process_type ?? '');
-                if ($processType && 'LOAN' !== $processType) {
-                    $status = $this->getTranslatableStatusString(
-                        $item->item_data->process_type
-                    );
-                }
+                $duedate = $item->item_data->due_date
+                    ? $this->parseDate((string)$item->item_data->due_date) : null;
+                [$available, $status] = $this->getItemAvailabilityAndStatus($item);
 
                 $description = null;
                 if (!empty($item->item_data->description)) {
@@ -343,7 +405,7 @@ class Alma extends AbstractBase implements
                 $results['holdings'][] = [
                     'id' => $id,
                     'source' => 'Solr',
-                    'availability' => $this->getAvailabilityFromItem($item),
+                    'availability' => $available,
                     'status' => $status,
                     'location' => $this->getItemLocation($item),
                     'reserve' => 'N',   // TODO: support reserve status
@@ -354,7 +416,8 @@ class Alma extends AbstractBase implements
                     'barcode' => empty($barcode) ? 'n/a' : $barcode,
                     'item_notes' => $itemNotes ?? null,
                     'item_id' => $itemId,
-                    'holding_id' => $holdingId,
+                    'holdings_id' => $holdingId,
+                    'holding_id' => $holdingId, // deprecated, retained for backward compatibility
                     'holdtype' => 'auto',
                     'addLink' => $patron ? 'check' : false,
                     // For Alma title-level hold requests
@@ -400,10 +463,11 @@ class Alma extends AbstractBase implements
         $patronId = $patron['id'];
         $level = $data['level'] ?? 'copy';
         if ('copy' === $level) {
-            // Call the request-options API for the logged-in user
+            // Call the request-options API for the logged-in user; note that holding_id
+            // is deprecated but retained for backward compatibility.
             $requestOptionsPath = '/bibs/' . rawurlencode($id)
-                . '/holdings/' . rawurlencode($data['holding_id']) . '/items/'
-                . rawurlencode($data['item_id']) . '/request-options?user_id='
+                . '/holdings/' . rawurlencode($data['holdings_id'] ?? $data['holding_id'])
+                . '/items/' . rawurlencode($data['item_id']) . '/request-options?user_id='
                 . urlencode($patronId);
 
             // Make the API request
@@ -858,12 +922,12 @@ class Alma extends AbstractBase implements
             $created = (string)$fee->creation_time;
             $checkout = (string)$fee->status_time;
             $fineList[] = [
-                "title"    => (string)($fee->title ?? ''),
-                "amount"   => round(floatval($fee->original_amount) * 100),
-                "balance"  => round(floatval($fee->balance) * 100),
-                "createdate" => $this->parseDate($created, true),
-                "checkout" => $this->parseDate($checkout, true),
-                "fine"     => $this->getTranslatableString($fee->type),
+                'title'    => (string)($fee->title ?? ''),
+                'amount'   => round(floatval($fee->original_amount) * 100),
+                'balance'  => round(floatval($fee->balance) * 100),
+                'createdate' => $this->parseDate($created, true),
+                'checkout' => $this->parseDate($checkout, true),
+                'fine'     => $this->getTranslatableString($fee->type),
             ];
         }
         return $fineList;
@@ -1431,7 +1495,8 @@ class Alma extends AbstractBase implements
         // Get information that is valid for both, item level requests and title
         // level requests.
         $mmsId = $holdDetails['id'];
-        $holId = $holdDetails['holding_id'];
+        // The holding_id value is deprecated but retained for back-compatibility
+        $holId = $holdDetails['holdings_id'] ?? $holdDetails['holding_id'];
         $itmId = $holdDetails['item_id'];
         $patronId = $holdDetails['patron']['id'];
         $pickupLocation = $holdDetails['pickUpLocation'] ?? null;
@@ -1534,10 +1599,10 @@ class Alma extends AbstractBase implements
      * @param array $patron      Patron information returned by the patronLogin
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
-     * in the context of placing or editing a hold.  When placing a hold, it contains
-     * most of the same values passed to placeHold, minus the patron data.  When
+     * in the context of placing or editing a hold. When placing a hold, it contains
+     * most of the same values passed to placeHold, minus the patron data. When
      * editing a hold it contains all the hold information returned by getMyHolds.
-     * May be used to limit the pickup options or may be ignored.  The driver must
+     * May be used to limit the pickup options or may be ignored. The driver must
      * not add new options to the return array based on this data or other areas of
      * VuFind may behave incorrectly.
      *
@@ -1620,18 +1685,18 @@ class Alma extends AbstractBase implements
     {
         // Remove trailing Z from end of date
         // e.g. from Alma we get dates like 2012-07-13Z without time, which is wrong)
-        if (strpos($date, 'T') === false && substr($date, -1) === 'Z') {
+        if (!str_contains($date, 'T') && substr($date, -1) === 'Z') {
             $date = substr($date, 0, -1);
         }
 
-        $compactDate = "/^[0-9]{8}$/"; // e. g. 20120725
+        $compactDate = '/^[0-9]{8}$/'; // e. g. 20120725
         $euroName = "/^[0-9]+\/[A-Za-z]{3}\/[0-9]{4}$/"; // e. g. 13/jan/2012
         $euro = "/^[0-9]+\/[0-9]+\/[0-9]{4}$/"; // e. g. 13/7/2012
         $euroPad = "/^[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{2,4}$/"; // e. g. 13/07/2012
-        $datestamp = "/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/"; // e. g. 2012-07-13
-        $timestamp = "/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$/";
+        $datestamp = '/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/'; // e. g. 2012-07-13
+        $timestamp = '/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$/';
         $timestampMs
-            = "/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}Z$/";
+            = '/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}Z$/';
         // e. g. 2017-07-09T18:00:00
 
         if ($date == null || $date == '') {
@@ -1677,7 +1742,7 @@ class Alma extends AbstractBase implements
 
     /**
      * Helper method to determine whether or not a certain method can be
-     * called on this driver.  Required method for any smart drivers.
+     * called on this driver. Required method for any smart drivers.
      *
      * @param string $method The name of the called method.
      * @param array  $params Array of passed parameters
@@ -1753,9 +1818,26 @@ class Alma extends AbstractBase implements
                 // Physical
                 $physicalItems = $marc->getFields('AVA');
                 foreach ($physicalItems as $field) {
-                    $avail = $marc->getSubfield($field, 'e');
+                    $available = null;
+                    $statusText = '';
+                    if ($this->locationTypeToItemStatus) {
+                        $locationCode = $marc->getSubfield($field, 'j');
+                        $library = $marc->getSubfield($field, 'b');
+                        [$available, $statusText] = $this->getItemStatusFromLocationTypeMap(
+                            $this->getLocationType($library, $locationCode)
+                        );
+                    }
+
+                    if (null === $available) {
+                        $availStr = strtolower($marc->getSubfield($field, 'e'));
+                        $available = 'available' === $availStr;
+                        // No status message available, so set it based on availability:
+                        $statusText = $available ? 'Item in place' : 'Item not in place';
+                    }
+
                     $item = $tmpl;
-                    $item['availability'] = strtolower($avail) === 'available';
+                    $item['availability'] = $available;
+                    $item['status'] = $statusText;
                     $item['location'] = $marc->getSubfield($field, 'c');
                     $item['callnumber'] = $marc->getSubfield($field, 'd');
                     $status[] = $item;
@@ -1861,7 +1943,7 @@ class Alma extends AbstractBase implements
         $value = ($this->config['Catalog']['translationPrefix'] ?? '')
             . (string)$element;
         $desc = (string)($element->attributes()->desc ?? $element);
-        return new \VuFind\I18n\TranslatableString($value, $desc);
+        return new TranslatableString($value, $desc);
     }
 
     /**
@@ -1869,7 +1951,7 @@ class Alma extends AbstractBase implements
      *
      * @param SimpleXMLElement $element XML element
      *
-     * @return \VuFind\I18n\TranslatableString
+     * @return TranslatableString
      */
     protected function getTranslatableStatusString($element)
     {
@@ -1878,7 +1960,7 @@ class Alma extends AbstractBase implements
         }
         $value = 'status_' . strtolower((string)$element);
         $desc = (string)($element->attributes()->desc ?? $element);
-        return new \VuFind\I18n\TranslatableString($value, $desc);
+        return new TranslatableString($value, $desc);
     }
 
     /**
@@ -1886,11 +1968,77 @@ class Alma extends AbstractBase implements
      *
      * @param SimpleXMLElement $item Item
      *
-     * @return \VuFind\I18n\TranslatableString|string
+     * @return TranslatableString|string
      */
     protected function getItemLocation($item)
     {
         return $this->getTranslatableString($item->item_data->location);
+    }
+
+    /**
+     * Get location type for an item
+     *
+     * @param SimpleXMLElement $item Item
+     *
+     * @return string
+     */
+    protected function getItemLocationType($item)
+    {
+        // Yes, temporary location is in holding data while permanent location is in
+        // item data.
+        if ('true' === (string)$item->holding_data->in_temp_location) {
+            $library = $item->holding_data->temp_library
+                ?: $item->item_data->library;
+            $location = $item->holding_data->temp_location
+                ?: $item->item_data->location;
+        } else {
+            $library = $item->item_data->library;
+            $location = $item->item_data->location;
+        }
+        return $this->getLocationType((string)$library, (string)$location);
+    }
+
+    /**
+     * Get type of a location
+     *
+     * @param string $library  Library
+     * @param string $location Location
+     *
+     * @return string
+     */
+    protected function getLocationType($library, $location)
+    {
+        $locations = $this->getLocations($library);
+        return $locations[$location]['type'] ?? '';
+    }
+
+    /**
+     * Get the locations for a library
+     *
+     * @param string $library Library
+     *
+     * @return array
+     */
+    protected function getLocations($library)
+    {
+        $cacheId = 'alma|locations|' . $library;
+        $locations = $this->getCachedData($cacheId);
+
+        if (null === $locations) {
+            $xml = $this->makeRequest(
+                '/conf/libraries/' . rawurlencode($library) . '/locations'
+            );
+            $locations = [];
+            foreach ($xml as $entry) {
+                $locations[(string)$entry->code] = [
+                    'name' => (string)$entry->name,
+                    'externalName' => (string)$entry->external_name,
+                    'type' => (string)$entry->type,
+                ];
+            }
+            $this->putCachedData($cacheId, $locations, 3600);
+        }
+        return $locations;
     }
 
     /**

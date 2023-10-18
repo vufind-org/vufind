@@ -3,7 +3,7 @@
 /**
  * Solr aspect of the Search Multi-class (Params)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -31,6 +31,10 @@
 namespace VuFind\Search\Solr;
 
 use VuFindSearch\ParamBag;
+
+use function count;
+use function in_array;
+use function is_array;
 
 /**
  * Solr Search Parameters

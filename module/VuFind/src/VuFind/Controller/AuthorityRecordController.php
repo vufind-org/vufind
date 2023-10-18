@@ -3,7 +3,7 @@
 /**
  * Authority Record Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -30,6 +30,8 @@
 namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
+
+use function is_callable;
 
 /**
  * Authority Record Controller

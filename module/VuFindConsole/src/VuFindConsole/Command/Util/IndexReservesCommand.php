@@ -3,7 +3,7 @@
 /**
  * Console command: index course reserves into Solr.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -35,6 +35,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Reserves\CsvReader;
 use VuFindSearch\Backend\Solr\Document\UpdateDocument;
 use VuFindSearch\Backend\Solr\Record\SerializableRecord;
+
+use function count;
+use function in_array;
+use function ini_get;
 
 /**
  * Console command: index course reserves into Solr.
@@ -105,7 +109,7 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
                 InputOption::VALUE_REQUIRED,
                 'provides a template showing where important values can be found '
                 . "within the file.\nThe template is a comma-separated list of "
-                . "values.  Choose from:\n"
+                . "values. Choose from:\n"
                 . "BIB_ID     - bibliographic ID\n"
                 . "COURSE     - course name\n"
                 . "DEPARTMENT - department name\n"
@@ -180,8 +184,8 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
      * @param array|string $files     Array of files to load (or single filename).
      * @param string       $delimiter Delimiter used by file(s).
      * @param string       $template  Template showing field positions within
-     * file(s).  Comma-separated list containing BIB_ID, INSTRUCTOR, COURSE,
-     * DEPARTMENT and/or SKIP.  Default = BIB_ID,COURSE,INSTRUCTOR,DEPARTMENT
+     * file(s). Comma-separated list containing BIB_ID, INSTRUCTOR, COURSE,
+     * DEPARTMENT and/or SKIP. Default = BIB_ID,COURSE,INSTRUCTOR,DEPARTMENT
      *
      * @return CsvReader
      */

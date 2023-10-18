@@ -3,7 +3,7 @@
 /**
  * Unit tests for Lucene syntax helper
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -455,7 +455,7 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
     public function unquotedNormalizationProvider(): array
     {
         return [
-            // Unquoted ones that need changes:
+            // Unquoted ones that may need changes:
             ['this - that', 'this that'],
             ['this -- that', 'this that'],
             ['- this that', 'this that'],
@@ -480,6 +480,17 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
             ['\\((( this that', '\\( this that'],
             ['\\\\\\((( this that', '\\\\\\( this that'],
             ['\\"((( this that\\"', '\\" this that\\"'],
+            ['&', '&'],
+            ['&&', ''],
+            ['|', '|'],
+            ['||', ''],
+            ['AND', 'and'],
+            ['OR', 'or'],
+            ['NOT', 'not'],
+            ['*:*', ''],
+            [' AND OR', ''],
+            ['AND OR NOT +-"&&||', ''],
+            ['AND OR NOT +-"&&|| &', 'AND OR NOT +-"&&|| &'],
 
             // Quoted ones that must not be affected:
             ['"this - that"', '"this - that"'],

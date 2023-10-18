@@ -3,7 +3,7 @@
 /**
  * Console command: remove suppressed records from index
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -29,10 +29,11 @@
 
 namespace VuFindConsole\Command\Util;
 
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+
+use function is_array;
 
 /**
  * Console command: remove suppressed records from index

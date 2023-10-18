@@ -3,7 +3,7 @@
 /**
  * Trait for tests involving PathResolver.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2022.
  *
@@ -30,6 +30,9 @@
 namespace VuFindTest\Feature;
 
 use VuFind\Config\PathResolver;
+
+use function defined;
+use function strlen;
 
 /**
  * Trait for tests involving PathResolver.

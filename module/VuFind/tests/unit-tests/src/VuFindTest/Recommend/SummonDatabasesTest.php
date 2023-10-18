@@ -3,7 +3,7 @@
 /**
  * SummonDatabases Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -62,7 +62,7 @@ class SummonDatabasesTest extends \PHPUnit\Framework\TestCase
         $results->expects($this->once())->method('getParams')
             ->will($this->returnValue($parms));
         $parms->expects($this->once())->method('getSearchClassId')
-            ->will($this->returnValue("Summon"));
+            ->will($this->returnValue('Summon'));
         $obj->process($results);
         $results->expects($this->once())->method('getDatabaseRecommendations')
             ->will($this->returnValue(false));

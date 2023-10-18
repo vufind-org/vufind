@@ -10,12 +10,12 @@
   $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc($currPage) . '</li>';
 
   // Load Javascript dependencies into header:
-  $this->headScript()->appendFile("check_item_statuses.js");
+  $this->headScript()->appendFile('check_item_statuses.js');
 
   // Load Javascript only if list view parameter is NOT full:
-  if ($this->params->getOptions()->getListViewOption() != "full") {
-    $this->headScript()->appendFile("record.js");
-    $this->headScript()->appendFile("embedded_record.js");
+  if ($this->params->getOptions()->getListViewOption() != 'full') {
+    $this->headScript()->appendFile('record.js');
+    $this->headScript()->appendFile('embedded_record.js');
   }
 
   $recordTotal = $this->results->getResultTotal();
@@ -30,7 +30,7 @@
 </a>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <h2><?=$list ? $this->escapeHtml($list->title) : $this->transEsc("Your Favorites")?></h2>
+  <h2><?=$list ? $this->escapeHtml($list->title) : $this->transEsc('Your Favorites')?></h2>
 
   <?php if ($list && $user && $list->user_id === $user->id && $list->public): ?>
     <strong>
@@ -59,12 +59,12 @@
         <?php if ($list->editAllowed($account->isLoggedIn())): ?>
           <a href="<?=$this->url('editList', ['id' => $list->id]) ?>" class="btn btn-link icon-link">
             <?=$this->icon('user-list-edit', 'icon-link__icon') ?>
-            <span class="icon-link__label"><?=$this->transEsc("edit_list")?></span>
+            <span class="icon-link__label"><?=$this->transEsc('edit_list')?></span>
           </a>
           <div class="btn-group">
             <a class="btn btn-link dropdown-toggle icon-link" data-toggle="dropdown" href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>">
               <?=$this->icon('user-list-delete', 'icon-link__icon') ?>
-              <span class="icon-link__label"><?=$this->transEsc("delete_list")?></span>
+              <span class="icon-link__label"><?=$this->transEsc('delete_list')?></span>
             </a>
             <ul class="dropdown-menu">
               <li class="dropdown-header"><?=$this->transEsc('confirm_delete') ?></li>
@@ -101,8 +101,8 @@
   <?php endif; ?>
 </div>
 
-<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
-  <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => isset($list) ? 'list' . $list['id'] : 'favorites'])?>
+<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
+  <?=$this->context($this)->renderInContext('myresearch/menu.phtml', ['active' => isset($list) ? 'list' . $list['id'] : 'favorites'])?>
   <?php foreach ($this->results->getRecommendations('side') as $current): ?>
     <?=$this->recommend($current)?>
   <?php endforeach; ?>

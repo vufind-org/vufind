@@ -3,7 +3,7 @@
 /**
  * Class to help build URLs and forms in the view based on search settings.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -32,6 +32,12 @@ namespace VuFind\Search;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
+
+use function call_user_func;
+use function count;
+use function in_array;
+use function is_array;
+use function is_callable;
 
 /**
  * Class to help build URLs and forms in the view based on search settings.
@@ -604,7 +610,7 @@ class UrlQueryHelper
     }
 
     /**
-     * Turn an array into a properly URL-encoded query string.  This is
+     * Turn an array into a properly URL-encoded query string. This is
      * equivalent to the built-in PHP http_build_query function, but it handles
      * arrays in a more compact way and ensures that ampersands don't get
      * messed up based on server-specific settings.
@@ -620,10 +626,10 @@ class UrlQueryHelper
         foreach ($a as $key => $value) {
             if (is_array($value)) {
                 foreach ($value as $current) {
-                    $parts[] = urlencode($key . '[]') . '=' . urlencode($current);
+                    $parts[] = urlencode($key . '[]') . '=' . urlencode($current ?? '');
                 }
             } else {
-                $parts[] = urlencode($key) . '=' . urlencode($value);
+                $parts[] = urlencode($key) . '=' . urlencode($value ?? '');
             }
         }
         $retVal = implode('&', $parts);

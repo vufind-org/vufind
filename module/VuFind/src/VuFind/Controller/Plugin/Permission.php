@@ -3,7 +3,7 @@
 /**
  * VuFind Action Helper - Permission Checker
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2017.
  *
@@ -168,7 +168,7 @@ class Permission extends AbstractPlugin implements
                     if ($exception instanceof \Exception) {
                         throw $exception;
                     }
-                    $this->logError("Permission configuration problem.");
+                    $this->logError('Permission configuration problem.');
                     throw new \Exception("$exceptionClass is not an exception!");
                 default:
                     throw new ForbiddenException($exceptionDescription);

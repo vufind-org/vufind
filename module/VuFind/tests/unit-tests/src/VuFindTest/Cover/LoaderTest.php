@@ -3,7 +3,7 @@
 /**
  * Cover Loader Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -32,6 +32,8 @@ namespace VuFindTest\Cover;
 use Laminas\Config\Config;
 use VuFind\Cover\Loader;
 use VuFindTheme\ThemeInfo;
+
+use function strlen;
 
 /**
  * Cover Loader Test Class

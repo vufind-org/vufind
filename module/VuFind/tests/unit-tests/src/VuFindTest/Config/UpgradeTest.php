@@ -3,7 +3,7 @@
 /**
  * Config Upgrade Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -30,6 +30,8 @@
 namespace VuFindTest\Config;
 
 use VuFind\Config\Upgrade;
+
+use function in_array;
 
 /**
  * Config Upgrade Test Class
@@ -102,15 +104,15 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             . 'For usage tracking, please configure Google Analytics or Matomo.',
         ];
         if ((float)$version < 1.3) {
-            $expectedWarnings[] = "WARNING: This version of VuFind does not support "
-                . "the default theme. Your config.ini [Site] theme setting "
-                . "has been reset to the default: bootprint3. You may need to "
-                . "reimplement your custom theme.";
+            $expectedWarnings[] = 'WARNING: This version of VuFind does not support '
+                . 'the default theme. Your config.ini [Site] theme setting '
+                . 'has been reset to the default: bootprint3. You may need to '
+                . 'reimplement your custom theme.';
         } elseif ((float)$version < 2.4) {
-            $expectedWarnings[] = "WARNING: This version of VuFind does not support "
-                . "the blueprint theme. Your config.ini [Site] theme setting "
-                . "has been reset to the default: bootprint3. You may need to "
-                . "reimplement your custom theme.";
+            $expectedWarnings[] = 'WARNING: This version of VuFind does not support '
+                . 'the blueprint theme. Your config.ini [Site] theme setting '
+                . 'has been reset to the default: bootprint3. You may need to '
+                . 'reimplement your custom theme.';
         }
         $this->assertEquals($expectedWarnings, $warnings);
 

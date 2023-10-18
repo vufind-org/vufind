@@ -5,7 +5,7 @@
  *
  * Class responsible for simulating the Overdrive API for test purposes.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2023.
  *
@@ -114,7 +114,7 @@ class FakeOverdriveConnector extends OverdriveConnector
     /**
      * Get Availability (in) Bulk
      *
-     * Gets availability for up to 25 titles at once.  This is used by the
+     * Gets availability for up to 25 titles at once. This is used by the
      * the ajax availability system
      *
      * @param array $overDriveIds The Overdrive ID (reserve IDs) of the
@@ -155,7 +155,7 @@ class FakeOverdriveConnector extends OverdriveConnector
      * token doesn't change much but according to
      * the OD API docs it could change and should be retrieved each session.
      * Also, the collection token depends on the user if the user is in a
-     * consortium.  If consortium support is turned on then the user collection
+     * consortium. If consortium support is turned on then the user collection
      * token will override the library collection token.
      * The token itself is returned but it's also saved in the session and
      * automatically returned.

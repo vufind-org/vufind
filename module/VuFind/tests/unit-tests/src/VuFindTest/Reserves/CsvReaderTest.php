@@ -3,7 +3,7 @@
 /**
  * Course Reserves CSV Loader Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -131,7 +131,7 @@ class CsvReaderTest extends \PHPUnit\Framework\TestCase
     {
         $reader = $this->getReader();
         $reader->getReserves();
-        $fixture = $this->getFixtureDir() . "reserves/reserves.csv";
+        $fixture = $this->getFixtureDir() . 'reserves/reserves.csv';
         $errors = "Skipping empty/missing Bib ID: $fixture, line 3\nSkipping incomplete row: $fixture, line 5\n";
         $this->assertEquals($errors, $reader->getErrors());
     }

@@ -3,7 +3,7 @@
 /**
  * VuFind Action Helper - Requests Support Methods
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -35,6 +35,10 @@ use Laminas\Session\SessionManager;
 use VuFind\Crypt\HMAC;
 use VuFind\Date\Converter as DateConverter;
 use VuFind\ILS\Connection;
+
+use function count;
+use function get_class;
+use function in_array;
 
 /**
  * Action helper base class to perform request-related actions
@@ -178,7 +182,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
 
         // Initialize gatheredDetails with any POST values we find; this will
         // allow us to repopulate the form with user-entered values if there
-        // is an error.  However, it is important that we load the POST data
+        // is an error. However, it is important that we load the POST data
         // FIRST and then override it with GET values in order to ensure that
         // the user doesn't bypass the hashkey verification by manipulating POST
         // values.
@@ -306,7 +310,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
     ) {
         // Load config:
         $dateArray = isset($checkHolds['defaultRequiredDate'])
-             ? explode(":", $checkHolds['defaultRequiredDate'])
+             ? explode(':', $checkHolds['defaultRequiredDate'])
              : [0, 1, 0];
 
         // Process special "driver" prefix and adjust default date

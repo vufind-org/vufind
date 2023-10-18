@@ -26,7 +26,7 @@
 <?php if (empty($token)): ?>
   <form action="<?=$this->url('channels-search')?>" class="channel-search form-inline">
     <?=$this->transEsc('channel_searchbox_label')?>
-    <input type="text" name="lookfor" class="form-control" value="<?=$this->escapeHtmlAttr($this->lookfor) ?>">
+    <input type="text" name="lookfor" class="form-control" value="<?=$this->escapeHtmlAttr($this->lookfor) ?>" aria-label="<?=$this->transEscAttr('search_terms') ?>">
     <input type="submit" value="<?=$this->transEscAttr('Submit')?>" class="btn btn-default">
   </form>
 <?php endif; ?>
@@ -45,9 +45,8 @@
     <?php if (count($channel['relatedTokens'] ?? []) > 0): ?>
       <div class="channel-add-menu hidden" data-group="<?=$this->escapeHtmlAttr($groupId) ?>">
         <button type="button" class="add-btn btn btn-link"><?=$this->transEsc('channel_add_more') ?></button><!--
-     --><button type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+     --><button type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="<?=$this->transEscAttr('toggle_dropdown') ?>">
           <span class="caret"></span>
-          <span class="sr-only">Toggle Dropdown</span>
         </button>
         <ul class="dropdown-menu">
           <?php foreach ($channel['relatedTokens'] as $related): ?>
@@ -63,7 +62,7 @@
         <?php $url = empty($item['routeDetails']) ? $this->recordLinker()->getUrl("{$item['source']}|{$item['id']}") : $this->url($item['routeDetails']['route'], $item['routeDetails']['params']); ?>
         <a href="<?=$this->escapeHtmlAttr($url)?>" class="channel-record slide hidden" data-record-id="<?=$this->escapeHtmlAttr($item['id']) ?>" data-record-source="<?=$item['source'] ?>" title="<?=$this->escapeHtml($item['title'])?>">
           <div class="thumb">
-            <img <?=$index < 6 ? "src" : "src=\"#\" data-lazy" ?>="<?=$this->escapeHtmlAttr($item['thumbnail'] ? $item['thumbnail'] : $this->url('cover-unavailable'))?>" alt="">
+            <img <?=$index < 6 ? 'src' : 'src="#" data-lazy' ?>="<?=$this->escapeHtmlAttr($item['thumbnail'] ? $item['thumbnail'] : $this->url('cover-unavailable'))?>" alt="">
           </div>
           <p class="channel-record-title"><?=$this->escapeHtml($item['title'])?></p>
         </a>

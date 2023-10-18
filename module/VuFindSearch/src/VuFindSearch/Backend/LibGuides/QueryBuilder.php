@@ -3,7 +3,7 @@
 /**
  * LibGuides QueryBuilder.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -47,6 +47,16 @@ use VuFindSearch\Query\QueryGroup;
  */
 class QueryBuilder
 {
+    /**
+     * LibGuides widget type
+     *
+     * 1 = Research Guides
+     * 2 = Database A-Z List
+     *
+     * @var string
+     */
+    protected $defaultWidgetType = '1';
+
     /// Public API
 
     /**
@@ -69,7 +79,23 @@ class QueryBuilder
             $params->set('search', $array[0]['lookfor']);
         }
 
+        if (!$params->hasParam('widget_type')) {
+            $params->set('widget_type', $this->defaultWidgetType);
+        }
+
         return $params;
+    }
+
+    /**
+     * Set the default widget type for this QueryBuilder instance.  See $defaultWidgetType.
+     *
+     * @param string $type default widget type
+     *
+     * @return void
+     */
+    public function setDefaultWidgetType($type)
+    {
+        $this->defaultWidgetType = $type;
     }
 
     /// Internal API

@@ -3,7 +3,7 @@
 /**
  * "Get Visualization Data" AJAX handler
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -123,7 +123,7 @@ class GetVisData extends AbstractBase
             ];
             foreach ($values['data']['list'] as $current) {
                 // Only retain numeric values!
-                if (preg_match("/^[0-9]+$/", $current['value'])) {
+                if (preg_match('/^[0-9]+$/', $current['value'])) {
                     $newValues['data'][]
                         = [$current['value'], $current['count']];
                 }

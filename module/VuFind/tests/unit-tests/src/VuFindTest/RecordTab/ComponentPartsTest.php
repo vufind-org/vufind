@@ -3,7 +3,7 @@
 /**
  * ComponentParts Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -118,23 +118,23 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $recordDriver->expects($this->any())->method('getUniqueID')
-            ->will($this->returnValue("foo"));
+            ->will($this->returnValue('foo'));
         $recordDriver->expects($this->any())->method('getSourceIdentifier')
-            ->will($this->returnValue("bar"));
+            ->will($this->returnValue('bar'));
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
             ->disableOriginalConstructor()
             ->getMock();
         $commandObj->expects($this->once())->method('getResult')
             ->will($this->returnValue($rci));
         $checkCommand = function ($command) {
-            return get_class($command) === \VuFindSearch\Command\SearchCommand::class
-                && $command->getTargetIdentifier() === "bar"
+            return $command::class === \VuFindSearch\Command\SearchCommand::class
+                && $command->getTargetIdentifier() === 'bar'
                 && $command->getArguments()[0]->getAllTerms() === 'hierarchy_parent_id:"foo"'
                 && $command->getArguments()[1] === 0
                 && $command->getArguments()[2] === 101
                 && $command->getArguments()[3]->getArrayCopy() === [
-                    "hl" => ["false"],
-                    "sort" => ["hierarchy_sequence ASC,title ASC"],
+                    'hl' => ['false'],
+                    'sort' => ['hierarchy_sequence ASC,title ASC'],
                 ];
         };
         $service->expects($this->once())->method('invoke')

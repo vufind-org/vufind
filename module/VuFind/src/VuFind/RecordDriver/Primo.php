@@ -3,7 +3,7 @@
 /**
  * Model for Primo Central records.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -28,6 +28,8 @@
  */
 
 namespace VuFind\RecordDriver;
+
+use function in_array;
 
 /**
  * Model for Primo Central records.
@@ -272,7 +274,7 @@ class Primo extends DefaultRecord
 
     /**
      * Get an array of strings representing citation formats supported
-     * by this record's data (empty if none).  For possible legal values,
+     * by this record's data (empty if none). For possible legal values,
      * see /application/themes/root/helpers/Citation.php, getCitation()
      * method.
      *

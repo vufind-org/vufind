@@ -3,7 +3,7 @@
 /**
  * VuFind Mailer Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2009.
  *
@@ -32,12 +32,14 @@ namespace VuFind\Mailer;
 use Laminas\Mail\Address;
 use Laminas\Mail\AddressList;
 use Laminas\Mail\Header\ContentType;
-use Laminas\Mail\Message;
 use Laminas\Mail\Transport\TransportInterface;
 use Laminas\Mime\Message as MimeMessage;
 use Laminas\Mime\Mime;
 use Laminas\Mime\Part as MimePart;
 use VuFind\Exception\Mail as MailException;
+
+use function count;
+use function is_callable;
 
 /**
  * VuFind Mailer Class
@@ -48,9 +50,12 @@ use VuFind\Exception\Mail as MailException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
+class Mailer implements
+    \VuFind\I18n\Translator\TranslatorAwareInterface,
+    \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
+    use \VuFind\Log\LoggerAwareTrait;
 
     /**
      * Mail transport
@@ -253,27 +258,42 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
         // Validate email addresses:
         if ($this->maxRecipients > 0) {
             if ($this->maxRecipients < count($recipients)) {
-                throw new MailException('Too Many Email Recipients');
+                throw new MailException(
+                    'Too Many Email Recipients',
+                    MailException::ERROR_TOO_MANY_RECIPIENTS
+                );
             }
         }
         $validator = new \Laminas\Validator\EmailAddress();
         if (count($recipients) == 0) {
-            throw new MailException('Invalid Recipient Email Address');
+            throw new MailException(
+                'Invalid Recipient Email Address',
+                MailException::ERROR_INVALID_RECIPIENT
+            );
         }
         foreach ($recipients as $current) {
             if (!$validator->isValid($current->getEmail())) {
-                throw new MailException('Invalid Recipient Email Address');
+                throw new MailException(
+                    'Invalid Recipient Email Address',
+                    MailException::ERROR_INVALID_RECIPIENT
+                );
             }
         }
         foreach ($replyTo as $current) {
             if (!$validator->isValid($current->getEmail())) {
-                throw new MailException('Invalid Reply-To Email Address');
+                throw new MailException(
+                    'Invalid Reply-To Email Address',
+                    MailException::ERROR_INVALID_REPLY_TO
+                );
             }
         }
         $fromEmail = ($from instanceof Address)
             ? $from->getEmail() : $from;
         if (!$validator->isValid($fromEmail)) {
-            throw new MailException('Invalid Sender Email Address');
+            throw new MailException(
+                'Invalid Sender Email Address',
+                MailException::ERROR_INVALID_SENDER
+            );
         }
 
         if (
@@ -314,7 +334,8 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
             }
             $this->getTransport()->send($message);
         } catch (\Exception $e) {
-            throw new MailException($e->getMessage());
+            $this->logError($e->getMessage());
+            throw new MailException($e->getMessage(), MailException::ERROR_UNKNOWN);
         }
     }
 

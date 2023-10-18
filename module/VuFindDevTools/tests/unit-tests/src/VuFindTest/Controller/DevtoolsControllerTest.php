@@ -3,7 +3,7 @@
 /**
  * Unit tests for DevTools controller.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2014.
  *
@@ -31,6 +31,10 @@ namespace VuFindTest\Controller;
 
 use Laminas\I18n\Translator\TextDomain;
 use VuFindDevTools\Controller\DevtoolsController as Controller;
+
+use function count;
+use function get_class;
+use function in_array;
 
 /**
  * Unit tests for DevTools controller.

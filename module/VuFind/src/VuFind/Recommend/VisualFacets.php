@@ -3,7 +3,7 @@
 /**
  * VisualFacets Recommendations Module
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Julia Bauder 2014.
  *
@@ -28,6 +28,8 @@
  */
 
 namespace VuFind\Recommend;
+
+use function is_callable;
 
 /**
  * VisualFacets Recommendations Module

@@ -3,7 +3,7 @@
 /**
  * Class to represent currently-selected theme and related information.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010-2023.
  *
@@ -30,6 +30,11 @@
 namespace VuFindTheme;
 
 use Laminas\Cache\Storage\StorageInterface;
+
+use function array_key_exists;
+use function is_array;
+use function is_string;
+use function strlen;
 
 /**
  * Class to represent currently-selected theme and related information.
@@ -336,7 +341,7 @@ class ThemeInfo
     }
 
     /**
-     * Search the themes for a particular file.  If it exists, return the
+     * Search the themes for a particular file. If it exists, return the
      * first matching theme name; otherwise, return null.
      *
      * @param string|array $relativePath Relative path (or array of paths) to

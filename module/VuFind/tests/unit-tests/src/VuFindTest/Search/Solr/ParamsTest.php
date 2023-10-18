@@ -3,7 +3,7 @@
 /**
  * Solr Search Object Parameters Test
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2022.
  *
@@ -166,12 +166,12 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      */
     public function sortValueProvider(): array
     {
-        return ['Test1' => ["year", "id", "publishDateSort desc,id asc"],
-                'Test2' => ["year", "id desc", "publishDateSort desc,id desc"],
-                'Test3' => ["year", "", "publishDateSort desc"],
-                'Test4' => ["year", "title desc,id asc", "publishDateSort desc,title_sort desc,id asc"],
-                'Test5' => ["year", "title desc,id", "publishDateSort desc,title_sort desc,id asc"],
-                'Test6' => ["year,id", "id desc", "publishDateSort desc,id asc"],
+        return ['Test1' => ['year', 'id', 'publishDateSort desc,id asc'],
+                'Test2' => ['year', 'id desc', 'publishDateSort desc,id desc'],
+                'Test3' => ['year', '', 'publishDateSort desc'],
+                'Test4' => ['year', 'title desc,id asc', 'publishDateSort desc,title_sort desc,id asc'],
+                'Test5' => ['year', 'title desc,id', 'publishDateSort desc,title_sort desc,id asc'],
+                'Test6' => ['year,id', 'id desc', 'publishDateSort desc,id asc'],
             ];
     }
 

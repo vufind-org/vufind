@@ -3,7 +3,7 @@
 /**
  * "Get Side Facets" AJAX handler
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2018-2019.
  *
@@ -39,6 +39,9 @@ use VuFind\Search\SearchRunner;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
 use VuFind\Search\UrlQueryHelper;
 use VuFind\Session\Settings as SessionSettings;
+
+use function in_array;
+use function is_callable;
 
 /**
  * "Get Side Facets" AJAX handler
@@ -287,7 +290,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
      * Get facet data for a hierarchical facet
      *
      * @param string         $facet       Facet
-     * @param array          $sortOptions Hierarhical facet sort options
+     * @param array          $sortOptions Hierarchical facet sort options
      * @param array          $facetList   Facet list
      * @param UrlQueryHelper $urlHelper   UrlQueryHelper for creating facet URLs
      *

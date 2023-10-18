@@ -3,7 +3,7 @@
 /**
  * Eds Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -31,6 +31,8 @@ namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Solr\Utils as SolrUtils;
+
+use function in_array;
 
 /**
  * EDS Controller
@@ -63,8 +65,7 @@ class EdsController extends AbstractSearch
     {
         $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
             ->get('EDS');
-        return isset($config->Record->next_prev_navigation)
-            && $config->Record->next_prev_navigation;
+        return $config->Record->next_prev_navigation ?? false;
     }
 
     /**
@@ -98,7 +99,7 @@ class EdsController extends AbstractSearch
     }
 
     /**
-     * Return a Search Results object containing advanced facet information.  This
+     * Return a Search Results object containing advanced facet information. This
      * data may come from the cache.
      *
      * @return array

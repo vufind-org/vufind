@@ -27,7 +27,7 @@ VuFind.register('relais', function Relais() {
             var $current = $(this);
             var text = VuFind.translate('relais_request');
             $current.html('<a class="relaisRecordButton" class="modal-link">' + text + '</a>');
-            $current.find('.relaisRecordButton').click(function addRecordButtonOnClick() { VuFind.lightbox.ajax({url: addLink + '?' + $.param({oclc: oclc, failLink: failLink})}); });
+            $current.find('.relaisRecordButton').on("click", function addRecordButtonOnClick() { VuFind.lightbox.ajax({url: addLink + '?' + $.param({oclc: oclc, failLink: failLink})}); });
           });
         } else {
           hideAvailabilityCheckMessages(failLink);
@@ -46,7 +46,7 @@ VuFind.register('relais', function Relais() {
   function errorCallback(failLink) {
     $('#requestButton').html("<input class='btn btn-primary' data-dismiss='modal' id='cancelRelaisRequest' type='submit' value='" + VuFind.translate('close') + "'>");
     $('#requestMessage').html(VuFind.translate('relais_error_html', {'%%url%%': failLink}));
-    $('#cancelRelaisRequest').unbind('click').click(cancelRequestOnClick);
+    $('#cancelRelaisRequest').off("click").on("click", cancelRequestOnClick);
   }
 
   function makeRequest(url, failLink) {
@@ -55,10 +55,10 @@ VuFind.register('relais', function Relais() {
       dataType: 'json',
       url: url,
       success: function makeRequestSuccessCallback(response) {
-        var obj = jQuery.parseJSON(response.data.result);
+        var obj = JSON.parse(response.data.result);
         $('#requestButton').html("<input class='btn btn-primary' data-dismiss='modal' id='cancelRelaisRequest' type='submit' value='" + VuFind.translate('close') + "'>");
         $('#requestMessage').html("<b>" + VuFind.translate('relais_success_label') + "</b> " + VuFind.translate('relais_success_message', {'%%id%%': obj.RequestNumber}));
-        $('#cancelRelaisRequest').unbind('click').click(cancelRequestOnClick);
+        $('#cancelRelaisRequest').off("click").on("click", cancelRequestOnClick);
       },
       error: function makeRequestErrorWrapper() { errorCallback(failLink); }
     });
@@ -73,21 +73,21 @@ VuFind.register('relais', function Relais() {
       dataType: 'json',
       url: url,
       success: function infoSuccessCallback(response) {
-        var obj = jQuery.parseJSON(response.data.result);
+        var obj = JSON.parse(response.data.result);
         if (obj && obj.Available) {
           $('#requestMessage').html(VuFind.translate('relais_available'));
           $('#requestButton').html(
             "<input class='btn btn-primary' id='makeRelaisRequest' type='submit' value='" + VuFind.translate('confirm_dialog_yes') + "'>"
             + "&nbsp;<input class='btn btn-primary' data-dismiss='modal' id='cancelRelaisRequest' type='submit' value='" + VuFind.translate('confirm_dialog_no') + "'>"
           );
-          $('#makeRelaisRequest').unbind('click').click(function makeRequestOnClick() {
+          $('#makeRelaisRequest').off("click").on("click", function makeRequestOnClick() {
             var orderUrl = VuFind.path + '/AJAX/JSON?' + $.param({
               method: 'relaisOrder',
               oclcNumber: oclc
             });
             makeRequest(orderUrl, failLink);
           });
-          $('#cancelRelaisRequest').unbind('click').click(cancelRequestOnClick);
+          $('#cancelRelaisRequest').off("click").on("click", cancelRequestOnClick);
         } else {
           errorCallback(failLink);
         }

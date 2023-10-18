@@ -3,7 +3,7 @@
 /**
  * Shibboleth Logout Notification API Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2016.
  *
@@ -31,6 +31,8 @@ namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Stdlib\ResponseInterface as Response;
+
+use function extension_loaded;
 
 /**
  * Handles Shibboleth back-channel logout notifications.

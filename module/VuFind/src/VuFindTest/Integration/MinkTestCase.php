@@ -3,7 +3,7 @@
 /**
  * Abstract base class for PHPUnit test cases using Mink.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -31,12 +31,16 @@ namespace VuFindTest\Integration;
 
 use Behat\Mink\Driver\Selenium2Driver;
 use Behat\Mink\Element\Element;
-use Behat\Mink\Session;
 use DMore\ChromeDriver\ChromeDriver;
 use PHPUnit\Util\Test;
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
+
+use function floatval;
+use function in_array;
+use function intval;
+use function strlen;
 
 /**
  * Abstract base class for PHPUnit test cases using Mink.
@@ -82,6 +86,16 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @var PathResolver
      */
     protected $pathResolver;
+
+    /**
+     * Get name of the current test
+     *
+     * @return string
+     */
+    protected function getTestName(): string
+    {
+        return $this::class . '::' . $this->getName(false);
+    }
 
     /**
      * Reconfigure VuFind for the current test.
@@ -259,6 +273,12 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     {
         if (empty($this->session)) {
             $this->session = new Session($this->getMinkDriver());
+            if ($coverageDir = getenv('VUFIND_REMOTE_COVERAGE_DIR')) {
+                $this->session->setRemoteCoverageConfig(
+                    $this->getTestName(),
+                    $coverageDir
+                );
+            }
             $this->session->start();
         }
         return $this->session;
@@ -377,7 +397,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $session = $this->getMinkSession();
         $session->wait(
             $timeout,
-            "typeof $ !== 'undefined' && $('$selector').length > $index"
+            "document.querySelectorAll('$selector').length > $index"
         );
         $results = $page->findAll('css', $selector);
         $this->assertIsArray($results, "Selector not found: $selector");
@@ -435,6 +455,11 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             try {
                 $elements = $page->findAll('css', $selector);
                 if (!isset($elements[$index])) {
+                    // Assert so that this method can be the only check in a test
+                    // without it being marked as risky with the message
+                    // "This test did not perform any assertions". Also makes this
+                    // check count as an assertion in test statistics.
+                    $this->assertNull(null);
                     return;
                 }
             } catch (\Exception $e) {
@@ -527,8 +552,8 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
                 return;
             }
             $this->logWarning(
-                'RETRY setValue after failure in ' . get_class($this) . '::'
-                . $this->getName(false) . "(try $i)."
+                'RETRY setValue after failure in ' . $this->getTestName()
+                . " (try $i)."
             );
 
             $this->snooze();
@@ -667,7 +692,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         );
         $session->wait(
             $timeout,
-            "window.__documentIsReady === true"
+            'window.__documentIsReady === true'
         );
     }
 
@@ -881,7 +906,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             . implode(PHP_EOL . PHP_EOL, $messages);
 
         if ($logFile) {
-            $method = get_class($this) . '::' . $this->getName(false);
+            $method = $this->getTestName();
             file_put_contents(
                 $logFile,
                 date('Y-m-d H:i:s') . ' [' . strtoupper($level) . "] [$method] "

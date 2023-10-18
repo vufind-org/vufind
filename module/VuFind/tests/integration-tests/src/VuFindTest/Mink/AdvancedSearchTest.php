@@ -3,7 +3,7 @@
 /**
  * Mink test class to test advanced search.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2014.
  *
@@ -118,16 +118,16 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->goToAdvancedSearch($session);
 
         // Add a group
-        $session->executeScript("addGroup()");
+        $session->executeScript('addGroup()');
         $this->findCss($page, '#group1');
 
         // Add a search term
-        $session->executeScript("addSearch(0)"); // add_search_link_0 click
+        $session->executeScript('addSearch(0)'); // add_search_link_0 click
         $this->findCss($page, '#search0_3');
         // No visible x next to lonely search term
         $this->findCss($page, '#search1_0 .adv-term-remove.hidden');
         // Add a search term in another group
-        $session->executeScript("addSearch(1)"); // add_search_link_1 click
+        $session->executeScript('addSearch(1)'); // add_search_link_1 click
         $this->findCss($page, '#search1_1');
         // Visible x next to lonely search term
         $this->findCss($page, '#search1_0 .adv-term-remove:not(.hidden)');
@@ -162,14 +162,14 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals('miller', $this->findCss($page, '#search_lookfor1_0')->getValue());
 
         // Term removal
-        $session->executeScript("deleteSearch(0, 2)"); // search0_2 x click
+        $session->executeScript('deleteSearch(0, 2)'); // search0_2 x click
         $this->assertNull($page->findById('search0_3'));
         // Terms collapsing up
         $this->assertEquals('1883', $this->findCss($page, '#search_lookfor0_2')->getValue());
         $this->assertEquals('year', $this->findCss($page, '#search_type0_2')->getValue());
 
         // Group removal
-        $session->executeScript("deleteGroup(0)");
+        $session->executeScript('deleteGroup(0)');
 
         // Submit search form
         $this->findCss($page, '[type=submit]')->press();
@@ -207,7 +207,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->goToAdvancedSearch($session);
 
         // Add a group
-        $session->executeScript("addGroup()");
+        $session->executeScript('addGroup()');
         $this->findCss($page, '#group1');
 
         // Enter search criteria
@@ -273,7 +273,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         // By default, everything is sorted alphabetically:
         $this->assertEquals(
             'Article Book Book Chapter Conference Proceeding eBook Electronic Journal Microfilm Serial',
-            $this->findCss($page, "#limit_format")->getText()
+            $this->findCss($page, '#limit_format')->getText()
         );
         // Change the language:
         $this->clickCss($page, '.language.dropdown');
@@ -282,7 +282,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         // Still sorted alphabetically, even though in a different language:
         $this->assertEquals(
             'Artikel Buch Buchkapitel E-Book Elektronisch Mikrofilm Schriftenreihe Tagungsbericht Zeitschrift',
-            $this->findCss($page, "#limit_format")->getText()
+            $this->findCss($page, '#limit_format')->getText()
         );
     }
 
@@ -309,7 +309,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         // By default, everything is sorted alphabetically:
         $this->assertEquals(
             'Book eBook Article Book Chapter Conference Proceeding Electronic Journal Microfilm Serial',
-            $this->findCss($page, "#limit_format")->getText()
+            $this->findCss($page, '#limit_format')->getText()
         );
         // Change the language:
         $this->clickCss($page, '.language.dropdown');
@@ -318,7 +318,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         // Still sorted alphabetically, even though in a different language:
         $this->assertEquals(
             'Buch E-Book Artikel Buchkapitel Elektronisch Mikrofilm Schriftenreihe Tagungsbericht Zeitschrift',
-            $this->findCss($page, "#limit_format")->getText()
+            $this->findCss($page, '#limit_format')->getText()
         );
     }
 }

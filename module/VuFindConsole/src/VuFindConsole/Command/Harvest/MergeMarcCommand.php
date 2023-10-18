@@ -3,7 +3,7 @@
 /**
  * Console command: Merge MARC records.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -115,7 +115,7 @@ class MergeMarcCommand extends Command
         $fileList = [];
         while (false !== ($file = readdir($handle))) {
             // Only operate on XML files:
-            if (pathinfo($file, PATHINFO_EXTENSION) === "xml") {
+            if (pathinfo($file, PATHINFO_EXTENSION) === 'xml') {
                 // get file content
                 $fileList[] = $dir . '/' . $file;
             }
@@ -144,7 +144,7 @@ class MergeMarcCommand extends Command
         libxml_use_internal_errors($prev);
         // Build an exception if something has gone wrong
         if ($xml === false) {
-            $msg = "Problem loading XML file: " . realpath($filePath);
+            $msg = 'Problem loading XML file: ' . realpath($filePath);
             foreach ($errors as $error) {
                 $msg .= "\n" . trim($error->message)
                     . ' in ' . realpath($error->file)

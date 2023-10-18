@@ -5,7 +5,7 @@
  * performance -- this allows us to set and roll back variables in the global
  * scope instead of relying on the overhead of building a whole new scope).
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -89,7 +89,7 @@ class Context extends AbstractHelper
 
     /**
      * Render a template using a temporary context; restore the view to its
-     * original state when done.  This offers the template full access to the
+     * original state when done. This offers the template full access to the
      * global scope, modified by $context, then puts the global scope back
      * the way it was.
      *

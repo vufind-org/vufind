@@ -3,7 +3,7 @@
 /**
  * HTTP POST log writer for Office365 webhooks.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -75,11 +75,11 @@ class Office365 extends Post
     protected function getBody($event)
     {
         $data = [
-            "@context" => "https://schema.org/extensions",
-            "@type" => "MessageCard",
-            "themeColor" => "0072C6",
-            "title" => $this->title,
-            "text" => $this->formatter->format($event),
+            '@context' => 'https://schema.org/extensions',
+            '@type' => 'MessageCard',
+            'themeColor' => '0072C6',
+            'title' => $this->title,
+            'text' => $this->formatter->format($event),
         ];
         return json_encode($data);
     }

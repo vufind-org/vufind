@@ -3,7 +3,7 @@
 /**
  * Helper to get path to a parent template (for including)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2019.
  *
@@ -71,7 +71,12 @@ class ParentTemplate extends \Laminas\View\Helper\AbstractHelper
     public function __invoke($template, $targetTheme = null)
     {
         $paths = $this->templatePathStack->getPaths();
+
+        // rewind to fix problems with multiple invokes
+        $paths->rewind();
+        // skip current theme
         $paths->next();
+
         while (
             $paths->current() &&
             (!file_exists($paths->current() . $template) ||

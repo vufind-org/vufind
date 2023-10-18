@@ -3,7 +3,7 @@
 /**
  * Unit tests for RandomCommand.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2022.
  *
@@ -110,7 +110,7 @@ class RandomCommandTest extends TestCase
             ->disableOriginalConstructor()->getMock();
         $command = new RandomCommand($backendId, $query, 10, $params);
         $rci = $this->getMockBuilder(\VuFindSearch\Response\RecordCollectionInterface::class)
-            ->addMethods(["shuffle"])
+            ->addMethods(['shuffle'])
             ->getMockForAbstractClass();
 
         $rci->expects($this->once())->method('getTotal')
@@ -153,10 +153,10 @@ class RandomCommandTest extends TestCase
             ->getMock();
         $rci->expects($this->once())->method('getTotal')
             ->will($this->returnValue(20));
-        $inputs = [[$query, "0", "0", $params]];
+        $inputs = [[$query, '0', '0', $params]];
         $outputs = [$rci];
         for ($i = 1; $i < $limit + 1; $i++) {
-            $inputs[] = [$query, $this->anything(), "1", $params];
+            $inputs[] = [$query, $this->anything(), '1', $params];
             $outputs[] = $rci;
         }
         $backend->expects($this->exactly(11))->method('search')

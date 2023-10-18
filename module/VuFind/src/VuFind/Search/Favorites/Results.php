@@ -3,7 +3,7 @@
 /**
  * Favorites aspect of the Search Multi-class (Results)
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -38,6 +38,8 @@ use VuFind\Record\Cache;
 use VuFind\Record\Loader;
 use VuFind\Search\Base\Results as BaseResults;
 use VuFindSearch\Service as SearchService;
+
+use function count;
 
 /**
  * Search Favorites Results

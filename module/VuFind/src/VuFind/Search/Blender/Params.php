@@ -3,7 +3,7 @@
 /**
  * Blender Search Parameters
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2015-2022.
  *
@@ -32,6 +32,13 @@ namespace VuFind\Search\Blender;
 use VuFind\Search\Base\Params as BaseParams;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
 use VuFindSearch\ParamBag;
+
+use function array_slice;
+use function call_user_func_array;
+use function count;
+use function func_get_args;
+use function in_array;
+use function is_callable;
 
 /**
  * Blender Search Parameters
@@ -374,8 +381,8 @@ class Params extends \VuFind\Search\Solr\Params
     }
 
     /**
-     * Add a checkbox facet.  When the checkbox is checked, the specified filter
-     * will be applied to the search.  When the checkbox is not checked, no filter
+     * Add a checkbox facet. When the checkbox is checked, the specified filter
+     * will be applied to the search. When the checkbox is not checked, no filter
      * will be applied.
      *
      * @param string $filter  [field]:[value] pair to associate with checkbox
@@ -493,7 +500,7 @@ class Params extends \VuFind\Search\Solr\Params
      */
     protected function proxyMethod(string $method, array $params)
     {
-        $result = call_user_func_array(['parent', $method], $params);
+        $result = call_user_func_array(parent::class . "::$method", $params);
         foreach ($this->searchParams as $searchParams) {
             $result = call_user_func_array([$searchParams, $method], $params);
         }

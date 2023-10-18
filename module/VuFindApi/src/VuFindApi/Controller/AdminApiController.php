@@ -3,7 +3,7 @@
 /**
  * Admin Api Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2021.
  *
@@ -31,6 +31,8 @@ namespace VuFindApi\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Cache\Manager as CacheManager;
+
+use function in_array;
 
 /**
  * Admin Api Controller

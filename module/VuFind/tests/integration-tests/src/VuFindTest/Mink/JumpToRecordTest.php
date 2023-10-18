@@ -3,7 +3,7 @@
 /**
  * "Jump to record" test class.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2018.
  *
@@ -29,6 +29,8 @@
 
 namespace VuFindTest\Mink;
 
+use function strlen;
+
 /**
  * "Jump to record" test class.
  *
@@ -49,7 +51,7 @@ class JumpToRecordTest extends \VuFindTest\Integration\MinkTestCase
     public function testJumpToFirst()
     {
         $this->changeConfigs(
-            ["config" => ["Record" => ["jump_to_single_search_result" => true]]]
+            ['config' => ['Record' => ['jump_to_single_search_result' => true]]]
         );
 
         $page = $this->performSearch('id:testbug2');

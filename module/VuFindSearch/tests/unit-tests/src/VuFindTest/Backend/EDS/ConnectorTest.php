@@ -3,7 +3,7 @@
 /**
  * Unit tests for EDS connector.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2022.
  *
@@ -62,7 +62,7 @@ class ConnectorTest extends TestCase
      */
     public function testCaching()
     {
-        $conn = $this->createConnector('retrieve');
+        $conn = $this->createConnector('retrieveEdsItem');
 
         $keyConstraint = new \PHPUnit\Framework\Constraint\IsType('string');
 

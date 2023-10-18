@@ -3,7 +3,7 @@
 /**
  * Abstract base command.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2021.
  *
@@ -171,7 +171,7 @@ abstract class AbstractBase implements CommandInterface
     public function getResult()
     {
         if (!$this->isExecuted()) {
-            throw new LogicException("Command was not yet executed");
+            throw new LogicException('Command was not yet executed');
         }
         return $this->result ?? null;
     }

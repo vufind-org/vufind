@@ -3,7 +3,7 @@
 /**
  * Abstract results search model.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -33,6 +33,14 @@ use Laminas\Paginator\Paginator;
 use VuFind\Record\Loader;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
 use VuFindSearch\Service as SearchService;
+
+use function call_user_func_array;
+use function count;
+use function func_get_args;
+use function get_class;
+use function in_array;
+use function is_callable;
+use function is_object;
 
 /**
  * Abstract results search model.
@@ -182,6 +190,13 @@ abstract class Results
     protected $hierarchicalFacetHelper = null;
 
     /**
+     * Extra search details.
+     *
+     * @var ?array
+     */
+    protected $extraSearchBackendDetails = null;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Params $params        Object representing user
@@ -317,7 +332,7 @@ abstract class Results
 
     /**
      * Abstract support method for performAndProcessSearch -- perform a search based
-     * on the parameters passed to the object.  This method is responsible for
+     * on the parameters passed to the object. This method is responsible for
      * filling in all of the key class properties: results, resultTotal, etc.
      *
      * @return void
@@ -457,7 +472,7 @@ abstract class Results
     public function isSavedSearch()
     {
         // This data is not available until \VuFind\Db\Table\Search::saveSearch()
-        // is called...  blow up if somebody tries to get data that is not yet
+        // is called... blow up if somebody tries to get data that is not yet
         // available.
         if (null === $this->savedSearch) {
             throw new \Exception(
@@ -477,7 +492,7 @@ abstract class Results
     public function getNotificationFrequency(): int
     {
         // This data is not available until \VuFind\Db\Table\Search::saveSearch()
-        // is called...  blow up if somebody tries to get data that is not yet
+        // is called... blow up if somebody tries to get data that is not yet
         // available.
         if (null === $this->notificationFrequency) {
             throw new \Exception(
@@ -505,7 +520,7 @@ abstract class Results
     }
 
     /**
-     * Start the timer to figure out how long a query takes.  Complements
+     * Start the timer to figure out how long a query takes. Complements
      * stopQueryTimer().
      *
      * @return void
@@ -513,19 +528,19 @@ abstract class Results
     protected function startQueryTimer()
     {
         // Get time before the query
-        $time = explode(" ", microtime());
+        $time = explode(' ', microtime());
         $this->queryStartTime = $time[1] + $time[0];
     }
 
     /**
-     * End the timer to figure out how long a query takes.  Complements
+     * End the timer to figure out how long a query takes. Complements
      * startQueryTimer().
      *
      * @return void
      */
     protected function stopQueryTimer()
     {
-        $time = explode(" ", microtime());
+        $time = explode(' ', microtime());
         $this->queryEndTime = $time[1] + $time[0];
         $this->queryTime = $this->queryEndTime - $this->queryStartTime;
     }
@@ -614,8 +629,6 @@ abstract class Results
      * @param array $data Extra data
      *
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function setExtraData(array $data): void
     {
@@ -786,6 +799,16 @@ abstract class Results
             $page++;
         } while ($limit == -1 && !empty($facetfields));
         return $facets;
+    }
+
+    /**
+     * Get the extra search details
+     *
+     * @return ?array
+     */
+    public function getExtraSearchBackendDetails()
+    {
+        return $this->extraSearchBackendDetails;
     }
 
     /**

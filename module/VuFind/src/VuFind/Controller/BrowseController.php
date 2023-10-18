@@ -3,7 +3,7 @@
 /**
  * Browse Module Controller
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
  *
@@ -32,6 +32,9 @@ namespace VuFind\Controller;
 use Laminas\Config\Config;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Exception\Forbidden as ForbiddenException;
+
+use function array_slice;
+use function in_array;
 
 /**
  * BrowseController Class

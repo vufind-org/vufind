@@ -3,7 +3,7 @@
 /**
  * Syndetics TOC content loader.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) The University of Chicago 2017.
  *
@@ -112,7 +112,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
                     $toc = $sourceInfo['div'];
                 } else {
                     // Get the marc field for toc (970)
-                    $nodes = $xmldoc2->GetElementsbyTagName("Fld970");
+                    $nodes = $xmldoc2->GetElementsbyTagName('Fld970');
 
                     foreach ($nodes as $node) {
                         $li = '';
@@ -120,7 +120,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
                         // Chapter labels.
                         $nodeList = $node->getElementsByTagName('l');
                         if ($nodeList->length > 0) {
-                            $li .= sprintf("%s. ", $nodeList->item(0)->nodeValue);
+                            $li .= sprintf('%s. ', $nodeList->item(0)->nodeValue);
                         }
 
                         // Chapter title.

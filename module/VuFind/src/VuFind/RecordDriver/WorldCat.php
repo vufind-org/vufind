@@ -3,7 +3,7 @@
 /**
  * Model for MARC records in WorldCat.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -54,7 +54,7 @@ class WorldCat extends DefaultRecord
      *
      * @param mixed $data Raw data representing the record; Record Model
      * objects are normally constructed by Record Driver objects using data
-     * passed in from a Search Results object.  In this case, $data is a MARCXML
+     * passed in from a Search Results object. In this case, $data is a MARCXML
      * document.
      *
      * @return void

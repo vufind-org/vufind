@@ -1,6 +1,6 @@
 <?php
   // Set up page title:
-  $pageTitle = $this->newList ? 'Create a List' : "edit_list";
+  $pageTitle = $this->newList ? 'Create a List' : 'edit_list';
   $this->headTitle($this->translate($pageTitle));
 
   // Set up breadcrumbs:
@@ -33,7 +33,7 @@
     <div class="form-group">
       <label class="control-label" for="list_tags"><?=$this->transEsc('Tags') ?>:</label>
       <input type="text" name="tags" id="list_tags" class="form-control" value="<?=$this->escapeHtmlAttr($this->listTags)?>">
-      <span class="help-block"><?=$this->transEsc("add_tag_note") ?></span>
+      <span class="help-block"><?=$this->transEsc('add_tag_note') ?></span>
     </div>
   <?php endif; ?>
   <?php if ($this->userlist()->getMode() === 'public_only'): ?>
@@ -61,7 +61,7 @@
 </form>
 <?php if ($this->auth()->isLoggedIn() && $this->layout()->getTemplate() !== 'layout/lightbox') :?>
   </div>
-  <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar">
-      <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => empty($this->list->id) ? 'editlist/NEW' : 'list' . $this->list->id])?>
+  <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
+      <?=$this->context($this)->renderInContext('myresearch/menu.phtml', ['active' => empty($this->list->id) ? 'editlist/NEW' : 'list' . $this->list->id])?>
   </div>
 <?php endif; ?>

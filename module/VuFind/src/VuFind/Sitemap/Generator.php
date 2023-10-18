@@ -3,7 +3,7 @@
 /**
  * VuFind Sitemap
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -30,6 +30,11 @@
 namespace VuFind\Sitemap;
 
 use Laminas\Config\Config;
+
+use function call_user_func;
+use function in_array;
+use function is_callable;
+use function is_string;
 
 /**
  * Class for generating sitemaps
@@ -241,7 +246,7 @@ class Generator
      */
     protected function getTime()
     {
-        $time = explode(" ", microtime());
+        $time = explode(' ', microtime());
         return $time[1] + $time[0];
     }
 
@@ -298,7 +303,7 @@ class Generator
             $plugin = $this->getPlugin($pluginName);
             $sitemapName = $plugin->getSitemapName();
             $msgName = empty($sitemapName)
-                ? "core sitemap" : "sitemap '$sitemapName'";
+                ? 'core sitemap' : "sitemap '$sitemapName'";
             $this->verboseMsg(
                 "Generating $msgName with '$pluginName'"
             );

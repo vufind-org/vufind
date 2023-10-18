@@ -3,7 +3,7 @@
 /**
  * Class for managing "next" and "previous" navigation within result sets.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010
  * Copyright (C) The National Library of Finland 2023
@@ -37,6 +37,9 @@ use VuFind\RecordDriver\AbstractBase as BaseRecord;
 use VuFind\Search\Base\Results;
 use VuFind\Search\Memory as SearchMemory;
 use VuFind\Search\Results\PluginManager as ResultsManager;
+
+use function count;
+use function is_array;
 
 /**
  * Class for managing "next" and "previous" navigation within result sets.

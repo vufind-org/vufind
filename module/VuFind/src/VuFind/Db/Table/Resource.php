@@ -3,7 +3,7 @@
 /**
  * Table Definition for resource
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
  *
@@ -35,6 +35,8 @@ use Laminas\Db\Sql\Select;
 use VuFind\Date\Converter as DateConverter;
 use VuFind\Db\Row\RowGateway;
 use VuFind\Record\Loader;
+
+use function in_array;
 
 /**
  * Table Definition for resource

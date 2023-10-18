@@ -3,7 +3,7 @@
 /**
  * Test class for holds-related functionality.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -287,7 +287,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
             $page,
             [
                 'username' => 'username4',
-                'email' => "username4@ignore.com",
+                'email' => 'username4@ignore.com',
             ]
         );
         $this->clickCss($page, 'input.btn.btn-primary');
@@ -439,15 +439,15 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->submitLoginForm($page, false);
 
         // Place the hold:
-        $futureDate = date("m-d-Y", strtotime("+2 days"));
-        $expectedDate = date("m-d-Y", strtotime("+1 day"));
+        $futureDate = date('m-d-Y', strtotime('+2 days'));
+        $expectedDate = date('m-d-Y', strtotime('+1 day'));
         $this->placeHoldAndGoToHoldsScreen($page, ['#startDate' => $futureDate]);
 
         // Confirm that the hold is frozen, as expected (note that the expected
         // date differs from the date entered, because the date entered indicates
         // when the hold will start, and the freeze ends on the previous day):
         $expected = "Frozen (temporarily suspended) through $expectedDate";
-        $elementText = $this->findCss($page, ".media-body")->getText();
+        $elementText = $this->findCss($page, '.media-body')->getText();
         $this->assertTrue(
             false !== strstr($elementText, $expected),
             "Missing expected text: '$expected' in '$elementText'"
@@ -558,8 +558,8 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Confirm that the popup contains a warning message about mismatched
         // pickup locations:
-        $expectedMsg = "Selected holds have different options for pick up location. "
-            . "Edit a single hold to change its pick up location.";
+        $expectedMsg = 'Selected holds have different options for pick up location. '
+            . 'Edit a single hold to change its pick up location.';
         $this->assertStringContainsString(
             $expectedMsg,
             $this->findCss($page, '#modal .hold-pickup-location')->getText()
@@ -628,7 +628,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         // Confirm that the values have changed
         $this->waitForPageLoad($page);
         $expected = "Frozen (temporarily suspended) through $futureDate";
-        $elementText = $this->findCss($page, ".media-body")->getText();
+        $elementText = $this->findCss($page, '.media-body')->getText();
         $this->assertTrue(
             false !== strstr($elementText, $expected),
             "Missing expected text: '$expected' in '$elementText'"
@@ -734,7 +734,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
             $page,
             [
                 'username' => 'username3',
-                'email' => "username3@ignore.com",
+                'email' => 'username3@ignore.com',
             ]
         );
         $this->clickCss($page, 'input.btn.btn-primary');

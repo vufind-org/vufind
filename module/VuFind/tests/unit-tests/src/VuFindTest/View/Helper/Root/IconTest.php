@@ -3,7 +3,7 @@
 /**
  * Icon View Helper Test Class
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
  *
@@ -70,11 +70,15 @@ class IconTest extends \PHPUnit\Framework\TestCase
                     'template' => 'svg-sprite',
                     'src' => 'mysprites.svg',
                 ],
+                'Unicode' => [
+                    'template' => 'unicode',
+                ],
             ],
             'aliases' => [
                 'bar' => 'Fugue:baz.png',
                 'bar-rtl' => 'Fugue:zab.png',
                 'ltronly' => 'Fugue:ltronly.png',
+                'quoted' => 'Fugue:"quoted".png',
                 'xyzzy' => 'FakeSprite:sprite',
                 'same' => 'Alias:foo',
                 'illegal' => 'Alias:criminal',
@@ -82,6 +86,10 @@ class IconTest extends \PHPUnit\Framework\TestCase
                 'foolish' => 'Alias:foolish',
                 'classy' => 'FontAwesome:spinner:extraClass',
                 'extraClassy' => 'Fugue:zzz.png:weird:class foo',
+                'smile' => 'Unicode:1F600',
+                'wrySmile' => 'Unicode:1F600:wry',
+                'classyWrySmile' => 'Unicode:1F600:wry:classy smile',
+                'oddGlyph' => 'Unicode:c<de',
             ],
         ];
     }
@@ -137,7 +145,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
     public function testFontIcon(): void
     {
         $helper = $this->getIconHelper();
-        $expected = '<span class="icon icon--font fa&#x20;fa-foo" '
+        $expected = '<span class="icon&#x20;icon--font&#x20;fa&#x20;fa-foo" '
             . 'role="img" aria-hidden="true"></span>';
         $this->assertEquals($expected, trim($helper('foo')));
     }
@@ -150,7 +158,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
     public function testFontIconWithExtraClass(): void
     {
         $helper = $this->getIconHelper();
-        $expected = '<span class="icon icon--font fa&#x20;fa-spinner extraClass" '
+        $expected = '<span class="icon&#x20;icon--font&#x20;fa&#x20;fa-spinner&#x20;extraClass" '
             . 'role="img" aria-hidden="true"></span>';
         $this->assertEquals($expected, trim($helper('classy')));
     }
@@ -163,16 +171,110 @@ class IconTest extends \PHPUnit\Framework\TestCase
     public function testFontIconWithExtras(): void
     {
         $helper = $this->getIconHelper();
-        $expected = '<span class="icon icon--font fa&#x20;fa-foo" '
+        $expected = '<span class="icon&#x20;icon--font&#x20;fa&#x20;fa-foo" '
             . 'bar="baz" role="img" aria-hidden="true"></span>';
         $this->assertEquals($expected, trim($helper('foo', ['bar' => 'baz'])));
 
         // Add class to class
-        $expected = '<span class="icon icon--font fa&#x20;fa-foo foo-bar" role="img" aria-hidden="true"></span>';
+        $expected = '<span class="icon&#x20;icon--font&#x20;fa&#x20;fa-foo&#x20;foo-bar" '
+            . 'role="img" aria-hidden="true"></span>';
         $this->assertEquals($expected, trim($helper('foo', ['class' => 'foo-bar'])));
 
         // Shortcut
         $this->assertEquals($expected, trim($helper('foo', 'foo-bar')));
+    }
+
+    /**
+     * Data provider for testUnicodeIcons
+     *
+     * @return array
+     */
+    public function unicodeIconProvider(): array
+    {
+        return [
+            [
+                '',
+                '',
+                '1F600',
+                'smile',
+                '',
+            ],
+            [
+                'wry',
+                '',
+                '1F600',
+                'wrySmile',
+                '',
+            ],
+            [
+                'super&#x20;wry',
+                '',
+                '1F600',
+                'wrySmile',
+                'super',
+            ],
+            [
+                'super&#x20;wry',
+                '',
+                '1F600',
+                'wrySmile',
+                ['class' => 'super'],
+            ],
+            [
+                'wry',
+                'foo="b&#x2B;r"',
+                '1F600',
+                'wrySmile',
+                [
+                    'foo' => 'b+r',
+                ],
+            ],
+            [
+                'super&#x20;wry',
+                'foo="b&#x2B;r"',
+                '1F600',
+                'wrySmile',
+                [
+                    'class' => 'super',
+                    'foo' => 'b+r',
+                ],
+            ],
+            [
+                '',
+                '',
+                'c&lt;de',
+                'oddGlyph',
+                '',
+            ],
+        ];
+    }
+
+    /**
+     * Test that we can generate a Unicode icons.
+     *
+     * @param string       $expectedClasses Expected extra classes
+     * @param string       $expectedAttrs   Expected extra attributes
+     * @param string       $expectedIcon    Expected icon code
+     * @param string       $icon            Icon alias
+     * @param string|array $attrs           Classes or attributes
+     *
+     * @dataProvider unicodeIconProvider
+     *
+     * @return void
+     */
+    public function testUnicodeIcons(
+        string $expectedClasses,
+        string $expectedAttrs,
+        string $expectedIcon,
+        string $icon,
+        string|array $attrs
+    ): void {
+        $helper = $this->getIconHelper();
+        $expected = '<span class="icon&#x20;icon--font&#x20;icon--unicode'
+            . ($expectedClasses ? "&#x20;$expectedClasses" : '') . '"'
+            . ($expectedAttrs ? " $expectedAttrs" : '')
+            . ' role="img" aria-hidden="true" data-icon="&#x' . $expectedIcon . ';"></span>';
+        $this->assertEquals($expected, trim($helper($icon, $attrs)));
     }
 
     /**
@@ -182,7 +284,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
      */
     public function testCaching(): void
     {
-        $expected = '<span class="icon icon--font fa&#x20;fa-foo" '
+        $expected = '<span class="icon&#x20;icon--font&#x20;fa&#x20;fa-foo" '
             . 'bar="baz" role="img" aria-hidden="true"></span>';
         $key = 'foo+c0dc783820069fb9337be7366f7945bf';
 
@@ -212,9 +314,23 @@ class IconTest extends \PHPUnit\Framework\TestCase
     {
         $plugins = ['imageLink' => $this->getMockImageLink('icons/baz.png')];
         $helper = $this->getIconHelper(null, null, $plugins);
-        $expected = '<img class="icon icon--img" src="baz.png" aria-hidden="true"'
+        $expected = '<img class="icon&#x20;icon--img" src="baz.png" aria-hidden="true"'
             . ' alt="">';
         $this->assertEquals($expected, $helper('bar'));
+    }
+
+    /**
+     * Test that we can generate an image-based icon where the icon contains a special character.
+     *
+     * @return void
+     */
+    public function testImageIconWithSpecialChars(): void
+    {
+        $plugins = ['imageLink' => $this->getMockImageLink('icons/"quoted".png')];
+        $helper = $this->getIconHelper(null, null, $plugins);
+        $expected = '<img class="icon&#x20;icon--img" src="&quot;quoted&quot;.png" aria-hidden="true"'
+            . ' alt="">';
+        $this->assertEquals($expected, $helper('quoted'));
     }
 
     /**
@@ -227,7 +343,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
     {
         $plugins = ['imageLink' => $this->getMockImageLink('icons/zzz.png')];
         $helper = $this->getIconHelper(null, null, $plugins);
-        $expected = '<img class="icon icon--img weird:class foo" src="zzz.png"'
+        $expected = '<img class="icon&#x20;icon--img&#x20;weird&#x3A;class&#x20;foo" src="zzz.png"'
             . ' aria-hidden="true" alt="">';
         $this->assertEquals($expected, $helper('extraClassy'));
     }
@@ -241,7 +357,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
     {
         $plugins = ['imageLink' => $this->getMockImageLink('icons/baz.png')];
         $helper = $this->getIconHelper(null, null, $plugins);
-        $expected = '<img class="icon icon--img myclass" src="baz.png"'
+        $expected = '<img class="icon&#x20;icon--img&#x20;myclass" src="baz.png"'
             . ' aria-hidden="true" alt="">';
         // Send a string, validating the shortcut where strings are treated as
         // classes, in addition to confirming that extras work for image icons.
@@ -258,14 +374,14 @@ class IconTest extends \PHPUnit\Framework\TestCase
         // RTL exists
         $plugins = ['imageLink' => $this->getMockImageLink('icons/zab.png')];
         $helper = $this->getIconHelper(null, null, $plugins, true);
-        $expected = '<img class="icon icon--img" src="zab.png" aria-hidden="true"'
+        $expected = '<img class="icon&#x20;icon--img" src="zab.png" aria-hidden="true"'
             . ' alt="">';
         $this->assertEquals($expected, $helper('bar'));
 
         // RTL does not exist
         $plugins = ['imageLink' => $this->getMockImageLink('icons/ltronly.png')];
         $helper = $this->getIconHelper(null, null, $plugins, true);
-        $expected = '<img class="icon icon--img" src="ltronly.png"'
+        $expected = '<img class="icon&#x20;icon--img" src="ltronly.png"'
             . ' aria-hidden="true" alt="">';
         $this->assertEquals($expected, $helper('ltronly'));
     }
@@ -278,7 +394,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
     public function testAlias(): void
     {
         $helper = $this->getIconHelper();
-        $expected = '<span class="icon icon--font fa&#x20;fa-foo" '
+        $expected = '<span class="icon&#x20;icon--font&#x20;fa&#x20;fa-foo" '
             . 'role="img" aria-hidden="true"></span>';
         // same is an alias for foo!
         $this->assertEquals($expected, $helper('same'));
@@ -316,7 +432,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
         $plugins = ['imageLink' => $this->getMockImageLink('mysprites.svg')];
         $helper = $this->getIconHelper(null, null, $plugins);
         $expected = <<<EXPECTED
-            <svg class="icon icon--svg" aria-hidden="true">
+            <svg class="icon&#x20;icon--svg" aria-hidden="true">
                 <use xlink:href="mysprites.svg#sprite"></use>
             </svg>
             EXPECTED;
@@ -333,7 +449,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
         $plugins = ['imageLink' => $this->getMockImageLink('mysprites.svg')];
         $helper = $this->getIconHelper(null, null, $plugins);
         $expected = <<<EXPECTED
-            <svg class="icon icon--svg myclass" data-foo="bar" aria-hidden="true">
+            <svg class="icon&#x20;icon--svg&#x20;myclass" data-foo="bar" aria-hidden="true">
                 <use xlink:href="mysprites.svg#sprite"></use>
             </svg>
             EXPECTED;

@@ -3,7 +3,7 @@
 /**
  * ScheduledSearch/Notify command test.
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2020.
  *
@@ -32,6 +32,8 @@ namespace VuFindTest\Command\ScheduledSearch;
 use Symfony\Component\Console\Tester\CommandTester;
 use VuFindConsole\Command\ScheduledSearch\NotifyCommand;
 use VuFindTest\Container\MockContainer;
+
+use function array_key_exists;
 
 /**
  * ScheduledSearch/Notify command test.

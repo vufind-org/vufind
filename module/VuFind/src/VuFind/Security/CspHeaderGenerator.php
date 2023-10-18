@@ -3,7 +3,7 @@
 /**
  * Class CspHeaderGenerator
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Moravian Library 2019.
  *
@@ -31,6 +31,8 @@ namespace VuFind\Security;
 
 use Laminas\Http\Header\ContentSecurityPolicy;
 use Laminas\Http\Header\ContentSecurityPolicyReportOnly;
+
+use function in_array;
 
 /**
  * VuFind class for generating Content Security Policy http headers
