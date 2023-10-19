@@ -321,6 +321,13 @@ abstract class Options implements TranslatorAwareInterface
     protected $firstlastNavigation = false;
 
     /**
+     * Top pagination control style (none, simple or full)
+     *
+     * @var string
+     */
+    protected $topPaginatorStyle;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Config loader
@@ -342,6 +349,8 @@ abstract class Options implements TranslatorAwareInterface
                 }
             }
         }
+        $searchSettings = $configLoader->get($this->searchIni);
+        $this->topPaginatorStyle = $searchSettings->General->top_paginator ?? false;
     }
 
     /**
@@ -1102,6 +1111,16 @@ abstract class Options implements TranslatorAwareInterface
     {
         // Unsupported by default!
         return false;
+    }
+
+    /**
+     * Get top paginator style
+     *
+     * @return string
+     */
+    public function getTopPaginatorStyle(): string
+    {
+        return $this->topPaginatorStyle;
     }
 
     /**
