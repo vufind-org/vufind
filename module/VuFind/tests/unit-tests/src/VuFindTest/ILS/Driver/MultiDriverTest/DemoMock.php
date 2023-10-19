@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Support class (mock Voyager driver) for MultiBackend ILS driver test
+ * Support class (fake Demo driver) for MultiBackend ILS driver test
  *
  * PHP version 8
  *
@@ -29,10 +29,10 @@
  * @link     https://vufind.org Main Page
  */
 
-namespace VuFindTest\ILS\Driver\MultiBackendTest;
+namespace VuFindTest\ILS\Driver\MultiDriverTest;
 
 /**
- * Support class (mock Voyager driver) for MultiBackend ILS driver test
+ * Support class (fake Demo driver) for MultiBackend ILS driver test
  *
  * @category VuFind
  * @package  Tests
@@ -40,7 +40,7 @@ namespace VuFindTest\ILS\Driver\MultiBackendTest;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class VoyagerMock extends \VuFind\ILS\Driver\Voyager
+class DemoMock extends \VuFind\ILS\Driver\Demo
 {
     use ILSMockTrait;
 }
