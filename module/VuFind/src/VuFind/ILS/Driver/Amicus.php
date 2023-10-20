@@ -457,8 +457,6 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      */
     public function getHolding($id, array $patron = null, array $options = [])
     {
-        include_once 'File/MARC.php';
-
         $items = 'select CPY_ID.BRCDE_NBR, CPY_ID.BIB_ITM_NBR, ' .
             'T_LCTN_NME_BUO.TBL_LNG_ENG_TXT ' .
             'as LOCATION, SHLF_LIST_SRT_FORM as CALLNUMBER, CPY_ID.CPY_ID_NBR as ' .

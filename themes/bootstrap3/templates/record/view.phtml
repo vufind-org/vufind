@@ -55,6 +55,7 @@
                   $tabClasses[] = 'active';
                 }
                 $tabClasses[] = 'initiallyActive';
+                $activeTabName = $tabName;
                 $activeTabObj = $obj;
               }
               if (!$obj->isVisible()) {
@@ -64,7 +65,7 @@
                 $tabClasses[] = 'noajax';
               }
             ?>
-            <li class="<?=implode(' ', $tabClasses)?>" role="tab" data-tab="<?=$this->escapeHtmlAttr($tabName)?>"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>>
+            <li id="record-tab-<?=$this->escapeHtmlAttr($tabName)?>" class="<?=implode(' ', $tabClasses)?>" role="tab" data-tab="<?=$this->escapeHtmlAttr($tabName)?>"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>>
               <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, $tab))?>#tabnav" data-lightbox-ignore>
                 <?=$this->transEsc($desc)?>
               </a>
@@ -74,7 +75,7 @@
 
         <div class="tab-content">
           <?php if (!$this->loadInitialTabWithAjax || !isset($activeTabObj) || !$activeTabObj->supportsAjax()): ?>
-            <div class="tab-pane active <?=$this->escapeHtmlAttr($this->activeTab) ?>-tab">
+            <div class="tab-pane active <?=$this->escapeHtmlAttr($this->activeTab) ?>-tab" aria-labelledby="record-tab-<?=$this->escapeHtmlAttr($activeTabName)?>">
               <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
             </div>
           <?php endif; ?>
@@ -82,7 +83,7 @@
       </div>
     <?php endif; ?>
 
-    <?=$this->driver->supportsCoinsOpenURL() ? '<span class="Z3988" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenURL()) . '"></span>' : ''?>
+    <?=$this->driver->supportsCoinsOpenURL() ? '<span class="Z3988" aria-hidden="true" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenURL()) . '"></span>' : ''?>
   </div>
 
   <div class="<?=$this->layoutClass('sidebar')?>" role="region" aria-label="<?=$this->translate('Related Items')?>">

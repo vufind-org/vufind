@@ -472,8 +472,12 @@ class AbstractSearch extends AbstractBase
      */
     protected function processJumpToOnlyResult($results)
     {
+        // If jumpto is explicitly disabled (set to false, e.g. by combined search),
+        // we should NEVER jump to a result regardless of other factors.
+        $jumpto = $this->params()->fromQuery('jumpto', true);
         if (
-            ($this->getConfig()->Record->jump_to_single_search_result ?? false)
+            $jumpto
+            && ($this->getConfig()->Record->jump_to_single_search_result ?? false)
             && $results->getResultTotal() == 1
             && $recordList = $results->getResults()
         ) {

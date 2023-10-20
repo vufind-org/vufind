@@ -30,7 +30,7 @@
  * @link     https://vufind.org Main Page
  */
 
-namespace VuFindTest\ILS\Driver\MultiBackendTest;
+namespace VuFindTest\ILS\Driver\MultiDriverTest;
 
 /**
  * Support class (limited functionality mock Voyager driver) for MultiBackend ILS

@@ -314,6 +314,30 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test successful place hold (using an old version of mod-circulation)
+     *
+     * @return void
+     */
+    public function testSuccessfulPlaceHoldLegacy(): void
+    {
+        $this->createConnector('successful-place-hold-legacy');
+        $details = [
+            'requiredBy' => '2022-01-01',
+            'requiredByTS' => 1641049790,
+            'patron' => ['id' => 'foo'],
+            'item_id' => 'record1',
+            'status' => 'Available',
+            'pickUpLocation' => 'desk1',
+        ];
+        $result = $this->driver->placeHold($details);
+        $expected = [
+            'success' => true,
+            'status' => 'success',
+        ];
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
      * Test successful place hold with no expiration date
      *
      * @return void
@@ -731,7 +755,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                 'callnumber' => 'PS2394 .M643 1883',
                 'id' => 'foo',
                 'item_id' => 'itemid',
-                'holding_id' => 'holdingid',
+                'holdings_id' => 'holdingid',
                 'number' => 1,
                 'enumchron' => '',
                 'barcode' => 'barcode-test',
@@ -796,7 +820,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                 'callnumber' => 'PS2394 .M643 1883',
                 'id' => 'instanceid',
                 'item_id' => 'itemid',
-                'holding_id' => 'holdingid',
+                'holdings_id' => 'holdingid',
                 'number' => 1,
                 'enumchron' => '',
                 'barcode' => 'barcode-test',
@@ -834,7 +858,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                 'callnumber' => 'PS2394 .M643 1883',
                 'id' => 'instanceid',
                 'item_id' => 'itemid',
-                'holding_id' => 'holdingid',
+                'holdings_id' => 'holdingid',
                 'number' => 1,
                 'enumchron' => '',
                 'barcode' => 'barcode-test',
@@ -870,7 +894,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                 'callnumber' => 'PS2394 .M643 1883',
                 'id' => 'instanceid',
                 'item_id' => 'itemid',
-                'holding_id' => 'holdingid',
+                'holdings_id' => 'holdingid',
                 'number' => 1,
                 'enumchron' => '',
                 'barcode' => 'barcode-test',
@@ -908,7 +932,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                 'callnumber' => 'PS2394 .M643 1883',
                 'id' => 'instanceid',
                 'item_id' => 'itemid2',
-                'holding_id' => 'holdingid',
+                'holdings_id' => 'holdingid',
                 'number' => 1,
                 'enumchron' => 'v.2',
                 'barcode' => 'barcode-test2',
@@ -931,7 +955,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                 'callnumber' => 'PS2394 .M643 1883',
                 'id' => 'instanceid',
                 'item_id' => 'itemid',
-                'holding_id' => 'holdingid',
+                'holdings_id' => 'holdingid',
                 'number' => 2,
                 'enumchron' => 'v.100',
                 'barcode' => 'barcode-test',

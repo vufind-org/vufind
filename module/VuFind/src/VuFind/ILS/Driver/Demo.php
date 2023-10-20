@@ -1530,7 +1530,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @param array $holdInfo Contains most of the same values passed to
      * placeHold, minus the patron data.
      *
-     * @return int
+     * @return int|null
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */

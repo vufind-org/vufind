@@ -321,6 +321,13 @@ abstract class Options implements TranslatorAwareInterface
     protected $firstlastNavigation = false;
 
     /**
+     * Top pagination control style (none, simple or full)
+     *
+     * @var string
+     */
+    protected $topPaginatorStyle;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Config loader
@@ -342,6 +349,8 @@ abstract class Options implements TranslatorAwareInterface
                 }
             }
         }
+        $searchSettings = $configLoader->get($this->searchIni);
+        $this->topPaginatorStyle = $searchSettings->General->top_paginator ?? false;
     }
 
     /**
@@ -1071,6 +1080,19 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
+     * Get the search class ID for identifying search box options; this is normally
+     * the same as the current search class ID, but some "special purpose" search
+     * namespaces (e.g. SolrAuthor) need to point to a different ID for search box
+     * generation
+     *
+     * @return string
+     */
+    public function getSearchBoxSearchClassId(): string
+    {
+        return $this->getSearchClassId();
+    }
+
+    /**
      * Should we include first/last options in result scroller navigation?
      *
      * @return bool
@@ -1089,6 +1111,16 @@ abstract class Options implements TranslatorAwareInterface
     {
         // Unsupported by default!
         return false;
+    }
+
+    /**
+     * Get top paginator style
+     *
+     * @return string
+     */
+    public function getTopPaginatorStyle(): string
+    {
+        return $this->topPaginatorStyle;
     }
 
     /**

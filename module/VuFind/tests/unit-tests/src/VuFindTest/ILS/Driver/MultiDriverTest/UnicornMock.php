@@ -29,7 +29,7 @@
  * @link     https://vufind.org Main Page
  */
 
-namespace VuFindTest\ILS\Driver\MultiBackendTest;
+namespace VuFindTest\ILS\Driver\MultiDriverTest;
 
 /**
  * Support class (mock Unicorn driver) for MultiBackend ILS driver test
