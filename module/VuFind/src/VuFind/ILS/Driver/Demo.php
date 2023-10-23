@@ -1041,7 +1041,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 } else {
                     // 50c a day fine
                     $fine = $day_overdue * 0.50;
-                    $type = $day_overdue > 20 ? 'Long Overdue' : 'Overdue';
+                    // After 20 days it becomes 'Long Overdue'
+                     $type = $day_overdue > 20 ? 'Long Overdue' : 'Overdue';
                 }
 
                 $fineList[] = [
@@ -1050,7 +1051,6 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                         ->convertToDisplayDate('U', $checkout),
                     'createdate' => $this->dateConverter
                         ->convertToDisplayDate('U', time()),
-                    // After 20 days it becomes 'Long Overdue'
                     'fine'     => $type,
                     // Additional description for long overdue fines:
                     'description' => 'Manual Fee' === $type ? 'Interlibrary loan request fee' : '',
