@@ -1042,7 +1042,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                     // 50c a day fine
                     $fine = $day_overdue * 0.50;
                     // After 20 days it becomes 'Long Overdue'
-                     $type = $day_overdue > 20 ? 'Long Overdue' : 'Overdue';
+                    $type = $day_overdue > 20 ? 'Long Overdue' : 'Overdue';
                 }
 
                 $fineList[] = [
