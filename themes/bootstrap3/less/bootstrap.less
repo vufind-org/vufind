@@ -438,6 +438,13 @@ ul.list-group {
   table-layout: fixed;
   word-wrap: break-word;
 }
+// No wrapping for fines table in wide windows
+@media (min-width: 992px) {
+  .table.fines-table {
+    table-layout: auto;
+    word-wrap: normal;
+  }
+}
 
 /* ------ Visualization View ------ */
 .node {
