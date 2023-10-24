@@ -30,6 +30,8 @@
 
 namespace VuFindTest\Mink;
 
+use Behat\Mink\Element\Element;
+
 use function count;
 use function intval;
 use function strlen;
@@ -49,7 +51,9 @@ use function strlen;
  */
 final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
 {
+    use \VuFindTest\Feature\AutocompleteTrait;
     use \VuFindTest\Feature\LiveDatabaseTrait;
+    use \VuFindTest\Feature\SearchSortTrait;
     use \VuFindTest\Feature\UserCreationTrait;
 
     /**
@@ -65,11 +69,13 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Move the current page to a record by performing a search.
      *
-     * @return \Behat\Mink\Element\Element
+     * @param string $query Search query to perform.
+     *
+     * @return Element
      */
-    protected function gotoRecord()
+    protected function gotoRecord(string $query = 'Dewey'): Element
     {
-        $page = $this->performSearch('Dewey');
+        $page = $this->performSearch($query);
         $this->clickCss($page, '.result a.title');
         return $page;
     }
@@ -77,12 +83,12 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Make new account
      *
-     * @param \Behat\Mink\Element\Element $page     Page element
-     * @param string                      $username Username to create
+     * @param Element $page     Page element
+     * @param string  $username Username to create
      *
      * @return void
      */
-    protected function makeAccount($page, $username)
+    protected function makeAccount(Element $page, string $username): void
     {
         $this->clickCss($page, '.modal-body .createAccountLink');
         $this->fillInAccountForm(
@@ -99,7 +105,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testAddComment()
+    public function testAddComment(): void
     {
         // Go to a record view
         $page = $this->gotoRecord();
@@ -142,8 +148,10 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test adding comments on records (with Captcha enabled).
      *
      * @return void
+     *
+     * @depends testAddComment
      */
-    public function testAddCommentWithCaptcha()
+    public function testAddCommentWithCaptcha(): void
     {
         // Set up configs:
         $this->changeConfigs(
@@ -200,13 +208,46 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Add tags to a record
+     *
+     * @param Element $page Page object
+     * @param string  $tags Tag(s) to add
+     * @param ?string $user Username to log in with (null if already logged in)
+     * @param ?string $pass Password to log in with (null if already logged in)
+     *
+     * @return void
+     */
+    protected function addTagsToRecord(
+        Element $page,
+        string $tags,
+        ?string $user = null,
+        ?string $pass = null
+    ): void {
+        $this->clickCss($page, '.tag-record');
+        // Login if necessary
+        if (!empty($user) && !empty($pass)) {
+            $this->fillInLoginForm($page, $user, $pass);
+            $this->submitLoginForm($page);
+        }
+        // Add tags
+        $this->findCss($page, '.modal #addtag_tag')->setValue($tags);
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
+        $this->waitForPageLoad($page);
+        $success = $this->findCss($page, '.modal-body .alert-success');
+        $this->assertEquals('Tags Saved', $success->getText());
+        $this->closeLightbox($page);
+    }
+
+    /**
      * Test adding tags on records.
      *
      * @retryCallback removeUsername2
      *
      * @return void
+     *
+     * @depends testAddComment
      */
-    public function testAddTag()
+    public function testAddTag(): void
     {
         // Go to a record view
         $page = $this->gotoRecord();
@@ -220,18 +261,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, '.modal #addtag_tag');
         $this->closeLightbox($page);
         $this->clickCss($page, '.logoutOptions a.logout');
-        // Login
-        // $page = $this->gotoRecord();
-        $this->clickCss($page, '.tag-record');
-        $this->fillInLoginForm($page, 'username2', 'test');
-        $this->submitLoginForm($page);
-        // Add tags
-        $this->findCss($page, '.modal #addtag_tag')->setValue('one 2 "three 4" five');
-        $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->waitForPageLoad($page);
-        $success = $this->findCss($page, '.modal-body .alert-success');
-        $this->assertEquals('Tags Saved', $success->getText());
-        $this->closeLightbox($page);
+        $this->addTagsToRecord($page, 'one 2 "three 4" five', 'username2', 'test');
         // Count tags
         $this->waitForPageLoad($page);
         $tags = $page->findAll('css', '.tagList .tag');
@@ -289,15 +319,90 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test searching for one of the tags created above.
      *
      * @return void
+     *
+     * @depends testAddTag
      */
-    public function testTagSearch()
+    public function testTagSearch(): void
     {
         // First try an undefined tag:
         $page = $this->performSearch('tag-not-in-system', 'tag');
         $this->assertEquals('No Results!', $this->findCss($page, 'h2')->getText());
-        // Now try a tag defined earlier:
+        // Now try a tag defined earlier, with a couple more instances added:
+        $page = $this->goToRecord('id:"<angle>brackets&ampersands"');
+        $this->addTagsToRecord($page, 'five', 'username2', 'test');
+        $page = $this->goToRecord('id:"017791359-1"');
+        $this->addTagsToRecord($page, 'five');
+        // Now perform the search:
         $page = $this->performSearch('five', 'tag');
-        $expected = 'Showing 1 - 1 results of 1 for search \'five\'';
+        $this->assertResultTitles($page, 3, 'Dewey browse test', '<HTML> The Basics');
+        $this->assertSelectedSort($page, 'title');
+    }
+
+    /**
+     * Data provider for testTagSearchSort
+     *
+     * @return array
+     */
+    public function getTagSearchSortData(): array
+    {
+        return [
+            [1, 'author', 'Fake Record 1 with multiple relators/', 'Dewey browse test'],
+            [2, 'year DESC', '<HTML> The Basics', 'Fake Record 1 with multiple relators/'],
+            [3, 'year', 'Fake Record 1 with multiple relators/', '<HTML> The Basics'],
+        ];
+    }
+
+    /**
+     * Test sorting the tag search results.
+     *
+     * @param int    $index         Sort drop-down index to test
+     * @param string $expectedSort  Expected sort value at $index
+     * @param string $expectedFirst Expected first title after sorting
+     * @param string $expectedLast  Expected last title after sorting
+     *
+     * @return void
+     *
+     * @dataProvider getTagSearchSortData
+     *
+     * @depends testTagSearch
+     */
+    public function testTagSearchSort(
+        int $index,
+        string $expectedSort,
+        string $expectedFirst,
+        string $expectedLast
+    ): void {
+        $page = $this->performSearch('five', 'tag');
+        $this->clickCss($page, $this->sortControlSelector . ' option', null, $index);
+        $this->waitForPageLoad($page);
+        $this->assertResultTitles($page, 3, $expectedFirst, $expectedLast);
+        $this->assertSelectedSort($page, $expectedSort);
+    }
+
+    /**
+     * Test that default autocomplete behavior is correct on a non-default search handler.
+     *
+     * @return void
+     *
+     * @depends testTagSearch
+     */
+    public function testTagAutocomplete(): void
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Home');
+        $page = $session->getPage();
+        $this->findCss($page, '#searchForm_type')
+            ->setValue('tag');
+        $this->findCss($page, '#searchForm_lookfor')
+            ->setValue('fiv');
+        $acItem = $this->getAndAssertFirstAutocompleteValue($page, 'five');
+        $acItem->click();
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            $this->getVuFindUrl() . '/Search/Results?lookfor=five&type=tag',
+            $session->getCurrentUrl()
+        );
+        $expected = 'Showing 1 - 3 results of 3 for search \'five\'';
         $this->assertEquals(
             $expected,
             substr(
@@ -312,8 +417,10 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test adding case sensitive tags on records.
      *
      * @return void
+     *
+     * @depends testAddTag
      */
-    public function testAddSensitiveTag()
+    public function testAddSensitiveTag(): void
     {
         // Set up configs:
         $this->changeConfigs(
@@ -348,7 +455,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testEmail()
+    public function testEmail(): void
     {
         // Set up configs:
         $this->changeConfigs(
@@ -412,7 +519,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testSMS()
+    public function testSMS(): void
     {
         // Set up configs:
         $this->changeConfigs(
@@ -499,7 +606,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testRatingDisabled()
+    public function testRatingDisabled(): void
     {
         // Go to a record view
         $page = $this->gotoRecord();
@@ -686,7 +793,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testRefWorksExportButton()
+    public function testRefWorksExportButton(): void
     {
         // Go to a record view
         $page = $this->gotoRecord();
@@ -705,7 +812,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function removeUsername2()
+    protected function removeUsername2(): void
     {
         static::removeUsers(['username2']);
     }
@@ -715,7 +822,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function removeUsername2And3And4()
+    protected function removeUsername2And3And4(): void
     {
         static::removeUsers(['username2', 'username3', 'username4']);
     }
@@ -725,7 +832,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function removeEmailManiac()
+    protected function removeEmailManiac(): void
     {
         static::removeUsers(['emailmaniac']);
     }
