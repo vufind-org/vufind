@@ -34,6 +34,8 @@ use VuFind\Search\Memory as SearchMemory;
 use VuFind\Search\RecommendListener;
 use VuFind\Search\SearchRunner;
 
+use function strlen;
+
 /**
  * Collection list tab
  *
