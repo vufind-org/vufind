@@ -141,7 +141,7 @@ class ConfigurationBased extends AbstractBase
      */
     public function getCollectionField(bool $hasSearch): string
     {
-        if ($hasSearch && !empty($this->config->Collections->search_container_id_field)) {
+        if ($hasSearch && null !== ($this->config->Collections->search_container_id_field ?? null)) {
             return $this->config->Collections->search_container_id_field;
         }
         return match ($this->getCollectionLinkType()) {

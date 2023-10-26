@@ -34,8 +34,6 @@ use VuFind\Search\Memory as SearchMemory;
 use VuFind\Search\RecommendListener;
 use VuFind\Search\SearchRunner;
 
-use function strlen;
-
 /**
  * Collection list tab
  *
@@ -132,7 +130,7 @@ class CollectionList extends AbstractBase
                 + $this->getRequest()->getPost()->toArray();
             $rManager = $this->recommendManager;
             $cb = function ($runner, $params, $searchId) use ($driver, $rManager, $request) {
-                $params->initFromRecordDriver($driver, strlen($request['lookfor'] ?? '') > 0);
+                $params->initFromRecordDriver($driver, '' !== ($request['lookfor'] ?? ''));
                 $listener = new RecommendListener($rManager, $searchId);
                 $listener->setConfig(
                     $params->getOptions()->getRecommendationSettings()
