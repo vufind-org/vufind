@@ -104,8 +104,10 @@ class ExtendedIniNormalizer
         $fileArray = file($filename);
 
         // Strip off UTF-8 BOM if necessary.
-        $bom = html_entity_decode('&#xFEFF;', ENT_NOQUOTES, 'UTF-8');
-        $fileArray[0] = str_replace($bom, '', $fileArray[0]);
+        if ($fileArray) {
+            $bom = html_entity_decode('&#xFEFF;', ENT_NOQUOTES, 'UTF-8');
+            $fileArray[0] = str_replace($bom, '', $fileArray[0]);
+        }
 
         return $fileArray;
     }
@@ -160,8 +162,11 @@ class ExtendedIniNormalizer
         foreach ($input as $key => $value) {
             // Put purely numeric keys in single quotes for Lokalise compatibility:
             $normalizedKey = is_numeric($key) ? "'$key'" : $key;
+            // Choose most appropriate type of outer quotes to reduce need for escaping:
             $quote = str_contains($value, '"') ? "'" : '"';
-            $escapedValue = str_replace($quote, '\\' . $quote, $value);
+            // Apply minimal escaping (to existing slashes and quotes matching the outer ones):
+            $escapedValue = str_replace(['\\', $quote], ['\\\\', '\\' . $quote], $value);
+            // Put it all together!
             $output .= "$normalizedKey = $quote$escapedValue$quote\n";
         }
         return trim($output) . "\n";

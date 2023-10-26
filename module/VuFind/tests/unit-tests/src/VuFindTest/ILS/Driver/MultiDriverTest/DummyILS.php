@@ -29,7 +29,7 @@
  * @link     https://vufind.org Main Page
  */
 
-namespace VuFindTest\ILS\Driver\MultiBackendTest;
+namespace VuFindTest\ILS\Driver\MultiDriverTest;
 
 /**
  * A dummy ILS driver used for testing a driver with unsupported features
