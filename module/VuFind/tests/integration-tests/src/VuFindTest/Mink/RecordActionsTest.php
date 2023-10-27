@@ -401,7 +401,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
             $this->getVuFindUrl() . '/Search/Results?lookfor=five&type=tag',
             $session->getCurrentUrl()
         );
-        $expected = 'Showing 1 - 3 results of 3 for search \'five\'';
+        $expected = 'Showing 1 - 3 results of 3';
         $this->assertEquals(
             $expected,
             substr(
