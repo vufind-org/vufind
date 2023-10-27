@@ -68,8 +68,7 @@ class EDSDatabasesFactory implements \Laminas\ServiceManager\Factory\FactoryInte
         }
         return new $requestedName(
             $container->get(\VuFind\Connection\LibGuides::class),
-            $container->get(\VuFind\Config\PluginManager::class)
-                ->get('LibGuidesAPI'),
+            $container->get(\VuFind\Config\PluginManager::class),
             $container->get(\VuFind\Cache\Manager::class)
                 ->getCache('object'),
         );

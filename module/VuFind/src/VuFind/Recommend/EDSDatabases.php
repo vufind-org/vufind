@@ -69,20 +69,21 @@ class EDSDatabases implements RecommendInterface
     /**
      * Constructor
      *
-     * @param LibGuides    $libGuides LibGuides API connection
-     * @param Config       $config    LibGuides API configuration object
-     * @param CacheAdapter $cache     Object cache
+     * @param LibGuides                    $libGuides     LibGuides API connection
+     * @param \VuFind\Config\PluginManager $configManager Config PluginManager
+     * @param CacheAdapter                 $cache         Object cache
      */
     public function __construct(
         LibGuides $libGuides,
-        Config $config,
+        \VuFind\Config\PluginManager $configManager,
         CacheAdapter $cache
     ) {
         $this->libGuides = $libGuides;
         $this->setCacheStorage($cache);
 
         // Cache the data related to profiles for up to 10 minutes:
-        $this->cacheLifetime = intval($config->GetAZ->cache_lifetime ?? 600);
+        $libGuidesApiConfig = $configManager->get('LibGuidesAPI');
+        $this->cacheLifetime = intval($libGuidesApiConfig->GetAZ->cache_lifetime ?? 600);
     }
 
     /**
