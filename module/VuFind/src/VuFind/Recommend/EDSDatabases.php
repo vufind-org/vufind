@@ -60,6 +60,20 @@ class EDSDatabases implements RecommendInterface
     protected $results;
 
     /**
+     * Databases listed in EDS.ini
+     *
+     * @var array
+     */
+    protected $edsDatabases;
+
+    /**
+     * Configuration of whether to use LibGuides as a data source
+     *
+     * @var bool
+     */
+    protected $useLibGuides;
+
+    /**
      * LibGuides connector
      *
      * @var LibGuides
@@ -69,21 +83,30 @@ class EDSDatabases implements RecommendInterface
     /**
      * Constructor
      *
-     * @param LibGuides                    $libGuides     LibGuides API connection
      * @param \VuFind\Config\PluginManager $configManager Config PluginManager
+     * @param LibGuides                    $libGuides     LibGuides API connection
      * @param CacheAdapter                 $cache         Object cache
      */
     public function __construct(
-        LibGuides $libGuides,
         \VuFind\Config\PluginManager $configManager,
+        LibGuides $libGuides,
         CacheAdapter $cache
     ) {
-        $this->libGuides = $libGuides;
-        $this->setCacheStorage($cache);
+        $edsConfig = $configManager->get('EDS');
+        $edsDatabaseUrls = isset($edsConfig->Databases->url) ? $edsConfig->Databases->url->toArray() : [];
+        $this->edsDatabases = array_map(function ($url) {
+            return ['url' => $url];
+        }, $edsDatabaseUrls);
 
-        // Cache the data related to profiles for up to 10 minutes:
-        $libGuidesApiConfig = $configManager->get('LibGuidesAPI');
-        $this->cacheLifetime = intval($libGuidesApiConfig->GetAZ->cache_lifetime ?? 600);
+        $this->useLibGuides = $edsConfig->Databases->useLibGuides ?? false;
+        if ($this->useLibGuides) {
+            $this->libGuides = $libGuides;
+            $this->setCacheStorage($cache);
+
+            // Cache the data related to profiles for up to 10 minutes:
+            $libGuidesApiConfig = $configManager->get('LibGuidesAPI');
+            $this->cacheLifetime = intval($libGuidesApiConfig->GetAZ->cache_lifetime ?? 600);
+        }
     }
 
     /**
@@ -140,7 +163,7 @@ class EDSDatabases implements RecommendInterface
     public function getResults()
     {
         $records = $this->results->getResults();
-        $nameToDatabase = $this->getLibGuidesDatabases();
+        $nameToDatabase = $this->getDatabases();
         $databases = [];
         foreach ($records as $record) {
             $databaseInfo = $nameToDatabase[$record->getDbLabel()] ?? null;
@@ -152,10 +175,26 @@ class EDSDatabases implements RecommendInterface
     }
 
     /**
+     * Generate a combined list of databases from all enabled sources.
+     *
+     * @return An array mapping a database name to a sub-array with
+     * the url.
+     */
+    protected function getDatabases()
+    {
+        $databases = [];
+        if ($this->useLibGuides) {
+            $databases = $this->getLibGuidesDatabases();
+        }
+        $databases = array_merge($databases, $this->edsDatabases);
+        return $databases;
+    }
+
+    /**
      * Load or retrieve from the cache the list of LibGuides A-Z databases.
      *
-     * @return array An array mapping a database name to the full object
-     * from the LibGuides /az API.
+     * @return array An array mapping a database name to an array
+     * representing the full object retrieved from the LibGuides /az API.
      */
     protected function getLibGuidesDatabases()
     {
@@ -165,7 +204,7 @@ class EDSDatabases implements RecommendInterface
 
             $nameToDatabase = [];
             foreach ($databases as $database) {
-                $nameToDatabase[$database->name] = $database;
+                $nameToDatabase[$database->name] = (array)$database;
             }
 
             $this->putCachedData('libGuidesAZ-nameToDatabase', $nameToDatabase);

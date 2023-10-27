@@ -67,8 +67,8 @@ class EDSDatabasesFactory implements \Laminas\ServiceManager\Factory\FactoryInte
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
-            $container->get(\VuFind\Connection\LibGuides::class),
             $container->get(\VuFind\Config\PluginManager::class),
+            $container->get(\VuFind\Connection\LibGuides::class),
             $container->get(\VuFind\Cache\Manager::class)
                 ->getCache('object'),
         );
