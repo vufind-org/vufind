@@ -149,7 +149,6 @@ public class UpdateDateTracker
         insertSql.close();
         selectSql.close();
         updateSql.close();
-        super.finalize();
     }
 
     /* Get the first indexed date (IMPORTANT: index() must be called before this method)
