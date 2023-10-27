@@ -195,7 +195,7 @@ class LibGuides implements
      *
      * @param string $url Full request url
      *
-     * @return object|null A JSON object of the repsons data, or null if an error occurs
+     * @return object|null A JSON object of the response data, or null if an error occurs
      */
     protected function doGet($url)
     {
