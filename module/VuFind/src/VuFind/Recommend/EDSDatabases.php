@@ -162,13 +162,14 @@ class EDSDatabases implements RecommendInterface
      */
     public function getResults()
     {
-        $records = $this->results->getResults();
+        $resultDatabases = $this->results->getFacetList(['ContentProvider' => null])['ContentProvider']['list'] ?? [];
         $nameToDatabase = $this->getDatabases();
         $databases = [];
-        foreach ($records as $record) {
-            $databaseInfo = $nameToDatabase[$record->getDbLabel()] ?? null;
+        foreach ($resultDatabases as $resultDatabase) {
+            $name = $resultDatabase['value'];
+            $databaseInfo = $nameToDatabase[$name] ?? null;
             if ($databaseInfo) {
-                $databases[$record->getDbLabel()] = $databaseInfo;
+                $databases[$name] = $databaseInfo;
             }
         }
         return $databases;
