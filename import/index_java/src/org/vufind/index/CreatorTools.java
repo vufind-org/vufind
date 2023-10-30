@@ -143,7 +143,7 @@ public class CreatorTools
             }
         } else {
             // If we got this far, we need to figure out what type of relation they have
-            List permittedRoles = normalizeRelatorStringList(Arrays.asList(loadRelatorConfig(relatorConfig)));
+            List<String> permittedRoles = normalizeRelatorStringList(Arrays.asList(loadRelatorConfig(relatorConfig)));
             relators.addAll(getValidRelatorsFromSubfields(subfieldE, permittedRoles, indexRawRelators.toLowerCase().equals("true")));
             relators.addAll(getValidRelatorsFromSubfields(subfield4, permittedRoles, indexRawRelators.toLowerCase().equals("true")));
             if (Arrays.asList(unknownRelatorAllowed).contains(tag)) {
@@ -422,11 +422,11 @@ public class CreatorTools
      * @param firstOnly            Return first result only?
      * @return List result
      */
-    public List getRelatorsFilteredByRelator(Record record, String tagList,
+    public List<String> getRelatorsFilteredByRelator(Record record, String tagList,
         String acceptWithoutRelator, String relatorConfig,
         String acceptUnknownRelators, String indexRawRelators, Boolean firstOnly
     ) {
-        List result = new LinkedList();
+        List<String> result = new LinkedList<String>();
         String[] noRelatorAllowed = acceptWithoutRelator.split(":");
         String[] unknownRelatorAllowed = acceptUnknownRelators.split(":");
         HashMap<String, Set<String>> parsedTagList = FieldSpecTools.getParsedTagList(tagList);
@@ -455,7 +455,7 @@ public class CreatorTools
      * in the MARC or "false" to index mapped versions.
      * @return List result
      */
-    public List getRelatorsFilteredByRelator(Record record, String tagList,
+    public List<String> getRelatorsFilteredByRelator(Record record, String tagList,
         String acceptWithoutRelator, String relatorConfig,
         String acceptUnknownRelators, String indexRawRelators
     ) {
@@ -481,7 +481,7 @@ public class CreatorTools
      * should be indexed even if they are not listed in author-classification.ini.
      * @return List result
      */
-    public List getRelatorsFilteredByRelator(Record record, String tagList,
+    public List<String> getRelatorsFilteredByRelator(Record record, String tagList,
         String acceptWithoutRelator, String relatorConfig,
         String acceptUnknownRelators
     ) {
@@ -505,7 +505,7 @@ public class CreatorTools
      * defines which relator terms are acceptable (or a colon-delimited list)
      * @return List result
      */
-    public List getRelatorsFilteredByRelator(Record record, String tagList,
+    public List<String> getRelatorsFilteredByRelator(Record record, String tagList,
         String acceptWithoutRelator, String relatorConfig
     ) {
         // default firstOnly to false!
