@@ -33,6 +33,7 @@ use Laminas\Cache\Storage\Adapter\AbstractAdapter as CacheAdapter;
 use Laminas\Config\Config;
 use VuFind\Connection\LibGuides;
 
+use function count;
 use function intval;
 
 /**
@@ -58,6 +59,13 @@ class EDSDatabases implements RecommendInterface
      * @var \VuFind\Search\Base\Results
      */
     protected $results;
+
+    /**
+     * Number of results to show
+     *
+     * @var int
+     */
+    protected $limit;
 
     /**
      * Databases listed in EDS.ini
@@ -118,7 +126,10 @@ class EDSDatabases implements RecommendInterface
      */
     public function setConfig($settings)
     {
-        // No action needed.
+        $settings = explode(':', $settings);
+        $this->limit
+            = (isset($settings[0]) && is_numeric($settings[0]) && $settings[0] > 0)
+            ? intval($settings[0]) : 5;
     }
 
     /**
@@ -170,6 +181,9 @@ class EDSDatabases implements RecommendInterface
             $databaseInfo = $nameToDatabase[$name] ?? null;
             if ($databaseInfo) {
                 $databases[$name] = $databaseInfo;
+            }
+            if (count($databases) >= $this->limit) {
+                break;
             }
         }
         return $databases;
