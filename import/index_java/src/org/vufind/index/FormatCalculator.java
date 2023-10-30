@@ -219,7 +219,7 @@ public class FormatCalculator
      * @param List formatCodes007
      * @return String
      */
-    protected String getFormatFromBibLevel(Record record, char recordType, char bibLevel, ControlField marc008, boolean couldBeBook, List formatCodes007) {
+    protected String getFormatFromBibLevel(Record record, char recordType, char bibLevel, ControlField marc008, boolean couldBeBook, List<Character> formatCodes007) {
         switch (bibLevel) {
             // Component parts
             case 'a':

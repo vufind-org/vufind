@@ -62,9 +62,9 @@ public class LccnTools
      * @param fieldSpec
      * @return Set of normalized LCCNs
      */
-    public Set getNormalizedLCCNs(Record record, String fieldSpec) {
+    public Set<String> getNormalizedLCCNs(Record record, String fieldSpec) {
         // Initialize return value:
-        Set result = new LinkedHashSet();
+        Set<String> result = new LinkedHashSet<String>();
 
         // Loop through relevant fields and normalize everything:
         for (String raw : SolrIndexer.instance().getFieldList(record, fieldSpec)) {
@@ -83,7 +83,7 @@ public class LccnTools
      * @param record
      * @return Set of normalized LCCNs
      */
-    public Set getNormalizedLCCNs(Record record) {
+    public Set<String> getNormalizedLCCNs(Record record) {
         // Send in a default fieldSpec if none was provided by the user:
         return getNormalizedLCCNs(record, "010a");
     }
