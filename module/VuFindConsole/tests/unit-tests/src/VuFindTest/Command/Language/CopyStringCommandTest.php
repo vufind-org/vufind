@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Language/CopyString command test.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Command\Language;
 
 use Symfony\Component\Console\Tester\CommandTester;
@@ -140,7 +142,7 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
             [
                 'source' => 'foo::bar',
                 'target' => 'foo::xyzzy',
-                '--replace' => 'baz/transformed'
+                '--replace' => 'baz/transformed',
             ]
         );
         $this->assertEquals(

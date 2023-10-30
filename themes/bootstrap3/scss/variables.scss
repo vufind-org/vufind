@@ -1,0 +1,2 @@
+// Cookie consent dialog should have a z-index low enough to stay below dropdowns and modals
+$zindex-cookie-consent: ($zindex-dropdown - 10);

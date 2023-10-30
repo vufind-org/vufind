@@ -1,4 +1,5 @@
 <?php
+
 /**
  * EDS Record Controller
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
@@ -50,7 +52,7 @@ class EdsrecordController extends AbstractRecord
     public function __construct(ServiceLocatorInterface $sm)
     {
         // Override some defaults:
-        $this->searchClassId = 'EDS';
+        $this->sourceId = 'EDS';
         $this->fallbackDefaultTab = 'Description';
 
         // Call standard record controller initialization:

@@ -7,7 +7,7 @@
             '%%index%%' => $this->transEsc('browse_' . $index),
             '%%from%%' => $this->escapeHtml($from),
             '%%url%%' => $this->url('alphabrowse-home')
-              . '?from=' . urlencode($from) . '&amp;source=' . urlencode($index)
+              . '?from=' . urlencode($from) . '&amp;source=' . urlencode($index),
         ]
     );
 ?>

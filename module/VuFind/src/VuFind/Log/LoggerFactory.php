@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for instantiating Logger
  *
@@ -25,15 +26,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Log;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\Config\Config;
 use Laminas\Log\Writer\WriterInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Factory for instantiating Logger
@@ -70,7 +72,7 @@ class LoggerFactory implements FactoryInterface
             'priority' => 'priority',
             'message' => 'message',
             'logtime' => 'timestamp',
-            'ident' => 'ident'
+            'ident' => 'ident',
         ];
 
         // Make Writers
@@ -232,7 +234,8 @@ class LoggerFactory implements FactoryInterface
         // Query parameters do not apply in console mode; if we do have a debug
         // query parameter, and the appropriate permission is set, activate dynamic
         // debug:
-        if (PHP_SAPI !== 'cli'
+        if (
+            PHP_SAPI !== 'cli'
             && $container->get('Request')->getQuery()->get('debug')
         ) {
             return $container->get(\LmcRbacMvc\Service\AuthorizationService::class)
@@ -281,7 +284,8 @@ class LoggerFactory implements FactoryInterface
         }
 
         // Activate Office365 logging, if applicable:
-        if (isset($config->Logging->office365)
+        if (
+            isset($config->Logging->office365)
             && isset($config->Logging->office365_url)
         ) {
             $hasWriter = true;
@@ -357,29 +361,29 @@ class LoggerFactory implements FactoryInterface
             // VuFind's configuration provides four priority options, each
             // combining two of the standard Laminas levels.
             switch (trim($priority)) {
-            case 'debug':
-                // Set static flag indicating that debug is turned on:
-                $logger->debugNeeded(true);
+                case 'debug':
+                    // Set static flag indicating that debug is turned on:
+                    $logger->debugNeeded(true);
 
-                $max = Logger::INFO;  // Informational: informational messages
-                $min = Logger::DEBUG; // Debug: debug messages
-                break;
-            case 'notice':
-                $max = Logger::WARN;  // Warning: warning conditions
-                $min = Logger::NOTICE;// Notice: normal but significant condition
-                break;
-            case 'error':
-                $max = Logger::CRIT;  // Critical: critical conditions
-                $min = Logger::ERR;   // Error: error conditions
-                break;
-            case 'alert':
-                $max = Logger::EMERG; // Emergency: system is unusable
-                $min = Logger::ALERT; // Alert: action must be taken immediately
-                break;
-            default:
-                // INVALID FILTER, so skip it. We must continue 2 levels, so we
-                // continue the foreach loop instead of just breaking the switch.
-                continue 2;
+                    $max = Logger::INFO;  // Informational: informational messages
+                    $min = Logger::DEBUG; // Debug: debug messages
+                    break;
+                case 'notice':
+                    $max = Logger::WARN;  // Warning: warning conditions
+                    $min = Logger::NOTICE;// Notice: normal but significant condition
+                    break;
+                case 'error':
+                    $max = Logger::CRIT;  // Critical: critical conditions
+                    $min = Logger::ERR;   // Error: error conditions
+                    break;
+                case 'alert':
+                    $max = Logger::EMERG; // Emergency: system is unusable
+                    $min = Logger::ALERT; // Alert: action must be taken immediately
+                    break;
+                default:
+                    // INVALID FILTER, so skip it. We must continue 2 levels, so we
+                    // continue the foreach loop instead of just breaking the switch.
+                    continue 2;
             }
 
             // Clone the submitted writer since we'll need a separate instance of the
@@ -433,7 +437,7 @@ class LoggerFactory implements FactoryInterface
         // Construct the logger as a lazy loading value holder so that
         // the object is not instantiated until it is called. This helps break
         // potential circular dependencies with other services.
-        $callback = function (& $wrapped, $proxy) use ($container, $requestedName) {
+        $callback = function (&$wrapped, $proxy) use ($container, $requestedName) {
             // Indicate that initialization is complete to avoid reinitialization:
             $proxy->setProxyInitializer(null);
 

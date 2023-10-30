@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Record driver view helper
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\View\Helper\Root;
 
 use VuFind\Cover\Router as CoverRouter;
@@ -206,6 +208,16 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
+     * Render a list of record labels.
+     *
+     * @return string
+     */
+    public function getLabelList()
+    {
+        return $this->renderTemplate('label-list.phtml');
+    }
+
+    /**
      * Render an entry in a favorite list.
      *
      * @param \VuFind\Db\Row\UserList $list Currently selected list (null for
@@ -227,7 +239,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
                 'driver' => $this->driver,
                 'list' => $list,
                 'user' => $user,
-                'lists' => $lists
+                'lists' => $lists,
             ]
         );
     }
@@ -340,8 +352,15 @@ class Record extends \Laminas\View\Helper\AbstractHelper
             'link-' . $type . '.phtml',
             ['driver' => $this->driver, 'lookfor' => $lookfor]
         );
+
+        $prepend = (strpos($link, '?') === false) ? '?' : '&amp;';
+
         $link .= $this->getView()->plugin('searchTabs')
-            ->getCurrentHiddenFilterParams($this->driver->getSourceIdentifier());
+            ->getCurrentHiddenFilterParams(
+                $this->driver->getSearchBackendIdentifier(),
+                false,
+                $prepend
+            );
         return $link;
     }
 
@@ -490,7 +509,8 @@ class Record extends \Laminas\View\Helper\AbstractHelper
      */
     protected function getCoverSize($context, $default = 'medium')
     {
-        if (isset($this->config->Content->coversize)
+        if (
+            isset($this->config->Content->coversize)
             && !$this->config->Content->coversize
         ) {
             // covers disabled entirely
@@ -544,15 +564,16 @@ class Record extends \Laminas\View\Helper\AbstractHelper
         }
 
         switch ($context) {
-        case "core":
-        case "results":
-            $key = 'showIn' . ucwords(strtolower($context));
-            break;
-        default:
-            return false;
+            case "core":
+            case "results":
+                $key = 'showIn' . ucwords(strtolower($context));
+                break;
+            default:
+                return false;
         }
 
-        if (!isset($this->config->QRCode->$key)
+        if (
+            !isset($this->config->QRCode->$key)
             || !$this->config->QRCode->$key
         ) {
             return false;
@@ -566,7 +587,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
             $extra + ['driver' => $this->driver]
         );
         $qrcode = [
-            "text" => $text, 'level' => $level, 'size' => $size, 'margin' => $margin
+            "text" => $text, 'level' => $level, 'size' => $size, 'margin' => $margin,
         ];
 
         $urlHelper = $this->getView()->plugin('url');
@@ -656,7 +677,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper
             return $link;
         };
 
-        return array_map($formatLink, $urls);
+        return $this->deduplicateLinks(array_map($formatLink, $urls));
     }
 
     /**
@@ -670,5 +691,20 @@ class Record extends \Laminas\View\Helper\AbstractHelper
     {
         return isset($this->config->OpenURL->replace_other_urls)
             && $this->config->OpenURL->replace_other_urls;
+    }
+
+    /**
+     * Remove duplicates from the array. All keys and values are being used
+     * recursively to compare, so if there are 2 links with the same url
+     * but different desc, they will both be preserved.
+     *
+     * @param array $links array of associative arrays,
+     * each containing 'desc' and 'url' keys
+     *
+     * @return array
+     */
+    protected function deduplicateLinks($links)
+    {
+        return array_values(array_unique($links, SORT_REGULAR));
     }
 }

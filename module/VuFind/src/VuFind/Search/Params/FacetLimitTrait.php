@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Trait to add facet limiting settings to a Params object.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\Search\Params;
 
 use Laminas\Config\Config;
@@ -136,9 +138,9 @@ trait FacetLimitTrait
         $limit = $this->facetLimitByField[$field] ?? $this->facetLimit;
 
         // Check for a different limit for hierarchical facets:
-        if (null !== $this->hierarchicalFacetLimit
+        if (
+            null !== $this->hierarchicalFacetLimit
             && $limit !== $this->hierarchicalFacetLimit
-            && is_callable([$this->getOptions(), 'getHierarchicalFacets'])
         ) {
             $hierarchicalFacets = $this->getOptions()->getHierarchicalFacets();
             if (in_array($field, $hierarchicalFacets)) {

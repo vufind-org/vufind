@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Storage retrieval requests trait (for subclasses of AbstractRecord)
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Controller;
 
 /**
@@ -58,7 +60,7 @@ trait StorageRetrievalRequestsTrait
             'StorageRetrievalRequests',
             [
                 'id' => $driver->getUniqueID(),
-                'patron' => $patron
+                'patron' => $patron,
             ]
         );
         if (!$checkRequests) {
@@ -94,39 +96,59 @@ trait StorageRetrievalRequestsTrait
         $extraFields = isset($checkRequests['extraFields'])
             ? explode(":", $checkRequests['extraFields']) : [];
 
+        // Check that there are pick up locations to choose from if the field is
+        // required:
+        if (in_array('pickUpLocation', $extraFields) && !$pickup) {
+            $this->flashMessenger()
+                ->addErrorMessage('No pickup locations available');
+            return $this->redirectToRecord('#top');
+        }
+
         // Process form submissions if necessary:
         if (null !== $this->params()->fromPost('placeStorageRetrievalRequest')) {
             // If we made it this far, we're ready to place the hold;
             // if successful, we will redirect and can stop here.
 
-            // Add Patron Data to Submitted Data
-            $details = $gatheredDetails + ['patron' => $patron];
-
-            // Attempt to place the hold:
-            $function = (string)$checkRequests['function'];
-            $results = $catalog->$function($details);
-
-            // Success: Go to Display Storage Retrieval Requests
-            if (isset($results['success']) && $results['success'] == true) {
-                $msg = [
-                    'html' => true,
-                    'msg' => 'storage_retrieval_request_place_success_html',
-                    'tokens' => [
-                        '%%url%%' => $this->url()
-                            ->fromRoute('myresearch-storageretrievalrequests')
-                    ],
-                ];
-                $this->flashMessenger()->addMessage($msg, 'success');
-                return $this->redirectToRecord('#top');
+            // Check that any pick up location is valid:
+            $validPickup = $this->storageRetrievalRequests()->validatePickUpInput(
+                $gatheredDetails['pickUpLocation'] ?? null,
+                $extraFields,
+                $pickup
+            );
+            if (!$validPickup) {
+                $this->flashMessenger()
+                    ->addErrorMessage('storage_retrieval_request_invalid_pickup');
             } else {
-                // Failure: use flash messenger to display messages, stay on
-                // the current form.
-                if (isset($results['status'])) {
-                    $this->flashMessenger()->addMessage($results['status'], 'error');
-                }
-                if (isset($results['sysMessage'])) {
-                    $this->flashMessenger()
-                        ->addMessage($results['sysMessage'], 'error');
+                // Add Patron Data to Submitted Data
+                $details = $gatheredDetails + ['patron' => $patron];
+
+                // Attempt to place the hold:
+                $function = (string)$checkRequests['function'];
+                $results = $catalog->$function($details);
+
+                // Success: Go to Display Storage Retrieval Requests
+                if (isset($results['success']) && $results['success'] == true) {
+                    $msg = [
+                        'html' => true,
+                        'msg' => 'storage_retrieval_request_place_success_html',
+                        'tokens' => [
+                            '%%url%%' => $this->url()
+                                ->fromRoute('myresearch-storageretrievalrequests'),
+                        ],
+                    ];
+                    $this->flashMessenger()->addMessage($msg, 'success');
+                    $this->getViewRenderer()->plugin('session')->put('reset_account_status', true);
+                    return $this->redirectToRecord($this->inLightbox() ? '?layout=lightbox' : '');
+                } else {
+                    // Failure: use flash messenger to display messages, stay on
+                    // the current form.
+                    if (isset($results['status'])) {
+                        $this->flashMessenger()->addErrorMessage($results['status']);
+                    }
+                    if (isset($results['sysMessage'])) {
+                        $this->flashMessenger()
+                            ->addMessage($results['sysMessage'], 'error');
+                    }
                 }
             }
         }

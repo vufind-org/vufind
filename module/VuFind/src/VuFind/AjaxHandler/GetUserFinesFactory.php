@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for GetUserFines AJAX handler.
  *
@@ -25,12 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\AjaxHandler;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Factory for GetUserFines AJAX handler.
@@ -41,8 +44,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class GetUserFinesFactory extends AbstractIlsAndUserActionFactory
-    implements \Laminas\ServiceManager\Factory\FactoryInterface
+class GetUserFinesFactory extends AbstractIlsAndUserActionFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -68,7 +70,7 @@ class GetUserFinesFactory extends AbstractIlsAndUserActionFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $helper = $container->get('ViewHelperManager')->get('safeMoneyFormat');
-        return parent::__invoke($container, $requestedName, [$helper]);
+        $formatter = $container->get(\VuFind\Service\CurrencyFormatter::class);
+        return parent::__invoke($container, $requestedName, [$formatter]);
     }
 }

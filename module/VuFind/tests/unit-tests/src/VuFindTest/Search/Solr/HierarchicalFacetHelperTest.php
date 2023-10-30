@@ -26,8 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTest\Search\Solr;
 
+use VuFind\I18n\Sorter;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
 
 /**
@@ -53,50 +55,50 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
             'displayText' => 'Book',
             'count' => 1000,
             'operator' => 'OR',
-            'isApplied' => false
+            'isApplied' => false,
         ],
         [
             'value' => '0/AV/',
             'displayText' => 'Audiovisual',
             'count' => 600,
             'operator' => 'OR',
-            'isApplied' => false
+            'isApplied' => false,
         ],
         [
             'value' => '0/Audio/',
             'displayText' => 'Sound',
             'count' => 400,
             'operator' => 'OR',
-            'isApplied' => false
+            'isApplied' => false,
         ],
         [
             'value' => '1/Book/BookPart/',
             'displayText' => 'Book Part',
             'count' => 300,
             'operator' => 'OR',
-            'isApplied' => false
+            'isApplied' => false,
         ],
         [
             'value' => '1/Book/Section/',
             'displayText' => 'Book Section',
             'count' => 200,
             'operator' => 'OR',
-            'isApplied' => false
+            'isApplied' => false,
         ],
         [
             'value' => '1/Audio/Spoken/',
             'displayText' => 'Spoken Text',
             'count' => 100,
             'operator' => 'OR',
-            'isApplied' => false
+            'isApplied' => false,
         ],
         [
             'value' => '1/Audio/Music/',
             'displayText' => 'Music',
             'count' => 50,
             'operator' => 'OR',
-            'isApplied' => false
-        ]
+            'isApplied' => false,
+        ],
     ];
 
     /**
@@ -110,21 +112,21 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
             'displayText' => 'Book',
             'count' => 1000,
             'operator' => 'OR',
-            'isApplied' => false
+            'isApplied' => false,
         ],
         [
             'value' => 'AV',
             'displayText' => 'Audiovisual',
             'count' => 600,
             'operator' => 'OR',
-            'isApplied' => false
+            'isApplied' => false,
         ],
         [
             'value' => 'Audio',
             'displayText' => 'Sound',
             'count' => 400,
             'operator' => 'OR',
-            'isApplied' => false
+            'isApplied' => false,
         ],
     ];
 
@@ -143,6 +145,7 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
     protected function setUp(): void
     {
         $this->helper = new HierarchicalFacetHelper();
+        $this->helper->setSorter(new Sorter(new \Collator('en')));
     }
 
     /**

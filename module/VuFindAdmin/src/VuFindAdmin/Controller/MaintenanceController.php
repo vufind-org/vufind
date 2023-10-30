@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Admin Maintenance Controller
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindAdmin\Controller;
 
 /**
@@ -133,7 +135,8 @@ class MaintenanceController extends AbstractAdmin
             if (!method_exists($search, 'deleteExpired')) {
                 throw new \Exception($table . ' does not support deleteExpired()');
             }
-            $count = $search->deleteExpired($daysOld);
+            $threshold = date('Y-m-d H:i:s', time() - $daysOld * 24 * 60 * 60);
+            $count = $search->deleteExpired($threshold);
             if ($count == 0) {
                 $msg = $failString;
             } else {

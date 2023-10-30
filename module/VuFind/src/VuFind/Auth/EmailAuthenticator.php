@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class for managing email-based authentication.
  *
@@ -25,12 +26,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:authentication_handlers Wiki
  */
+
 namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\RemoteAddress;
 use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Db\Table\AuthHash as AuthHashTable;
 use VuFind\Exception\Auth as AuthException;
+use VuFind\Validator\CsrfInterface;
 
 /**
  * Class for managing email-based authentication.
@@ -58,7 +61,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
     /**
      * CSRF Validator
      *
-     * @var \VuFind\Validator\Csrf $csrf CSRF validator
+     * @var CsrfInterface
      */
     protected $csrf = null;
 
@@ -108,7 +111,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
      * Constructor
      *
      * @param \Laminas\Session\SessionManager          $session      Session Manager
-     * @param \VuFind\Validator\Csrf                   $csrf         CSRF Validator
+     * @param CsrfInterface                            $csrf         CSRF Validator
      * @param \VuFind\Mailer\Mailer                    $mailer       Mailer
      * @param \Laminas\View\Renderer\RendererInterface $viewRenderer View Renderer
      * @param RemoteAddress                            $remoteAddr   Remote address
@@ -117,7 +120,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
      */
     public function __construct(
         \Laminas\Session\SessionManager $session,
-        \VuFind\Validator\Csrf $csrf,
+        CsrfInterface $csrf,
         \VuFind\Mailer\Mailer $mailer,
         \Laminas\View\Renderer\RendererInterface $viewRenderer,
         RemoteAddress $remoteAddr,
@@ -160,7 +163,8 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
         $recoveryInterval = $this->config->Authentication->recover_interval ?? 60;
         $sessionId = $this->sessionManager->getId();
 
-        if (($row = $this->authHashTable->getLatestBySessionId($sessionId))
+        if (
+            ($row = $this->authHashTable->getLatestBySessionId($sessionId))
             && time() - strtotime($row['created']) < $recoveryInterval
         ) {
             throw new AuthException('authentication_error_in_progress');
@@ -171,7 +175,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
             'timestamp' => time(),
             'data' => $data,
             'email' => $email,
-            'ip' => $this->remoteAddress->getIpAddress()
+            'ip' => $this->remoteAddress->getIpAddress(),
         ];
         $hash = $this->csrf->getHash(true);
 
@@ -221,7 +225,8 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
 
         // Require same session id or IP address:
         $sessionId = $this->sessionManager->getId();
-        if ($row['session_id'] !== $sessionId
+        if (
+            $row['session_id'] !== $sessionId
             && $linkData['ip'] !== $this->remoteAddress->getIpAddress()
         ) {
             throw new AuthException('authentication_error_session_ip_mismatch');

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Mailer Class for SMS messages
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\SMS;
 
 use VuFind\Exception\Mail as MailException;
@@ -53,7 +55,7 @@ class Mailer extends AbstractBase
         'sprint' => ['name' => 'Sprint', 'domain' => 'messaging.sprintpcs.com'],
         'tmobile' => ['name' => 'T Mobile', 'domain' => 'tmomail.net'],
         'alltel' => ['name' => 'Alltel', 'domain' => 'message.alltel.com'],
-        'Cricket' => ['name' => 'Cricket', 'domain' => 'mms.mycricket.com']
+        'Cricket' => ['name' => 'Cricket', 'domain' => 'mms.mycricket.com'],
     ];
 
     /**
@@ -80,7 +82,7 @@ class Mailer extends AbstractBase
     public function __construct(\Laminas\Config\Config $config, $options = [])
     {
         // Set up parent object first:
-        parent::__construct($config, $options);
+        parent::__construct($config);
 
         // If found, use carriers from SMS configuration; otherwise, fall back to the
         // default list of US carriers.
@@ -97,7 +99,8 @@ class Mailer extends AbstractBase
             = $options['defaultFrom'] ?? '';
 
         // Make sure mailer dependency has been injected:
-        if (!isset($options['mailer'])
+        if (
+            !isset($options['mailer'])
             || !($options['mailer'] instanceof \VuFind\Mailer\Mailer)
         ) {
             throw new \Exception(

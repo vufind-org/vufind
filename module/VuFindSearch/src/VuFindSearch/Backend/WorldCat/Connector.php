@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class for accessing OCLC WorldCat search API
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindSearch\Backend\WorldCat;
 
 use VuFindSearch\ParamBag;
@@ -136,7 +138,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
         return [
             'docs' => $error ? [] : [$body],
             'offset' => 0,
-            'total' => $error ? 0 : 1
+            'total' => $error ? 0 : 1,
         ];
     }
 
@@ -167,7 +169,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
         return [
             'docs' => $finalDocs,
             'offset' => $offset,
-            'total' => (int)($xml->numberOfRecords ?? 0)
+            'total' => (int)($xml->numberOfRecords ?? 0),
         ];
     }
 }

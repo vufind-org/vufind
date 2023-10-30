@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Search options plugin manager
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\Search\Options;
 
 /**
@@ -44,6 +46,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
+        'blender' => \VuFind\Search\Blender\Options::class,
         'browzine' => \VuFind\Search\BrowZine\Options::class,
         'combined' => \VuFind\Search\Combined\Options::class,
         'eds' => \VuFind\Search\EDS\Options::class,
@@ -74,6 +77,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
+        \VuFind\Search\Blender\Options::class => OptionsFactory::class,
         \VuFind\Search\BrowZine\Options::class => OptionsFactory::class,
         \VuFind\Search\Combined\Options::class => OptionsFactory::class,
         \VuFind\Search\EDS\Options::class =>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink search actions test class.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 /**
@@ -47,25 +49,12 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
     protected $id = 'testdeweybrowse';
 
     /**
-     * Standard setup method.
-     *
-     * @return void
-     */
-    public function setUp(): void
-    {
-        // Give up if we're not running in CI:
-        if (!$this->continuousIntegrationRunning()) {
-            $this->markTestSkipped('Continuous integration not running.');
-            return;
-        }
-    }
-
-    /**
      * Set config for callnumber tests
      * Sets callnumber_handler to false
      *
      * @param string $nos  multiple_call_nos setting
      * @param string $locs multiple_locations setting
+     * @param bool   $full Show full status setting
      *
      * @return void
      */
@@ -79,9 +68,9 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
                         'multiple_call_nos' => $nos,
                         'multiple_locations' => $locs,
                         'callnumber_handler' => false,
-                        'show_full_status' => $full
-                    ]
-                ]
+                        'show_full_status' => $full,
+                    ],
+                ],
             ]
         );
     }
@@ -96,7 +85,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function checkLink($link, $type)
     {
-        $this->assertTrue(is_object($link));
+        $this->assertIsObject($link);
         $href = $link->getAttribute('href');
         $this->assertStringContainsString($type, $href);
         $this->assertNotEquals('', $link->getText());
@@ -104,12 +93,17 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertStringEndsWith($hrefCallnum, $link->getText());
     }
 
+    /**
+     * Set up configuration for testing with multiple call numbers.
+     *
+     * @return void
+     */
     protected function setupMultipleCallnumbers()
     {
         $this->changeConfigs(
             [
             'config' => [
-                'Catalog' => ['driver' => 'Demo']
+                'Catalog' => ['driver' => 'Demo'],
             ],
             'Demo' => [
                 'StaticHoldings' => [
@@ -118,11 +112,11 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
                         ['callnumber' => 'CallNumberOne', 'location' => 'Villanova'],
                         ['callnumber' => 'CallNumberTwo', 'location' => 'Villanova'],
                         ['callnumber' => 'CallNumberThree', 'location' => 'Phobos'],
-                        ['callnumber' => 'CallNumberFour', 'location' => 'Phobos']
+                        ['callnumber' => 'CallNumberFour', 'location' => 'Phobos'],
                         ]
-                    )
-                ]
-            ]
+                    ),
+                ],
+            ],
             ]
         );
     }
@@ -143,8 +137,8 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
             [
                 'config' => [
                     'Catalog' => ['driver' => 'Sample'],
-                    'Item_Status' => ['callnumber_handler' => $type]
-                ]
+                    'Item_Status' => ['callnumber_handler' => $type],
+                ],
             ]
         );
         $callnumberSelector = '.callnumber a,.groupCallnumber a,.fullCallnumber a';
@@ -173,6 +167,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $nos         multiple_call_nos setting
      * @param string $locs        multiple_locations setting
      * @param bool   $expectLinks whether or not links are expected for multiple callnumbers in this config
+     * @param bool   $full        Show full status setting
      *
      * @return void
      */

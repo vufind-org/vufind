@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for instantiating Session Manager
  *
@@ -25,14 +26,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Session;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Laminas\Session\SessionManager;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Factory for instantiating Session Manager
@@ -171,6 +173,11 @@ class ManagerFactory implements FactoryInterface
             }
         } else {
             $storage->cookiePath = $sessionConfig->getCookiePath();
+        }
+
+        // Set session start time:
+        if (empty($storage->sessionStartTime)) {
+            $storage->sessionStartTime = time();
         }
 
         // Check if we need to immediately stop it based on the settings object

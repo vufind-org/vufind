@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Backend\EDS\Command;
 
 use VuFindSearch\Backend\EDS\Backend;
@@ -90,7 +91,7 @@ class AutocompleteCommand extends CallMethodCommand
     {
         return [
             $this->getQuery(),
-            $this->getDomain()
+            $this->getDomain(),
         ];
     }
 

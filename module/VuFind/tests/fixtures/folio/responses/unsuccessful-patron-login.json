@@ -1,0 +1,9 @@
+[
+    {
+        "comment": "Initial token check"
+    },
+    {
+        "expectedPath": "/users",
+        "expectedParams": { "query": "username == \"foo\"" }
+    }
+]

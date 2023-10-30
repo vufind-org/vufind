@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Record versions test class.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 /**
@@ -39,20 +41,6 @@ namespace VuFindTest\Mink;
  */
 class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
 {
-    /**
-     * Standard setup method.
-     *
-     * @return void
-     */
-    public function setUp(): void
-    {
-        // Give up if we're not running in CI:
-        if (!$this->continuousIntegrationRunning()) {
-            $this->markTestSkipped('Continuous integration not running.');
-            return;
-        }
-    }
-
     /**
      * Run test procedure for record versions.
      *
@@ -91,7 +79,7 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCss($page, 'ul.breadcrumb li.active')->getText()
         );
         $results = $page->findAll('css', '.result');
-        $this->assertEquals(4, count($results));
+        $this->assertCount(4, $results);
     }
 
     /**
@@ -126,9 +114,9 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
         $extraConfigs = [
             'RecordTabs' => [
                 'VuFind\RecordDriver\SolrMarc' => [
-                    'tabs[Versions]' => false
-                ]
-            ]
+                    'tabs[Versions]' => false,
+                ],
+            ],
         ];
         $this->changeConfigs($extraConfigs);
         // Search for an item known to have other versions in test data:
@@ -151,7 +139,7 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCss($page, 'ul.breadcrumb li.active')->getText()
         );
         $results = $page->findAll('css', '.result');
-        $this->assertEquals(4, count($results));
+        $this->assertCount(4, $results);
     }
 
     /**
@@ -166,9 +154,9 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
         $extraConfigs = [
             'searches' => [
                 'General' => [
-                    'display_versions' => false
-                ]
-            ]
+                    'display_versions' => false,
+                ],
+            ],
         ];
         $this->changeConfigs($extraConfigs);
 
@@ -176,9 +164,9 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch('id:0001732009-0');
 
         // Click on the "other versions" link:
-        $this->assertEquals(
+        $this->assertCount(
             0,
-            count($page->findAll('css', 'div.record-versions a'))
+            $page->findAll('css', 'div.record-versions a')
         );
     }
 }

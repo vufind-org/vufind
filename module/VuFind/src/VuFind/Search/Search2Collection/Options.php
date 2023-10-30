@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Search2 Collection aspect of the Search Multi-class (Options)
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Search\Search2Collection;
 
 /**

@@ -1,53 +1,42 @@
 <?php
 
-// Define path to application directory
-defined('APPLICATION_PATH')
-    || define(
-        'APPLICATION_PATH',
-        (getenv('VUFIND_APPLICATION_PATH') ? getenv('VUFIND_APPLICATION_PATH')
-            : dirname(__DIR__) . '/../..')
-    );
+/**
+ * Bootstrap logic for PHPUnit
+ *
+ * PHP version 7
+ *
+ * Copyright (C) Villanova University 2023.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * @category VuFind
+ * @package  Tests
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
+ */
 
-// Define application environment
-defined('APPLICATION_ENV')
-    || define(
-        'APPLICATION_ENV',
-        (getenv('VUFIND_ENV') ? getenv('VUFIND_ENV') : 'testing')
-    );
-
-// Define default search backend identifier
-defined('DEFAULT_SEARCH_BACKEND') || define('DEFAULT_SEARCH_BACKEND', 'Solr');
-
-// Define path to local override directory
-defined('LOCAL_OVERRIDE_DIR')
-    || define(
-        'LOCAL_OVERRIDE_DIR',
-        (getenv('VUFIND_LOCAL_DIR') ? getenv('VUFIND_LOCAL_DIR') : '')
-    );
-
-// Define path to cache directory
-defined('LOCAL_CACHE_DIR')
-    || define(
-        'LOCAL_CACHE_DIR',
-        (getenv('VUFIND_CACHE_DIR')
-            ? getenv('VUFIND_CACHE_DIR')
-            : (strlen(LOCAL_OVERRIDE_DIR) > 0 ? LOCAL_OVERRIDE_DIR . '/cache' : ''))
-    );
+require __DIR__ . '/bootstrap_constants.php';
+require __DIR__ . '/../../../config/constants.config.php';
 
 chdir(APPLICATION_PATH);
-
-// Ensure vendor/ is on include_path; some PEAR components may not load correctly
-// otherwise (i.e. File_MARC may cause a "Cannot redeclare class" error by pulling
-// from the shared PEAR directory instead of the local copy):
-$pathParts = [];
-$pathParts[] = APPLICATION_PATH . '/vendor';
-$pathParts[] = get_include_path();
-set_include_path(implode(PATH_SEPARATOR, $pathParts));
 
 // Composer autoloading
 if (file_exists('vendor/autoload.php')) {
     $loader = include 'vendor/autoload.php';
     $loader = new Composer\Autoload\ClassLoader();
+    $loader->addClassMap(['minSO' => __DIR__ . '/../src/VuFind/Search/minSO.php']);
     $loader->add('VuFindTest', __DIR__ . '/unit-tests/src');
     $loader->add('VuFindTest', __DIR__ . '/../src');
     // Dynamically discover all module src directories:
@@ -60,4 +49,12 @@ if (file_exists('vendor/autoload.php')) {
         }
     }
     $loader->register();
+}
+
+// Make sure local config dir exists:
+if (!defined('LOCAL_OVERRIDE_DIR')) {
+    throw new \Exception('LOCAL_OVERRIDE_DIR must be defined');
+}
+if (!file_exists(LOCAL_OVERRIDE_DIR)) {
+    mkdir(LOCAL_OVERRIDE_DIR, 0777, true);
 }

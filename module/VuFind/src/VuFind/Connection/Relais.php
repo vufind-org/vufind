@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Relais connection class.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Connection;
 
 use Laminas\Config\Config;
@@ -87,8 +89,8 @@ class Relais implements \Laminas\Log\LoggerAwareInterface
     /**
      * Format the parameters needed to look up an OCLC number in the API.
      *
-     * @param string $oclc   OCLC number to look up
-     * @param string $patron Patron ID (null to use default from config)
+     * @param string  $oclc   OCLC number to look up
+     * @param ?string $patron Patron ID (null to use default from config)
      *
      * @return array
      */
@@ -102,8 +104,8 @@ class Relais implements \Laminas\Log\LoggerAwareInterface
                 [
                     'Type' => 'OCLC',
                     'Value' => $oclc,
-                ]
-            ]
+                ],
+            ],
         ];
     }
 

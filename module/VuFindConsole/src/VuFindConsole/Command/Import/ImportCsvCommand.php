@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Console command: CSV importer
  *
@@ -25,14 +26,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Import;
 
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\CSV\Importer;
-use VuFindConsole\Command\RelativeFileAwareCommand;
 
 /**
  * Console command: CSV importer
@@ -43,7 +45,7 @@ use VuFindConsole\Command\RelativeFileAwareCommand;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ImportCsvCommand extends RelativeFileAwareCommand
+class ImportCsvCommand extends Command
 {
     /**
      * The name of the command

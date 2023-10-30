@@ -3,7 +3,7 @@
 
 <?php if (isset($sideFacetSet['tags']) && !empty($sideFacetSet['tags']['list'])): ?>
   <h4 class="tag"><?=$this->transEsc($sideFacetSet['tags']['label'])?></h4>
-  <ul class="list-group">
+  <div class="list-group">
   <?php $filterList = $results->getParams()->getFilterList(true);
      $tagFilterList = $filterList[$sideFacetSet['tags']['label']] ?? null; ?>
     <?php if (!empty($tagFilterList)): ?>
@@ -11,18 +11,18 @@
       <?php foreach ($tagFilterList as $filter): ?>
         <?php $removeLink = $this->currentPath() . $results->getUrlQuery()->removeFacet($filter['field'], $filter['value']); ?>
         <a class="list-group-item active" href="<?=$removeLink?>">
-          <span class="pull-right flip"><i class="fa fa-minus-circle" aria-hidden="true"></i></span>
+          <span class="pull-right flip"><?=$this->icon('ui-remove') ?></span>
           <?=$this->escapeHtml($filter['displayText'])?>
         </a>
       <?php endforeach; ?>
     <?php endif; ?>
-    <?php foreach($sideFacetSet['tags']['list'] as $thisFacet): ?>
-      <?php if(!$thisFacet['isApplied']): ?>
+    <?php foreach ($sideFacetSet['tags']['list'] as $thisFacet): ?>
+      <?php if (!$thisFacet['isApplied']): ?>
         <a class="list-group-item" href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet('tags', $thisFacet['value'])?>">
           <span class="badge"><?=$this->escapeHtml($thisFacet['count'])?></span>
           <?=$this->escapeHtml($thisFacet['displayText'])?>
         </a>
       <?php endif ?>
     <?php endforeach; ?>
-  </ul>
+  </div>
 <?php endif; ?>

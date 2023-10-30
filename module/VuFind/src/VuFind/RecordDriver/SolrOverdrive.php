@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Record Driver for SolrOverdrive Records
  *
@@ -28,6 +29,7 @@
  *           License
  * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
  */
+
 namespace VuFind\RecordDriver;
 
 use Laminas\Config\Config;
@@ -123,7 +125,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
                     $formatType = $format->formatType;
                     $formats[$formatType] = $formatNames[$formatType];
                 }
-                // If we aren't locked in, we can show all formats
+            // If we aren't locked in, we can show all formats
             } else {
                 foreach ($this->getDigitalFormats() as $format) {
                     $formats[$format->id] = $formatNames[$format->id];
@@ -173,7 +175,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     public function getFormattedDigitalFormats()
     {
         $results = [];
-        foreach ($this->getDigitalFormats() as $key=>$format) {
+        foreach ($this->getDigitalFormats() as $key => $format) {
             $tmpresults = [];
             if ($format->fileSize > 0) {
                 if ($format->fileSize > 1000000) {
@@ -227,7 +229,8 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
 
         if (isset($data->formats[0]->samples[0])) {
             foreach ($data->formats[0]->samples as $format) {
-                if ($format->formatType == 'audiobook-overdrive'
+                if (
+                    $format->formatType == 'audiobook-overdrive'
                     || $format->formatType == 'ebook-overdrive'
                 ) {
                     $results = $format;
@@ -397,48 +400,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
-     * Get Marc Record
-     *
-     * Override the base marc trait to return a fake marc object
-     *
-     * @return     \File_MARCBASE
-     * @throws     \File_MARC_Exception
-     * @deprecated Use getMarcReader()
-     */
-    public function getMarcRecord()
-    {
-        if ($this->getIsMarc()) {
-            return parent::getMarcRecord();
-        }
-        // No MARC support? Return new fake MARC class.
-        return new class {
-            /**
-             * Get the field
-             *
-             * @param string $f Fieldname
-             *
-             * @return string
-             */
-            public function getField($f)
-            {
-                return "";
-            }
-
-            /**
-             * Get the fields
-             *
-             * @param array $f Fieldnames
-             *
-             * @return array
-             */
-            public function getFields($f)
-            {
-                return [];
-            }
-        };
-    }
-
-    /**
      * Get Title Section
      *
      * @return string
@@ -478,7 +439,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         $coverMap = [
             'large' => 'cover300Wide',
             'medium' => 'cover150Wide',
-            'small' => 'thumbnail'
+            'small' => 'thumbnail',
         ];
         $cover = $coverMap[$size] ?? 'cover';
 
@@ -577,7 +538,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
             $c_arr[] = "<strong>{$creator["role"]}<strong>: "
                 . $creator["name"];
         }
-        $data['creators'] = implode("<br/>", $c_arr);
+        $data['creators'] = implode("<br>", $c_arr);
 
         $this->debug("raw data:" . print_r($data, true));
         return $data;
@@ -596,7 +557,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
             'action' => 'Hold',
             'record' => $rec_id,
             'query' => "od_id=$od_id&rec_id=$rec_id",
-            'anchor' => ''
+            'anchor' => '',
         ];
         return $urlDetails;
     }

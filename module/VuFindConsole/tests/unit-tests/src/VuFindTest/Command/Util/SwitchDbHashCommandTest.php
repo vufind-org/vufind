@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SwitchDbHashCommand test.
  *
@@ -25,13 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Command\Util;
 
 use Laminas\Config\Config;
 use Laminas\Crypt\BlockCipher;
 use Laminas\Crypt\Symmetric\Openssl;
 use Symfony\Component\Console\Tester\CommandTester;
-use VuFind\Config\Locator;
 use VuFind\Config\Writer;
 use VuFind\Db\Table\User;
 use VuFindConsole\Command\Util\SwitchDbHashCommand;
@@ -47,6 +48,15 @@ use VuFindConsole\Command\Util\SwitchDbHashCommand;
  */
 class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\PathResolverTrait;
+
+    /**
+     * Expected path to config.ini
+     *
+     * @var string
+     */
+    protected $expectedConfigIniPath;
+
     /**
      * Encryption algorithm to use
      *
@@ -83,6 +93,8 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @param array $config Config settings
      * @param User  $table  User table gateway
+     *
+     * @return SwitchDbhashCommand
      */
     protected function getMockCommand(array $config = [], $table = null)
     {
@@ -104,6 +116,17 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
     protected function getMockConfigWriter()
     {
         return $this->prepareMock(Writer::class);
+    }
+
+    /**
+     * Standard setup method.
+     *
+     * @return void
+     */
+    public function setUp(): void
+    {
+        $this->expectedConfigIniPath = $this->getPathResolver()
+            ->getLocalConfigPath('config.ini', null, true);
     }
 
     /**
@@ -154,7 +177,7 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
                     'encrypt_ils_password' => true,
                     'ils_encryption_algo' => $this->encryptionAlgorithm,
                     'ils_encryption_key' => 'bar',
-                ]
+                ],
             ]
         );
         $commandTester = new CommandTester($command);
@@ -186,9 +209,8 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
             ['newmethod' => $this->encryptionAlgorithm, 'newkey' => 'foo']
         );
         $this->assertEquals(1, $commandTester->getStatusCode());
-        $expectedConfig = Locator::getLocalConfigPath('config.ini', null, true);
         $this->assertEquals(
-            "\tUpdating $expectedConfig...\n\tWrite failed!\n",
+            "\tUpdating {$this->expectedConfigIniPath}...\n\tWrite failed!\n",
             $commandTester->getDisplay()
         );
     }
@@ -207,7 +229,7 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
                 [
                     'Authentication',
                     'ils_encryption_algo',
-                    $this->encryptionAlgorithm
+                    $this->encryptionAlgorithm,
                 ],
                 ['Authentication', 'ils_encryption_key', 'foo']
             );
@@ -224,10 +246,9 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
             ['newmethod' => $this->encryptionAlgorithm, 'newkey' => 'foo']
         );
         $this->assertEquals(0, $commandTester->getStatusCode());
-        $expectedConfig = Locator::getLocalConfigPath('config.ini', null, true);
         $this->assertEquals(
-            "\tUpdating $expectedConfig...\n\tConverting hashes for 0 user(s).\n"
-            . "\tFinished.\n",
+            "\tUpdating {$this->expectedConfigIniPath}...\n\tConverting hashes for"
+            . " 0 user(s).\n\tFinished.\n",
             $commandTester->getDisplay()
         );
     }
@@ -258,6 +279,10 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Decode a hash to confirm that it was encoded correctly.
+     *
+     * @param string $hash Hash to decode
+     *
+     * @return string
      */
     protected function decode($hash)
     {
@@ -282,7 +307,7 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
                 [
                     'Authentication',
                     'ils_encryption_algo',
-                    $this->encryptionAlgorithm
+                    $this->encryptionAlgorithm,
                 ],
                 ['Authentication', 'ils_encryption_key', 'foo']
             );
@@ -301,10 +326,9 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
             ['newmethod' => $this->encryptionAlgorithm, 'newkey' => 'foo']
         );
         $this->assertEquals(0, $commandTester->getStatusCode());
-        $expectedConfig = Locator::getLocalConfigPath('config.ini', null, true);
         $this->assertEquals(
-            "\tUpdating $expectedConfig...\n\tConverting hashes for 1 user(s).\n"
-            . "\tFinished.\n",
+            "\tUpdating {$this->expectedConfigIniPath}...\n\tConverting hashes for"
+            . " 1 user(s).\n\tFinished.\n",
             $commandTester->getDisplay()
         );
         $this->assertEquals(null, $user['cat_password']);

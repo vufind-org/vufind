@@ -1,4 +1,5 @@
 <?php
+
 /**
  * "Get User Transactions" AJAX handler
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
@@ -40,6 +42,8 @@ use Laminas\Mvc\Controller\Plugin\Params;
  */
 class GetUserTransactions extends AbstractIlsAndUserAction
 {
+    use \VuFind\ILS\Logic\SummaryTrait;
+
     /**
      * Paginator
      *
@@ -65,11 +69,7 @@ class GetUserTransactions extends AbstractIlsAndUserAction
             return $this->formatResponse('', self::STATUS_HTTP_ERROR);
         }
 
-        $counts = [
-            'ok' => 0,
-            'warn' => 0,
-            'overdue' => 0
-        ];
+        $counts = [];
         $functionConfig = $this->ils->checkFunction('getMyTransactions', $patron);
         $page = 1;
         do {
@@ -78,18 +78,10 @@ class GetUserTransactions extends AbstractIlsAndUserAction
                 ->getOptions($page, null, 1000, $functionConfig);
             $result = $this->ils
                 ->getMyTransactions($patron, $pageOptions['ilsParams']);
-            foreach ($result['records'] as $item) {
-                switch ($item['dueStatus'] ?? '') {
-                case 'due':
-                    $counts['warn']++;
-                    break;
-                case 'overdue':
-                    $counts['overdue']++;
-                    break;
-                default:
-                    $counts['ok']++;
-                    break;
-                }
+
+            $summary = $this->getTransactionSummary($result['records']);
+            foreach ($summary as $key => $value) {
+                $counts[$key] = ($counts[$key] ?? 0) + $value;
             }
             $pageEnd = $pageOptions['ilsPaging']
                 ? ceil($result['count'] / $pageOptions['limit'])

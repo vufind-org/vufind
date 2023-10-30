@@ -58,10 +58,24 @@ header .navbar {
     &:hover { color: transparent; }
     &.lang-ar { background-image: url('../../bootprint3/images/vufind_logo_ar.png'); }
   }
-  .navbar-nav > li > a { padding: 12px 6px; }
+  .navbar-nav > li > a,
+  .navbar-nav > li .dropdown-toggle  {
+    position: relative;
+    padding: 12px 6px;
+
+    &:hover,
+    &:focus {
+      z-index: 1000;
+      text-decoration: none;
+      color: #000;
+      outline: dotted 1px #000;
+      background-color: #eeeeee;
+    }
+  }
   .navbar-right { margin-top: 12px; }
   @media (max-width: 767px) {
-    .navbar-nav > li > a { padding: 8px 24px; }
+    .navbar-nav > li > a,
+    .navbar-nav > li .dropdown-toggle { padding: 8px 24px; }
     .navbar-right { margin: 0; }
   }
 }

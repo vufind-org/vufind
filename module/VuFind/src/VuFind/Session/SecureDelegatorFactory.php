@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Secure session delegator factory
  *
@@ -27,11 +28,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:session_handlers Wiki
  */
+
 namespace VuFind\Session;
 
-use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\DelegatorFactoryInterface;
 use ProxyManager\Factory\LazyLoadingValueHolderFactory;
+use Psr\Container\ContainerInterface;
 
 /**
  * Secure session delegator factory

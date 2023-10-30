@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Hierarchy Driver Factory Class
  *
@@ -25,9 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
+
 namespace VuFind\Hierarchy\Driver;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * Hierarchy Driver Factory Class
@@ -70,7 +72,7 @@ class ConfigurationBasedFactory
         $configReader = $container->get(\VuFind\Config\PluginManager::class);
         $globalConfig = $configReader->get('config');
         $options = [
-            'enabled' => $globalConfig->Hierarchy->showTree ?? false
+            'enabled' => $globalConfig->Hierarchy->showTree ?? false,
         ];
 
         // Load driver-specific configuration:

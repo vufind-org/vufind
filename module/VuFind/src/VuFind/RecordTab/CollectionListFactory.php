@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for building the CollectionList tab.
  *
@@ -25,12 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\RecordTab;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Factory for building the CollectionList tab.
@@ -41,8 +43,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class CollectionListFactory
-    implements \Laminas\ServiceManager\Factory\FactoryInterface
+class CollectionListFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -70,7 +71,8 @@ class CollectionListFactory
         }
         return new $requestedName(
             $container->get(\VuFind\Search\SearchRunner::class),
-            $container->get(\VuFind\Recommend\PluginManager::class)
+            $container->get(\VuFind\Recommend\PluginManager::class),
+            $container->get(\VuFind\Search\Memory::class)
         );
     }
 }

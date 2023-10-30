@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Factory for EDS search options objects.
  *
@@ -25,12 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Search\EDS;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 
 /**
  * Factory for EDS search options objects.
@@ -65,9 +67,11 @@ class OptionsFactory extends \VuFind\Search\Options\OptionsFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $command = new \VuFindSearch\Backend\EDS\Command\GetInfoCommand();
-        $searchService = $container->get(\VuFindSearch\Service::class);
-        $extra = [$searchService->invoke($command)->getResult()];
-        return parent::__invoke($container, $requestedName, $extra);
+        $getInfo = function () use ($container): array {
+            $searchService = $container->get(\VuFindSearch\Service::class);
+            $command = new \VuFindSearch\Backend\EDS\Command\GetInfoCommand();
+            return $searchService->invoke($command)->getResult();
+        };
+        return parent::__invoke($container, $requestedName, [$getInfo]);
     }
 }

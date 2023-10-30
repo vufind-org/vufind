@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Abstract parameters search model.
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\Base;
 
 use VuFind\I18n\TranslatableString;
@@ -359,7 +361,8 @@ class Params
             // to reduce the size of result lists without actually enabling
             // the user's ability to select a reduced list size).
             $legalOptions = $this->getOptions()->getLimitOptions();
-            if (in_array($limit, $legalOptions)
+            if (
+                in_array($limit, $legalOptions)
                 || ($limit > 0 && $limit < max($legalOptions))
             ) {
                 $this->limit = $limit;
@@ -569,7 +572,8 @@ class Params
         } elseif (!empty($view) && in_array($view, $validViews)) {
             // make sure the url parameter is a valid view
             $this->setView($view);
-        } elseif (!empty($this->lastView)
+        } elseif (
+            !empty($this->lastView)
             && in_array($this->lastView, $validViews)
         ) {
             // if there is nothing in the URL, see if we had a previous value
@@ -774,6 +778,25 @@ class Params
     }
 
     /**
+     * Parse apart any prefix, field and value from a URL filter string.
+     *
+     * @param string $filter A filter string from url : "field:value"
+     *
+     * @return array         Array with elements 0 = prefix, 1 = field, 2 = value.
+     */
+    public function parseFilterAndPrefix($filter)
+    {
+        [$field, $value] = $this->parseFilter($filter);
+        $prefix = substr($field, 0, 1);
+        if (in_array($prefix, ['-', '~'])) {
+            $field = substr($field, 1);
+        } else {
+            $prefix = '';
+        }
+        return [$prefix, $field, $value];
+    }
+
+    /**
      * Given a facet field, return an array containing all aliases of that
      * field.
      *
@@ -814,7 +837,8 @@ class Params
 
         // Check all of the relevant fields for matches:
         foreach ($this->getAliasesForFacetField($field) as $current) {
-            if (isset($this->filterList[$current])
+            if (
+                isset($this->filterList[$current])
                 && in_array($value, $this->filterList[$current])
             ) {
                 return true;
@@ -985,7 +1009,8 @@ class Params
      */
     public function getFacetLabel($field, $value = null, $default = null)
     {
-        if (!isset($this->facetConfig[$field])
+        if (
+            !isset($this->facetConfig[$field])
             && !isset($this->extraFacetLabels[$field])
             && isset($this->facetAliases[$field])
         ) {
@@ -1042,6 +1067,12 @@ class Params
      */
     public function getFilterList($excludeCheckboxFilters = false)
     {
+        // If we don't have any filters, return right away to avoid further
+        // processing:
+        if (!$this->filterList) {
+            return [];
+        }
+
         // Get a list of checkbox filters to skip if necessary:
         $skipList = $excludeCheckboxFilters
             ? $this->getCheckboxFacetValues() : [];
@@ -1055,7 +1086,8 @@ class Params
             // and each value currently used for that field
             foreach ($values as $value) {
                 // Add to the list unless it's in the list of fields to skip:
-                if (!isset($skipList[$field])
+                if (
+                    !isset($skipList[$field])
                     || !in_array($value, $skipList[$field])
                 ) {
                     $facetLabel = $this->getFacetLabel($field, $value);
@@ -1069,6 +1101,18 @@ class Params
             }
         }
         return $list;
+    }
+
+    /**
+     * Get the filter list as a query parameter array.
+     *
+     * Returns an array of strings that parseFilter can parse.
+     *
+     * @return array
+     */
+    public function getFiltersAsQueryParams(): array
+    {
+        return $this->formatFilterArrayAsQueryParams($this->getRawFilters());
     }
 
     /**
@@ -1111,7 +1155,7 @@ class Params
                 $translateFormat,
                 [
                     '%%raw%%' => $text,
-                    '%%translated%%' => $translated
+                    '%%translated%%' => $translated,
                 ]
             ) : $translated;
     }
@@ -1166,7 +1210,7 @@ class Params
     protected function getCheckboxFacetValues()
     {
         $list = [];
-        foreach ($this->checkboxFacets as $facets) {
+        foreach ($this->getRawCheckboxFacets() as $facets) {
             foreach ($facets as $current) {
                 [$field, $value] = $this->parseFilter($current['filter']);
                 if (!isset($list[$field])) {
@@ -1194,11 +1238,12 @@ class Params
         // Build up an array of checkbox facets with status booleans and
         // toggle URLs.
         $result = [];
-        foreach ($this->checkboxFacets as $facets) {
+        foreach ($this->getRawCheckboxFacets() as $facets) {
             foreach ($facets as $facet) {
                 // If the current filter is not on the include list, skip it (but
                 // accept everything if the include list is null).
-                if (($include !== null && !in_array($facet['filter'], $include))
+                if (
+                    ($include !== null && !in_array($facet['filter'], $include))
                     && !($includeDynamic && $facet['dynamic'])
                 ) {
                     continue;
@@ -1209,6 +1254,36 @@ class Params
                 // child classes).
                 $facet['alwaysVisible'] = false;
                 $result[] = $facet;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Return checkbox facets without any processing
+     *
+     * @return array
+     */
+    protected function getRawCheckboxFacets(): array
+    {
+        return $this->checkboxFacets;
+    }
+
+    /**
+     * Format a raw filter array as a query parameter array.
+     *
+     * Returns an array of strings that parseFilter can parse.
+     *
+     * @param array $filterArray Filter array
+     *
+     * @return array
+     */
+    protected function formatFilterArrayAsQueryParams(array $filterArray): array
+    {
+        $result = [];
+        foreach ($filterArray as $field => $values) {
+            foreach ($values as $current) {
+                $result[] = "$field:\"$current\"";
             }
         }
         return $result;
@@ -1234,14 +1309,14 @@ class Params
      * Support method for initDateFilters() -- normalize a year for use in a
      * year-based date range.
      *
-     * @param string $year Value to check for valid year.
+     * @param ?string $year Value to check for valid year.
      *
      * @return string      Formatted year.
      */
     protected function formatYearForDateRange($year)
     {
         // Make sure parameter is set and numeric; default to wildcard otherwise:
-        $year = preg_match('/\d{2,4}/', $year) ? $year : '*';
+        $year = ($year && preg_match('/\d{2,4}/', $year)) ? $year : '*';
 
         // Pad to four digits:
         if (strlen($year) == 2) {
@@ -1257,14 +1332,14 @@ class Params
      * Support method for initFullDateFilters() -- normalize a date for use in a
      * year/month/day date range.
      *
-     * @param string $date Value to check for valid date.
+     * @param ?string $date Value to check for valid date.
      *
      * @return string      Formatted date.
      */
     protected function formatDateForFullDateRange($date)
     {
         // Make sure date is valid; default to wildcard otherwise:
-        $date = SolrUtils::sanitizeDate($date);
+        $date = $date ? SolrUtils::sanitizeDate($date) : null;
         return $date ?? '*';
     }
 
@@ -1272,7 +1347,7 @@ class Params
      * Support method for initNumericRangeFilters() -- normalize a year for use in
      * a date range.
      *
-     * @param string $num Value to format into a number.
+     * @param ?string $num Value to format into a number.
      *
      * @return string     Formatted number.
      */
@@ -1552,6 +1627,18 @@ class Params
     }
 
     /**
+     * Get the hidden filter list as a query parameter array.
+     *
+     * Returns an array of strings that parseFilter can parse.
+     *
+     * @return array
+     */
+    public function getHiddenFiltersAsQueryParams(): array
+    {
+        return $this->formatFilterArrayAsQueryParams($this->getHiddenFilters());
+    }
+
+    /**
      * Does the object already contain the specified hidden filter?
      *
      * @param string $filter A filter string from url : "field:value"
@@ -1563,7 +1650,8 @@ class Params
         // Extract field and value from URL string:
         [$field, $value] = $this->parseFilter($filter);
 
-        if (isset($this->hiddenFilters[$field])
+        if (
+            isset($this->hiddenFilters[$field])
             && in_array($value, $this->hiddenFilters[$field])
         ) {
             return true;
@@ -1589,6 +1677,20 @@ class Params
                 $this->hiddenFilters[$field][] = $value;
             }
         }
+    }
+
+    /**
+     * Take a filter string and add it into the protected hidden filters
+     *   array checking for duplicates.
+     *
+     * @param string $field Field
+     * @param string $value Filter value
+     *
+     * @return void
+     */
+    public function addHiddenFilterForField(string $field, string $value): void
+    {
+        $this->addHiddenFilter("$field:\"$value\"");
     }
 
     /**
@@ -1624,7 +1726,7 @@ class Params
         foreach ($this->getOptions()->getViewOptions() as $key => $value) {
             $list[$key] = [
                 'desc' => $value,
-                'selected' => ($key == $this->getView())
+                'selected' => ($key == $this->getView()),
             ];
         }
         return $list;
@@ -1644,7 +1746,7 @@ class Params
         foreach ($valid as $limit) {
             $list[$limit] = [
                 'desc' => $limit,
-                'selected' => ($limit == $this->getLimit())
+                'selected' => ($limit == $this->getLimit()),
             ];
         }
         return $list;
@@ -1664,7 +1766,7 @@ class Params
         foreach ($valid as $sort => $desc) {
             $list[$sort] = [
                 'desc' => $desc,
-                'selected' => ($sort == $this->getSort())
+                'selected' => ($sort == $this->getSort()),
             ];
         }
         return $list;

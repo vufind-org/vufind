@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Generate/DynamicRoute command test.
  *
@@ -25,9 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Command\Generate;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 use VuFind\Route\RouteGenerator;
 use VuFindConsole\Command\Generate\DynamicRouteCommand;

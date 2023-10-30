@@ -1,0 +1,43 @@
+HTTP/1.1 200 OK
+Content-Security-Policy: default-src 'none'; base-uri 'none'; connect-src 'self'; form-action 'self'; font-src 'self'; frame-ancestors 'none'; img-src 'self'; media-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; worker-src 'self';
+X-Content-Type-Options: nosniff
+X-Frame-Options: SAMEORIGIN
+X-XSS-Protection: 1; mode=block
+Last-Modified: Fri, 08 Apr 2022 10:21:31 GMT
+ETag: "MWMwMDAwMDAwMDAwMDAwMFNvbHI="
+Content-Type: application/json;charset=utf-8
+Vary: Accept-Encoding, User-Agent
+Content-Length: 779
+
+{
+  "responseHeader":{
+    "status":0,
+    "QTime":0,
+    "params":{
+      "facet.limit":"5",
+      "q":"*:*",
+      "facet.field":"topic_facet",
+      "json.nl":"arrarr",
+      "fl":"*",
+      "start":"0",
+      "facet.mincount":"1",
+      "sort":"title_sort asc",
+      "rows":"0",
+      "facet":"true",
+      "wt":"json",
+      "facet.sort":"count"}},
+  "response":{"numFound":317,"start":0,"numFoundExact":true,"docs":[]
+  },
+  "facet_counts":{
+    "facet_queries":{},
+    "facet_fields":{
+      "topic_facet":
+      [
+        ["Research",16],
+        ["Psychotherapy",8],
+        ["Adult children of aging parents",7],
+        ["Automobile drivers' tests",7],
+        ["Fathers and daughters",7]]},
+    "facet_ranges":{},
+    "facet_intervals":{},
+    "facet_heatmaps":{}}}

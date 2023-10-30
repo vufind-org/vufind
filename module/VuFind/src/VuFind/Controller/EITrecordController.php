@@ -1,4 +1,5 @@
 <?php
+
 /**
  * EIT Record Controller
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
@@ -52,7 +54,7 @@ class EITrecordController extends AbstractRecord
     {
         // Override some defaults:
         $this->accessPermission = 'access.EITModule';
-        $this->searchClassId = 'EIT';
+        $this->sourceId = 'EIT';
         $this->defaultTab = 'Description';
 
         // Call standard record controller initialization:

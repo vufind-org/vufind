@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mink account ajax menu test class.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFindTest\Mink;
 
 /**
@@ -62,11 +64,8 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function setUp(): void
     {
-        // Give up if we're not running in CI:
-        if (!$this->continuousIntegrationRunning()) {
-            $this->markTestSkipped('Continuous integration not running.');
-            return;
-        }
+        parent::setUp();
+
         // Setup config
         $this->changeConfigs(
             [
@@ -75,9 +74,9 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
                 'Catalog' => ['driver' => 'Demo'],
                 'Authentication' => [
                     'enableAjax' => true,
-                    'enableDropdown' => false
-                ]
-            ]
+                    'enableDropdown' => false,
+                ],
+            ],
             ]
         );
     }
@@ -87,6 +86,8 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
      *
      * Cleared when browser closes.
      * If run multiple times in one test function, manually clear cache.
+     *
+     * @param array $states States to set in JS session storage
      *
      * @return void
      */
@@ -158,9 +159,9 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
         // Seed some fines
         $page = $this->setUpFinesEnvironment();
         $menu = $page->findAll('css', '#login-dropdown');
-        $this->assertEquals(0, count($menu));
+        $this->assertCount(0, $menu);
         $stati = $page->findAll('css', '.account-menu .fines-status.hidden');
-        $this->assertEquals(0, count($stati));
+        $this->assertCount(0, $stati);
     }
 
     /**
@@ -179,17 +180,17 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
                 'config' => [
                     'Authentication' => [
                         'enableAjax' => false,
-                        'enableDropdown' => false
-                    ]
-                ]
+                        'enableDropdown' => false,
+                    ],
+                ],
             ]
         );
         $this->login();
         $page = $this->setUpFinesEnvironment();
         $menu = $page->findAll('css', '#login-dropdown');
-        $this->assertEquals(0, count($menu));
+        $this->assertCount(0, $menu);
         $stati = $page->findAll('css', '.account-menu .fines-status.hidden');
-        $this->assertEquals(1, count($stati));
+        $this->assertCount(1, $stati);
     }
 
     /**
@@ -207,17 +208,17 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
                 'config' => [
                     'Authentication' => [
                         'enableAjax' => false,
-                        'enableDropdown' => true
-                    ]
-                ]
+                        'enableDropdown' => true,
+                    ],
+                ],
             ]
         );
         $this->login();
         $page = $this->setUpFinesEnvironment();
         $menu = $page->findAll('css', '#login-dropdown');
-        $this->assertEquals(1, count($menu));
+        $this->assertCount(1, $menu);
         $stati = $page->findAll('css', '.account-menu .fines-status.hidden');
-        $this->assertEquals(2, count($stati)); // one in menu, one in dropdown
+        $this->assertCount(2, $stati); // one in menu, one in dropdown
     }
 
     /**
@@ -235,15 +236,15 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
                 'config' => [
                     'Authentication' => [
                         'enableAjax' => true,
-                        'enableDropdown' => true
-                    ]
-                ]
+                        'enableDropdown' => true,
+                    ],
+                ],
             ]
         );
         $this->login();
         $page = $this->setUpFinesEnvironment();
         $menu = $page->findAll('css', '#login-dropdown');
-        $this->assertEquals(1, count($menu));
+        $this->assertCount(1, $menu);
         $this->unFindCss($page, '.account-menu .fines-status.hidden');
     }
 
@@ -309,6 +310,9 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Abstracted test to set storage and check if the icon is correct
      *
+     * @param array  $storage    Array of storage values to test
+     * @param string $checkClass Icon class to check
+     *
      * @return void
      */
     protected function checkIcon($storage, $checkClass)
@@ -320,7 +324,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
             $session->reload();
             $page = $session->getPage();
             $this->waitForPageLoad($page);
-            $this->findCss($page, '#account-icon' . $checkClass);
+            $this->findCss($page, '#account-icon ' . $checkClass);
             foreach ($item as $key => $value) {
                 $session->evaluateScript('VuFind.account.clearCache("' . $key . '");');
             }
@@ -337,15 +341,38 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
         $this->login();
         $storage = [
             // No fines
-            ['fines' => ['value' => 0, 'display' => 'ZILTCH']],
+            [
+                'fines' => [
+                    'total' => 0,
+                    'display' => 'ZILTCH',
+                ],
+            ],
             // Holds in transit only
-            ['holds' => ['in_transit' => 1, 'available' => 0]],
+            [
+                'holds' => [
+                    'in_transit' => 1,
+                    'available' => 0,
+                    'other' => 0,
+                ],
+            ],
             // ILL Requests in transit only
-            ['illRequests' => ['in_transit' => 1, 'available' => 0]],
+            [
+                'illRequests' => [
+                    'in_transit' => 1,
+                    'available' => 0,
+                    'other' => 0,
+                ],
+            ],
             // Storage Retrievals in transit only
-            ['storageRetrievalRequests' => ['in_transit' => 1, 'available' => 0]]
+            [
+                'storageRetrievalRequests' => [
+                    'in_transit' => 1,
+                    'available' => 0,
+                    'other' => 0,
+                ],
+            ],
         ];
-        $this->checkIcon($storage, '.fa-user-circle');
+        $this->checkIcon($storage, '.account-status-none');
     }
 
     /**
@@ -362,9 +389,9 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
             // ILL Requests available
             ['illRequests' => ['in_transit' => 0, 'available' => 1]],
             // Storage Retrievals available
-            ['storageRetrievalRequests' => ['in_transit' => 0, 'available' => 1]]
+            ['storageRetrievalRequests' => ['in_transit' => 0, 'available' => 1]],
         ];
-        $this->checkIcon($storage, '.fa-bell.text-success');
+        $this->checkIcon($storage, '.account-status-good');
     }
 
     /**
@@ -377,9 +404,9 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
         $this->login();
         $storage = [
             // Checked out due soon
-            ['checkedOut' => ['warn' => 1]]
+            ['checkedOut' => ['warn' => 1]],
         ];
-        $this->checkIcon($storage, '.fa-bell.text-warning');
+        $this->checkIcon($storage, '.account-status-warning');
     }
 
     /**
@@ -396,7 +423,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
             // Checkedout overdue
             ['checkedOut' => ['overdue' => 1]],
         ];
-        $this->checkIcon($storage, '.fa-exclamation-triangle');
+        $this->checkIcon($storage, '.account-status-danger');
     }
 
     /**
@@ -412,37 +439,37 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
         // Danger overrides warning
         $this->checkIcon(
             [['checkedOut' => ['warn' => 2, 'overdue' => 1]]],
-            '.fa-exclamation-triangle'
+            '.account-status-danger'
         );
         // Danger overrides good
         $this->checkIcon(
             [
                 [
                     'checkedOut' => ['overdue' => 1],
-                    'holds' => ['available' => 1]
-                ]
+                    'holds' => ['available' => 1],
+                ],
             ],
-            '.fa-exclamation-triangle'
+            '.account-status-danger'
         );
         // Warning overrides good
         $this->checkIcon(
             [
                 [
                     'checkedOut' => ['warn' => 1],
-                    'holds' => ['available' => 1]
-                ]
+                    'holds' => ['available' => 1],
+                ],
             ],
-            '.fa-bell.text-warning'
+            '.account-status-warning'
         );
         // Good overrides none
         $this->checkIcon(
             [
                 [
                     'holds' => ['available' => 1],
-                    'fines' => ['value' => 0, 'display' => 'none']
-                ]
+                    'fines' => ['total' => 0, 'display' => 'none'],
+                ],
             ],
-            '.fa-bell.text-success'
+            '.account-status-good'
         );
     }
 

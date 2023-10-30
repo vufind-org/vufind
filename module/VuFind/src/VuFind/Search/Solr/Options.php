@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Solr aspect of the Search Multi-class (Options)
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\Solr;
 
 /**
@@ -46,22 +48,8 @@ class Options extends \VuFind\Search\Base\Options
      * @var array
      */
     protected $facetSortOptions = [
-        '*' => ['count' => 'sort_count', 'index' => 'sort_alphabetic']
+        '*' => ['count' => 'sort_count', 'index' => 'sort_alphabetic'],
     ];
-
-    /**
-     * Hierarchical facets
-     *
-     * @var array
-     */
-    protected $hierarchicalFacets = [];
-
-    /**
-     * Hierarchical facet separators
-     *
-     * @var array
-     */
-    protected $hierarchicalFacetSeparators = [];
 
     /**
      * Relevance sort override for empty searches
@@ -76,6 +64,13 @@ class Options extends \VuFind\Search\Base\Options
      * @var bool
      */
     protected $displayRecordVersions = true;
+
+    /**
+     * Solr field to be used as a tie-breaker.
+     *
+     * @var string
+     */
+    protected $sortTieBreaker = null;
 
     /**
      * Constructor
@@ -96,11 +91,15 @@ class Options extends \VuFind\Search\Base\Options
         if (isset($searchSettings->General->default_sort)) {
             $this->defaultSort = $searchSettings->General->default_sort;
         }
+        if (isset($searchSettings->General->tie_breaker_sort)) {
+            $this->sortTieBreaker = $searchSettings->General->tie_breaker_sort;
+        }
         if (isset($searchSettings->General->empty_search_relevance_override)) {
             $this->emptySearchRelevanceOverride
                 = $searchSettings->General->empty_search_relevance_override;
         }
-        if (isset($searchSettings->DefaultSortingByType)
+        if (
+            isset($searchSettings->DefaultSortingByType)
             && count($searchSettings->DefaultSortingByType) > 0
         ) {
             foreach ($searchSettings->DefaultSortingByType as $key => $val) {
@@ -163,7 +162,8 @@ class Options extends \VuFind\Search\Base\Options
 
         // Load facet preferences
         $facetSettings = $configLoader->get($this->facetsIni);
-        if (isset($facetSettings->Advanced_Settings->translated_facets)
+        if (
+            isset($facetSettings->Advanced_Settings->translated_facets)
             && count($facetSettings->Advanced_Settings->translated_facets) > 0
         ) {
             $this->setTranslatedFacets(
@@ -175,7 +175,8 @@ class Options extends \VuFind\Search\Base\Options
                 $facetSettings->Advanced_Settings->delimiter
             );
         }
-        if (isset($facetSettings->Advanced_Settings->delimited_facets)
+        if (
+            isset($facetSettings->Advanced_Settings->delimited_facets)
             && count($facetSettings->Advanced_Settings->delimited_facets) > 0
         ) {
             $this->setDelimitedFacets(
@@ -203,7 +204,8 @@ class Options extends \VuFind\Search\Base\Options
         }
 
         // Turn on first/last navigation if configured:
-        if (isset($config->Record->first_last_navigation)
+        if (
+            isset($config->Record->first_last_navigation)
             && $config->Record->first_last_navigation
         ) {
             $this->firstlastNavigation = true;
@@ -211,10 +213,8 @@ class Options extends \VuFind\Search\Base\Options
 
         // Turn on highlighting if the user has requested highlighting or snippet
         // functionality:
-        $highlight = !isset($searchSettings->General->highlighting)
-            ? false : $searchSettings->General->highlighting;
-        $snippet = !isset($searchSettings->General->snippets)
-            ? false : $searchSettings->General->snippets;
+        $highlight = $searchSettings->General->highlighting ?? false;
+        $snippet = $searchSettings->General->snippets ?? false;
         if ($highlight || $snippet) {
             $this->highlight = true;
         }
@@ -223,14 +223,16 @@ class Options extends \VuFind\Search\Base\Options
         $this->configureAutocomplete($searchSettings);
 
         // Load shard settings
-        if (isset($searchSettings->IndexShards)
+        if (
+            isset($searchSettings->IndexShards)
             && !empty($searchSettings->IndexShards)
         ) {
             foreach ($searchSettings->IndexShards as $k => $v) {
                 $this->shards[$k] = $v;
             }
             // If we have a default from the configuration, use that...
-            if (isset($searchSettings->ShardPreferences->defaultChecked)
+            if (
+                isset($searchSettings->ShardPreferences->defaultChecked)
                 && !empty($searchSettings->ShardPreferences->defaultChecked)
             ) {
                 $defaultChecked
@@ -305,23 +307,13 @@ class Options extends \VuFind\Search\Base\Options
     }
 
     /**
-     * Get an array of hierarchical facets.
+     * Get the field to be used as a sort tie-breaker.
      *
-     * @return array
+     * @return ?string Sort field or null if not set
      */
-    public function getHierarchicalFacets()
+    public function getSortTieBreaker()
     {
-        return $this->hierarchicalFacets;
-    }
-
-    /**
-     * Get hierarchical facet separators
-     *
-     * @return array
-     */
-    public function getHierarchicalFacetSeparators()
-    {
-        return $this->hierarchicalFacetSeparators;
+        return $this->sortTieBreaker;
     }
 
     /**

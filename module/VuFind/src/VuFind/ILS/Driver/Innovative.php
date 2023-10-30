@@ -1,4 +1,5 @@
 <?php
+
 /**
  * III ILS Driver
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
+
 namespace VuFind\ILS\Driver;
 
 use VuFind\Exception\ILS as ILSException;
@@ -98,7 +100,8 @@ class Innovative extends AbstractBase implements
     protected function prepID($id)
     {
         // Get the ID format from config (default to use_full_id if unset):
-        if (!isset($this->config['RecordID']['use_full_id'])
+        if (
+            !isset($this->config['RecordID']['use_full_id'])
             || $this->config['RecordID']['use_full_id']
         ) {
             // Strip ID leading period and trailing check digit.

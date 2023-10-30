@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search;
 
 use Laminas\Stdlib\Parameters;
@@ -186,20 +187,21 @@ abstract class QueryAdapter
             $groupId = $matches[1];
             $group = [];
             $lastBool = null;
+            $value = (array)$value;
 
             // Loop through each term inside the group
             for ($i = 0; $i < count($value); $i++) {
                 // Ignore advanced search fields with no lookup
                 if ($value[$i] != '') {
                     // Use default fields if not set
-                    $typeArr = $request->get("type$groupId");
+                    $typeArr = (array)$request->get("type$groupId");
                     $handler = !empty($typeArr[$i]) ? $typeArr[$i] : $defaultHandler;
 
-                    $opArr = $request->get("op$groupId");
+                    $opArr = (array)$request->get("op$groupId");
                     $operator = !empty($opArr[$i]) ? $opArr[$i] : null;
 
                     // Add term to this group
-                    $boolArr = $request->get("bool$groupId");
+                    $boolArr = (array)$request->get("bool$groupId");
                     $lastBool = $boolArr[0] ?? 'AND';
                     $group[] = new Query($value[$i], $handler, $operator);
                 }
@@ -232,8 +234,8 @@ abstract class QueryAdapter
             return [
                 [
                     'l' => $query->getString(),
-                    'i' => $query->getHandler()
-                ]
+                    'i' => $query->getHandler(),
+                ],
             ];
         }
 
@@ -244,7 +246,7 @@ abstract class QueryAdapter
             if ($topLevel) {
                 $retVal[] = [
                     'g' => self::minify($current, false),
-                    'j' => $operator
+                    'j' => $operator,
                 ];
             } elseif ($current instanceof QueryGroup) {
                 throw new \Exception('Not sure how to minify this query!');
@@ -252,7 +254,7 @@ abstract class QueryAdapter
                 $currentArr = [
                     'f' => $current->getHandler(),
                     'l' => $current->getString(),
-                    'b' => $operator
+                    'b' => $operator,
                 ];
                 if (null !== ($op = $current->getOperator())) {
                     // Some search forms omit the operator for the first element;

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * HeadThemeResources view helper Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\View\Helper;
 
 use VuFindTheme\View\Helper\Slot;
@@ -49,7 +51,7 @@ class SlotTest extends \PHPUnit\Framework\TestCase
     {
         $helper = $this->getHelper();
         $ret = $helper('test');
-        $this->assertTrue($ret instanceof Slot);
+        $this->assertInstanceOf(Slot::class, $ret);
     }
 
     /**

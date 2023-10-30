@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindTest\Backend\EDS;
 
 use PHPUnit\Framework\TestCase;
@@ -78,7 +79,7 @@ class QueryBuilderTest extends TestCase
                         'field' => null,
                         'bool' => 'AND',
                     ],
-                ]
+                ],
             ],
             $response
         );
@@ -106,9 +107,9 @@ class QueryBuilderTest extends TestCase
                         'term' => 'test',
                         'field' => 'SU',
                         'bool' => 'AND',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ];
 
         $qb = new QueryBuilder();

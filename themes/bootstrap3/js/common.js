@@ -1,5 +1,5 @@
-/*global grecaptcha, isPhoneNumberValid */
-/*exported VuFind, htmlEncode, deparam, getUrlRoot, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, bulkFormHandler, setupMultiILSLoginFields */
+/*global Autocomplete, grecaptcha, isPhoneNumberValid */
+/*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
 
 // IE 9< console polyfill
 window.console = window.console || { log: function polyfillLog() {} };
@@ -10,6 +10,7 @@ var VuFind = (function VuFind() {
   var _initialized = false;
   var _submodules = [];
   var _cspNonce = '';
+  var _searchId = null;
 
   var _icons = {};
   var _translations = {};
@@ -42,6 +43,31 @@ var VuFind = (function VuFind() {
     }
   };
 
+  /**
+   * Evaluate a callback
+   */
+  var evalCallback = function evalCallback(callback, event, data) {
+    if ('function' === typeof window[callback]) {
+      return window[callback](event, data);
+    }
+    var parts = callback.split('.');
+    if (typeof window[parts[0]] === 'object') {
+      var obj = window[parts[0]];
+      for (var i = 1; i < parts.length; i++) {
+        if (typeof obj[parts[i]] === 'undefined') {
+          obj = false;
+          break;
+        }
+        obj = obj[parts[i]];
+      }
+      if ('function' === typeof obj) {
+        return obj(event, data);
+      }
+    }
+    console.error('Callback function ' + callback + ' not found.');
+    return null;
+  };
+
   var initDisableSubmitOnClick = function initDisableSubmitOnClick() {
     $('[data-disable-on-submit]').on('submit', function handleOnClickDisable() {
       var $form = $(this);
@@ -56,6 +82,31 @@ var VuFind = (function VuFind() {
     });
   };
 
+  var initClickHandlers = function initClickHandlers() {
+    window.addEventListener(
+      'click',
+      function handleClick(event) {
+        let elem = event.target;
+        if (elem.hasAttribute('data-click-callback')) {
+          return evalCallback(elem.dataset.clickCallback, event, {});
+        }
+        if (elem.hasAttribute('data-click-set-checked')) {
+          document.getElementById(elem.dataset.clickSetChecked).checked = true;
+          event.preventDefault();
+        }
+      }
+    );
+    window.addEventListener(
+      'change',
+      function handleChange(event) {
+        let elem = event.target;
+        if (elem.hasAttribute('data-submit-on-change')) {
+          elem.form.requestSubmit();
+        }
+      }
+    );
+  };
+
   var init = function init() {
     for (var i = 0; i < _submodules.length; i++) {
       if (this[_submodules[i]].init) {
@@ -65,6 +116,7 @@ var VuFind = (function VuFind() {
     _initialized = true;
 
     initDisableSubmitOnClick();
+    initClickHandlers();
   };
 
   var addTranslations = function addTranslations(s) {
@@ -94,13 +146,44 @@ var VuFind = (function VuFind() {
       }
     }
   };
-  var icon = function icon(name) {
+  var icon = function icon(name, attrs = {}) {
     if (typeof _icons[name] == "undefined") {
       console.error("JS icon missing: " + name);
       return name;
     }
 
     var html = _icons[name];
+
+    // Add additional attributes
+    function addAttrs(_html, _attrs = {}) {
+      var mod = String(_html);
+      for (var attr in _attrs) {
+        if (Object.prototype.hasOwnProperty.call(_attrs, attr)) {
+          var sliceStart = html.indexOf(" ");
+          var sliceEnd = sliceStart;
+          var value = _attrs[attr];
+          var regex = new RegExp(` ${attr}=(['"])([^\\1]+?)\\1`);
+          var existing = html.match(regex);
+          if (existing) {
+            sliceStart = existing.index;
+            sliceEnd = sliceStart + existing[0].length;
+            value = existing[2] + " " + value;
+          }
+          mod = mod.slice(0, sliceStart) +
+              " " + attr + '="' + value + '"' +
+              mod.slice(sliceEnd);
+        }
+      }
+      return mod;
+    }
+
+    if (typeof attrs == "string") {
+      return addAttrs(html, { class: attrs });
+    }
+
+    if (Object.keys(attrs).length > 0) {
+      return addAttrs(html, attrs);
+    }
 
     return html;
   };
@@ -112,7 +195,7 @@ var VuFind = (function VuFind() {
   var loading = function loading(text = null, extraClass = "") {
     let className = ("loading-spinner " + extraClass).trim();
     let string = translate(text === null ? 'loading_ellipsis' : text);
-    return '<span class="' + className + '">' + icon('spinner') + string + '</span>';
+    return '<span class="' + className + '">' + icon('spinner') + ' ' + string + '</span>';
   };
 
   /**
@@ -163,6 +246,18 @@ var VuFind = (function VuFind() {
     return Boolean(window.location.search.match(/[?&]print=/));
   };
 
+  var getCurrentSearchId = function getCurrentSearchId() {
+    if (null !== _searchId) {
+      return _searchId;
+    }
+    var match = location.href.match(/[&?]sid=(\d+)/);
+    return match ? match[1] : '';
+  };
+
+  var setCurrentSearchId = function setCurrentSearchId(searchId) {
+    _searchId = searchId;
+  };
+
   //Reveal
   return {
     defaultSearchBackend: defaultSearchBackend,
@@ -172,6 +267,7 @@ var VuFind = (function VuFind() {
     addTranslations: addTranslations,
     init: init,
     emit: emit,
+    evalCallback: evalCallback,
     getCspNonce: getCspNonce,
     icon: icon,
     isPrinting: isPrinting,
@@ -183,7 +279,9 @@ var VuFind = (function VuFind() {
     loadHtml: loadHtml,
     loading: loading,
     translate: translate,
-    updateCspNonce: updateCspNonce
+    updateCspNonce: updateCspNonce,
+    getCurrentSearchId: getCurrentSearchId,
+    setCurrentSearchId: setCurrentSearchId
   };
 })();
 
@@ -195,6 +293,67 @@ function htmlEncode(value) {
     return '';
   }
 }
+
+/**
+ * Keyboard and focus controllers
+ * Adapted from Micromodal
+ * - https://github.com/ghosh/Micromodal/blob/master/lib/src/index.js
+ */
+const FOCUSABLE_ELEMENTS = ['a[href]', 'area[href]', 'input:not([disabled]):not([type="hidden"]):not([aria-hidden])', 'select:not([disabled]):not([aria-hidden])', 'textarea:not([disabled]):not([aria-hidden])', 'button:not([disabled]):not([aria-hidden])', 'iframe', 'object', 'embed', '[contenteditable]', '[tabindex]:not([tabindex^="-"])'];
+function getFocusableNodes(container) {
+  const nodes = container.querySelectorAll(FOCUSABLE_ELEMENTS);
+  return Array.from(nodes);
+}
+
+/**
+ * Adapted from Laminas.
+ * Source: https://github.com/laminas/laminas-escaper/blob/2.13.x/src/Escaper.php
+ *
+ * @param  {string} str Attribute
+ * @return {string}
+ */
+function escapeHtmlAttr(str) {
+  if (!str) {
+    return str;
+  }
+
+  const namedEntities = {
+    34: 'quot', // quotation mark
+    38: 'amp', // ampersand
+    60: 'lt', // less-than sign
+    62: 'gt', // greater-than sign
+  };
+
+  const regexp = new RegExp(/[^a-z0-9,\\.\\-_]/giu);
+  return str.replace(regexp, (char) => {
+    const code = char.charCodeAt(0);
+
+    // Named entities
+    if (code in namedEntities) {
+      return `&${namedEntities[code]};`;
+    }
+
+    /**
+     * The following replaces characters undefined in HTML with the
+     * hex entity for the Unicode replacement character.
+     */
+    if (
+      (code >= 0x7f && code <= 0x9f) ||
+      (code <= 0x1f && char !== "\t" && char !== "\n" && char !== "\r")
+    ) {
+      return '&#xFFFD;';
+    }
+
+    const hex = code.toString(16).toUpperCase();
+
+    if (code > 255) {
+      return `&#x${hex.padStart(4, 0)};`;
+    }
+
+    return `&#x${hex.padStart(2, 0)};`;
+  });
+}
+
 function extractClassParams(selector) {
   var str = $(selector).attr('class');
   if (typeof str === "undefined") {
@@ -322,62 +481,72 @@ function setupOffcanvas() {
 
 function setupAutocomplete() {
   // If .autocomplete class is missing, autocomplete is disabled and we should bail out.
-  var searchbox = $('#searchForm_lookfor.autocomplete');
-  if (searchbox.length < 1) {
+  var $searchbox = $('#searchForm_lookfor.autocomplete');
+  if ($searchbox.length === 0) {
     return;
   }
-  // Auto-submit based on config
-  var acCallback = function ac_cb_noop() {};
-  if (searchbox.hasClass("ac-auto-submit")) {
-    acCallback = function autoSubmitAC(item, input) {
-      input.val(item.value);
-      $("#searchForm").submit();
-      return false;
-    };
-  }
-  // Search autocomplete
-  searchbox.autocomplete({
+
+  const typeahead = new Autocomplete({
     rtl: $(document.body).hasClass("rtl"),
     maxResults: 10,
     loadingString: VuFind.translate('loading_ellipsis'),
-    // Auto-submit selected item
-    callback: acCallback,
-    // AJAX call for autocomplete results
-    handler: function vufindACHandler(input, cb) {
-      var query = input.val();
-      var searcher = extractClassParams(input);
-      var hiddenFilters = [];
-      $('#searchForm').find('input[name="hiddenFilters[]"]').each(function hiddenFiltersEach() {
-        hiddenFilters.push($(this).val());
-      });
-      $.fn.autocomplete.ajax({
-        url: VuFind.path + '/AJAX/JSON',
-        data: {
-          q: query,
-          method: 'getACSuggestions',
-          searcher: searcher.searcher,
-          type: searcher.type ? searcher.type : $('#searchForm_type').val(),
-          hiddenFilters: hiddenFilters
-        },
-        dataType: 'json',
-        success: function autocompleteJSON(json) {
-          if (json.data.suggestions.length > 0) {
-            var datums = [];
-            for (var j = 0; j < json.data.suggestions.length; j++) {
-              datums.push(json.data.suggestions[j]);
-            }
-            cb(datums);
-          } else {
-            cb([]);
-          }
-        }
-      });
+  });
+
+  let cache = {};
+  const input = $searchbox[0];
+  typeahead(input, function vufindACHandler(query, callback) {
+    const classParams = extractClassParams(input);
+    const searcher = classParams.searcher;
+    const type = classParams.type ? classParams.type : $('#searchForm_type').val();
+
+    const cacheKey = searcher + "|" + type;
+    if (typeof cache[cacheKey] === "undefined") {
+      cache[cacheKey] = {};
     }
+
+    if (typeof cache[cacheKey][query] !== "undefined") {
+      callback(cache[cacheKey][query]);
+      return;
+    }
+
+    var hiddenFilters = [];
+    $('#searchForm').find('input[name="hiddenFilters[]"]').each(function hiddenFiltersEach() {
+      hiddenFilters.push($(this).val());
+    });
+
+    $.ajax({
+      url: VuFind.path + '/AJAX/JSON',
+      data: {
+        q: query,
+        method: 'getACSuggestions',
+        searcher: searcher,
+        type: type,
+        hiddenFilters,
+      },
+      dataType: 'json',
+      success: function autocompleteJSON(json) {
+        const highlighted = json.data.suggestions.map(
+          (item) => ({
+            text: item.replace(query, `<b>${query}</b>`),
+            value: item,
+          })
+        );
+        cache[cacheKey][query] = highlighted;
+        callback(highlighted);
+      }
+    });
   });
-  // Update autocomplete on type change
-  $('#searchForm_type').change(function searchTypeChange() {
-    searchbox.autocomplete().clearCache();
-  });
+
+  // Bind autocomplete auto submit
+  if ($searchbox.hasClass("ac-auto-submit")) {
+    input.addEventListener("ac-select", (event) => {
+      const value = typeof event.detail === "string"
+        ? event.detail
+        : event.detail.value;
+      input.value = value;
+      $("#searchForm").submit();
+    });
+  }
 }
 
 /**
@@ -431,6 +600,10 @@ function setupIeSupport() {
   }
 }
 
+function unwrapJQuery(node) {
+  return node instanceof Node ? node : node[0];
+}
+
 function setupJumpMenus(_container) {
   var container = _container || $('body');
   container.find('select.jumpMenu').change(function jumpMenu(){ $(this).parent('form').submit(); });
@@ -467,20 +640,12 @@ function setupQRCodeLinks(_container) {
   var container = _container || $('body');
 
   container.find('a.qrcodeLink').click(function qrcodeToggle() {
-    if ($(this).hasClass("active")) {
-      $(this).html(VuFind.translate('qrcode_show')).removeClass("active");
-    } else {
-      $(this).html(VuFind.translate('qrcode_hide')).addClass("active");
-    }
-
     var holder = $(this).next('.qrcode');
     if (holder.find('img').length === 0) {
       // We need to insert the QRCode image
       var template = holder.find('.qrCodeImgTag').html();
       holder.html(template);
     }
-    holder.toggleClass('hidden');
-    return false;
   });
 }
 

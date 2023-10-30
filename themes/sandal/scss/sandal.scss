@@ -55,8 +55,10 @@ header {
   .navbar-nav { margin-top: 0; }
   a,
   .nav a,
-  .btn-link {
+  .btn-link,
+  button.dropdown-toggle {
     color: $white;
+    background-color: transparent;
     &:hover { color: $header-light; }
   }
   .btn-primary {
@@ -68,10 +70,14 @@ header {
     background-color: $header-light;
     border-color: $black;
   }
-  .nav>li>a:hover,
-  .nav>li>a:focus {
-    color: $black;
-    background-color: $header-light;
+  .nav > li > a,
+  button.dropdown-toggle {
+    &:hover,
+    &:focus {
+      color: $black;
+      background-color: $header-light;
+      outline: dotted 1px #000;
+    }
   }
   .navbar-toggle {
     margin: .5rem;
@@ -203,17 +209,12 @@ a:hover .login-dropdown-caret {
   .facet-group .title {
     background-color: $sidebar-title-bg;
     color: $sidebar-title-color;
-    &::after {
-      width: 1rem;
-      font-family: "FontAwesome";
-      text-align: center;
+
+    .icon--font,
+    .icon--svg {
       color: $sidebar-title-icon-color;
-      content: '\f106';
     }
   }
-  .facet-group .title.collapsed::after { content: '\f107'; }
-  .active-filters .title::after,
-  #advSearchForm & .title:after { content: none; } // No arrow on active filter title
 
   a.facet:hover,
   .facet.checkbox:hover { background-color: $sidebar-item-hover-bg; }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Primo Central Search Parameters
  *
@@ -26,6 +27,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\Primo;
 
 use VuFindSearch\ParamBag;
@@ -96,24 +98,18 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Format a single filter for use in getFilterList().
+     * Get a display text for a facet field.
      *
-     * @param string $field     Field name
-     * @param string $value     Field value
-     * @param string $operator  Operator (AND/OR/NOT)
-     * @param bool   $translate Should we translate the label?
+     * @param string $field Facet field
+     * @param string $value Facet value
      *
-     * @return array
+     * @return string
      */
-    protected function formatFilterListEntry($field, $value, $operator, $translate)
+    public function getFacetValueRawDisplayText(string $field, string $value): string
     {
-        $result
-            = parent::formatFilterListEntry($field, $value, $operator, $translate);
-        if (!$translate) {
-            $result['displayText']
-                = $this->fixPrimoFacetValue($result['displayText']);
-        }
-        return $result;
+        return $this->fixPrimoFacetValue(
+            parent::getFacetValueRawDisplayText($field, $value)
+        );
     }
 
     /**
@@ -156,7 +152,7 @@ class Params extends \VuFind\Search\Base\Params
             }
             $result[$field] = [
                 'facetOp' => $facetOp,
-                'values' => $filter
+                'values' => $filter,
             ];
         }
         return $result;

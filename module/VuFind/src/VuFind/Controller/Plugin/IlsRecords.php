@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VuFind Action Helper - ILS Records Support Methods
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Controller\Plugin;
 
 use Laminas\Config\Config;
@@ -41,6 +43,8 @@ use VuFind\Record\Loader;
  */
 class IlsRecords extends \Laminas\Mvc\Controller\Plugin\AbstractPlugin
 {
+    use \VuFind\ILS\Logic\SummaryTrait;
+
     /**
      * VuFind configuration
      *
@@ -84,7 +88,7 @@ class IlsRecords extends \Laminas\Mvc\Controller\Plugin\AbstractPlugin
             function ($current) {
                 return [
                     'id' => $current['id'] ?? '',
-                    'source' => $current['source'] ?? DEFAULT_SEARCH_BACKEND
+                    'source' => $current['source'] ?? DEFAULT_SEARCH_BACKEND,
                 ];
             },
             $records
@@ -112,22 +116,16 @@ class IlsRecords extends \Laminas\Mvc\Controller\Plugin\AbstractPlugin
     public function collectRequestStats(array $records): ?array
     {
         // Collect up to date stats for ajax account notifications:
-        if (empty($this->config->Authentication->enableAjax)) {
+        if (!($this->config->Authentication->enableAjax ?? true)) {
             return null;
         }
-        $accountStatus = [
-            'available' => 0,
-            'in_transit' => 0
-        ];
-        foreach ($records as $record) {
-            $request = $record->getExtraDetail('ils_details');
-            if ($request['available'] ?? false) {
-                $accountStatus['available']++;
-            }
-            if ($request['in_transit'] ?? false) {
-                $accountStatus['in_transit']++;
-            }
-        }
-        return $accountStatus;
+        return $this->getRequestSummary(
+            array_map(
+                function ($record) {
+                    return $record->getExtraDetail('ils_details');
+                },
+                $records
+            )
+        );
     }
 }

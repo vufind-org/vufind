@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Search\Search2;
 
 /**
@@ -47,7 +48,7 @@ class Params extends \VuFind\Search\Solr\Params
      */
     protected $defaultFacetLabelSections = [
         'Advanced_Facets', 'HomePage_Facets', 'ResultsTop', 'Results',
-        'ExtraFacetLabels'
+        'ExtraFacetLabels',
     ];
 
     /**

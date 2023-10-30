@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Generate/ExtendClass command test.
  *
@@ -25,9 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Command\Generate;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 use VuFindConsole\Command\Generate\ExtendClassCommand;
 use VuFindConsole\Generator\GeneratorTools;
@@ -88,7 +90,7 @@ class ExtendClassCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester->execute(
             [
                 'class_name' => 'Foo',
-                'target_module' => 'Bar'
+                'target_module' => 'Bar',
             ]
         );
         $this->assertEquals(0, $commandTester->getStatusCode());
@@ -144,7 +146,7 @@ class ExtendClassCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester->execute(
             [
                 'class_name' => 'Foo',
-                'target_module' => 'Bar'
+                'target_module' => 'Bar',
             ]
         );
         $this->assertEquals("Foo!\n", $commandTester->getDisplay());

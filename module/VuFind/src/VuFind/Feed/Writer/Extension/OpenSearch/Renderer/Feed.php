@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Laminas\Feed\Renderer\Feed extension for Open Search
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFind\Feed\Writer\Extension\OpenSearch\Renderer;
 
 use DOMDocument;

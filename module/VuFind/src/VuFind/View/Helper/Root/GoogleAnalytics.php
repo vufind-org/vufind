@@ -1,4 +1,5 @@
 <?php
+
 /**
  * GoogleAnalytics view helper
  *
@@ -25,7 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\View\Helper\Root;
+
+use Laminas\View\Helper\HeadScript;
 
 /**
  * GoogleAnalytics view helper
@@ -44,13 +48,6 @@ class GoogleAnalytics extends \Laminas\View\Helper\AbstractHelper
      * @var string|bool
      */
     protected $key;
-
-    /**
-     * Are we using Universal Analytics?
-     *
-     * @var bool
-     */
-    protected $universal;
 
     /**
      * Options to pass to the ga() create command.
@@ -76,7 +73,6 @@ class GoogleAnalytics extends \Laminas\View\Helper\AbstractHelper
             $options = ['universal' => (bool)$options];
         }
         $this->key = $key;
-        $this->universal = $options['universal'] ?? false;
         $this->createOptions = $options['create_options_js'] ?? "'auto'";
     }
 
@@ -89,38 +85,12 @@ class GoogleAnalytics extends \Laminas\View\Helper\AbstractHelper
      */
     protected function getRawJavascript($customUrl = false)
     {
-        // Simple case: Universal
-        if ($this->universal) {
-            return '(function(i,s,o,g,r,a,m){'
-                . "i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){"
-                . '(i[r].q=i[r].q||[]).push(arguments)},'
-                . 'i[r].l=1*new Date();a=s.createElement(o),'
-                . 'm=s.getElementsByTagName(o)[0];a.async=1;a.src=g;'
-                . 'm.parentNode.insertBefore(a,m)'
-                . "})(window,document,'script',"
-                . "'//www.google-analytics.com/analytics.js','ga');"
-                . "ga('create', '{$this->key}', {$this->createOptions});"
-                . "ga('send', 'pageview');";
-        }
-
-        // Alternate (legacy) case:
-        $code = 'var key = "' . $this->key . '";' . "\n"
-            . "var _gaq = _gaq || [];\n"
-            . "_gaq.push(['_setAccount', key]);\n";
-        if ($customUrl) {
-            $code .= "_gaq.push(['_trackPageview', '" . $customUrl . "']);\n";
-        } else {
-            $code .= "_gaq.push(['_trackPageview']);\n";
-        }
-        $code .= "(function() {\n"
-            . "var ga = document.createElement('script'); "
-            . "ga.type = 'text/javascript'; ga.async = true;\n"
-            . "ga.src = ('https:' == document.location.protocol ? "
-            . "'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';\n"
-            . "var s = document.getElementsByTagName('script')[0]; "
-            . "s.parentNode.insertBefore(ga, s);\n"
-            . "})();";
-        return $code;
+        return <<<JS
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '{$this->key}', {$this->createOptions});
+            JS;
     }
 
     /**
@@ -135,8 +105,11 @@ class GoogleAnalytics extends \Laminas\View\Helper\AbstractHelper
         if (!$this->key) {
             return '';
         }
-        $code = $this->getRawJavascript($customUrl);
         $inlineScript = $this->getView()->plugin('inlinescript');
-        return $inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $code, 'SET');
+        $url = 'https://www.googletagmanager.com/gtag/js?id=' . urlencode($this->key);
+        $code = $this->getRawJavascript($customUrl);
+        return
+            $inlineScript(HeadScript::FILE, $url, 'SET', ['async' => true]) . "\n"
+            . $inlineScript(HeadScript::SCRIPT, $code, 'SET');
     }
 }

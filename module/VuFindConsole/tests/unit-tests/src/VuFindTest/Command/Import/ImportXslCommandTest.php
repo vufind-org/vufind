@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Import/ImportXsl command test.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Command\Import;
 
 use Symfony\Component\Console\Tester\CommandTester;
@@ -82,7 +84,7 @@ class ImportXslCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester->execute(
             [
                 'XML_file' => 'foo.xml',
-                'properties_file' => 'bar.properties'
+                'properties_file' => 'bar.properties',
             ]
         );
         $this->assertEquals(

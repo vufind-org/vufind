@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Head link view helper (extended for VuFind's theme system)
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindTheme\View\Helper;
 
 use VuFindTheme\ThemeInfo;
@@ -37,9 +39,12 @@ use VuFindTheme\ThemeInfo;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
+ *
+ * @method getWhitespace(string|int $indent)
+ * @method getIndent()
+ * @method getSeparator()
  */
-class HeadLink extends \Laminas\View\Helper\HeadLink
-    implements \Laminas\Log\LoggerAwareInterface
+class HeadLink extends \Laminas\View\Helper\HeadLink implements \Laminas\Log\LoggerAwareInterface
 {
     use ConcatTrait;
     use \VuFind\Log\LoggerAwareTrait;
@@ -120,51 +125,6 @@ class HeadLink extends \Laminas\View\Helper\HeadLink
         }
         $this->addNonce($item);
         return parent::itemToString($item);
-    }
-
-    /**
-     * Compile a less file to css and add to css folder
-     *
-     * @param string $file Path to less file
-     *
-     * @return string
-     */
-    public function addLessStylesheet($file)
-    {
-        $relPath = 'less/' . $file;
-        $urlHelper = $this->getView()->plugin('url');
-        $currentTheme = $this->themeInfo->findContainingTheme($relPath);
-        $helperHome = $urlHelper('home');
-        $home = APPLICATION_PATH . '/themes/' . $currentTheme . '/';
-        $cssDirectory = $helperHome . 'themes/' . $currentTheme . '/css/less/';
-
-        try {
-            $less_files = [
-                APPLICATION_PATH . '/themes/' . $currentTheme . '/' . $relPath
-                    => $cssDirectory
-            ];
-            $themeParents = array_keys($this->themeInfo->getThemeInfo());
-            $directories = [];
-            foreach ($themeParents as $theme) {
-                $directories[APPLICATION_PATH . '/themes/' . $theme . '/less/']
-                    = $helperHome . 'themes/' . $theme . '/css/less/';
-            }
-            $css_file_name = \Less_Cache::Get(
-                $less_files,
-                [
-                    'cache_dir' => $home . 'css/less/',
-                    'cache_method' => false,
-                    'compress' => true,
-                    'import_dirs' => $directories,
-                    'output' => str_replace('.less', '.css', $file)
-                ]
-            );
-            return $cssDirectory . $css_file_name;
-        } catch (\Exception $e) {
-            error_log($e->getMessage());
-            [$fileName, ] = explode('.', $file);
-            return $urlHelper('home') . "themes/{$currentTheme}/css/{$fileName}.css";
-        }
     }
 
     /**

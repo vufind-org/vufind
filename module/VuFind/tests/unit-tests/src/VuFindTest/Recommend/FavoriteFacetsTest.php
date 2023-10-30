@@ -1,4 +1,5 @@
 <?php
+
 /**
  * FavoriteFacets recommendation module Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Recommend;
 
 use VuFind\Recommend\FavoriteFacets;
@@ -64,7 +66,8 @@ class FavoriteFacetsTest extends \PHPUnit\Framework\TestCase
     {
         $results = $this->getMockResults();
         $params = $results->getParams();
-        $params->expects($this->once())->method('addFacet')->with($this->equalTo('tags'), $this->equalTo('Your Tags'), $this->equalTo(false));
+        $params->expects($this->once())->method('addFacet')
+            ->with($this->equalTo('tags'), $this->equalTo('Your Tags'), $this->equalTo(false));
         $this->getFavoriteFacets($results);
     }
 
@@ -74,14 +77,21 @@ class FavoriteFacetsTest extends \PHPUnit\Framework\TestCase
      * @param \VuFind\Search\Solr\Results                 $results      results object
      * @param string                                      $tagSetting   Are tags enabled?
      * @param string                                      $settings     settings
-     * @param \Laminas\Stdlib\Parameters                     $request      request
-     * @param \VuFind\Search\Solr\HierarchicalFacetHelper $facetHelper  hierarchical facet helper (true to build default, null to omit)
+     * @param \Laminas\Stdlib\Parameters                  $request      request
+     * @param \VuFind\Search\Solr\HierarchicalFacetHelper $facetHelper  hierarchical facet helper
+     * (true to build default, null to omit)
      * @param \VuFind\Config\PluginManager                $configLoader config loader
      *
      * @return FavoriteFacets
      */
-    protected function getFavoriteFacets($results = null, $tagSetting = 'enabled', $settings = '', $request = null, $facetHelper = null, $configLoader = null)
-    {
+    protected function getFavoriteFacets(
+        $results = null,
+        $tagSetting = 'enabled',
+        $settings = '',
+        $request = null,
+        $facetHelper = null,
+        $configLoader = null
+    ) {
         if (null === $results) {
             $results = $this->getMockResults();
         }

@@ -26,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
+
 namespace VuFindSearch\Command;
 
 use VuFindSearch\Backend\BackendInterface;
@@ -107,6 +108,18 @@ abstract class AbstractBase implements CommandInterface
     }
 
     /**
+     * Set target backend identifier.
+     *
+     * @param string $identifier New identifier
+     *
+     * @return void
+     */
+    public function setTargetIdentifier(string $identifier): void
+    {
+        $this->backendId = $identifier;
+    }
+
+    /**
      * Save a result, flag the command as executed, and return the command object;
      * useful as the final step in execute() implementations.
      *
@@ -174,6 +187,18 @@ abstract class AbstractBase implements CommandInterface
     }
 
     /**
+     * Set search parameters.
+     *
+     * @param ParamBag $params Params
+     *
+     * @return void
+     */
+    public function setSearchParameters(ParamBag $params): void
+    {
+        $this->params = $params;
+    }
+
+    /**
      * Return command context.
      *
      * @return mixed
@@ -181,5 +206,17 @@ abstract class AbstractBase implements CommandInterface
     public function getContext()
     {
         return $this->context;
+    }
+
+    /**
+     * Set command context.
+     *
+     * @param mixed $context Context
+     *
+     * @return void
+     */
+    public function setContext($context)
+    {
+        $this->context = $context;
     }
 }

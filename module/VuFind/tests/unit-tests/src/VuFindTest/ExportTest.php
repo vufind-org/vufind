@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Export Support Test Class
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest;
 
 use Laminas\Config\Config;
@@ -151,7 +153,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     {
         $config = [
             'foo' => ['requiredMethods' => ['getTitle']],
-            'bar' => ['requiredMethods' => ['getThingThatDoesNotExist']]
+            'bar' => ['requiredMethods' => ['getThingThatDoesNotExist']],
         ];
 
         $export = $this->getExport([], $config);
@@ -182,7 +184,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
         // turned on by default if no main config is passed in.
         $config = [
             'RefWorks' => ['requiredMethods' => ['getTitle']],
-            'EndNote' => ['requiredMethods' => ['getThingThatDoesNotExist']]
+            'EndNote' => ['requiredMethods' => ['getThingThatDoesNotExist']],
         ];
 
         $export = $this->getExport([], $config);
@@ -205,7 +207,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
         ];
         $exportConfig = [
             'anything' => ['requiredMethods' => ['getTitle']],
-            'marc' => ['requiredMethods' => ['getMarcReader']]
+            'marc' => ['requiredMethods' => ['getMarcReader']],
         ];
         $export = $this->getExport($mainConfig, $exportConfig);
         $solrDefault = new \VuFind\RecordDriver\SolrDefault();
@@ -237,7 +239,8 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     public function testGetRedirectUrl()
     {
         $mainConfig = ['config' => ['this' => 'that=true']];
-        $template = 'http://result?src={encodedCallback}&fallbacktest={config|config|unset|default}&configtest={encodedConfig|config|this|default}';
+        $template = 'http://result?src={encodedCallback}&fallbacktest={config|config|unset|default}'
+            . '&configtest={encodedConfig|config|this|default}';
         $exportConfig = ['foo' => ['redirectUrl' => $template]];
         $export = $this->getExport($mainConfig, $exportConfig);
         $this->assertEquals(

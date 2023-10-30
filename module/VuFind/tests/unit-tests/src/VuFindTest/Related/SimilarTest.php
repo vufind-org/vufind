@@ -1,10 +1,11 @@
 <?php
+
 /**
  * Similar Related Items Test Class
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Related;
 
 use VuFind\Related\Similar;
@@ -55,14 +57,22 @@ class SimilarTest extends \PHPUnit\Framework\TestCase
         $driver->expects($this->once())
             ->method('getUniqueId')
             ->will($this->returnValue('fakeid'));
-        $service = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->onlyMethods(['similar'])
-            ->getMock();
-        $service->expects($this->once())
-            ->method('similar')
-            ->with($this->equalTo('Solr'), $this->equalTo('fakeid'))
-            ->will($this->returnValue(['fakeresponse']));
 
+        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $commandObj->expects($this->once())->method('getResult')
+            ->will($this->returnValue(['fakeresponse']));
+        $checkCommand = function ($command) {
+            return get_class($command) === \VuFindSearch\Command\SimilarCommand::class
+                    && $command->getTargetIdentifier() === "Solr"
+                    && $command->getArguments()[0] === "fakeid";
+        };
+        $service = $this->getMockBuilder(\VuFindSearch\Service::class)
+            ->getMock();
+        $service->expects($this->once())->method('invoke')
+            ->with($this->callback($checkCommand))
+            ->will($this->returnValue($commandObj));
         $similar = new Similar($service);
         $similar->init('', $driver);
         $this->assertEquals(['fakeresponse'], $similar->getResults());

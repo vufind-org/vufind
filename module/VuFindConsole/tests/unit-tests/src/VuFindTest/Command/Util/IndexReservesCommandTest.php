@@ -1,4 +1,5 @@
 <?php
+
 /**
  * IndexReservesCommand test.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 namespace VuFindTest\Command\Util;
 
 use Symfony\Component\Console\Tester\CommandTester;
@@ -230,7 +232,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
         $ils = $this->getMockIlsConnection();
         $instructors = ['inst1' => 'inst1', 'inst2' => 'inst2', 'inst3' => 'inst3'];
         $courses = [
-            'course1' => 'course1', 'course2' => 'course2', 'course3' => 'course3'
+            'course1' => 'course1', 'course2' => 'course2', 'course3' => 'course3',
         ];
         $departments = ['dept1' => 'dept1', 'dept2' => 'dept2', 'dept3' => 'dept3'];
         $reserves = [

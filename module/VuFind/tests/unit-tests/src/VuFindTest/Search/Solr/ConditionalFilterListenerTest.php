@@ -26,13 +26,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFindTest\Search\Solr;
 
 use Laminas\EventManager\Event;
 use VuFind\Search\Solr\InjectConditionalFilterListener;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\Connector;
-
 use VuFindSearch\Backend\Solr\HandlerMap;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Service;
@@ -57,7 +57,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
      */
     protected static $searchConfig = [
         '0' => '-conditionalFilter.sample|(NOT institution:"MyInst")',
-        '1' => 'conditionalFilter.sample|institution:"MyInst"'
+        '1' => 'conditionalFilter.sample|institution:"MyInst"',
     ];
 
     /**
@@ -98,9 +98,15 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
      */
     protected function setUp(): void
     {
-        $handlermap     = new HandlerMap(['select' => ['fallback' => true]]);
-        $connector      = new Connector('http://example.org/', $handlermap);
-        $this->backend  = new Backend($connector);
+        $handlermap    = new HandlerMap(['select' => ['fallback' => true]]);
+        $connector     = new Connector(
+            'http://localhost/',
+            $handlermap,
+            function () {
+                return new \Laminas\Http\Client();
+            }
+        );
+        $this->backend = new Backend($connector);
     }
 
     /**
@@ -298,7 +304,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             [0 => 'fulltext:VuFind',
             1 => 'field2:novalue',
-            2 => '(NOT institution:"MyInst")'
+            2 => '(NOT institution:"MyInst")',
             ],
             $fq
         );
@@ -333,7 +339,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             [0 => 'fulltext:VuFind',
             1 => 'field2:novalue',
-            2 => 'institution:"MyInst"'
+            2 => 'institution:"MyInst"',
             ],
             $fq
         );

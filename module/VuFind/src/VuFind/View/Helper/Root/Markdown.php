@@ -26,10 +26,12 @@
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://knihovny.cz Main Page
  */
+
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
-use League\CommonMark\MarkdownConverterInterface;
+use League\CommonMark\ConverterInterface;
+use League\CommonMark\Output\RenderedContentInterface;
 
 /**
  * Helper for transforming markdown to html
@@ -45,16 +47,16 @@ class Markdown extends AbstractHelper
     /**
      * Markdown converter
      *
-     * @var MarkdownConverterInterface
+     * @var ConverterInterface
      */
     protected $converter;
 
     /**
      * Markdown constructor.
      *
-     * @param MarkdownConverterInterface $converter Markdown converter
+     * @param ConverterInterface $converter Markdown converter
      */
-    public function __construct(MarkdownConverterInterface $converter)
+    public function __construct(ConverterInterface $converter)
     {
         $this->converter = $converter;
     }
@@ -64,10 +66,10 @@ class Markdown extends AbstractHelper
      *
      * @param string $markdown Markdown formatted text
      *
-     * @return string
+     * @return RenderedContentInterface
      */
     public function __invoke(string $markdown)
     {
-        return $this->converter->convertToHtml($markdown);
+        return $this->converter->convert($markdown);
     }
 }

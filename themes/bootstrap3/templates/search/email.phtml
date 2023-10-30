@@ -9,6 +9,6 @@
 <h2><?=$this->transEsc('Email this Search') ?></h2>
 <?=$this->flashmessages()?>
 <form class="form-search-email" method="post" name="emailSearch">
-  <input type="hidden" name="url" value="<?=$this->escapeHtmlAttr($this->url)?>" />
+  <input type="hidden" name="url" value="<?=$this->escapeHtmlAttr($this->url)?>">
   <?=$this->render('Helpers/email-form-fields.phtml')?>
 </form>

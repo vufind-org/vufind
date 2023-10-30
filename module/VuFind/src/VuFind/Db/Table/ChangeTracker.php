@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Table Definition for change_tracker
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
@@ -91,6 +93,7 @@ class ChangeTracker extends Gateway
      * @param int    $offset  Record number to retrieve first.
      * @param int    $limit   Retrieval limit (null for no limit)
      * @param array  $columns Columns to retrieve (null for all)
+     * @param string $order   Sort order
      *
      * @return callable
      */
@@ -100,7 +103,8 @@ class ChangeTracker extends Gateway
         $until,
         $offset = 0,
         $limit = null,
-        $columns = null
+        $columns = null,
+        $order = null
     ) {
         return function ($select) use (
             $core,
@@ -108,7 +112,8 @@ class ChangeTracker extends Gateway
             $until,
             $offset,
             $limit,
-            $columns
+            $columns,
+            $order
         ) {
             if ($columns !== null) {
                 $select->columns($columns);
@@ -117,7 +122,9 @@ class ChangeTracker extends Gateway
                 ->equalTo('core', $core)
                 ->greaterThanOrEqualTo('deleted', $from)
                 ->lessThanOrEqualTo('deleted', $until);
-            $select->order('deleted');
+            if ($order !== null) {
+                $select->order($order);
+            }
             if ($offset > 0) {
                 $select->offset($offset);
             }
@@ -171,7 +178,9 @@ class ChangeTracker extends Gateway
             $from,
             $until,
             $offset,
-            $limit
+            $limit,
+            null,
+            'deleted'
         );
         return $this->select($callback);
     }
@@ -287,7 +296,8 @@ class ChangeTracker extends Gateway
         // Are we restoring a previously deleted record, or was the stored
         // record change date before current record change date?  Either way,
         // we need to update the table!
-        if (!empty($row->deleted)
+        if (
+            !empty($row->deleted)
             || $this->strToUtcTime($row->last_record_change) < $change
         ) {
             // Save new values to the object:

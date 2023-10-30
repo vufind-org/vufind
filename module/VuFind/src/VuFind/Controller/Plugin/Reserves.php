@@ -1,10 +1,11 @@
 <?php
+
 /**
  * VuFind Action Helper - Reserves Support Methods
  *
  * PHP version 7
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010, 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -25,9 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Controller\Plugin;
 
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
+use VuFindSearch\Command\RetrieveCommand;
 use VuFindSearch\Service;
 
 /**
@@ -99,8 +102,12 @@ class Reserves extends AbstractPlugin
         if ($this->useIndex()) {
             // get the selected reserve record from reserves index
             // and extract the bib IDs from it
+            $command = new RetrieveCommand(
+                'SolrReserves',
+                $course . '|' . $inst . '|' . $dept
+            );
             $result = $this->searchService
-                ->retrieve('SolrReserves', $course . '|' . $inst . '|' . $dept);
+                ->invoke($command)->getResult();
             $bibs = [];
             if ($result->getTotal() < 1) {
                 return $bibs;
@@ -113,7 +120,7 @@ class Reserves extends AbstractPlugin
                     'BIB_ID' => $bib_id,
                     'bib_id' => $bib_id,
                     'course' => $course,
-                    'instructor' => $instructor
+                    'instructor' => $instructor,
                 ];
             }
             return $bibs;

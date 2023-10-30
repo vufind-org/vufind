@@ -113,15 +113,13 @@ else
 fi
 
 # Process all the files in the target directory:
-for file in $BASEPATH/*.xml $BASEPATH/*.mrc
+find $BASEPATH -maxdepth 1 \( -iname "*.xml" -o -iname "*.mrc" -o -iname "*.marc" \) -type f -print0 | \
+  while read -d $'\0' file
 do
-  if [ -f $file ]
+  # Logging output handled by log() function
+  $VUFIND_HOME/import-marc-auth.sh $file $2 2> >(log $file)
+  if [ "$?" -eq "0" ] && [ $MOVE_DATA == true ]
   then
-    # Logging output handled by log() function
-    $VUFIND_HOME/import-marc-auth.sh $file $2 2> >(log $file)
-    if [ "$?" -eq "0" ] && [ $MOVE_DATA == true ]
-    then
-      mv $file $BASEPATH/processed/`basename $file`
-    fi
+    mv $file $BASEPATH/processed/`basename $file`
   fi
 done

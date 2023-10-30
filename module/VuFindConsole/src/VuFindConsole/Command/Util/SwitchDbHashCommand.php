@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Console command: switch database encryption algorithm.
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+
 namespace VuFindConsole\Command\Util;
 
 use Laminas\Config\Config;
@@ -35,6 +37,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Config\Locator as ConfigLocator;
+use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
 use VuFind\Db\Table\User as UserTable;
 
@@ -71,17 +74,30 @@ class SwitchDbHashCommand extends Command
     protected $userTable;
 
     /**
+     * Config file path resolver
+     *
+     * @var PathResolver
+     */
+    protected $pathResolver;
+
+    /**
      * Constructor
      *
-     * @param Config      $config    VuFind configuration
-     * @param UserTable   $userTable User table gateway
-     * @param string|null $name      The name of the command; passing null means it
-     * must be set in configure()
+     * @param Config       $config       VuFind configuration
+     * @param UserTable    $userTable    User table gateway
+     * @param string|null  $name         The name of the command; passing null means
+     * it must be set in configure()
+     * @param PathResolver $pathResolver Config file path resolver
      */
-    public function __construct(Config $config, UserTable $userTable, $name = null)
-    {
+    public function __construct(
+        Config $config,
+        UserTable $userTable,
+        $name = null,
+        PathResolver $pathResolver = null
+    ) {
         $this->config = $config;
         $this->userTable = $userTable;
+        $this->pathResolver = $pathResolver;
         parent::__construct($name);
     }
 
@@ -141,7 +157,8 @@ class SwitchDbHashCommand extends Command
         $newhash = $input->getArgument('newmethod');
 
         // Pull existing encryption settings from the configuration:
-        if (!isset($this->config->Authentication->ils_encryption_key)
+        if (
+            !isset($this->config->Authentication->ils_encryption_key)
             || !($this->config->Authentication->encrypt_ils_password ?? false)
         ) {
             $oldhash = 'none';
@@ -179,7 +196,9 @@ class SwitchDbHashCommand extends Command
 
         // Next update the config file, so if we are unable to write the file,
         // we don't go ahead and make unwanted changes to the database:
-        $configPath = ConfigLocator::getLocalConfigPath('config.ini', null, true);
+        $configPath = $this->pathResolver
+            ? $this->pathResolver->getLocalConfigPath('config.ini', null, true)
+            : ConfigLocator::getLocalConfigPath('config.ini', null, true);
         $output->writeln("\tUpdating $configPath...");
         $writer = $this->getConfigWriter($configPath);
         $writer->set('Authentication', 'encrypt_ils_password', true);
@@ -199,17 +218,22 @@ class SwitchDbHashCommand extends Command
         $output->writeln("\tConverting hashes for " . count($users) . ' user(s).');
         foreach ($users as $row) {
             $pass = null;
-            if ($oldhash != 'none' && isset($row['cat_pass_enc'])) {
-                $oldcipher = new BlockCipher($oldCrypt);
-                $oldcipher->setKey($oldkey);
-                $pass = $oldcipher->decrypt($row['cat_pass_enc']);
+            if ($oldhash != 'none' && $row['cat_pass_enc'] ?? null !== null) {
+                try {
+                    $oldcipher = new BlockCipher($oldCrypt);
+                    $oldcipher->setKey($oldkey);
+                    $pass = $oldcipher->decrypt($row['cat_pass_enc']);
+                } catch (\Exception $e) {
+                    $output->writeln("Problem with user {$row['username']}: " . (string)$e);
+                    continue;
+                }
             } else {
                 $pass = $row['cat_password'];
             }
             $newcipher = new BlockCipher($newCrypt);
             $newcipher->setKey($newkey);
             $row['cat_password'] = null;
-            $row['cat_pass_enc'] = $newcipher->encrypt($pass);
+            $row['cat_pass_enc'] = $pass === null ? null : $newcipher->encrypt($pass);
             $row->save();
         }
 

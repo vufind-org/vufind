@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Table Definition for session
  *
@@ -27,6 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+
 namespace VuFind\Db\Table;
 
 use Laminas\Db\Adapter\Adapter;
@@ -73,7 +75,7 @@ class Session extends Gateway
      * @param string $sid    Session ID to retrieve
      * @param bool   $create Should we create rows that don't already exist?
      *
-     * @return \VuFind\Db\Row\Session
+     * @return ?\VuFind\Db\Row\Session
      */
     public function getBySessionId($sid, $create = true)
     {
@@ -161,14 +163,14 @@ class Session extends Gateway
     /**
      * Update the select statement to find records to delete.
      *
-     * @param Select $select  Select clause
-     * @param int    $daysOld Age in days of an "expired" record.
+     * @param Select $select    Select clause
+     * @param string $dateLimit Date threshold of an "expired" record in format
+     * 'Y-m-d H:i:s'.
      *
      * @return void
      */
-    protected function expirationCallback($select, $daysOld)
+    protected function expirationCallback($select, $dateLimit)
     {
-        $expireDate = time() - $daysOld * 24 * 60 * 60;
-        $select->where->lessThan('last_used', $expireDate);
+        $select->where->lessThan('last_used', strtotime($dateLimit));
     }
 }
