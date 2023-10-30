@@ -1,4 +1,5 @@
 <?php
+
 /**
  * GoogleTagManager view helper
  *
@@ -25,6 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
+
 namespace VuFind\View\Helper\Root;
 
 /**
@@ -73,7 +75,7 @@ class GoogleTagManager extends \Laminas\View\Helper\AbstractHelper
             j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             'https://www.googletagmanager.com/gtm.js?id='+i+dl;var n=d.querySelector('[nonce]');
             n&&j.setAttribute('nonce',n.nonce||n.getAttribute('nonce'));f.parentNode.insertBefore(j,f);
-            })(window,document,'script','dataLayer','{$this->gtmContainerId}');                
+            })(window,document,'script','dataLayer','{$this->gtmContainerId}');
             END;
         // phpcs:enable
         $inlineScript = $this->getView()->plugin('inlinescript');
