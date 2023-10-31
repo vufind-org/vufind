@@ -134,7 +134,8 @@ class Params extends \VuFind\Search\Solr\Params
         foreach ($this->searchParams as $params) {
             $translatedRequest = clone $request;
             foreach (array_keys($translatedRequest->getArrayCopy()) as $key) {
-                if (in_array($key, $filteredParams)) {
+                // Check for filtered param or advanced search types:
+                if (in_array($key, $filteredParams) || preg_match('/^type\d+$/', $key)) {
                     $translatedRequest->offsetUnset($key);
                 }
             }
@@ -157,12 +158,26 @@ class Params extends \VuFind\Search\Solr\Params
             $backendId = $params->getSearchClassId();
             // Clone request to avoid tampering the original one:
             $translatedRequest = clone $request;
-            // Map search type:
+            // Map basic search type:
             if ($type = $translatedRequest->get('type')) {
                 $translatedRequest->set(
                     'type',
                     $this->translateSearchType($type, $backendId)
                 );
+            }
+            // Map advanced search types:
+            $i = 0;
+            while ($types = $translatedRequest->get("type$i")) {
+                $translatedRequest->set(
+                    "type$i",
+                    array_map(
+                        function ($type) use ($backendId) {
+                            return $this->translateSearchType($type, $backendId);
+                        },
+                        (array)$types
+                    )
+                );
+                ++$i;
             }
             $params->initSearch($translatedRequest);
         }
