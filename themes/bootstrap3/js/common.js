@@ -66,15 +66,16 @@ var VuFind = (function VuFind() {
   };
 
    var initDisableSubmitOnClick = function initDisableSubmitOnClick() {
-    var form = document.querySelector("[data-disable-on-submit]");
-    form.addEventListener("submit", function () {
-      var submitButtons = form.querySelectorAll('[type="submit"]');
-      // Disable submit elements via setTimeout so that the submit button value gets
-      // included in the submitted data before being disabled:
-      setTimeout(function () {
-        submitButtons.forEach(button => button.disabled = true);
-      }, 0);
-    });
+    var forms = document.querySelectorAll("[data-disable-on-submit]");
+    forms.forEach(form =>
+      form.addEventListener("submit", function submitEventListener() {
+        var submitButtons = form.querySelectorAll('[type="submit"]');
+        // Disable submit elements via setTimeout so that the submit button value gets
+        // included in the submitted data before being disabled:
+        setTimeout(function buttonTimeout() {
+          submitButtons.forEach(button => button.disabled = true);
+        }, 0);
+      }));
   };
   
   var initClickHandlers = function initClickHandlers() {
