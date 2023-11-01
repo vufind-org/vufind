@@ -65,7 +65,7 @@ var VuFind = (function VuFind() {
     return null;
   };
 
-   var initDisableSubmitOnClick = function initDisableSubmitOnClick() {
+  var initDisableSubmitOnClick = function initDisableSubmitOnClick() {
     var forms = document.querySelectorAll("[data-disable-on-submit]");
     forms.forEach(form =>
       form.addEventListener("submit", function submitEventListener() {
