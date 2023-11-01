@@ -43,13 +43,24 @@
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier()) ?>" class="hiddenSource">
 <?php
 //TAMU Customization inject and id for GIFM
-$idFields = $this->driver->getMarcRecord()->getFields("999");
+$idFields = $this->driver->getMarcReader()->getFields("999");
+
 $fieldCount = count($idFields);
 if ($fieldCount > 0) {
-  $instanceIdSubField = $idFields[$fieldCount - 1]->getSubField("i");
-  if ($instanceIdSubField) {
-    echo '<input type="hidden" value="' . $this->escapeHtmlAttr($instanceIdSubField->getData()) . '" class="hiddenInstanceId" id="hiddenInstanceId" />';
-  }
+	
+	foreach ($idFields[$fieldCount - 1] as $subfield) {
+		if (is_array($subfield)) {
+			foreach ($subfield as $subfield1) {
+				if ( $subfield1['code'] == 'i') {
+					$instanceIdSubField = $subfield1['data'];
+				}
+			}
+		}
+	}
+		
+	if ($instanceIdSubField) {
+		echo '<input type="hidden" value="' . $this->escapeHtmlAttr($instanceIdSubField) . '" class="hiddenInstanceId" id="hiddenInstanceId" />';
+	}
 }
 ?>
     <?=$this->flashmessages()?>
