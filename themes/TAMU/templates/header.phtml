@@ -108,10 +108,11 @@
 </section>	 
 -->
 <?php
+
 if (
 
-(strpos($_SERVER['REDIRECT_URL'], 'Alphabrowse') === false) &&
-(strpos($_SERVER['REDIRECT_URL'], 'search/reserves') === false) &&
+(strpos($_SERVER['SCRIPT_NAME'], 'Alphabrowse') === false) &&
+(strpos($_SERVER['SCRIPT_NAME'], 'search/reserves') === false) &&
 ($this->layout()->searchbox !== false)
 
 ):
