@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EDS Databases Recommendations Module
+ * Databases Recommendations Module
  *
  * PHP version 8
  *
@@ -37,11 +37,11 @@ use function count;
 use function intval;
 
 /**
- * EDSDatabases Recommendations Module
+ * Databases Recommendations Module
  *
  * This class displays a list of external links to the research databases represented
- * by EDS results.  (Unlike the EDS ContentProvider facet that would narrow down the
- * results within VuFind.)
+ * by EDS or similar results.  (Unlike the EDS ContentProvider facet that would narrow
+ * down the results within VuFind.)
  *
  * @category VuFind
  * @package  Recommendations
@@ -49,7 +49,7 @@ use function intval;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class EDSDatabases implements RecommendInterface
+class Databases implements RecommendInterface
 {
     use \VuFind\Cache\CacheTrait;
 
@@ -61,6 +61,13 @@ class EDSDatabases implements RecommendInterface
     protected $results;
 
     /**
+     * Configuration manager
+     *
+     * @var ConfigManager
+     */
+    protected $configManager;
+
+    /**
      * Number of results to show
      *
      * @var int
@@ -68,11 +75,33 @@ class EDSDatabases implements RecommendInterface
     protected $limit;
 
     /**
-     * Databases listed in EDS.ini
+     * Name of the configuration file for databases config (minus ".ini").
+     *
+     * @var string
+     */
+    protected $databasesConfigFile;
+
+    /**
+     * The result facet with the list of databases.  Each value in the
+     * array is a level of the facet hierarchy.
      *
      * @var array
      */
-    protected $edsDatabases;
+    protected $resultFacet;
+
+    /**
+     * For each database facet, the key to the database name.
+     *
+     * @var string
+     */
+    protected $resultFacetNameKey;
+
+    /**
+     * Databases listed in configuration file
+     *
+     * @var array
+     */
+    protected $configFileDatabases;
 
     /**
      * Configuration of whether to use LibGuides as a data source
@@ -100,21 +129,9 @@ class EDSDatabases implements RecommendInterface
         LibGuides $libGuides,
         CacheAdapter $cache
     ) {
-        $edsConfig = $configManager->get('EDS');
-        $edsDatabaseUrls = isset($edsConfig->Databases->url) ? $edsConfig->Databases->url->toArray() : [];
-        $this->edsDatabases = array_map(function ($url) {
-            return ['url' => $url];
-        }, $edsDatabaseUrls);
-
-        $this->useLibGuides = $edsConfig->Databases->useLibGuides ?? false;
-        if ($this->useLibGuides) {
-            $this->libGuides = $libGuides;
-            $this->setCacheStorage($cache);
-
-            // Cache the data related to profiles for up to 10 minutes:
-            $libGuidesApiConfig = $configManager->get('LibGuidesAPI');
-            $this->cacheLifetime = intval($libGuidesApiConfig->GetAZ->cache_lifetime ?? 600);
-        }
+        $this->configManager = $configManager;
+        $this->libGuides = $libGuides;
+        $this->setCacheStorage($cache);
     }
 
     /**
@@ -130,6 +147,25 @@ class EDSDatabases implements RecommendInterface
         $this->limit
             = (isset($settings[0]) && is_numeric($settings[0]) && $settings[0] > 0)
             ? intval($settings[0]) : 5;
+        $databasesConfigFile = $settings[1] ?? 'EDS';
+
+        $databasesConfig = $this->configManager->get($databasesConfigFile);
+        $configUrls = isset($databasesConfig->Databases->url)
+            ? $databasesConfig->Databases->url->toArray() : [];
+        $this->configFileDatabases = array_map(function ($url) {
+            return ['url' => $url];
+        }, $configUrls);
+
+        $this->resultFacet = isset($databasesConfig->Databases->resultFacet)
+            ? $databasesConfig->Databases->resultFacet->toArray() : [];
+        $this->resultFacetNameKey = $databasesConfig->Databases->resultFacetNameKey ?? 'value';
+
+        $this->useLibGuides = $databasesConfig->Databases->useLibGuides ?? false;
+        if ($this->useLibGuides) {
+            // Cache the data related to profiles for up to 10 minutes:
+            $libGuidesApiConfig = $this->configManager->get('LibGuidesAPI');
+            $this->cacheLifetime = intval($libGuidesApiConfig->GetAZ->cache_lifetime ?? 600);
+        }
     }
 
     /**
@@ -173,11 +209,21 @@ class EDSDatabases implements RecommendInterface
      */
     public function getResults()
     {
-        $resultDatabases = $this->results->getFacetList(['ContentProvider' => null])['ContentProvider']['list'] ?? [];
+        if (count($this->resultFacet) < 1) {
+            throw new \Exception('At least one facet key required.');
+        }
+
+        $resultDatabasesTopFacet = array_shift($this->resultFacet);
+        $resultDatabases = $this->results->getFacetList([$resultDatabasesTopFacet => null])[$resultDatabasesTopFacet];
+        while (count($this->resultFacet) && $resultDatabases) {
+            // Throw exception if the key is not found
+            $resultDatabases = $resultDatabases[array_shift($this->resultFacet)];
+        }
         $nameToDatabase = $this->getDatabases();
         $databases = [];
         foreach ($resultDatabases as $resultDatabase) {
-            $name = $resultDatabase['value'];
+            // Throw exception if the name is not found
+            $name = $resultDatabase[$this->resultFacetNameKey];
             $databaseInfo = $nameToDatabase[$name] ?? null;
             if ($databaseInfo) {
                 $databases[$name] = $databaseInfo;
@@ -201,7 +247,7 @@ class EDSDatabases implements RecommendInterface
         if ($this->useLibGuides) {
             $databases = $this->getLibGuidesDatabases();
         }
-        $databases = array_merge($databases, $this->edsDatabases);
+        $databases = array_merge($databases, $this->configFileDatabases);
         return $databases;
     }
 

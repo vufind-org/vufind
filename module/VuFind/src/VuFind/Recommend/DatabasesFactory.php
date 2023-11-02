@@ -1,7 +1,7 @@
 <?php
 
 /**
- * LibGuides Profile recommendation module factory.
+ * Databases recommendation module factory.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFind\Recommend;
 use Psr\Container\ContainerInterface;
 
 /**
- * EDS Databases recommendation module factory.
+ * Databases recommendation module factory.
  *
  * @category VuFind
  * @package  Recommendations
@@ -40,7 +40,7 @@ use Psr\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class EDSDatabasesFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+class DatabasesFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
