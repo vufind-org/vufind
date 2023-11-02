@@ -288,6 +288,13 @@ class SierraRest extends AbstractBase implements
     protected $apiBase = 'v5';
 
     /**
+     * Statistic group to use e.g. when renewing loans or placing holds
+     *
+     * @var ?int
+     */
+    protected $statGroup = null;
+
+    /**
      * Whether to sort items by enumchron. Default is true.
      *
      * @var array
@@ -467,6 +474,13 @@ class SierraRest extends AbstractBase implements
             // Default to API v5 unless a lower compatibility level is needed.
             if ($this->apiVersion < 5) {
                 $this->apiBase = 'v' . floor($this->apiVersion);
+            }
+        }
+        if ($statGroup = $this->config['Catalog']['statgroup'] ?? null) {
+            if ($this->apiVersion >= 6) {
+                $this->statGroup = (int)$statGroup;
+            } else {
+                $this->logWarning("Ignoring statgroup for API Version {$this->apiVersion}");
             }
         }
 
@@ -848,12 +862,13 @@ class SierraRest extends AbstractBase implements
     {
         $patron = $renewDetails['patron'];
         $finalResult = ['details' => []];
+        $renewParams = $this->statGroup ? ['statgroup' => $this->statGroup] : [];
 
         foreach ($renewDetails['details'] as $details) {
             [$checkoutId, $itemId] = explode('|', $details);
             $result = $this->makeRequest(
                 [$this->apiBase, 'patrons', 'checkouts', $checkoutId, 'renewal'],
-                [],
+                $renewParams,
                 'POST',
                 $patron
             );
@@ -1454,6 +1469,9 @@ class SierraRest extends AbstractBase implements
         }
         if ($comment) {
             $request['note'] = $comment;
+        }
+        if ($this->statGroup) {
+            $request['statgroup'] = $this->statGroup;
         }
 
         $result = $this->makeRequest(
