@@ -77,7 +77,7 @@ var VuFind = (function VuFind() {
         }, 0);
       }));
   };
-  
+
   var initClickHandlers = function initClickHandlers() {
     let checkClickHandlers = function (event, elem) {
       if (elem.hasAttribute('data-click-callback')) {
