@@ -70,6 +70,10 @@ class InjectSearchRunnerFactory implements \Laminas\ServiceManager\Factory\Facto
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        return new $requestedName($container->get(SearchRunner::class));
+        $module = new $requestedName($container->get(SearchRunner::class));
+        if (method_exists($module, 'setConfigManager')) {
+            $module->setConfigManager($container->get(\VuFind\Config\PluginManager::class));
+        }
+        return $module;
     }
 }

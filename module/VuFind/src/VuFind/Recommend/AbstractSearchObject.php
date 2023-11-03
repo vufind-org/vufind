@@ -62,6 +62,20 @@ abstract class AbstractSearchObject implements RecommendInterface
     protected $limit;
 
     /**
+     * Key to config section of hidden filters for this search
+     *
+     * @var string
+     */
+    protected $hiddenFiltersKey;
+
+    /**
+     * Custom heading for this recommendation module
+     *
+     * @var string
+     */
+    protected $customHeading;
+
+    /**
      * Name of request parameter to use for search query
      *
      * @var string
@@ -74,6 +88,13 @@ abstract class AbstractSearchObject implements RecommendInterface
      * @var SearchRunner
      */
     protected $runner;
+
+    /**
+     * Config PluginManager
+     *
+     * @var \VuFind\Config\PluginManager
+     */
+    protected $configManager;
 
     /**
      * Constructor
@@ -99,6 +120,21 @@ abstract class AbstractSearchObject implements RecommendInterface
         $this->limit
             = (isset($settings[1]) && is_numeric($settings[1]) && $settings[1] > 0)
             ? intval($settings[1]) : 5;
+
+        $this->hiddenFiltersKey = $settings[2] ?? false;
+        $this->customHeading = $settings[3] ?? null;
+    }
+
+    /**
+     * Store the config PluginManager if neeeded to get additional configuration.
+     *
+     * @param \VuFind\Config\PluginManager $configManager Config PluginManager
+     *
+     * @return void
+     */
+    public function setConfigManager($configManager)
+    {
+        $this->configManager = $configManager;
     }
 
     /**
@@ -139,6 +175,21 @@ abstract class AbstractSearchObject implements RecommendInterface
                 $lookfor,
                 $params->getOptions()->getHandlerForLabel($typeLabel)
             );
+
+            // Set any hidden filters configured for this search
+            if (!empty($this->hiddenFiltersKey)) {
+                $ini = $params->getOptions()->getSearchIni();
+                $config = $this->configManager->get($ini);
+                try {
+                    $allHiddenFilters = $config->AbstractSearchObjectHiddenFilters->toArray() ?? [];
+                } catch (\Error $e) {
+                    throw new \Exception("No filters found matching key '$this->hiddenFiltersKey' in $ini.ini.");
+                }
+                $hiddenFilters = $allHiddenFilters[$this->hiddenFiltersKey] ?? [];
+                foreach ($hiddenFilters as $filter) {
+                    $params->addFilter($filter);
+                }
+            }
         };
 
         // Perform the search:
@@ -168,6 +219,16 @@ abstract class AbstractSearchObject implements RecommendInterface
     public function getResults()
     {
         return $this->results;
+    }
+
+    /**
+     * Get the custon heading, if any.
+     *
+     * @return string
+     */
+    public function getCustomHeading()
+    {
+        return $this->customHeading ?? null;
     }
 
     /**
