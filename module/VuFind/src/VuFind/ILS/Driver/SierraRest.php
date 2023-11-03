@@ -1824,7 +1824,7 @@ class SierraRest extends AbstractBase implements
 
         // Set up the request
         $apiUrl = $this->getApiUrlFromHierarchy($hierarchy);
-        // Add additional query parameters directly to the URL becuase they cannot be
+        // Add additional query parameters directly to the URL because they cannot be
         // added with setParameterGet for POST request:
         if ($queryParams) {
             $apiUrl .= '?' . http_build_query($queryParams);
