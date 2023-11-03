@@ -862,13 +862,16 @@ class SierraRest extends AbstractBase implements
     {
         $patron = $renewDetails['patron'];
         $finalResult = ['details' => []];
-        $renewParams = $this->statGroup ? ['statgroup' => $this->statGroup] : [];
 
         foreach ($renewDetails['details'] as $details) {
             [$checkoutId, $itemId] = explode('|', $details);
+            $urlHierarchy = [$this->apiBase, 'patrons', 'checkouts', $checkoutId, 'renewal'];
+            if ($this->statGroup) {
+                $urlHierarchy[] = ['statgroup' => $this->statGroup];
+            }
             $result = $this->makeRequest(
-                [$this->apiBase, 'patrons', 'checkouts', $checkoutId, 'renewal'],
-                $renewParams,
+                $urlHierarchy,
+                [],
                 'POST',
                 $patron
             );
@@ -1711,7 +1714,8 @@ class SierraRest extends AbstractBase implements
      * Makes a request to the Sierra REST API
      *
      * @param array  $hierarchy    Array of values to embed in the URL path of the
-     * request
+     * request. String values are considered part of the path, array values part of
+     * the query string (for use in POST queries).
      * @param array  $params       A keyed array of query data
      * @param string $method       The http request method to use (Default is GET)
      * @param array  $patron       Patron information, if available
@@ -1781,7 +1785,8 @@ class SierraRest extends AbstractBase implements
      * Callback used by makeRequest
      *
      * @param array  $hierarchy    Array of values to embed in the URL path of the
-     * request
+     * request. String values are considered part of the path, array values part of
+     * the query string (for use in POST queries).
      * @param array  $params       A keyed array of query data
      * @param string $method       The http request method to use (Default is GET)
      * @param array  $patron       Patron information, if available
@@ -1916,7 +1921,11 @@ class SierraRest extends AbstractBase implements
     {
         $url = $this->config['Catalog']['host'];
         foreach ($hierarchy as $value) {
-            $url .= '/' . urlencode($value);
+            if (is_array($value)) {
+                $url .= (str_contains($url, '?') ? '&' : '?') . http_build_query($value);
+            } else {
+                $url .= '/' . urlencode($value);
+            }
         }
         return $url;
     }
