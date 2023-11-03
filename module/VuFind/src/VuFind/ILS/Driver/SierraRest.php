@@ -866,14 +866,13 @@ class SierraRest extends AbstractBase implements
         foreach ($renewDetails['details'] as $details) {
             [$checkoutId, $itemId] = explode('|', $details);
             $urlHierarchy = [$this->apiBase, 'patrons', 'checkouts', $checkoutId, 'renewal'];
-            if ($this->statGroup) {
-                $urlHierarchy[] = ['statgroup' => $this->statGroup];
-            }
             $result = $this->makeRequest(
                 $urlHierarchy,
                 [],
                 'POST',
-                $patron
+                $patron,
+                false,
+                $this->statGroup ? ['statgroup' => $this->statGroup] : []
             );
             if (!empty($result['code'])) {
                 $msg = $this->formatErrorMessage(
@@ -1714,13 +1713,14 @@ class SierraRest extends AbstractBase implements
      * Makes a request to the Sierra REST API
      *
      * @param array  $hierarchy    Array of values to embed in the URL path of the
-     * request. String values are considered part of the path, array values part of
-     * the query string (for use in POST queries).
+     * request
      * @param array  $params       A keyed array of query data
      * @param string $method       The http request method to use (Default is GET)
      * @param array  $patron       Patron information, if available
      * @param bool   $returnStatus Whether to return HTTP status code and response
      * as a keyed array instead of just the response
+     * @param array  $queryParams  Additional query params that are added to the URL
+     * regardless of request type
      *
      * @throws ILSException
      * @return mixed JSON response decoded to an associative array, an array of HTTP
@@ -1729,10 +1729,11 @@ class SierraRest extends AbstractBase implements
      */
     protected function makeRequest(
         $hierarchy,
-        $params = false,
+        $params = [],
         $method = 'GET',
         $patron = false,
-        $returnStatus = false
+        $returnStatus = false,
+        $queryParams = []
     ) {
         // Status logging callback:
         $statusCallback = function (
@@ -1785,13 +1786,14 @@ class SierraRest extends AbstractBase implements
      * Callback used by makeRequest
      *
      * @param array  $hierarchy    Array of values to embed in the URL path of the
-     * request. String values are considered part of the path, array values part of
-     * the query string (for use in POST queries).
+     * request
      * @param array  $params       A keyed array of query data
      * @param string $method       The http request method to use (Default is GET)
      * @param array  $patron       Patron information, if available
      * @param bool   $returnStatus Whether to return HTTP status code and response
      * as a keyed array instead of just the response
+     * @param array  $queryParams  Additional query params that are added to the URL
+     * regardless of request type
      *
      * @throws ILSException
      * @return mixed JSON response decoded to an associative array, an array of HTTP
@@ -1800,10 +1802,11 @@ class SierraRest extends AbstractBase implements
      */
     protected function requestCallback(
         $hierarchy,
-        $params = false,
+        $params = [],
         $method = 'GET',
         $patron = false,
-        $returnStatus = false
+        $returnStatus = false,
+        $queryParams = []
     ) {
         // Clear current access token if it's not specific to the given patron
         if (
@@ -1822,6 +1825,11 @@ class SierraRest extends AbstractBase implements
 
         // Set up the request
         $apiUrl = $this->getApiUrlFromHierarchy($hierarchy);
+        // Add additional query parameters directly to the URL becuase they cannot be
+        // added with setParameterGet for POST request:
+        if ($queryParams) {
+            $apiUrl .= '?' . http_build_query($queryParams);
+        }
 
         // Create proxy request
         $client = $this->createHttpClient($apiUrl);
@@ -1921,11 +1929,7 @@ class SierraRest extends AbstractBase implements
     {
         $url = $this->config['Catalog']['host'];
         foreach ($hierarchy as $value) {
-            if (is_array($value)) {
-                $url .= (str_contains($url, '?') ? '&' : '?') . http_build_query($value);
-            } else {
-                $url .= '/' . urlencode($value);
-            }
+            $url .= '/' . urlencode($value);
         }
         return $url;
     }
