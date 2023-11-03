@@ -865,9 +865,8 @@ class SierraRest extends AbstractBase implements
 
         foreach ($renewDetails['details'] as $details) {
             [$checkoutId, $itemId] = explode('|', $details);
-            $urlHierarchy = [$this->apiBase, 'patrons', 'checkouts', $checkoutId, 'renewal'];
             $result = $this->makeRequest(
-                $urlHierarchy,
+                [$this->apiBase, 'patrons', 'checkouts', $checkoutId, 'renewal'],
                 [],
                 'POST',
                 $patron,
