@@ -90,18 +90,6 @@ class AbstractSolrSearch extends AbstractSearch
     }
 
     /**
-     * Get proper options file for search class
-     *
-     * @return \VuFind\Search\Base\Options
-     */
-    public function getOptionsForClass(): \VuFind\Search\Base\Options
-    {
-        return $this->serviceLocator
-            ->get(\VuFind\Search\Options\PluginManager::class)
-            ->get($this->searchClassId);
-    }
-
-    /**
      * Get the possible legal values for the illustration limit radio buttons.
      *
      * @param object $savedSearch Saved search object (false if none)
