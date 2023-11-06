@@ -160,9 +160,9 @@ class LibGuides implements
     }
 
     /**
-     * Authentiate to the LibGuides API and set authentiation headers.
+     * Authenticate to the LibGuides API and set authentication headers.
      *
-     * @return bool Indicates if authentiation succeeded.
+     * @return bool Indicates if authentication succeeded.
      */
     protected function authenticateAndSetHeaders()
     {
