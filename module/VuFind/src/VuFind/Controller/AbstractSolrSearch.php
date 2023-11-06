@@ -173,7 +173,7 @@ class AbstractSolrSearch extends AbstractSearch
                 $facetFilters = $options->getHierarchicalFacetFilters();
                 $excludeFilters = $options->getHierarchicalExcludeFilters();
                 if (
-                    $options->getFilterFacetsInAdvanced()
+                    $options->getFilterHierarchicalFacetsInAdvanced()
                     && (!empty($facetFilters[$facet])
                     || !empty($excludeFilters[$facet]))
                 ) {

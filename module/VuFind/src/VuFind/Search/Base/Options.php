@@ -321,26 +321,26 @@ abstract class Options implements TranslatorAwareInterface
     protected $firstlastNavigation = false;
 
     /**
-     * Should HierarchicalFacetFilters and HierarchicalExcludeFilters
+     * Should hierarchicalFacetFilters and hierarchicalExcludeFilters
      * apply in advanced search
      *
      * @var bool
      */
-    protected $filterFacetsInAdvanced = false;
+    protected $filterHierarchicalFacetsInAdvanced = false;
 
     /**
-     * Excluded filters
+     * Hierarchical exclude filters
      *
      * @var array
      */
-    protected $excludeFilters = [];
+    protected $hierarchicalExcludeFilters = [];
 
     /**
-     * Facet filters
+     * Hierarchical facet filters
      *
      * @var array
      */
-    protected $facetFilters = [];
+    protected $hierarchicalFacetFilters = [];
 
     /**
      * Top pagination control style (none, simple or full)
@@ -371,11 +371,11 @@ abstract class Options implements TranslatorAwareInterface
                 }
             }
         }
-        $this->filterFacetsInAdvanced
+        $this->filterHierarchicalFacetsInAdvanced
             = !empty($facetSettings->Advanced_Settings->enable_hierarchical_filters);
-        $this->excludeFilters
+        $this->hierarchicalExcludeFilters
             = $facetSettings?->HierarchicalExcludeFilters?->toArray() ?? [];
-        $this->facetFilters
+        $this->hierarchicalFacetFilters
             = $facetSettings?->HierarchicalFacetFilters?->toArray() ?? [];
 
         $searchSettings = $configLoader->get($this->searchIni);
@@ -1204,28 +1204,28 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return bool
      */
-    public function getFilterFacetsInAdvanced(): bool
+    public function getFilterHierarchicalFacetsInAdvanced(): bool
     {
-        return $this->filterFacetsInAdvanced;
+        return $this->filterHierarchicalFacetsInAdvanced;
     }
 
     /**
-     * Get exclude filters.
+     * Get hierarchical exclude filters.
      *
      * @return array
      */
     public function getHierarchicalExcludeFilters(): array
     {
-        return $this->excludeFilters;
+        return $this->hierarchicalExcludeFilters;
     }
 
     /**
-     * Get facet filters.
+     * Get hierarchical facet filters.
      *
      * @return array
      */
     public function getHierarchicalFacetFilters(): array
     {
-        return $this->facetFilters;
+        return $this->hierarchicalFacetFilters;
     }
 }
