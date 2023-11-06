@@ -99,7 +99,8 @@ abstract class AbstractSearchObject implements RecommendInterface
     /**
      * Constructor
      *
-     * @param SearchRunner $runner Search runner
+     * @param SearchRunner                 $runner        Search runner
+     * @param \VuFind\Config\PluginManager $configManager Config manager
      */
     public function __construct(SearchRunner $runner, \VuFind\Config\PluginManager $configManager)
     {
