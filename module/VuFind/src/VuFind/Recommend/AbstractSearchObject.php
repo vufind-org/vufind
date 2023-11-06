@@ -174,7 +174,8 @@ abstract class AbstractSearchObject implements RecommendInterface
                     $hiddenFilters = $config->{$this->iniSection}->toArray() ?? [];
                 } catch (\Error $e) {
                     throw new \Exception(
-                        "No section found matching '$this->iniSection' in $ini.ini.");
+                        "No section found matching '$this->iniSection' in $ini.ini."
+                    );
                 }
                 foreach ($hiddenFilters as $filter) {
                     $params->addFilter($filter);
