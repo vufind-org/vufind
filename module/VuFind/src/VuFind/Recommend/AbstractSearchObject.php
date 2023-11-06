@@ -101,9 +101,10 @@ abstract class AbstractSearchObject implements RecommendInterface
      *
      * @param SearchRunner $runner Search runner
      */
-    public function __construct(SearchRunner $runner)
+    public function __construct(SearchRunner $runner, \VuFind\Config\PluginManager $configManager)
     {
         $this->runner = $runner;
+        $this->configManager = $configManager;
     }
 
     /**
@@ -123,18 +124,6 @@ abstract class AbstractSearchObject implements RecommendInterface
 
         $this->iniSection = $settings[2] ?? false;
         $this->customHeading = $settings[3] ?? null;
-    }
-
-    /**
-     * Store the config PluginManager if neeeded to get additional configuration.
-     *
-     * @param \VuFind\Config\PluginManager $configManager Config PluginManager
-     *
-     * @return void
-     */
-    public function setConfigManager($configManager)
-    {
-        $this->configManager = $configManager;
     }
 
     /**
