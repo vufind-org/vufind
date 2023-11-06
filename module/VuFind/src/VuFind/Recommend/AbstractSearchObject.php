@@ -62,11 +62,11 @@ abstract class AbstractSearchObject implements RecommendInterface
     protected $limit;
 
     /**
-     * Key to config section of hidden filters for this search
+     * Config section with hidden filters for this search
      *
      * @var string
      */
-    protected $hiddenFiltersKey;
+    protected $iniSection;
 
     /**
      * Custom heading for this recommendation module
@@ -121,7 +121,7 @@ abstract class AbstractSearchObject implements RecommendInterface
             = (isset($settings[1]) && is_numeric($settings[1]) && $settings[1] > 0)
             ? intval($settings[1]) : 5;
 
-        $this->hiddenFiltersKey = $settings[2] ?? false;
+        $this->iniSection = $settings[2] ?? false;
         $this->customHeading = $settings[3] ?? null;
     }
 
@@ -177,15 +177,15 @@ abstract class AbstractSearchObject implements RecommendInterface
             );
 
             // Set any hidden filters configured for this search
-            if (!empty($this->hiddenFiltersKey)) {
+            if (!empty($this->iniSection)) {
                 $ini = $params->getOptions()->getSearchIni();
                 $config = $this->configManager->get($ini);
+                $iniSection = $this->iniSection;
                 try {
-                    $allHiddenFilters = $config->AbstractSearchObjectHiddenFilters->toArray() ?? [];
+                    $hiddenFilters = $config->$iniSection->toArray() ?? [];
                 } catch (\Error $e) {
-                    throw new \Exception("No filters found matching key '$this->hiddenFiltersKey' in $ini.ini.");
+                    throw new \Exception("No section found matching '$iniSection' in $ini.ini.");
                 }
-                $hiddenFilters = $allHiddenFilters[$this->hiddenFiltersKey] ?? [];
                 foreach ($hiddenFilters as $filter) {
                     $params->addFilter($filter);
                 }
