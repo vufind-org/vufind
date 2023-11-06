@@ -1034,8 +1034,16 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 $day_overdue = rand() % 30 + 5;
                 // Calculate checkout date:
                 $checkout = strtotime('now - ' . ($day_overdue + 14) . ' days');
-                // 50c a day fine?
-                $fine = $day_overdue * 0.50;
+                // 1 in 10 chance of this being a "Manual Fee":
+                if (rand(1, 10) === 1) {
+                    $fine = 2.50;
+                    $type = 'Manual Fee';
+                } else {
+                    // 50c a day fine
+                    $fine = $day_overdue * 0.50;
+                    // After 20 days it becomes 'Long Overdue'
+                    $type = $day_overdue > 20 ? 'Long Overdue' : 'Overdue';
+                }
 
                 $fineList[] = [
                     'amount'   => $fine * 100,
@@ -1043,8 +1051,9 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                         ->convertToDisplayDate('U', $checkout),
                     'createdate' => $this->dateConverter
                         ->convertToDisplayDate('U', time()),
-                    // After 20 days it becomes 'Long Overdue'
-                    'fine'     => $day_overdue > 20 ? 'Long Overdue' : 'Overdue',
+                    'fine'     => $type,
+                    // Additional description for long overdue fines:
+                    'description' => 'Manual Fee' === $type ? 'Interlibrary loan request fee' : '',
                     // 50% chance they've paid half of it
                     'balance'  => (rand() % 100 > 49 ? $fine / 2 : $fine) * 100,
                     'duedate'  => $this->dateConverter->convertToDisplayDate(
@@ -1530,7 +1539,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @param array $holdInfo Contains most of the same values passed to
      * placeHold, minus the patron data.
      *
-     * @return int
+     * @return int|null
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
