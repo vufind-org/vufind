@@ -150,7 +150,7 @@ class Databases implements RecommendInterface
         $databasesConfigFile = $settings[1] ?? 'EDS';
 
         $databasesConfig = $this->configManager->get($databasesConfigFile)->Databases;
-        if (!$databasesConfig){
+        if (!$databasesConfig) {
             throw new \Exception("Databases config file $databasesConfigFile must have section 'Databases'.");
         }
         $configUrls = isset($databasesConfig->url) ? $databasesConfig->url->toArray() : [];
