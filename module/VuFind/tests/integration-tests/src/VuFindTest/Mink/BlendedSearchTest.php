@@ -270,18 +270,36 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
             );
         }
 
+        // Go back and add a search term:
+        $this->clickCss($page, '.adv_search_links a');
+        $this->findCssAndSetValue($page, '#search_lookfor0_0', 'Dublin');
+        $this->findCssAndSetValue($page, '#search_type0_0', 'AllFields');
+        $this->clickCss($page, '.adv-submit .btn-primary');
+
+        $this->assertStringStartsWith(
+            'Showing 1 - 12 results of 12',
+            $this->findCss($page, '.search-stats')->getText()
+        );
+
+        // Go back and add another search term:
         $this->clickCss($page, '.adv_search_links a');
         $this->clickcss($page, '.add_search_link');
+        $this->findCssAndSetValue($page, '#search_lookfor0_1', 'Award');
+        $this->findCssAndSetValue($page, '#search_type0_1', 'Subject');
+        $this->clickCss($page, '.adv-submit .btn-primary');
 
-        // Add search terms:
-        $this->findCssAndSetValue($page, '#search_lookfor0_0', 'Foo');
-        $this->findCssAndSetValue($page, '#search_type0_0', 'Title');
-        $this->findCssAndSetValue($page, '#search_lookfor0_1', 'Bar');
+        $this->assertStringStartsWith(
+            'Showing 1 - 4 results of 4',
+            $this->findCss($page, '.search-stats')->getText()
+        );
+
+        // Go back and change type of second search term:
+        $this->clickCss($page, '.adv_search_links a');
         $this->findCssAndSetValue($page, '#search_type0_1', 'Author');
         $this->clickCss($page, '.adv-submit .btn-primary');
 
         $this->assertEquals(
-            'Your search - (Title:Foo AND Author:Bar) - did not match any resources.',
+            'Your search - (All Fields:Dublin AND Author:Award) - did not match any resources.',
             $this->findCss($page, '.mainbody p')->getText()
         );
     }
