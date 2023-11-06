@@ -149,18 +149,20 @@ class Databases implements RecommendInterface
             ? intval($settings[0]) : 5;
         $databasesConfigFile = $settings[1] ?? 'EDS';
 
-        $databasesConfig = $this->configManager->get($databasesConfigFile);
-        $configUrls = isset($databasesConfig->Databases->url)
-            ? $databasesConfig->Databases->url->toArray() : [];
+        $databasesConfig = $this->configManager->get($databasesConfigFile)->Databases;
+        if (!$databasesConfig){
+            throw new \Exception("Databases config file $databasesConfigFile must have section 'Databases'.");
+        }
+        $configUrls = isset($databasesConfig->url) ? $databasesConfig->url->toArray() : [];
         $this->configFileDatabases = array_map(function ($url) {
             return ['url' => $url];
         }, $configUrls);
 
-        $this->resultFacet = isset($databasesConfig->Databases->resultFacet)
-            ? $databasesConfig->Databases->resultFacet->toArray() : [];
-        $this->resultFacetNameKey = $databasesConfig->Databases->resultFacetNameKey ?? 'value';
+        $this->resultFacet = isset($databasesConfig->resultFacet)
+            ? $databasesConfig->resultFacet->toArray() : [];
+        $this->resultFacetNameKey = $databasesConfig->resultFacetNameKey ?? 'value';
 
-        $this->useLibGuides = $databasesConfig->Databases->useLibGuides ?? false;
+        $this->useLibGuides = $databasesConfig->useLibGuides ?? false;
         if ($this->useLibGuides) {
             // Cache the data related to profiles for up to 10 minutes:
             $libGuidesApiConfig = $this->configManager->get('LibGuidesAPI');
