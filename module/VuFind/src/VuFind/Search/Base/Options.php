@@ -1212,20 +1212,32 @@ abstract class Options implements TranslatorAwareInterface
     /**
      * Get hierarchical exclude filters.
      *
+     * @param string|null $field Field to get or null for all values.
+     *                           Default is null.
+     *
      * @return array
      */
-    public function getHierarchicalExcludeFilters(): array
+    public function getHierarchicalExcludeFilters(?string $field = null): array
     {
+        if ($field) {
+            return $this->hierarchicalExcludeFilters[$field] ?? [];
+        }
         return $this->hierarchicalExcludeFilters;
     }
 
     /**
      * Get hierarchical facet filters.
      *
+     * @param string|null $field Field to get or null for all values.
+     *                           Default is null.
+     *
      * @return array
      */
-    public function getHierarchicalFacetFilters(): array
+    public function getHierarchicalFacetFilters(?string $field = null): array
     {
+        if ($field) {
+            return $this->hierarchicalFacetFilters[$field] ?? [];
+        }
         return $this->hierarchicalFacetFilters;
     }
 }

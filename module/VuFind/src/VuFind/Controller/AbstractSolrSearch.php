@@ -170,17 +170,16 @@ class AbstractSolrSearch extends AbstractSearch
                 $list['list'] = $facetHelper->flattenFacetHierarchy($tmpList);
 
                 $options = $this->getOptionsForClass();
-                $facetFilters = $options->getHierarchicalFacetFilters();
-                $excludeFilters = $options->getHierarchicalExcludeFilters();
+                $facetFilters = $options->getHierarchicalFacetFilters($facet);
+                $excludeFilters = $options->getHierarchicalExcludeFilters($facet);
                 if (
                     $options->getFilterHierarchicalFacetsInAdvanced()
-                    && (!empty($facetFilters[$facet])
-                    || !empty($excludeFilters[$facet]))
+                    && ($facetFilters || $excludeFilters)
                 ) {
                     $list['list'] = $facetHelper->filterFacets(
                         $list['list'],
-                        $facetFilters[$facet] ?? [],
-                        $excludeFilters[$facet] ?? []
+                        $facetFilters,
+                        $excludeFilters
                     );
                 }
             }
