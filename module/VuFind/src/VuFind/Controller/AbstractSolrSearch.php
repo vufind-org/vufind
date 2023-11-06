@@ -159,18 +159,18 @@ class AbstractSolrSearch extends AbstractSearch
         $hierarchicalFacets = [],
         $hierarchicalFacetsSortOptions = []
     ) {
-        // Process the facets
-        $facetHelper = $this->serviceLocator
-            ->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class);
-        $options = $this->getOptionsForClass();
-        $facetFilters = $options->getHierarchicalFacetFilters();
-        $excludeFilters = $options->getHierarchicalExcludeFilters();
+        $facetHelper = null;
         foreach ($facetList as $facet => &$list) {
             // Hierarchical facets: format display texts and sort facets
             // to a flat array according to the hierarchy
             if (in_array($facet, $hierarchicalFacets)) {
-                $tmpList = $list['list'];
+                // Process the facets
+                if (!$facetHelper) {
+                    $facetHelper = $this->serviceLocator
+                        ->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class);
+                }
 
+                $tmpList = $list['list'];
                 $sort = $hierarchicalFacetsSortOptions[$facet]
                     ?? $hierarchicalFacetsSortOptions['*'] ?? 'top';
 
@@ -180,18 +180,21 @@ class AbstractSolrSearch extends AbstractSearch
                     $tmpList
                 );
                 $list['list'] = $facetHelper->flattenFacetHierarchy($tmpList);
-            }
 
-            if (
-                $options->getFilterFacetsInAdvanced()
-                && (!empty($facetFilters[$facet])
-                || !empty($excludeFilters[$facet]))
-            ) {
-                $list['list'] = $facetHelper->filterFacets(
-                    $list['list'],
-                    $facetFilters[$facet] ?? [],
-                    $excludeFilters[$facet] ?? []
-                );
+                $options = $this->getOptionsForClass();
+                $facetFilters = $options->getHierarchicalFacetFilters();
+                $excludeFilters = $options->getHierarchicalExcludeFilters();
+                if (
+                    $options->getFilterFacetsInAdvanced()
+                    && (!empty($facetFilters[$facet])
+                    || !empty($excludeFilters[$facet]))
+                ) {
+                    $list['list'] = $facetHelper->filterFacets(
+                        $list['list'],
+                        $facetFilters[$facet] ?? [],
+                        $excludeFilters[$facet] ?? []
+                    );
+                }
             }
 
             foreach ($list['list'] as $key => $value) {

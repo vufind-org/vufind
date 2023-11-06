@@ -372,7 +372,7 @@ abstract class Options implements TranslatorAwareInterface
             }
         }
         $this->filterFacetsInAdvanced
-            = !empty($facetSettings->Advanced_Settings->enable_filters);
+            = !empty($facetSettings->Advanced_Settings->enable_hierarchical_filters);
         $this->excludeFilters
             = $facetSettings?->HierarchicalExcludeFilters?->toArray() ?? [];
         $this->facetFilters
