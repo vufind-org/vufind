@@ -67,6 +67,23 @@ class RecordDataFormatter extends AbstractHelper
     protected $driver = null;
 
     /**
+     * Config for configurable fields.
+     *
+     * @var \Laminas\Config\Config
+     */
+    protected $config = null;
+
+    /**
+     * Constructor
+     *
+     * @param \Laminas\Config\Config $config Config for configurable fields
+     */
+    public function __construct($config)
+    {
+        $this->config = $config;
+    }
+
+    /**
      * Store a record driver object and return this object so that the appropriate
      * data can be rendered.
      *
@@ -126,6 +143,14 @@ class RecordDataFormatter extends AbstractHelper
      */
     protected function render($field, $data, $options)
     {
+        if ($options['configurable'] ?? false) {
+            if ($this->config[$field] ?? false) {
+                $options = array_merge($options, $this->config[$field]->toArray());
+            } else {
+                return null;
+            }
+        }
+
         // Check whether the data is worth rendering.
         if (!$this->allowValue($data, $options, true)) {
             return null;

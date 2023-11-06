@@ -48,6 +48,7 @@ use function func_get_args;
  */
 class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ConfigPluginManagerTrait;
     use \VuFindTest\Feature\FixtureTrait;
     use \VuFindTest\Feature\ViewTrait;
     use \VuFindTest\Feature\PathResolverTrait;
@@ -200,7 +201,20 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         $container = new \VuFindTest\Container\MockContainer($this);
         $container->set(
             \VuFind\Config\PluginManager::class,
-            new \VuFind\Config\PluginManager($container)
+            $this->getMockConfigPluginManager([
+                'config' => [
+                    'Record' => [],
+                ],
+                'RecordDataFormatter' => [
+                    'ConfigurableWithoutOptions' => [],
+                    'ConfigurableWithOptions' => [
+                        'separator' => ';',
+                    ],
+                    'ConfigurableOverwriteOptions' => [
+                        'separator' => ';',
+                    ],
+                ],
+            ])
         );
         $this->addPathResolverToContainer($container);
         $formatter = $factory($container, RecordDataFormatter::class);
@@ -441,6 +455,31 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'dataMethodParams' => ['test', 'test2'],
             'pos' => 5000,
         ];
+        $spec['ConfigurableWithoutConfig'] = [
+            'dataMethod' => 'getNewerTitles',
+            'renderType' => 'Simple',
+            'configurable' => true,
+            'pos' => 6000,
+        ];
+        $spec['ConfigurableWithoutOptions'] = [
+            'dataMethod' => 'getNewerTitles',
+            'renderType' => 'Simple',
+            'configurable' => true,
+            'pos' => 6001,
+        ];
+        $spec['ConfigurableWithOptions'] = [
+            'dataMethod' => 'getNewerTitles',
+            'renderType' => 'Simple',
+            'configurable' => true,
+            'pos' => 6002,
+        ];
+        $spec['ConfigurableOverwriteOptions'] = [
+            'dataMethod' => 'getNewerTitles',
+            'renderType' => 'Simple',
+            'configurable' => true,
+            'separator' => '/',
+            'pos' => 6003,
+        ];
         $expected = [
             'Building' => 'prefix_0',
             'Published in' => '0',
@@ -472,6 +511,9 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'CombineAltArray' => 'New TitleSecond New Title Alt New TitleSecond Alt New Title',
             'CombineAltRenderTemplate' => 'Centro di Studi Vichiani, 1992 Alt Place Alt Name Alt Date',
             'FunctionWithParams' => 'test test2',
+            'ConfigurableWithoutOptions' => 'New TitleSecond New Title',
+            'ConfigurableWithOptions' => 'New Title;Second New Title',
+            'ConfigurableOverwriteOptions' => 'New Title;Second New Title',
         ];
         // Call the method specified by the data provider
         $results = $this->$function($driver, $spec);
