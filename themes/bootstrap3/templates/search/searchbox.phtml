@@ -1,22 +1,30 @@
 <?php
-    // Initialize from current search (if available) or defaults:
+    // Initialize from current search (if available and not explicitly overridden) or defaults:
     if ($results = ($this->results ?? $this->searchMemory()->getCurrentSearch())) {
       $params = $results->getParams();
       $this->searchClassId = $params->getSearchClassId();
+    } else {
+      $params = null;
+      $this->searchClassId ??= $this->config()->get('config')->Site->defaultSearchBackend
+        ?? 'Solr';
+    }
+    // Initialize from current search if eligible, defaults otherwise:
+    if (isset($params) && $this->searchClassId === $params->getSearchClassId()) {
       $hiddenFilters = $params->getHiddenFilters();
       $lastSort = $params->getSort();
       $lastLimit = $params->getLimit();
-      $options = $results->getOptions();
+      $options = $params->getOptions();
     } else {
-      if (!isset($this->searchClassId)) {
-          $config = $this->config()->get('config');
-          $this->searchClassId = $config->Site->defaultSearchBackend ?? 'Solr';
-      }
-      $options = $this->searchOptions($this->searchClassId);
       $hiddenFilters = $this->searchTabs()->getHiddenFilters($this->searchClassId, true, $this->ignoreHiddenFiltersInRequest ?? false);
       $lastSort = $this->searchMemory()->getLastSort($this->searchClassId);
       $lastLimit = $this->searchMemory()->getLastLimit($this->searchClassId);
-      $params = null;
+      $options = $this->searchOptions($this->searchClassId);
+    }
+    // Override search class ID with searchbox-specific settings, if necessary:
+    $overrideSearchClassId = $options->getSearchBoxSearchClassId();
+    if ($overrideSearchClassId !== $this->searchClassId) {
+      $this->searchClassId = $overrideSearchClassId;
+      $options = $this->searchOptions($overrideSearchClassId);
     }
 
     // Load search actions and settings (if any):
@@ -69,10 +77,27 @@
 <?php else: ?>
   <form id="searchForm" class="searchForm navbar-form navbar-left flip" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off">
     <?= $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $tabConfig['tabs'], 'showCounts' => $tabConfig['showCounts']]); ?>
-    <?php $placeholder = $this->searchbox()->getPlaceholderText($tabConfig['selected']['id'] ?? null); ?>
+    <?php
+      $searchboxAttributes = [
+        'id' => 'searchForm_lookfor',
+        'class' => 'searchForm_lookfor form-control search-query',
+        'type' => 'search',
+        'name' => 'lookfor',
+        'value' => $this->lookfor,
+        'aria-label' => $this->translate('search_terms'),
+      ];
+      if ($placeholder = $this->searchbox()->getPlaceholderText($tabConfig['selected']['id'] ?? $this->searchClassId)) {
+        $searchboxAttributes['placeholder'] = $placeholder;
+      }
+      if ($this->searchbox()->autocompleteEnabled($this->searchClassId)) {
+        $searchboxAttributes['class'] .= " autocomplete searcher:{$this->searchClassId}"
+          . ($this->searchbox()->autocompleteAutoSubmit($this->searchClassId) ? ' ac-auto-submit' : '');
+        $searchboxAttributes['data-autocomplete-formatting-rules'] = $this->searchbox()->autocompleteFormattingRulesJson($this->searchClassId);
+      }
+    ?>
     <div class="searchForm-query">
-      <input id="searchForm_lookfor" class="searchForm_lookfor form-control search-query<?php if ($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete searcher:<?=$this->escapeHtmlAttr($this->searchClassId) ?><?=$this->searchbox()->autocompleteAutoSubmit($this->searchClassId) ? ' ac-auto-submit' : '' ?><?php endif ?>" type="search" name="lookfor" value="<?=$this->escapeHtmlAttr($this->lookfor)?>"<?php if ($placeholder): ?> placeholder="<?=$this->transEscAttr($placeholder) ?>"<?php endif ?> aria-label="<?=$this->transEscAttr('search_terms')?>">
-      <button id="searchForm-reset" class="searchForm-reset" type="reset" tabindex="-1" aria-label="<?=$this->transEsc('searchform_reset_button')?>"><?=$this->icon('ui-reset-search');?></button>
+      <input<?=$this->htmlAttributes($searchboxAttributes)?>>
+      <button id="searchForm-reset" class="searchForm-reset hidden" type="reset" tabindex="-1" aria-label="<?=$this->transEsc('searchform_reset_button')?>"><?=$this->icon('ui-reset-search');?></button>
     </div>
     <?php if ($handlerCount > 1): ?>
       <select id="searchForm_type" class="searchForm_type form-control" name="type" data-native-menu="false" aria-label="<?=$this->transEscAttr('Search type')?>">

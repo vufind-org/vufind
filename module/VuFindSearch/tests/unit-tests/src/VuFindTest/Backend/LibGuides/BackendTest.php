@@ -82,13 +82,13 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
         $this->assertEquals('test', $rec->getSourceIdentifier());
-        $this->assertEquals('http://libguides.brynmawr.edu/tests-measures?hs=a', $rec->getUniqueID());
+        $this->assertEquals('https://guides.tricolib.brynmawr.edu/testprep', $rec->getUniqueID());
         $recs = $coll->getRecords();
         $this->assertEquals('test', $recs[1]->getSourceIdentifier());
-        $this->assertEquals('http://libguides.brynmawr.edu/psyctests-measures?hs=a', $recs[1]->getUniqueID());
+        $this->assertEquals('https://guides.tricolib.brynmawr.edu/tests-measures', $recs[1]->getUniqueID());
         $this->assertEquals('test', $recs[2]->getSourceIdentifier());
-        $this->assertEquals('http://libguides.brynmawr.edu/social-work?hs=a', $recs[2]->getUniqueID());
-        $this->assertEquals(40, $coll->getTotal());
+        $this->assertEquals('https://guides.tricolib.brynmawr.edu/psyctests-measures', $recs[2]->getUniqueID());
+        $this->assertEquals(53, $coll->getTotal());
         $this->assertEquals(0, $coll->getOffset());
     }
 

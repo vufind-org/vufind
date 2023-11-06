@@ -351,7 +351,11 @@ class AbstractRecord extends AbstractBase
                 if (true === $driver->tryMethod('isCollection')) {
                     $params = $this->params()->fromQuery()
                         + $this->params()->fromRoute();
-                    $options = [];
+                    // Disable path normalization since it can unencode e.g. encoded
+                    // slashes in record id's
+                    $options = [
+                        'normalize_path' => false,
+                    ];
                     if ($sid = $this->getSearchMemory()->getCurrentSearchId()) {
                         $options['query'] = compact('sid');
                     }

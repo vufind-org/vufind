@@ -23,7 +23,7 @@
   ];
 ?>
 <div<?php if ($truncateSettings): ?> class="truncate-hierarchy" data-truncate="<?=$this->htmlSafeJsonEncode($truncateSettings)?>"<?php endif; ?>>
-  <div id="facet_<?=$this->escapeHtml($this->title)?>" class="jstree-facet"
+  <div id="facet_<?=$this->escapeHtml($this->title)?>" class="jstree-facet facet-tree"
     data-source="<?=$this->escapeHtml($this->searchClassId)?>"
     data-facet="<?=$this->escapeHtmlAttr($this->title)?>"
     data-path="<?=$this->currentPath()?>"

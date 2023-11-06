@@ -69,7 +69,7 @@ class Options extends \VuFind\Search\Solr\Options
      */
     public function getSearchAction()
     {
-        return 'search-blended';
+        return 'blender-results';
     }
 
     /**
@@ -80,7 +80,7 @@ class Options extends \VuFind\Search\Solr\Options
      */
     public function getAdvancedSearchAction()
     {
-        return false;
+        return $this->advancedHandlers ? 'blender-advanced' : false;
     }
 
     /**
