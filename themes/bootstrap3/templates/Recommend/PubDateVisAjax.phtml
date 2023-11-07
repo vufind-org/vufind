@@ -21,7 +21,7 @@
   <?php
     $js = "loadVis('" . $this->recommend->getFacetFields() . "', '"
         . $this->recommend->getSearchParams() . "', VuFind.path, "
-        . $this->recommend->getZooming() . ");";
+        . $this->recommend->getZooming() . ');';
     echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $js, 'SET');
   ?>
 

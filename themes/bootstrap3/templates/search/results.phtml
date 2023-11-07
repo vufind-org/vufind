@@ -30,26 +30,21 @@
   $this->layout()->searchId = $this->results->getSearchId();
 
   // Enable cart if appropriate:
-  $this->showBulkOptions = $this->params->getOptions()->supportsCart() && $this->showBulkOptions;
+  $options = $this->params->getOptions();
+  $this->showBulkOptions = $options->supportsCart() && $this->showBulkOptions;
   // Checkboxes if appropriate:
-  $this->showCartControls = $this->params->getOptions()->supportsCart() && $this->cart()->isActive()
+  $this->showCartControls = $options->supportsCart() && $this->cart()->isActive()
     && ($this->showBulkOptions || !$this->cart()->isActiveInSearch());
   // Enable bulk options if appropriate:
   $this->showCheckboxes = $this->showCartControls || $this->showBulkOptions;
-  // Create a css class for results from the search class:
-  $searchClass = $this->params->getSearchClassId();
-  if (!ctype_upper($searchClass)) {
-    $searchClass = preg_replace('/([a-zA-Z])(?=[A-Z])/', '$1-', $searchClass);
-  }
-  $this->resultsClass = 'search-results-' . strtolower($searchClass);
 
-  $this->render('search/results-scripts.phtml', ['displayVersions' => !empty($this->params->getOptions()->getVersionsAction())]);
-
-  // Load only if list view parameter is NOT full:
-  if ($this->params->getOptions()->getListViewOption() !== 'full') {
-      $this->headScript()->appendFile("record.js");
-      $this->headScript()->appendFile("embedded_record.js");
-  }
+  $this->render(
+      'search/results-scripts.phtml',
+      [
+          'displayVersions' => !empty($options->getVersionsAction()),
+          'listViewOption' => $options->getListViewOption(),
+      ]
+  );
 ?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
@@ -63,7 +58,11 @@
     <?php // Data-record-total attribute is for analytics use.  Do not remove. ?>
     <div class="search-stats" data-record-total="<?=$this->escapeHtmlAttr($recordTotal)?>">
       <?php if ($recordTotal > 0): ?>
-        <?=$this->context()->renderInContext('search/controls/showing.phtml', ['lookfor' => $lookfor, 'recordTotal' => $recordTotal]) ?>
+        <?php if ($this->results->getOptions()->getTopPaginatorStyle() === 'simple'): ?>
+          <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', ['results' => $this->results])?>
+        <?php else: ?>
+          <?=$this->context()->renderInContext('search/controls/showing.phtml', ['lookfor' => $lookfor, 'recordTotal' => $recordTotal]) ?>
+        <?php endif; ?>
         <a class="search-filter-toggle visible-xs" href="#search-sidebar" data-toggle="offcanvas" title="<?=$this->transEscAttr('sidebar_expand') ?>">
           <?=$this->transEsc('Refine Results') ?>
         </a>
@@ -103,10 +102,13 @@
       <?php endif; ?>
     <?php endforeach; ?>
   <?php else: ?>
+    <?php if ($this->results->getOptions()->getTopPaginatorStyle() === 'full'): ?>
+      <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', ['results' => $this->results, 'options' => ($this->paginationOptions ?? []) + ['className' => 'pagination-top']])?>
+    <?php endif; ?>
     <form id="search-cart-form" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>" data-lightbox data-lightbox-onsubmit="bulkFormHandler">
       <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => ''])?>
     </form>
-    <?=$this->render('search/list-' . $this->params->getView() . '.phtml')?>
+    <?=$this->render('search/results-list.phtml')?>
     <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', ['idPrefix' => 'bottom_', 'formAttr' => 'search-cart-form'])?>
     <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', ['results' => $this->results, 'options' => $this->paginationOptions ?? []])?>
     <?=$this->context($this)->renderInContext('search/controls/results-tools.phtml', ['results' => $this->results])?>

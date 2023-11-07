@@ -34,6 +34,10 @@ use Laminas\Session\Container;
 use VuFind\Db\Table\Search;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 
+use function array_key_exists;
+use function intval;
+use function strlen;
+
 /**
  * Wrapper class to handle search memory
  *
@@ -228,7 +232,7 @@ class Memory
     }
 
     /**
-     * Retrieve last accessed search URL, if available.  Returns null if no URL
+     * Retrieve last accessed search URL, if available. Returns null if no URL
      * is available.
      *
      * @return string|null

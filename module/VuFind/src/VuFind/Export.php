@@ -32,6 +32,9 @@ namespace VuFind;
 use Laminas\Config\Config;
 use Laminas\View\Renderer\PhpRenderer;
 
+use function in_array;
+use function is_callable;
+
 /**
  * Export support class
  *
@@ -242,7 +245,7 @@ class Export
 
     /**
      * Get an array of strings representing formats in which a specified record's
-     * data may be exported (empty if none).  Legal values: "BibTeX", "EndNote",
+     * data may be exported (empty if none). Legal values: "BibTeX", "EndNote",
      * "MARC", "MARCXML", "RDF", "RefWorks".
      *
      * @param \VuFind\RecordDriver\AbstractBase $driver Record driver

@@ -37,6 +37,10 @@ use VuFind\Db\Table\User as UserTable;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Validator\CsrfInterface;
 
+use function count;
+use function in_array;
+use function is_callable;
+
 /**
  * Wrapper class for handling logged-in user in session.
  *
@@ -299,7 +303,7 @@ class Manager implements
 
     /**
      * Get the URL to establish a session (needed when the internal VuFind login
-     * form is inadequate).  Returns false when no session initiator is needed.
+     * form is inadequate). Returns false when no session initiator is needed.
      *
      * @param string $target Full URL where external authentication method should
      * send user after login (some drivers may override this).
@@ -677,7 +681,7 @@ class Manager implements
         ) {
             if (!$this->csrf->isValid($request->getPost()->get('csrf'))) {
                 $this->getAuth()->resetState();
-                $this->logWarning("Invalid CSRF token passed to login");
+                $this->logWarning('Invalid CSRF token passed to login');
                 throw new AuthException('authentication_error_technical');
             } else {
                 // After successful token verification, clear list to shrink session:
@@ -793,7 +797,7 @@ class Manager implements
     {
         $auth = $this->getAuth();
         if (!$auth->supportsConnectingLibraryCard()) {
-            throw new \Exception("Connecting of library cards is not supported");
+            throw new \Exception('Connecting of library cards is not supported');
         }
         $auth->connectLibraryCard($request, $user);
     }

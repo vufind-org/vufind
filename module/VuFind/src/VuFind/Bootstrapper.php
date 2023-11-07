@@ -34,6 +34,8 @@ use Laminas\Router\Http\RouteMatch;
 use Psr\Container\ContainerInterface;
 use VuFind\I18n\Locale\LocaleSettings;
 
+use function is_callable;
+
 /**
  * VuFind Bootstrapper
  *

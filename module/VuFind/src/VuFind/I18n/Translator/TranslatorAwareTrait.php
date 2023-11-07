@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Lightweight translator aware marker interface.
+ * Reusable implementation of TranslatorAwareInterface.
  *
  * PHP version 8
  *
@@ -31,11 +31,13 @@ namespace VuFind\I18n\Translator;
 
 use Laminas\I18n\Translator\TranslatorInterface;
 
+use function count;
+use function is_array;
+use function is_callable;
+use function is_string;
+
 /**
- * Lightweight translator aware marker interface (used as an alternative to
- * \Laminas\I18n\Translator\TranslatorAwareInterface, which requires an excessive
- * number of methods to be implemented).  If we switch to PHP 5.4 traits in the
- * future, we can eliminate this interface in favor of the default Laminas version.
+ * Reusable implementation of TranslatorAwareInterface.
  *
  * @category VuFind
  * @package  Translator
@@ -106,6 +108,19 @@ trait TranslatorAwareTrait
     {
         // Figure out the text domain for the string:
         [$domain, $str] = $this->extractTextDomain($target);
+
+        if ($this->getTranslatorLocale() == 'debug') {
+            $targetString = $domain !== 'default' ? "$domain::$str" : $str;
+            $keyValueToString = function ($key, $val) {
+                return "$key = $val";
+            };
+            $tokenDetails = empty($tokens)
+                ? ''
+                : ' | [' .
+                implode(', ', array_map($keyValueToString, array_keys($tokens), array_values($tokens))) .
+                ']';
+            return "*$targetString$tokenDetails*";
+        }
 
         // Special case: deal with objects with a designated display value:
         if ($str instanceof \VuFind\I18n\TranslatableStringInterface) {

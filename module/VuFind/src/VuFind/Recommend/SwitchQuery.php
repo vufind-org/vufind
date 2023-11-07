@@ -33,6 +33,9 @@ namespace VuFind\Recommend;
 use VuFindSearch\Command\GetLuceneHelperCommand;
 use VuFindSearch\Service;
 
+use function in_array;
+use function strlen;
+
 /**
  * SwitchQuery Recommendations Module
  *
@@ -144,7 +147,7 @@ class SwitchQuery implements RecommendInterface
     }
 
     /**
-     * Called after the Search Results object has performed its main search.  This
+     * Called after the Search Results object has performed its main search. This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
      *

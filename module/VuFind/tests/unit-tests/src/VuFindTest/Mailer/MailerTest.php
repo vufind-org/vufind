@@ -35,6 +35,8 @@ use VuFind\Mailer\Factory as MailerFactory;
 use VuFind\Mailer\Mailer;
 use VuFindTest\Container\MockContainer;
 
+use function count;
+
 /**
  * Mailer Test Class
  *

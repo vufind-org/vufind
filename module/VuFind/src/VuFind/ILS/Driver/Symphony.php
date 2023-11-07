@@ -38,6 +38,10 @@ use VuFind\Cache\Manager as CacheManager;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Record\Loader;
 
+use function count;
+use function in_array;
+use function is_array;
+
 /**
  * Symphony Web Services (symws) ILS Driver
  *
@@ -374,7 +378,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                     // ILSException didn't seem to produce an error message
                     // when checkSymwsVersion() was called from the catch
                     // block in makeRequest().
-                    throw new \Exception("SymWS version too old");
+                    throw new \Exception('SymWS version too old');
                 }
                 break;
             }
@@ -1195,7 +1199,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
 
             $primaryAddress = $result->patronAddressInfo->primaryAddress;
 
-            $primaryAddressInfo = "Address" . $primaryAddress . "Info";
+            $primaryAddressInfo = 'Address' . $primaryAddress . 'Info';
 
             $addressInfo = $result->patronAddressInfo->$primaryAddressInfo;
             $address1    = $addressInfo[0]->addressValue;
@@ -1516,7 +1520,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     /**
      * Renew My Items
      *
-     * Function for attempting to renew a patron's items.  The data in
+     * Function for attempting to renew a patron's items. The data in
      * $renewDetails['details'] is determined by getRenewDetails().
      *
      * @param array $renewDetails An array of data required for renewing items
@@ -1682,10 +1686,10 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * @param array $patron      Patron information returned by the patronLogin
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
-     * in the context of placing or editing a hold.  When placing a hold, it contains
-     * most of the same values passed to placeHold, minus the patron data.  When
+     * in the context of placing or editing a hold. When placing a hold, it contains
+     * most of the same values passed to placeHold, minus the patron data. When
      * editing a hold it contains all the hold information returned by getMyHolds.
-     * May be used to limit the pickup options or may be ignored.  The driver must
+     * May be used to limit the pickup options or may be ignored. The driver must
      * not add new options to the return array based on this data or other areas of
      * VuFind may behave incorrectly.
      *
@@ -1717,7 +1721,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
      * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.  May be used to limit the pickup options
+     * placeHold, minus the patron data. May be used to limit the pickup options
      * or may be ignored.
      *
      * @return string       The default pickup location for the patron.

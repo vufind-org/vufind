@@ -68,6 +68,6 @@ class ChannelsControllerFactory extends AbstractBaseFactory
             throw new \Exception('Unexpected options sent to factory.');
         }
         $loader = $container->get(\VuFind\ChannelProvider\ChannelLoader::class);
-        return $this->applyPermissions($container, new $requestedName($loader));
+        return $this->applyPermissions($container, new $requestedName($loader, $container));
     }
 }

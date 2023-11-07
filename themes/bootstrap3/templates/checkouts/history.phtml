@@ -42,34 +42,39 @@
       <form name="purge_history" method="post" action="<?=$this->url('checkouts-purgehistory')?>" id="purge_history" data-disable-on-submit>
       <input type="hidden" id="submitType" name="purgeSelected" value="1">
       <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>">
-      <div class="toolbar">
-        <div class="checkbox">
-          <?php if ($purgeSelectedAllowed): ?>
+      <?php if ($purgeSelectedAllowed || $purgeAllAllowed): ?>
+        <div class="toolbar">
+          <div class="bulk-checkbox">
             <label>
-              <input type="checkbox" name="selectAll" class="checkbox-select-all"/>
-              <?=$this->transEsc('select_page')?>
+              <input type="checkbox" name="selectAll" class="checkbox-select-all">
+              <?=$this->transEsc('select_all_on_page')?>
             </label>
-            <div class="btn-group">
-              <input type="submit" id="purgeSelected" name="purgeSelected" value="<?=$this->transEscAttr('loan_history_purge_selected')?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-lightbox-ignore>
-              <ul class="dropdown-menu">
-                <li class="disabled"><span class="prompt-text"><?=$this->transEsc('loan_history_confirm_purge_selected')?></span></li>
-                <li><a href="#" id="confirm_purge_selected_yes"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
-                <li><a href="#" class="confirm_purge_no"><?=$this->transEsc('confirm_dialog_no')?></a></li>
-              </ul>
-            </div>
-          <?php endif; ?>
-          <?php if ($purgeAllAllowed): ?>
-            <div class="btn-group">
-              <input type="submit" id="purgeAll" name="purgeAll" value="<?=$this->transEscAttr('loan_history_purge_all')?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-lightbox-ignore>
-              <ul class="dropdown-menu">
-                <li class="disabled"><span class="prompt-text"><?=$this->transEsc('loan_history_confirm_purge_all')?></span></li>
-                <li><a href="#" id="confirm_purge_all_yes"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
-                <li><a href="#" class="confirm_purge_no"><?=$this->transEsc('confirm_dialog_no')?></a></li>
-              </ul>
-            </div>
-          <?php endif; ?>
+          </div>
+          <ul class="action-toolbar">
+            <?php if ($purgeSelectedAllowed): ?>
+              <li class="btn-group">
+                <input type="submit" id="purgeSelected" name="purgeSelected" value="<?=$this->transEscAttr('loan_history_purge_selected')?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-lightbox-ignore>
+                <ul class="dropdown-menu">
+                  <li class="disabled"><span class="prompt-text"><?=$this->transEsc('loan_history_confirm_purge_selected')?></span></li>
+                  <li><a href="#" id="confirm_purge_selected_yes"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+                  <li><a href="#" class="confirm_purge_no"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+                </ul>
+              </li>
+            <?php endif; ?>
+
+            <?php if ($purgeAllAllowed): ?>
+              <li class="btn-group">
+                <input type="submit" id="purgeAll" name="purgeAll" value="<?=$this->transEscAttr('loan_history_purge_all')?>" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-lightbox-ignore>
+                <ul class="dropdown-menu">
+                  <li class="disabled"><span class="prompt-text"><?=$this->transEsc('loan_history_confirm_purge_all')?></span></li>
+                  <li><a href="#" id="confirm_purge_all_yes"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+                  <li><a href="#" class="confirm_purge_no"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+                </ul>
+              </li>
+            <?php endif; ?>
+          </ul>
         </div>
-      </div>
+        <?php endif; ?>
     <?php endif; ?>
 
     <ul class="record-list">
@@ -82,7 +87,7 @@
               <?php if (isset($ilsDetails['row_id'])): ?>
                 <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['row_id']); ?>
                 <label>
-                  <input class="checkbox-select-item" type="checkbox" name="purgeSelectedIDs[]" value="<?=$this->escapeHtmlAttr($ilsDetails['row_id'])?>" id="checkbox_<?=$safeId?>" />
+                  <input class="checkbox-select-item" type="checkbox" name="purgeSelectedIDs[]" value="<?=$this->escapeHtmlAttr($ilsDetails['row_id'])?>" id="checkbox_<?=$safeId?>" aria-label="<?=$this->transEscAttr('select_item_purge')?>">
                 </label>
               <?php else: ?>
                 <label> </label>
@@ -107,40 +112,7 @@
               <?=$thumbnail ?>
             <?php endif ?>
             <div class="media-body">
-              <?php
-                // If this is a non-missing Solr record, we should display a link:
-                if (is_a($resource, 'VuFind\\RecordDriver\\SolrDefault') && !is_a($resource, 'VuFind\\RecordDriver\\Missing')) {
-                  $title = $resource->getTitle();
-                  $title = empty($title) ? $this->transEsc('Title not available') : $this->escapeHtml($title);
-                  echo '<a href="' . $this->escapeHtmlAttr($this->recordLinker()->getUrl($resource)) .
-                    '" class="title">' . $title . '</a>';
-                } elseif (isset($ilsDetails['title']) && !empty($ilsDetails['title'])) {
-                  // If the record is not available in Solr, perhaps the ILS driver sent us a title we can show...
-                  echo $this->escapeHtml($ilsDetails['title']);
-                } else {
-                  // Last resort -- indicate that no title could be found.
-                  echo $this->transEsc('Title not available');
-                }
-              ?><br>
-              <?php $listAuthors = $resource->getPrimaryAuthors(); ?>
-              <?php if (!empty($listAuthors)): ?>
-                <?=$this->transEsc('by')?>:
-                <a href="<?=$this->record($resource)->getLink('author', $listAuthors[0])?>"><?=$this->escapeHtml($listAuthors[0])?></a><?php if (count($listAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?><br>
-              <?php endif; ?>
-              <?php if (count($resource->getFormats()) > 0): ?>
-                <?=$this->record($resource)->getFormatList() ?>
-                <br>
-              <?php endif; ?>
-              <?php if (!empty($ilsDetails['volume'])): ?>
-                <strong><?=$this->transEsc('Volume')?>:</strong> <?=$this->escapeHtml($ilsDetails['volume'])?>
-                <br>
-              <?php endif; ?>
-
-              <?php if (!empty($ilsDetails['publication_year'])): ?>
-                <strong><?=$this->transEsc('Year of Publication')?>:</strong> <?=$this->escapeHtml($ilsDetails['publication_year'])?>
-                <br>
-              <?php endif; ?>
-
+              <?=$this->record($resource)->renderTemplate('account-entry.phtml')?>
               <?php if (!empty($ilsDetails['institution_name']) && (empty($ilsDetails['borrowingLocation']) || $ilsDetails['institution_name'] != $ilsDetails['borrowingLocation'])): ?>
                 <strong><?=$this->transEscWithPrefix('location_', $ilsDetails['institution_name'])?></strong>
                 <br>
@@ -169,7 +141,7 @@
               <?=$thumbnail ?>
             <?php endif ?>
           </div>
-          <?=$resource->tryMethod('supportsCoinsOpenUrl') ? '<span class="Z3988" title="' . $this->escapeHtmlAttr($resource->getCoinsOpenUrl()) . '"></span>' : ''?>
+          <?=$resource->tryMethod('supportsCoinsOpenUrl') ? '<span class="Z3988" aria-hidden="true" title="' . $this->escapeHtmlAttr($resource->getCoinsOpenUrl()) . '"></span>' : ''?>
         </li>
       <?php endforeach; ?>
     </ul>
@@ -185,5 +157,5 @@
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-  <?=$this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'historicloans'])?>
+  <?=$this->context($this)->renderInContext('myresearch/menu.phtml', ['active' => 'historicloans'])?>
 </div>

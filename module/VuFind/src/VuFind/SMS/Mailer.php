@@ -31,6 +31,9 @@ namespace VuFind\SMS;
 
 use VuFind\Exception\SMS as SMSException;
 
+use function count;
+use function in_array;
+
 /**
  * VuFind Mailer Class for SMS messages
  *
@@ -111,7 +114,7 @@ class Mailer extends AbstractBase
     }
 
     /**
-     * Get a list of carriers supported by the module.  Returned as an array of
+     * Get a list of carriers supported by the module. Returned as an array of
      * associative arrays indexed by carrier ID and containing "name" and "domain"
      * keys.
      *

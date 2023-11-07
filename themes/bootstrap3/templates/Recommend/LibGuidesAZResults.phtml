@@ -1,0 +1,19 @@
+<?php
+  $searchObject = $this->recommend->getResults();
+  $results = $searchObject->getResults();
+?>
+<?php if (!empty($results)): ?>
+  <h4><?=$this->transEsc('libguidesaz_recommendations')?></h4>
+  <div class="list-group">
+    <?php foreach ($results as $driver): ?>
+      <div class="list-group-item">
+        <span>
+          <a href="<?=$this->escapeHtmlAttr($driver->getUniqueID())?>" class="title">
+            <?=$this->record($driver)->getTitleHtml()?>
+          </a>
+        </span>
+      </div>
+    <?php endforeach; ?>
+    <a class="list-group-item" href="<?=$this->url($searchObject->getOptions()->getSearchAction()) . $searchObject->getUrlQuery()->setLimit($searchObject->getOptions()->getDefaultLimit())?>"><?=$this->transEsc('libguidesaz_recommendations_more')?></a>
+  </div>
+<?php endif ?>

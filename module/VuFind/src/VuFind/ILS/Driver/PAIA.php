@@ -37,6 +37,11 @@ use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\ILS as ILSException;
 
+use function count;
+use function in_array;
+use function is_array;
+use function is_callable;
+
 /**
  * PAIA ILS Driver for VuFind to get patron information
  *
@@ -293,7 +298,7 @@ class PAIA extends DAIA
             $items[] = ['item' => stripslashes($item)];
         }
         $patron = $cancelDetails['patron'];
-        $post_data = ["doc" => $items];
+        $post_data = ['doc' => $items];
 
         try {
             $array_response = $this->paiaPostAsArray(
@@ -373,10 +378,10 @@ class PAIA extends DAIA
         }
 
         $post_data = [
-            "patron"       => $details['patron']['cat_username'],
-            "username"     => $details['patron']['cat_username'],
-            "old_password" => $details['oldPassword'],
-            "new_password" => $details['newPassword'],
+            'patron'       => $details['patron']['cat_username'],
+            'username'     => $details['patron']['cat_username'],
+            'old_password' => $details['oldPassword'],
+            'new_password' => $details['newPassword'],
         ];
 
         try {
@@ -455,7 +460,7 @@ class PAIA extends DAIA
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
      * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.  May be used to limit the pickup options
+     * placeHold, minus the patron data. May be used to limit the pickup options
      * or may be ignored.
      *
      * @return string       The default pickup location for the patron.
@@ -881,10 +886,10 @@ class PAIA extends DAIA
      * @param array $patron      Patron information returned by the patronLogin
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
-     * in the context of placing or editing a hold.  When placing a hold, it contains
-     * most of the same values passed to placeHold, minus the patron data.  When
+     * in the context of placing or editing a hold. When placing a hold, it contains
+     * most of the same values passed to placeHold, minus the patron data. When
      * editing a hold it contains all the hold information returned by getMyHolds.
-     * May be used to limit the pickup options or may be ignored.  The driver must
+     * May be used to limit the pickup options or may be ignored. The driver must
      * not add new options to the return array based on this data or other areas of
      * VuFind may behave incorrectly.
      *
@@ -990,7 +995,7 @@ class PAIA extends DAIA
     {
         // TODO: also have exception contain content of 'error' as for at least
         //       error code 403 two differing errors are possible
-        //       (cf.  http://gbv.github.io/paia/paia.html#request-errors)
+        //       (cf. http://gbv.github.io/paia/paia.html#request-errors)
         if (isset($array['error'])) {
             switch ($array['error']) {
                 case 'access_denied':
@@ -1135,7 +1140,7 @@ class PAIA extends DAIA
         $doc = [];
         $doc['item'] = stripslashes($item);
         if ($confirm = $this->getConfirmations($holdDetails)) {
-            $doc["confirm"] = $confirm;
+            $doc['confirm'] = $confirm;
         }
         $post_data = [];
         $post_data['doc'][] = $doc;
@@ -1241,7 +1246,7 @@ class PAIA extends DAIA
             $items[] = ['item' => stripslashes($item)];
         }
         $patron = $details['patron'];
-        $post_data = ["doc" => $items];
+        $post_data = ['doc' => $items];
 
         try {
             $array_response = $this->paiaPostAsArray(
@@ -1378,7 +1383,7 @@ class PAIA extends DAIA
             }
         } else {
             $this->debug(
-                "No documents found in PAIA response. Returning empty array."
+                'No documents found in PAIA response. Returning empty array.'
             );
         }
         return [];
@@ -1826,8 +1831,8 @@ class PAIA extends DAIA
         $post_data = [];
         switch ($this->grantType) {
             case 'password':
-                $post_data["username"] = $username;
-                $post_data["password"] = $password;
+                $post_data['username'] = $username;
+                $post_data['password'] = $password;
                 break;
             case 'client_credentials':
                 // client_credentials only works if we have client_credentials
@@ -1836,12 +1841,12 @@ class PAIA extends DAIA
                     isset($this->config['PAIA']['clientUsername'])
                     && isset($this->config['PAIA']['clientPassword'])
                 ) {
-                    $header_data["Authorization"] = 'Basic ' .
+                    $header_data['Authorization'] = 'Basic ' .
                         base64_encode(
                             $this->config['PAIA']['clientUsername'] . ':' .
                             $this->config['PAIA']['clientPassword']
                         );
-                    $post_data["patron"] = $username; // actual patron identifier
+                    $post_data['patron'] = $username; // actual patron identifier
                 } else {
                     throw new ILSException(
                         'Missing username and/or password for PAIA grant_type' .
@@ -1852,11 +1857,11 @@ class PAIA extends DAIA
         }
 
         // finalize post data
-        $post_data["grant_type"] = $this->grantType;
-        $post_data["scope"] = self::SCOPE_READ_PATRON . " " .
-                self::SCOPE_READ_FEES . " " .
-                self::SCOPE_READ_ITEMS . " " .
-                self::SCOPE_WRITE_ITEMS . " " .
+        $post_data['grant_type'] = $this->grantType;
+        $post_data['scope'] = self::SCOPE_READ_PATRON . ' ' .
+                self::SCOPE_READ_FEES . ' ' .
+                self::SCOPE_READ_ITEMS . ' ' .
+                self::SCOPE_WRITE_ITEMS . ' ' .
                 self::SCOPE_CHANGE_PASSWORD;
 
         // perform full PAIA auth and get patron info

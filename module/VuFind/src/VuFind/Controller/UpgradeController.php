@@ -52,6 +52,13 @@ use VuFind\Db\AdapterFactory;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 
+use function count;
+use function dirname;
+use function in_array;
+use function is_object;
+use function is_string;
+use function strlen;
+
 /**
  * Class controls VuFind upgrading.
  *
@@ -109,7 +116,7 @@ class UpgradeController extends AbstractBase
         $this->cookie = new CookieContainer('vfup', $cookieManager);
 
         // ...however, once the configuration piece of the upgrade is done, we can
-        // safely use the session for storing some values.  We'll use this for the
+        // safely use the session for storing some values. We'll use this for the
         // temporary storage of root database credentials, since it is unwise to
         // send such sensitive values around as cookies!
         $this->session = $sessionContainer;
@@ -379,7 +386,7 @@ class UpgradeController extends AbstractBase
                         }
                         $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
                         $this->session->warnings->append(
-                            "Removed deprecated column(s) from table(s): "
+                            'Removed deprecated column(s) from table(s): '
                             . implode(', ', array_keys($deprecatedColumns))
                         );
                     }
@@ -391,7 +398,7 @@ class UpgradeController extends AbstractBase
             }
         }
 
-        // Check for missing tables.  Note that we need to finish dealing with
+        // Check for missing tables. Note that we need to finish dealing with
         // missing tables before we proceed to the missing columns check, or else
         // the missing tables will cause fatal errors during the column test.
         $missingTables = $this->dbUpgrade()->getMissingTables();
@@ -403,7 +410,7 @@ class UpgradeController extends AbstractBase
                 }
                 $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
                 $this->session->warnings->append(
-                    "Created missing table(s): " . implode(', ', $missingTables)
+                    'Created missing table(s): ' . implode(', ', $missingTables)
                 );
             }
             $sql .= $this->dbUpgrade()
@@ -421,7 +428,7 @@ class UpgradeController extends AbstractBase
                 }
                 $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
                 $this->session->warnings->append(
-                    "Added column(s) to table(s): "
+                    'Added column(s) to table(s): '
                     . implode(', ', array_keys($missingCols))
                 );
             }
@@ -440,7 +447,7 @@ class UpgradeController extends AbstractBase
                 }
                 $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
                 $this->session->warnings->append(
-                    "Modified column(s) in table(s): "
+                    'Modified column(s) in table(s): '
                     . implode(', ', array_keys($modifiedCols))
                 );
             }
@@ -458,7 +465,7 @@ class UpgradeController extends AbstractBase
                 }
                 $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
                 $this->session->warnings->append(
-                    "Added constraint(s) to table(s): "
+                    'Added constraint(s) to table(s): '
                     . implode(', ', array_keys($missingConstraints))
                 );
             }
@@ -477,7 +484,7 @@ class UpgradeController extends AbstractBase
                 }
                 $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
                 $this->session->warnings->append(
-                    "Modified constraint(s) in table(s): "
+                    'Modified constraint(s) in table(s): '
                     . implode(', ', array_keys($modifiedConstraints))
                 );
             }
@@ -495,7 +502,7 @@ class UpgradeController extends AbstractBase
                 }
                 $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
                 $this->session->warnings->append(
-                    "Modified key(s) in table(s): "
+                    'Modified key(s) in table(s): '
                     . implode(', ', array_keys($modifiedKeys))
                 );
             }
@@ -512,7 +519,7 @@ class UpgradeController extends AbstractBase
                 }
                 $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
                 $this->session->warnings->append(
-                    "Modified character set(s)/collation(s) in table(s): "
+                    'Modified character set(s)/collation(s) in table(s): '
                     . implode(', ', array_keys($colProblems))
                 );
             }
@@ -664,7 +671,7 @@ class UpgradeController extends AbstractBase
                     $factory = $this->serviceLocator
                         ->get(AdapterFactory::class);
                     $db = $factory->getAdapter($dbrootuser, $pass);
-                    $db->query("SELECT * FROM user;");
+                    $db->query('SELECT * FROM user;');
                     $this->session->dbRootUser = $dbrootuser;
                     $this->session->dbRootPass = $pass;
                     return $this->forwardTo('Upgrade', 'FixDatabase');
@@ -782,7 +789,7 @@ class UpgradeController extends AbstractBase
                     $problem->assignMetadata($driver, $converter)->save();
                 } catch (RecordMissingException $e) {
                     $this->session->warnings->append(
-                        "Unable to load metadata for record "
+                        'Unable to load metadata for record '
                         . "{$problem->source}:{$problem->record_id}"
                     );
                 }

@@ -51,6 +51,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'aleph' => Aleph::class,
         'alma' => Alma::class,
         'amicus' => Amicus::class,
+        'composeddriver' => ComposedDriver::class,
         'daia' => DAIA::class,
         'demo' => Demo::class,
         'evergreen' => Evergreen::class,
@@ -84,8 +85,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         Aleph::class => AlephFactory::class,
-        Alma::class => AlmaFactory::class,
+        Alma::class => DriverWithDateConverterFactory::class,
         Amicus::class => InvokableFactory::class,
+        ComposedDriver::class => AbstractMultiDriverFactory::class,
         DAIA::class => DriverWithDateConverterFactory::class,
         Demo::class => DemoFactory::class,
         Evergreen::class => DriverWithDateConverterFactory::class,

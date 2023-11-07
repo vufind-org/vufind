@@ -34,6 +34,8 @@ use Laminas\ServiceManager\Exception\InvalidServiceException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use VuFind\Auth\MultiAuth;
 
+use function get_class;
+
 /**
  * LDAP authentication test class.
  *
@@ -136,7 +138,7 @@ class MultiAuthTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test login with handler configured to load a class which does not conform
-     * to the appropriate authentication interface.  (We'll use this test class
+     * to the appropriate authentication interface. (We'll use this test class
      * as an arbitrary inappropriate class).
      *
      * @return void

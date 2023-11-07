@@ -41,7 +41,7 @@ namespace VuFind\Db\Table;
 interface DbTableAwareInterface
 {
     /**
-     * Get the plugin manager.  Throw an exception if it is missing.
+     * Get the plugin manager. Throw an exception if it is missing.
      *
      * @throws \Exception
      * @return PluginManager

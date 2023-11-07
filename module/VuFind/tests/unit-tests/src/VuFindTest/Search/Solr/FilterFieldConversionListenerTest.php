@@ -78,7 +78,7 @@ class FilterFieldConversionListenerTest extends \PHPUnit\Framework\TestCase
                     'foo:value',
                     'baz:"foo:value"',
                     'foofoo:value',
-                    "foo\\:value",
+                    'foo\\:value',
                     'baz:value OR foo:value',
                     '(foo:value)',
                 ],
@@ -103,7 +103,7 @@ class FilterFieldConversionListenerTest extends \PHPUnit\Framework\TestCase
             'bar:value',
             'boo:"foo:value"',
             'foofoo:value',
-            "foo\\:value",
+            'foo\\:value',
             'boo:value OR bar:value',
             '(bar:value)',
         ];

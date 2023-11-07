@@ -1,4 +1,4 @@
-<h3><?=$this->transEsc('Electronic')?></h3>
+<h2><?=$this->transEsc('Electronic')?></h2>
 <table class="table table-striped">
   <?php foreach ($this->holdings as $item): ?>
     <tr>
@@ -13,14 +13,18 @@
       <td class="fullAvailability">
         <?php if ($item['use_unknown_message'] ?? false): ?>
           <span><?=$this->transEsc('status_unknown_message')?></span>
-        <?php elseif ($item['availability']): ?>
-          <span class="text-success"><?=!empty($item['status']) ? $this->transEsc($item['status']) : $this->transEsc('Available')?></span>
-        <?php else: ?>
+        <?php elseif ((int)$item['availability'] === \VuFind\ILS\Logic\ItemStatus::STATUS_UNAVAILABLE): ?>
           <span class="text-danger"><?=$this->transEsc($item['status'])?></span>
+        <?php elseif ((int)$item['availability'] === \VuFind\ILS\Logic\ItemStatus::STATUS_UNCERTAIN): ?>
+          <span class="text-warning"><?=$this->transEsc($item['status'])?></span>
+        <?php else: ?>
+          <span class="text-success">
+            <?=!empty($item['status']) ? $this->transEsc($item['status']) : $this->transEsc('Available')?>
+          </span>
         <?php endif; ?>
         <?php if (isset($item['item_notes'])): ?>
           <div class="item-notes">
-            <b><?=$this->transEsc("Item Notes")?>:</b>
+            <b><?=$this->transEsc('Item Notes')?>:</b>
             <ul>
               <?php foreach ($item['item_notes'] as $item_note): ?>
                 <li><?=$this->escapeHtml($item_note) ?></li>

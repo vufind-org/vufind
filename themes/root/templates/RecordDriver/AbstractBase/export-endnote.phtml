@@ -29,7 +29,7 @@ if (is_array($pubPlaces) && is_array($pubDates) && is_array($pubNames)) {
     }
     for ($i = 0; $i < $total; $i++) {
         if (isset($pubNames[$i])) {
-            echo "%I " . rtrim($pubNames[$i], ", ") . "\n";
+            echo '%I ' . rtrim($pubNames[$i], ', ') . "\n";
         }
         $date = trim($pubDates[$i], '[]. ');
         if (strlen($date) > 4) {
@@ -39,7 +39,7 @@ if (is_array($pubPlaces) && is_array($pubDates) && is_array($pubNames)) {
             echo "%D $date\n";
         }
         if (isset($pubPlaces[$i])) {
-            echo "%C " . rtrim(str_replace(['[', ']'], '', $pubPlaces[$i]), ': ') . "\n";
+            echo '%C ' . rtrim(str_replace(['[', ']'], '', $pubPlaces[$i]), ': ') . "\n";
         }
     }
 }
@@ -72,7 +72,7 @@ if (is_array($issns)) {
     }
 }
 
-$title = rtrim($this->driver->getTitle(), " /");
+$title = rtrim($this->driver->getTitle(), ' /');
 echo "%T $title\n";
 
 $journalTitle = $this->driver->tryMethod('getContainerTitle');

@@ -77,7 +77,7 @@ class CollectionHierarchyTree extends HierarchyTree
     }
 
     /**
-     * Get the current active record.  Returns record driver if found, false
+     * Get the current active record. Returns record driver if found, false
      * if no record requested, null if ID invalid.
      *
      * @return mixed
