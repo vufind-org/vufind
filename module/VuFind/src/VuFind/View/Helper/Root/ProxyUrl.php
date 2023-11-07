@@ -29,6 +29,7 @@
 
 namespace VuFind\View\Helper\Root;
 
+use Exception;
 use Laminas\Cache\Storage\Adapter\AbstractAdapter as CacheAdapter;
 
 /**
@@ -41,9 +42,11 @@ use Laminas\Cache\Storage\Adapter\AbstractAdapter as CacheAdapter;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class ProxyUrl extends \Laminas\View\Helper\AbstractHelper implements
+    \Laminas\Log\LoggerAwareInterface,
     \VuFindHttp\HttpServiceAwareInterface
 {
     use \VuFind\Cache\CacheTrait;
+    use \VuFind\Log\LoggerAwareTrait;
     use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
@@ -77,9 +80,9 @@ class ProxyUrl extends \Laminas\View\Helper\AbstractHelper implements
     {
         $useWebService = $this->config->EZproxy->prefixLinksWebServiceUrl ?? false;
         if ($useWebService) {
-            $usePrefix = $this->checkUrl($url);
+            $usePrefix = $this->checkUrl($url) ?? $this->checkConfig();
         } else {
-            $usePrefix = $this->config->EZproxy->prefixLinks ?? true;
+            $usePrefix = $this->checkConfig();
         }
 
         return ($usePrefix && isset($this->config->EZproxy->host))
@@ -88,11 +91,21 @@ class ProxyUrl extends \Laminas\View\Helper\AbstractHelper implements
     }
 
     /**
+     * Return the configured prefixLinks setting.
+     *
+     * @return bool The configured setting, or the default
+     */
+    private function checkConfig()
+    {
+        return $this->config->EZproxy->prefixLinks ?? true;
+    }
+
+    /**
      * Check whether the given URL requires the proxy prefix.  Cache the repsonse.
      *
      * @param string $url The raw URL to check
      *
-     * @return bool Whether the URL should be prefixed
+     * @return mixed Whether the URL should be prefixed, or null if it can't be determined
      */
     protected function checkUrl($url)
     {
@@ -111,15 +124,20 @@ class ProxyUrl extends \Laminas\View\Helper\AbstractHelper implements
      *
      * @param $domain The domain
      *
-     * @return bool Whether the URL should be prefixed
+     * @return mixed Whether the URL should be prefixed, or null if it can't be determined
      */
     protected function queryWebService($domain)
     {
         $prefixLinksWebServiceUrl = $this->config->EZproxy->prefixLinksWebServiceUrl;
         $queryUrl = $prefixLinksWebServiceUrl . '?url=' . $domain;
-        $client  = $this->httpService->createClient($queryUrl);
-        $response = $client->send();
-        $responseData = $response->getContent();
+        try {
+            $client  = $this->httpService->createClient($queryUrl);
+            $response = $client->send();
+            $responseData = $response->getContent();
+        } catch (Exception $ex) {
+            $this->logError('Exception during EZproxy web service request: ' . $ex->getMessage());
+            return null;
+        }
         return ('1' === $responseData);
     }
 }
