@@ -167,7 +167,6 @@ class AbstractSolrSearch extends AbstractSearch
                     $facet,
                     $tmpList
                 );
-                $list['list'] = $facetHelper->flattenFacetHierarchy($tmpList);
 
                 $options = $this->getOptionsForClass();
                 $facetFilters = $options->getHierarchicalFacetFilters($facet);
@@ -176,12 +175,13 @@ class AbstractSolrSearch extends AbstractSearch
                     $options->getFilterHierarchicalFacetsInAdvanced()
                     && ($facetFilters || $excludeFilters)
                 ) {
-                    $list['list'] = $facetHelper->filterFacets(
-                        $list['list'],
+                    $tmpList = $facetHelper->filterFacets(
+                        $tmpList,
                         $facetFilters,
                         $excludeFilters
                     );
                 }
+                $list['list'] = $facetHelper->flattenFacetHierarchy($tmpList);
             }
 
             foreach ($list['list'] as $key => $value) {
