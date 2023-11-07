@@ -51,6 +51,20 @@
         use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
         /**
+         * Session containing Notification status information
+         *
+         * @var \Laminas\Session\Container
+         */
+        protected $session;
+
+        /**
+         * SessionManager
+         *
+         * @var \Laminas\Session\SessionManager
+         */
+        protected $sessionManager;
+
+        /**
          * Database
          *
          * @var mixed
@@ -107,6 +121,12 @@
          * Get all broadcasts in the current user language, sorted by priority and id
          */
         public function getBroadcasts ($global = false) {
+            $session = $this->getSession();
+            $closedBroadcasts = $session->closedBrodcasts;
+            if (!$closedBroadcasts || !is_array($closedBroadcasts)) {
+                $closedBroadcasts = [];
+            }
+
             $broadcastsTable = $this->database->get('notifications_broadcasts');
 
             $environment = new Environment([]);
@@ -123,13 +143,13 @@
             }
 
             foreach ($broadcastsTable->getBroadcastsList([$visibility => true, 'language' => $this->getTranslatorLocale()],  'priority ASC, id ASC') as $broadcast) {
-                if ($broadcast['content'] != '') {
+                if ($broadcast['content'] != '' && !in_array($broadcast['broadcast_id'], $closedBroadcasts)) {
                     $broadcast['content'] = $converter->convert($broadcast['content']);
 
                     $broadcast['color_value'] = $this->config['Notifications']['broadcast_types'][$broadcast['color']]['color'];
                     $broadcast['border_color_value'] = $this->config['Notifications']['broadcast_types'][$broadcast['color']]['border_color'];
 
-                    $broadcasts[] = $broadcast;
+                    $broadcasts[$broadcast['broadcast_id']] = $broadcast;
                 }
             }
 
@@ -142,5 +162,22 @@
             $endDate = new \DateTime($broadcast['enddate']);
             $endDate->setTime(23, 59, 59);
             return $startDate <= $today && $endDate >= $today;
+        }
+
+        /**
+         * Get the session container (constructing it on demand if not already present)
+         *
+         * @return SessionContainer
+         */
+        protected function getSession()
+        {
+            // SessionContainer not defined yet? Build it now:
+            if (null === $this->session) {
+                $this->session = new \Laminas\Session\Container(
+                    'Notifications',
+                    $this->sessionManager
+                );
+            }
+            return $this->session;
         }
     }

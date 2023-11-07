@@ -1,7 +1,6 @@
 <?php
     // Set up page title:
     $this->headTitle($this->translate('Pages Home'));
-    $this->headScript()->appendFile('notifications.js');
 
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('search-home') . '">' . $this->transEsc('Search Home') . '</a></li>';

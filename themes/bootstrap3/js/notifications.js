@@ -122,4 +122,19 @@ $(function() {
     $('input[type="checkbox"][name="is_external_url"]').change(function(){
         toggleFormExternalUrl();
     });
+
+    $('.close-broadcast').on('click', function(e){
+        e.preventDefault();
+        var $this = $(this);
+        $.ajax({
+            url : '/vufind/AJAX/JSON?method=NotificationsClose',
+            dataType:'json',
+            data: {
+                'broadcast-id': $this.data('broadcast-id'),
+            },
+            success : function(data) {
+                $this.parents('span.broadcast').hide();
+            },
+        });
+    });
 });

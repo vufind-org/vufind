@@ -27,6 +27,7 @@ textarea.form-control {
   margin-bottom: 5px;
   padding: 10px 25px;
   width: 100%;
+  position: relative;
 }
 
 .broadcast p {
@@ -49,4 +50,13 @@ textarea.form-control {
 
 .notifications-form-error {
   border: 1px solid #ff0000;
+}
+
+.close-broadcast {
+  right: 5px;
+  position: absolute;
+  top: 0;
+  span {
+    color: darkgrey;
+  }
 }
