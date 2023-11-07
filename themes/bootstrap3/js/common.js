@@ -65,14 +65,14 @@ var VuFind = (function VuFind() {
     return null;
   };
 
-  var initDisableSubmitOnClick = function initDisableSubmitOnClick() {
+  var initDisableSubmitOnClick = () => {
     var forms = document.querySelectorAll("[data-disable-on-submit]");
     forms.forEach(form =>
-      form.addEventListener("submit", function submitEventListener() {
+      form.addEventListener("submit", () => {
         var submitButtons = form.querySelectorAll('[type="submit"]');
         // Disable submit elements via setTimeout so that the submit button value gets
         // included in the submitted data before being disabled:
-        setTimeout(function buttonTimeout() {
+        setTimeout(() => {
           submitButtons.forEach(button => button.disabled = true);
         }, 0);
       }));
