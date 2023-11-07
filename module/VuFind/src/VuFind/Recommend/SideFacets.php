@@ -202,7 +202,7 @@ class SideFacets extends AbstractFacets
 
         // Checkbox facets:
         $flipCheckboxes = false;
-        if (substr($checkboxSection, 0, 1) == '~') {
+        if (str_starts_with($checkboxSection, '~')) {
             $checkboxSection = substr($checkboxSection, 1);
             $flipCheckboxes = true;
         }

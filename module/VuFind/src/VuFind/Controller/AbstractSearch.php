@@ -826,7 +826,7 @@ class AbstractSearch extends AbstractBase
 
         // Process checkbox settings in config:
         $flipCheckboxes = false;
-        if (substr($section, 0, 1) == '~') {        // reverse flag
+        if (str_starts_with($section, '~')) {        // reverse flag
             $section = substr($section, 1);
             $flipCheckboxes = true;
         }

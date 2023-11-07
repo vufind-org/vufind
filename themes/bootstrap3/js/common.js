@@ -439,7 +439,7 @@ function deparam(url) {
     if (name.length === 0) {
       continue;
     }
-    if (name.substring(name.length - 2) === '[]') {
+    if (name.endsWith('[]')) {
       name = name.substring(0, name.length - 2);
       if (!request[name]) {
         request[name] = [];
