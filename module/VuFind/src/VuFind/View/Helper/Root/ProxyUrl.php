@@ -29,6 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
+use Laminas\Cache\Storage\Adapter\AbstractAdapter as CacheAdapter;
+
 /**
  * Proxy URL view helper
  *
@@ -38,8 +40,12 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ProxyUrl extends \Laminas\View\Helper\AbstractHelper
+class ProxyUrl extends \Laminas\View\Helper\AbstractHelper implements
+    \VuFindHttp\HttpServiceAwareInterface
 {
+    use \VuFind\Cache\CacheTrait;
+    use \VuFindHttp\HttpServiceAwareTrait;
+
     /**
      * VuFind configuration
      *
@@ -50,11 +56,14 @@ class ProxyUrl extends \Laminas\View\Helper\AbstractHelper
     /**
      * Constructor
      *
+     * @param CacheAdapter           $cache  Cache for web service repsonses
      * @param \Laminas\Config\Config $config VuFind configuration
      */
-    public function __construct($config = null)
+    public function __construct(CacheAdapter $cache = null, $config = null)
     {
         $this->config = $config;
+        $this->setCacheStorage($cache);
+        $this->cacheLifetime = intval($config->EZproxy->prefixLinksWebServiceCacheLifetime ?? 600);
     }
 
     /**
@@ -66,10 +75,51 @@ class ProxyUrl extends \Laminas\View\Helper\AbstractHelper
      */
     public function __invoke($url)
     {
-        $usePrefix = !isset($this->config->EZproxy->prefixLinks)
-            || $this->config->EZproxy->prefixLinks;
+        $useWebService = $this->config->EZproxy->prefixLinksWebServiceUrl ?? false;
+        if ($useWebService) {
+            $usePrefix = $this->checkUrl($url);
+        } else {
+            $usePrefix = $this->config->EZproxy->prefixLinks ?? true;
+        }
+
         return ($usePrefix && isset($this->config->EZproxy->host))
             ? $this->config->EZproxy->host . '/login?qurl=' . urlencode($url)
             : $url;
+    }
+
+    /**
+     * Check whether the given URL requires the proxy prefix.  Cache the repsonse.
+     *
+     * @param string $url The raw URL to check
+     *
+     * @return bool Whether the URL should be prefixed
+     */
+    protected function checkUrl($url)
+    {
+        $domain = parse_url($url, PHP_URL_HOST);
+        $cacheKey = parse_url($url, PHP_URL_SCHEME) . '://' . $domain;
+        $usePrefix = $this->getCachedData("proxyUrl-domainToUsePrefix-$cacheKey");
+        if (null === $usePrefix) {
+            $usePrefix = $this->queryWebService($domain);
+            $this->putCachedData("proxyUrl-domainToUsePrefix-$cacheKey", $usePrefix);
+        }
+        return $usePrefix;
+    }
+
+    /**
+     * Query the web service on whether to prefix URLs to a given domain.
+     *
+     * @param $domain The domain
+     *
+     * @return bool Whether the URL should be prefixed
+     */
+    protected function queryWebService($domain)
+    {
+        $prefixLinksWebServiceUrl = $this->config->EZproxy->prefixLinksWebServiceUrl;
+        $queryUrl = $prefixLinksWebServiceUrl . '?url=' . $domain;
+        $client  = $this->httpService->createClient($queryUrl);
+        $response = $client->send();
+        $responseData = $response->getContent();
+        return ('1' === $responseData);
     }
 }
