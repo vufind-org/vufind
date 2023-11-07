@@ -1,5 +1,5 @@
 <?php if ($this->disabled): ?>
-  <h3><?= $this->transEsc('explain_disabled', ['%%searchClassId%%' => $this->driver->getSourceIdentifier()]) ?></h3>
+  <h3><?=$this->transEsc('explain_disabled', ['%%searchClassId%%' => $this->driver->getSourceIdentifier()])?></h3>
 <?php else: ?>
   <?=
     $this->record($this->driver)->renderTemplate(

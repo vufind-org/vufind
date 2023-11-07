@@ -15,8 +15,8 @@ $restExplanation = $explanation->getExplanationForRest();
 $link = $this->recordLinker()->getUrl($this->driver);
 ?>
 <div class="explain">
-  <p><?= $this->transEsc('Top Result Relevance')?>: <?= $this->localizedNumber($maxScore, $decimalPlaces) ?></p>
-  <h3><?= $this->transEsc('Explanation for search')?>: <?= $explanation->getLookfor() ?></h3>
+  <p><?=$this->transEsc('Top Result Relevance')?>: <?=$this->localizedNumber($maxScore, $decimalPlaces)?></p>
+  <h3><?=$this->transEsc('Explanation for search')?>: <?=$explanation->getLookfor()?></h3>
   <p>
     <?=
       $this->translate('explain_relevance', [
@@ -76,16 +76,16 @@ $link = $this->recordLinker()->getUrl($this->driver);
         $fieldName = $this->transEsc('ExplainFieldName::' . $fieldNameKey);
       ?>
       <td class="percentage">
-        <?= $this->localizedNumber($explainElement['percent'], $decimalPlaces)?>%
+        <?=$this->localizedNumber($explainElement['percent'], $decimalPlaces)?>%
       </td>
       <td>
-        <span class="<?= $explainElement['exactMatch'] ? 'exact-match' : 'inexact-match' ?>"><?= $explainElement['fieldValue'] ?>"</span>
-        <?= $this->transEsc('in') ?>: <?= $explainElement['fieldName'] ?>
+        <span class="<?=$explainElement['exactMatch'] ? 'exact-match' : 'inexact-match'?>"><?=$explainElement['fieldValue']?>"</span>
+        <?=$this->transEsc('in')?>: <?=$explainElement['fieldName']?>
         <?php if ($fieldNameKey !== $fieldName): ?>
-          (<?= $fieldName ?>)
+          (<?=$fieldName?>)
         <?php endif; ?>
         <?php if (isset($explainElement['fieldModifier'])): ?>
-          , <?= $this->transEsc('explain_modifier', ['%%modifier%%' => $this->localizedNumber($explainElement['fieldModifier'], $decimalPlaces)]) ?>
+          , <?=$this->transEsc('explain_modifier', ['%%modifier%%' => $this->localizedNumber($explainElement['fieldModifier'], $decimalPlaces)])?>
         <?php endif; ?>
       </td>
     </tr>
@@ -97,7 +97,7 @@ $link = $this->recordLinker()->getUrl($this->driver);
         $shortExplainLabels[] = 'rest';
         $shortExplain[] = $rest['value'];
       ?>
-      <b><?= $this->transEsc('rest') ?></b>
+      <b><?=$this->transEsc('rest')?></b>
       <table>
         <?php foreach ($restExplanation as $explainElement): ?>
           <tr>
@@ -111,23 +111,23 @@ $link = $this->recordLinker()->getUrl($this->driver);
               $fieldName = $this->transEsc('ExplainFieldName::' . $fieldNameKey);
             ?>
             <td class="percentage rest-value">
-              <?= $this->localizedNumber($explainElement['percent'], $decimalPlaces)?>%
+              <?=$this->localizedNumber($explainElement['percent'], $decimalPlaces)?>%
             </td>
             <td>
-              <span class="<?= $explainElement['exactMatch'] ? 'exact-match' : 'inexact-match' ?>">"<?= $explainElement['fieldValue'] ?>"</span>
-              <?= $this->transEsc('in') ?>: <?= $explainElement['fieldName'] ?>
+              <span class="<?=$explainElement['exactMatch'] ? 'exact-match' : 'inexact-match'?>">"<?=$explainElement['fieldValue']?>"</span>
+              <?=$this->transEsc('in')?>: <?=$explainElement['fieldName']?>
               <?php if ($fieldNameKey !== $fieldName): ?>
-                (<?= $fieldName ?>)
+                (<?=$fieldName?>)
               <?php endif; ?>
             </td>
           </tr>
         <?php endforeach; ?>
         <tr>
           <td class="percentage rest-value sum-rest">
-            <?= $this->localizedNumber($rest['percent'], $decimalPlaces) ?>%
+            <?=$this->localizedNumber($rest['percent'], $decimalPlaces)?>%
           </td>
           <td>
-            <?= $this->transEsc('explain_sum') ?>
+            <?=$this->transEsc('explain_sum')?>
           </td>
         </tr>
       </table>
@@ -144,9 +144,9 @@ $link = $this->recordLinker()->getUrl($this->driver);
         <div class="pie-chart-container">
           <canvas id="explain-pie-chart"
              class="explain-chart"
-             data-chart-title="<?= $recordId ?>"
-             data-chart-labels="<?= $labels ?>"
-             data-chart-data="<?= $values ?>"
+             data-chart-title="<?=$recordId?>"
+             data-chart-labels="<?=$labels?>"
+             data-chart-data="<?=$values?>"
           ></canvas>
         </div>
       <?php endif; ?>
@@ -161,10 +161,10 @@ $link = $this->recordLinker()->getUrl($this->driver);
         <div class="explain-column-container">
           <canvas id="explain-column-chart"
                class="explain-chart"
-               data-chart-title="<?= $this->transEsc('explain_compared', ['%%recordId%%' => $recordId]) ?>"
-               data-chart-data="<?= $this->escapeHtmlAttr(json_encode($data)) ?>"
-               data-max-score="<?= $maxScore ?>"
-               data-score="<?= $totalScore ?>"
+               data-chart-title="<?=$this->transEsc('explain_compared', ['%%recordId%%' => $recordId])?>"
+               data-chart-data="<?=$this->escapeHtmlAttr(json_encode($data))?>"
+               data-max-score="<?=$maxScore?>"
+               data-score="<?=$totalScore?>"
           ></canvas>
         </div>
       <?php endif; ?>
