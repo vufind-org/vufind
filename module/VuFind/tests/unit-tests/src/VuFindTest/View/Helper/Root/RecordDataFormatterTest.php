@@ -30,10 +30,12 @@
 namespace VuFindTest\View\Helper\Root;
 
 use Psr\Container\ContainerInterface;
+use VuFind\RecordDriver\Response\PublicationDetails;
 use VuFind\View\Helper\Root\RecordDataFormatter;
 use VuFind\View\Helper\Root\RecordDataFormatterFactory;
 
 use function count;
+use function func_get_args;
 
 /**
  * RecordDataFormatter Test Class
@@ -121,11 +123,17 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     protected function getDriver($overrides = [])
     {
         // "Mock out" tag functionality to avoid database access:
-        $methods = [
-            'getBuildings', 'getDeduplicatedAuthors', 'getContainerTitle', 'getTags',
+        $onlyMethods = [
+            'getBuildings', 'getDeduplicatedAuthors', 'getContainerTitle', 'getTags', 'getSummary', 'getNewerTitles',
+        ];
+        $addMethods = [
+            'getFullTitle', 'getFullTitleAltScript', 'getAltFullTitle', 'getBuildingsAltScript',
+            'getNotExistingAltScript', 'getSummaryAltScript', 'getNewerTitlesAltScript',
+            'getPublicationDetailsAltScript', 'getFunctionWithParams',
         ];
         $record = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
-            ->onlyMethods($methods)
+            ->onlyMethods($onlyMethods)
+            ->addMethods($addMethods)
             ->getMock();
         $record->expects($this->any())->method('getTags')
             ->will($this->returnValue([]));
@@ -144,6 +152,35 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         ];
         $record->expects($this->once())->method('getDeduplicatedAuthors')
             ->will($this->returnValue($authors));
+
+        // Functions for testing combine alt
+        $record->expects($this->any())->method('getFullTitle')
+            ->will($this->returnValue(['Standard Title']));
+        $record->expects($this->any())->method('getFullTitleAltScript')
+            ->will($this->returnValue('Alternative Title'));
+        $record->expects($this->any())->method('getAltFullTitle')
+            ->will($this->returnValue('Other Alternative Title'));
+        $record->expects($this->any())->method('getBuildingsAltScript')
+            ->will($this->returnValue(null));
+        $record->expects($this->any())->method('getNotExistingAltScript')
+            ->will($this->returnValue('Alternative Value'));
+        $record->expects($this->any())->method('getSummary')
+        ->will($this->returnValue(null));
+        $record->expects($this->any())->method('getSummaryAltScript')
+            ->will($this->returnValue('Alternative Summary'));
+        $record->expects($this->any())->method('getPublicationDetailsAltScript')
+            ->will($this->returnValue([
+                new PublicationDetails('Alt Place', 'Alt Name', 'Alt Date'),
+            ]));
+        $record->expects($this->any())->method('getNewerTitles')
+            ->will($this->returnValue(['New Title', 'Second New Title']));
+        $record->expects($this->any())->method('getNewerTitlesAltScript')
+            ->will($this->returnValue(['Alt New Title', 'Second Alt New Title']));
+        $record->expects($this->any())->method('getFunctionWithParams')
+            ->will($this->returnCallback(function () {
+                $args = func_get_args();
+                return implode(' ', $args);
+            }));
 
         // Load record data from fixture file:
         $fixture = $this->getJsonFixture('misc/testbug2.json');
@@ -349,9 +386,65 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
                 ];
             },
         ];
+        $spec['CombineAlt'] = [
+            'dataMethod' => 'getFullTitle',
+            'renderType' => 'CombineAlt',
+            'pos' => 4000,
+        ];
+        $spec['CombineAltPrioritizeAlt'] = [
+            'dataMethod' => 'getFullTitle',
+            'renderType' => 'CombineAlt',
+            'pos' => 4001,
+            'prioritizeAlt' => true,
+        ];
+        $spec['CombineAltDataMethod'] = [
+            'dataMethod' => 'getFullTitle',
+            'renderType' => 'CombineAlt',
+            'pos' => 4002,
+            'altDataMethod' => 'getAltFullTitle',
+        ];
+        $spec['CombineAltNoAltFunction'] = [
+            'dataMethod' => 'getFormats',
+            'renderType' => 'CombineAlt',
+            'pos' => 4003,
+        ];
+        $spec['CombineAltNoAltValue'] = [
+            'dataMethod' => 'getBuildings',
+            'renderType' => 'CombineAlt',
+            'pos' => 4004,
+        ];
+        $spec['CombineAltNoStdFunction'] = [
+            'dataMethod' => 'getNotExisting',
+            'renderType' => 'CombineAlt',
+            'pos' => 4005,
+        ];
+        $spec['CombineAltNoStdValue'] = [
+            'dataMethod' => 'getSummary',
+            'renderType' => 'CombineAlt',
+            'pos' => 4006,
+        ];
+        $spec['CombineAltArray'] = [
+            'dataMethod' => 'getNewerTitles',
+            'renderType' => 'CombineAlt',
+            'pos' => 4007,
+        ];
+        $spec['CombineAltRenderTemplate'] = [
+            'dataMethod' => 'getPublicationDetails',
+            'renderType' => 'CombineAlt',
+            'combineAltRenderType' => 'RecordDriverTemplate',
+            'template' => 'data-publicationDetails.phtml',
+            'pos' => 4008,
+        ];
+        $spec['FunctionWithParams'] = [
+            'dataMethod' => 'getFunctionWithParams',
+            'renderType' => 'Simple',
+            'dataMethodParams' => ['test', 'test2'],
+            'pos' => 5000,
+        ];
         $expected = [
             'Building' => 'prefix_0',
             'Published in' => '0',
+            'New Title' => 'New TitleSecond New Title',
             'Main Author' => 'Vico, Giambattista, 1668-1744.',
             'Other Authors' => 'Pandolfi, Claudia.',
             'Format' => 'Book',
@@ -369,6 +462,16 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'c' => 'c',
             'a' => 'a',
             'b' => 'b',
+            'CombineAlt' => 'Standard Title Alternative Title',
+            'CombineAltPrioritizeAlt' => 'Alternative Title Standard Title',
+            'CombineAltDataMethod' => 'Standard Title Other Alternative Title',
+            'CombineAltNoAltFunction' => 'Book',
+            'CombineAltNoAltValue' => '0',
+            'CombineAltNoStdFunction' => 'Alternative Value',
+            'CombineAltNoStdValue' => 'Alternative Summary',
+            'CombineAltArray' => 'New TitleSecond New Title Alt New TitleSecond Alt New Title',
+            'CombineAltRenderTemplate' => 'Centro di Studi Vichiani, 1992 Alt Place Alt Name Alt Date',
+            'FunctionWithParams' => 'test test2',
         ];
         // Call the method specified by the data provider
         $results = $this->$function($driver, $spec);

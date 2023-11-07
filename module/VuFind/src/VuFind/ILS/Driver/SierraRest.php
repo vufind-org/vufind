@@ -240,6 +240,13 @@ class SierraRest extends AbstractBase implements
     protected $patronBlockMappings = [];
 
     /**
+     * Mappings from fine types to VuFind strings
+     *
+     * @var array
+     */
+    protected $fineTypeMappings = [];
+
+    /**
      * Status codes indicating that a hold is available for pickup
      *
      * @var array
@@ -453,6 +460,7 @@ class SierraRest extends AbstractBase implements
             );
         }
         $this->patronBlockMappings = $this->config['PatronBlockMappings'] ?? [];
+        $this->fineTypeMappings = (array)($this->config['FineTypeMappings'] ?? []);
 
         if (isset($this->config['Catalog']['api_version'])) {
             $this->apiVersion = $this->config['Catalog']['api_version'];
@@ -899,7 +907,7 @@ class SierraRest extends AbstractBase implements
                 'offset' => $offset,
                 'sortField' => 'outDate',
                 'sortOrder' => $sortOrder,
-                'fields' => 'item,outDate',
+                'fields' => 'bib,item,outDate',
             ],
             'GET',
             $patron
@@ -1433,7 +1441,7 @@ class SierraRest extends AbstractBase implements
 
         // Make sure pickup location is valid
         if (!$this->pickUpLocationIsValid($pickUpLocation, $patron, $holdDetails)) {
-            return $this->holdError('hold_invalid_pickup');
+            return $this->holdError('hold_invalid_pickup', false);
         }
 
         $request = [
@@ -1492,25 +1500,7 @@ class SierraRest extends AbstractBase implements
             $amount = $entry['itemCharge'] + $entry['processingFee']
                 + $entry['billingFee'];
             $balance = $amount - $entry['paidAmount'];
-            $description = '';
-            // Display charge type if it's not manual (code=1)
-            if (
-                !empty($entry['chargeType'])
-                && $entry['chargeType']['code'] != '1'
-            ) {
-                $description = $entry['chargeType']['display'];
-            }
-            if (!empty($entry['description'])) {
-                if ($description) {
-                    $description .= ' - ';
-                }
-                $description .= $entry['description'];
-            }
-            switch ($description) {
-                case 'Overdue Renewal':
-                    $description = 'Overdue';
-                    break;
-            }
+            $type = $entry['chargeType']['display'] ?? '';
             $bibId = null;
             $title = null;
             if (!empty($entry['item'])) {
@@ -1532,7 +1522,8 @@ class SierraRest extends AbstractBase implements
 
             $fines[] = [
                 'amount' => $amount * 100,
-                'fine' => $description,
+                'fine' => $this->fineTypeMappings[$type] ?? $type,
+                'description' => $entry['description'] ?? '',
                 'balance' => $balance * 100,
                 'createdate' => $this->dateConverter->convertToDisplayDate(
                     'Y-m-d',
@@ -1688,7 +1679,7 @@ class SierraRest extends AbstractBase implements
      */
     protected function extractVolume($item)
     {
-        foreach ($item['varFields'] as $varField) {
+        foreach ($item['varFields'] ?? [] as $varField) {
             if ($varField['fieldTag'] == 'v') {
                 return trim($varField['content']);
             }
@@ -2271,6 +2262,9 @@ class SierraRest extends AbstractBase implements
                     );
                 }
             }
+            $callNumber = isset($item['callNumber'])
+                ? $this->extractCallNumber($item['callNumber'])
+                : $bibCallNumber;
             $volume = isset($item['varFields']) ? $this->extractVolume($item) : '';
 
             $entry = [
@@ -2280,12 +2274,10 @@ class SierraRest extends AbstractBase implements
                 'availability' => $available,
                 'status' => $status,
                 'reserve' => 'N',
-                'callnumber' => isset($item['callNumber'])
-                    ? preg_replace('/^\|a/', '', $item['callNumber'])
-                    : $bibCallNumber,
+                'callnumber' => trim($callNumber),
                 'duedate' => $duedate,
-                'number' => $volume,
-                'barcode' => $item['barcode'],
+                'number' => trim($volume),
+                'barcode' => $item['barcode'] ?? '',
                 'sort' => $sort--,
             ];
             if ($notes) {
@@ -2349,7 +2341,7 @@ class SierraRest extends AbstractBase implements
                 'id' => $id,
                 'item_id' => "ORDER_{$id}_$locationCode",
                 'location' => $location,
-                'callnumber' => $bibCallNumber,
+                'callnumber' => trim($bibCallNumber),
                 'number' => '',
                 'status' => $this->mapStatusCode('Ordered'),
                 'reserve' => 'N',
@@ -2363,6 +2355,18 @@ class SierraRest extends AbstractBase implements
 
         usort($statuses, [$this, 'statusSortFunction']);
         return $statuses;
+    }
+
+    /**
+     * Extract the actual call number from item's call number field
+     *
+     * @param string $callNumber Call number field
+     *
+     * @return string
+     */
+    protected function extractCallNumber(string $callNumber): string
+    {
+        return str_starts_with($callNumber, '|a') ? substr($callNumber, 2) : $callNumber;
     }
 
     /**
@@ -2805,16 +2809,16 @@ class SierraRest extends AbstractBase implements
      *
      * Returns a Hold Error Message
      *
-     * @param string $msg An error message string
+     * @param string $msg    An error message string
+     * @param bool   $ilsMsg Whether the error is an ILS error message (needs formatting and any translations prefix)
      *
      * @return array An array with a success (boolean) and sysMessage key
      */
-    protected function holdError($msg)
+    protected function holdError($msg, bool $ilsMsg = true)
     {
-        $msg = $this->formatErrorMessage($msg);
         return [
             'success' => false,
-            'sysMessage' => $msg,
+            'sysMessage' => $ilsMsg ? $this->formatErrorMessage($msg) : $msg,
         ];
     }
 
@@ -2842,7 +2846,7 @@ class SierraRest extends AbstractBase implements
             },
             $msg
         );
-        return $msg;
+        return ($this->config['Catalog']['translationPrefix'] ?? '') . $msg;
     }
 
     /**
@@ -3252,10 +3256,17 @@ class SierraRest extends AbstractBase implements
         if (!$transactions) {
             return [];
         }
-        // Fetch items
+        // Fetch items and collect bib id mappings if available:
         $itemIds = [];
+        $bibIdsToItems = [];
         foreach ($transactions as $transaction) {
-            $itemIds[] = $this->extractId($transaction['item']);
+            $itemId = $this->extractId($transaction['item']);
+            $itemIds[] = $itemId;
+            // Historical transactions include the bib id. Collect them here so that
+            // we can get the bib data even if the item doesn't exist anymore:
+            if ($bibId = $transaction['bib'] ?? null) {
+                $bibIdsToItems[$this->extractId($bibId)][$itemId] = true;
+            }
         }
         $itemsResult = $this->makeRequest(
             [$this->apiBase, 'items'],
@@ -3266,15 +3277,17 @@ class SierraRest extends AbstractBase implements
             'GET',
             $patron
         );
+        // Map items to an array and collect further bib id mappings:
         $items = [];
-        $bibIdsToItems = [];
         foreach ($itemsResult['entries'] as $item) {
-            $items[(string)$item['id']] = $item;
-            if (!empty($item['bibIds'][0])) {
-                $bibIdsToItems[(string)$item['bibIds'][0]] = (string)$item['id'];
+            $itemId = (string)$item['id'];
+            $items[$itemId] = $item;
+            if ($bibId = (string)($item['bibIds'][0] ?? '')) {
+                // Collect all item id's for each bib:
+                $bibIdsToItems[$bibId][$itemId] = true;
             }
         }
-        // Fetch bibs for the items
+        // Fetch bibs for the items:
         $bibsResult = $this->makeRequest(
             [$this->apiBase, 'bibs'],
             [
@@ -3285,8 +3298,10 @@ class SierraRest extends AbstractBase implements
             $patron
         );
         foreach ($bibsResult['entries'] as $bib) {
-            // Add bib data to the items
-            $items[$bibIdsToItems[(string)$bib['id']]]['bib'] = $bib;
+            // Add bib data to the items:
+            foreach (array_keys($bibIdsToItems[(string)$bib['id']]) as $itemId) {
+                $items[$itemId]['bib'] = $bib;
+            }
         }
 
         return $items;

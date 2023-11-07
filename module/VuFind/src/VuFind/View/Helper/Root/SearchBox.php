@@ -149,6 +149,34 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
+     * Get JSON-encoded configuration for autocomplete query formatting.
+     *
+     * @param string $activeSearchClass Active search class ID
+     *
+     * @return string
+     */
+    public function autocompleteFormattingRulesJson($activeSearchClass): string
+    {
+        if ($this->combinedHandlersActive()) {
+            $rules = [];
+            $settings = $this->getCombinedHandlerConfig($activeSearchClass);
+            foreach ($settings['target'] ?? [] as $i => $target) {
+                if (($settings['type'][$i] ?? null) === 'VuFind') {
+                    $options = $this->optionsManager->get($target);
+                    $handlerRules = $options->getAutocompleteFormattingRules();
+                    foreach ($handlerRules as $key => $val) {
+                        $rules["VuFind:$target|$key"] = $val;
+                    }
+                }
+            }
+        } else {
+            $options = $this->optionsManager->get($activeSearchClass);
+            $rules = $options->getAutocompleteFormattingRules();
+        }
+        return json_encode($rules);
+    }
+
+    /**
      * Are alphabrowse options configured to display in the search options
      * drop-down?
      *
@@ -167,8 +195,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
      */
     public function combinedHandlersActive()
     {
-        return isset($this->config['General']['combinedHandlers'])
-            && $this->config['General']['combinedHandlers'];
+        return $this->config['General']['combinedHandlers'] ?? false;
     }
 
     /**

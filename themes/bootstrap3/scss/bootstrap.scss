@@ -104,6 +104,14 @@ label { cursor: pointer; }
     }
   }
 }
+.navbar-nav button.dropdown-toggle {
+  @include button-variant($btn-default-color, $btn-default-bg, $btn-default-border);
+  appearance: none;
+  padding: 15px;
+  border: 0;
+  color: inherit;
+  background-color: transparent;
+}
 
 // Normalize highlighting
 .highlight,
@@ -149,14 +157,6 @@ h3 { font-size: 16px; }
   }
   .form-control { max-width: 400px; }
   #modal .form-control { max-width: none; }
-}
-
-button.dropdown-toggle {
-  @include button-variant($btn-default-color, $btn-default-bg, $btn-default-border);
-  appearance: none;
-  padding: 15px;
-  border: 0;
-  color: $brand-primary;
 }
 
 /* ------ Layout ------ */
@@ -438,6 +438,13 @@ ul.list-group {
 .table {
   table-layout: fixed;
   word-wrap: break-word;
+}
+// No wrapping for fines table in wide windows
+@media (min-width: 992px) {
+  .table.fines-table {
+    table-layout: auto;
+    word-wrap: normal;
+  }
 }
 
 /* ------ Visualization View ------ */
