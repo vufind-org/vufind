@@ -62,18 +62,18 @@ abstract class AbstractSearchObject implements RecommendInterface
     protected $limit;
 
     /**
-     * Config section with hidden filters for this search
-     *
-     * @var string
-     */
-    protected $iniSection;
-
-    /**
      * Custom heading for this recommendation module
      *
      * @var string
      */
     protected $customHeading;
+
+    /**
+     * Config section with hidden filters for this search
+     *
+     * @var string
+     */
+    protected $iniSection;
 
     /**
      * Name of request parameter to use for search query
@@ -123,8 +123,8 @@ abstract class AbstractSearchObject implements RecommendInterface
             = (isset($settings[1]) && is_numeric($settings[1]) && $settings[1] > 0)
             ? intval($settings[1]) : 5;
 
-        $this->iniSection = $settings[2] ?? false;
-        $this->customHeading = $settings[3] ?? null;
+        $this->customHeading = $settings[2] ?? null;
+        $this->iniSection = $settings[3] ?? false;
     }
 
     /**
