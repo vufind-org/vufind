@@ -125,6 +125,13 @@ abstract class Options implements TranslatorAwareInterface
     protected $retainFiltersByDefault = true;
 
     /**
+     * Should we display a "Reset Filters" link regardless of retainFiltersByDefault?
+     *
+     * @var bool
+     */
+    protected $alwaysDisplayResetFilters = false;
+
+    /**
      * Default filters to apply to new searches
      *
      * @var array
@@ -351,6 +358,8 @@ abstract class Options implements TranslatorAwareInterface
         }
         $searchSettings = $configLoader->get($this->searchIni);
         $this->topPaginatorStyle = $searchSettings->General->top_paginator ?? false;
+        $this->retainFiltersByDefault = $searchSettings->General->retain_filters_by_default ?? true;
+        $this->alwaysDisplayResetFilters = $searchSettings->General->always_display_reset_filters ?? false;
     }
 
     /**
@@ -927,6 +936,16 @@ abstract class Options implements TranslatorAwareInterface
     public function getRetainFilterSetting()
     {
         return $this->retainFiltersByDefault;
+    }
+
+    /**
+     * Should the "Reset Filters" button be displayed?
+     *
+     * @return bool
+     */
+    public function shouldDisplayResetFilters()
+    {
+        return $this->retainFiltersByDefault || $this->alwaysDisplayResetFilters;
     }
 
     /**
