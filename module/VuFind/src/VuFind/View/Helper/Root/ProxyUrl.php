@@ -111,12 +111,13 @@ class ProxyUrl extends \Laminas\View\Helper\AbstractHelper implements
      */
     protected function checkUrl($url)
     {
-        $domain = parse_url($url, PHP_URL_HOST);
-        $cacheKey = parse_url($url, PHP_URL_SCHEME) . '://' . $domain;
-        $usePrefix = $this->getCachedData("proxyUrl-domainToUsePrefix-$cacheKey");
+        $domain = parse_url($url, PHP_URL_SCHEME)
+         . '://'
+         . parse_url($url, PHP_URL_HOST);
+        $usePrefix = $this->getCachedData("proxyUrl-domainToUsePrefix-$domain");
         if (null === $usePrefix) {
             $usePrefix = $this->queryWebService($domain);
-            $this->putCachedData("proxyUrl-domainToUsePrefix-$cacheKey", $usePrefix);
+            $this->putCachedData("proxyUrl-domainToUsePrefix-$domain", $usePrefix);
         }
         return $usePrefix;
     }
