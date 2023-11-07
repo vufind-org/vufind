@@ -69,7 +69,7 @@ abstract class AbstractSearchObject implements RecommendInterface
     protected $heading;
 
     /**
-     * Config section with hidden filters for this search
+     * Config section with filters for this search
      *
      * @var string
      */
@@ -166,18 +166,18 @@ abstract class AbstractSearchObject implements RecommendInterface
                 $params->getOptions()->getHandlerForLabel($typeLabel)
             );
 
-            // Set any hidden filters configured for this search
+            // Set any filters configured for this search
             if (!empty($this->iniSection)) {
                 $ini = $params->getOptions()->getSearchIni();
                 $config = $this->configManager->get($ini);
                 try {
-                    $hiddenFilters = $config->{$this->iniSection}->toArray() ?? [];
+                    $filters = $config->{$this->iniSection}->toArray() ?? [];
                 } catch (\Error $e) {
                     throw new \Exception(
                         "No section found matching '$this->iniSection' in $ini.ini."
                     );
                 }
-                foreach ($hiddenFilters as $filter) {
+                foreach ($filters as $filter) {
                     $params->addFilter($filter);
                 }
             }
