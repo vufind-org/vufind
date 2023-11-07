@@ -1,11 +1,25 @@
 .keyboard-selection {
   display: inline-block;
-  padding-top: 2px;
+  margin-top: 2px;
+
+  button.dropdown-toggle {
+    color: $input-color;
+    background-color: white;
+  }
 
   button.dropdown-toggle:hover,
-  button.dropdown-toggle:focus {
-    border: none;
+  button.dropdown-toggle:focus,
+  &.open > button.dropdown-toggle {
+    color: white;
+    background-color: $brand-primary;
+    border-color: $brand-primary;
     outline: none;
+  }
+
+  &:not(.open) {
+    .activated:not(:hover){
+      background: lighten($brand-primary, 55%);
+    }
   }
 
   > .dropdown-menu {
@@ -19,12 +33,6 @@
     padding: 0 2px 0 4px !important;
     .icon {
       margin: 0;
-    }
-  }
-
-  &:not(.open) {
-    .activated:not(:hover){
-      background: lighten($brand-primary, 55%);
     }
   }
 }

@@ -19,6 +19,7 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
 
   function _handleInputChange(input, triggerInputEvent = true) {
     _textInput.value = input;
+    _textInput.setAttribute('value', input);
     if (_textInput.value === '') {
       _resetButton.classList.add('hidden');
     } else {
@@ -30,6 +31,7 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
     if (triggerInputEvent) {
       _textInput.dispatchEvent(new Event('input'));
     }
+    _textInput.focus();
   }
 
   function _showKeyboard() {
@@ -97,17 +99,23 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
       _showKeyboard();
     });
     document.addEventListener("click", (event) => {
+      function hasClass(el, className) {
+        return el.className !== undefined && el.className.includes(className);
+      }
       if (
-        _keyboard.options.theme.includes("show-keyboard") &&
-        !event.target.className.includes("searchForm_lookfor") &&
-        !event.target.className.includes('keyboard-selection') &&
-        !event.target.parentNode.className.includes('keyboard-selection') &&
-        !event.target.parentNode.parentNode.className.includes('keyboard-selection') &&
-        !event.target.className.includes("hg-button") &&
-        !event.target.className.includes("hg-row") &&
-        !event.target.className.includes("simple-keyboard") &&
-        !event.target.className.includes("searchForm-reset") &&
-        !event.target.parentNode.className.includes("searchForm-reset")
+        event.target.parentNode == null ||
+        event.target.parentNode.parentNode == null || (
+          _keyboard.options.theme.includes('show-keyboard')
+          && !hasClass(event.target, 'searchForm_lookfor')
+          && !hasClass(event.target, 'keyboard-selection')
+          && !hasClass(event.target, 'hg-button')
+          && !hasClass(event.target, 'hg-row')
+          && !hasClass(event.target, 'simple-keyboard')
+          && !hasClass(event.target, 'searchForm-reset')
+          && !hasClass(event.target.parentNode, 'keyboard-selection')
+          && !hasClass(event.target.parentNode, 'searchForm-reset')
+          && !hasClass(event.target.parentNode.parentNode, 'keyboard-selection')
+        )
       ) {
         _hideKeyboard();
       }

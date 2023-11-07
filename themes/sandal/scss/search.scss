@@ -195,14 +195,12 @@
   .keyboard-selection {
     bottom: 2px;
 
-    button.dropdown-toggle {
-      color: $input-color;
-      background-color: white;
-
-      &:hover, &:focus {
-        color: white;
-        background-color: $header-bg;
-      }
+    button.dropdown-toggle:hover,
+    button.dropdown-toggle:focus,
+    &.open > button.dropdown-toggle {
+      color: white;
+      background-color: $header-bg;
+      border-color: $header-bg;
     }
 
     &:not(.open) {
@@ -211,15 +209,13 @@
       }
     }
 
-
-
     .dropdown-menu .active a,
     .dropdown-menu .active a:hover {
       background-color: $header-bg;
     }
 
     .btn-primary {
-      height: 20px;
+      height: 22px;
     }
   }
 }
