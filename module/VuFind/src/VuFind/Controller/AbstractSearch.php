@@ -913,7 +913,6 @@ class AbstractSearch extends AbstractBase
         return $view;
     }
 
-
     /**
      * Get proper options file for search class
      *

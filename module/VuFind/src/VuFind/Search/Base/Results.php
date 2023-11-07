@@ -889,8 +889,8 @@ abstract class Results
                 }
                 $result[$field]['list'] = $this->hierarchicalFacetHelper->filterFacets(
                     $result[$field]['list'],
-                    $facetFilters[$field] ?? [],
-                    $excludeFilters[$field] ?? []
+                    $facetFilters,
+                    $excludeFilters
                 );
             }
         }

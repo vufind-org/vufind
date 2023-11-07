@@ -440,6 +440,133 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test hierarchical exclude filters
+     *
+     * @return void
+     */
+    public function testHierarchicalExcludeFilters(): void
+    {
+        // Test with active filter
+        $facetList = $this->helper->buildFacetArray(
+            'format',
+            $this->facetList
+        );
+        $exclude = [
+            '0/Book/',
+            '1/Audio/Spoken/',
+        ];
+        // Always test that the proper values are found in the test data
+        $testDataIsok = array_column($this->facetList, 'value');
+        $this->assertContains('0/Book/', $testDataIsok);
+        $this->assertContains('1/Audio/Spoken/', $testDataIsok);
+        $expected = [
+            [
+                'value' => '0/AV/',
+                'displayText' => 'Audiovisual',
+                'count' => 600,
+                'operator' => 'OR',
+                'isApplied' => false,
+                'level' => '0',
+                'parent' => '',
+                'hasAppliedChildren' => false,
+                'href' => '',
+                'exclude' => '',
+                'children' => [],
+            ],
+            [
+                'value' => '0/Audio/',
+                'displayText' => 'Sound',
+                'count' => 400,
+                'operator' => 'OR',
+                'isApplied' => false,
+                'level' => '0',
+                'parent' => '',
+                'hasAppliedChildren' => false,
+                'href' => '',
+                'exclude' => '',
+                'children' => [
+                    [
+                        'value' => '1/Audio/Music/',
+                        'displayText' => 'Music',
+                        'count' => 50,
+                        'operator' => 'OR',
+                        'isApplied' => false,
+                        'level' => '1',
+                        'parent' => '0/Audio/',
+                        'hasAppliedChildren' => false,
+                        'href' => '',
+                        'exclude' => '',
+                        'children' => [],
+                    ],
+                ],
+            ],
+        ];
+        $filtered = $this->helper->filterFacets($facetList, [], $exclude);
+        $this->assertEquals($expected, $filtered);
+    }
+
+    /**
+     * Test hierarchical facet filters
+     *
+     * @return void
+     */
+    public function testHierarchicalFacetFilters(): void
+    {
+        // Test with active filter
+        $facetList = $this->helper->buildFacetArray(
+            'format',
+            $this->facetList
+        );
+        $filters = [
+            '0/Audio/',
+        ];
+        $expected = [
+            [
+                'value' => '0/Audio/',
+                'displayText' => 'Sound',
+                'count' => 400,
+                'operator' => 'OR',
+                'isApplied' => false,
+                'level' => '0',
+                'parent' => null,
+                'hasAppliedChildren' => false,
+                'href' => '',
+                'exclude' => '',
+                'children' => [
+                    [
+                        'value' => '1/Audio/Spoken/',
+                        'displayText' => 'Spoken Text',
+                        'count' => 100,
+                        'operator' => 'OR',
+                        'isApplied' => false,
+                        'level' => '1',
+                        'parent' => '0/Audio/',
+                        'hasAppliedChildren' => false,
+                        'href' => '',
+                        'exclude' => '',
+                        'children' => [],
+                    ],
+                    [
+                        'value' => '1/Audio/Music/',
+                        'displayText' => 'Music',
+                        'count' => 50,
+                        'operator' => 'OR',
+                        'isApplied' => false,
+                        'level' => '1',
+                        'parent' => '0/Audio/',
+                        'hasAppliedChildren' => false,
+                        'href' => '',
+                        'exclude' => '',
+                        'children' => [],
+                    ],
+                ],
+            ],
+        ];
+        $filtered = $this->helper->filterFacets($facetList, $filters, []);
+        $this->assertEquals($expected, $filtered);
+    }
+
+    /**
      * Set 'isApplied' to true in facet item with the given value
      *
      * @param string $facetValue Value to search for
