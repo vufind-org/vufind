@@ -122,14 +122,14 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @var bool
      */
-    protected $retainFiltersByDefault = true;
+    protected $retainFiltersByDefault;
 
     /**
      * Should we display a "Reset Filters" link regardless of retainFiltersByDefault?
      *
      * @var bool
      */
-    protected $alwaysDisplayResetFilters = false;
+    protected $alwaysDisplayResetFilters;
 
     /**
      * Default filters to apply to new searches
@@ -945,7 +945,7 @@ abstract class Options implements TranslatorAwareInterface
      */
     public function shouldDisplayResetFilters()
     {
-        return $this->retainFiltersByDefault || $this->alwaysDisplayResetFilters;
+        return $this->alwaysDisplayResetFilters || $this->getRetainFilterSetting();
     }
 
     /**
