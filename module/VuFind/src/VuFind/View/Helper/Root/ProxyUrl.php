@@ -32,6 +32,8 @@ namespace VuFind\View\Helper\Root;
 use Exception;
 use Laminas\Cache\Storage\Adapter\AbstractAdapter as CacheAdapter;
 
+use function intval;
+
 /**
  * Proxy URL view helper
  *
@@ -138,6 +140,6 @@ class ProxyUrl extends \Laminas\View\Helper\AbstractHelper implements
             $this->logError('Exception during EZproxy web service request: ' . $ex->getMessage());
             return null;
         }
-        return ('1' === $responseData);
+        return '1' === $responseData;
     }
 }
