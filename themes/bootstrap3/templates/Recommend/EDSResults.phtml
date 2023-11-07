@@ -1,9 +1,10 @@
 <?php
   $searchObject = $this->recommend->getResults();
   $results = $searchObject->getResults();
+  $heading = $this->recommend->getHeading();
 ?>
 <?php if (!empty($results)): ?>
-  <h4><?=$this->transEsc('EDS Results')?></h4>
+  <h4><?=$this->transEsc($heading)?></h4>
   <div class="list-group">
     <?php foreach ($results as $driver): ?>
       <div class="list-group-item">

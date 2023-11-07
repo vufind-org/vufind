@@ -51,4 +51,14 @@ class SummonResults extends AbstractSearchObject
     {
         return 'Summon';
     }
+
+    /**
+     * Get the default heading for this recommendation module.
+     *
+     * @return string
+     */
+    protected function getDefaultHeading()
+    {
+        return 'Summon Results';
+    }
 }

@@ -62,11 +62,11 @@ abstract class AbstractSearchObject implements RecommendInterface
     protected $limit;
 
     /**
-     * Custom heading for this recommendation module
+     * Heading for this recommendation module
      *
      * @var string
      */
-    protected $customHeading;
+    protected $heading;
 
     /**
      * Config section with hidden filters for this search
@@ -123,7 +123,7 @@ abstract class AbstractSearchObject implements RecommendInterface
             = (isset($settings[1]) && is_numeric($settings[1]) && $settings[1] > 0)
             ? intval($settings[1]) : 5;
 
-        $this->customHeading = $settings[2] ?? null;
+        $this->heading = $settings[2] ?? $this->getDefaultHeading();
         $this->iniSection = $settings[3] ?? false;
     }
 
@@ -213,13 +213,13 @@ abstract class AbstractSearchObject implements RecommendInterface
     }
 
     /**
-     * Get the custon heading, if any.
+     * Get the heading.
      *
      * @return string
      */
-    public function getCustomHeading()
+    public function getHeading()
     {
-        return $this->customHeading ?? null;
+        return $this->heading;
     }
 
     /**
@@ -228,4 +228,11 @@ abstract class AbstractSearchObject implements RecommendInterface
      * @return string
      */
     abstract protected function getSearchClassId();
+
+    /**
+     * Get the default heading for this recommendation module.
+     *
+     * @return string
+     */
+    abstract protected function getDefaultHeading();
 }
