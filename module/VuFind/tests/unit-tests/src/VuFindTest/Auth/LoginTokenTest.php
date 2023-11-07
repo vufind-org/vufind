@@ -40,7 +40,6 @@ use Laminas\Session\SessionManager;
 use VuFind\Cookie\CookieManager;
 use VuFind\Exception\LoginToken as LoginTokenException;
 
-
 /**
  * Class AuthTokenTest
  *
@@ -53,11 +52,11 @@ use VuFind\Exception\LoginToken as LoginTokenException;
 class LoginTokenTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test logging in with a login token
+     * Test login exception
      *
      * @return void
      */
-    public function testTokenLogin()
+    public function testTokenLoginException()
     {
         $user = $this->getMockUser();
         $cookieManager = $this->getCookieManager(
@@ -100,11 +99,11 @@ class LoginTokenTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($this->getMockUser()));
         $tokenTable = $this->getMockLoginTokenTable();
         $tokenTable->expects($this->once())->method('matchToken')
-            ->will($this->throwException(new \VuFind\Exception\LoginToken));
+            ->will($this->throwException(\VuFind\Exception\LoginToken::class));
         $tokenTable->expects($this->once())->method('getByUserId')
             ->will($this->returnValue($mockToken));
         $loginToken = $this->getLoginToken($cookieManager, $tokenTable, $userTable);
-        $this->assertNull($loginToken->tokenLogin('123'));        
+        $this->assertNull($loginToken->tokenLogin('123'));
     }
 
 

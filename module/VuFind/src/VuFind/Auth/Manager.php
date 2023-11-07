@@ -288,11 +288,8 @@ class Manager implements
     public function supportsPersistentLogin($user = null)
     {
         if (!empty($this->config->Authentication->persistent_login)) {
-            if ($this->getAuth() instanceof ChoiceAuth) {
-                $method = $this->getAuth()->getSelectedAuthOption();
-            } else {
-                $method = $this->getAuthMethod();
-            }
+            $method = $this->getAuth() instanceof ChoiceAuth
+                ? $this->getAuth()->getSelectedAuthOption() : $this->getAuthMethod();
 
             return in_array(
                 strtolower($method),
