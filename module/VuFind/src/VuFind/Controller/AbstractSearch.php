@@ -82,7 +82,7 @@ class AbstractSearch extends AbstractBase
     protected function createViewModel($params = null)
     {
         $view = parent::createViewModel($params);
-        $view->searchClassId = $this->searchClassId;
+        $this->layout()->searchClassId = $view->searchClassId = $this->searchClassId;
         return $view;
     }
 
