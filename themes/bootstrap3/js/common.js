@@ -498,7 +498,7 @@ function phoneNumberFormHandler(numID, regionCode) {
 // Setup captchas after Google script loads
 function recaptchaOnLoad() {
   if (typeof grecaptcha !== 'undefined') {
-    var captchas = document.querySelectorAll('.g-recaptcha:empty');  
+    var captchas = document.querySelectorAll('.g-recaptcha:empty');
     for (var i = 0; i < captchas.length; i++) {
       var captchaElement = captchas[i];
       var captchaData = captchaElement.dataset;
