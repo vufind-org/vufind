@@ -114,10 +114,11 @@ class ProxyUrl extends \Laminas\View\Helper\AbstractHelper implements
         $domain = parse_url($url, PHP_URL_SCHEME)
          . '://'
          . parse_url($url, PHP_URL_HOST);
-        $usePrefix = $this->getCachedData("proxyUrl-domainToUsePrefix-$domain");
+        $cacheKey = "proxyUrl-domainToUsePrefix-$domain";
+        $usePrefix = $this->getCachedData($cacheKey);
         if (null === $usePrefix) {
             $usePrefix = $this->queryWebService($domain);
-            $this->putCachedData("proxyUrl-domainToUsePrefix-$domain", $usePrefix);
+            $this->putCachedData($cacheKey, $usePrefix);
         }
         return $usePrefix;
     }
