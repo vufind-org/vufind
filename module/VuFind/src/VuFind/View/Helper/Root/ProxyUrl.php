@@ -97,7 +97,7 @@ class ProxyUrl extends \Laminas\View\Helper\AbstractHelper implements
      *
      * @return bool The configured setting, or the default
      */
-    private function checkConfig()
+    protected function checkConfig()
     {
         return $this->config->EZproxy->prefixLinks ?? true;
     }
