@@ -24,7 +24,7 @@
         ?>
         <div id="facet_<?=$this->escapeHtml($field)?>_container" role="listbox" class="home-facet <?=$this->escapeHtmlAttr($field)?> hide">
           <h2><?=$labelHeading?></h2>
-          <div id="facet_<?=$this->escapeHtml($field)?>" class="jstree-facet"
+          <div id="facet_<?=$this->escapeHtml($field)?>" class="jstree-facet facet-tree"
               data-source="<?=$this->escapeHtml($this->searchClassId)?>"
               data-facet="<?=$this->escapeHtml($field)?>"
               data-path="<?=$this->url($basicSearch)?>"

@@ -33,6 +33,9 @@ namespace VuFind\Crypt;
 
 use Exception;
 
+use function intval;
+use function strlen;
+
 /**
  * Base62 generator
  *

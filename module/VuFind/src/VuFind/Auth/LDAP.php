@@ -32,6 +32,8 @@ namespace VuFind\Auth;
 
 use VuFind\Exception\Auth as AuthException;
 
+use function in_array;
+
 /**
  * LDAP authentication class
  *

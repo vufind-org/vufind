@@ -37,6 +37,8 @@ use VuFind\Db\Table\Resource;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Loader as RecordLoader;
 
+use function intval;
+
 /**
  * AJAX handler to comment on a record.
  *

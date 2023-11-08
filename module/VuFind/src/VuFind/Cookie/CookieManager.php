@@ -31,6 +31,8 @@
 
 namespace VuFind\Cookie;
 
+use function is_array;
+
 /**
  * Cookie Manager
  *

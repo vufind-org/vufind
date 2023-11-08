@@ -31,6 +31,9 @@ namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
 
+use function count;
+use function is_object;
+
 /**
  * Mink cart test class.
  *

@@ -31,6 +31,8 @@ namespace VuFind\RecordTab;
 
 use VuFind\ILS\Connection;
 
+use function strlen;
+
 /**
  * Holdings (ILS) tab
  *

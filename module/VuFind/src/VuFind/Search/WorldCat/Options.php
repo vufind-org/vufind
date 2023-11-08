@@ -29,6 +29,8 @@
 
 namespace VuFind\Search\WorldCat;
 
+use function count;
+
 /**
  * WorldCat Search Options
  *

@@ -29,6 +29,8 @@
 
 namespace VuFind\Cover\Layer;
 
+use function strlen;
+
 /**
  * Abstract cover layer
  *

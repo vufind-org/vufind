@@ -32,7 +32,7 @@
        that you fully re-index after changing this setting as it can
        affect both how text is indexed and queried.
     -->
-  <luceneMatchVersion>9.1.1</luceneMatchVersion>
+  <luceneMatchVersion>9.7</luceneMatchVersion>
 
   <!-- Use the classic schema style by default for VuFind -->
   <schemaFactory class="ClassicIndexSchemaFactory"/>
@@ -43,6 +43,7 @@
   <dataDir>${solr.solr.home:./solr}/biblio</dataDir>
 
   <lib dir="../../../import/lib" regex="marc4j.*\.jar" />
+  <lib dir="../../../import" regex="solrmarc_core.*\.jar" />
   <lib dir="../../vendor/modules/analysis-extras/lib" regex=".*\.jar" />
   <lib dir="../jars" regex=".*\.jar" />
 
@@ -276,11 +277,6 @@
     handleSelect=false will use solr1.1 style error formatting
     -->
   <requestDispatcher handleSelect="true" >
-    <!--Make sure your system has some authentication before enabling remote streaming!  -->
-    <requestParsers enableRemoteStreaming="true"
-                    multipartUploadLimitInKB="2048000"
-                    formdataUploadLimitInKB="2048"/>
-
     <!-- Set HTTP caching related parameters (for proxy caches and clients).
 
          To get the behaviour of Solr 1.2 (ie: no caching related headers)
@@ -437,6 +433,7 @@
 
   <requestHandler name="/browse" class="org.vufind.solr.handler.BrowseRequestHandler">
     <!-- These definitions should match the field names used in the authority index. -->
+    <!-- The parameters should match the ones given to build_browse in index-alphabetic-browse.sh -->
     <str name="preferredHeadingField">heading</str>
     <str name="useInsteadHeadingField">use_for</str>
     <str name="seeAlsoHeadingField">see_also</str>
@@ -457,6 +454,7 @@
 
     <lst name="title">
       <str name="DBpath">${solr.solr.home:./solr}/alphabetical_browse/title_browse.db</str>
+      <str name="normalizer">org.vufind.util.TitleNormalizer</str>
       <str name="field">title_fullStr</str>
     </lst>
 
