@@ -65,18 +65,17 @@ var VuFind = (function VuFind() {
     return null;
   };
 
-  var initDisableSubmitOnClick = function initDisableSubmitOnClick() {
-    $('[data-disable-on-submit]').on('submit', function handleOnClickDisable() {
-      var $form = $(this);
-      // Disable submit elements via setTimeout so that the submit button value gets
-      // included in the submitted data before being disabled:
-      setTimeout(
-        function disableSubmit() {
-          $form.find('[type=submit]').prop('disabled', true);
-        },
-        0
-      );
-    });
+  var initDisableSubmitOnClick = () => {
+    var forms = document.querySelectorAll("[data-disable-on-submit]");
+    forms.forEach(form =>
+      form.addEventListener("submit", () => {
+        var submitButtons = form.querySelectorAll('[type="submit"]');
+        // Disable submit elements via setTimeout so that the submit button value gets
+        // included in the submitted data before being disabled:
+        setTimeout(() => {
+          submitButtons.forEach(button => button.disabled = true);
+        }, 0);
+      }));
   };
 
   var initClickHandlers = function initClickHandlers() {
