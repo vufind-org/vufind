@@ -1200,7 +1200,7 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
-     * Is FacetFilters and ExcludeFilters enabled in advanced search?
+     * Is hierarchicalFacetFilters and hierarchicalExcludeFilters enabled in advanced search?
      *
      * @return bool
      */
