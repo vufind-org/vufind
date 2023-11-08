@@ -148,6 +148,7 @@ class AbstractSolrSearch extends AbstractSearch
         $hierarchicalFacetsSortOptions = []
     ) {
         $facetHelper = null;
+        $options = null;
         foreach ($facetList as $facet => &$list) {
             // Hierarchical facets: format display texts and sort facets
             // to a flat array according to the hierarchy
@@ -156,6 +157,7 @@ class AbstractSolrSearch extends AbstractSearch
                 if (!$facetHelper) {
                     $facetHelper = $this->serviceLocator
                         ->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class);
+                    $options = $this->getOptionsForClass();
                 }
 
                 $tmpList = $list['list'];
@@ -167,20 +169,11 @@ class AbstractSolrSearch extends AbstractSearch
                     $facet,
                     $tmpList
                 );
-
-                $options = $this->getOptionsForClass();
-                $facetFilters = $options->getHierarchicalFacetFilters($facet);
-                $excludeFilters = $options->getHierarchicalExcludeFilters($facet);
-                if (
-                    $options->getFilterHierarchicalFacetsInAdvanced()
-                    && ($facetFilters || $excludeFilters)
-                ) {
-                    $tmpList = $facetHelper->filterFacets(
-                        $tmpList,
-                        $facetFilters,
-                        $excludeFilters
-                    );
-                }
+                $tmpList = $facetHelper->filterFacets(
+                    $facet,
+                    $tmpList,
+                    $options
+                );
                 $list['list'] = $facetHelper->flattenFacetHierarchy($tmpList);
             }
 

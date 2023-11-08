@@ -125,11 +125,16 @@ class GetFacetData extends AbstractBase
                     $queryHelper->setDefaultParameter($field, $request[$field]);
                 }
             }
-
             $facetList = $facets[$facet]['data']['list'];
             $this->facetHelper->sortFacetList($facetList, $sort);
             $facets = $this->facetHelper
-                ->buildFacetArray($facet, $facetList, $queryHelper, false);
+                ->buildFacetArray(
+                    $facet,
+                    $facetList,
+                    $queryHelper,
+                    false
+                );
+            $this->facetHelper->filterFacets($facet, $facets, $results->getOptions());
         }
         return $this->formatResponse(compact('facets'));
     }

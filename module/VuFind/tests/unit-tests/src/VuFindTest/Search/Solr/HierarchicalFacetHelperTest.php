@@ -31,6 +31,7 @@ namespace VuFindTest\Search\Solr;
 
 use VuFind\I18n\Sorter;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
+use VuFindTest\Search\TestHarness\Options;
 
 /**
  * Unit tests for Hierarchical Facet Helper.
@@ -446,9 +447,10 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
      */
     public function testHierarchicalExcludeFilters(): void
     {
+        $facet = 'format';
         // Test with active filter
         $facetList = $this->helper->buildFacetArray(
-            'format',
+            $facet,
             $this->facetList
         );
         $exclude = [
@@ -501,7 +503,12 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
         ];
-        $filtered = $this->helper->filterFacets($facetList, [], $exclude);
+        $options = $this->getMockOptions();
+        $options->expects($this->any())->method('getHierarchicalExcludeFilters')
+            ->will($this->returnValue($exclude));
+        $options->expects($this->any())->method('getHierarchicalFacetFilters')
+            ->will($this->returnValue([]));
+        $filtered = $this->helper->filterFacets($facet, $facetList, $options);
         $this->assertEquals($expected, $filtered);
     }
 
@@ -512,9 +519,10 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
      */
     public function testHierarchicalFacetFilters(): void
     {
+        $facet = 'format';
         // Test with active filter
         $facetList = $this->helper->buildFacetArray(
-            'format',
+            $facet,
             $this->facetList
         );
         $filters = [
@@ -562,7 +570,12 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
         ];
-        $filtered = $this->helper->filterFacets($facetList, $filters, []);
+        $options = $this->getMockOptions();
+        $options->expects($this->any())->method('getHierarchicalExcludeFilters')
+            ->will($this->returnValue([]));
+        $options->expects($this->any())->method('getHierarchicalFacetFilters')
+            ->will($this->returnValue($filters));
+        $filtered = $this->helper->filterFacets($facet, $facetList, $options);
         $this->assertEquals($expected, $filtered);
     }
 
@@ -582,5 +595,16 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
             }
         }
         return $facetList;
+    }
+
+    /**
+     * Create mock options class
+     *
+     * @return \PHPUnit\Framework\MockObject\MockObject
+     */
+    protected function getMockOptions(): \PHPUnit\Framework\MockObject\MockObject
+    {
+        return $this->getMockBuilder(\VuFind\Search\Base\Options::class)
+            ->disableOriginalConstructor()->getMock();
     }
 }

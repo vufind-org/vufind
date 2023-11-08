@@ -297,7 +297,9 @@ class SideFacets extends AbstractFacets
     public function getFacetSet()
     {
         $facetSet = $this->results->getFacetList($this->mainFacets);
-
+        if ($this->hierarchicalFacetHelper && method_exists($this->hierarchicalFacetHelper, 'setOptions')) {
+            $this->hierarchicalFacetHelper->setOptions($this->results->getOptions());
+        }
         foreach ($this->hierarchicalFacets as $hierarchicalFacet) {
             if (isset($facetSet[$hierarchicalFacet])) {
                 if (!$this->hierarchicalFacetHelper) {
@@ -309,6 +311,11 @@ class SideFacets extends AbstractFacets
                 $facetArray = $this->hierarchicalFacetHelper->buildFacetArray(
                     $hierarchicalFacet,
                     $facetSet[$hierarchicalFacet]['list']
+                );
+                $facetArray = $this->hierarchicalFacetHelper->filterFacets(
+                    $hierarchicalFacet,
+                    $facetArray,
+                    $this->results->getOptions()
                 );
                 $facetSet[$hierarchicalFacet]['list'] = $this
                     ->hierarchicalFacetHelper

@@ -308,19 +308,11 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
             $urlHelper,
             false
         );
-        if (!method_exists($this->facetHelper, 'filterFacets')) {
-            return $result;
-        }
-        $facetFilters = $options->getHierarchicalFacetFilters($facet);
-        $excludeFilters = $options->getHierarchicalExcludeFilters($facet);
-        if ($facetFilters || $excludeFilters) {
-            $result = $this->facetHelper->filterFacets(
-                $result,
-                $facetFilters,
-                $excludeFilters
-            );
-        }
-
+        $result = $this->facetHelper->filterFacets(
+            $facet,
+            $result,
+            $options
+        );
         return $result;
     }
 }

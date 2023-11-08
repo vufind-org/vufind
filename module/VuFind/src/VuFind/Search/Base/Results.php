@@ -881,18 +881,6 @@ abstract class Results
                     'isApplied'
                 );
             }
-            if ($hierarchical && method_exists($this->hierarchicalFacetHelper, 'filterFacets')) {
-                $excludeFilters = $this->getOptions()->getHierarchicalExcludeFilters($field);
-                $facetFilters = $this->getOptions()->getHierarchicalFacetFilters($field);
-                if (empty($excludeFilters[$field]) && empty($facetFilters[$field])) {
-                    continue;
-                }
-                $result[$field]['list'] = $this->hierarchicalFacetHelper->filterFacets(
-                    $result[$field]['list'],
-                    $facetFilters,
-                    $excludeFilters
-                );
-            }
         }
         return $result;
     }

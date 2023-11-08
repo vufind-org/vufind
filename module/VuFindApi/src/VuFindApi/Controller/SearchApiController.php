@@ -407,7 +407,6 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
 
         $facetHelper = $this->serviceLocator
             ->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class);
-
         $facetList = [];
         foreach ($facets as $facet) {
             if (empty($facetResults[$facet]['data']['list'])) {
@@ -420,6 +419,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
                 $results->getUrlQuery(),
                 false
             );
+            $facetList[$facet] = $facetHelper->filterFacets($facet, $facetList[$facet], $results->getOptions());
         }
 
         return $facetList;

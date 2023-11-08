@@ -35,6 +35,7 @@ use VuFind\I18n\TranslatableString;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\Search\Base\HierarchicalFacetHelperInterface;
+use VuFind\Search\Base\Options;
 use VuFind\Search\UrlQueryHelper;
 
 use function array_slice;
@@ -388,15 +389,22 @@ class HierarchicalFacetHelper implements
     /**
      * Filter hierarchical facets
      *
-     * @param array $facets         Facet list
-     * @param array $filters        Facet filters
-     * @param array $excludeFilters Exclusion filters
+     * @param string  $name    Facet name
+     * @param array   $facets  Facet list
+     * @param Options $options Options
      *
      * @return array
      */
-    public function filterFacets($facets, $filters, $excludeFilters): array
+    public function filterFacets($name, $facets, $options): array
     {
-        if (!empty($filters)) {
+        $filters = $options->getHierarchicalFacetFilters($name);
+        $excludeFilters = $options->getHierarchicalExcludeFilters($name);
+
+        if (!$filters && !$excludeFilters) {
+            return $facets;
+        }
+
+        if ($filters) {
             foreach ($facets as $key => &$facet) {
                 $value = $facet['value'];
                 [$level] = explode('/', $value);
@@ -415,15 +423,15 @@ class HierarchicalFacetHelper implements
                     unset($facets[$key]);
                 } elseif (!empty($facet['children'])) {
                     $facet['children'] = $this->filterFacets(
+                        $name,
                         $facet['children'],
-                        $filters,
-                        $excludeFilters
+                        $options
                     );
                 }
             }
         }
 
-        if (!empty($excludeFilters)) {
+        if ($excludeFilters) {
             foreach ($facets as $key => &$facet) {
                 $value = $facet['value'];
                 $match = false;
@@ -435,9 +443,9 @@ class HierarchicalFacetHelper implements
                 }
                 if (!empty($facet['children'])) {
                     $facet['children'] = $this->filterFacets(
+                        $name,
                         $facet['children'],
-                        $filters,
-                        $excludeFilters
+                        $options
                     );
                 }
             }
