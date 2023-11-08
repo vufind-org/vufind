@@ -498,12 +498,16 @@ function phoneNumberFormHandler(numID, regionCode) {
 // Setup captchas after Google script loads
 function recaptchaOnLoad() {
   if (typeof grecaptcha !== 'undefined') {
-    var captchas = $('.g-recaptcha:empty');
+    var captchas = document.querySelectorAll('.g-recaptcha:empty');
     for (var i = 0; i < captchas.length; i++) {
-      $(captchas[i]).data('captchaId', grecaptcha.render(captchas[i], $(captchas[i]).data()));
+      var captchaElement = captchas[i];
+      var captchaData = captchaElement.dataset;
+      var captchaId = grecaptcha.render(captchaElement, captchaData);
+      captchaElement.dataset.captchaId = captchaId;
     }
   }
 }
+
 function resetCaptcha($form) {
   if (typeof grecaptcha !== 'undefined') {
     var captcha = $form.find('.g-recaptcha');
