@@ -137,11 +137,11 @@ class ComponentTest extends \VuFindTest\Integration\MinkTestCase
         $toggle = $this->findCss($page, '.confirm__toggle');
 
         $assertOpen = function ($menu) {
-            $className = $menu->getAttribute("class");
+            $className = $menu->getAttribute('class');
             $this->assertTrue(strstr($className, 'is-open') !== false);
         };
         $assertClosed = function ($menu) {
-            $className = $menu->getAttribute("class");
+            $className = $menu->getAttribute('class');
             $this->assertTrue(strstr($className, 'is-open') === false);
         };
 
