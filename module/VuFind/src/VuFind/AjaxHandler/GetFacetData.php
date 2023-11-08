@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  AJAX
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -50,6 +51,7 @@ use VuFind\Session\Settings as SessionSettings;
  * @category VuFind
  * @package  AJAX
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -125,6 +127,7 @@ class GetFacetData extends AbstractBase
                     $queryHelper->setDefaultParameter($field, $request[$field]);
                 }
             }
+
             $facetList = $facets[$facet]['data']['list'];
             $this->facetHelper->sortFacetList($facetList, $sort);
             $facets = $this->facetHelper
