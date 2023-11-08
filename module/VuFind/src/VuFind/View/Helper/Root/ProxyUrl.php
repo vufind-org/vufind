@@ -135,7 +135,7 @@ class ProxyUrl extends \Laminas\View\Helper\AbstractHelper implements
         $prefixLinksWebServiceUrl = $this->config->EZproxy->prefixLinksWebServiceUrl;
         $queryUrl = $prefixLinksWebServiceUrl . '?url=' . $domain;
         try {
-            $client  = $this->httpService->createClient($queryUrl);
+            $client = $this->httpService->createClient($queryUrl);
             $response = $client->send();
             $responseData = $response->getContent();
         } catch (Exception $ex) {
