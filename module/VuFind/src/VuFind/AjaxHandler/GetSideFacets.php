@@ -302,6 +302,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
                 'top' === $sortOptions[$facet]
             );
         }
+
         $result = $this->facetHelper->buildFacetArray(
             $facet,
             $facetList,
