@@ -49,9 +49,10 @@ use function intval;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class Databases implements RecommendInterface
+class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
 {
     use \VuFind\Cache\CacheTrait;
+    use \VuFind\Log\LoggerAwareTrait;
 
     /**
      * Results object
@@ -212,20 +213,31 @@ class Databases implements RecommendInterface
     public function getResults()
     {
         if (count($this->resultFacet) < 1) {
-            throw new \Exception('At least one facet key required.');
+            $this->logError('At least one facet key is required.');
+            return [];
         }
 
         $resultDatabasesTopFacet = array_shift($this->resultFacet);
-        $resultDatabases = $this->results->getFacetList([$resultDatabasesTopFacet => null])[$resultDatabasesTopFacet];
-        while (count($this->resultFacet) && $resultDatabases) {
-            // Throw exception if the key is not found
-            $resultDatabases = $resultDatabases[array_shift($this->resultFacet)];
+        try {
+            $resultDatabases = $this->results->getFacetList([$resultDatabasesTopFacet => null])[$resultDatabasesTopFacet];
+            while (count($this->resultFacet) && $resultDatabases) {
+                $resultDatabases = $resultDatabases[array_shift($this->resultFacet)];
+            }    
+        }
+        catch (\Exception $ex) {
+            $this->logError('Error using configured facets to find list of result databases.');
+            return [];
         }
         $nameToDatabase = $this->getDatabases();
         $databases = [];
         foreach ($resultDatabases as $resultDatabase) {
-            // Throw exception if the name is not found
-            $name = $resultDatabase[$this->resultFacetNameKey];
+            try {
+                $name = $resultDatabase[$this->resultFacetNameKey];
+            }
+            catch (\Exception $ex) {
+                $this->logError("Name key '$this->resultFacetNameKey' not found for database.");
+                continue;
+            }
             $databaseInfo = $nameToDatabase[$name] ?? null;
             if ($databaseInfo) {
                 $databases[$name] = $databaseInfo;
