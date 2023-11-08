@@ -61,7 +61,7 @@ class ProxyUrl extends \Laminas\View\Helper\AbstractHelper implements
     /**
      * Constructor
      *
-     * @param CacheAdapter           $cache  Cache for web service repsonses
+     * @param CacheAdapter           $cache  Cache for web service responses
      * @param \Laminas\Config\Config $config VuFind configuration
      */
     public function __construct(CacheAdapter $cache = null, $config = null)
@@ -103,7 +103,7 @@ class ProxyUrl extends \Laminas\View\Helper\AbstractHelper implements
     }
 
     /**
-     * Check whether the given URL requires the proxy prefix.  Cache the repsonse.
+     * Check whether the given URL requires the proxy prefix.  Cache the response.
      *
      * @param string $url The raw URL to check
      *
