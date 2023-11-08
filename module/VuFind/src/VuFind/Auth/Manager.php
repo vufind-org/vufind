@@ -779,6 +779,18 @@ class Manager implements
     }
 
     /**
+     * Delete all login tokens for a user
+     *
+     * @param int $userId User identifier
+     *
+     * @return void
+     */
+    public function deleteUserLoginTokens(int $userId)
+    {
+        $this->loginToken->deleteUserLoginTokens($userId);
+    }
+
+    /**
      * Setter
      *
      * @param string $method     The auth class to proxy

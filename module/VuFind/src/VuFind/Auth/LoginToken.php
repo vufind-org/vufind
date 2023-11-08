@@ -148,12 +148,7 @@ class LoginToken implements \VuFind\I18n\Translator\TranslatorAwareInterface
                 // Delete all login tokens for the user and all sessions
                 // associated with the tokens and send a warning email to user
                 $user = $this->userTable->getById($cookie['user_id']);
-                $userTokens = $this->loginTokenTable->getByUserId($cookie['user_id']);
-                $handler = $this->sessionManager->getSaveHandler();
-                foreach ($userTokens as $t) {
-                    $handler->destroy($t->last_session_id);
-                }
-                $this->loginTokenTable->deleteByUserId($cookie['user_id']);
+                $this->deleteUserLoginTokens($user->id);
                 $this->sendLoginTokenWarningEmail($user);
                 return null;
             }
@@ -214,6 +209,24 @@ class LoginToken implements \VuFind\I18n\Translator\TranslatorAwareInterface
             $handler->destroy($token->last_session_id);
         }
         $this->loginTokenTable->deleteBySeries($series, $cookie['user_id']);
+    }
+
+    /**
+     * Delete all login tokens for a user. Also destroys
+     * sesisons associated with the tokens.
+     *
+     * @param int $userId User identifier
+     *
+     * @return void
+     */
+    public function deleteUserLoginTokens($userId)
+    {
+        $userTokens = $this->loginTokenTable->getByUserId($userId);
+        $handler = $this->sessionManager->getSaveHandler();
+        foreach ($userTokens as $t) {
+            $handler->destroy($t->last_session_id);
+        }
+        $this->loginTokenTable->deleteByUserId($userId);
     }
 
     /**
