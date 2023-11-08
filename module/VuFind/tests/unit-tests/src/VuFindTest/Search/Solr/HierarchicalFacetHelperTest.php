@@ -448,7 +448,6 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
     public function testHierarchicalExcludeFilters(): void
     {
         $facet = 'format';
-        // Test with active filter
         $facetList = $this->helper->buildFacetArray(
             $facet,
             $this->facetList
@@ -520,7 +519,6 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
     public function testHierarchicalFacetFilters(): void
     {
         $facet = 'format';
-        // Test with active filter
         $facetList = $this->helper->buildFacetArray(
             $facet,
             $this->facetList
