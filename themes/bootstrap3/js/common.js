@@ -12,6 +12,9 @@ var VuFind = (function VuFind() {
   var _icons = {};
   var _translations = {};
 
+  var _elementBase;
+  var _iconsCache = {};
+
   // Emit a custom event
   // Recommendation: prefix with vf-
   var emit = function emit(name, detail) {
@@ -141,46 +144,60 @@ var VuFind = (function VuFind() {
       }
     }
   };
-  var icon = function icon(name, attrs = {}) {
+
+  /**
+   * Get an icon identified by a name.
+   *
+   * @param {String} name          Name of the icon to create
+   * @param {Object} attrs         Object containing attributes,
+   *                               key is the attribute of an HTMLElement,
+   *                               value is the values to add for the attribute.
+   * @param {Boolean}   returnElement [Optional] Should the function return an HTMLElement.
+   *                               Default is false.
+   *
+   * @returns {String|HTMLElement}
+   */
+  var icon = function icon(name, attrs = {}, returnElement = false) {
     if (typeof _icons[name] == "undefined") {
       console.error("JS icon missing: " + name);
       return name;
     }
+    // Create a template element for icon function
+    if (!_elementBase) {
+      _elementBase = document.createElement('div');
+    }
+    const cacheKey = `${name}||${JSON.stringify(attrs)}`;
+    if (_iconsCache[cacheKey]) {
+      return returnElement
+        ? _iconsCache[cacheKey].cloneNode(true)
+        : _iconsCache[cacheKey].outerHTML;
+    }
+
+    const clone = _elementBase.cloneNode();
+    clone.insertAdjacentHTML('afterbegin', _icons[name]);
+    let element = clone.firstChild;
 
     // Add additional attributes
-    function addAttrs(_html, _attrs = {}) {
-      var mod = String(_html);
-      for (var attr in _attrs) {
-        if (Object.prototype.hasOwnProperty.call(_attrs, attr)) {
-          var sliceStart = mod.indexOf(" ");
-          var sliceEnd = sliceStart;
-          var value = _attrs[attr];
-          var regex = new RegExp(` ${attr}=(['"])([^\\1]+?)\\1`);
-          var existing = mod.match(regex);
-          if (existing) {
-            sliceStart = existing.index;
-            sliceEnd = sliceStart + existing[0].length;
-            value = existing[2] + " " + value;
-          }
-          mod = mod.slice(0, sliceStart) +
-              " " + attr + '="' + value + '"' +
-              mod.slice(sliceEnd);
+    function addAttrs(_element, _attrs = {}) {
+      Object.keys(_attrs).forEach(key => {
+        if (key !== 'class') {
+          _element.setAttribute(key, _attrs[key]);
+          return;
         }
-      }
-      return mod;
+        let newAttrs = _attrs[key].split(" ");
+        const oldAttrs = _element.getAttribute(key) || [];
+        const newAttrsSet = new Set([...newAttrs, ...oldAttrs.split(" ")]);
+        _element.className = Array.from(newAttrsSet).join(" ");
+      });
     }
-
-    var html = _icons[name];
 
     if (typeof attrs == "string") {
-      return addAttrs(html, { class: attrs });
+      addAttrs(element, { class: attrs });
+    } else if (Object.keys(attrs).length > 0) {
+      addAttrs(element, attrs);
     }
-
-    if (Object.keys(attrs).length > 0) {
-      return addAttrs(html, attrs);
-    }
-
-    return html;
+    _iconsCache[cacheKey] = element;
+    return returnElement ? element.cloneNode(true) : element.outerHTML;
   };
   // Icon shortcut methods
   var spinner = function spinner(extraClass = "") {
