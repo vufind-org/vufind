@@ -219,12 +219,12 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
 
         $resultDatabasesTopFacet = array_shift($this->resultFacet);
         try {
-            $resultDatabases = $this->results->getFacetList([$resultDatabasesTopFacet => null])[$resultDatabasesTopFacet];
+            $resultDatabases =
+                $this->results->getFacetList([$resultDatabasesTopFacet => null])[$resultDatabasesTopFacet];
             while (count($this->resultFacet) && $resultDatabases) {
                 $resultDatabases = $resultDatabases[array_shift($this->resultFacet)];
-            }    
-        }
-        catch (\Exception $ex) {
+            }
+        } catch (\Exception $ex) {
             $this->logError('Error using configured facets to find list of result databases.');
             return [];
         }
@@ -233,8 +233,7 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
         foreach ($resultDatabases as $resultDatabase) {
             try {
                 $name = $resultDatabase[$this->resultFacetNameKey];
-            }
-            catch (\Exception $ex) {
+            } catch (\Exception $ex) {
                 $this->logError("Name key '$this->resultFacetNameKey' not found for database.");
                 continue;
             }
