@@ -92,6 +92,7 @@ class SimulatedSSO extends AbstractBase
      */
     public function getSessionInitiator($target)
     {
+        $target .= (str_contains($target, '?') ? '&' : '?') . 'auth_method=SimulatedSSO';
         return ($this->getSessionInitiatorCallback)($target);
     }
 }
