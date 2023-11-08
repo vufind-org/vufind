@@ -228,12 +228,10 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testBulkDeleteFromList(): void
     {
-        // Access the list created in the previous test:
+        // Log in to account that owns the list:
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/MyResearch/Favorites');
         $page = $session->getPage();
-
-        // Log in to account that owns the list:
         $this->fillInLoginForm($page, 'username1', 'test', false);
         $this->submitLoginForm($page, false);
         $this->waitForPageLoad($page);
