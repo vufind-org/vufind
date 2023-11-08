@@ -483,7 +483,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
 
         $newDesc = preg_replace("/&#8217;/i", "", $desc);
         $newDesc = strip_tags($newDesc);
-        return ["Summary" => $newDesc];
+        return [$newDesc];
     }
 
     /**
@@ -576,6 +576,29 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
+     * Return an array of associative URL arrays with one or more of the following
+     * keys:
+     *
+     * <li>
+     *   <ul>desc: URL description text to display (optional)</ul>
+     *   <ul>url: fully-formed URL (required if 'route' is absent)</ul>
+     *   <ul>route: VuFind route to build URL with (required if 'url' is absent)</ul>
+     *   <ul>routeParams: Parameters for route (optional)</ul>
+     *   <ul>queryString: Query params to append after building route (optional)</ul>
+     * </li>
+     *
+     * @return array
+     */
+    public function getURLs()
+    {
+      $permlink =  $this->getPermanentLink();
+      //todo translate
+      $desc = "Overdrive Resource Page";
+      $retVal[] = ['url' => $permlink, 'desc' => $desc ?: $permlink];
+      return $retVal;
+    }
+    
+        /**
      * Get Permanent Link to the resource on your institutions Overdrive site
      *
      * @return string the permanent link to the resource
