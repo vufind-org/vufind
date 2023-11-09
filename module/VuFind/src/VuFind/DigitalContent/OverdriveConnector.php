@@ -1069,7 +1069,7 @@ class OverdriveConnector implements
      * with metadata attached to the records with the property name of 'metadata'
      *
      * @param array $overDriveTitles Assoc array of objects with OD IDs as keys (generally what
-     * you get from getCheckouts and getHolds)
+     *                               you get from getCheckouts and getHolds)
      *
      * @return array inital array with results of metadata attached as "metadata" property
      *
@@ -1641,7 +1641,7 @@ class OverdriveConnector implements
             $forceNewConnection
             || $patronTokenData == null
             || (isset($patronTokenData->expirationTime)
-                and time() >= $patronTokenData->expirationTime)
+            and time() >= $patronTokenData->expirationTime)
         ) {
             $this->debug('connecting to patron API for new token.');
             $url = $config->patronTokenURL;

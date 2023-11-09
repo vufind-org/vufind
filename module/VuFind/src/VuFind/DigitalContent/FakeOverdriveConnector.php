@@ -328,6 +328,7 @@ class FakeOverdriveConnector extends OverdriveConnector
      * Returns
      *
      * @param string $overDriveId Overdrive Identifier for magazine title
+     * @param bool   $checkouts   Whether to add checkout information to each issue
      * @param int    $limit       maximum number of issues to retrieve (default 100)
      * @param int    $offset      page of results (default 0)
      *
@@ -362,7 +363,7 @@ class FakeOverdriveConnector extends OverdriveConnector
      * with metadata attached to the records with the property name of 'metadata'
      *
      * @param array $overDriveTitles Assoc array of objects with OD IDs as keys (generally what
-     * you get from getCheckouts and getHolds)
+     *                               you get from getCheckouts and getHolds)
      *
      * @return array inital array with results of metadata attached as "metadata" property
      *
