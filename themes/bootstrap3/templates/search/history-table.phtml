@@ -2,7 +2,7 @@
   $scheduleSupported = !empty($this->schedule);
   $saveSupported = $this->accountCapabilities()->getSavedSearchSetting() === 'enabled';
 ?>
-<table class="search-history-table responsive-table" id="<?=$this->showSaved ? 'saved-searches' : 'recent-searches'?>">
+<table class="search-history-table" id="<?=$this->showSaved ? 'saved-searches' : 'recent-searches'?>">
   <thead>
     <tr>
       <th scope="col" class="history_time"><?=$this->transEsc('history_time')?></th>
