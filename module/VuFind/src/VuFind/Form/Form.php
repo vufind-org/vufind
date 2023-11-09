@@ -186,7 +186,7 @@ class Form extends \Laminas\Form\Form implements
      */
     public function getDisplayString($translationKey, $escape = null)
     {
-        $escape ??= substr($translationKey, -5) !== '_html';
+        $escape ??= !str_ends_with($translationKey, '_html');
         $helper = $this->viewHelperManager->get($escape ? 'transEsc' : 'translate');
         return $helper($translationKey);
     }
