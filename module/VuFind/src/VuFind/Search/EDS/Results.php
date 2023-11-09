@@ -88,11 +88,7 @@ class Results extends \VuFind\Search\Base\Results
             $dateFacets = $this->getParams()->getDateFacetSettings();
             if (!empty($dateFacets)) {
                 foreach ($dateFacets as $dateFacet) {
-<<<<<<< HEAD
-                    $this->responseFacets[$dateFacet] = [""];
-=======
                     $this->responseFacets[$dateFacet] = [''];
->>>>>>> dev
                 }
             }
 

@@ -49,6 +49,6 @@ class OverdriveHoldings extends AbstractBase implements TabInterface
      */
     public function getDescription()
     {
-        return "Holdings";
+        return 'Holdings';
     }
 }

@@ -205,7 +205,7 @@ class FakeOverdriveConnector extends OverdriveConnector
     {
         return (object)[
             'status' => true,
-            'msg' => "",
+            'msg' => '',
             'data' => false,
             'code' => 0,
         ];
@@ -222,11 +222,11 @@ class FakeOverdriveConnector extends OverdriveConnector
      *
      * @return \stdClass Object with result
      */
-    public function suspendHold($overDriveId, $email, $suspensionType = "indefinite", $numberOfDays = 7)
+    public function suspendHold($overDriveId, $email, $suspensionType = 'indefinite', $numberOfDays = 7)
     {
         return (object)[
             'status' => true,
-            'msg' => "",
+            'msg' => '',
             'data' => false,
             'code' => 0,
         ];
@@ -243,11 +243,11 @@ class FakeOverdriveConnector extends OverdriveConnector
      *
      * @return \stdClass Object with result
      */
-    public function editSuspendedHold($overDriveId, $email, $suspensionType = "indefinite", $numberOfDays = 7)
+    public function editSuspendedHold($overDriveId, $email, $suspensionType = 'indefinite', $numberOfDays = 7)
     {
         return (object)[
             'status' => true,
-            'msg' => "",
+            'msg' => '',
             'data' => false,
             'code' => 0,
         ];
@@ -265,7 +265,7 @@ class FakeOverdriveConnector extends OverdriveConnector
     {
         return (object)[
             'status' => true,
-            'msg' => "",
+            'msg' => '',
             'data' => false,
             'code' => 0,
         ];
@@ -306,7 +306,7 @@ class FakeOverdriveConnector extends OverdriveConnector
     {
         return (object)[
             'status' => true,
-            'msg' => "",
+            'msg' => '',
             'data' => false,
             'code' => 0,
         ];
@@ -337,7 +337,7 @@ class FakeOverdriveConnector extends OverdriveConnector
     {
         return (object)[
             'status' => true,
-            'msg' => "",
+            'msg' => '',
             'data' => false,
             'code' => 0,
         ];

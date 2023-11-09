@@ -889,7 +889,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     {
         $driverConfig = $this->defaultDriverConfig;
         $driverConfig['Holdings']['folio_sort'] = 'volume';
-        $this->createConnector("get-holding-empty-statements", $driverConfig);
+        $this->createConnector('get-holding-empty-statements', $driverConfig);
         $expected = [
             [
                 'callnumber_prefix' => '',
@@ -904,7 +904,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                 'duedate' => '',
                 'availability' => true,
                 'is_holdable' => true,
-                'holdings_notes' => ["Fake note"],
+                'holdings_notes' => ['Fake note'],
                 'item_notes' => null,
                 'summary' => ['summ1', 'summ2'],
                 'supplements' => ['supp1', 'supp2'],
@@ -915,7 +915,7 @@ class FolioTest extends \PHPUnit\Framework\TestCase
                 'addLink' => true,
             ],
         ];
-        $this->assertEquals($expected, $this->driver->getHolding("instanceid"));
+        $this->assertEquals($expected, $this->driver->getHolding('instanceid'));
     }
 
     /**

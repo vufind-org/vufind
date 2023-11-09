@@ -31,6 +31,11 @@ namespace VuFind\Connection;
 
 use Laminas\Config\Config;
 
+use function count;
+use function in_array;
+use function intval;
+use function strlen;
+
 /**
  * World Cat Utilities
  *
@@ -238,17 +243,17 @@ class WorldCatUtils implements \Laminas\Log\LoggerAwareInterface
      */
     protected function getRelatedIdentitiesUrl($query, $maxRecords)
     {
-        return "http://worldcat.org/identities/search/PersonalIdentities" .
-            "?query=" . urlencode($query) .
-            "&version=1.1" .
-            "&operation=searchRetrieve" .
-            "&recordSchema=info%3Asrw%2Fschema%2F1%2FIdentities" .
-            "&maximumRecords=" . intval($maxRecords) .
-            "&startRecord=1" .
-            "&resultSetTTL=300" .
-            "&recordPacking=xml" .
-            "&recordXPath=" .
-            "&sortKeys=holdingscount";
+        return 'http://worldcat.org/identities/search/PersonalIdentities' .
+            '?query=' . urlencode($query) .
+            '&version=1.1' .
+            '&operation=searchRetrieve' .
+            '&recordSchema=info%3Asrw%2Fschema%2F1%2FIdentities' .
+            '&maximumRecords=' . intval($maxRecords) .
+            '&startRecord=1' .
+            '&resultSetTTL=300' .
+            '&recordPacking=xml' .
+            '&recordXPath=' .
+            '&sortKeys=holdingscount';
     }
 
     /**

@@ -106,7 +106,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         return false;
     }
 
-
     /**
      * Get Available Digital Formats
      *
@@ -252,8 +251,8 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function supportsAjaxStatus()
     {
-        $this->debug("ajax status:" . $this->config->enableAjaxStatus);
-        $this->debug("all configs:" . print_r($this->config, true));
+        $this->debug('ajax status:' . $this->config->enableAjaxStatus);
+        $this->debug('all configs:' . print_r($this->config, true));
         return $this->config->enableAjaxStatus;
     }
 
@@ -334,16 +333,16 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function isCheckedOut()
     {
-        $this->debug("isCheckedOut", [], true);
+        $this->debug('isCheckedOut', [], true);
         $overdriveID = $this->getOverdriveID();
         $result = $this->connector->getCheckouts(true);
         if ($result->status) {
             $checkedout = false;
             $checkouts = $result->data;
-             $result->data = [];
+            $result->data = [];
             foreach ($checkouts as $checkout) {
                 $this->debug("comparing: {$checkout->reserveId} to $overdriveID");
-                if ($checkout->metadata->mediaType == "Magazine") {
+                if ($checkout->metadata->mediaType == 'Magazine') {
                     $idToCheck = strtolower($checkout->metadata->parentMagazineReferenceId);
                 } else {
                     ($idToCheck = $checkout->reserveId);
@@ -361,7 +360,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
             }
         }
         // If it didn't work, an error should be logged from the connector
-         $this->debug("ischeckedOut ($overdriveID) result: " . print_r($result->data, true));
+        $this->debug("ischeckedOut ($overdriveID) result: " . print_r($result->data, true));
         return $result;
     }
 
@@ -593,14 +592,14 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function getURLs()
     {
-      $permlink =  $this->getPermanentLink();
-      //todo translate
-      $desc = "Overdrive Resource Page";
-      $retVal[] = ['url' => $permlink, 'desc' => $desc ?: $permlink];
-      return $retVal;
+        $permlink =  $this->getPermanentLink();
+        //todo translate
+        $desc = 'Overdrive Resource Page';
+        $retVal[] = ['url' => $permlink, 'desc' => $desc ?: $permlink];
+        return $retVal;
     }
 
-        /**
+    /**
      * Get Permanent Link to the resource on your institutions Overdrive site
      *
      * @return string the permanent link to the resource

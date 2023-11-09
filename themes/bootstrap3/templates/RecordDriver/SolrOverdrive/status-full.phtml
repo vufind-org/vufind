@@ -17,37 +17,37 @@ foreach ($ids as $id) {
     $current = [];
     $current['status'] = 'OK';
     $current['id'] = $id;
-    $avail = $this->result->data[$id] ?? (object) array('code' => '');
-    $current['full_status'] = "";
+    $avail = $this->result->data[$id] ?? (object)['code' => ''];
+    $current['full_status'] = '';
 
     if ($noshow) {
         //patron does not have access to overdrive. don't show avail
-    } elseif ((isset($avail->code) && $avail->code=='od_code_resource_not_found') || $isError) {
+    } elseif ((isset($avail->code) && $avail->code == 'od_code_resource_not_found') || $isError) {
         $current['error'] = $this->transEsc('status_unknown_message');
     } elseif ($loginForAvail) {
         $current['full_status'] = "<p class='alert-info'>"
             . $this->transEsc('od_code_login_for_avail') . '</p>';
     } else {
-        $current['full_status'] .= "<div class=\"availability\"><p>";
-        if ($avail->copiesAvailable > 0 ) {
-            $current['full_status'] .= "<span class=\"text-success\">";
+        $current['full_status'] .= '<div class="availability"><p>';
+        if ($avail->copiesAvailable > 0) {
+            $current['full_status'] .= '<span class="text-success">';
             $current['full_status'] .= $this->icon('status-available', 'icon-link__icon');
-            $current['full_status'] .= "</span> ";
+            $current['full_status'] .= '</span> ';
         } else {
-            $current['full_status'] .= "<span class=\"text-danger\">";
+            $current['full_status'] .= '<span class="text-danger">';
             $current['full_status'] .= $this->icon('status-unavailable', 'icon-link__icon');
-            $current['full_status'] .= "</span> ";
+            $current['full_status'] .= '</span> ';
         }
-        if ($avail->availabilityType=="AlwaysAvailable") {
-            $current['full_status'] .= $this->transEsc("od_unlimited");
+        if ($avail->availabilityType == 'AlwaysAvailable') {
+            $current['full_status'] .= $this->transEsc('od_unlimited');
         } else {
-            $current['full_status'] .= $avail->copiesAvailable . " / " . $avail->copiesOwned;
+            $current['full_status'] .= $avail->copiesAvailable . ' / ' . $avail->copiesOwned;
         }
-        $current['full_status'] .= " " . $this->transEsc("od_copies_available");
-        if ($avail->numberOfHolds > 0 ) {
-            $current['full_status'] .= "; ".$avail->numberOfHolds
-              . " " . ($avail->numberOfHolds>1 ? $this->transEsc('od_people'): $this->transEsc('od_person'))
-              . " " . $this->transEsc('od_waiting');
+        $current['full_status'] .= ' ' . $this->transEsc('od_copies_available');
+        if ($avail->numberOfHolds > 0) {
+            $current['full_status'] .= '; ' . $avail->numberOfHolds
+              . ' ' . ($avail->numberOfHolds > 1 ? $this->transEsc('od_people') : $this->transEsc('od_person'))
+              . ' ' . $this->transEsc('od_waiting');
         }
     }
     $data[] = $current;

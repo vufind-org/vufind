@@ -303,15 +303,9 @@ class InstallController extends AbstractBase
 
         // Is our version new enough?
         if (!$this->phpVersionIsNewEnough()) {
-<<<<<<< HEAD
-            $msg = "VuFind requires PHP version " . $this->getMinimalPhpVersion()
-                . " or newer; you are running " . phpversion()
-                . ". Please upgrade.";
-=======
             $msg = 'VuFind requires PHP version ' . $this->getMinimalPhpVersion()
                 . ' or newer; you are running ' . phpversion()
                 . '. Please upgrade.';
->>>>>>> dev
             $this->flashMessenger()->addMessage($msg, 'error');
             $problems++;
         }

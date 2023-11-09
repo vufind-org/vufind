@@ -231,7 +231,7 @@ return [
             'overdrive-checkout-rtl' => 'FontAwesome:arrow-right',
             'overdrive-download' => 'FontAwesome:download',
             'overdrive-edit-hold' => 'Alias:ui-edit',
-            'overdrive-edit-hold-suspension' => 'FontAwesome:calendar',  
+            'overdrive-edit-hold-suspension' => 'FontAwesome:calendar',
             'overdrive-help' => 'FontAwesome:question-circle',
             'overdrive-place-hold' => 'Alias:place-hold',
             'overdrive-return' => 'FontAwesome:undo',
