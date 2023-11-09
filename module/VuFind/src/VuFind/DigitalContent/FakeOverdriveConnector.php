@@ -333,7 +333,7 @@ class FakeOverdriveConnector extends OverdriveConnector
      *
      * @return object results of metadata fetch
      */
-    public function getMagazineIssues($overDriveId = false, $limit = 100, $offset = 0)
+    public function getMagazineIssues($overDriveId = false, $checkouts = false, $limit = 100, $offset = 0)
     {
         return (object)[
             'status' => true,
