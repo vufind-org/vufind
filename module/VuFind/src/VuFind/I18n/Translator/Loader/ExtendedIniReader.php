@@ -71,7 +71,7 @@ class ExtendedIniReader
                     '$1',
                     trim($parts[0])
                 );
-                if ($key != '' && substr($key, 0, 1) != ';') {
+                if ($key !== '' && !str_starts_with($key, ';')) {
                     // Trim outermost matching single or double quotes off the value if present:
                     if (isset($parts[1])) {
                         $value = stripslashes(
