@@ -157,8 +157,8 @@ var VuFind = (function VuFind() {
    *
    * @returns {String|HTMLElement}
    */
-  var icon = function icon(name, attrs = {}, returnElement = false) {
-    if (typeof _icons[name] == "undefined") {
+  var icon = (name, attrs = {}, returnElement = false) => {
+    if (typeof _icons[name] === "undefined") {
       console.error("JS icon missing: " + name);
       return name;
     }
@@ -166,17 +166,15 @@ var VuFind = (function VuFind() {
     if (!_elementBase) {
       _elementBase = document.createElement('div');
     }
-    const cacheKey = `${name}||${JSON.stringify(attrs)}`;
+    const cacheKey = name + '||' + JSON.stringify(attrs);
     if (_iconsCache[cacheKey]) {
       return returnElement
-        ? _iconsCache[cacheKey].cloneNode(true)
+        ? _iconsCache[cacheKey].cloneNode(true).outerHTML
         : _iconsCache[cacheKey].outerHTML;
     }
-
     const clone = _elementBase.cloneNode();
     clone.insertAdjacentHTML('afterbegin', _icons[name]);
     let element = clone.firstChild;
-
     // Add additional attributes
     function addAttrs(_element, _attrs = {}) {
       Object.keys(_attrs).forEach(key => {
@@ -189,16 +187,16 @@ var VuFind = (function VuFind() {
         const newAttrsSet = new Set([...newAttrs, ...oldAttrs.split(" ")]);
         _element.className = Array.from(newAttrsSet).join(" ");
       });
-    }
-
-    if (typeof attrs == "string") {
+    } 
+    if (typeof attrs === "string") {
       addAttrs(element, { class: attrs });
     } else if (Object.keys(attrs).length > 0) {
       addAttrs(element, attrs);
     }
     _iconsCache[cacheKey] = element;
-    return returnElement ? element.cloneNode(true) : element.outerHTML;
+    return returnElement ? element.cloneNode(true).outerHTML : element.outerHTML;
   };
+  
   // Icon shortcut methods
   var spinner = function spinner(extraClass = "") {
     let className = ("loading-spinner " + extraClass).trim();
