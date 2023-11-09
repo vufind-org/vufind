@@ -171,11 +171,13 @@ class AbstractSolrSearch extends AbstractSearch
                     $facet,
                     $tmpList
                 );
-                $tmpList = $facetHelper->filterFacets(
-                    $facet,
-                    $tmpList,
-                    $options
-                );
+                if ($options->getFilterHierarchicalFacetsInAdvanced()) {
+                    $tmpList = $facetHelper->filterFacets(
+                        $facet,
+                        $tmpList,
+                        $options
+                    );
+                }
                 $list['list'] = $facetHelper->flattenFacetHierarchy($tmpList);
             }
 
