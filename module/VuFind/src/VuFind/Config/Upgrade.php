@@ -1470,7 +1470,7 @@ class Upgrade
 
             // Is the current line a comment?  If so, add to the currentComments
             // string. Note that we treat blank lines as comments.
-            if (empty($trimmed) || str_starts_with($trimmed, ';')) {
+            if ('' === $trimmed || str_starts_with($trimmed, ';')) {
                 $comments .= $line;
             } elseif (
                 str_starts_with($trimmed, '[')
@@ -1496,7 +1496,7 @@ class Upgrade
                 // Is the current line a setting?  If so, add to the return value:
                 $set = trim(substr($trimmed, 0, $equals));
                 $set = trim(str_replace('[]', '', $set));
-                if ('' == $section && '' == $set) {
+                if ('' !== $section && '' !== $set) {
                     // Grab comments at the end of the line, if any:
                     if (($semicolon = strpos($trimmed, ';')) !== false) {
                         $inline = trim(substr($trimmed, $semicolon));
