@@ -57,6 +57,6 @@ class OverdriveHoldingsFactory implements \Laminas\ServiceManager\Factory\Factor
      */
     public function __invoke(\Interop\Container\ContainerInterface $container, $requestedName, array $options = null)
     {
-        return new \Vufind\RecordTab\OverdriveHoldings();
+        return new \VuFind\RecordTab\OverdriveHoldings();
     }
 }
