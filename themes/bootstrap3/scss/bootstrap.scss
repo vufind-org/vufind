@@ -446,6 +446,40 @@ ul.list-group {
   }
 }
 
+/* ------  Table for small screen size  ------ */
+@media screen and (max-width: 768px) {
+  .responsive-table {
+    thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      padding: 0;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+    tr {
+      display: block;
+      margin-bottom: $line-height-computed;
+      background-color: $table-bg-accent;
+      border-left: 1px solid $table-border-color;
+      border-right: 1px solid $table-border-color;
+      border-bottom: 4px solid $table-border-color;
+    }
+    td {
+      display: block;
+    }
+    td:before {
+      display: block;
+      font-weight: bold;
+      font-size: 110%;
+      width: 100%;
+      content: attr(data-label);
+    }
+  }
+}
+
 /* ------ Visualization View ------ */
 .node {
   position: absolute;

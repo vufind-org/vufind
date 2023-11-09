@@ -665,13 +665,18 @@ body.rtl {
 .search-history-table {
   @extend .table;
   @extend .table-striped;
+  @media screen and (max-width: 768px) {
+    @extend .table-responsive;
+  }
 }
 table.search-history-table {
   table-layout: auto;
 
+  @media screen and (min-width: 768px) {
   tbody > tr > td { vertical-align: middle; }
-  .history_time {
-    width: 20%;
+    .history_time {
+      width: 20%;
+    }
   }
 }
 

@@ -2,7 +2,7 @@
   $scheduleSupported = !empty($this->schedule);
   $saveSupported = $this->accountCapabilities()->getSavedSearchSetting() === 'enabled';
 ?>
-<table class="search-history-table" id="<?=$this->showSaved ? 'saved-searches' : 'recent-searches'?>">
+<table class="search-history-table responsive-table" id="<?=$this->showSaved ? 'saved-searches' : 'recent-searches'?>">
   <thead>
     <tr>
       <th scope="col" class="history_time"><?=$this->transEsc('history_time')?></th>
@@ -16,15 +16,15 @@
   <tbody>
     <?php foreach (($this->showSaved ? array_reverse($this->saved) : array_reverse($this->unsaved)) as $iteration => $info): ?>
       <tr class="<?=$iteration % 2 == 1 ? 'even' : 'odd'?>row">
-        <td class="history_time"><?=$this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime('U', $info->getStartTime()))?></td>
-        <td class="history_search">
+        <td class="history_time" data-label="<?=$this->transEscAttr('history_time')?>"><?=$this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime('U', $info->getStartTime()))?></td>
+        <td class="history_search" data-label="<?=$this->transEscAttr('history_search')?>">
           <?=$this->historylabel($info->getParams()->getSearchClassId())?>
           <a href="<?=$this->url($info->getOptions()->getSearchAction()) . $info->getUrlQuery()->getParams()?>"><?php
             $desc = $info->getParams()->getDisplayQuery();
             echo empty($desc) ? $this->transEsc('history_empty_search') : $this->escapeHtml($desc);
           ?></a>
         </td>
-        <td class="history_limits">
+        <td class="history_limits" data-label="<?=$this->transEscAttr('history_limits')?>">
           <?php foreach ($info->getParams()->getFilterList(true) as $field => $filters): ?>
             <?php foreach ($filters as $i => $filter): ?>
               <?php
@@ -43,7 +43,7 @@
             <?php endif; ?>
           <?php endforeach; ?>
         </td>
-        <td class="history_results"><?=$this->escapeHtml($this->localizedNumber($info->getResultTotal()))?></td>
+        <td class="history_results" data-label="<?=$this->transEscAttr('history_results')?>"><?=$this->escapeHtml($this->localizedNumber($info->getResultTotal()))?></td>
         <?php if ($scheduleSupported): ?>
           <td class="search-schedule-header">
           <?php if (isset($this->schedule[$info->getSearchId()])): ?>
