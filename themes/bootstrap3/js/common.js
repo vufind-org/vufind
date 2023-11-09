@@ -273,13 +273,13 @@ var VuFind = (function VuFind() {
   function setupQRCodeLinks(_container) {
     var container = _container || document.body;
     var qrcodeLinks = container.querySelectorAll('a.qrcodeLink');
-    qrcodeLinks.forEach(function (link) {
-      link.addEventListener('click', function qrcodeToggle() {
+    qrcodeLinks.forEach((link) => {
+      link.addEventListener('click', () => {
         var holder = this.nextElementSibling;
-        if (holder.querySelectorAll('img').length === 0) {
+        if (holder.find('img').length === 0) {
           // We need to insert the QRCode image
-          var template = holder.querySelector('.qrCodeImgTag').innerHTML;
-          holder.innerHTML = template;
+          var template = holder.find('.qrCodeImgTag').html();
+          holder.html(template);
         }
       });
     });
