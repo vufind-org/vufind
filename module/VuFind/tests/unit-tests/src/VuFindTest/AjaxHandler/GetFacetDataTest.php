@@ -255,7 +255,7 @@ class GetFacetDataTest extends \VuFindTest\Unit\AjaxHandlerTest
     }
 
     /**
-     * Test the AJAX handler's basic response.
+     * Test the AJAX handler's basic response with hierarchical exclude filters.
      *
      * @return void
      */
@@ -289,7 +289,7 @@ class GetFacetDataTest extends \VuFindTest\Unit\AjaxHandlerTest
     }
 
     /**
-     * Test the AJAX handler's basic response.
+     * Test the AJAX handler's basic response with hierarchical facet filters.
      *
      * @return void
      */
