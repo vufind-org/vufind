@@ -132,7 +132,7 @@ class GetFacetData extends AbstractBase
             $this->facetHelper->sortFacetList($facetList, $sort);
             $facets = $this->facetHelper
                 ->buildFacetArray($facet, $facetList, $queryHelper, false);
-            $this->facetHelper->filterFacets($facet, $facets, $results->getOptions());
+            $facets = $this->facetHelper->filterFacets($facet, $facets, $results->getOptions());
         }
         return $this->formatResponse(compact('facets'));
     }
