@@ -222,7 +222,6 @@ class GetFacetDataTest extends \VuFindTest\Unit\AjaxHandlerTest
         $params = $this->getParamsHelper(
             [
                 'facetName' => 'format',
-                'searchClassId' => 'scl',
             ]
         );
         $facets = $this->handler->handleRequest($params)[0]['facets'];
@@ -255,7 +254,6 @@ class GetFacetDataTest extends \VuFindTest\Unit\AjaxHandlerTest
         $params = $this->getParamsHelper(
             [
                 'facetName' => 'format',
-                'searchClassId' => 'scl',
             ]
         );
         $facets = $this->handler->handleRequest($params)[0]['facets'];
@@ -283,7 +281,6 @@ class GetFacetDataTest extends \VuFindTest\Unit\AjaxHandlerTest
         $params = $this->getParamsHelper(
             [
                 'facetName' => 'format',
-                'searchClassId' => 'scl',
             ]
         );
         $facets = $this->handler->handleRequest($params)[0]['facets'];
