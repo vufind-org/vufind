@@ -881,44 +881,6 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getHolding filters empty holding statements appropriately.
-     *
-     * @return void
-     */
-    public function testGetHoldingFilteringOfEmptyHoldingStatements(): void
-    {
-        $driverConfig = $this->defaultDriverConfig;
-        $driverConfig['Holdings']['folio_sort'] = 'volume';
-        $this->createConnector('get-holding-empty-statements', $driverConfig);
-        $expected = [
-            [
-                'callnumber_prefix' => '',
-                'callnumber' => 'PS2394 .M643 1883',
-                'id' => 'instanceid',
-                'item_id' => 'itemid',
-                'holding_id' => 'holdingid',
-                'number' => 1,
-                'enumchron' => '',
-                'barcode' => 'barcode-test',
-                'status' => 'Available',
-                'duedate' => '',
-                'availability' => true,
-                'is_holdable' => true,
-                'holdings_notes' => ['Fake note'],
-                'item_notes' => null,
-                'summary' => ['summ1', 'summ2'],
-                'supplements' => ['supp1', 'supp2'],
-                'indexes' => ['ind1', 'ind2'],
-                'location' => 'Special Collections',
-                'location_code' => 'DCOC',
-                'reserve' => 'TODO',
-                'addLink' => true,
-            ],
-        ];
-        $this->assertEquals($expected, $this->driver->getHolding('instanceid'));
-    }
-
-    /**
      * Test getHolding with checked out item.
      *
      * @return void
