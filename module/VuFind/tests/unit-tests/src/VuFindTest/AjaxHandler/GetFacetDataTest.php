@@ -132,21 +132,6 @@ class GetFacetDataTest extends \VuFindTest\Unit\AjaxHandlerTest
     protected $options;
 
     /**
-     * Set up configuration for a test.
-     *
-     * @param array $config Configuration to set.
-     *
-     * @return void
-     */
-    protected function setupConfig($config = [])
-    {
-        $this->container->set(
-            \VuFind\Config\PluginManager::class,
-            $this->getMockConfigPluginManager(compact('config'))
-        );
-    }
-
-    /**
      * Get a mock results object.
      *
      * @return Results
@@ -229,10 +214,6 @@ class GetFacetDataTest extends \VuFindTest\Unit\AjaxHandlerTest
      */
     public function testResponseDefault()
     {
-        // Set up session settings:
-
-        // Set up configuration:
-        $this->setupConfig();
         $this->options->expects($this->any())->method('getHierarchicalExcludeFilters')
             ->will($this->returnValue([]));
         $this->options->expects($this->any())->method('getHierarchicalFacetFilters')
@@ -261,11 +242,6 @@ class GetFacetDataTest extends \VuFindTest\Unit\AjaxHandlerTest
      */
     public function testResponseExclude()
     {
-        // Set up session settings:
-
-        // Set up configuration:
-        $this->setupConfig();
-
         $exclude = [
             '0/Book/',
             '1/Audio/Spoken/',
@@ -295,11 +271,6 @@ class GetFacetDataTest extends \VuFindTest\Unit\AjaxHandlerTest
      */
     public function testResponseFilter()
     {
-        // Set up session settings:
-
-        // Set up configuration:
-        $this->setupConfig();
-
         $filters = [
             '0/Audio/',
         ];
