@@ -29,6 +29,8 @@
 
 namespace VuFind\Solr;
 
+use function strlen;
+
 /**
  * Solr Utility Functions
  *
@@ -101,7 +103,7 @@ class Utils
                 }
                 $time = @strtotime($date);
                 if ($time) {
-                    $date = @date("Y-m-d", $time);
+                    $date = @date('Y-m-d', $time);
                     if ($year) {
                         $date = str_replace('1999', $year, $date);
                     }
@@ -133,7 +135,7 @@ class Utils
             if (strlen($date) < 8) {
                 $day = '01';
                 if (preg_match('/^[0-9]{4}-([0-9]{1,2})/', $date, $matches)) {
-                    $month = str_pad($matches[1], 2, "0", STR_PAD_LEFT);
+                    $month = str_pad($matches[1], 2, '0', STR_PAD_LEFT);
                 } else {
                     $month = '01';
                 }
@@ -141,8 +143,8 @@ class Utils
                 // If we have year + month + day, parse that out:
                 $ymdRegex = '/^[0-9]{4}-([0-9]{1,2})-([0-9]{1,2})/';
                 if (preg_match($ymdRegex, $date, $matches)) {
-                    $month = str_pad($matches[1], 2, "0", STR_PAD_LEFT);
-                    $day = str_pad($matches[2], 2, "0", STR_PAD_LEFT);
+                    $month = str_pad($matches[1], 2, '0', STR_PAD_LEFT);
+                    $day = str_pad($matches[2], 2, '0', STR_PAD_LEFT);
                 } else {
                     $month = $day = '01';
                 }

@@ -32,6 +32,8 @@ namespace VuFind\Controller\Feature;
 
 use VuFindSearch\Command\AlphabeticBrowseCommand;
 
+use function func_get_args;
+
 /**
  * VuFind Action Feature Trait - Alphabetic browse support
  *

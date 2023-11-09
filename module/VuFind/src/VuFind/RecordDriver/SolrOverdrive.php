@@ -36,6 +36,8 @@ use Laminas\Config\Config;
 use Laminas\Log\LoggerAwareInterface;
 use VuFind\DigitalContent\OverdriveConnector;
 
+use function in_array;
+
 /**
  * VuFind Record Driver for SolrOverdrive Records
  *
@@ -181,28 +183,28 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
             if ($format->fileSize > 0) {
                 if ($format->fileSize > 1000000) {
                     $size = round($format->fileSize / 1000000);
-                    $size .= " GB";
+                    $size .= ' GB';
                 } elseif ($format->fileSize > 1000) {
                     $size = round($format->fileSize / 1000);
-                    $size .= " MB";
+                    $size .= ' MB';
                 } else {
                     $size = $format->fileSize;
-                    $size .= " KB";
+                    $size .= ' KB';
                 }
-                $tmpresults["File Size"] = $size;
+                $tmpresults['File Size'] = $size;
             }
             if ($format->partCount) {
-                $tmpresults["Parts"] = $format->partCount;
+                $tmpresults['Parts'] = $format->partCount;
             }
             if ($format->identifiers) {
                 foreach ($format->identifiers as $id) {
-                    if (in_array($id->type, ["ISBN", "ASIN"])) {
+                    if (in_array($id->type, ['ISBN', 'ASIN'])) {
                         $tmpresults[$id->type] = $id->value;
                     }
                 }
             }
             if ($format->onSaleDate) {
-                $tmpresults["Release Date"] = $format->onSaleDate;
+                $tmpresults['Release Date'] = $format->onSaleDate;
             }
             $results[$format->name] = $tmpresults;
         }
@@ -239,7 +241,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
                 }
             }
         }
-        $this->debug("previewlinks:" . print_r($results, true));
+        $this->debug('previewlinks:' . print_r($results, true));
         return $results;
     }
 
@@ -479,9 +481,9 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
             return parent::getSummary();
         }
         // Non-MARC case:
-        $desc = $this->fields["description"] ?? '';
+        $desc = $this->fields['description'] ?? '';
 
-        $newDesc = preg_replace("/&#8217;/i", "", $desc);
+        $newDesc = preg_replace('/&#8217;/i', '', $desc);
         $newDesc = strip_tags($newDesc);
         return [$newDesc];
     }
@@ -548,12 +550,12 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
         $data = json_decode($jsonData, true);
         $c_arr = [];
         foreach ($data['creators'] as $creator) {
-            $c_arr[] = "<strong>{$creator["role"]}<strong>: "
-                . $creator["name"];
+            $c_arr[] = "<strong>{$creator['role']}<strong>: "
+                . $creator['name'];
         }
-        $data['creators'] = implode("<br>", $c_arr);
+        $data['creators'] = implode('<br>', $c_arr);
 
-        $this->debug("raw data:" . print_r($data, true));
+        $this->debug('raw data:' . print_r($data, true));
         return $data;
     }
 
@@ -597,7 +599,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
       $retVal[] = ['url' => $permlink, 'desc' => $desc ?: $permlink];
       return $retVal;
     }
-    
+
         /**
      * Get Permanent Link to the resource on your institutions Overdrive site
      *

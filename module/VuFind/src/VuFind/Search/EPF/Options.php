@@ -32,6 +32,11 @@
 
 namespace VuFind\Search\EPF;
 
+<<<<<<< HEAD
+=======
+use function count;
+
+>>>>>>> dev
 /**
  * EPF API Options
  *

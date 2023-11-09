@@ -29,6 +29,9 @@
 
 namespace VuFind\RecordTab;
 
+use function count;
+use function is_object;
+
 /**
  * HierarchyTree tab
  *

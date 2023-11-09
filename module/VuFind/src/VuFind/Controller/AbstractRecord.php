@@ -35,6 +35,11 @@ use VuFind\Exception\Mail as MailException;
 use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
 use VuFindSearch\ParamBag;
 
+use function in_array;
+use function intval;
+use function is_array;
+use function is_object;
+
 /**
  * VuFind Record Controller
  *
@@ -346,7 +351,11 @@ class AbstractRecord extends AbstractBase
                 if (true === $driver->tryMethod('isCollection')) {
                     $params = $this->params()->fromQuery()
                         + $this->params()->fromRoute();
-                    $options = [];
+                    // Disable path normalization since it can unencode e.g. encoded
+                    // slashes in record id's
+                    $options = [
+                        'normalize_path' => false,
+                    ];
                     if ($sid = $this->getSearchMemory()->getCurrentSearchId()) {
                         $options['query'] = compact('sid');
                     }
@@ -458,7 +467,7 @@ class AbstractRecord extends AbstractBase
         // by unsetting the followup and relying on default behavior in processSave.
         $referer = $this->getRequest()->getServer()->get('HTTP_REFERER');
         if (
-            substr($referer, -5) != '/Save'
+            !str_ends_with($referer, '/Save')
             && stripos($referer, 'MyResearch/EditList/NEW') === false
         ) {
             $this->setFollowupUrlToReferer();

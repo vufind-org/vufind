@@ -7,8 +7,39 @@
 
   // More link should use default limit, not custom limit:
   $moreUrl = $this->url($params->getOptions()->getSearchAction()) . $results->getUrlQuery()->setPage(1)->setLimit($params->getOptions()->getDefaultLimit());
+
+  // Advanced search link
+  $advancedSearchAction = ($currentSearch['advanced_link_bottom'] ?? false)
+    ? $params->getOptions()->getAdvancedSearchAction() : false;
+  $advancedSearchUrl = $advancedSearchAction
+    ? $this->url($advancedSearchAction, [], ['query' => ['edit' => $results->getSearchId()]])
+    : false;
 ?>
-<?php if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
+<?php
+    $classId = $this->escapeHtml($domId ?? 'combined_' . $searchClassId);
+    $countsJs = <<<JS
+        function updateJumpLink_$classId() {
+          let count = $recordTotal;
+          count = count.toLocaleString();
+
+          const template = document.createElement('template');
+          template.innerHTML = "<span class='record-total'>(" + count + ")</span>";
+          const span = template.content.children[0];
+
+          const link = document.querySelector('.combined-jump-links .$classId');
+          link.append(span);
+        }
+
+        if (document.readyState != 'loading') {
+          updateJumpLink_$classId();
+        }
+        else {
+          document.addEventListener('DOMContentLoaded', updateJumpLink_$classId);
+        }
+        JS;
+?>
+<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $countsJs, 'SET')?>
+<?php if ($currentSearch['more_link'] ?? false): ?>
   <div class="pull-right flip">
     <a href="<?=$moreUrl?>" class="btn btn-link icon-link">
       <?=$this->icon('options', 'icon-link__icon') ?>
@@ -36,6 +67,38 @@
     <?php if ($recordTotal > 0): ?>
       <?php foreach (($top = $results->getRecommendations('top')) as $current): ?>
         <?=$this->recommend($current)?>
+      <?php endforeach; ?>
+      <?php foreach (($results->getRecommendations('side')) as $current):
+        $recommendationClass = str_replace('\\', '_', $current::class);
+        $recommendationJs = <<<JS
+            function addRecommendation_$recommendationClass() {
+              const recommendationContainer = document.querySelector('#search-sidebar .recommendation_container__$recommendationClass');
+              if (!recommendationContainer) {
+                console.error("Cannot find recommendation container for $recommendationClass");
+                return;
+              }
+
+              const recommendation = document.getElementById('recommendation__$recommendationClass');
+              if (!recommendation) {
+                console.error("Cannot find recommendation for $recommendationClass");
+                return;
+              }
+
+              recommendationContainer.append(recommendation);
+              recommendation.style.display = 'inherit';
+            }
+
+            if (document.readyState != 'loading') {
+              addRecommendation_$recommendationClass();
+            } else {
+              document.addEventListener('DOMContentLoaded', addRecommendation_$recommendationClass);
+            }
+            JS;
+        ?>
+        <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $recommendationJs, 'SET')?>
+        <div id="recommendation__<?=$recommendationClass?>" style="display: none;">
+          <?=$this->recommend($current)?>
+        </div>
       <?php endforeach; ?>
       <?=
         $this->context()->renderInContext(
@@ -74,13 +137,22 @@
       'params' => $params,
       'showCheckboxes' => $this->showCartControls || $this->showBulkOptions,
       'excludeResultIds' => true, // Don't add id attributes to results to avoid duplicates
+      'combined' => true, // Flag that we're in combined mode; may be useful to customize template behavior
     ];
   ?>
   <?=$this->render('search/list-' . $viewType . '.phtml', $viewParams)?>
-  <?php if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
-    <p>
+  <?php if ($currentSearch['more_link'] ?? false): ?>
+    <p class="more_link_bottom">
       <a class="icon-link" href="<?=$moreUrl?>">
         <span class="icon-link__label"><?=$this->transEsc($currentSearch['more_link'])?></span>
+        <?=$this->icon('more', 'icon-link__icon') ?>
+      </a>
+    </p>
+  <?php endif; ?>
+  <?php if ($advancedSearchUrl): ?>
+    <p class="advanced_link_bottom">
+      <a class="icon-link" href="<?=$advancedSearchUrl?>">
+        <span class="icon-link__label"><?=$this->transEsc($currentSearch['advanced_link_bottom'])?></span>
         <?=$this->icon('more', 'icon-link__icon') ?>
       </a>
     </p>

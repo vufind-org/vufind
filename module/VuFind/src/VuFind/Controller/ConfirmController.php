@@ -30,6 +30,8 @@
 
 namespace VuFind\Controller;
 
+use function is_array;
+
 /**
  * Redirects the user to the appropriate VuFind action.
  *

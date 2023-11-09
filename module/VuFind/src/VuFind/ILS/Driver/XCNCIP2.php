@@ -34,6 +34,11 @@ use VuFind\Date\DateException;
 use VuFind\Exception\AuthToken as AuthTokenException;
 use VuFind\Exception\ILS as ILSException;
 
+use function array_key_exists;
+use function count;
+use function in_array;
+use function is_array;
+
 /**
  * XC NCIP Toolkit (v2) ILS Driver
  *
@@ -315,20 +320,24 @@ class XCNCIP2 extends AbstractBase implements
      */
     public function init()
     {
-        if (empty($this->config)) {
-            throw new ILSException('Configuration needs to be set.');
+        // Validate config
+        $required = ['url', 'agency'];
+        foreach ($required as $current) {
+            if (!isset($this->config['Catalog'][$current])) {
+                throw new ILSException("Missing Catalog/{$current} config setting.");
+            }
         }
 
         $this->url = $this->config['Catalog']['url'];
         $this->fromAgency = $this->config['Catalog']['fromAgency'] ?? null;
-        if ($this->config['Catalog']['consortium']) {
+        if ($this->config['Catalog']['consortium'] ?? false) {
             $this->consortium = true;
-            foreach ($this->config['Catalog']['agency'] as $agency) {
+            foreach ($this->config['Catalog']['agency'] ?? [] as $agency) {
                 $this->agency[$agency] = 1;
             }
         } else {
             $this->consortium = false;
-            if (is_array($this->config['Catalog']['agency'])) {
+            if (is_array($this->config['Catalog']['agency'] ?? null)) {
                 $this->agency[$this->config['Catalog']['agency'][0]] = 1;
             } else {
                 $this->agency[$this->config['Catalog']['agency']] = 1;
@@ -414,7 +423,7 @@ class XCNCIP2 extends AbstractBase implements
                 "Cannot load pickup locations file: {$pickupLocationsFile}."
             );
         }
-        if (($handle = fopen($pickupLocationsFile, "r")) !== false) {
+        if (($handle = fopen($pickupLocationsFile, 'r')) !== false) {
             while (($data = fgetcsv($handle)) !== false) {
                 $agencyId = $data[0] . '|' . $data[1];
                 $this->pickupLocations[$agencyId] = [
@@ -1164,7 +1173,7 @@ class XCNCIP2 extends AbstractBase implements
                 );
                 // Hack to account for bibs from other non-local institutions
                 // temporarily until consortial functionality is enabled.
-                $bibId = !empty($bibId) ? (string)$bibId[0] : "1";
+                $bibId = !empty($bibId) ? (string)$bibId[0] : '1';
             }
             if ($itemAgencyId === null && isset($itemResponse)) {
                 $itemAgencyId = $itemResponse->xpath(
@@ -1773,7 +1782,7 @@ class XCNCIP2 extends AbstractBase implements
     public function getRenewDetails($checkOutDetails)
     {
         return $checkOutDetails['item_agency_id'] .
-            "|" . $checkOutDetails['item_id'];
+            '|' . $checkOutDetails['item_id'];
     }
 
     /**
@@ -1817,7 +1826,7 @@ class XCNCIP2 extends AbstractBase implements
         $requestType = $details['holdtype'] ?? $type;
         $pickUpLocation = null;
         if (isset($details['pickUpLocation'])) {
-            [, $pickUpLocation] = explode("|", $details['pickUpLocation']);
+            [, $pickUpLocation] = explode('|', $details['pickUpLocation']);
         }
 
         $convertedDate = $this->dateConverter->convertFromDisplayDate(
@@ -1835,7 +1844,7 @@ class XCNCIP2 extends AbstractBase implements
             $details['patron']['patronAgencyId'],
             $details['item_agency_id'],
             $requestType,
-            "Item",
+            'Item',
             $lastInterestDateStr,
             $pickUpLocation,
             $username
@@ -1903,7 +1912,7 @@ class XCNCIP2 extends AbstractBase implements
         ];
 
         foreach ($details as $detail) {
-            [$itemAgencyId, $requestId, $itemId] = explode("|", $detail);
+            [$itemAgencyId, $requestId, $itemId] = explode('|', $detail);
             $request = $this->getCancelRequest(
                 $username,
                 $password,
@@ -1969,8 +1978,8 @@ class XCNCIP2 extends AbstractBase implements
             return '';
         }
         return $details['item_agency_id'] .
-            "|" . $details['requestId'] .
-            "|" . $details['item_id'];
+            '|' . $details['requestId'] .
+            '|' . $details['item_id'];
     }
 
     /**
@@ -2046,10 +2055,10 @@ class XCNCIP2 extends AbstractBase implements
         $details = [];
         $username = $renewDetails['patron']['cat_username'];
         foreach ($renewDetails['details'] as $detail) {
-            [$agencyId, $itemId] = explode("|", $detail);
+            [$agencyId, $itemId] = explode('|', $detail);
             $failureReturn = [
-                "success" => false,
-                "item_id" => $itemId,
+                'success' => false,
+                'item_id' => $itemId,
             ];
             if ($this->disableRenewals) {
                 $details[$itemId] = $failureReturn;
@@ -2075,10 +2084,10 @@ class XCNCIP2 extends AbstractBase implements
 
             if ($dueDate !== '') {
                 $details[$itemId] = [
-                    "success" => true,
-                    "new_date" => $dueDate,
-                    "new_time" => $dueTime,
-                    "item_id" => $itemId,
+                    'success' => true,
+                    'new_date' => $dueDate,
+                    'new_time' => $dueTime,
+                    'item_id' => $itemId,
                 ];
             } else {
                 $details[$itemId] = $failureReturn;

@@ -32,6 +32,11 @@ namespace VuFind\Recommend;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
 use VuFind\Solr\Utils as SolrUtils;
 
+use function get_class;
+use function in_array;
+use function intval;
+use function is_array;
+
 /**
  * SideFacets Recommendations Module
  *
@@ -197,7 +202,7 @@ class SideFacets extends AbstractFacets
 
         // Checkbox facets:
         $flipCheckboxes = false;
-        if (substr($checkboxSection, 0, 1) == '~') {
+        if (str_starts_with($checkboxSection, '~')) {
             $checkboxSection = substr($checkboxSection, 1);
             $flipCheckboxes = true;
         }
@@ -257,8 +262,12 @@ class SideFacets extends AbstractFacets
      */
     public function init($params, $request)
     {
+        $mainFacets = $this->mainFacets;
+        if ($request != null && ($enabledFacets = $request->get('enabledFacets', null)) !== null) {
+            $mainFacets = array_intersect_key($mainFacets, array_flip($enabledFacets));
+        }
         // Turn on side facets in the search results:
-        foreach ($this->mainFacets as $name => $desc) {
+        foreach ($mainFacets as $name => $desc) {
             $params->addFacet($name, $desc, in_array($name, $this->orFacets));
         }
         foreach ($this->checkboxFacets as $name => $desc) {

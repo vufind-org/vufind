@@ -31,11 +31,23 @@ then
   SOLR_HOME="$VUFIND_HOME/solr/vufind"
 fi
 
+# This can point to an external Solr in e.g. a Docker container
+if [ -z "$SOLR_JAR_PATH" ]
+then
+  SOLR_JAR_PATH="${SOLR_HOME}/../vendor"
+fi
+
 set -e
 set -x
 
 cd "`dirname $0`/import"
-CLASSPATH="browse-indexing.jar:${VUFIND_HOME}/import/lib/*:${SOLR_HOME}/jars/*:${SOLR_HOME}/../vendor/modules/analysis-extras/lib/*:${SOLR_HOME}/../vendor/server/solr-webapp/webapp/WEB-INF/lib/*"
+SOLRMARC_CLASSPATH=$(echo solrmarc_core*.jar)
+if [[ `wc -w <<<"$SOLRMARC_CLASSPATH"` -gt 1 ]]
+then
+  echo "Error: more than one solrmarc_core*.jar in import/; exiting."
+  exit 1
+fi
+CLASSPATH="browse-indexing.jar:${SOLRMARC_CLASSPATH}:${VUFIND_HOME}/import/lib/*:${SOLR_HOME}/jars/*:${SOLR_JAR_PATH}/modules/analysis-extras/lib/*:${SOLR_JAR_PATH}/server/solr-webapp/webapp/WEB-INF/lib/*"
 
 # make index work with replicated index
 # current index is stored in the last line of index.properties
@@ -87,8 +99,9 @@ function build_browse
     mv "${browse}_browse.db" "$index_dir/${browse}_browse.db-updated"
     touch "$index_dir/${browse}_browse.db-ready"
 }
+# These parameters should match the ones in solr/vufind/biblio/conf/solrconfig.xml - BrowseRequestHandler
 build_browse "hierarchy" "hierarchy_browse"
-build_browse "title" "title_fullStr" 1 "-Dbibleech=StoredFieldLeech -Dsortfield=title_sort -Dvaluefield=title_fullStr"
+build_browse "title" "title_fullStr" 1 "-Dbibleech=StoredFieldLeech -Dsortfield=title_sort -Dvaluefield=title_fullStr -Dbrowse.normalizer=org.vufind.util.TitleNormalizer"
 build_browse "topic" "topic_browse"
 build_browse "author" "author_browse"
 build_browse "lcc" "callnumber-raw" 1 "-Dbrowse.normalizer=org.vufind.util.LCCallNormalizer"

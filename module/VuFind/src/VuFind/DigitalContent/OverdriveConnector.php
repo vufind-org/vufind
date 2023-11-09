@@ -42,6 +42,9 @@ use VuFind\Auth\ILSAuthenticator;
 use VuFind\Cache\KeyGeneratorTrait;
 use VuFind\Exception\ILS as ILSException;
 
+use function count;
+use function in_array;
+
 /**
  * OverdriveConnector
  *
@@ -145,7 +148,7 @@ class OverdriveConnector implements
     protected function getSessionContainer()
     {
         if (null === $this->sessionContainer || !$this->sessionContainer) {
-            error_log("NO SESSION CONTAINER");
+            error_log('NO SESSION CONTAINER');
         }
         return $this->sessionContainer;
     }
@@ -183,15 +186,15 @@ class OverdriveConnector implements
     {
         $this->debug("checking patron access to Overdrive.");
         if (!$user = $this->getUser()) {
-            return $this->getResultObject(false, "User not logged in.");
+            return $this->getResultObject(false, 'User not logged in.');
         }
 
         $odAccess = $this->getSessionContainer()->odAccess;
         if ($refresh || empty($odAccess)) {
             if (
                 $this->connectToPatronAPI(
-                    $user["cat_username"],
-                    $user["cat_password"],
+                    $user['cat_username'],
+                    $user['cat_password'],
                     true
                 )
             ) {
@@ -199,9 +202,8 @@ class OverdriveConnector implements
                     = $this->getResultObject(true);
             } else {
                 $result = $this->getResultObject();
-
                 // There is some problem with the account
-                $result->code = "od_account_problem";
+                $result->code = 'od_account_problem';
                 $conf = $this->getConfig();
 
                 if ($conf->noAccessString) {
@@ -212,7 +214,7 @@ class OverdriveConnector implements
                         )
                     ) {
                         // This user should not have access to OD
-                        $result->code = "od_account_noaccess";
+                        $result->code = 'od_account_noaccess';
                     }
                 }
                 // odAccessMessage is set in the session by the API call above
@@ -244,13 +246,12 @@ class OverdriveConnector implements
     {
         $result = $this->getResultObject();
         if (!$overDriveId) {
-            $this->logWarning("no overdrive content ID was passed in.");
+            $this->logWarning('no overdrive content ID was passed in.');
             return $result;
         }
 
         if ($conf = $this->getConfig()) {
             $collectionToken = $this->getCollectionToken();
-
             // Hmm, no token. If user is logged in let's check access
             if (!$collectionToken && $this->getUser()) {
                 $accessResult = $this->getAccess();
@@ -264,7 +265,7 @@ class OverdriveConnector implements
             $availabilityUrl .= "$overDriveId/availability";
             $res = $this->callUrl($availabilityUrl);
 
-            if (isset($res->errorCode) and $res->errorCode == "NotFound") {
+            if (isset($res->errorCode) and $res->errorCode == 'NotFound') {
                 if ($conf->consortiumSupport && !$this->getUser()) {
                     // Consortium support is turned on but user is not logged in;
                     // if the title is not found it probably means that it's only
@@ -308,7 +309,7 @@ class OverdriveConnector implements
         $result = $this->getResultObject();
         $loginRequired = false;
         if (count($overDriveIds) < 1) {
-            $this->logWarning("no overdrive content ID was passed in.");
+            $this->logWarning('no overdrive content ID was passed in.');
             return false;
         }
 
@@ -317,7 +318,6 @@ class OverdriveConnector implements
                 $loginRequired = true;
             }
             $collectionToken = $this->getCollectionToken();
-
             // Hmm, no token. If user is logged in let's check access
             if (!$collectionToken && $this->getUser()) {
                 $accessResult = $this->getAccess();
@@ -326,15 +326,15 @@ class OverdriveConnector implements
                 }
             }
             $baseUrl = $conf->discURL;
-            $availabilityPath = "/v2/collections/";
+            $availabilityPath = '/v2/collections/';
             $availabilityPath .= "$collectionToken/availability?products=";
             $availabilityUrl = $baseUrl . $availabilityPath .
-                implode(",", $overDriveIds);
+                implode(',', $overDriveIds);
             $res = $this->callUrl($availabilityUrl);
             if (!$res) {
                 $result->code = 'od_code_connection_failed';
             } else {
-                if ((isset($res->errorCode) and $res->errorCode == "NotFound") or $res->totalItems == 0) {
+                if ((isset($res->errorCode) and $res->errorCode == 'NotFound') or $res->totalItems == 0) {
                     if ($loginRequired) {
                         // Consortium support is turned on but user is not logged in.
                         // If the title is not found it could mean that it's only
@@ -344,7 +344,7 @@ class OverdriveConnector implements
                     } else {
                         $result->status = false;
                         $result->code = 'od_code_resource_not_found';
-                        $this->logWarning("resources not found");
+                        $this->logWarning('resources not found');
                     }
                 } else {
                     $result->status = true;
@@ -355,7 +355,6 @@ class OverdriveConnector implements
                         $result->data[strtolower($item->reserveId)] = $item;
                         $res->code = "od_none";
                     }
-
                     // Now look for items not returned
                     foreach ($overDriveIds as $id) {
                         if (!isset($result->data[$id])) {
@@ -396,7 +395,7 @@ class OverdriveConnector implements
      */
     public function getCollectionToken()
     {
-        $collectionToken = $this->getCachedData("collectionToken");
+        $collectionToken = $this->getCachedData('collectionToken');
         $userCollectionToken = $this->getSessionContainer(
         )->userCollectionToken;
         $this->debug("collectionToken from cache: $collectionToken");
@@ -404,12 +403,12 @@ class OverdriveConnector implements
         $conf = $this->getConfig();
         if ($conf->consortiumSupport && $user = $this->getUser()) {
             if (empty($userCollectionToken)) {
-                $this->debug("getting new user collectionToken");
+                $this->debug('getting new user collectionToken');
                 $baseUrl = $conf->circURL;
                 $patronURL = "$baseUrl/v1/patrons/me";
                 $res = $this->callPatronUrl(
-                    $user["cat_username"],
-                    $user["cat_password"],
+                    $user['cat_username'],
+                    $user['cat_password'],
                     $patronURL
                 );
                 if ($res) {
@@ -423,14 +422,14 @@ class OverdriveConnector implements
             return $userCollectionToken;
         }
         if (empty($collectionToken)) {
-            $this->debug("getting new collectionToken");
+            $this->debug('getting new collectionToken');
             $baseUrl = $conf->discURL;
             $libraryID = $conf->libraryID;
             $libraryURL = "$baseUrl/v1/libraries/$libraryID";
             $res = $this->callUrl($libraryURL);
             if ($res) {
                 $collectionToken = $res->collectionToken;
-                $this->putCachedData("collectionToken", $collectionToken);
+                $this->putCachedData('collectionToken', $collectionToken);
             } else {
                 return false;
             }
@@ -450,9 +449,9 @@ class OverdriveConnector implements
     {
         $result = $this->getResultObject();
 
-        $this->debug("doOverdriveCheckout: overdriveID: " . $overDriveId);
+        $this->debug('doOverdriveCheckout: overdriveID: ' . $overDriveId);
         if (!$user = $this->getUser()) {
-            $this->error("Checkout - user is not logged in", [], true);
+            $this->error('Checkout - user is not logged in', [], true);
             return $result;
         }
         if ($config = $this->getConfig()) {
@@ -462,16 +461,16 @@ class OverdriveConnector implements
             ];
 
             $response = $this->callPatronUrl(
-                $user["cat_username"],
-                $user["cat_password"],
+                $user['cat_username'],
+                $user['cat_password'],
                 $url,
                 $params,
-                "POST"
+                'POST'
             );
 
             if (!empty($response)) {
                 if (isset($response->reserveId)) {
-                    $expires = "";
+                    $expires = '';
                     if ($dt = new \DateTime($response->expires)) {
                         $expires = $dt->format(
                             (string) $config->displayDateFormat
@@ -504,11 +503,11 @@ class OverdriveConnector implements
     public function placeOverDriveHold($overDriveId, $email)
     {
         $overDriveId = strtoupper($overDriveId);
-        $this->debug("placeOverdriveHold");
+        $this->debug('placeOverdriveHold');
         $holdResult = $this->getResultObject();
 
         if (!$user = $this->getUser()) {
-            $this->error("user is not logged in (hold)", [], true);
+            $this->error('user is not logged in (hold)', [], true);
             return $holdResult;
         }
 
@@ -523,8 +522,8 @@ class OverdriveConnector implements
             ];
 
             $response = $this->callPatronUrl(
-                $user["cat_username"],
-                $user["cat_password"],
+                $user['cat_username'],
+                $user['cat_password'],
                 $url,
                 $params,
                 $action
@@ -753,8 +752,8 @@ class OverdriveConnector implements
             $url = $config->circURL . "/v1/patrons/me/holds/$overDriveId";
             $action = "DELETE";
             $response = $this->callPatronUrl(
-                $user["cat_username"],
-                $user["cat_password"],
+                $user['cat_username'],
+                $user['cat_password'],
                 $url,
                 null,
                 $action
@@ -790,8 +789,8 @@ class OverdriveConnector implements
             $url = $config->circURL . "/v1/patrons/me/checkouts/$resourceID";
             $action = "DELETE";
             $response = $this->callPatronUrl(
-                $user["cat_username"],
-                $user["cat_password"],
+                $user['cat_username'],
+                $user['cat_password'],
                 $url,
                 null,
                 $action
@@ -821,7 +820,7 @@ class OverdriveConnector implements
         $result = $this->getResultObject();
         $downloadLink = false;
         if (!$user = $this->getUser()) {
-            $this->error("user is not logged in", false, true);
+            $this->error('user is not logged in', false, true);
             return $result;
         }
         $checkout = $this->getCheckout($overDriveId, false);
@@ -895,8 +894,8 @@ class OverdriveConnector implements
         $conf = new \stdClass();
         if (!$this->recordConfig) {
             $this->error(
-                "Could not locate the Overdrive Record Driver "
-                . "configuration."
+                'Could not locate the Overdrive Record Driver '
+                . 'configuration.'
             );
             return false;
         }
@@ -1043,7 +1042,7 @@ class OverdriveConnector implements
     {
         $metadata = [];
         if (!$overDriveIds || count($overDriveIds) < 1) {
-            $this->logWarning("no overdrive content IDs were passed in.");
+            $this->logWarning('no overdrive content IDs were passed in.');
             return [];
         }
         if ($conf = $this->getConfig()) {
@@ -1051,8 +1050,8 @@ class OverdriveConnector implements
             $productsKey = $this->getCollectionToken();
             $baseUrl = $conf->discURL;
             $metadataUrl = "$baseUrl/v1/collections/$productsKey/";
-            $metadataUrl .= "bulkmetadata?reserveIds=" . implode(
-                ",",
+            $metadataUrl .= 'bulkmetadata?reserveIds=' . implode(
+                ',',
                 $overDriveIds
             );
             $res = $this->callUrl($metadataUrl);
@@ -1110,7 +1109,7 @@ class OverdriveConnector implements
      */
     public function getCheckout($overDriveId, $refresh = true)
     {
-        $this->debug("get Overdrive checkout");
+        $this->debug('get Overdrive checkout');
         $result = $this->getCheckouts($refresh);
         if ($result->status) {
             $checkouts = $result->data;
@@ -1144,13 +1143,13 @@ class OverdriveConnector implements
      */
     public function getHold($overDriveId, $refresh = true)
     {
-        $this->debug("get Overdrive hold");
+        $this->debug('get Overdrive hold');
         $result = $this->getHolds($refresh);
         if ($result->status) {
             $holds = $result->data;
             foreach ($holds as $hold) {
                 if (strtolower($hold->reserveId) == strtolower($overDriveId)) {
-                    $this->debug("hold found");
+                    $this->debug('hold found');
                     return $hold;
                 }
             }
@@ -1184,8 +1183,8 @@ class OverdriveConnector implements
                 $url = $config->circURL . '/v1/patrons/me/checkouts';
 
                 $response = $this->callPatronUrl(
-                    $user["cat_username"],
-                    $user["cat_password"],
+                    $user['cat_username'],
+                    $user['cat_password'],
                     $url,
                     null
                 );
@@ -1224,7 +1223,7 @@ class OverdriveConnector implements
                 }
             } // no config...
         } else {
-            $this->debug("found Overdrive Checkouts in session");
+            $this->debug('found Overdrive Checkouts in session');
             $result->status = true;
             $result->msg = [];
             $result->data = (object) [];
@@ -1243,7 +1242,7 @@ class OverdriveConnector implements
      */
     public function getHolds($refresh = true)
     {
-        $this->debug("get Overdrive Holds");
+        $this->debug('get Overdrive Holds');
         $result = $this->getResultObject();
         if (!$user = $this->getUser()) {
             $this->error("user is not logged in (getholds)");
@@ -1256,8 +1255,8 @@ class OverdriveConnector implements
                 $url = $config->circURL . '/v1/patrons/me/holds';
 
                 $response = $this->callPatronUrl(
-                    $user["cat_username"],
-                    $user["cat_password"],
+                    $user['cat_username'],
+                    $user['cat_password'],
                     $url
                 );
 
@@ -1313,7 +1312,7 @@ class OverdriveConnector implements
                 }
             } // no config
         } else {
-            $this->debug("found Overdrive Holds in cache");
+            $this->debug('found Overdrive Holds in cache');
             $result->status = true;
             $result->message = [];
             $result->data = $this->getSessionContainer()->holds;
@@ -1339,7 +1338,7 @@ class OverdriveConnector implements
         $url,
         $headers = null,
         $checkToken = true,
-        $requestType = "GET"
+        $requestType = 'GET'
     ) {
         $this->debug("chktoken: $checkToken");
         if (!$checkToken || $this->connectToAPI()) {
@@ -1349,7 +1348,7 @@ class OverdriveConnector implements
                 $client = $this->getHttpClient($url);
             } catch (Exception $e) {
                 $this->error(
-                    "error while setting up the client: " . $e->getMessage()
+                    'error while setting up the client: ' . $e->getMessage()
                 );
                 return false;
             }
@@ -1362,7 +1361,7 @@ class OverdriveConnector implements
                     $headers[] = "Authorization: {$tokenData->token_type} "
                         . $tokenData->access_token;
                 }
-                $headers[] = "User-Agent: VuFind";
+                $headers[] = 'User-Agent: VuFind';
             }
             $client->setHeaders($headers);
             $client->setMethod($requestType);
@@ -1372,7 +1371,7 @@ class OverdriveConnector implements
                 $response = $client->send();
             } catch (Exception $ex) {
                 $this->error(
-                    "Exception during request: " .
+                    'Exception during request: ' .
                     $ex->getMessage()
                 );
                 return false;
@@ -1380,33 +1379,33 @@ class OverdriveConnector implements
 
             if ($response->isServerError()) {
                 $this->error(
-                    "Overdrive HTTP Error: " .
+                    'Overdrive HTTP Error: ' .
                     $response->getStatusCode()
                 );
-                $this->debug("Request: " . $client->getRequest());
-                $this->debug("Response: " . $client->getResponse());
+                $this->debug('Request: ' . $client->getRequest());
+                $this->debug('Response: ' . $client->getResponse());
                 return false;
             }
 
             $body = $response->getBody();
             $returnVal = json_decode($body);
             $this->debug(
-                "Return from OD API Call: " . print_r($returnVal, true)
+                'Return from OD API Call: ' . print_r($returnVal, true)
             );
             if ($returnVal != null) {
                 if (isset($returnVal->errorCode)) {
                     // In some cases, this should be returned perhaps...
-                    $this->error("Overdrive Error: " . $returnVal->errorCode);
+                    $this->error('Overdrive Error: ' . $returnVal->errorCode);
                     return $returnVal;
                 } else {
                     return $returnVal;
                 }
             } else {
                 $this->error(
-                    "Overdrive Error: Nothing returned from API call."
+                    'Overdrive Error: Nothing returned from API call.'
                 );
                 $this->debug(
-                    "Body return from OD API Call: " . print_r($body, true)
+                    'Body return from OD API Call: ' . print_r($body, true)
                 );
             }
         }
@@ -1423,17 +1422,17 @@ class OverdriveConnector implements
      */
     protected function connectToAPI($forceNewConnection = false)
     {
-        $this->debug("connecting to API");
+        $this->debug('connecting to API');
         $conf = $this->getConfig();
         $tokenData = $this->getSessionContainer()->tokenData;
-        $this->debug("API Token from session: " . print_r($tokenData, true));
+        $this->debug('API Token from session: ' . print_r($tokenData, true));
         if (
             $forceNewConnection || $tokenData == null
             || !isset($tokenData->access_token)
             || time() >= $tokenData->expirationTime
         ) {
             $authHeader = base64_encode(
-                $conf->clientKey . ":" . $conf->clientSecret
+                $conf->clientKey . ':' . $conf->clientSecret
             );
             $headers = [
                 'Content-Type: application/x-www-form-urlencoded;charset=UTF-8',
@@ -1444,28 +1443,28 @@ class OverdriveConnector implements
                 $client = $this->getHttpClient();
             } catch (Exception $e) {
                 $this->error(
-                    "error while setting up the client: " . $e->getMessage()
+                    'error while setting up the client: ' . $e->getMessage()
                 );
                 return false;
             }
             $client->setHeaders($headers);
-            $client->setMethod("POST");
-            $client->setRawBody("grant_type=client_credentials");
+            $client->setMethod('POST');
+            $client->setRawBody('grant_type=client_credentials');
             $response = $client->setUri($conf->tokenURL)->send();
 
             if ($response->isServerError()) {
                 $this->error(
-                    "Overdrive HTTP Error: " .
+                    'Overdrive HTTP Error: ' .
                     $response->getStatusCode()
                 );
-                $this->debug("Request: " . $client->getRequest());
+                $this->debug('Request: ' . $client->getRequest());
                 return false;
             }
 
             $body = $response->getBody();
             $tokenData = json_decode($body);
             $this->debug(
-                "TokenData returned from OD API Call: " . print_r(
+                'TokenData returned from OD API Call: ' . print_r(
                     $tokenData,
                     true
                 )
@@ -1473,7 +1472,7 @@ class OverdriveConnector implements
             if ($tokenData != null) {
                 if (isset($tokenData->errorCode)) {
                     // In some cases, this should be returned perhaps...
-                    $this->error("Overdrive Error: " . $tokenData->errorCode);
+                    $this->error('Overdrive Error: ' . $tokenData->errorCode);
                     return false;
                 } else {
                     $tokenData->expirationTime = time()
@@ -1483,10 +1482,10 @@ class OverdriveConnector implements
                 }
             } else {
                 $this->error(
-                    "Overdrive Error: Nothing returned from API call."
+                    'Overdrive Error: Nothing returned from API call.'
                 );
                 $this->debug(
-                    "Body return from OD API Call: " . print_r($body, true)
+                    'Body return from OD API Call: ' . print_r($body, true)
                 );
             }
         }
@@ -1533,7 +1532,7 @@ class OverdriveConnector implements
                 $client = $this->getHttpClient(null, $returnType != "redirect");
             } catch (Exception $e) {
                 $this->error(
-                    "error while setting up the client: " . $e->getMessage()
+                    'error while setting up the client: ' . $e->getMessage()
                 );
                 return false;
             }
@@ -1559,7 +1558,7 @@ class OverdriveConnector implements
                 $response = $client->send();
             } catch (Exception $ex) {
                 $this->error(
-                    "Exception during request: " .
+                    'Exception during request: ' .
                     $ex->getMessage()
                 );
                 return false;
@@ -1619,7 +1618,7 @@ class OverdriveConnector implements
                 }
             }
         } else {
-            $this->error("Overdrive Error: Not connected to the Patron API.");
+            $this->error('Overdrive Error: Not connected to the Patron API.');
         }
         return false;
     }
@@ -1647,31 +1646,31 @@ class OverdriveConnector implements
             || (isset($patronTokenData->expirationTime)
                 and time() >= $patronTokenData->expirationTime)
         ) {
-            $this->debug("connecting to patron API for new token.");
+            $this->debug('connecting to patron API for new token.');
             $url = $config->patronTokenURL;
             $websiteId = $config->websiteID;
             $ilsname = $config->ILSname;
             $authHeader = base64_encode(
-                $config->clientKey . ":" . $config->clientSecret
+                $config->clientKey . ':' . $config->clientSecret
             );
             $headers = [
-                "Content-Type: application/x-www-form-urlencoded;charset=UTF-8",
+                'Content-Type: application/x-www-form-urlencoded;charset=UTF-8',
                 "Authorization: Basic $authHeader",
-                "User-Agent: VuFind"
+                'User-Agent: VuFind',
             ];
             try {
                 $client = $this->getHttpClient($url);
             } catch (Exception $e) {
                 $this->error(
-                    "error while setting up the client: " . $e->getMessage()
+                    'error while setting up the client: ' . $e->getMessage()
                 );
                 return false;
             }
             $client->setHeaders($headers);
-            $client->setMethod("POST");
+            $client->setMethod('POST');
             if ($patronPin == null) {
                 $postFields = "grant_type=password&username={$patronBarcode}";
-                $postFields .= "&password=ignore&password_required=false";
+                $postFields .= '&password=ignore&password_required=false';
                 $postFields .= "&scope=websiteId:{$websiteId}%20";
                 $postFields .= "authorizationname:{$ilsname}";
             } else {
@@ -1690,13 +1689,12 @@ class OverdriveConnector implements
                     + $patronTokenData->expires_in;
             } else {
                 $this->debug(
-                    "problem with OD patron API token Call: " .
+                    'problem with OD patron API token Call: ' .
                     print_r(
                         $patronTokenData,
                         true
                     )
                 );
-
                 // If we have an unauthorized error, then we are going
                 // to cache that in the session so we don't keep making
                 // unnecessary calls; otherwise, just don't store the tokenData
@@ -1846,7 +1844,7 @@ class OverdriveConnector implements
      *
      * @return object
      */
-    public function getResultObject($status = false, $msg = "", $code = "")
+    public function getResultObject($status = false, $msg = '', $code = '')
     {
         return (object) [
             'status' => $status,

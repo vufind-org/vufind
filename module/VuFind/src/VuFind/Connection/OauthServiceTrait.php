@@ -31,6 +31,11 @@
 
 namespace VuFind\Connection;
 
+<<<<<<< HEAD
+=======
+use function func_get_args;
+
+>>>>>>> dev
 /**
  * Helper trait for OAuth 2.0 connections.
  *
@@ -72,16 +77,26 @@ trait OauthServiceTrait
         $clientId,
         $clientSecret
     ) {
+<<<<<<< HEAD
         $this->oauthServiceTraitDebug("connecting to API");
         $tokenData = $this->tokenData;
         $this->oauthServiceTraitDebug("Last API Token: " . print_r($tokenData, true));
+=======
+        $this->oauthServiceTraitDebug('connecting to API');
+        $tokenData = $this->tokenData;
+        $this->oauthServiceTraitDebug('Last API Token: ' . print_r($tokenData, true));
+>>>>>>> dev
         if (
             $tokenData == null
             || !isset($tokenData->access_token)
             || time() >= $tokenData->expirationTime
         ) {
             $authHeader = base64_encode(
+<<<<<<< HEAD
                 $clientId . ":" . $clientSecret
+=======
+                $clientId . ':' . $clientSecret
+>>>>>>> dev
             );
             $headers = [
                 'Content-Type: application/x-www-form-urlencoded;charset=UTF-8',
@@ -89,25 +104,41 @@ trait OauthServiceTrait
             ];
 
             $this->client->setHeaders($headers);
+<<<<<<< HEAD
             $this->client->setMethod("POST");
             $this->client->setRawBody("grant_type=client_credentials");
+=======
+            $this->client->setMethod('POST');
+            $this->client->setRawBody('grant_type=client_credentials');
+>>>>>>> dev
             $response = $this->client
                 ->setUri($oauthUrl)
                 ->send();
 
             if ($response->isServerError()) {
                 $this->oauthServiceTraitError(
+<<<<<<< HEAD
                     "API HTTP Error: " .
                     $response->getStatusCode()
                 );
                 $this->oauthServiceTraitDebug("Request: " . $this->client->getRequest());
+=======
+                    'API HTTP Error: ' .
+                    $response->getStatusCode()
+                );
+                $this->oauthServiceTraitDebug('Request: ' . $this->client->getRequest());
+>>>>>>> dev
                 return false;
             }
 
             $body = $response->getBody();
             $tokenData = json_decode($body);
             $this->oauthServiceTraitDebug(
+<<<<<<< HEAD
                 "TokenData returned from API Call: " . print_r(
+=======
+                'TokenData returned from API Call: ' . print_r(
+>>>>>>> dev
                     $tokenData,
                     true
                 )
@@ -115,7 +146,11 @@ trait OauthServiceTrait
             if ($tokenData != null) {
                 if (isset($tokenData->errorCode)) {
                     // In some cases, this should be returned perhaps...
+<<<<<<< HEAD
                     $this->oauthServiceTraitError("API Error: " . $tokenData->errorCode);
+=======
+                    $this->oauthServiceTraitError('API Error: ' . $tokenData->errorCode);
+>>>>>>> dev
                     return false;
                 } else {
                     $tokenData->expirationTime = time()
@@ -125,10 +160,17 @@ trait OauthServiceTrait
                 }
             } else {
                 $this->oauthServiceTraitError(
+<<<<<<< HEAD
                     "Error: Nothing returned from API call."
                 );
                 $this->oauthServiceTraitDebug(
                     "Body return from API Call: " . print_r($body, true)
+=======
+                    'Error: Nothing returned from API call.'
+                );
+                $this->oauthServiceTraitDebug(
+                    'Body return from API Call: ' . print_r($body, true)
+>>>>>>> dev
                 );
             }
         }

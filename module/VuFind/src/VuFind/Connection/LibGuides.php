@@ -95,7 +95,11 @@ class LibGuides implements
      *
      * @var string
      */
+<<<<<<< HEAD
     protected $userAgent = "VuFind";
+=======
+    protected $userAgent = 'VuFind';
+>>>>>>> dev
 
     /**
      * Constructor
@@ -124,7 +128,11 @@ class LibGuides implements
     public function getAccounts()
     {
         $tokenData = $this->authenticateWithClientCredentials(
+<<<<<<< HEAD
             $this->baseUrl . "/oauth/token",
+=======
+            $this->baseUrl . '/oauth/token',
+>>>>>>> dev
             $this->clientId,
             $this->clientSecret
         );
@@ -140,18 +148,31 @@ class LibGuides implements
             $headers[] = "Authorization: {$tokenData->token_type} "
                 . $tokenData->access_token;
         }
+<<<<<<< HEAD
         $headers[] = "User-Agent: " . $this->userAgent;
 
         $this->client->setHeaders($headers);
         $this->client->setMethod("GET");
         $this->client->setUri(
             $this->baseUrl . "/accounts?expand=profile,subjects"
+=======
+        $headers[] = 'User-Agent: ' . $this->userAgent;
+
+        $this->client->setHeaders($headers);
+        $this->client->setMethod('GET');
+        $this->client->setUri(
+            $this->baseUrl . '/accounts?expand=profile,subjects'
+>>>>>>> dev
         );
         try {
             $response = $this->client->send();
         } catch (Exception $ex) {
             $this->error(
+<<<<<<< HEAD
                 "Exception during request: " .
+=======
+                'Exception during request: ' .
+>>>>>>> dev
                 $ex->getMessage()
             );
             return null;
@@ -159,30 +180,53 @@ class LibGuides implements
 
         if ($response->isServerError()) {
             $this->error(
+<<<<<<< HEAD
                 "LibGuides API HTTP Error: " .
                 $response->getStatusCode()
             );
             $this->debug("Request: " . $this->client->getRequest());
             $this->debug("Response: " . $this->client->getResponse());
+=======
+                'LibGuides API HTTP Error: ' .
+                $response->getStatusCode()
+            );
+            $this->debug('Request: ' . $this->client->getRequest());
+            $this->debug('Response: ' . $this->client->getResponse());
+>>>>>>> dev
             return null;
         }
         $body = $response->getBody();
         $returnVal = json_decode($body);
         $this->debug(
+<<<<<<< HEAD
             "Return from LibGuides API Call: " . print_r($returnVal, true)
+=======
+            'Return from LibGuides API Call: ' . print_r($returnVal, true)
+>>>>>>> dev
         );
         if ($returnVal != null) {
             if (isset($returnVal->errorCode)) {
                 // In some cases, this should be returned perhaps...
+<<<<<<< HEAD
                 $this->error("LibGuides Error: " . $returnVal->errorCode);
+=======
+                $this->error('LibGuides Error: ' . $returnVal->errorCode);
+>>>>>>> dev
             }
             return $returnVal;
         } else {
             $this->error(
+<<<<<<< HEAD
                 "LibGuides API Error: Nothing returned from API call."
             );
             $this->debug(
                 "Body return from LibGuides API Call: " . print_r($body, true)
+=======
+                'LibGuides API Error: Nothing returned from API call.'
+            );
+            $this->debug(
+                'Body return from LibGuides API Call: ' . print_r($body, true)
+>>>>>>> dev
             );
         }
         return null;

@@ -36,6 +36,8 @@ use VuFind\Auth\PluginManager;
 use VuFind\Db\Row\User as UserRow;
 use VuFind\Db\Table\User as UserTable;
 
+use function get_class;
+
 /**
  * Authentication manager test class.
  *

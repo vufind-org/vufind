@@ -15,7 +15,7 @@ if ($code == 'od_code_login_for_avail') {
 $data = [];
 foreach ($ids as $id) {
     $current = [];
-    $current['status'] = "OK";
+    $current['status'] = 'OK';
     $current['id'] = $id;
     $avail = $this->result->data[$id] ?? (object) array('code' => '');
     $current['full_status'] = "";
@@ -26,7 +26,7 @@ foreach ($ids as $id) {
         $current['error'] = $this->transEsc('status_unknown_message');
     } elseif ($loginForAvail) {
         $current['full_status'] = "<p class='alert-info'>"
-            . $this->transEsc('od_code_login_for_avail') . "</p>";
+            . $this->transEsc('od_code_login_for_avail') . '</p>';
     } else {
         $current['full_status'] .= "<div class=\"availability\"><p>";
         if ($avail->copiesAvailable > 0 ) {
@@ -46,7 +46,7 @@ foreach ($ids as $id) {
         $current['full_status'] .= " " . $this->transEsc("od_copies_available");
         if ($avail->numberOfHolds > 0 ) {
             $current['full_status'] .= "; ".$avail->numberOfHolds
-              . " " . ($avail->numberOfHolds>1 ? $this->transEsc('od_people'): $this->transEsc('od_person')) 
+              . " " . ($avail->numberOfHolds>1 ? $this->transEsc('od_people'): $this->transEsc('od_person'))
               . " " . $this->transEsc('od_waiting');
         }
     }

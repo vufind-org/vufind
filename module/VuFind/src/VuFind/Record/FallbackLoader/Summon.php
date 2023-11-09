@@ -33,6 +33,8 @@ use SerialsSolutions\Summon\Laminas as Connector;
 use VuFindSearch\Command\RetrieveCommand;
 use VuFindSearch\ParamBag;
 
+use function strlen;
+
 /**
  * Summon record fallback loader
  *

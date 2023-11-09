@@ -31,6 +31,8 @@
 
 namespace VuFind\RecordDriver\Feature;
 
+use function strlen;
+
 /**
  * Functions to add basic MARC-driven functionality to a record driver not already
  * powered by the standard index spec. Depends upon MarcReaderTrait.
@@ -55,7 +57,7 @@ trait MarcBasicTrait
             $this->getFieldArray('773', ['z'])
         );
         foreach ($isbn as $key => $num) {
-            $isbn[$key] = str_replace("-", "", $num);
+            $isbn[$key] = str_replace('-', '', $num);
         }
         $isbn = array_unique($isbn);
         return $isbn;
