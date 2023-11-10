@@ -68,10 +68,10 @@ class ProxyUrlFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $cache = $container->get(\VuFind\Cache\Manager::class)
-            ->getCache('object');
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
-        return new $requestedName($cache, $config);
+            $cache = $container->get(\VuFind\Cache\Manager::class)
+            ->getCache('object');
+        return new $requestedName($config, $cache);
     }
 }
