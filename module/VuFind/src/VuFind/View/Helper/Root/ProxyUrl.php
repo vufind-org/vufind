@@ -133,10 +133,8 @@ class ProxyUrl extends \Laminas\View\Helper\AbstractHelper implements
     protected function queryWebService($domain)
     {
         $prefixLinksWebServiceUrl = $this->config->EZproxy->prefixLinksWebServiceUrl;
-        $queryUrl = $prefixLinksWebServiceUrl . '?url=' . urlencode($domain);
         try {
-            $client = $this->httpService->createClient($queryUrl);
-            $response = $client->send();
+            $response = $this->httpService->get($prefixLinksWebServiceUrl, ['url' => $domain]);
             $responseData = $response->getContent();
         } catch (Exception $ex) {
             $this->logError('Exception during EZproxy web service request: ' . $ex->getMessage());
