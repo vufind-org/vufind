@@ -70,7 +70,7 @@ class ProxyUrlFactory implements FactoryInterface
         }
         $config = $container->get(\VuFind\Config\PluginManager::class)
             ->get('config');
-            $cache = $container->get(\VuFind\Cache\Manager::class)
+        $cache = $container->get(\VuFind\Cache\Manager::class)
             ->getCache('object');
         return new $requestedName($config, $cache);
     }
