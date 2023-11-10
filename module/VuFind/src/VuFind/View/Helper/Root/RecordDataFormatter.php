@@ -143,9 +143,14 @@ class RecordDataFormatter extends AbstractHelper
      */
     protected function render($field, $data, $options)
     {
+        if ($globalOptions = ($this->config->Global ?? false)) {
+            $options = array_merge($globalOptions->toArray(), $options);
+        }
+
         if ($options['configurable'] ?? false) {
-            if ($this->config[$field] ?? false) {
-                $options = array_merge($options, $this->config[$field]->toArray());
+            $section = 'Field_' . $field;
+            if ($fieldOptions = ($this->config->$section ?? false)) {
+                $options = array_merge($options, $fieldOptions->toArray());
             } else {
                 return null;
             }

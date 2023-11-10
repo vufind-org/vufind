@@ -192,28 +192,31 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     /**
      * Build a formatter, including necessary mock view w/ helpers.
      *
+     * @param array $additionalConfig Additional RecordDataFormatter config
+     *
      * @return RecordDataFormatter
      */
-    protected function getFormatter()
+    protected function getFormatter($additionalConfig = [])
     {
         // Build the formatter:
         $factory = new RecordDataFormatterFactory();
         $container = new \VuFindTest\Container\MockContainer($this);
+        $recordDataFormatterConfig = array_merge($additionalConfig, [
+            'Field_ConfigurableWithoutOptions' => [],
+            'Field_ConfigurableWithOptions' => [
+                'separator' => ';',
+            ],
+            'Field_ConfigurableOverwriteOptions' => [
+                'separator' => ';',
+            ],
+        ]);
         $container->set(
             \VuFind\Config\PluginManager::class,
             $this->getMockConfigPluginManager([
                 'config' => [
                     'Record' => [],
                 ],
-                'RecordDataFormatter' => [
-                    'ConfigurableWithoutOptions' => [],
-                    'ConfigurableWithOptions' => [
-                        'separator' => ';',
-                    ],
-                    'ConfigurableOverwriteOptions' => [
-                        'separator' => ';',
-                    ],
-                ],
+                'RecordDataFormatter' => $recordDataFormatterConfig,
             ])
         );
         $this->addPathResolverToContainer($container);
@@ -561,30 +564,196 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Data Provider for testFormattingWithGlobalOptions().
+     *
+     * @return array
+     */
+    public function getFormattingDataWithGlobalOptions(): array
+    {
+        return [
+            [
+                'getInvokedSpecsWithGlobalOptions',
+            ],
+            [
+                'getOldSpecsWithGlobalOptions',
+            ],
+        ];
+    }
+
+    /**
+     * Get global options for testFormattingWithGlobalOptions.
+     *
+     * @return array
+     */
+    public function getGlobalTestConfig()
+    {
+        return [
+            'Global' => [
+                'enabled' => false,
+                'separator' => '-',
+            ],
+            'Field_EnabledFieldByConfig' => [
+                'enabled' => true,
+            ],
+            'Field_DisabledFieldByConfig' => [
+                'enabled' => false,
+            ],
+            'Field_SeparatorByConfig' => [
+                'separator' => ';',
+                'configurable' => true,
+                'enabled' => true,
+            ],
+        ];
+    }
+
+    /**
+     * Test formatting with global options.
+     *
+     * @param string $function Function to test the formatting with.
+     *
+     * @return void
+     *
+     * @dataProvider getFormattingDataWithGlobalOptions
+     */
+    public function testFormattingWithGlobalOptions(string $function): void
+    {
+        $driver = $this->getDriver();
+        $formatter = $this->getFormatter($this->getGlobalTestConfig());
+        $spec = $formatter->getDefaults('core');
+
+        $spec['NormalField'] = [
+            'dataMethod' => 'getContainerTitle',
+            'renderType' => 'Simple',
+            'pos' => 1000,
+        ];
+        $spec['EnabledField'] = [
+            'dataMethod' => 'getContainerTitle',
+            'renderType' => 'Simple',
+            'enabled' => true,
+            'pos' => 1001,
+        ];
+        $spec['DisabledField'] = [
+            'dataMethod' => 'getContainerTitle',
+            'renderType' => 'Simple',
+            'enabled' => false,
+            'pos' => 1002,
+        ];
+        $spec['EnabledFieldByConfig'] = [
+            'dataMethod' => 'getContainerTitle',
+            'renderType' => 'Simple',
+            'configurable' => true,
+            'pos' => 1003,
+        ];
+        $spec['DisabledFieldByConfig'] = [
+            'dataMethod' => 'getContainerTitle',
+            'renderType' => 'Simple',
+            'configurable' => true,
+            'enabled' => true,
+            'pos' => 1004,
+        ];
+        $spec['SeparatorGlobal'] = [
+            'dataMethod' => 'getNewerTitles',
+            'renderType' => 'Simple',
+            'enabled' => true,
+            'pos' => 2000,
+        ];
+        $spec['SeparatorFactory'] = [
+            'dataMethod' => 'getNewerTitles',
+            'renderType' => 'Simple',
+            'separator' => '/',
+            'enabled' => true,
+            'pos' => 2001,
+        ];
+        $spec['SeparatorByConfig'] = [
+            'dataMethod' => 'getNewerTitles',
+            'renderType' => 'Simple',
+            'separator' => '/',
+            'configurable' => true,
+            'enabled' => true,
+            'pos' => 2002,
+        ];
+
+        $expected = [
+            'EnabledField' => '0',
+            'EnabledFieldByConfig' => '0',
+            'SeparatorGlobal' => 'New Title-Second New Title',
+            'SeparatorFactory' => 'New Title/Second New Title',
+            'SeparatorByConfig' => 'New Title;Second New Title',
+        ];
+
+        // Call the method specified by the data provider
+        $results = $this->$function($driver, $spec);
+        // Check for expected array keys
+        $this->assertEquals(array_keys($expected), $this->getLabels($results));
+
+        // Check for expected text (with markup stripped)
+        foreach ($expected as $key => $value) {
+            $this->assertEquals(
+                $value,
+                trim(
+                    preg_replace(
+                        '/\s+/',
+                        ' ',
+                        strip_tags($this->findResult($key, $results)['value'])
+                    )
+                )
+            );
+        }
+    }
+
+    /**
      * Invokes a RecordDataFormatter with a driver and returns getData results.
      *
-     * @param SolrDefault $driver Driver to invoke with.
-     * @param array       $spec   Specifications to test with.
+     * @param SolrDefault $driver        Driver to invoke with.
+     * @param array       $spec          Specifications to test with.
+     * @param array       $globalOptions Optional global options.
      *
      * @return array Results from RecordDataFormatter::getData
      */
-    protected function getInvokedSpecs($driver, array $spec): array
+    protected function getInvokedSpecs($driver, array $spec, $globalOptions = []): array
     {
-        $formatter = ($this->getFormatter())($driver);
+        $formatter = ($this->getFormatter($globalOptions))($driver);
         return $formatter->getData($spec);
     }
 
     /**
      * Calls RecordDataFormatter::getData with a driver as parameter and returns the results.
      *
+     * @param SolrDefault $driver        Driver to call with.
+     * @param array       $spec          Specifications to test with.
+     * @param array       $globalOptions Optional global options.
+     *
+     * @return array Results from RecordDataFormatter::getData
+     */
+    protected function getOldSpecs($driver, array $spec, $globalOptions = []): array
+    {
+        $formatter = $this->getFormatter($globalOptions);
+        return $formatter->getData($driver, $spec);
+    }
+
+    /**
+     * Invokes a RecordDataFormatter with global options and with a driver and returns getData results.
+     *
+     * @param SolrDefault $driver Driver to invoke with.
+     * @param array       $spec   Specifications to test with.
+     *
+     * @return array Results from RecordDataFormatter::getData
+     */
+    protected function getInvokedSpecsWithGlobalOptions($driver, array $spec): array
+    {
+        return $this->getInvokedSpecs($driver, $spec, $this->getGlobalTestConfig());
+    }
+
+    /**
+     * Calls RecordDataFormatter::getData with global options with a driver as parameter and returns the results.
+     *
      * @param SolrDefault $driver Driver to call with.
      * @param array       $spec   Specifications to test with.
      *
      * @return array Results from RecordDataFormatter::getData
      */
-    protected function getOldSpecs($driver, array $spec): array
+    protected function getOldSpecsWithGlobalOptions($driver, array $spec): array
     {
-        $formatter = $this->getFormatter();
-        return $formatter->getData($driver, $spec);
+        return $this->getOldSpecs($driver, $spec, $this->getGlobalTestConfig());
     }
 }
