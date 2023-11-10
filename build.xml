@@ -290,7 +290,6 @@
   </target>
 
   <target name="installbootstrap5" description="Install Bootstrap 5">
-    <copy file="${srcdir}/vendor/twbs/bootstrap/dist/js/popper.min.js" todir="${srcdir}/themes/bootstrap5/js/vendor" overwrite="true" />
     <copy file="${srcdir}/vendor/twbs/bootstrap/dist/js/bootstrap.min.js" todir="${srcdir}/themes/bootstrap5/js/vendor" overwrite="true" />
   </target>
 
