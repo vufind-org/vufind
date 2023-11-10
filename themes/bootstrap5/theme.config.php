@@ -34,7 +34,7 @@ return [
          */
         ['file' => 'vendor/jquery.min.js', 'priority' => 110],
         ['file' => 'vendor/popper.min.js', 'priority' => 120],
-            ['file' => 'vendor/bootstrap.js', 'priority' => 130],
+        ['file' => 'vendor/bootstrap.min.js', 'priority' => 130],
         ['file' => 'vendor/validator.min.js', 'priority' => 140],
         ['file' => 'vendor/autocomplete.js', 'priority' => 220],
         ['file' => 'lib/ajax_request_queue.js', 'priority' => 230],
