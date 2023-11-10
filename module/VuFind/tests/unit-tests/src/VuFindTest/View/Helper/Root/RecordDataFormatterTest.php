@@ -202,12 +202,20 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         $factory = new RecordDataFormatterFactory();
         $container = new \VuFindTest\Container\MockContainer($this);
         $recordDataFormatterConfig = array_merge($additionalConfig, [
+            'Defaults' => [
+                'core' => ['Extra'],
+            ],
             'Field_ConfigurableWithoutOptions' => [],
             'Field_ConfigurableWithOptions' => [
                 'separator' => ';',
             ],
             'Field_ConfigurableOverwriteOptions' => [
                 'separator' => ';',
+            ],
+            'Field_Extra' => [
+                'dataMethod' => 'getContainerTitle',
+                'pos' => 6000,
+                'enabled' => true,
             ],
         ]);
         $container->set(
@@ -474,26 +482,26 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'dataMethod' => 'getNewerTitles',
             'renderType' => 'Simple',
             'configurable' => true,
-            'pos' => 6000,
+            'pos' => 6001,
         ];
         $spec['ConfigurableWithoutOptions'] = [
             'dataMethod' => 'getNewerTitles',
             'renderType' => 'Simple',
             'configurable' => true,
-            'pos' => 6001,
+            'pos' => 6002,
         ];
         $spec['ConfigurableWithOptions'] = [
             'dataMethod' => 'getNewerTitles',
             'renderType' => 'Simple',
             'configurable' => true,
-            'pos' => 6002,
+            'pos' => 6003,
         ];
         $spec['ConfigurableOverwriteOptions'] = [
             'dataMethod' => 'getNewerTitles',
             'renderType' => 'Simple',
             'configurable' => true,
             'separator' => '/',
-            'pos' => 6003,
+            'pos' => 6004,
         ];
         $expected = [
             'Building' => 'prefix_0',
@@ -527,6 +535,8 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'CombineAltRenderTemplate' => 'Centro di Studi Vichiani, 1992 Alt Place Alt Name Alt Date',
             'EnabledField' => '0',
             'FunctionWithParams' => 'test test2',
+            'Extra' => '0',
+            'ConfigurableWithoutConfig' => 'New TitleSecond New Title',
             'ConfigurableWithoutOptions' => 'New TitleSecond New Title',
             'ConfigurableWithOptions' => 'New Title;Second New Title',
             'ConfigurableOverwriteOptions' => 'New Title;Second New Title',
@@ -679,6 +689,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'SeparatorGlobal' => 'New Title-Second New Title',
             'SeparatorFactory' => 'New Title/Second New Title',
             'SeparatorByConfig' => 'New Title;Second New Title',
+            'Extra' => '0',
         ];
 
         // Call the method specified by the data provider

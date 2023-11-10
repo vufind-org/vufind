@@ -143,19 +143,6 @@ class RecordDataFormatter extends AbstractHelper
      */
     protected function render($field, $data, $options)
     {
-        if ($globalOptions = ($this->config->Global ?? false)) {
-            $options = array_merge($globalOptions->toArray(), $options);
-        }
-
-        if ($options['configurable'] ?? false) {
-            $section = 'Field_' . $field;
-            if ($fieldOptions = ($this->config->$section ?? false)) {
-                $options = array_merge($options, $fieldOptions->toArray());
-            } else {
-                return null;
-            }
-        }
-
         if (!($options['enabled'] ?? true)) {
             return null;
         }
@@ -222,6 +209,7 @@ class RecordDataFormatter extends AbstractHelper
         $result = [];
         foreach ($args[0] as $field => $current) {
             // Extract the relevant data from the driver and try to render it.
+            $current = $this->addOptions($field, $current);
             $data = $this->extractData($current);
             $value = $this->render($field, $data, $current);
             if ($value !== null) {
@@ -246,6 +234,7 @@ class RecordDataFormatter extends AbstractHelper
         if (!isset($this->defaults[$key])) {
             return [];
         }
+
         // Callback stored? Resolve to array on demand:
         if (is_callable($this->defaults[$key])) {
             $this->defaults[$key] = $this->defaults[$key]();
@@ -253,6 +242,14 @@ class RecordDataFormatter extends AbstractHelper
                 throw new \Exception('Callback for ' . $key . ' must return array');
             }
         }
+
+        // Adding from config
+        foreach ($this->config->Defaults->$key ?? [] as $field) {
+            $this->defaults[$key][$field] = [
+                'configurable' => true,
+            ];
+        }
+
         // Send back array:
         return $this->defaults[$key];
     }
@@ -272,6 +269,30 @@ class RecordDataFormatter extends AbstractHelper
             throw new \Exception('$values must be array or callable');
         }
         $this->defaults[$key] = $values;
+    }
+
+    /**
+     * Add global and configured options to options of a field.
+     *
+     * @param string $field   Field
+     * @param array  $options Options of a field.
+     *
+     * @return ?array
+     */
+    protected function addOptions($field, $options)
+    {
+        if ($globalOptions = ($this->config->Global ?? false)) {
+            $options = array_merge($globalOptions->toArray(), $options);
+        }
+
+        if ($options['configurable'] ?? false) {
+            $section = 'Field_' . $field;
+            if ($fieldOptions = ($this->config->$section ?? false)) {
+                $options = array_merge($options, $fieldOptions->toArray());
+            }
+        }
+
+        return $options;
     }
 
     /**
