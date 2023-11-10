@@ -112,26 +112,26 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
     protected $useLibGuides;
 
     /**
-     * LibGuides connector
+     * Callable for LibGuides connector
      *
-     * @var LibGuides
+     * @var callable
      */
-    protected $libGuides;
+    protected $libGuidesGetter;
 
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configManager Config PluginManager
-     * @param LibGuides                    $libGuides     LibGuides API connection
-     * @param CacheAdapter                 $cache         Object cache
+     * @param \VuFind\Config\PluginManager $configManager   Config PluginManager
+     * @param callable                     $libGuidesGetter Getter for LibGuides API connection
+     * @param CacheAdapter                 $cache           Object cache
      */
     public function __construct(
         \VuFind\Config\PluginManager $configManager,
-        LibGuides $libGuides,
+        callable $libGuidesGetter,
         CacheAdapter $cache
     ) {
         $this->configManager = $configManager;
-        $this->libGuides = $libGuides;
+        $this->libGuidesGetter = $libGuidesGetter;
         $this->setCacheStorage($cache);
     }
 
@@ -274,7 +274,8 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
     {
         $nameToDatabase = $this->getCachedData('libGuidesAZ-nameToDatabase');
         if (empty($nameToDatabase)) {
-            $databases = $this->libGuides->getAZ();
+            $libGuides = ($this->libGuidesGetter)();
+            $databases = $libGuides->getAZ();
 
             $nameToDatabase = [];
             foreach ($databases as $database) {

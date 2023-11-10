@@ -66,9 +66,15 @@ class DatabasesFactory implements \Laminas\ServiceManager\Factory\FactoryInterfa
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
+
+        // LibGuides connection should only be instantiated if used
+        $libGuidesGetter =  function () use ($container) {
+            return $container->get(\VuFind\Connection\LibGuides::class);
+        };
+
         return new $requestedName(
             $container->get(\VuFind\Config\PluginManager::class),
-            $container->get(\VuFind\Connection\LibGuides::class),
+            $libGuidesGetter,
             $container->get(\VuFind\Cache\Manager::class)
                 ->getCache('object'),
         );
