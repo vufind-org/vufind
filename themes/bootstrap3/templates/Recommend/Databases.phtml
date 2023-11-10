@@ -1,9 +1,9 @@
 <div class="databases">
   <?php $databases = $this->recommend->getResults(); ?>
   <?php if (!empty($databases)): ?>
-    <h2><?=$this->transEsc('databases')?></h2>
-    <?php if ($this->transEsc('databases_intro', [], '')): ?>
-      <p><?=$this->transEsc('databases_intro')?></p>
+    <h2><?=$this->transEsc('databases_recommend_heading')?></h2>
+    <?php if ($this->transEsc('databases_recommend_intro', [], '')): ?>
+      <p><?=$this->transEsc('databases_recommend_intro')?></p>
     <?php endif; ?>
     <div class="list-group">
       <?php foreach ($databases as $name => $database): ?>
