@@ -34,6 +34,8 @@ use PDO;
 use PDOException;
 use VuFind\Exception\ILS as ILSException;
 
+use function count;
+
 /**
  * VuFind Driver for Koha (version: 3.02)
  *
@@ -694,7 +696,7 @@ class Koha extends AbstractBase
             $this->throwAsIlsException($e);
         }
 
-        if ('$2a$' == substr($stored_hash, 0, 4)) {
+        if (str_starts_with($stored_hash, '$2a$')) {
             // Newer Koha version that uses bcrypt
             $db_pwd = crypt($password, $stored_hash);
         } else {

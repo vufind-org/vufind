@@ -103,6 +103,14 @@ label { cursor: pointer; }
     }
   }
 }
+.navbar-nav button.dropdown-toggle {
+  .button-variant(@btn-default-color; @btn-default-bg; @btn-default-border);
+  appearance: none;
+  padding: 15px;
+  border: 0;
+  color: inherit;
+  background-color: transparent;
+}
 
 // Normalize highlighting
 .highlight,
@@ -148,14 +156,6 @@ h3 { font-size: 16px; }
   }
   .form-control { max-width: 400px; }
   #modal .form-control { max-width: none; }
-}
-
-button.dropdown-toggle {
-  .button-variant(@btn-default-color; @btn-default-bg; @btn-default-border);
-  appearance: none;
-  padding: 15px;
-  border: 0;
-  color: @brand-primary;
 }
 
 /* ------ Layout ------ */
@@ -266,21 +266,40 @@ footer {
 }
 
 /* ------ Cart ------ */
-.cart-controls {
+.cart-controls,
+.cart-control-btns {
   display: flex;
   flex-wrap: wrap;
   gap: 0.25rem;
   align-items: center;
 }
-.cart-controls .checkbox {
-  padding-right: 1rem;
-  padding-bottom: 0.25rem;
+.cart-controls > .checkbox {
+  margin-top: 0.5rem;
+  /* wrap below */
+  order: 1;
+  flex-basis: 100%;
+}
+.cart-control-btns {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 .cart-controls .toolbar-btn {
   &:extend(.toolbar-btn);
   &:extend(.icon-link);
 
   margin: 0;
+}
+
+@media (min-width: 992px) {
+  .cart-controls > .checkbox {
+    margin-block: 0;
+    padding-inline-end: 1rem;
+    padding-bottom: 0.25rem;
+    /* place inline */
+    order: unset;
+    flex-basis: auto;
+  }
 }
 
 .nav .btn-bookbag-toggle { float: left; }
@@ -419,6 +438,13 @@ ul.list-group {
   table-layout: fixed;
   word-wrap: break-word;
 }
+// No wrapping for fines table in wide windows
+@media (min-width: 992px) {
+  .table.fines-table {
+    table-layout: auto;
+    word-wrap: normal;
+  }
+}
 
 /* ------ Visualization View ------ */
 .node {
@@ -540,4 +566,11 @@ div.holding-notes {
   .pm__section--toggle {
     background: transparent;
   }
+}
+
+/* --- Help menu --- */
+.HelpMenu {
+  list-style-type: none;
+  margin-bottom: 1rem;
+  padding: 0;
 }

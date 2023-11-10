@@ -31,6 +31,8 @@ namespace VuFind\SMS;
 
 use VuFind\Exception\SMS as SMSException;
 
+use function function_exists;
+
 /**
  * Class for text messaging via Clickatell's HTTP API
  *
@@ -85,7 +87,7 @@ class Clickatell extends AbstractBase
         if (empty($response)) {
             throw new SMSException('Problem sending text.', SMSException::ERROR_UNKNOWN);
         }
-        if ('ID:' !== substr($response, 0, 3)) {
+        if (!str_starts_with($response, 'ID:')) {
             throw new SMSException($response, SMSException::ERROR_UNKNOWN);
         }
         return true;

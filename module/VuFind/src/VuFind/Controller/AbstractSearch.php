@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -36,12 +37,17 @@ use Laminas\View\Model\ViewModel;
 use VuFind\Search\RecommendListener;
 use VuFind\Solr\Utils as SolrUtils;
 
+use function count;
+use function in_array;
+use function intval;
+
 /**
  * VuFind Search Controller
  *
  * @category VuFind
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -90,9 +96,7 @@ class AbstractSearch extends AbstractBase
     public function advancedAction()
     {
         $view = $this->createViewModel();
-        $view->options = $this->serviceLocator
-            ->get(\VuFind\Search\Options\PluginManager::class)
-            ->get($this->searchClassId);
+        $view->options = $this->getOptionsForClass();
         if ($view->options->getAdvancedSearchAction() === false) {
             throw new \Exception('Advanced search not supported.');
         }
@@ -468,8 +472,12 @@ class AbstractSearch extends AbstractBase
      */
     protected function processJumpToOnlyResult($results)
     {
+        // If jumpto is explicitly disabled (set to false, e.g. by combined search),
+        // we should NEVER jump to a result regardless of other factors.
+        $jumpto = $this->params()->fromQuery('jumpto', true);
         if (
-            ($this->getConfig()->Record->jump_to_single_search_result ?? false)
+            $jumpto
+            && ($this->getConfig()->Record->jump_to_single_search_result ?? false)
             && $results->getResultTotal() == 1
             && $recordList = $results->getResults()
         ) {
@@ -818,7 +826,7 @@ class AbstractSearch extends AbstractBase
 
         // Process checkbox settings in config:
         $flipCheckboxes = false;
-        if (substr($section, 0, 1) == '~') {        // reverse flag
+        if (str_starts_with($section, '~')) {        // reverse flag
             $section = substr($section, 1);
             $flipCheckboxes = true;
         }
@@ -905,5 +913,17 @@ class AbstractSearch extends AbstractBase
         );
         $view->setTemplate('search/facet-list');
         return $view;
+    }
+
+    /**
+     * Get proper options file for search class
+     *
+     * @return \VuFind\Search\Base\Options
+     */
+    public function getOptionsForClass(): \VuFind\Search\Base\Options
+    {
+        return $this->serviceLocator
+            ->get(\VuFind\Search\Options\PluginManager::class)
+            ->get($this->searchClassId);
     }
 }

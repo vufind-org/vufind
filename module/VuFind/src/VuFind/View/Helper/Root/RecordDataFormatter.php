@@ -34,6 +34,11 @@ namespace VuFind\View\Helper\Root;
 use Laminas\View\Helper\AbstractHelper;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
+use function call_user_func;
+use function count;
+use function is_array;
+use function is_callable;
+
 /**
  * Record driver data formatting view helper
  *
@@ -95,14 +100,15 @@ class RecordDataFormatter extends AbstractHelper
      * Should we allow a value? (Always accepts non-empty values; for empty
      * values, allows zero when configured to do so).
      *
-     * @param mixed $value   Data to check for zero value.
-     * @param array $options Rendering options.
+     * @param mixed $value            Data to check for zero value.
+     * @param array $options          Rendering options.
+     * @param array $ignoreCombineAlt If value should always be allowed when renderType is CombineAlt
      *
      * @return bool
      */
-    protected function allowValue($value, $options)
+    protected function allowValue($value, $options, $ignoreCombineAlt = false)
     {
-        if (!empty($value)) {
+        if (!empty($value) || ($ignoreCombineAlt && ($options['renderType'] ?? 'Simple') == 'CombineAlt')) {
             return true;
         }
         $allowZero = $options['allowZero'] ?? true;
@@ -121,7 +127,7 @@ class RecordDataFormatter extends AbstractHelper
     protected function render($field, $data, $options)
     {
         // Check whether the data is worth rendering.
-        if (!$this->allowValue($data, $options)) {
+        if (!$this->allowValue($data, $options, true)) {
             return null;
         }
 
@@ -256,14 +262,15 @@ class RecordDataFormatter extends AbstractHelper
 
         if ($useCache = ($options['useCache'] ?? false)) {
             $cacheKey = $this->driver->getUniqueID() . '|'
-                . $this->driver->getSourceIdentifier() . '|' . $method;
+                . $this->driver->getSourceIdentifier() . '|' . $method
+                . (isset($options['dataMethodParams']) ? '|' . serialize($options['dataMethodParams']) : '');
             if (isset($cache[$cacheKey])) {
                 return $cache[$cacheKey];
             }
         }
 
         // Default action: try to extract data from the record driver:
-        $data = $this->driver->tryMethod($method);
+        $data = $this->driver->tryMethod($method, $options['dataMethodParams'] ?? []);
 
         if ($useCache) {
             $cache[$cacheKey] = $data;
@@ -370,6 +377,55 @@ class RecordDataFormatter extends AbstractHelper
             return $helper->getLink($options['recordLink'], $value);
         }
         return false;
+    }
+
+    /**
+     * Render standard and alternative fields together.
+     *
+     * @param mixed $data    Data to render
+     * @param array $options Rendering options.
+     *
+     * @return string
+     */
+    protected function renderCombineAlt(
+        $data,
+        array $options
+    ) {
+        // Determine the rendering method to use, and bail out if it's illegal:
+        $method = empty($options['combineAltRenderType'])
+            ? 'renderSimple' : 'render' . $options['combineAltRenderType'];
+        if (!is_callable([$this, $method])) {
+            return null;
+        }
+
+        // get standard value
+        $stdValue = $this->$method($data, $options);
+
+        // get alternative value
+        $altDataMethod = $options['altDataMethod'] ?? $options['dataMethod'] . 'AltScript';
+
+        $altOptions = $options;
+        $altOptions['dataMethod'] = $altDataMethod;
+        $altData = $this->extractData($altOptions);
+
+        $altValue = $altData != null ? $this->$method($altData, $altOptions) : null;
+
+        // check if both values are not allowed
+        if (!$this->allowValue($stdValue, $options) && !$this->allowValue($altValue, $options)) {
+            return null;
+        }
+
+        // render both values
+        $helper = $this->getView()->plugin('record');
+        $template = $options['combineAltTemplate'] ?? 'combine-alt';
+        $context = [
+            'stdValue' => $stdValue,
+            'altValue' => $altValue,
+            'prioritizeAlt' => $options['prioritizeAlt'] ?? false,
+        ];
+        return trim(
+            $helper($this->driver)->renderTemplate($template, $context)
+        );
     }
 
     /**

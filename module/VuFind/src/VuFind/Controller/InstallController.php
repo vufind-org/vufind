@@ -34,6 +34,14 @@ use Laminas\Mvc\MvcEvent;
 use VuFind\Config\Writer as ConfigWriter;
 use VuFindSearch\Command\RetrieveCommand;
 
+use function count;
+use function defined;
+use function dirname;
+use function function_exists;
+use function in_array;
+use function is_callable;
+use function strlen;
+
 /**
  * Class controls VuFind auto-configuration.
  *
@@ -609,9 +617,9 @@ class InstallController extends AbstractBase
             while ($line = readdir($dir)) {
                 if (
                     stristr($line, '.php') && !in_array($line, $excludeList)
-                    && substr($line, 0, 8) !== 'Abstract'
-                    && substr($line, -11) !== 'Factory.php'
-                    && substr($line, -9) !== 'Trait.php'
+                    && !str_starts_with($line, 'Abstract')
+                    && !str_ends_with($line, 'Factory.php')
+                    && !str_ends_with($line, 'Trait.php')
                 ) {
                     $drivers[] = str_replace('.php', '', $line);
                 }
@@ -933,7 +941,7 @@ class InstallController extends AbstractBase
         $methods = get_class_methods($this);
         $checks = [];
         foreach ($methods as $method) {
-            if (substr($method, 0, 5) == 'check') {
+            if (str_starts_with($method, 'check')) {
                 $checks[] = $this->$method();
             }
         }

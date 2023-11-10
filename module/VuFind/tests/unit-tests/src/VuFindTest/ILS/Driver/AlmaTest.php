@@ -3,7 +3,7 @@
 /**
  * Alma ILS driver test
  *
- * PHP version 7
+ * PHP version 8
  *
  * Copyright (C) Villanova University 2023.
  * Copyright (C) The National Library of Finland 2023.
@@ -33,6 +33,9 @@ namespace VuFindTest\ILS\Driver;
 
 use VuFind\I18n\TranslatableString;
 use VuFind\ILS\Driver\Alma;
+
+use function func_get_args;
+use function is_array;
 
 /**
  * Alma ILS driver test

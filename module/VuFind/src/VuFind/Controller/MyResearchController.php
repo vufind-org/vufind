@@ -46,6 +46,11 @@ use VuFind\Mailer\Mailer;
 use VuFind\Search\RecommendListener;
 use VuFind\Validator\CsrfInterface;
 
+use function in_array;
+use function intval;
+use function is_array;
+use function is_object;
+
 /**
  * Controller for the user account area.
  *
@@ -683,6 +688,14 @@ class MyResearchController extends AbstractBase
                         break;
                     }
                 }
+            }
+
+            // Add proxy details if available
+            if ($catalog->checkCapability('getProxiedUsers', [$patron])) {
+                $view->proxiedUsers = $catalog->getProxiedUsers($patron);
+            }
+            if ($catalog->checkCapability('getProxyingUsers', [$patron])) {
+                $view->proxyingUsers = $catalog->getProxyingUsers($patron);
             }
         } else {
             $view->patronLoginView = $patron;

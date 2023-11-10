@@ -36,6 +36,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Marc\MarcCollectionFile;
 use VuFind\Marc\MarcLint;
 
+use function count;
+
 /**
  * Console command: Lint MARC records.
  *

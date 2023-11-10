@@ -31,6 +31,10 @@
 
 namespace VuFind\Search\EDS;
 
+use function count;
+use function in_array;
+use function is_callable;
+
 /**
  * EDS API Options
  *
@@ -477,13 +481,11 @@ class Options extends \VuFind\Search\Base\Options
 
         // Set up highlighting preference
         if (isset($this->searchSettings->General->highlighting)) {
-            $this->highlight = $this->searchSettings->General->highlighting;
-        }
-
-        // Load search preferences:
-        if (isset($this->searchSettings->General->retain_filters_by_default)) {
-            $this->retainFiltersByDefault
-                = $this->searchSettings->General->retain_filters_by_default;
+            // For legacy config compatibility, support the "n" value to disable highlighting:
+            $falsyStrings = ['n', 'false'];
+            $this->highlight = in_array(strtolower($this->searchSettings->General->highlighting), $falsyStrings)
+                ? false
+                : (bool)$this->searchSettings->General->highlighting;
         }
 
         // View preferences

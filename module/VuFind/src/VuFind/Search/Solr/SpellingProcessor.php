@@ -33,6 +33,11 @@ use Laminas\Config\Config;
 use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
 use VuFindSearch\Query\AbstractQuery;
 
+use function count;
+use function in_array;
+use function is_array;
+use function strlen;
+
 /**
  * Solr spelling processor.
  *
@@ -142,7 +147,7 @@ class SpellingProcessor
         $token = strtok($input, " \t");
         while ($token !== false) {
             // find double quoted tokens
-            if (substr($token, 0, 1) == '"' && substr($token, -1) != '"') {
+            if (str_starts_with($token, '"') && !str_ends_with($token, '"')) {
                 $token .= ' ' . strtok('"') . '"';
             }
             // skip boolean operators
@@ -156,7 +161,7 @@ class SpellingProcessor
         // the tokenization process added the quote, which will break spelling
         // replacements. We need to strip it back off again:
         $last = count($tokens) > 0 ? $tokens[count($tokens) - 1] : null;
-        if ($last && substr($last, -1) == '"' && substr($input, -1) != '"') {
+        if ($last && str_ends_with($last, '"') && !str_ends_with($input, '"')) {
             $tokens[count($tokens) - 1] = substr($last, 0, strlen($last) - 1);
         }
         return $tokens;

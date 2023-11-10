@@ -32,6 +32,9 @@ namespace VuFindDevTools;
 use Laminas\I18n\Translator\TextDomain;
 use VuFind\I18n\Translator\Loader\ExtendedIni;
 
+use function count;
+use function in_array;
+
 /**
  * Language Helper for Development Tools Controller
  *
@@ -86,7 +89,7 @@ class LanguageHelper
         $handle = opendir($dir);
         $files = [];
         while ($file = readdir($handle)) {
-            if (substr($file, -6) == '.phtml') {
+            if (str_ends_with($file, '.phtml')) {
                 $files[] = $file;
             }
         }
@@ -104,7 +107,7 @@ class LanguageHelper
         $langs = [];
         $dir = opendir(APPLICATION_PATH . '/languages');
         while ($file = readdir($dir)) {
-            if (substr($file, -4) == '.ini') {
+            if (str_ends_with($file, '.ini')) {
                 $lang = current(explode('.', $file));
                 if ('native' != $lang) {
                     $langs[] = $lang;

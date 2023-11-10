@@ -36,6 +36,10 @@ use VuFind\Crypt\HMAC;
 use VuFind\Date\Converter as DateConverter;
 use VuFind\ILS\Connection;
 
+use function count;
+use function get_class;
+use function in_array;
+
 /**
  * Action helper base class to perform request-related actions
  *

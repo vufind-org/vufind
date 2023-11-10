@@ -31,6 +31,9 @@ namespace VuFind\ILS\Driver;
 
 use VuFind\Exception\ILS as ILSException;
 
+use function count;
+use function strlen;
+
 /**
  * VuFind Connector for Innovative
  *
@@ -131,11 +134,7 @@ class Innovative extends AbstractBase implements
         $id_ = $this->prepID($id);
 
         // Load Record Page
-        if (substr($this->config['Catalog']['url'], -1) == '/') {
-            $host = substr($this->config['Catalog']['url'], 0, -1);
-        } else {
-            $host = $this->config['Catalog']['url'];
-        }
+        $host = rtrim($this->config['Catalog']['url'], '/');
 
         // Grab the full item list view
         //$result = $this->sendRequest($host . '/record=b' . $id_);

@@ -33,6 +33,9 @@
 
 namespace VuFindSearch\Backend\Solr;
 
+use function count;
+use function in_array;
+
 /**
  * Lucene query syntax helper class.
  *
@@ -404,7 +407,7 @@ class LuceneSyntaxHelper
     protected function normalizeWildcards($input)
     {
         // Ensure wildcards are not at beginning of input
-        return ((substr($input, 0, 1) == '*') || (substr($input, 0, 1) == '?'))
+        return str_starts_with($input, '*') || str_starts_with($input, '?')
             ? substr($input, 1) : $input;
     }
 

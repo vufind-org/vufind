@@ -31,6 +31,11 @@ namespace VuFind\I18n\Translator;
 
 use Laminas\I18n\Translator\TranslatorInterface;
 
+use function count;
+use function is_array;
+use function is_callable;
+use function is_string;
+
 /**
  * Reusable implementation of TranslatorAwareInterface.
  *

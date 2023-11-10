@@ -31,6 +31,8 @@ namespace VuFindTest\Config;
 
 use VuFind\Config\Upgrade;
 
+use function in_array;
+
 /**
  * Config Upgrade Test Class
  *
@@ -510,6 +512,44 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
                 'fileContainsMeaningfulLines',
                 [$meaningful]
             )
+        );
+    }
+
+    /**
+     * Test comment extraction.
+     *
+     * @return void
+     */
+    public function testCommentExtraction()
+    {
+        $upgrader = $this->getUpgrader('comments');
+        $config = $this->getFixtureDir() . 'configs/comments/config.ini';
+        $this->assertEquals(
+            [
+                'sections' => [
+                    'Section' => [
+                        'before' => "; This is a top comment\n",
+                        'inline' => '',
+                        'settings' => [
+                            'foo' => [
+                                'before' => "; This is a setting comment\n",
+                                'inline' => '',
+                            ],
+                            'bar' => [
+                                'before' => "\n",
+                                'inline' => '; this is an inline comment',
+                            ],
+                        ],
+                    ],
+                    'NextSection' => [
+                        'before' => "\n",
+                        'inline' => '; this is an inline section comment',
+                        'settings' => [],
+                    ],
+                ],
+                'after' => "\n; This is a trailing comment",
+            ],
+            $this->callMethod($upgrader, 'extractComments', [$config])
         );
     }
 

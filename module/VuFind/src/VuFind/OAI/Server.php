@@ -36,6 +36,11 @@ use VuFind\Exception\RecordMissing as RecordMissingException;
 use VuFind\SimpleXML;
 use VuFindApi\Formatter\RecordFormatter;
 
+use function count;
+use function in_array;
+use function intval;
+use function strlen;
+
 /**
  * OAI Server class
  *
@@ -1399,9 +1404,8 @@ class Server
 
         // Prefix?  Strip it off and return the stripped version if valid:
         $prefix = 'oai:' . $this->idNamespace . ':';
-        $prefixLen = strlen($prefix);
-        if (substr($id, 0, $prefixLen) == $prefix) {
-            return substr($id, $prefixLen);
+        if (str_starts_with($id, $prefix)) {
+            return substr($id, strlen($prefix));
         }
 
         // Invalid prefix -- unrecognized ID:

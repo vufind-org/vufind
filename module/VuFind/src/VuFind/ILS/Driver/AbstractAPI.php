@@ -34,6 +34,9 @@ use VuFind\Exception\BadConfig;
 use VuFind\Exception\ILS as ILSException;
 use VuFindHttp\HttpServiceAwareInterface;
 
+use function in_array;
+use function is_string;
+
 /**
  * Abstract Driver for API-based ILS drivers
  *
@@ -122,6 +125,8 @@ abstract class AbstractAPI extends AbstractBase implements
      * @param true|int[]|string $allowedFailureCodes HTTP failure codes that should
      * NOT cause an ILSException to be thrown. May be an array of integers, a regular
      * expression, or boolean true to allow all codes.
+     * @param string|array      $debugParams         Value to use in place of $params
+     * in debug messages (useful for concealing sensitive data, etc.)
      *
      * @return \Laminas\Http\Response
      * @throws ILSException
@@ -131,7 +136,8 @@ abstract class AbstractAPI extends AbstractBase implements
         $path = '/',
         $params = [],
         $headers = [],
-        $allowedFailureCodes = []
+        $allowedFailureCodes = [],
+        $debugParams = null
     ) {
         $client = $this->httpService->createClient(
             $this->config['API']['base_url'] . $path,
@@ -145,7 +151,7 @@ abstract class AbstractAPI extends AbstractBase implements
         [$req_headers, $params] = $this->preRequest($req_headers, $params);
 
         if ($this->logger) {
-            $this->debugRequest($method, $path, $params, $req_headers);
+            $this->debugRequest($method, $path, $debugParams ?? $params, $req_headers);
         }
 
         // Add params

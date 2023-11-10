@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  Controller
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
@@ -33,6 +34,9 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFindApi\Formatter\FacetFormatter;
 use VuFindApi\Formatter\RecordFormatter;
 
+use function count;
+use function is_array;
+
 /**
  * Search API Controller
  *
@@ -41,6 +45,7 @@ use VuFindApi\Formatter\RecordFormatter;
  * @category VuFind
  * @package  Service
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
@@ -417,6 +422,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
                 $results->getUrlQuery(),
                 false
             );
+            $facetList[$facet] = $facetHelper->filterFacets($facet, $facetList[$facet], $results->getOptions());
         }
 
         return $facetList;

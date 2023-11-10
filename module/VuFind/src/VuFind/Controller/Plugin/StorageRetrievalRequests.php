@@ -31,6 +31,8 @@
 
 namespace VuFind\Controller\Plugin;
 
+use function in_array;
+
 /**
  * Action helper to perform storage retrieval request related actions
  *

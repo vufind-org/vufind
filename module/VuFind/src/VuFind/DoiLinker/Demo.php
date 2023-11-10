@@ -29,6 +29,8 @@
 
 namespace VuFind\DoiLinker;
 
+use function count;
+
 /**
  * Demo (fake data) DOI linker
  *

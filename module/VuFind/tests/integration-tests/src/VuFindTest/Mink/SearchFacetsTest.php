@@ -6,6 +6,7 @@
  * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
+ * Copyright (C) The National Library of Finland 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,11 +24,14 @@
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
 
 namespace VuFindTest\Mink;
+
+use function count;
 
 /**
  * Mink search facet/filter functionality test class.
@@ -35,6 +39,7 @@ namespace VuFindTest\Mink;
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  * @retry    4
@@ -42,11 +47,53 @@ namespace VuFindTest\Mink;
 class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
-     * CSS selector for finding active filters
+     * CSS selector for finding the active filter values
      *
      * @var string
      */
     protected $activeFilterSelector = '.active-filters.hidden-xs .filters .filter-value';
+
+    /**
+     * CSS selector for finding the active filter labels
+     *
+     * @var string
+     */
+    protected $activeFilterLabelSelector = '.active-filters.hidden-xs .filters .filters-title';
+
+    /**
+     * CSS selector for finding the first hierarchical facet expand button
+     *
+     * @var string
+     */
+    protected $facetExpandSelector = '.facet-tree .facet-tree__toggle-expanded .facet-tree__expand';
+
+    /**
+     * CSS selector for finding the first expanded hierarchical facet
+     *
+     * @var string
+     */
+    protected $facetExpandedSelector = '.facet-tree button[aria-expanded=true] ~ ul';
+
+    /**
+     * CSS selector for finding the first second level hierarchical facet
+     *
+     * @var string
+     */
+    protected $facetSecondLevelLinkSelector = '.facet-tree button[aria-expanded=true] ~ ul a';
+
+    /**
+     * CSS selector for finding the first active second level hierarchical facet
+     *
+     * @var string
+     */
+    protected $facetSecondLevelActiveLinkSelector = '.facet-tree button[aria-expanded=true] ~ ul a.active';
+
+    /**
+     * CSS selector for finding the first second level hierarchical facet
+     *
+     * @var string
+     */
+    protected $facetSecondLevelExcludeLinkSelector = '.facet-tree button[aria-expanded=true] ~ ul a.exclude';
 
     /**
      * Get filtered search
@@ -305,14 +352,19 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function clickHierarchyFacet($page)
     {
-        $this->clickCss($page, '#j1_1.jstree-closed .jstree-icon');
-        $this->findCss($page, '#j1_1.jstree-open .jstree-icon');
-        $this->clickCss($page, '#j1_2 a');
+        // Open second level:
+        $this->clickCss($page, $this->facetExpandSelector);
+        // Check results:
+        $this->findCss($page, $this->facetExpandedSelector);
+        // Click second level facet:
+        $this->clickCss($page, $this->facetSecondLevelLinkSelector);
+        // Check the active filter:
         $filter = $this->findCss($page, $this->activeFilterSelector);
-        $label = $this->findCss($page, '.filters .filters-title');
+        $label = $this->findCss($page, $this->activeFilterLabelSelector);
         $this->assertEquals('hierarchy:', $label->getText());
         $this->assertEquals('Remove Filter level1a/level2a', $filter->getText());
-        $this->findCss($page, '#j1_2 .applied');
+        // Check that the applied facet is displayed properly:
+        $this->findCss($page, $this->facetSecondLevelActiveLinkSelector);
     }
 
     /**
@@ -370,9 +422,8 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             'Showing 1 - 10 results of 10 for search \'building:"hierarchy.mrc"\'',
             $extractCount($stats->getText())
         );
-        $this->clickCss($page, '#j1_1.jstree-closed .jstree-icon');
-        $this->findCss($page, '#j1_1.jstree-open .jstree-icon');
-        $this->clickCss($page, '#j1_2 a.exclude');
+        $this->clickCss($page, $this->facetExpandSelector);
+        $this->clickCss($page, $this->facetSecondLevelExcludeLinkSelector);
         $filter = $this->findCss($page, $this->activeFilterSelector);
         $label = $this->findCss($page, '.filters .filters-title');
         $this->assertEquals('hierarchy:', $label->getText());
@@ -446,6 +497,20 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     {
         $items = $page->findAll('css', $this->activeFilterSelector);
         $this->assertCount(0, $items);
+    }
+
+    /**
+     * Assert that the "reset filters" button is present.
+     *
+     * @param \Behat\Mink\Element\Element $page Mink page object
+     *
+     * @return void
+     */
+    protected function assertResetFiltersButton($page)
+    {
+        $reset = $page->findAll('css', '.reset-filters-btn');
+        // The toggle bar has its own reset button, so we should have 2:
+        $this->assertCount(2, $reset);
     }
 
     /**
@@ -539,6 +604,56 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         // Re-click the search button and confirm that filters go away
         $this->clickCss($page, '#searchForm .btn.btn-primary');
         $this->assertNoFilters($page);
+    }
+
+    /**
+     * Test disabled "always display reset filters" configurable behavior
+     *
+     * @return void
+     */
+    public function testDisabledResetFiltersBehavior()
+    {
+        $this->changeConfigs(
+            [
+                'searches' => [
+                    'General' => [
+                        'retain_filters_by_default' => false,
+                        'always_display_reset_filters' => false,
+                    ],
+                ],
+            ]
+        );
+        $page = $this->getFilteredSearch();
+        $this->assertFilterIsStillThere($page);
+        // Confirm that there is no reset button:
+        $this->assertNoResetFiltersButton($page);
+    }
+
+    /**
+     * Test enabled "always display reset filters" configurable behavior
+     *
+     * @return void
+     */
+    public function testEnabledResetFiltersBehavior()
+    {
+        $this->changeConfigs(
+            [
+                'searches' => [
+                    'General' => [
+                        'retain_filters_by_default' => false,
+                        'always_display_reset_filters' => true,
+                    ],
+                ],
+            ]
+        );
+        $page = $this->getFilteredSearch();
+        $this->assertFilterIsStillThere($page);
+        // Confirm that there is a reset button:
+        $this->assertResetFiltersButton($page);
+        // Reset filters:
+        $this->clickCss($page, '.reset-filters-btn');
+        // Confirm that there is no reset button:
+        $this->assertNoResetFiltersButton($page);
     }
 
     /**

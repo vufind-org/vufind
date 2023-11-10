@@ -33,6 +33,8 @@ namespace VuFind\ILS\Driver;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
+use function strlen;
+
 /**
  * Driver for offline/missing ILS.
  *
@@ -267,8 +269,9 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
             // ID prefix, strip it off!
             $idPrefix = $this->getIdPrefix();
             if (
-                isset($result[0]['id']) && strlen($idPrefix)
-                && $idPrefix === substr($result[0]['id'], 0, strlen($idPrefix))
+                isset($result[0]['id'])
+                && '' !== $idPrefix
+                && str_starts_with($result[0]['id'], $idPrefix)
             ) {
                 $result[0]['id'] = substr($result[0]['id'], strlen($idPrefix));
             }

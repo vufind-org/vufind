@@ -29,6 +29,8 @@
 
 namespace VuFind\Search\Primo;
 
+use function count;
+
 /**
  * Primo Search Options
  *
@@ -85,10 +87,6 @@ class Options extends \VuFind\Search\Base\Options
         }
 
         // Load search preferences:
-        if (isset($searchSettings->General->retain_filters_by_default)) {
-            $this->retainFiltersByDefault
-                = $searchSettings->General->retain_filters_by_default;
-        }
         if (isset($searchSettings->General->default_filters)) {
             $this->defaultFilters = $searchSettings->General->default_filters
                 ->toArray();
