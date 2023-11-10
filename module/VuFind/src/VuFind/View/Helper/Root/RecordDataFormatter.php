@@ -234,7 +234,6 @@ class RecordDataFormatter extends AbstractHelper
         if (!isset($this->defaults[$key])) {
             return [];
         }
-
         // Callback stored? Resolve to array on demand:
         if (is_callable($this->defaults[$key])) {
             $this->defaults[$key] = $this->defaults[$key]();
@@ -242,8 +241,7 @@ class RecordDataFormatter extends AbstractHelper
                 throw new \Exception('Callback for ' . $key . ' must return array');
             }
         }
-
-        // Adding from config
+        // Adding defaults from config
         foreach ($this->config->Defaults->$key ?? [] as $field) {
             $this->defaults[$key][$field] = [
                 'configurable' => true,
