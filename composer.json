@@ -94,7 +94,8 @@
         "vufind-org/vufind-marc": "1.0.2",
         "webfontkit/open-sans": "^1.0",
         "wikimedia/composer-merge-plugin": "2.1.0",
-        "yajra/laravel-pdo-via-oci8": "3.4.0"
+        "yajra/laravel-pdo-via-oci8": "3.4.0",
+        "twbs/bootstrap": "5.3.2"
     },
     "require-dev": {
         "behat/mink": "1.10.0",
@@ -124,7 +125,7 @@
         }
     },
     "scripts": {
-        "phing-install-dependencies": ["phing patch-dependencies", "phing installsolr installswaggerui"],
+        "phing-install-dependencies": ["phing patch-dependencies", "phing installbootstrap5 installsolr installswaggerui"],
         "post-install-cmd": "@phing-install-dependencies",
         "post-update-cmd": "@phing-install-dependencies",
         "qa": "phing qa-console -Ddefaultconfigs=true",

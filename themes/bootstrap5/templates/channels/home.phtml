@@ -1,0 +1,8 @@
+<?php
+    // Set up page title:
+    $this->headTitle($this->translate('Channels'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li class="active">' . $this->transEsc('Channels') . '</li>';
+?>
+<?=$this->render('channels/channelList.phtml')?>

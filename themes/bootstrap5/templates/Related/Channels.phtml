@@ -1,0 +1,9 @@
+<?php
+    $driver = $this->related->getDriver();
+    $link = $this->url('channels-record')
+        . '?id=' . urlencode($driver->getUniqueId())
+        . '&source=' . urlencode($driver->getSourceIdentifier());
+?>
+<div class="channels-alert alert alert-info">
+  <a href="<?=$this->escapeHtmlAttr($link)?>"><?=$this->transEsc('channel_expand')?></a>
+</div>

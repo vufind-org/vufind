@@ -1,0 +1,5 @@
+<?php
+  // Load the Summon-specific advanced search controls and inject them into the
+  // standard advanced search layout:
+  $this->extraAdvancedControls = $this->render('search/advanced/summon.phtml');
+  echo $this->render('search/advanced/layout.phtml');

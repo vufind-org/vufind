@@ -1,0 +1,88 @@
+// Mappings for improved back-compatibility with Boostrap 3
+// See also components/variables.scss
+
+
+// *** Variables ***
+$border-radius-base: $border-radius !default;
+$border-radius-large: $border-radius-lg !default;
+
+$breadcrumb-separator: $breadcrumb-divider !default;
+
+$btn-border-radius-base: $btn-border-radius;
+$btn-default-color: map-get($theme-colors, "light") !default;
+$btn-default-bg: map-get($theme-colors, "primary") !default;
+$btn-default-border: shade-color($btn-default-bg, $btn-active-bg-shade-amount) !default;
+
+$gray-base:              #000 !default;
+$gray-darker:            lighten($gray-base, 13.5%) !default; // #222
+$gray-dark:              lighten($gray-base, 20%) !default;   // #333
+$gray:                   lighten($gray-base, 33.5%) !default; // #555
+$gray-light:             lighten($gray-base, 46.7%) !default; // #777
+$gray-lighter:           lighten($gray-base, 93.5%) !default; // #eee
+
+$input-height-base: $input-height !default;
+
+$list-group-border: $list-group-border-color !default;
+
+$nav-link-hover-bg: $gray-lighter !default;
+$nav-link-padding: $nav-link-padding-y !default;
+
+$padding-base-vertical: $btn-padding-y !default;
+
+$panel-default-border:   $primary-border-subtle !default;
+$panel-footer-bg:      #f5f5f5 !default;
+
+$screen-sm:              map-get($grid-breakpoints, "sm");
+$screen-sm-min:          $screen-sm;
+$screen-md:              map-get($grid-breakpoints, "md");
+$screen-md-min:          $screen-md;
+$screen-lg:              map-get($grid-breakpoints, "lg");
+$screen-lg-min:          $screen-lg;
+$screen-xs-max:          ($screen-sm-min - 1);
+$screen-sm-max:          ($screen-md-min - 1);
+$screen-md-max:          ($screen-lg-min - 1);
+
+$state-danger-text: var(--bs-danger) !default;
+$state-danger-bg: var(--bs-danger-bg-subtle) !default;
+$state-success-text: var(--bs-success) !default;
+$state-success-bg: var(--bs-success-bg-subtle) !default;
+$state-warning-text: var(--bs-warning) !default;
+$state-warning-bg: var(--bs-warning-bg-subtle) !default;
+
+$text-color: $body-color !default;
+
+$well-bg:                #f5f5f5 !default;
+$well-border:            darken($well-bg, 7%) !default;
+
+// *** Styles ***
+.btn-default {
+    @extend .btn-primary;
+}
+
+.label {
+    @extend .badge;
+}
+.label-info {
+    @extend .text-bg-primary;
+}
+
+.dropdown-toggle::after {
+    display: none;
+}
+
+.form-control, .form-select {
+    display: inline-block;
+}
+
+.form-select {
+    width: initial;
+}
+
+.hidden {
+    display: none;
+}
+
+.navbar-collapse {
+    display: flex;
+    justify-content: right;
+}

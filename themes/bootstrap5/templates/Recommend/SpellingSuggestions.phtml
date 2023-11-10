@@ -1,0 +1,10 @@
+<?php
+    $results = $this->recommend->getResults();
+    $label = $results->getResultTotal() > 0
+        ? '<strong>' . $this->transEsc('spell_suggest') . '</strong>:'
+        : $this->transEsc('nohit_spelling') . ':';
+    $suggestions = $this->search()->renderSpellingSuggestions($label, $results, $this);
+?>
+<?php if (!empty($suggestions)): ?>
+  <?=$suggestions?>
+<?php endif; ?>

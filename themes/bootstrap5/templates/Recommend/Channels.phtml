@@ -1,0 +1,9 @@
+<?php
+    $results = $this->recommend->getResults();
+    $link = $this->url('channels-search')
+        . $results->getUrlQuery()->getParams(false)
+        . '&source=' . urlencode($results->getParams()->getSearchClassId());
+?>
+<div class="channels-alert alert alert-info">
+  <a href="<?=$this->escapeHtmlAttr($link)?>"><?=$this->transEsc('channel_expand')?></a>
+</div>

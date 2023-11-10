@@ -1,0 +1,20 @@
+<?php
+  // Set page title.
+  $this->headTitle($this->translate('VuFind Administration - Configuration'));
+?>
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <h2><?=$this->transEsc('Configuration')?></h2>
+  <?=$this->flashmessages()?>
+  <p>Most VuFind configuration is handled by editing the configuration files in <strong><?=$this->escapeHtml($this->baseConfigPath)?></strong>.</p>
+  <p>Some basic settings can also be adjusted through the auto-configuration tool.</p>
+  <?php if (!$this->showInstallLink): ?>
+    <p><?=$this->transEsc('Auto configuration is currently disabled') ?>.</p>
+    <p><a href="<?=$this->url('admin/config', ['action' => 'EnableAutoConfig'])?>"><?=$this->transEsc('Enable Auto Config')?></a></p>
+  <?php else: ?>
+    <p><a href="<?=$this->url('install-home')?>"><?=$this->transEsc('auto_configure_title')?></a></p>
+  <?php endif; ?>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>">
+  <?=$this->render('admin/menu.phtml')?>
+</div>

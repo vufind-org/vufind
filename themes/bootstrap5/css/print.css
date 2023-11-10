@@ -1,0 +1,12 @@
+* {
+  background-color: #FFF;
+  color: #000;
+}
+a[href]:after{ content: ''; } /* hide following urls */
+.container { margin:0; } /* print margins */
+/* print utilities */
+.hidden-print,
+.hidden-print * { display:none !important; }
+
+.bulkActionButtons,
+.action-toolbar { display: none !important; }

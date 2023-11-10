@@ -1,0 +1,16 @@
+<?php
+    // Set some overrides, then call the standard search results action:
+    $this->slot('head-title')->set($this->translate('Reserves Search Results'));
+    $this->slot('search-heading')->set($this->transEsc('Reserves'));
+    $headingParts = [];
+    if (isset($this->instructor)) {
+        $headingParts[] = $this->transEsc('Instructor') . ': <strong>' . $this->escapeHtml($this->instructor) . '</strong>';
+    }
+    if (isset($this->course)) {
+        $headingParts[] = $this->transEsc('Course') . ': <strong>' . $this->escapeHtml($this->course) . '</strong>';
+    }
+    if (!empty($headingParts)) {
+        $this->slot('search-heading')->append(' (' . implode(', ', $headingParts) . ')');
+    }
+    $this->slot('empty-message')->set($this->transEsc('course_reserves_empty_list'));
+    echo $this->render('search/results.phtml');

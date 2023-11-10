@@ -1,0 +1,20 @@
+<?php
+    // Hide the total result count -- because of limitations in the way facet
+    // paging works, we can't actually determine an accurate total count.  (Note
+    // that this setting simply modifies the behavior of search/results.phtml below).
+    $this->skipTotalCount = true;
+
+    // Load standard settings from the default search results screen:
+    echo $this->render('search/results.phtml');
+
+    // Override some details...
+
+    // Set up page title:
+    $this->headTitle($this->translate('Author Browse'));
+
+    // Set up empty search box pointing at Solr module:
+    $this->layout()->searchbox = $this->render('search/searchbox.phtml');
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('author-home') . '">' . $this->transEsc('Author') . '</a></li> '
+         . '<li class="active">' . $this->transEsc('Author Results for') . ' ' . $this->escapeHtml($this->params->getDisplayQuery()) . '</li>';

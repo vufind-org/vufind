@@ -1,0 +1,15 @@
+<?php
+$ilsStatusScript = <<<JS
+    $(document).ready(function() {
+      $.ajax({
+          dataType: 'json',
+          method: 'GET',
+          data: {'offlineModeMsg':'ils_offline_home_message'},
+          url: VuFind.path + '/AJAX/JSON?method=getIlsStatus',
+          success: function(response) {
+              $('{$target}').prepend(response.data.html);
+          }
+      });
+    });
+    JS;
+echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $ilsStatusScript, 'SET');

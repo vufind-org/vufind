@@ -1,0 +1,44 @@
+<?php
+$isError = false;
+$loginForAvail = false;
+$noshow = false;
+$code = $this->result->code ?? null;
+if ($code == 'od_code_login_for_avail') {
+    $loginForAvail = true;
+} elseif ($code == 'od_account_noaccess') {
+    $noshow = true;
+} elseif (empty($this->result->status)) {
+    //we must have had a connection error.
+    $isError = true;
+}
+
+$data = [];
+foreach ($ids as $id) {
+    $current = [];
+    $current['status'] = 'OK';
+    $current['id'] = $id;
+    $avail = $this->result->data[$id] ?? new \stdClass();
+
+    if ($noshow) {
+        $current['full_status'] = '';
+    } elseif ($isError || $avail->code == 'od_code_resource_not_found') {
+        $current['error'] = $this->transEsc('status_unknown_message');
+        $current['full_status'] = '';
+    } elseif ($loginForAvail || $avail->code == 'od_code_login_for_avail') {
+        $current['full_status'] = "<p class='alert-info'>"
+            . $this->transEsc('od_code_login_for_avail') . '</p>';
+    } else {
+        $current['full_status'] = "<p><div class='copies'><strong>"
+            . $this->transEsc('od_avail_total') . '</strong> '
+            . $this->escapeHtml($avail->copiesOwned)
+            . "</div><div class='avail'><strong>"
+            . $this->transEsc('od_avail_avail') . '</strong> '
+            . $this->escapeHtml($avail->copiesAvailable)
+            . "</div><div class='holds'><strong>"
+            . $this->transEsc('od_avail_holds') . '</strong> '
+            . $this->escapeHtml($avail->numberOfHolds) . '</div></p>';
+    }
+    $data[] = $current;
+}
+// JSON response. Array of HTML strings.
+echo json_encode(['data' => ['statuses' => $data]]);

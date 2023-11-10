@@ -1,0 +1,108 @@
+.channel-wrapper {
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+@media (max-width: 767px) {
+  .channel-wrapper {
+    margin-left: 1rem;
+  }
+}
+.channel {
+  position: relative;
+  width: 100%;
+  max-height: 300px;
+  padding: 1rem;
+  background-color: #eee;
+  border-radius: $border-radius-base;
+}
+
+.channel-add-menu {
+  position: relative;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid $gray;
+  text-align: center;
+}
+@media (min-width: 768px) {
+  .channel-add-menu {
+    float: right;
+    margin: 0;
+    padding: 0;
+    border: 0;
+
+    body.rtl & {
+      float: left;
+    }
+  }
+}
+.channel-add-menu .dropdown-menu {
+  left: auto;
+  right: 0;
+  max-width: 90vw;
+  overflow: hidden;
+}
+
+.channel .channel-record.slide {
+  display: inline-block;
+  min-width: 100px;
+  max-height: 16em;
+  padding: 0 .5rem;
+  text-align: center;
+}
+.channel-record-title {
+  display: block;
+  height: 3em;
+  margin: 0;
+  line-height: 1.5;
+  overflow: hidden;
+}
+.channel .channel-record .thumb {
+  display: flex;
+  height: 200px;
+  align-items: center;
+  justify-content: center;
+}
+.channel .channel-record .thumb img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.channel .popover {
+  width: 500px;
+  max-width: none;
+}
+.channel .popover-title {
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+.channel-title h2 {
+  display: inline-block;
+  margin: 0;
+}
+.channel-title .dropdown {
+  display: inline-block;
+}
+.channel-title a:hover { text-decoration: none; }
+.channel-title i.fa-fw {
+  width: 1.4em;
+  padding-top: 0.5em;
+  font-size: 0.6em;
+  text-align: center;
+  vertical-align: top;
+}
+.channel-title .placeholder { width: 25px; }
+
+.channel-title .dropdown button {
+  font-size: 18px;
+  color: #777;
+  vertical-align: baseline;
+}
+.channel .slick-prev::before,
+.channel .slick-next::before {
+  color: #555;
+}
+
+.channel-search {
+  margin-top: 1rem;
+}

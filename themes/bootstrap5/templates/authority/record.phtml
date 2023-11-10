@@ -1,0 +1,8 @@
+<?php
+  $this->layout()->breadcrumbs = false;
+  $this->layout()->searchClassId = 'SolrAuth';
+  // Pick a tab to display -- Details if available, otherwise first option (if any):
+  $tab = $this->tabs['Details'] ?? current($this->tabs) ?? null;
+?>
+<h1><?=$this->escapeHtml($this->driver->getBreadcrumb())?></h1>
+<p><?=empty($tab) ? $this->transEsc('no_description') : $this->record($this->driver)->getTab($tab)?></p>

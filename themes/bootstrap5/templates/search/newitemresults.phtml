@@ -1,0 +1,6 @@
+<?php
+  // Set some overrides, then call the standard search results action:
+  $this->slot('head-title')->set($this->translate('New Items'));
+  $this->slot('search-heading')->set($this->transEsc('New Items'));
+  $this->slot('empty-message')->set($this->transEsc('No new item information is currently available.'));
+  echo $this->render('search/results.phtml');

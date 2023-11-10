@@ -1,0 +1,42 @@
+<div>
+  <?php if (!empty($this->electronic)): ?>
+    <div class="openurls">
+      <strong><?=$this->transEsc('Electronic')?></strong>
+      <ul>
+        <?php foreach ($this->electronic as $link): ?>
+          <li>
+            <?=$this->context($this)->renderInContext('ajax/resolverLink.phtml', ['link' => $link, 'type' => 'electronic']); ?>
+          </li>
+        <?php endforeach; ?>
+      </ul>
+    </div>
+  <?php endif; ?>
+  <?php if (!empty($this->print)): ?>
+    <div class="openurls">
+      <strong><?=$this->transEsc('Holdings')?></strong>
+      <ul>
+        <?php foreach ($this->print as $link): ?>
+          <li>
+            <?=$this->context($this)->renderInContext('ajax/resolverLink.phtml', ['link' => $link, 'type' => 'print']); ?>
+          </li>
+        <?php endforeach; ?>
+      </ul>
+    </div>
+  <?php endif; ?>
+  <div class="openurls">
+    <?php if (!empty($this->moreOptionsLink)): ?>
+      <strong><a href="<?=$this->escapeHtmlAttr($this->moreOptionsLink)?>"><?=$this->transEsc('More options')?></a></strong>
+    <?php endif; ?>
+    <?php if (!empty($this->services)): ?>
+      <ul>
+        <?php foreach ($this->services as $link): ?>
+          <?php if (!empty($link['href'])): ?>
+            <li>
+              <?=$this->context($this)->renderInContext('ajax/resolverLink.phtml', ['link' => $link, 'type' => 'service']); ?>
+            </li>
+          <?php endif; ?>
+        <?php endforeach; ?>
+      </ul>
+    <?php endif; ?>
+  </div>
+</div>

@@ -1,0 +1,30 @@
+<?php
+  $id = $this->escapeHtmlAttr(uniqid());
+  $labelAttrs = !empty($this->labelAttrs) ? (' ' . implode(' ', $this->labelAttrs)) : '';
+  $inputAttrs = !empty($this->inputAttrs) ? (' ' . implode(' ', $this->inputAttrs)) : '';
+  $rating = $ratingData['count'] ? ($ratingData['rating'] ?? 0) : null;
+  // Unique name for the fields of read-only ratings so that displaying multiple ratings on a page works:
+  $fieldName = $this->readonly ? "rating_{$id}" : 'rating';
+?>
+<div class="star-rating<?=$this->readonly ? ' readonly' : ''?>">
+  <label class="rating__label hidden" for="rating_<?=$id?>_none" aria-label="<?=$this->transEsc('rating_none')?>"<?=$labelAttrs?>>
+    &nbsp;
+  </label>
+  <input class="rating__input" name="<?=$fieldName?>" id="rating_<?=$id?>_none" value="" type="radio"<?=null === $rating ? ' checked' : ''?><?=$inputAttrs?>>
+  <?php for ($level = 10; $level <= 100; $level += 10): ?>
+    <?php
+      $fieldId = "rating_{$id}_$level";
+      $rangeLow = $level;
+      $rangeHigh = 100 === $level ? 101 : ($level + 10);
+      $class = $level % 20 === 10 ? ' rating__label--half' : '';
+      $icon = $this->icon($level % 20 === 10 ? 'rating-half' : 'rating-full', 'rating__icon rating__icon--star');
+    ?>
+    <label class="rating__label<?=$class?>" for="<?=$fieldId?>" aria-label="<?=$this->transEsc("rating_$level")?>"<?=$labelAttrs?>>
+      <?=$icon?>
+    </label>
+    <input class="rating__input" name="<?=$fieldName?>" id="<?=$fieldId?>" value="<?=$level ?>" type="radio"<?=$rating >= $rangeLow && $rating < $rangeHigh ? ' checked' : ''?><?=$this->readonly ? ' disabled' : ''?><?=$inputAttrs?>>
+  <?php endfor; ?>
+</div>
+<?php if (!empty($this->allowClear)): ?>
+  <a href="#" data-click-set-checked="rating_<?=$id?>_none"><?=$this->transEsc('Clear')?></a>
+<?php endif; ?>

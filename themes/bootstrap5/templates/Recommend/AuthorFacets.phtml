@@ -1,0 +1,22 @@
+<?php if ($this->recommend->getResults()->getResultTotal() > 0): ?>
+  <?php $similarAuthors = $this->recommend->getSimilarAuthors(); ?>
+  <?php if (!empty($similarAuthors['list'])): ?>
+    <p class="author-label"><?=$this->transEsc('Author Results for')?> <strong><?=$this->escapeHtml($this->recommend->getSearchTerm()) ?></strong></p>
+    <div class="author-facets">
+      <div class="author-list">
+      <?php foreach ($similarAuthors['list'] as $i => $author): ?>
+        <?php if ($i == 5): ?>
+            <a href="<?=$this->url('author-search') . '?lookfor=' . urlencode($this->recommend->getSearchTerm()) ?>"><strong><?=$this->transEsc('see all') ?> <?=(isset($similarAuthors['count']) && $similarAuthors['count']) ? $similarAuthors['count'] : ''?> &raquo;</strong></a>
+          </div>
+          <div class="author-list">
+        <?php endif; ?>
+        <a href="<?=$this->url('author-home') . '?author=' . urlencode($author['value'])?>"><?=$this->escapeHtml($author['value']) ?><?php /* count disabled -- uncomment to add: echo ' - ' . $this->escapeHtml($author['count']); */ ?></a>
+        <?php if ($i + 1 < count($similarAuthors['list'])): ?>
+          <br>
+        <?php endif; ?>
+      <?php endforeach; ?>
+      </div>
+    </div>
+    <br>
+  <?php endif; ?>
+<?php endif; ?>

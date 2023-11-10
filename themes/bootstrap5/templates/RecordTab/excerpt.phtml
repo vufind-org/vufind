@@ -1,0 +1,18 @@
+<?php
+    // Set page title.
+    $this->headTitle($this->translate('Excerpt') . ': ' . $this->driver->getBreadcrumb());
+
+    // Grab excerpt data:
+    $excerpts = $this->tab->getContent();
+?>
+<?php if (count($excerpts) > 0): ?>
+  <?php foreach ($excerpts as $provider => $list): ?>
+    <?php foreach ($list as $excerpt): ?>
+      <p class="summary"><?=$excerpt['Content']?></p>
+      <?=$excerpt['Copyright'] ?? ''?>
+      <hr>
+    <?php endforeach; ?>
+  <?php endforeach; ?>
+<?php else: ?>
+  <?=$this->transEsc('No excerpts were found for this record.')?>
+<?php endif; ?>

@@ -1,0 +1,39 @@
+<?php $recommend = $this->recommend->getResults(); ?>
+<?php if (count($recommend) > 0): ?>
+  <ul class="list-group random <?=$this->recommend->getDisplayMode()?>">
+    <li class="list-group-item title" data-bs-toggle="collapse" data-bs-target="#side-collapse-randomrecommend">
+      <?=$this->transEsc('random_recommendation_title')?>
+    </li>
+    <div id="side-collapse-randomrecommend" class="collapse in">
+    <?php foreach ($recommend as $driver): ?>
+      <li class="list-group-item">
+        <?php if ($this->recommend->getDisplayMode() === 'images' || $this->recommend->getDisplayMode() === 'mixed'): ?>
+          <?php /* Display thumbnail if appropriate: */ ?>
+          <?=$this->record($driver)->getCover('RandomRecommend', 'small:medium', $this->recordLinker()->getUrl($driver)); ?>
+        <?php endif; ?>
+
+        <?php
+          $formats = $driver->getFormats();
+          $format = $formats[0] ?? '';
+        ?>
+        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($driver))?>" class="title <?=$this->record($driver)->getFormatClass($format)?> clearfix">
+          <?=$this->record($driver)->getTitleHtml()?>
+        </a>
+        <?php $summAuthors = $driver->getPrimaryAuthors(); ?>
+        <span class="small<?php if (!empty($summAuthors)): ?> pull-right flip<?php endif; ?>">
+          <?php $summDate = $driver->getPublicationDates(); ?>
+          <?php if (!empty($summDate)): ?>
+            <?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($summDate[0])?>)
+          <?php endif; ?>
+        </span>
+        <?php if (!empty($summAuthors)): ?>
+          <span class="small text-right">
+            <?=$this->transEsc('By')?>
+            <a href="<?=$this->record($driver)->getLink('author', $summAuthors[0])?>"><?=$this->escapeHtml($summAuthors[0])?></a><?php if (count($summAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?>
+          </span>
+        <?php endif; ?>
+      </li>
+    <?php endforeach; ?>
+    </div>
+  </ul>
+<?php endif; ?>

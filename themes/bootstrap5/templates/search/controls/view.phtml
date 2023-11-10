@@ -1,0 +1,27 @@
+<div class="view-buttons hidden-xs">
+  <?php $viewList = $this->params->getViewList(); ?>
+  <?php if (count($viewList) > 1): ?>
+    <?php foreach ($viewList as $viewType => $viewData): ?>
+      <?php $viewDesc = $this->translate($viewData['desc']); ?>
+      <?php if (!$viewData['selected']): ?>
+        <?php
+          $viewUrl = $this->results->getUrlQuery()->setViewParam($viewType);
+          if ('visual' === $viewType) {
+            $viewUrl = $viewUrl->setPage(1);
+          }
+        ?>
+        <a class="icon-link" href="<?=$viewUrl?>" title="<?=$this->transEscAttr('switch_view', ['%%view%%' => $viewDesc])?>" >
+      <?php else: ?>
+        <span class="icon-link" title="<?=$this->transEscAttr('view_already_selected', ['%%current%%' => $viewDesc]) ?>">
+      <?php endif; ?>
+      <?=$this->icon('view-' . $viewType, 'icon-link__icon') ?>
+      <span class="icon-link__label"><?=$this->escapeHtml($viewDesc) ?></span>
+      <?php if (!$viewData['selected']): ?>
+        </a>
+      <?php else: ?>
+        </span>
+      <?php endif; ?>
+      &nbsp;
+    <?php endforeach; ?>
+  <?php endif; ?>
+</div>

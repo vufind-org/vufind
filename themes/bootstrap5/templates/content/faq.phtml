@@ -1,0 +1,14 @@
+<?php $this->headTitle($this->translate('FAQs')); ?>
+
+<h1><?=$this->transEsc('FAQs') ?></h1>
+
+<?php if ($this->auth()->getManager()->supportsRecovery()): ?>
+  <p>
+    Q: How do I reset my password?<br>
+    A: Go to the login screen and click the "Forgot password" link. Enter either your user name or email address, and you will get an email containing a link to reset your password.
+  </p>
+<?php endif; ?>
+<p>
+  Q: Why does the service use cookies?<br>
+  A: Cookies are used to manage sessions, which include selected language, last search, book bag contents, any login information, etc.
+</p>

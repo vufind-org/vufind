@@ -1,0 +1,30 @@
+<?php
+  $url = $this->driver->getUrl();
+?>
+<div class="media">
+  <div class="media-body">
+    <div class="resultItemLine1">
+      <a href="<?=$this->escapeHtmlAttr($url)?>" class="title">
+        <?=$this->record($this->driver)->getTitleHtml()?>
+      </a>
+    </div>
+
+    <div class="resultItemLine2">
+      <?php $snippet = $this->driver->getHighlightedSnippet(); ?>
+      <?php $summary = $this->driver->getSummary(); ?>
+      <?php if (!empty($snippet)): ?>
+        <?=$this->highlight($snippet['snippet'])?>
+      <?php elseif (!empty($summary)): ?>
+        <?=$this->escapeHtml($summary[0])?>
+      <?php endif; ?>
+    </div>
+
+    <div class="resultItemLine3">
+      <?=$this->escapeHtml($url)?>
+      <?php $lastMod = $this->driver->getLastModified(); ?>
+      <?php if (!empty($lastMod)): ?>
+        <br><?=$this->transEsc('Last Modified')?>: <?=$this->escapeHtml(trim(str_replace(['T', 'Z'], ' ', $lastMod)))?>
+      <?php endif; ?>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,16 @@
+<?php
+    // Set page title
+    $this->headTitle($this->translate('external_auth_heading'));
+?>
+
+<div class="external-content-access">
+  <?=$this->flashmessages()?>
+  <?php if ($this->unauthorized): ?>
+    <div class="unauthorized-description">
+      <p><?=$this->transEsc('external_auth_unauthorized_desc'); ?></p>
+    </div>
+    <div>
+      <a href="<?=$this->url('myresearch-logout')?>" class="logout btn btn-primary" title="<?=$this->transEscAttr('Log Out')?>"><strong><?=$this->transEsc('Log Out')?></strong></a>
+    </div>
+  <?php endif; ?>
+</div>

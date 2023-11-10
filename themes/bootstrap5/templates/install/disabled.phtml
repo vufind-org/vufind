@@ -1,0 +1,10 @@
+<?php
+    // Set page title.
+    $this->headTitle($this->translate('auto_configure_title'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('install-home') . '">' . $this->transEsc('auto_configure_title') . '</a><li> <li class="active">' . $this->transEsc('Disabled') . '</li>';
+?>
+<h2><?=$this->transEsc('auto_configure_title')?></h2>
+
+<p><?=$this->transEsc('auto_configure_disabled')?></p>

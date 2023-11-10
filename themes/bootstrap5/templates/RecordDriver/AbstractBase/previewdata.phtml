@@ -1,0 +1,85 @@
+<?php
+    $previews = isset($this->config->Content->previews)
+        ? explode(',', $this->config->Content->previews) : [];
+    if (!empty($previews)) {
+        $idClasses = $this->record($this->driver)->getPreviewIds();
+
+        // If we found at least one identifier, we can insert the data
+        $html = '';
+        if (!empty($idClasses)) {
+            // Convert to string:
+            $idClasses = implode(' ', $idClasses);
+
+            // Loop through configured options and build appropriate HTML:
+            foreach ($previews as $current) {
+                switch (trim(strtolower($current))) {
+                case 'google':
+                    $spanClass = 'googlePreviewSpan';
+                    // specify link vs. tab
+                    $link_options = '';
+                    if ($this->config->Content->GoogleOptions->link ?? false) {
+                        $link_options = 'link:' . strtolower(
+                            str_replace(
+                                ' ',
+                                '',
+                                $this->config->Content->GoogleOptions->link
+                            )
+                        );
+                    }
+                    $tab_options = '';
+                    if ($this->config->Content->GoogleOptions->tab ?? false) {
+                        $tab_options = 'tab:' . strtolower(
+                            str_replace(
+                                ' ',
+                                '',
+                                $this->config->Content->GoogleOptions->tab
+                            )
+                        );
+                    }
+                    $options = ($link_options && $tab_options)
+                        ? "$link_options;$tab_options"
+                        : "$link_options$tab_options";
+                    // maintain previous behavior and default
+                    if (!$link_options && !$tab_options) {
+                        $options = 'link:full,partial';
+                        if (is_string($this->config->Content->GoogleOptions ?? null)) {
+                            $options = 'link:' . strtolower(
+                                str_replace(
+                                    ' ',
+                                    '',
+                                    $this->config->Content->GoogleOptions
+                                )
+                            );
+                        }
+                    }
+                    break;
+                case 'openlibrary':
+                    $spanClass = 'olPreviewSpan';
+                    $options = isset($this->config->Content->OpenLibraryOptions)
+                        ? str_replace(' ', '', $this->config->Content->OpenLibraryOptions)
+                        : 'full,partial';
+                    break;
+                case 'hathitrust':
+                    $spanClass = 'hathiPreviewSpan';
+                    $options = isset($this->config->Content->HathiRights)
+                        ? str_replace(' ', '', $this->config->Content->HathiRights)
+                        : 'pd,ic-world';
+                    break;
+                default:
+                    $spanClass = $options = false;
+                    break;
+                }
+                if ($spanClass) {
+                    $html .= '<span class="' . $spanClass . '__' . $options . '"></span>';
+                }
+            }
+
+            // If we built some HTML, we should load the supporting Javascript and
+            // add the necessary identifier code:
+            if (!empty($html)) {
+                $html .= '<span class="previewBibkeys ' . $idClasses . '"></span>';
+                $this->headScript()->appendFile('preview.js');
+                echo $html;
+            }
+        }
+    }

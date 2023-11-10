@@ -1,0 +1,7 @@
+<div class="alert alert-warning">
+  <h2><?=$this->transEsc('ils_offline_title')?></h2>
+  <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
+  <p><?=$this->transEsc($this->offlineModeMsg)?></p>
+  <?php $supportEmail = $this->escapeHtmlAttr($this->systemEmail()); ?>
+  <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
+</div>

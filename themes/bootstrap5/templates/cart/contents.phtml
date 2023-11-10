@@ -1,0 +1,18 @@
+<?php $records = $this->cart()->getRecordDetails(); ?>
+<?php if (!empty($records)): ?>
+  <hr>
+  <ul class="list-unstyled">
+  <?php foreach ($records as $i => $record): ?>
+    <li>
+      <div class="checkbox">
+        <label>
+          <?=$this->record($record)->getCheckbox('cart')?>
+          <a title="<?=$this->transEscAttr('View Record')?>" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($record))?>" data-lightbox-ignore><?=$this->escapeHtml($record->getBreadcrumb())?></a>
+        </label>
+      </div>
+    </li>
+  <?php endforeach; ?>
+  </ul>
+<?php else: ?>
+  <p class="alert alert-info"><?=$this->transEsc('bookbag_is_empty')?>.</p>
+<?php endif; ?>

@@ -1,0 +1,35 @@
+<?php if ($this->wrapHtml):?>
+  <div class="form-group">
+<?php endif;?>
+
+<?php if (count($this->captchas) == 1):?>
+  <?php if ($captchaHtml = $this->captcha()->getHtmlForCaptcha($this->captchas[0])): ?>
+    <label class="control-label"><?=$this->transEsc('captcha_label_single')?></label>
+    <p><?=$captchaHtml?></p>
+  <?php endif; ?>
+<?php else:?>
+  <label class="control-label"><?=$this->transEsc('captcha_label_multiple')?></label>
+  <!-- nav -->
+  <ul class="nav nav-tabs">
+    <?php foreach ($this->captchas as $i => $captcha):?>
+      <?php $active = $i == 0 ? ' class="active"' : ''?>
+      <li<?=$active?>>
+        <a href="#<?=$captcha->getId()?>" role="tab" data-toggle="tab"><?=$this->transEsc('captcha_method_' . strtolower($captcha->getId()), [], $captcha->getId())?></a>
+      </li>
+    <?php endforeach;?>
+  </ul>
+
+  <!-- panes -->
+  <div class="tab-content">
+    <?php foreach ($this->captchas as $i => $captcha):?>
+      <?php $active = $i == 0 ? ' active' : ''?>
+      <div class="tab-pane fade in<?=$active?>" id="<?=$captcha->getId()?>">
+        <?=$this->captcha()->getHtmlForCaptcha($captcha)?>
+      </div>
+    <?php endforeach;?>
+  </div>
+<?php endif;?>
+
+<?php if ($this->wrapHtml):?>
+  </div>
+<?php endif;?>
