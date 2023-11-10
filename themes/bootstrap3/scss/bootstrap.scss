@@ -449,6 +449,7 @@ ul.list-group {
 /* ------ Responsive table for small screen size ------ */
 @media screen and (max-width: 768px) {
   .table-responsive {
+    border: none;
     thead {
       position: absolute;
       width: 1px;
