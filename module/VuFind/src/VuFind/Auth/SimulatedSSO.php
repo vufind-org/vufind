@@ -51,13 +51,33 @@ class SimulatedSSO extends AbstractBase
     protected $getSessionInitiatorCallback;
 
     /**
+     * Configuration settings
+     *
+     * @var array
+     */
+    protected $simulatedSSOConfig;
+
+    /**
+     * Default user attributes, if not overridden by configuration.
+     *
+     * @var array
+     */
+    protected $defaultAttributes = [
+        'firstname' => 'Test',
+        'lastname' => 'User',
+        'email' => 'fake@example.com',
+    ];
+
+    /**
      * Constructor
      *
-     * @param callable $url Session initiator URL callback
+     * @param callable $url    Session initiator URL callback
+     * @param array    $config Configuration settings
      */
-    public function __construct($url)
+    public function __construct($url, array $config = [])
     {
         $this->getSessionInitiatorCallback = $url;
+        $this->simulatedSSOConfig = $config;
     }
 
     /**
@@ -71,10 +91,31 @@ class SimulatedSSO extends AbstractBase
     public function authenticate($request)
     {
         // If we made it this far, we should log in the user!
-        $user = $this->getUserTable()->getByUsername('fakeuser1');
-        $user->firstname = 'Test';
-        $user->lastname = 'User';
-        $user->email = 'fake@example.com';
+        $username = $this->simulatedSSOConfig['General']['username'] ?? 'fakeuser1';
+        if (!$username) {
+            throw new AuthException('Simulated failure');
+        }
+        $user = $this->getUserTable()->getByUsername($username);
+        $attribs = array_merge(
+            $this->defaultAttributes,
+            $this->simulatedSSOConfig['General']['attributes'] ?? []
+        );
+        $catPassword = null;
+        foreach ($attribs as $attribute => $value) {
+            if ($attribute == 'email') {
+                $user->updateEmail($value);
+            } elseif ($attribute != 'cat_password') {
+                $user->$attribute = $value ?? '';
+            } else {
+                $catPassword = $value;
+            }
+        }
+        if (!empty($user->cat_username)) {
+            $user->saveCredentials(
+                $user->cat_username,
+                empty($catPassword) ? $user->getCatPassword() : $catPassword
+            );
+        }
 
         // Save and return the user object:
         $user->save();
