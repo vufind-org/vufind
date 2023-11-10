@@ -1685,7 +1685,7 @@ class Alma extends AbstractBase implements
     {
         // Remove trailing Z from end of date
         // e.g. from Alma we get dates like 2012-07-13Z without time, which is wrong)
-        if (!str_contains($date, 'T') && substr($date, -1) === 'Z') {
+        if (!str_contains($date, 'T') && str_ends_with($date, 'Z')) {
             $date = substr($date, 0, -1);
         }
 

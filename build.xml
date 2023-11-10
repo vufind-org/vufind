@@ -57,7 +57,7 @@
   <property name="phpunit_remote_coverage" value="" /><!-- set to 1 to enable code coverage for Mink tests  -->
   <property name="retain_coverage_files" value="false" /><!-- set to true to keep temporary coverage files from Mink tests -->
 
-  <property name="version" value="9.0.3" />
+  <property name="version" value="9.1" />
 
   <!-- We only need the -p switch if the password is non-blank -->
   <if>
@@ -383,6 +383,10 @@
         <exclude name="themes/default-dark/" />
       </fileset>
     </copy>
+    <!-- simple-keyboard -->
+    <copy file="${srcdir}/node_modules/simple-keyboard/build/index.js" todir="${srcdir}/themes/bootstrap3/js/vendor/simple-keyboard" overwrite="true" />
+    <copy file="${srcdir}/node_modules/simple-keyboard/build/css/index.css" todir="${srcdir}/themes/bootstrap3/css/vendor/simple-keyboard" overwrite="true" />
+    <copy file="${srcdir}/node_modules/simple-keyboard-layouts/build/index.js" todir="${srcdir}/themes/bootstrap3/js/vendor/simple-keyboard-layouts" overwrite="true" />
     <!-- vanilla-cookieconsent -->
     <copy file="${srcdir}/node_modules/vanilla-cookieconsent/dist/cookieconsent.umd.js" todir="${srcdir}/themes/bootstrap3/js/vendor" overwrite="true" />
   </target>
