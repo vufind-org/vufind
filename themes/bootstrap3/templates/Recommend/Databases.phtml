@@ -9,9 +9,9 @@
       <?php foreach ($databases as $name => $database): ?>
         <div class="list-group-item">
           <span>
-            <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($database['url']))?>" class="title" target="_blank">
-              <?=$this->icon('external-link') ?>
-              <?=$this->escapeHtml($name)?>
+            <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($database['url']))?>" class="title icon-link" target="_blank">
+              <?=$this->icon('external-link', 'icon-link__icon') ?>
+              <span class="icon-link__label"><?=$this->escapeHtml($name)?></span>
             </a>
           </span>
         </div>
