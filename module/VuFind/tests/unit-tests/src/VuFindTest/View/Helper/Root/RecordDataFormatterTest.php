@@ -449,11 +449,23 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'template' => 'data-publicationDetails.phtml',
             'pos' => 4008,
         ];
+        $spec['EnabledField'] = [
+            'dataMethod' => 'getContainerTitle',
+            'renderType' => 'Simple',
+            'enabled' => true,
+            'pos' => 5000,
+        ];
+        $spec['DisabledField'] = [
+            'dataMethod' => 'getContainerTitle',
+            'renderType' => 'Simple',
+            'enabled' => false,
+            'pos' => 5001,
+        ];
         $spec['FunctionWithParams'] = [
             'dataMethod' => 'getFunctionWithParams',
             'renderType' => 'Simple',
             'dataMethodParams' => ['test', 'test2'],
-            'pos' => 5000,
+            'pos' => 5002,
         ];
         $spec['ConfigurableWithoutConfig'] = [
             'dataMethod' => 'getNewerTitles',
@@ -510,6 +522,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'CombineAltNoStdValue' => 'Alternative Summary',
             'CombineAltArray' => 'New TitleSecond New Title Alt New TitleSecond Alt New Title',
             'CombineAltRenderTemplate' => 'Centro di Studi Vichiani, 1992 Alt Place Alt Name Alt Date',
+            'EnabledField' => '0',
             'FunctionWithParams' => 'test test2',
             'ConfigurableWithoutOptions' => 'New TitleSecond New Title',
             'ConfigurableWithOptions' => 'New Title;Second New Title',

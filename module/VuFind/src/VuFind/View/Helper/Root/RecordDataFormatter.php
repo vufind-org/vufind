@@ -151,6 +151,10 @@ class RecordDataFormatter extends AbstractHelper
             }
         }
 
+        if (!($options['enabled'] ?? true)) {
+            return null;
+        }
+
         // Check whether the data is worth rendering.
         if (!$this->allowValue($data, $options, true)) {
             return null;
