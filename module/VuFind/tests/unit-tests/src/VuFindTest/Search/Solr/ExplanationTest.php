@@ -493,7 +493,7 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('1.6698492760937964', $explanationElement['percent']);
         $this->assertEquals('title_short', $explanationElement['fieldName']);
         $this->assertEquals('potter', $explanationElement['fieldValue']);
-        $this->assertTrue($explanationElement['exactMatch']);
+        $this->assertEquals('exact', $explanationElement['exactMatch']);
         $this->assertEquals('750.0', $explanationElement['fieldModifier']);
 
         $explanationElement = $explanation->getExplanation()[1];
@@ -501,7 +501,7 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('1.5375755961911866', $explanationElement['percent']);
         $this->assertEquals('title_short', $explanationElement['fieldName']);
         $this->assertEquals('harri', $explanationElement['fieldValue']);
-        $this->assertFalse($explanationElement['exactMatch']);
+        $this->assertEquals('inexact', $explanationElement['exactMatch']);
         $this->assertEquals('750.0', $explanationElement['fieldModifier']);
     }
 

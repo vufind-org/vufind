@@ -1,0 +1,26 @@
+<?php
+  if (!empty($fieldName)) {
+    $fieldDescription = $this->transEsc('IndexFieldDescription::' . $fieldName);
+    $fieldDescription = $fieldName !== $fieldDescription ? ' (' . $fieldDescription . ')' : '';
+  } else {
+    $fieldDescription = '';
+  }
+  $modifier = isset($explainElement['fieldModifier'])
+    ? ', ' . $this->transEsc(
+        'explain_modifier',
+        ['%%modifier%%' => $this->localizedNumber($explainElement['fieldModifier'], $decimalPlaces)]
+    )
+    : '';
+  $exactMatchClass = ($explainElement['exactMatch'] ?? 'unkown') . '-match';
+?>
+<tr>
+  <td class="percentage">
+    <?=$this->localizedNumber($explainElement['percent'], $decimalPlaces)?>%
+  </td>
+  <td>
+    <?php if ($fieldValue): ?>
+      <span class="<?=$exactMatchClass?>">"<?=$fieldValue?>"</span>
+    <?php endif; ?>
+    <?=$this->transEsc('in')?>: <?=$fieldName?><?=$fieldDescription?><?=$modifier?>
+  </td>
+</tr>

@@ -301,7 +301,9 @@ class Explanation extends \VuFind\Search\Base\Explanation
         // handle coord
         if (!empty($lines) && str_contains($this->parseLine(end($lines))['description'], 'coord')) {
             $this->coord = $this->parseLine(end($lines));
-            $this->baseScore = $this->baseScore / $this->coord['value'];
+            if ($this->coord['value'] > 0) {
+                $this->baseScore = $this->baseScore / $this->coord['value'];
+            }
         }
 
         // build explanation
@@ -399,7 +401,7 @@ class Explanation extends \VuFind\Search\Base\Explanation
             }
         }
 
-        //summery of lower childes
+        // summery of lower children
         if (
             (
                 (str_contains($description, 'product of:') || str_contains($description, 'sum of') || $isMaxPlusOthers)
@@ -415,7 +417,7 @@ class Explanation extends \VuFind\Search\Base\Explanation
                     $lines = $this->buildRecursive($lines, $modifier * $matches['tieValue']);
                 }
             }
-            //match in field
+            // match in field
         } elseif (str_contains($description, 'weight') && !str_contains($description, 'FunctionScoreQuery')) {
             // parse explaining element
             $currentValue = $value * $modifier;
@@ -514,14 +516,17 @@ class Explanation extends \VuFind\Search\Base\Explanation
         $res = [
             'value' => $value,
             'percent' => $percentage,
+            'fieldName' => 'unknown',
+            'fieldValue' => 'unknown',
+            'exactMatch' => 'unknown',
         ];
-        $pattern = '/weight\((?<fieldName>[^:]+):(?<fieldValue>\"([^\W]+\s?)+[^\\W]+\"|[^\W]+)(.+?(?= in))?/';
+        $pattern = '/weight\((?<fieldName>[^:]+):(?<fieldValue>\"([^\W]+\s?)+[^\\W]+\"|[^\W]+)(.+?(?= in))?/u';
         if (preg_match($pattern, $description, $matches)) {
             $fieldValue = str_replace('"', '', $matches['fieldValue']);
             $res['fieldName'] = $matches['fieldName'];
             $res['fieldValue'] = $fieldValue;
             // extra space to only exact match whole words
-            $res['exactMatch'] = str_contains($this->lookfor . ' ', $fieldValue . ' ');
+            $res['exactMatch'] = str_contains($this->lookfor . ' ', $fieldValue . ' ') ? 'exact' : 'inexact';
         }
         if ($fieldModifier !== null) {
             $res['fieldModifier'] = $fieldModifier;

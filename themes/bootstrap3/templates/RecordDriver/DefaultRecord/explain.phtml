@@ -65,31 +65,13 @@ $link = $this->recordLinker()->getUrl($this->driver);
   ?>
   <table>
   <?php foreach ($explanation->getExplanation() as $explainElement): ?>
-    <tr>
-      <?php
-        $fieldModifier = $explainElement['fieldModifier'] ?? false;
-        $shortExplainLabels[] = $explainElement['fieldName']
-          . ($fieldModifier ? ('^' . $this->localizedNumber($fieldModifier, $decimalPlaces)) : '')
-          . ' (' . $explainElement['fieldValue'] . ')';
-        $shortExplain[] = $explainElement['value'];
-        $fieldNameKey = $explainElement['fieldName'];
-        $fieldName = $this->transEsc('ExplainFieldName::' . $fieldNameKey);
-      ?>
-      <td class="percentage">
-        <?=$this->localizedNumber($explainElement['percent'], $decimalPlaces)?>%
-      </td>
-      <td>
-        <span class="<?=$explainElement['exactMatch'] ? 'exact-match' : 'inexact-match'?>"><?=$explainElement['fieldValue']?>"</span>
-        <?=$this->transEsc('in')?>: <?=$explainElement['fieldName']?>
-        <?php if ($fieldNameKey !== $fieldName): ?>
-          (<?=$fieldName?>)
-        <?php endif; ?>
-        <?php if (isset($explainElement['fieldModifier'])): ?>
-          , <?=$this->transEsc('explain_modifier', ['%%modifier%%' => $this->localizedNumber($explainElement['fieldModifier'], $decimalPlaces)])?>
-        <?php endif; ?>
-      </td>
-    </tr>
-    <?php endforeach; ?>
+    <?php
+      $renderedElement = $this->explainElement($explainElement, $decimalPlaces);
+      $shortExplainLabels[] = $renderedElement['shortLabel'];
+      $shortExplain[] = $renderedElement['shortValue'];
+      echo $renderedElement['completeLine'];
+    ?>
+  <?php endforeach; ?>
   </table>
   <?php if (!empty($rest) and $rest['percent'] < 99): ?>
     <div class="explain-rest">
@@ -100,30 +82,10 @@ $link = $this->recordLinker()->getUrl($this->driver);
       <b><?=$this->transEsc('rest')?></b>
       <table>
         <?php foreach ($restExplanation as $explainElement): ?>
-          <tr>
-            <?php
-              $shortExplainRest[] = [
-                $explainElement['fieldName'] . ($explainElement['fieldModifier'] ?? '') . ' (' . $explainElement['fieldValue'] . ')',
-                $explainElement['value'],
-              ];
-              $fieldValueColor = $explainElement['exactMatch'] ? 'black' : '#436c71';
-              $fieldNameKey = $explainElement['fieldName'];
-              $fieldName = $this->transEsc('ExplainFieldName::' . $fieldNameKey);
-            ?>
-            <td class="percentage rest-value">
-              <?=$this->localizedNumber($explainElement['percent'], $decimalPlaces)?>%
-            </td>
-            <td>
-              <span class="<?=$explainElement['exactMatch'] ? 'exact-match' : 'inexact-match'?>">"<?=$explainElement['fieldValue']?>"</span>
-              <?=$this->transEsc('in')?>: <?=$explainElement['fieldName']?>
-              <?php if ($fieldNameKey !== $fieldName): ?>
-                (<?=$fieldName?>)
-              <?php endif; ?>
-            </td>
-          </tr>
+          <?=$this->explainElement($explainElement, $decimalPlaces)['completeLine'];?>
         <?php endforeach; ?>
         <tr>
-          <td class="percentage rest-value sum-rest">
+          <td class="percentage sum-rest">
             <?=$this->localizedNumber($rest['percent'], $decimalPlaces)?>%
           </td>
           <td>
@@ -142,7 +104,7 @@ $link = $this->recordLinker()->getUrl($this->driver);
     <div class="charts" >
       <?php if(!empty($values) && !empty($labels)): ?>
         <div class="pie-chart-container">
-          <canvas id="explain-pie-chart"
+          <canvas id="js-explain-pie-chart"
              class="explain-chart"
              data-chart-title="<?=$recordId?>"
              data-chart-labels="<?=$labels?>"
@@ -159,7 +121,7 @@ $link = $this->recordLinker()->getUrl($this->driver);
         ?>
         <br>
         <div class="explain-column-container">
-          <canvas id="explain-column-chart"
+          <canvas id="js-explain-column-chart"
                class="explain-chart"
                data-chart-title="<?=$this->transEsc('explain_compared', ['%%recordId%%' => $recordId])?>"
                data-chart-data="<?=$this->escapeHtmlAttr(json_encode($data))?>"

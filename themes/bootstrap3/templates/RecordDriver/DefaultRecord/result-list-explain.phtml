@@ -1,7 +1,7 @@
 <?php
   $link = $this->recordLinker()->getActionUrl($this->driver, 'Explain', $this->request);
 ?>
-<a target="explain" href="<?=$this->escapeHtmlAttr($link)?>"><?=$this->transEsc('Explain')?></a>
+<a target="_blank" href="<?=$this->escapeHtmlAttr($link)?>"><?=$this->transEsc('Explain')?></a>
 <br>
 <?php
   $recordId = $this->driver->getUniqueID();
@@ -13,7 +13,7 @@
     $this->headScript()->appendFile('vendor/chart.js');
     $this->headScript()->appendFile('explain.js');
   ?>
-  <div class="result-list-explain">
+  <div class="js-result-list-explain">
     <canvas class="bar-chart"
             data-chart-title="<?=$this->transEsc('explain_compared', ['%%recordId%%' => $recordId])?>"
             data-chart-data="<?=$this->escapeHtmlAttr('[["item"],["value"]]')?>"

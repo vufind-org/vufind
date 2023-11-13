@@ -25,7 +25,7 @@ VuFind.register('explain', function explain() {
   }
 
   function _setupResultListChart() {
-    document.querySelectorAll('.result-list-explain .bar-chart').forEach(function createResultListChart(barChart) {
+    document.querySelectorAll('.js-result-list-explain .bar-chart').forEach(function createResultListChart(barChart) {
       const maxScore = barChart.dataset.maxScore;
       const score = barChart.dataset.score;
       const diff = Math.abs(maxScore - score);
@@ -90,50 +90,54 @@ VuFind.register('explain', function explain() {
 
 
   function _setupExplainPieChart() {
-    const pieChart = document.getElementById('explain-pie-chart');
-    if (pieChart != null) {
-      const data = pieChart.dataset.chartData.split(', ');
-      const labels = pieChart.dataset.chartLabels.split(', ');
-      new Chart(pieChart, {
-        type: 'pie',
-        data: {
-          labels: labels,
-          datasets: [
-            {
-              label: 'score',
-              data: data,
-              borderColor: "black",
-              borderWidth: 0.2,
-              backgroundColor: [
-                "#ffa600",
-                "#ff7c43",
-                "#f95d6a",
-                "#d45087",
-                "#a05195",
-                "#665191",
-                "#2f4b7c",
-                "#003f5c",
-              ],
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          aspectRatio: 1 | 1,
-          maintainAspectRatio: false,
-          devicePixelRatio: 1.8, //fixes "blurry" text
-          plugins: {
-            legend: {
-              position: 'right',
-            },
-          }
-        }
-      });
+    const pieChart = document.getElementById('js-explain-pie-chart');
+    if (!pieChart) {
+      return;
     }
+    const data = pieChart.dataset.chartData.split(', ');
+    const labels = pieChart.dataset.chartLabels.split(', ');
+    new Chart(pieChart, {
+      type: 'pie',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'score',
+            data: data,
+            borderColor: "black",
+            borderWidth: 0.2,
+            backgroundColor: [
+              "#ffa600",
+              "#ff7c43",
+              "#f95d6a",
+              "#d45087",
+              "#a05195",
+              "#665191",
+              "#2f4b7c",
+              "#003f5c",
+            ],
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        aspectRatio: 1 | 1,
+        maintainAspectRatio: false,
+        devicePixelRatio: 1.8, // fixes "blurry" text
+        plugins: {
+          legend: {
+            position: 'right',
+          },
+        }
+      }
+    });
   }
 
   function _setupExplainColumnChart() {
-    const columnChart = document.getElementById('explain-column-chart');
+    const columnChart = document.getElementById('js-explain-column-chart');
+    if (!columnChart) {
+      return;
+    }
     const maxScore = columnChart.dataset.maxScore;
     const score = columnChart.dataset.score;
     const diff = Math.abs(maxScore - score);
@@ -163,7 +167,7 @@ VuFind.register('explain', function explain() {
         ]
       },
       options: {
-        devicePixelRatio: 1.8, //fixes "blurry" text
+        devicePixelRatio: 1.8, // fixes "blurry" text
         responsive: true,
         aspectRatio: 1 | 4,
         maintainAspectRatio: false,
