@@ -35,6 +35,7 @@ use VuFind\Connection\LibGuides;
 
 use function count;
 use function intval;
+use function strlen;
 
 /**
  * Databases Recommendations Module
