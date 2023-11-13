@@ -55,12 +55,20 @@ $well-bg:                #f5f5f5 !default;
 $well-border:            darken($well-bg, 7%) !default;
 
 // *** Styles ***
+.sr-only {
+    @extend .visually-hidden;
+}
+
 .btn-default {
-    @extend .btn-primary;
+    @extend .btn-outline-secondary;
+    //@include button-outline-variant($text-color, $body-bg);
+}
+.btn-group {
+    display: inline-block;
 }
 
 .label {
-    @extend .badge;
+    //@extend .badge;
 }
 .label-info {
     @extend .text-bg-primary;
@@ -70,12 +78,41 @@ $well-border:            darken($well-bg, 7%) !default;
     display: none;
 }
 
-.form-control, .form-select {
-    display: inline-block;
+.searchForm {
+    .form-control, .form-select {
+        display: inline-block;
+    }
+    .btn {
+        vertical-align: baseline;
+    }
 }
 
 .form-select {
     width: initial;
+    appearance: auto;
+    padding-top: 0.525rem;
+    padding-bottom: 0.525rem;
+}
+
+.control-label {
+    @extend .form-label;
+}
+
+.form-group {
+    @extend .mb-3;
+}
+
+h1, .h1,
+h2, .h2,
+h3, .h3 {
+  margin-top: $line-height-base * 1rem;
+  margin-bottom: ($line-height-base / 2) * 1rem;
+}
+h4, .h4,
+h5, .h5,
+h6, .h6 {
+  margin-top: ($line-height-base / 2) * 1rem;
+  margin-bottom: ($line-height-base / 2) * 1rem;
 }
 
 .hidden {

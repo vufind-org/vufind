@@ -10,3 +10,15 @@ $danger:          #d9534f;
 
 // Disable transitions to allow the bs3-compat.js to do its work without visual distractions:
 $enable-transitions: false;
+
+// Disable several default icons:
+$accordion-button-active-icon: none;
+$accordion-button-active-icon-dark: none;
+$accordion-button-icon: none;
+$accordion-button-icon-dark: none;
+$form-select-indicator: none;
+$form-select-indicator-dark: none;
+$form-switch-bg-image: none;
+$form-switch-bg-image-dark: none;
+$navbar-dark-toggler-icon-bg: none;
+$navbar-light-toggler-icon-bg: none;

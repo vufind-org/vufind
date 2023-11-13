@@ -86,7 +86,7 @@ VuFind.register('account', function Account() {
         .attr("title", VuFind.translate("account_has_alerts"))
         .tooltip();
     } else {
-      $("#account-icon").tooltip("destroy");
+      $("#account-icon").tooltip("hide");
     }
   };
   var _ajaxLookup = function _ajaxLookup(module) {
