@@ -73,7 +73,7 @@ abstract class AbstractSearchObject implements RecommendInterface
      *
      * @var string
      */
-    protected $iniSection;
+    protected $filterIniSection;
 
     /**
      * Name of request parameter to use for search query
@@ -124,7 +124,7 @@ abstract class AbstractSearchObject implements RecommendInterface
             ? intval($settings[1]) : 5;
 
         $this->heading = $settings[2] ?? $this->getDefaultHeading();
-        $this->iniSection = $settings[3] ?? false;
+        $this->filterIniSection = $settings[3] ?? false;
     }
 
     /**
@@ -167,14 +167,14 @@ abstract class AbstractSearchObject implements RecommendInterface
             );
 
             // Set any filters configured for this search
-            if (!empty($this->iniSection)) {
+            if (!empty($this->filterIniSection)) {
                 $ini = $params->getOptions()->getSearchIni();
                 $config = $this->configManager->get($ini);
                 try {
-                    $filters = $config->{$this->iniSection}->toArray() ?? [];
+                    $filters = $config->{$this->filterIniSection}->toArray() ?? [];
                 } catch (\Error $e) {
                     throw new \Exception(
-                        "No section found matching '$this->iniSection' in $ini.ini."
+                        "No section found matching '$this->filterIniSection' in $ini.ini."
                     );
                 }
                 foreach ($filters as $filter) {
