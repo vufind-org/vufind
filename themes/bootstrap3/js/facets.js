@@ -45,10 +45,19 @@ VuFind.register('facetList', function FacetList() {
       }
       url += '&' + encodeURIComponent(key) + '=' + encodeURIComponent(val);
     }
+
     let contains = getCurrentContainsValue();
     if (contains) {
       url += '&contains=' + encodeURIComponent(contains);
     }
+
+    if (!("facetsort" in overrideParams)) {
+      let sort = $('.js-facet-sort.active').data('sort');
+      if (sort !== undefined) {
+        url += '&facetsort=' + encodeURIComponent(sort);
+      }
+    }
+
     url += '&ajax=1';
 
     return Promise.resolve($.ajax({
