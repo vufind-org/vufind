@@ -32,6 +32,8 @@ namespace VuFind\Auth;
 use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Exception\Auth as AuthException;
 
+use function is_array;
+
 /**
  * Simulated single sign-on authentication module (for testing purposes only).
  *
