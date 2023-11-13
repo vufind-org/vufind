@@ -72,7 +72,7 @@ abstract class AbstractLayer implements LayerInterface
      * @param resource $im    Image resource being updated
      * @param string   $color Legal color name from HTML4
      *
-     * @return int allocated color
+     * @return int|false allocated color
      */
     protected function getColor($im, $color)
     {
