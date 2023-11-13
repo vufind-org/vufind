@@ -273,7 +273,7 @@ class InstallCommand extends Command
     {
         // There is one special case for Windows, and a variety of different
         // Unix-flavored possibilities that all work similarly.
-        $msg = (strtoupper(substr(php_uname('s'), 0, 3)) === 'WIN')
+        $msg = PHP_OS_FAMILY === 'Windows'
             ? $this->getWindowsApacheMessage() : $this->getLinuxApacheMessage();
         $output->writeln($msg);
     }

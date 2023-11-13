@@ -51,6 +51,7 @@
   $this->headLink()->appendStylesheet('combined-search.css');
 ?>
 <?=$this->flashmessages()?>
+<h1 class="sr-only"><?=$this->escapeHtml($headTitle)?></h1>
 <form id="search-cart-form" class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-searchresultsbulk')?>">
   <?php $recs = $combinedResults->getRecommendations('top'); ?>
   <?php if (!empty($recs)): ?>

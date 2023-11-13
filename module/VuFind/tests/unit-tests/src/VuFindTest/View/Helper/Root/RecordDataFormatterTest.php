@@ -35,6 +35,7 @@ use VuFind\View\Helper\Root\RecordDataFormatter;
 use VuFind\View\Helper\Root\RecordDataFormatterFactory;
 
 use function count;
+use function func_get_args;
 
 /**
  * RecordDataFormatter Test Class
@@ -128,7 +129,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         $addMethods = [
             'getFullTitle', 'getFullTitleAltScript', 'getAltFullTitle', 'getBuildingsAltScript',
             'getNotExistingAltScript', 'getSummaryAltScript', 'getNewerTitlesAltScript',
-            'getPublicationDetailsAltScript',
+            'getPublicationDetailsAltScript', 'getFunctionWithParams',
         ];
         $record = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
             ->onlyMethods($onlyMethods)
@@ -175,6 +176,11 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue(['New Title', 'Second New Title']));
         $record->expects($this->any())->method('getNewerTitlesAltScript')
             ->will($this->returnValue(['Alt New Title', 'Second Alt New Title']));
+        $record->expects($this->any())->method('getFunctionWithParams')
+            ->will($this->returnCallback(function () {
+                $args = func_get_args();
+                return implode(' ', $args);
+            }));
 
         // Load record data from fixture file:
         $fixture = $this->getJsonFixture('misc/testbug2.json');
@@ -429,6 +435,12 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'template' => 'data-publicationDetails.phtml',
             'pos' => 4008,
         ];
+        $spec['FunctionWithParams'] = [
+            'dataMethod' => 'getFunctionWithParams',
+            'renderType' => 'Simple',
+            'dataMethodParams' => ['test', 'test2'],
+            'pos' => 5000,
+        ];
         $expected = [
             'Building' => 'prefix_0',
             'Published in' => '0',
@@ -459,6 +471,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'CombineAltNoStdValue' => 'Alternative Summary',
             'CombineAltArray' => 'New TitleSecond New Title Alt New TitleSecond Alt New Title',
             'CombineAltRenderTemplate' => 'Centro di Studi Vichiani, 1992 Alt Place Alt Name Alt Date',
+            'FunctionWithParams' => 'test test2',
         ];
         // Call the method specified by the data provider
         $results = $this->$function($driver, $spec);
