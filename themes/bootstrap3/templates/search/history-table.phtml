@@ -45,7 +45,7 @@
         </td>
         <td class="history_results" data-label="<?=$this->transEscAttr('history_results')?>"><?=$this->escapeHtml($this->localizedNumber($info->getResultTotal()))?></td>
         <?php if ($scheduleSupported): ?>
-          <td class="search-schedule-header">
+          <td class="search-schedule-header" data-label="<?=$this->transEscAttr('history_schedule')?>">
           <?php if (isset($this->schedule[$info->getSearchId()])): ?>
             <?php $schedule = $this->schedule[$info->getSearchId()]; ?>
               <form class="form-inline jumpMenuForm" action="<?= $this->url('myresearch-savesearch')?>" method="get" name="schedule">
