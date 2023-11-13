@@ -84,8 +84,13 @@ VuFind.register('facetList', function FacetList() {
   function registerCallbacks() {
     $('.facet-lightbox-filter').removeClass('hidden');
 
-    $('.ajax_param[data-name="contains"]').on('input', function onInputChangeFacetList() {
+    $('.ajax_param[data-name="contains"]').on('input', function onInputChangeFacetList(event) {
       clearTimeout(inputCallbackTimeout);
+      if (event.target.value.length < 1) {
+        $('#btn-reset-contains').addClass('hidden');
+      } else {
+        $('#btn-reset-contains').removeClass('hidden');
+      }
       inputCallbackTimeout = setTimeout(function onInputTimeout() {
         updateContent({facetpage: 1});
       }, 500);
@@ -93,6 +98,7 @@ VuFind.register('facetList', function FacetList() {
 
     $('#btn-reset-contains').on('click', function onResetClick() {
       setCurrentContainsValue('');
+      $('#btn-reset-contains').addClass('hidden');
       updateContent({facetpage: 1});
     });
   }
