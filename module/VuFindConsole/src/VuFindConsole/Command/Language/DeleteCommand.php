@@ -33,8 +33,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use function strlen;
-
 /**
  * Language command: add string using template.
  *
@@ -107,7 +105,7 @@ class DeleteCommand extends AbstractCommand
             $out = '';
             $found = false;
             foreach ($lines as $line) {
-                if (substr($line, 0, strlen($target)) !== $target) {
+                if (!str_starts_with($line, $target)) {
                     $out .= $line;
                 } else {
                     $found = true;

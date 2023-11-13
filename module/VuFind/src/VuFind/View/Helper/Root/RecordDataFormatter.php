@@ -262,14 +262,15 @@ class RecordDataFormatter extends AbstractHelper
 
         if ($useCache = ($options['useCache'] ?? false)) {
             $cacheKey = $this->driver->getUniqueID() . '|'
-                . $this->driver->getSourceIdentifier() . '|' . $method;
+                . $this->driver->getSourceIdentifier() . '|' . $method
+                . (isset($options['dataMethodParams']) ? '|' . serialize($options['dataMethodParams']) : '');
             if (isset($cache[$cacheKey])) {
                 return $cache[$cacheKey];
             }
         }
 
         // Default action: try to extract data from the record driver:
-        $data = $this->driver->tryMethod($method);
+        $data = $this->driver->tryMethod($method, $options['dataMethodParams'] ?? []);
 
         if ($useCache) {
             $cache[$cacheKey] = $data;
