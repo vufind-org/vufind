@@ -96,10 +96,15 @@ class SimulatedSSO extends AbstractBase
             throw new AuthException('Simulated failure');
         }
         $user = $this->getUserTable()->getByUsername($username);
-        $attribs = array_merge(
-            $this->defaultAttributes,
-            $this->simulatedSSOConfig['General']['attributes'] ?? []
-        );
+
+        // Get attribute configuration -- use defaults if no value is set, and use an
+        // empty array if something invalid was provided.
+        $attribs = $this->simulatedSSOConfig['General']['attributes']
+            ?? $this->defaultAttributes;
+        if (!is_array($attribs)) {
+            $attribs = [];
+        }
+
         $catPassword = null;
         foreach ($attribs as $attribute => $value) {
             if ($attribute == 'email') {
