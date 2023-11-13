@@ -32,7 +32,6 @@ VuFind.register('bs3-compat', function cookie() {
   function initFormElements() {
     document.querySelectorAll('select.form-control').forEach((el) => {
       el.classList.add('form-select');
-      el.classList.remove('form-control');
     });
   }
 

@@ -68,7 +68,7 @@ $well-border:            darken($well-bg, 7%) !default;
 }
 
 .label {
-    //@extend .badge;
+    @extend .badge;
 }
 .label-info {
     @extend .text-bg-primary;
@@ -81,14 +81,18 @@ $well-border:            darken($well-bg, 7%) !default;
 .searchForm {
     .form-control, .form-select {
         display: inline-block;
+        width: initial;
     }
     .btn {
         vertical-align: baseline;
     }
 }
 
+.form-control {
+    appearance: auto;
+}
+
 .form-select {
-    width: initial;
     appearance: auto;
     padding-top: 0.525rem;
     padding-bottom: 0.525rem;
@@ -102,6 +106,23 @@ $well-border:            darken($well-bg, 7%) !default;
     @extend .mb-3;
 }
 
+.checkbox {
+  position: relative;
+  display: block;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.checkbox input[type="checkbox"],
+.checkbox-inline input[type="checkbox"] {
+  margin-left: -20px;
+}
+.radio label, .checkbox label {
+  min-height: 20px;
+  padding-left: 20px;
+  margin-bottom: 0;
+  cursor: pointer;
+}
+
 h1, .h1,
 h2, .h2,
 h3, .h3 {
@@ -113,6 +134,10 @@ h5, .h5,
 h6, .h6 {
   margin-top: ($line-height-base / 2) * 1rem;
   margin-bottom: ($line-height-base / 2) * 1rem;
+}
+
+.footer {
+    clear: both;
 }
 
 .hidden {
