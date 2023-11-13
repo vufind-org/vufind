@@ -314,6 +314,30 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test successful place hold (using an old version of mod-circulation)
+     *
+     * @return void
+     */
+    public function testSuccessfulPlaceHoldLegacy(): void
+    {
+        $this->createConnector('successful-place-hold-legacy');
+        $details = [
+            'requiredBy' => '2022-01-01',
+            'requiredByTS' => 1641049790,
+            'patron' => ['id' => 'foo'],
+            'item_id' => 'record1',
+            'status' => 'Available',
+            'pickUpLocation' => 'desk1',
+        ];
+        $result = $this->driver->placeHold($details);
+        $expected = [
+            'success' => true,
+            'status' => 'success',
+        ];
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
      * Test successful place hold with no expiration date
      *
      * @return void

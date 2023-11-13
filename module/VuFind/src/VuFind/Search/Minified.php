@@ -218,8 +218,7 @@ class Minified
 
             // Now rewrite the type if necessary (only needed for legacy objects):
             if ($fixType) {
-                $this->ty = (substr($this->ty, -8) == 'Advanced')
-                    ? 'advanced' : 'basic';
+                $this->ty = str_ends_with($this->ty, 'Advanced') ? 'advanced' : 'basic';
             }
         }
     }

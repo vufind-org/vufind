@@ -1,4 +1,4 @@
-/*global Autocomplete, grecaptcha, isPhoneNumberValid */
+/*global Autocomplete, grecaptcha, isPhoneNumberValid, loadCovers */
 /*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
 
 var VuFind = (function VuFind() {
@@ -11,6 +11,9 @@ var VuFind = (function VuFind() {
 
   var _icons = {};
   var _translations = {};
+
+  var _elementBase;
+  var _iconsCache = {};
 
   // Emit a custom event
   // Recommendation: prefix with vf-
@@ -65,18 +68,17 @@ var VuFind = (function VuFind() {
     return null;
   };
 
-  var initDisableSubmitOnClick = function initDisableSubmitOnClick() {
-    $('[data-disable-on-submit]').on('submit', function handleOnClickDisable() {
-      var $form = $(this);
-      // Disable submit elements via setTimeout so that the submit button value gets
-      // included in the submitted data before being disabled:
-      setTimeout(
-        function disableSubmit() {
-          $form.find('[type=submit]').prop('disabled', true);
-        },
-        0
-      );
-    });
+  var initDisableSubmitOnClick = () => {
+    var forms = document.querySelectorAll("[data-disable-on-submit]");
+    forms.forEach(form =>
+      form.addEventListener("submit", () => {
+        var submitButtons = form.querySelectorAll('[type="submit"]');
+        // Disable submit elements via setTimeout so that the submit button value gets
+        // included in the submitted data before being disabled:
+        setTimeout(() => {
+          submitButtons.forEach(button => button.disabled = true);
+        }, 0);
+      }));
   };
 
   var initClickHandlers = function initClickHandlers() {
@@ -115,18 +117,6 @@ var VuFind = (function VuFind() {
     );
   };
 
-  var init = function init() {
-    for (var i = 0; i < _submodules.length; i++) {
-      if (this[_submodules[i]].init) {
-        this[_submodules[i]].init();
-      }
-    }
-    _initialized = true;
-
-    initDisableSubmitOnClick();
-    initClickHandlers();
-  };
-
   var addTranslations = function addTranslations(s) {
     for (var i in s) {
       if (Object.prototype.hasOwnProperty.call(s, i)) {
@@ -154,46 +144,60 @@ var VuFind = (function VuFind() {
       }
     }
   };
-  var icon = function icon(name, attrs = {}) {
+
+  /**
+   * Get an icon identified by a name.
+   *
+   * @param {String} name          Name of the icon to create
+   * @param {Object} attrs         Object containing attributes,
+   *                               key is the attribute of an HTMLElement,
+   *                               value is the values to add for the attribute.
+   * @param {Boolean}   returnElement [Optional] Should the function return an HTMLElement.
+   *                               Default is false.
+   *
+   * @returns {String|HTMLElement}
+   */
+  var icon = function icon(name, attrs = {}, returnElement = false) {
     if (typeof _icons[name] == "undefined") {
       console.error("JS icon missing: " + name);
       return name;
     }
+    // Create a template element for icon function
+    if (!_elementBase) {
+      _elementBase = document.createElement('div');
+    }
+    const cacheKey = `${name}||${JSON.stringify(attrs)}`;
+    if (_iconsCache[cacheKey]) {
+      return returnElement
+        ? _iconsCache[cacheKey].cloneNode(true)
+        : _iconsCache[cacheKey].outerHTML;
+    }
+
+    const clone = _elementBase.cloneNode();
+    clone.insertAdjacentHTML('afterbegin', _icons[name]);
+    let element = clone.firstChild;
 
     // Add additional attributes
-    function addAttrs(_html, _attrs = {}) {
-      var mod = String(_html);
-      for (var attr in _attrs) {
-        if (Object.prototype.hasOwnProperty.call(_attrs, attr)) {
-          var sliceStart = mod.indexOf(" ");
-          var sliceEnd = sliceStart;
-          var value = _attrs[attr];
-          var regex = new RegExp(` ${attr}=(['"])([^\\1]+?)\\1`);
-          var existing = mod.match(regex);
-          if (existing) {
-            sliceStart = existing.index;
-            sliceEnd = sliceStart + existing[0].length;
-            value = existing[2] + " " + value;
-          }
-          mod = mod.slice(0, sliceStart) +
-              " " + attr + '="' + value + '"' +
-              mod.slice(sliceEnd);
+    function addAttrs(_element, _attrs = {}) {
+      Object.keys(_attrs).forEach(key => {
+        if (key !== 'class') {
+          _element.setAttribute(key, _attrs[key]);
+          return;
         }
-      }
-      return mod;
+        let newAttrs = _attrs[key].split(" ");
+        const oldAttrs = _element.getAttribute(key) || [];
+        const newAttrsSet = new Set([...newAttrs, ...oldAttrs.split(" ")]);
+        _element.className = Array.from(newAttrsSet).join(" ");
+      });
     }
-
-    var html = _icons[name];
 
     if (typeof attrs == "string") {
-      return addAttrs(html, { class: attrs });
+      addAttrs(element, { class: attrs });
+    } else if (Object.keys(attrs).length > 0) {
+      addAttrs(element, attrs);
     }
-
-    if (Object.keys(attrs).length > 0) {
-      return addAttrs(html, attrs);
-    }
-
-    return html;
+    _iconsCache[cacheKey] = element;
+    return returnElement ? element.cloneNode(true) : element.outerHTML;
   };
   // Icon shortcut methods
   var spinner = function spinner(extraClass = "") {
@@ -266,6 +270,65 @@ var VuFind = (function VuFind() {
     _searchId = searchId;
   };
 
+  function setupQRCodeLinks(_container) {
+    var container = _container || $('body');
+
+    container.find('a.qrcodeLink').on('click', function qrcodeToggle() {
+      var holder = $(this).next('.qrcode');
+      if (holder.find('img').length === 0) {
+        // We need to insert the QRCode image
+        var template = holder.find('.qrCodeImgTag').html();
+        holder.html(template);
+      }
+    });
+  }
+
+  /**
+   * Initialize result page scripts.
+   *
+   * @param {string|JQuery} container
+   */
+  var initResultScripts = function initResultScripts(container) {
+    let jqContainer = typeof container === 'string' ? $(container) : container;
+    if (typeof this.openurl !== 'undefined') {
+      this.openurl.init(jqContainer);
+    }
+    if (typeof this.itemStatuses !== 'undefined') {
+      this.itemStatuses.init(jqContainer);
+    }
+    if (typeof this.saveStatuses !== 'undefined') {
+      this.saveStatuses.init(jqContainer);
+    }
+    if (typeof this.recordVersions !== 'undefined') {
+      this.recordVersions.init(jqContainer);
+    }
+    if (typeof this.cart !== 'undefined') {
+      this.cart.registerToggles(jqContainer);
+    }
+    if (typeof this.embedded !== 'undefined') {
+      this.embedded.init(jqContainer);
+    }
+    this.lightbox.bind(jqContainer);
+    setupQRCodeLinks(jqContainer);
+    if (typeof loadCovers === 'function') {
+      loadCovers();
+    }
+  };
+
+  var init = function init() {
+    for (var i = 0; i < _submodules.length; i++) {
+      if (this[_submodules[i]].init) {
+        this[_submodules[i]].init();
+      }
+    }
+    _initialized = true;
+
+    initDisableSubmitOnClick();
+    initClickHandlers();
+    // handle QR code links
+    setupQRCodeLinks();
+  };
+
   //Reveal
   return {
     defaultSearchBackend: defaultSearchBackend,
@@ -289,7 +352,9 @@ var VuFind = (function VuFind() {
     translate: translate,
     updateCspNonce: updateCspNonce,
     getCurrentSearchId: getCurrentSearchId,
-    setCurrentSearchId: setCurrentSearchId
+    setCurrentSearchId: setCurrentSearchId,
+    initResultScripts: initResultScripts,
+    setupQRCodeLinks: setupQRCodeLinks
   };
 })();
 
@@ -390,7 +455,7 @@ function deparam(url) {
     if (name.length === 0) {
       continue;
     }
-    if (name.substring(name.length - 2) === '[]') {
+    if (name.endsWith('[]')) {
       name = name.substring(0, name.length - 2);
       if (!request[name]) {
         request[name] = [];
@@ -450,12 +515,16 @@ function phoneNumberFormHandler(numID, regionCode) {
 // Setup captchas after Google script loads
 function recaptchaOnLoad() {
   if (typeof grecaptcha !== 'undefined') {
-    var captchas = $('.g-recaptcha:empty');
+    var captchas = document.querySelectorAll('.g-recaptcha:empty');
     for (var i = 0; i < captchas.length; i++) {
-      $(captchas[i]).data('captchaId', grecaptcha.render(captchas[i], $(captchas[i]).data()));
+      var captchaElement = captchas[i];
+      var captchaData = captchaElement.dataset;
+      var captchaId = grecaptcha.render(captchaElement, captchaData);
+      captchaElement.dataset.captchaId = captchaId;
     }
   }
 }
+
 function resetCaptcha($form) {
   if (typeof grecaptcha !== 'undefined') {
     var captcha = $form.find('.g-recaptcha');
@@ -644,7 +713,9 @@ function unwrapJQuery(node) {
 
 function setupJumpMenus(_container) {
   var container = _container || $('body');
-  container.find('select.jumpMenu').change(function jumpMenu(){ $(this).parent('form').trigger("submit"); });
+  container.find('select.jumpMenu').on("change", function jumpMenu() {
+    $(this).parent('form').trigger("submit");
+  });
 }
 
 function setupMultiILSLoginFields(loginMethods, idPrefix) {
@@ -674,19 +745,6 @@ function setupMultiILSLoginFields(loginMethods, idPrefix) {
   }).trigger("change");
 }
 
-function setupQRCodeLinks(_container) {
-  var container = _container || $('body');
-
-  container.find('a.qrcodeLink').click(function qrcodeToggle() {
-    var holder = $(this).next('.qrcode');
-    if (holder.find('img').length === 0) {
-      // We need to insert the QRCode image
-      var template = holder.find('.qrCodeImgTag').html();
-      holder.html(template);
-    }
-  });
-}
-
 $(function commonDocReady() {
   // Start up all of our submodules
   VuFind.init();
@@ -699,9 +757,6 @@ $(function commonDocReady() {
 
   // support "jump menu" dropdown boxes
   setupJumpMenus();
-
-  // handle QR code links
-  setupQRCodeLinks();
 
   // Checkbox select all
   $('.checkbox-select-all').on('change', function selectAllCheckboxes() {
