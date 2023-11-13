@@ -67,7 +67,7 @@ class RecordDataFormatter extends AbstractHelper
     protected $driver = null;
 
     /**
-     * Config for configurable fields.
+     * Config.
      *
      * @var \Laminas\Config\Config
      */
@@ -76,7 +76,7 @@ class RecordDataFormatter extends AbstractHelper
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $config Config for configurable fields
+     * @param \Laminas\Config\Config $config Config
      */
     public function __construct($config)
     {
@@ -243,9 +243,7 @@ class RecordDataFormatter extends AbstractHelper
         }
         // Adding defaults from config
         foreach ($this->config->Defaults->$key ?? [] as $field) {
-            $this->defaults[$key][$field] = [
-                'configurable' => true,
-            ];
+            $this->defaults[$key][$field] = [];
         }
 
         // Send back array:
@@ -283,11 +281,9 @@ class RecordDataFormatter extends AbstractHelper
             $options = array_merge($globalOptions->toArray(), $options);
         }
 
-        if ($options['configurable'] ?? false) {
-            $section = 'Field_' . $field;
-            if ($fieldOptions = ($this->config->$section ?? false)) {
-                $options = array_merge($options, $fieldOptions->toArray());
-            }
+        $section = 'Field_' . $field;
+        if ($fieldOptions = ($this->config->$section ?? false)) {
+            $options = array_merge($options, $fieldOptions->toArray());
         }
 
         return $options;

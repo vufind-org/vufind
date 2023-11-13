@@ -205,11 +205,10 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'Defaults' => [
                 'core' => ['Extra'],
             ],
-            'Field_ConfigurableWithoutOptions' => [],
-            'Field_ConfigurableWithOptions' => [
+            'Field_ConfiguredOptions' => [
                 'separator' => ';',
             ],
-            'Field_ConfigurableOverwriteOptions' => [
+            'Field_ConfiguredOverwriteOptions' => [
                 'separator' => ';',
             ],
             'Field_Extra' => [
@@ -478,28 +477,14 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'dataMethodParams' => ['test', 'test2'],
             'pos' => 5002,
         ];
-        $spec['ConfigurableWithoutConfig'] = [
+        $spec['ConfiguredOptions'] = [
             'dataMethod' => 'getNewerTitles',
             'renderType' => 'Simple',
-            'configurable' => true,
-            'pos' => 6001,
-        ];
-        $spec['ConfigurableWithoutOptions'] = [
-            'dataMethod' => 'getNewerTitles',
-            'renderType' => 'Simple',
-            'configurable' => true,
-            'pos' => 6002,
-        ];
-        $spec['ConfigurableWithOptions'] = [
-            'dataMethod' => 'getNewerTitles',
-            'renderType' => 'Simple',
-            'configurable' => true,
             'pos' => 6003,
         ];
-        $spec['ConfigurableOverwriteOptions'] = [
+        $spec['ConfiguredOverwriteOptions'] = [
             'dataMethod' => 'getNewerTitles',
             'renderType' => 'Simple',
-            'configurable' => true,
             'separator' => '/',
             'pos' => 6004,
         ];
@@ -536,10 +521,8 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'EnabledField' => '0',
             'FunctionWithParams' => 'test test2',
             'Extra' => '0',
-            'ConfigurableWithoutConfig' => 'New TitleSecond New Title',
-            'ConfigurableWithoutOptions' => 'New TitleSecond New Title',
-            'ConfigurableWithOptions' => 'New Title;Second New Title',
-            'ConfigurableOverwriteOptions' => 'New Title;Second New Title',
+            'ConfiguredOptions' => 'New Title;Second New Title',
+            'ConfiguredOverwriteOptions' => 'New Title;Second New Title',
         ];
         // Call the method specified by the data provider
         $results = $this->$function($driver, $spec);
@@ -610,7 +593,6 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             ],
             'Field_SeparatorByConfig' => [
                 'separator' => ';',
-                'configurable' => true,
                 'enabled' => true,
             ],
         ];
@@ -651,13 +633,11 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         $spec['EnabledFieldByConfig'] = [
             'dataMethod' => 'getContainerTitle',
             'renderType' => 'Simple',
-            'configurable' => true,
             'pos' => 1003,
         ];
         $spec['DisabledFieldByConfig'] = [
             'dataMethod' => 'getContainerTitle',
             'renderType' => 'Simple',
-            'configurable' => true,
             'enabled' => true,
             'pos' => 1004,
         ];
@@ -678,7 +658,6 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'dataMethod' => 'getNewerTitles',
             'renderType' => 'Simple',
             'separator' => '/',
-            'configurable' => true,
             'enabled' => true,
             'pos' => 2002,
         ];
