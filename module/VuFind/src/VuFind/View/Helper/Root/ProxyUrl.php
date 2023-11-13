@@ -135,7 +135,7 @@ class ProxyUrl extends \Laminas\View\Helper\AbstractHelper implements
         $prefixLinksWebServiceUrl = $this->config->EZproxy->prefixLinksWebServiceUrl;
         try {
             $response = $this->httpService->get($prefixLinksWebServiceUrl, ['url' => $domain]);
-            $responseData = $response->getContent();
+            $responseData = trim($response->getContent());
         } catch (Exception $ex) {
             $this->logError('Exception during EZproxy web service request: ' . $ex->getMessage());
             return null;
