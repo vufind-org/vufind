@@ -113,6 +113,10 @@ return [
             'Collapse' => [
                 'template' => 'collapse',
             ],
+            // Unicode symbol characters. Icons are defined as hex code points.
+            'Unicode' => [
+                'template' => 'unicode',
+            ],
             /* For an example of an images set, see Bootprint's theme.config.php. */
         ],
         'aliases' => [
@@ -156,9 +160,9 @@ return [
             'external-link' => 'FontAwesome:link',
             'facet-applied' => 'FontAwesome:check',
             'facet-checked' => 'FontAwesome:check-square-o',
-            'facet-collapse' => 'FontAwesome:caret-down',
+            'facet-collapse' => 'Unicode:25BD',
             'facet-exclude' => 'FontAwesome:times',
-            'facet-expand' => 'FontAwesome:caret-right',
+            'facet-expand' => 'Unicode:25B6',
             'facet-noncollapsible' => 'FontAwesome:none',
             'facet-unchecked' => 'FontAwesome:square-o',
             'feedback' => 'FontAwesome:envelope',

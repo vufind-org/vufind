@@ -180,7 +180,7 @@ class Params extends \VuFind\Search\Base\Params
             $this->filterList
         );
         foreach ($filterList as $field => $filter) {
-            if ($orFacet = (substr($field, 0, 1) == '~')) {
+            if ($orFacet = str_starts_with($field, '~')) {
                 $field = substr($field, 1);
             }
             foreach ($filter as $value) {
@@ -188,7 +188,7 @@ class Params extends \VuFind\Search\Base\Params
                 if ($field == '#') {
                     $q = $value;
                 } elseif (
-                    substr($value, -1) == '*'
+                    str_ends_with($value, '*')
                     || preg_match('/\[[^\]]+\s+TO\s+[^\]]+\]/', $value)
                 ) {
                     // Special case -- allow trailing wildcards and ranges
@@ -532,7 +532,7 @@ class Params extends \VuFind\Search\Base\Params
 
             foreach ($facets as $key => $value) {
                 // prefix keys with "facet" unless they already have a "f." prefix:
-                $fullKey = substr($key, 0, 2) == 'f.' ? $key : "facet.$key";
+                $fullKey = str_starts_with($key, 'f.') ? $key : "facet.$key";
                 $backendParams->add($fullKey, $value);
             }
             $backendParams->add('facet.mincount', 1);

@@ -20,7 +20,7 @@
           <?php endif; ?>
           <?php $cart = $this->cart(); ?>
           <?php if ($cart->isActive()): ?>
-            <li id="cartSummary">
+            <li id="cartSummary" aria-live="polite" aria-atomic="true">
               <a id="cartItems" class="icon-link" data-lightbox title="<?=$this->transEscAttr('View Book Bag')?>" href="<?=$this->url('cart-home')?>">
                 <?=$this->icon('cart', 'icon-link__icon') ?>
                 <span class="icon-link__label">

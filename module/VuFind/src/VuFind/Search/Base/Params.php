@@ -35,6 +35,7 @@ use VuFind\I18n\TranslatableString;
 use VuFind\Search\QueryAdapter;
 use VuFind\Solr\Utils as SolrUtils;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
+use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
 
@@ -785,10 +786,10 @@ class Params
         $value = count($temp) > 0 ? $temp[0] : '';
 
         // Remove quotes from the value if there are any
-        if (substr($value, 0, 1) == '"') {
+        if (str_starts_with($value, '"')) {
             $value = substr($value, 1);
         }
-        if (substr($value, -1, 1) == '"') {
+        if (str_ends_with($value, '"')) {
             $value = substr($value, 0, -1);
         }
         // One last little clean on whitespace
@@ -900,10 +901,7 @@ class Params
      */
     public function isAdvancedFilter($filter)
     {
-        if (substr($filter, 0, 1) == '(' || substr($filter, 0, 2) == '-(') {
-            return true;
-        }
-        return false;
+        return str_starts_with($filter, '(') || str_starts_with($filter, '-(');
     }
 
     /**
@@ -1912,7 +1910,7 @@ class Params
     /**
      * Return search query object.
      *
-     * @return \VuFindSearch\Query\AbstractQuery
+     * @return AbstractQuery
      */
     public function getQuery()
     {
@@ -1920,6 +1918,21 @@ class Params
             return new Query($this->overrideQuery);
         }
         return $this->query;
+    }
+
+    /**
+     * Set search query object.
+     *
+     * @param AbstractQuery $query Query
+     *
+     * @return void
+     */
+    public function setQuery(AbstractQuery $query): void
+    {
+        if ($this->overrideQuery) {
+            $this->overrideQuery = false;
+        }
+        $this->query = $query;
     }
 
     /**
@@ -1981,7 +1994,7 @@ class Params
             ->get($cfgFile ?? $this->getOptions()->getFacetsIni());
         $retVal = false;
         // If the section is in reverse order, the tilde will flag this:
-        if (substr($facetList, 0, 1) == '~') {
+        if (str_starts_with($facetList, '~')) {
             foreach ($config->{substr($facetList, 1)} ?? [] as $value => $key) {
                 $this->addCheckboxFacet($key, $value);
                 $retVal = true;

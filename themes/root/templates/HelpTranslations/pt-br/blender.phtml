@@ -1,0 +1,46 @@
+<h1>Dicas úteis de busca</h1>
+
+<ul class="HelpMenu">
+  <li><a href="#boolean_operators">Operadores booleanos</a>
+    <ul>
+      <li><a href="#boolean_and">AND</a></li>
+      <li><a href="#boolean_or">OR</a></li>
+      <li><a href="#boolean_not">NOT</a></li>
+    </ul>
+  </li>
+</ul>
+
+<dl class="Content">
+  <dt><a id="boolean_operators"></a>Operadores booleanos</dt>
+  <dd>
+    <p>
+      Os operadores booleanos permitem combinar termos com operadores lógicos.
+      São permitidos os seguintes operadores: <strong>AND</strong>, <strong>OR</strong> e <strong>NOT</strong>.
+    </p>
+    <p>Nota: Os operadores booleanos devem estar em MAIÚSCULAS</p>
+    <dl>
+      <dt><a id="boolean_and"></a>AND</dt>
+      <dd>
+        <p>O operador <strong>AND</strong> é o operador de conjunção padrão. Isso significa que se não houver operador booleano entre dois termos, o operador AND será usado. O operador AND corresponde a registros onde ambos os termos existem em qualquer lugar do campo de um registro.</p>
+        <p>Para buscar registros que contenham "economia" e "Keynes" use a consulta: </p>
+        <pre class="code">economia Keynes</pre>
+        <p>or</p>
+        <pre class="code">economia AND Keynes</pre>
+      </dd>
+      <dt><a id="boolean_or"></a>OR</dt>
+      <dd>
+        <p>O operador OR vincula dois termos e encontra um registro correspondente se algum dos termos existir em um registro.</p>
+        <p>Para buscar documentos que contenham "Keynes econômico" ou apenas "Keynes" use a consulta:</p>
+        <pre class="code">"economia Keynes" OR Keynes</pre>
+      </dd>
+      <dt><a id="boolean_not"></a>NOT</dt>
+      <dd>
+        <p>O operador NOT exclui registros que contenham o termo após NOT.</p>
+        <p>Para buscar documentos que contenham “economia”, mas não “Keynes”, use a consulta:</p>
+        <pre class="code">economia NOT Keynes</pre>
+        <p>Nota: O operador NOT não pode ser usado com apenas um termo. Por exemplo, a busca a seguir não retornará resultados:</p>
+        <pre class="code">NOT economia</pre>
+      </dd>
+    </dl>
+  </dd>
+</dl>

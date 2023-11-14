@@ -4,9 +4,9 @@
   <?php foreach ($this->combinedResults as $searchClassId => $currentSearch): ?>
     <?php
       if (
-        (!isset($currentSearch['ajax']) || !$currentSearch['ajax'])                    // AJAX column
-        && (isset($currentSearch['hide_if_empty']) && $currentSearch['hide_if_empty']) // set to hide when empty
-        && $currentSearch['view']->results->getResultTotal() == 0                      // and empty
+        !($currentSearch['ajax'] ?? false)                        // AJAX column
+        && ($currentSearch['hide_if_empty'] ?? false)             // set to hide when empty
+        && $currentSearch['view']->results->getResultTotal() == 0 // and empty
       ) {
         continue;
       }
@@ -36,7 +36,7 @@
     <div class="combined-column">
       <?php foreach ($currColumn as $colParams): ?>
         <div id="<?=$this->escapeHtmlAttr($colParams['domId'])?>" class="combined-list">
-          <?php $templateSuffix = (isset($colParams['ajax']) && $colParams['ajax']) ? 'ajax' : 'list'; ?>
+          <?php $templateSuffix = ($colParams['ajax'] ?? false) ? 'ajax' : 'list'; ?>
           <?=$this->render('combined/results-' . $templateSuffix . '.phtml', $colParams)?>
         </div>
       <?php endforeach; ?>
