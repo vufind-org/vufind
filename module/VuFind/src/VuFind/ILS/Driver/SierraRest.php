@@ -2994,8 +2994,7 @@ class SierraRest extends AbstractBase implements
     protected function extractBibId($id)
     {
         // If the .b prefix is found, strip it and the trailing checksum:
-        return substr($id, 0, 2) === '.b'
-            ? substr($id, 2, strlen($id) - 3) : $id;
+        return str_starts_with($id, '.b') ? substr($id, 2, -1) : $id;
     }
 
     /**

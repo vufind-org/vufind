@@ -457,7 +457,7 @@ VuFind.register('lightbox', function Lightbox() {
         imageCheck.done(function lightboxImageCheckDone(content, status, jq_xhr) {
           if (
             jq_xhr.status === 200 &&
-            jq_xhr.getResponseHeader("content-type").substr(0, 5) === "image"
+            jq_xhr.getResponseHeader("content-type").startsWith("image")
           ) {
             render('<div class="lightbox-image"><img src="' + url + '"/></div>');
           } else {
