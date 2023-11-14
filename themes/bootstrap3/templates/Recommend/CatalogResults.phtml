@@ -3,7 +3,7 @@
   $results = $searchObject->getResults();
 ?>
 <?php if (!empty($results)): ?>
-  <h4><?=$this->transEsc('Catalog Results')?></h4>
+  <h2><?=$this->transEsc('Catalog Results')?></h2>
   <ul class="list-group">
     <?php foreach ($results as $driver): ?>
       <li class="list-group-item catalog-result">
