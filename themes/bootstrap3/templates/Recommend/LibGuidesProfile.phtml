@@ -1,7 +1,7 @@
 <?php $account = $this->recommend->getResults(); ?>
 <?php if (!empty($account) && !empty($account->profile->url) && !empty($account->first_name)): ?>
   <div class="libguides-profile">
-    <h4><?=$this->transEsc('libguides_profile_suggestion_heading')?></h4>
+    <h2><?=$this->transEsc('libguides_profile_suggestion_heading')?></h2>
     <a href="<?=$this->escapeHtmlAttr($account->profile->url)?>" target="_blank">
       <?php if (!empty($account->profile->image->url)): ?>
         <img class="libguides-profile-img" src="<?=$this->escapeHtmlAttr($account->profile->image->url)?>">

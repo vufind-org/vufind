@@ -4,7 +4,7 @@
   $heading = $this->recommend->getHeading();
 ?>
 <?php if (!empty($results)): ?>
-  <h4><?=$this->transEsc($heading)?></h4>
+  <h2><?=$this->transEsc($heading)?></h2>
   <ul class="list-group">
     <?php foreach ($results as $driver): ?>
       <li class="list-group-item catalog-result">
