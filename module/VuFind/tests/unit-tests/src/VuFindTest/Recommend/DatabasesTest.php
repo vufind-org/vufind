@@ -110,7 +110,7 @@ class DatabasesTest extends \PHPUnit\Framework\TestCase
      *
      * @param $configData array A Databases config section
      *
-     * @return void
+     * @return object
      */
     protected function buildModuleAndProcessResults($configData)
     {
@@ -149,7 +149,7 @@ class DatabasesTest extends \PHPUnit\Framework\TestCase
      * @param $facetList   array Result facets
      * @param $queryString string Query string
      *
-     * @return void
+     * @return object
      */
     protected function mockResults($facetList, $queryString = 'History')
     {
@@ -174,7 +174,7 @@ class DatabasesTest extends \PHPUnit\Framework\TestCase
     /**
      * Mock up a standard Databases config section.
      *
-     * @return void
+     * @return array
      */
     protected function mockConfigData()
     {
@@ -198,7 +198,7 @@ class DatabasesTest extends \PHPUnit\Framework\TestCase
     /**
      * Mock up a results facet list.
      *
-     * @return void
+     * @return array
      */
     protected function mockFacetList()
     {
@@ -222,7 +222,7 @@ class DatabasesTest extends \PHPUnit\Framework\TestCase
     /**
      * Mock up LibGuides API databases data.
      *
-     * @return void
+     * @return array
      */
     protected function mockLibGuidesData()
     {
