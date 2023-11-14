@@ -55,9 +55,6 @@ class DatabasesTest extends \PHPUnit\Framework\TestCase
 
         $configData = [];
         $module = $this->buildModuleAndProcessResults($configData);
-
-        $settings = '5:EDS';
-        $module->setConfig($settings);
     }
 
     /**
