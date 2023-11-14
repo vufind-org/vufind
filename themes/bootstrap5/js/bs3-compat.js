@@ -35,11 +35,18 @@ VuFind.register('bs3-compat', function cookie() {
     });
   }
 
+  function initCollapse() {
+    document.querySelectorAll('.collapse.in').forEach((el) => {
+      el.classList.add('show');
+    });
+  }
+
   function init() {
     initNav();
     initNavbar();
     initFormElements();
     initBreadcrumbs();
+    initCollapse();
   }
 
   return {

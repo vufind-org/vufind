@@ -2,11 +2,11 @@ $nav-link-padding-y: 1rem;
 
 $navbar-nav-link-padding-x: 1rem;
 
-$primary:         #265680;
-$success:         #5cb85c;
-$info:            #5bc0de;
-$warning:         #f0ad4e;
-$danger:          #d9534f;
+$primary:         #265680 !default;
+$success:         #028302 !default;
+$info:            #1C5F74 !default;
+$warning:         #A56100 !default;
+$danger:          #A41915 !default;
 
 // Disable transitions to allow the bs3-compat.js to do its work without visual distractions:
 $enable-transitions: false;

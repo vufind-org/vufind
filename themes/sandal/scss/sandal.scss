@@ -4,7 +4,7 @@
 @import "variables";
 <#LESS */
 /* #SCSS> */
-@import "colors", "variables", "../../bootstrap3/scss/bootstrap";
+@import "colors", "variables", "../../bootstrap5/scss/bootstrap";
 /* <#SCSS */
 
 @import "common";
@@ -70,7 +70,7 @@ header {
     border-color: $black;
   }
   .nav > li > a,
-  .navbar-nav button.dropdown-toggle {
+  .nav.navbar-nav button.dropdown-toggle {
     &:hover,
     &:focus {
       color: $black;
