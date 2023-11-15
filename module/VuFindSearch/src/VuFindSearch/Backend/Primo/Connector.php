@@ -244,7 +244,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
                 }
 
                 //set the lookfor terms to search
-                $lookfor = preg_replace('/,/', '+', $thisTerm['lookfor']);
+                $lookfor = str_replace(',', ' ', $thisTerm['lookfor']);
 
                 //set precision
                 if (array_key_exists('op', $thisTerm) && !empty($thisTerm['op'])) {
@@ -291,7 +291,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
                     }
                     $values = array_map(
                         function ($value) {
-                            return urlencode(preg_replace('/,/', '+', $value));
+                            return urlencode(str_replace(',', ' ', $value));
                         },
                         $values
                     );
