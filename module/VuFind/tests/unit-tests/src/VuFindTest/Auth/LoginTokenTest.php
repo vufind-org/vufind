@@ -99,7 +99,7 @@ class LoginTokenTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($this->getMockUser()));
         $tokenTable = $this->getMockLoginTokenTable();
         $tokenTable->expects($this->once())->method('matchToken')
-            ->will($this->throwException(\VuFind\Exception\LoginToken::class));
+            ->will($this->throwException(new LoginTokenException()));
         $tokenTable->expects($this->once())->method('getByUserId')
             ->will($this->returnValue($mockToken));
         $loginToken = $this->getLoginToken($cookieManager, $tokenTable, $userTable);

@@ -184,9 +184,12 @@ class LoginToken implements \VuFind\I18n\Translator\TranslatorAwareInterface
             $lifetime = $this->config->Authentication->persistent_login_lifetime ?? 0;
             $expires = time() + $lifetime * 60 * 60 * 24;
         }
-        $this->setLoginTokenCookie($user->id, $token, $series, $expires);
-
-        $this->loginTokenTable->saveToken($user->id, $token, $series, $browser, $platform, $expires, $sessionId);
+        try {
+            $this->loginTokenTable->saveToken($user->id, $token, $series, $browser, $platform, $expires, $sessionId);
+            $this->setLoginTokenCookie($user->id, $token, $series, $expires);
+        } catch (\Exception $e) {
+            throw new AuthException('Failed to save token');
+        }
     }
 
     /**

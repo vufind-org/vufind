@@ -395,7 +395,8 @@ CREATE TABLE login_token (
   browser varchar(255),
   platform varchar(255),
   expires int NOT NULL,
-  last_session_id varchar(255)
+  last_session_id varchar(255),
+  UNIQUE (user_id, series)
 );
 
 -- --------------------------------------------------------

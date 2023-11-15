@@ -108,12 +108,7 @@ class LoginToken extends Gateway
      */
     public function matchToken(array $token)
     {
-        $row = $this->select(
-            [
-                'user_id' => $token['user_id'],
-                'series' => $token['series'],
-            ]
-        )->current();
+        $row = $this->getBySeries($token['series'], $token['user_id']);
         if ($row && hash_equals($row['token'], hash('sha256', $token['token']))) {
             if (time() > $row['expires']) {
                 $row->delete();
