@@ -88,8 +88,9 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
     _KeyboardClass = window.SimpleKeyboard.default;
     _KeyboardLayoutClass = window.SimpleKeyboardLayouts.default;
 
-    $('.keyboard-selection-item').on("click", function updateLayoutOnClick(){
+    $('.keyboard-selection-item').on("click", function updateLayoutOnClick(ev) {
       _updateKeyboardLayout($(this).data("value"));
+      ev.preventDefault();
     });
 
     _textInput.addEventListener("focus", () => {
