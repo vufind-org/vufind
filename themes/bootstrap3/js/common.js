@@ -284,6 +284,7 @@ var VuFind = (function VuFind() {
       });
     });
   }
+
   /**
    * Initialize result page scripts.
    *
