@@ -144,6 +144,10 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
     _textInput = document.getElementById('searchForm_lookfor');
     _resetButton = document.getElementById('searchForm-reset');
 
+    if (!_textInput || !_resetButton) {
+      return;
+    }
+  
     _textInput.addEventListener("input", function resetOnInput(event) {
       _handleInputChange(event.target.value, false);
     });
