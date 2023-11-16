@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for SimulatedSSO authentication module.
+ * Factory for instantiating recommendation modules.
  *
  * PHP version 8
  *
@@ -21,29 +21,32 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Authentication
+ * @package  Recommendations
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Maccabee Levine <msl321@lehigh.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Auth;
+namespace VuFind\Recommend;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Search\SearchRunner;
 
 /**
- * Factory for SimulatedSSO authentication module.
+ * Factory for instantiating recommendation modules.
  *
  * @category VuFind
- * @package  Authentication
+ * @package  Recommendations
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Maccabee Levine <msl321@lehigh.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SimulatedSSOFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+class AbstractSearchObjectFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -58,6 +61,8 @@ class SimulatedSSOFactory implements \Laminas\ServiceManager\Factory\FactoryInte
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
         ContainerInterface $container,
@@ -65,21 +70,12 @@ class SimulatedSSOFactory implements \Laminas\ServiceManager\Factory\FactoryInte
         array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
-        $helpers = $container->get('ViewHelperManager');
-        // The view helpers aren't set up yet when this factory runs, so we need to
-        // wrap the view helper functionality in a callback function to ensure
-        // everything is ready when it is called.
-        $getUrl = function ($target) use ($helpers) {
-            $serverUrl = $helpers->get('serverUrl');
-            $url = $helpers->get('url');
-            return $serverUrl(
-                $url('simulatedsso-login', [], ['query' => ['return' => $target]])
-            );
-        };
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('SimulatedSSO')->toArray();
-        return new $requestedName($getUrl, $config);
+        $module = new $requestedName(
+            $container->get(SearchRunner::class),
+            $container->get(\VuFind\Config\PluginManager::class)
+        );
+        return $module;
     }
 }
