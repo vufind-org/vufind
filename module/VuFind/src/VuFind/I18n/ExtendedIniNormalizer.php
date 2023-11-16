@@ -183,7 +183,7 @@ class ExtendedIniNormalizer
     {
         $comments = '';
         foreach ($contents as $line) {
-            if (substr(trim($line), 0, 1) == ';') {
+            if (str_starts_with(trim($line), ';')) {
                 $comments .= $line;
             }
         }
@@ -228,7 +228,7 @@ class ExtendedIniNormalizer
             if ('' === $line || strncmp($line, ';', 1) === 0) {
                 continue;
             }
-            if (substr($line, 0, 1) === '[' && substr($line, -1) === ']') {
+            if (str_starts_with($line, '[') && str_ends_with($line, ']')) {
                 throw new \Exception(
                     "Cannot normalize a file with sections; $filename line $lineNum"
                     . " contains: $line"

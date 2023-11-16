@@ -110,10 +110,10 @@ class GridBackground extends AbstractBackgroundLayer
             $settings->height,
             $this->getColor($im, $settings->baseColor)
         );
-        $halfWidth = $settings->width / 2;
-        $halfHeight = $settings->height / 2;
-        $boxWidth  = $settings->width / 8;
-        $boxHeight = $settings->height / 8;
+        $halfWidth = (int)($settings->width / 2);
+        $halfHeight = (int)($settings->height / 2);
+        $boxWidth  = (int)($settings->width / 8);
+        $boxHeight = (int)($settings->height / 8);
 
         $bc = str_split($pattern);
         for ($k = 0; $k < 4; $k++) {

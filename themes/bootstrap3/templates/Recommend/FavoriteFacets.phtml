@@ -2,7 +2,7 @@
 <?php $sideFacetSet = $this->recommend->getFacetSet(); ?>
 
 <?php if (isset($sideFacetSet['tags']) && !empty($sideFacetSet['tags']['list'])): ?>
-  <h4 id="acc-menu-favs-header" class="tag"><?=$this->transEsc($sideFacetSet['tags']['label'])?></h4>
+  <h3 id="acc-menu-favs-header" class="tag"><?=$this->transEsc($sideFacetSet['tags']['label'])?></h3>
   <nav aria-labelledby="acc-menu-favs-header">
     <ul class="list-group">
       <?php $filterList = $results->getParams()->getFilterList(true);
