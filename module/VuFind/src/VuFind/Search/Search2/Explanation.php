@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Explanation plugin manager
+ * Solr Explanation for second Solr index
  *
  * PHP version 8
  *
@@ -21,57 +21,31 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Search
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Search_Solr
  * @author   Dennis Schrittenlocher <Dennis.Schrittenlocher@outlook.de>
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
+ * @link     https://vufind.org Main Page
  */
 
-namespace VuFind\Search\Explanation;
+namespace VuFind\Search\Search2;
 
 /**
- * Explanation plugin manager
+ * Solr Explanation for second Solr index
  *
  * @category VuFind
- * @package  Search
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Search_Solr
  * @author   Dennis Schrittenlocher <Dennis.Schrittenlocher@outlook.de>
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
+ * @link     https://vufind.org Main Page
  */
-class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
+class Explanation extends \VuFind\Search\Solr\Explanation
 {
     /**
-     * Default plugin aliases.
+     * Configuration file to read search settings from
      *
-     * @var array
+     * @var string
      */
-    protected $aliases = [
-        'solr' => \VuFind\Search\Solr\Explanation::class,
-        'search2' => \VuFind\Search\Search2\Explanation::class,
-    ];
-
-    /**
-     * Default plugin factories.
-     *
-     * @var array
-     */
-    protected $factories = [
-        \VuFind\Search\Solr\Explanation::class => ExplanationFactory::class,
-        \VuFind\Search\Search2\Explanation::class => ExplanationFactory::class,
-    ];
-
-    /**
-     * Return the name of the base class or interface that plug-ins must conform
-     * to.
-     *
-     * @return string
-     */
-    protected function getExpectedInterface()
-    {
-        return \VuFind\Search\Base\Explanation::class;
-    }
+    protected $searchIni = 'Search2';
 }

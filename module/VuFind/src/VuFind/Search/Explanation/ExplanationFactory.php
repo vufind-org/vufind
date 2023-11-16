@@ -69,7 +69,7 @@ class ExplanationFactory implements FactoryInterface
         $requestedName,
         array $options = null
     ) {
-        // Replace trailing "Results" with "Params" to get the params service:
+        // Replace trailing "Explanation" with "Params" to get the params service:
         $paramsService = preg_replace('/Explanation$/', 'Params', $requestedName);
         // Replace leading namespace with "VuFind" if service is not available:
         $paramsServiceAvailable = $container
