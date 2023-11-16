@@ -276,6 +276,16 @@ function Autocomplete(_settings) {
           },
           false
         );
+        window.addEventListener(
+          "scroll",
+          function acresize() {
+            if (lastInput === false) {
+              return;
+            }
+            _align(lastInput);
+          },
+          false
+        );
       }
     }
 

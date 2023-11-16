@@ -79,6 +79,7 @@ return [
             'VuFind\View\Helper\Bootstrap3\Highlight' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Bootstrap3\LayoutClass' => 'VuFind\View\Helper\Bootstrap3\LayoutClassFactory',
             'VuFind\View\Helper\Bootstrap3\Search' => 'Laminas\ServiceManager\Factory\InvokableFactory',
+            'VuFind\View\Helper\Bootstrap3\StickyElement' => 'VuFind\View\Helper\Bootstrap3\StickyElementFactory',
         ],
         'aliases' => [
             'copyToClipboardButton' => 'VuFind\View\Helper\Bootstrap3\CopyToClipboardButton',
@@ -86,6 +87,7 @@ return [
             'highlight' => 'VuFind\View\Helper\Bootstrap3\Highlight',
             'layoutClass' => 'VuFind\View\Helper\Bootstrap3\LayoutClass',
             'search' => 'VuFind\View\Helper\Bootstrap3\Search',
+            'stickyElement' => 'VuFind\View\Helper\Bootstrap3\StickyElement',
         ],
     ],
     'icons' => [
