@@ -726,6 +726,9 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
             return;
         }
 
+        // Clear previously stored lightboxParent.
+        $this->followup()->retrieveAndClear('lightboxParent');
+
         // If we got this far, we want to store the referer:
         $this->followup()->store([], $referer);
     }
