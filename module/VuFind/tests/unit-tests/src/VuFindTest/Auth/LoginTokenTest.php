@@ -31,13 +31,11 @@ declare(strict_types=1);
 
 namespace VuFindTest\Auth;
 
-use VuFind\Auth\LoginToken;
 use Laminas\Config\Config;
-use VuFind\Db\Row\User as UserRow;
-use VuFind\Db\Table\User as UserTable;
-use VuFind\Db\Row\LoginToken as LoginTokenRow;
 use Laminas\Session\SessionManager;
+use VuFind\Auth\LoginToken;
 use VuFind\Cookie\CookieManager;
+use VuFind\Db\Table\User as UserTable;
 use VuFind\Exception\LoginToken as LoginTokenException;
 
 /**
@@ -61,7 +59,7 @@ class LoginTokenTest extends \PHPUnit\Framework\TestCase
         $user = $this->getMockUser();
         $cookieManager = $this->getCookieManager(
             [
-              'loginToken' => '222;0;111'
+              'loginToken' => '222;0;111',
             ]
         );
         $mockToken = $this->getMockLoginToken();
@@ -89,7 +87,7 @@ class LoginTokenTest extends \PHPUnit\Framework\TestCase
         $user = $this->getMockUser();
         $cookieManager = $this->getCookieManager(
             [
-              'loginToken' => '222;0;111'
+              'loginToken' => '222;0;111',
             ]
         );
         $mockToken = $this->getMockLoginToken();
@@ -106,7 +104,6 @@ class LoginTokenTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($loginToken->tokenLogin('123'));
     }
 
-
     /**
      * Test failed login
      *
@@ -118,7 +115,7 @@ class LoginTokenTest extends \PHPUnit\Framework\TestCase
         $userTable = $this->getMockUserTable();
         $cookieManager = $this->getCookieManager(
             [
-              'loginToken' => '222;0;111'
+              'loginToken' => '222;0;111',
             ]
         );
         $token = $this->getMockLoginToken();
@@ -150,7 +147,7 @@ class LoginTokenTest extends \PHPUnit\Framework\TestCase
     protected function getMockUser()
     {
         $userData = [
-            ['id', 0]
+            ['id', 0],
         ];
         $user = $this->getMockBuilder(\VuFind\Db\Row\User::class)
             ->disableOriginalConstructor()
@@ -173,7 +170,7 @@ class LoginTokenTest extends \PHPUnit\Framework\TestCase
             ['token', '111'],
             ['user_id', 0],
             ['series', '222'],
-            ['expires', 2]
+            ['expires', 2],
         ];
         $token = $this->getMockBuilder(\VuFind\Db\Row\LoginToken::class)
             ->disableOriginalConstructor()
