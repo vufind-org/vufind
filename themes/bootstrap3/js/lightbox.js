@@ -481,15 +481,13 @@ VuFind.register('lightbox', function Lightbox() {
     });
   }
 
-  function loadConfiguredLightbox(){
+  function loadConfiguredLightbox() {
     if (VuFind.lightbox.child) {
       // remove lightbox reference
       let lightboxChild = VuFind.lightbox.child;
       VuFind.lightbox.child = null;
       let url = new URL(window.location.href);
-      let params = url.searchParams;
-      params.delete('lightboxChild');
-      url.search = params.toString();
+      url.searchParams.delete('lightboxChild');
       window.history.replaceState({}, document.title, url.toString());
 
       // load lightbox
