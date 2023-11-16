@@ -56,6 +56,7 @@ class WebResultsTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $configManager = $this->getMockBuilder(\VuFind\Config\PluginManager::class)
+            ->disableOriginalConstructor()
             ->getMock();
         $obj = new WebResults($runner, $configManager);
 
