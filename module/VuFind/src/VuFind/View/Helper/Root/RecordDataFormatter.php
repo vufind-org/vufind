@@ -139,7 +139,7 @@ class RecordDataFormatter extends AbstractHelper
      * @param mixed  $data    Data to render
      * @param array  $options Rendering options
      *
-     * @return array
+     * @return ?array
      */
     protected function render($field, $data, $options)
     {
