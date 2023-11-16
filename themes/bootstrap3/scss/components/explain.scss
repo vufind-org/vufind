@@ -1,5 +1,16 @@
-.js-result-list-explain {
-  max-width: 100px;
+.result-list-explain {
+  .js-result-list-explain {
+    max-width: 100px;
+
+    .bar-chart {
+      display: inline-block !important;
+    }
+  }
+}
+
+.result-list-explain,
+.result-list-explain:hover{
+  text-decoration: none;
 }
 
 .explain {

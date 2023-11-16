@@ -30,14 +30,16 @@ VuFind.register('explain', function explain() {
       const score = barChart.dataset.score;
       const diff = Math.abs(maxScore - score);
       const color = _getBarChartColor(score, maxScore);
-      const title = barChart.dataset.chartTitle;
+      const chartLabel = barChart.dataset.chartLabel;
+      const chartRecordScore = barChart.dataset.chartRecordScore;
+      const chartDifferenceScore = barChart.dataset.chartDifferenceScore;
       new Chart(barChart, {
         type: 'bar',
         data: {
-          labels: ['score'],
+          labels: [chartLabel],
           datasets: [
             {
-              label: title,
+              label: chartRecordScore,
               data: [score],
               backgroundColor: color.fill,
               borderColor: color.border,
@@ -45,7 +47,7 @@ VuFind.register('explain', function explain() {
               borderSkipped: false,
             },
             {
-              label: 'difference to top score',
+              label: chartDifferenceScore,
               data: [diff],
               backgroundColor: '#ddd',
               borderColor: '#aaa',
@@ -143,13 +145,16 @@ VuFind.register('explain', function explain() {
     const diff = Math.abs(maxScore - score);
     const color = _getBarChartColor(score, maxScore);
     const title = columnChart.dataset.chartTitle;
+    const chartLabel = columnChart.dataset.chartLabel;
+    const chartRecordScore = columnChart.dataset.chartRecordScore;
+    const chartDifferenceScore = columnChart.dataset.chartDifferenceScore;
     new Chart(columnChart, {
       type: 'bar',
       data: {
-        labels: ['relevance score'],
+        labels: [chartLabel],
         datasets: [
           {
-            label: 'title score',
+            label: chartRecordScore,
             data: [score],
             backgroundColor: color.fill,
             borderColor: color.border,
@@ -157,7 +162,7 @@ VuFind.register('explain', function explain() {
             borderSkipped: false,
           },
           {
-            label: 'difference to top score',
+            label: chartDifferenceScore,
             data: [diff],
             backgroundColor: '#ddd',
             borderColor: '#aaa',

@@ -122,11 +122,14 @@ $link = $this->recordLinker()->getUrl($this->driver);
         <br>
         <div class="explain-column-container">
           <canvas id="js-explain-column-chart"
-               class="explain-chart"
-               data-chart-title="<?=$this->transEsc('explain_compared', ['%%recordId%%' => $recordId])?>"
-               data-chart-data="<?=$this->escapeHtmlAttr(json_encode($data))?>"
-               data-max-score="<?=$maxScore?>"
-               data-score="<?=$totalScore?>"
+                  class="explain-chart"
+                  data-chart-title="<?=$this->transEscAttr('explain_compared', ['%%recordId%%' => $recordId])?>"
+                  data-chart-label="<?=$this->transEscAttr('explain_relevance_score')?>"
+                  data-chart-record-score="<?=$this->transEscAttr('explain_record_score')?>"
+                  data-chart-difference-score="<?=$this->transEscAttr('explain_difference_score')?>"
+                  data-chart-data="<?=$this->escapeHtmlAttr(json_encode($data))?>"
+                  data-max-score="<?=$maxScore?>"
+                  data-score="<?=$totalScore?>"
           ></canvas>
         </div>
       <?php endif; ?>
