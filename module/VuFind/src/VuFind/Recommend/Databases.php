@@ -127,6 +127,14 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
     protected $useLibGuides;
 
     /**
+     * Configuration of whether to match on the alt_names field in LibGuides
+     * in addition to the primary name
+     *
+     * @var bool
+     */
+    protected $useLibGuidesAlternateNames;
+
+    /**
      * Callable for LibGuides connector
      *
      * @var callable
@@ -169,10 +177,13 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
         if (!$databasesConfig) {
             throw new \Exception("Databases config file $databasesConfigFile must have section 'Databases'.");
         }
-        $configUrls = isset($databasesConfig->url) ? $databasesConfig->url->toArray() : [];
-        $this->configFileDatabases = array_map(function ($url) {
-            return ['url' => $url];
-        }, $configUrls);
+        $this->configFileDatabases = isset($databasesConfig->url) ? $databasesConfig->url->toArray() : [];
+        array_walk($this->configFileDatabases, function (&$value, $name) {
+            $value = [
+                'name' => $name,
+                'url' => $value,
+            ];
+        });
 
         $this->resultFacet = isset($databasesConfig->resultFacet)
             ? $databasesConfig->resultFacet->toArray() : [];
@@ -186,6 +197,8 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
             // Cache the data related to profiles for up to 10 minutes:
             $libGuidesApiConfig = $this->configManager->get('LibGuidesAPI');
             $this->cacheLifetime = intval($libGuidesApiConfig->GetAZ->cache_lifetime ?? 600);
+
+            $this->useLibGuidesAlternateNames = $databasesConfig->useLibGuidesAlternateNames ?? true;
         }
     }
 
@@ -247,6 +260,9 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
             return [];
         }
         $nameToDatabase = $this->getDatabases();
+
+        // Array of url => [name, url].  Key by URL so that the same database (under alternate
+        // names) is not duplicated.
         $databases = [];
 
         // Add databases from search query
@@ -255,7 +271,7 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
             if (strlen($query) >= $this->useQueryMinLength) {
                 foreach ($nameToDatabase as $name => $databaseInfo) {
                     if (str_contains(strtolower($name), $query)) {
-                        $databases[$name] = $databaseInfo;
+                        $databases[$databaseInfo['url']] = $databaseInfo;
                     }
                     if (count($databases) >= $this->limit) {
                         return $databases;
@@ -274,7 +290,7 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
             }
             $databaseInfo = $nameToDatabase[$name] ?? null;
             if ($databaseInfo) {
-                $databases[$name] = $databaseInfo;
+                $databases[$databaseInfo['url']] = $databaseInfo;
             }
             if (count($databases) >= $this->limit) {
                 return $databases;
@@ -316,6 +332,9 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
             $nameToDatabase = [];
             foreach ($databases as $database) {
                 $nameToDatabase[$database->name] = (array)$database;
+                if ($this->useLibGuidesAlternateNames && ($database->alt_names ?? false)) {
+                    $nameToDatabase[$database->alt_names] = (array)$database;
+                }
             }
 
             $this->putCachedData('libGuidesAZ-nameToDatabase', $nameToDatabase);
