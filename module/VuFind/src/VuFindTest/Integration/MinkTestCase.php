@@ -531,12 +531,11 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $retries = 6
     ) {
         $timeout ??= $this->getDefaultTimeout();
-        $field = $this->findCss($page, $selector, $timeout, 0);
 
         $session = $this->getMinkSession();
         $session->wait(
             $timeout,
-            "typeof $ !== 'undefined' && $('$selector:focusable').length > 0"
+            "document.querySelector('$selector:not([type=\"hidden\"]):not([disabled])') !== null;"
         );
         $results = $page->findAll('css', $selector);
         $this->assertIsArray($results, "Selector not found: $selector");
@@ -545,7 +544,21 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         // Workaround for Chromedriver bug; sometimes setting a value
         // doesn't work on the first try.
         for ($i = 1; $i <= $retries; $i++) {
-            $field->setValue($value);
+            $startTime = microtime(true);
+            $lastException = null;
+            while ((microtime(true) - $startTime) * 1000 <= $timeout) {
+                try {
+                    $lastException = null;
+                    $field->setValue($value);
+                    break;
+                } catch (\Exception $e) {
+                    $lastException = $e;
+                }
+                usleep(100000);
+            }
+            if ($lastException) {
+                throw $lastException;
+            }
 
             // Did it work? If so, we're done and can leave....
             if ($field->getValue() === $value) {
