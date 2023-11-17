@@ -311,7 +311,7 @@ var VuFind = (function VuFind() {
       this.embedded.init(jqContainer);
     }
     this.lightbox.bind(jqContainer);
-    setupQRCodeLinks(jqContainer);
+    setupQRCodeLinks(jqContainer[0]);
     if (typeof loadCovers === 'function') {
       loadCovers();
     }
