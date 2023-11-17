@@ -98,17 +98,17 @@ $link = $this->recordLinker()->getUrl($this->driver);
   <?php endif; ?>
   <?php if ($totalScore > 0): ?>
     <?php
-      $values = implode(', ', $shortExplain);
-      $labels = implode(', ', $shortExplainLabels);
+      $values = implode(';', $shortExplain);
+      $labels = implode(';', $shortExplainLabels);
     ?>
     <div class="charts" >
       <?php if(!empty($values) && !empty($labels)): ?>
         <div class="pie-chart-container">
           <canvas id="js-explain-pie-chart"
              class="explain-chart"
-             data-chart-title="<?=$recordId?>"
-             data-chart-labels="<?=$labels?>"
-             data-chart-data="<?=$values?>"
+             data-chart-title="<?=$this->escapeHtmlAttr($recordId)?>"
+             data-chart-labels="<?=$this->escapeHtmlAttr($labels)?>"
+             data-chart-data="<?=$this->escapeHtmlAttr($values)?>"
           ></canvas>
         </div>
       <?php endif; ?>

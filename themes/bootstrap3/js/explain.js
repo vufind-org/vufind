@@ -96,8 +96,8 @@ VuFind.register('explain', function explain() {
     if (!pieChart) {
       return;
     }
-    const data = pieChart.dataset.chartData.split(', ');
-    const labels = pieChart.dataset.chartLabels.split(', ');
+    const data = pieChart.dataset.chartData.split(';');
+    const labels = pieChart.dataset.chartLabels.split(';');
     new Chart(pieChart, {
       type: 'pie',
       data: {

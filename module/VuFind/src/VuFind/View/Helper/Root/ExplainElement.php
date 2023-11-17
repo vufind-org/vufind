@@ -30,6 +30,9 @@
 
 namespace VuFind\View\Helper\Root;
 
+use function count;
+use function is_array;
+
 /**
  * Explain element view helper
  *
@@ -56,14 +59,23 @@ class ExplainElement extends \Laminas\View\Helper\AbstractHelper
         $fieldName = $explainElement['fieldName'] ?? '';
         $fieldModifier = $explainElement['fieldModifier'] ?? false;
         $fieldValue = $explainElement['fieldValue'] ?? false;
-
-        $shortLabel = $fieldName;
+        $shortLabel = '';
+        if (is_array($fieldName) && is_array($fieldValue) && count($fieldName) == count($fieldValue)) {
+            $shortLabel = 'Synonym [' . implode(', ', array_map(function ($name, $value) {
+                return $name . '(' . $value . ')';
+            }, $fieldName, $fieldValue)) . ']';
+        } else {
+            if ($fieldName) {
+                $shortLabel .= $fieldName;
+            }
+            if ($fieldValue) {
+                $shortLabel .= ' (' . $explainElement['fieldValue'] . ')';
+            }
+        }
         if ($fieldModifier) {
             $shortLabel .= '^' . $view->localizedNumber($fieldModifier, $decimalPlaces);
         }
-        if ($fieldValue) {
-            $shortLabel .= ' (' . $explainElement['fieldValue'] . ')';
-        }
+
         $shortValue = $explainElement['value'];
         $completeLine = $view->render('RecordDriver/DefaultRecord/explain-line.phtml', [
             'explainElement' => $explainElement,
