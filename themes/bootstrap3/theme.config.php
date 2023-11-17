@@ -162,7 +162,7 @@ return [
             'facet-checked' => 'FontAwesome:check-square-o',
             'facet-collapse' => 'Unicode:25BD',
             'facet-exclude' => 'FontAwesome:times',
-            'facet-expand' => 'Unicode:25B6',
+            'facet-expand' => 'Unicode:25B7',
             'facet-noncollapsible' => 'FontAwesome:none',
             'facet-unchecked' => 'FontAwesome:square-o',
             'feedback' => 'FontAwesome:envelope',
