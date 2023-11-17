@@ -85,7 +85,7 @@ function build_browse
 
     extra_jvm_opts=$4
 
-    # Get the browse headings
+    # Get the browse headings from Solr
     if [ "$skip_authority" = "1" ]; then
         if ! output=$($JAVA ${extra_jvm_opts} -Dfile.encoding="UTF-8" -Dfield.preferred=heading -Dfield.insteadof=use_for -cp $CLASSPATH PrintBrowseHeadings "$bib_index" "$field" "${browse}.tmp" 2>&1); then
             echo "ERROR: Failed to create browse headings for ${browse}. ${output}."
