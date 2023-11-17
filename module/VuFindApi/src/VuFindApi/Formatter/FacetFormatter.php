@@ -58,10 +58,10 @@ class FacetFormatter extends BaseFormatter
             foreach ($request['facetFilter'] as $filter) {
                 [$facetField, $regex] = explode(':', $filter, 2);
                 $regex = trim($regex);
-                if (substr($regex, 0, 1) == '"') {
+                if (str_starts_with($regex, '"')) {
                     $regex = substr($regex, 1);
                 }
-                if (substr($regex, -1, 1) == '"') {
+                if (str_ends_with($regex, '"')) {
                     $regex = substr($regex, 0, -1);
                 }
                 $facetFilters[$facetField][] = $regex;

@@ -30,7 +30,6 @@ import org.solrmarc.index.SolrIndexer;
 
 import java.lang.StringBuilder;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
