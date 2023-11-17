@@ -524,6 +524,10 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'ConfiguredOptions' => 'New Title;Second New Title',
             'ConfiguredOverwriteOptions' => 'New Title;Second New Title',
         ];
+
+        // Calling getDefaults again to apply changes from config
+        $formatter->setDefaults('core', $spec);
+        $spec = $formatter->getDefaults('core');
         // Call the method specified by the data provider
         $results = $this->$function($driver, $spec);
         // Check for expected array keys
@@ -671,6 +675,9 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'Extra' => '0',
         ];
 
+        // Calling getDefaults again to apply changes from config
+        $formatter->setDefaults('core', $spec);
+        $spec = $formatter->getDefaults('core');
         // Call the method specified by the data provider
         $results = $this->$function($driver, $spec);
         // Check for expected array keys

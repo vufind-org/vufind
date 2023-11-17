@@ -209,7 +209,6 @@ class RecordDataFormatter extends AbstractHelper
         $result = [];
         foreach ($args[0] as $field => $current) {
             // Extract the relevant data from the driver and try to render it.
-            $current = $this->addOptions($field, $current);
             $data = $this->extractData($current);
             $value = $this->render($field, $data, $current);
             if ($value !== null) {
@@ -245,7 +244,10 @@ class RecordDataFormatter extends AbstractHelper
         foreach ($this->config->Defaults->$key ?? [] as $field) {
             $this->defaults[$key][$field] = [];
         }
-
+        // Adding options from config
+        foreach ($this->defaults[$key] as $field => $options) {
+            $this->defaults[$key][$field] = $this->addOptions($field, $options);
+        }
         // Send back array:
         return $this->defaults[$key];
     }
