@@ -320,20 +320,24 @@ class XCNCIP2 extends AbstractBase implements
      */
     public function init()
     {
-        if (empty($this->config)) {
-            throw new ILSException('Configuration needs to be set.');
+        // Validate config
+        $required = ['url', 'agency'];
+        foreach ($required as $current) {
+            if (!isset($this->config['Catalog'][$current])) {
+                throw new ILSException("Missing Catalog/{$current} config setting.");
+            }
         }
 
         $this->url = $this->config['Catalog']['url'];
         $this->fromAgency = $this->config['Catalog']['fromAgency'] ?? null;
-        if ($this->config['Catalog']['consortium']) {
+        if ($this->config['Catalog']['consortium'] ?? false) {
             $this->consortium = true;
-            foreach ($this->config['Catalog']['agency'] as $agency) {
+            foreach ($this->config['Catalog']['agency'] ?? [] as $agency) {
                 $this->agency[$agency] = 1;
             }
         } else {
             $this->consortium = false;
-            if (is_array($this->config['Catalog']['agency'])) {
+            if (is_array($this->config['Catalog']['agency'] ?? null)) {
                 $this->agency[$this->config['Catalog']['agency'][0]] = 1;
             } else {
                 $this->agency[$this->config['Catalog']['agency']] = 1;

@@ -82,7 +82,7 @@ abstract class AbstractLayer implements LayerInterface
             return imagecolorallocate($im, ...$this->colorMap[$key]);
         }
         // Case two: hex color
-        if (substr($color, 0, 1) == '#' && strlen($color) == 7) {
+        if (str_starts_with($color, '#') && strlen($color) == 7) {
             $r = hexdec(substr($color, 1, 2));
             $g = hexdec(substr($color, 3, 2));
             $b = hexdec(substr($color, 5, 2));

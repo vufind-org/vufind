@@ -21,12 +21,9 @@ package org.vufind.index;
 
 import org.marc4j.marc.Record;
 
-import org.vufind.index.FieldSpecTools;
-
 import com.ibm.icu.text.Transliterator;
 
 import java.text.Normalizer;
-import java.text.Normalizer.Form;
 import java.util.Hashtable;
 import java.util.LinkedHashSet;
 import java.util.Set;
