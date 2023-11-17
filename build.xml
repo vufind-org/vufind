@@ -905,4 +905,32 @@ ${git_status}
       </filterchain>
     </reflexive>
   </target>
+
+  <target name="update-bootstrap5-templates">
+    <if>
+      <available file="${srcdir}/themes/bootstrap5/templates"></available>
+      <then>
+        <delete dir="${srcdir}/themes/bootstrap5/templates" includeemptydirs="true" failonerror="true" />
+      </then>
+    </if>
+    <mkdir dir="${srcdir}/themes/bootstrap5/templates"></mkdir>
+    <copy todir="${srcdir}/themes/bootstrap5/templates">
+      <fileset dir="${srcdir}/themes/bootstrap3/templates" defaultexcludes="false" />
+    </copy>
+    <reflexive>
+      <fileset dir="${srcdir}/themes/bootstrap5/templates">
+        <include pattern="**/*.phtml" />
+      </fileset>
+      <filterchain>
+        <replaceregexp>
+          <!-- HTML attributes -->
+          <regexp pattern=" data-(dismiss|target|toggle)=" replace=" data-bs-\1=" />
+
+          <!-- HTMLAttributes helper -->
+          <regexp pattern="'data-(dismiss|target|toggle)'" replace="'data-bs-\1'" />
+        </replaceregexp>
+      </filterchain>
+    </reflexive>
+  </target>
+
 </project>
