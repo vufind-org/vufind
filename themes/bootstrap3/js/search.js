@@ -189,6 +189,42 @@ VuFind.register('search', function search() {
   }
 
   /**
+   * Update URLs of links pointing to the same results page
+   *
+   * Updates links pointing to this page to ensure that they contain current URL
+   * parameters (e.g. sort and limit). Any link that only contains query parameters
+   * is considered.
+   *
+   * @param {string} pageUrl
+   */
+  function updateResultLinks(pageUrl) {
+    let urlParts = pageUrl.split('?', 2);
+    const params = new URLSearchParams(urlParts.length > 1 ? urlParts[1] : '');
+    const sort = params.get('sort');
+    const limit = params.get('limit');
+
+    document.querySelectorAll('a').forEach((a) => {
+      // Use original href attribute since a.href returns an absolute URL:
+      const href = a.getAttribute('href');
+      if (!href || !href.startsWith('?')) {
+        return true;
+      }
+      const hrefParams = new URLSearchParams(href.substr(1));
+      if (null === sort) {
+        hrefParams.delete('sort');
+      } else {
+        hrefParams.set('sort', sort);
+      }
+      if (null === limit) {
+        hrefParams.delete('limit');
+      } else {
+        hrefParams.set('limit', limit);
+      }
+      a.href = '?' + hrefParams.toString();
+    });
+  }
+
+  /**
    * Scroll view port to results
    *
    * @param {string} _style Scroll behavior ('smooth' (default), 'instant' or 'auto')
@@ -260,6 +296,7 @@ VuFind.register('search', function search() {
       }
     }
     updateResultControls(pageUrl);
+    updateResultLinks(pageUrl);
     VuFind.emit('vf-results-load', {url: pageUrl, addToHistory: addToHistory});
     fetch(VuFind.path + '/AJAX/JSON?' + queryParams.toString())
       .then((response) => response.json())
