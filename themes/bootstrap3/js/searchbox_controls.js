@@ -20,10 +20,8 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
   function _handleInputChange(input, triggerInputEvent = true) {
     _textInput.value = input;
     _textInput.setAttribute('value', input);
-    if (_textInput.value === '') {
-      _resetButton.classList.add('hidden');
-    } else {
-      _resetButton.classList.remove('hidden');
+    if (_resetButton) {
+      _resetButton.classList.toggle('hidden', _textInput.value === '');
     }
     if ( typeof _keyboard !== 'undefined') {
       _keyboard.setInput(input);
@@ -144,7 +142,7 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
     _textInput = document.getElementById('searchForm_lookfor');
     _resetButton = document.getElementById('searchForm-reset');
 
-    if (!_textInput || !_resetButton) {
+    if (!_textInput) {
       return;
     }
   
@@ -152,9 +150,12 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
       _handleInputChange(event.target.value, false);
     });
 
-    _resetButton.addEventListener('click', function resetOnClick() {
-      _handleInputChange('');
-    });
+    if (_resetButton) {
+      _resetButton.addEventListener('click', function resetOnClick() {
+        _handleInputChange('');
+      });
+    }
+
 
     if (typeof window.SimpleKeyboard !== 'undefined') {
       _initKeyboard();
