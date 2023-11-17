@@ -53,7 +53,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'search' => Search::class,
         'session' => Session::class,
         'user' => User::class,
-        'userlist' => UserList::class,
         'userresource' => UserResource::class,
     ];
 
@@ -71,7 +70,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Search::class => RowGatewayFactory::class,
         Session::class => RowGatewayFactory::class,
         User::class => UserFactory::class,
-        UserList::class => UserListFactory::class,
         UserResource::class => RowGatewayFactory::class,
     ];
 

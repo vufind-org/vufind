@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010-2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -31,6 +31,7 @@ namespace VuFind\View\Helper\Root;
 
 use Laminas\Session\Container;
 use Laminas\View\Helper\AbstractHelper;
+use VuFind\Db\Service\UserListService as ListService;
 
 /**
  * List view helper
@@ -58,16 +59,26 @@ class UserList extends AbstractHelper
     protected $session;
 
     /**
+     * UserList database service
+     *
+     * @var ListService
+     */
+    protected $listService;
+
+    /**
      * Constructor
      *
-     * @param Container $session Session container (must use same namespace as
-     * container provided to \VuFind\Db\Table\UserList)
-     * @param string    $mode    List mode (enabled or disabled)
+     * @param Container   $session     Session container (must use same namespace as
+     *                                 container provided to
+     *                                 \VuFind\Db\Table\UserList)
+     * @param string      $mode        List mode (enabled or disabled)
+     * @param ListService $listService UserList database service
      */
-    public function __construct(Container $session, $mode = 'enabled')
+    public function __construct(Container $session, $mode, ListService $listService)
     {
         $this->mode = $mode;
         $this->session = $session;
+        $this->listService = $listService;
     }
 
     /**
@@ -88,5 +99,17 @@ class UserList extends AbstractHelper
     public function lastUsed()
     {
         return $this->session->lastUsed ?? null;
+    }
+
+    /**
+     * Proxy to the userList method of UserListService
+     *
+     * @param User|int $user Id of the user owning the list.
+     *
+     * @return array
+     */
+    public function getListsForUser($user)
+    {
+        return $this->listService->getListsForUser($user);
     }
 }

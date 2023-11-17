@@ -29,7 +29,14 @@
 
 namespace VuFind\Db\Service;
 
+use Laminas\Log\LoggerAwareInterface;
+use VuFind\Db\Entity\Resource;
+use VuFind\Db\Entity\User;
+use VuFind\Db\Entity\UserList;
 use VuFind\Db\Entity\UserResource;
+use VuFind\Log\LoggerAwareTrait;
+
+use function is_object;
 
 /**
  * Database service for UserResource.
@@ -40,8 +47,11 @@ use VuFind\Db\Entity\UserResource;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class UserResourceService extends AbstractService
+class UserResourceService extends AbstractService implements LoggerAwareInterface, ServiceAwareInterface
 {
+    use LoggerAwareTrait;
+    use ServiceAwareTrait;
+
     /**
      * Get a list of duplicate rows (this sometimes happens after merging IDs,
      * for example after a Summon resource ID changes).
@@ -126,5 +136,99 @@ class UserResourceService extends AbstractService
         $query = $this->entityManager->createQuery($dql);
         $stats = current($query->getResult());
         return $stats;
+    }
+
+    /**
+     * Unlink rows for the specified resource. This will also automatically remove
+     * any tags associated with the relationship.
+     *
+     * @param User|int          $user        ID of user removing links
+     * @param string|array|null $resource_id ID (or array of IDs) of resource(s) to unlink
+     * (null for ALL matching resources)
+     * @param UserList|null     $list        list to unlink (null for ALL matching lists, with the destruction
+     * of all tags associated with the $resource_id value; true for ALL matching lists,
+     * but retaining any tags associated with the resource_id independently of lists)
+     *
+     * @return void
+     */
+    public function destroyLinks($user, $resource_id = null, $list = null)
+    {
+        // Remove any tags associated with the links we are removing; we don't
+        // want to leave orphaned tags in the resource_tags table after we have
+        // cleared out favorites in user_resource!
+        $tagService = $this->getDbService(\VuFind\Db\Service\TagService::class);
+        $tagService->destroyResourceLinks($resource_id, $user, $list);
+
+        $dql = 'DELETE FROM ' . $this->getEntityClass(UserResource::class) . ' ur ';
+        $dqlWhere = ['ur.user = :user '];
+        $parameters = compact('user');
+        if (null !== $resource_id) {
+            $dqlWhere[] = ' ur.resource IN (:resource_id) ';
+            $parameters['resource_id'] = (array)$resource_id;
+        }
+
+        // null or true values of $list have different meanings in the
+        // context of the $tagService->destroyResourceLinks() call above, since
+        // some tags have a null $list value. In the case of user_resource
+        // rows, however, every row has a non-null $list value, so the
+        // two cases are equivalent and may be handled identically.
+        if (null !== $list && true !== $list) {
+            $dqlWhere[] = ' ur.list = :list ';
+            $parameters['list'] = $list;
+        }
+        $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $query->execute();
+    }
+
+    /**
+     * Create link if one does not exist; update notes if one does.
+     *
+     * @param Resource|int $resource ID of resource to link up
+     * @param User|int     $user     ID of user creating link
+     * @param UserList|int $list     ID of list to link up
+     * @param string       $notes    Notes to associate with link
+     *
+     * @return UserResource|false
+     */
+    public function createOrUpdateLink(
+        $resource,
+        $user,
+        $list,
+        $notes = ''
+    ) {
+        $resource = is_object($resource) ? $resource : $this->entityManager->getReference(Resource::class, $resource);
+        $user = is_object($user) ? $user : $this->entityManager->getReference(User::class, $user);
+        $params = compact('resource', 'list', 'user');
+        $result = current($this->entityManager->getRepository($this->getEntityClass(UserResource::class))
+            ->findBy($params));
+
+        if (empty($result)) {
+            $result = $this->createUserResource()
+                ->setResource($resource)
+                ->setUser($user)
+                ->setList($list);
+        }
+        // Update the notes:
+        $result->setNotes($notes);
+        try {
+            $this->persistEntity($result);
+        } catch (\Exception $e) {
+            $this->logError('Could not save user resource: ' . $e->getMessage());
+            return false;
+        }
+        return $result;
+    }
+
+    /**
+     * Create a userResource entity object.
+     *
+     * @return UserResource
+     */
+    public function createUserResource(): UserResource
+    {
+        $class = $this->getEntityClass(UserResource::class);
+        return new $class();
     }
 }

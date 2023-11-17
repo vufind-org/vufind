@@ -29,7 +29,10 @@
 
 namespace VuFind\Db\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+
+use function is_int;
 
 /**
  * UserList
@@ -99,7 +102,7 @@ class UserList implements EntityInterface
      *
      * @ORM\Column(name="public", type="boolean", nullable=false)
      */
-    protected $public = '0';
+    protected $public = false;
 
     /**
      * User ID.
@@ -117,10 +120,143 @@ class UserList implements EntityInterface
     /**
      * Id getter
      *
-     * @return int
+     * @return ?int
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
+    }
+
+    /**
+     * Is this a public list?
+     *
+     * @return bool
+     */
+    public function isPublic(): bool
+    {
+        return (bool)($this->public ?? false);
+    }
+
+    /**
+     * Userlist title setter
+     *
+     * @param string $title List title
+     *
+     * @return UserList
+     */
+    public function setTitle(string $title): UserList
+    {
+        $this->title = $title;
+        return $this;
+    }
+
+    /**
+     * Get list title
+     *
+     * @return ?string
+     */
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    /**
+     * Set description of the list
+     *
+     * @param ?string $description List description
+     *
+     * @return UserList
+     */
+    public function setDescription(?string $description): UserList
+    {
+        $this->description = $description;
+        return $this;
+    }
+
+    /**
+     * Get description of the list
+     *
+     * @return ?string
+     */
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    /**
+     * Set the public list flag
+     *
+     * @param bool $public Public flag
+     *
+     * @return UserList
+     */
+    public function setPublic(bool $public): UserList
+    {
+        $this->public = $public;
+        return $this;
+    }
+
+    /**
+     * User setter.
+     *
+     * @param ?User $user User object
+     *
+     * @return UserList
+     */
+    public function setUser(?User $user): UserList
+    {
+        $this->user = $user;
+        return $this;
+    }
+
+    /**
+     * User getter
+     *
+     * @return User
+     */
+    public function getUser(): User
+    {
+        return $this->user;
+    }
+
+    /**
+     * Created setter.
+     *
+     * @param Datetime $dateTime Created date
+     *
+     * @return UserList
+     */
+    public function setCreated(DateTime $dateTime): UserList
+    {
+        $this->created = $dateTime;
+        return $this;
+    }
+
+    /**
+     * Created getter
+     *
+     * @return Datetime
+     */
+    public function getCreated(): Datetime
+    {
+        return $this->created;
+    }
+
+    /**
+     * Is the current user allowed to edit this list?
+     *
+     * @param User|int|bool $user Logged-in user (false if none)
+     *
+     * @return bool
+     */
+    public function editAllowed($user): bool
+    {
+        if ($user instanceof \VuFind\Db\Entity\User && $user->getId() == $this->getUser()->getId()) {
+            return true;
+        }
+        if (is_int($user) && $user == $this->getUser()->getId()) {
+            return true;
+        }
+        return false;
     }
 }

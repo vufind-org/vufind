@@ -246,7 +246,7 @@ class TagService extends AbstractService implements LoggerAwareInterface
     ) {
         $tag = (array)$tag;
         $listId = $listId ? (array)$listId : null;
-        $dql = 'SELECT IDENTITY(rt.list) as list '
+        $dql = 'SELECT IDENTITY(rt.list) '
             . 'FROM ' . $this->getEntityClass(ResourceTags::class) . ' rt '
             . 'JOIN rt.tag t '
             . 'JOIN rt.list l '
@@ -292,9 +292,9 @@ class TagService extends AbstractService implements LoggerAwareInterface
     /**
      * Unlink rows for the specified resource.
      *
-     * @param string|array|null $resource ID (or array of IDs) of resource(s) to
+     * @param mixed             $resource ID (or array of IDs) of resource(s) to
      * unlink (null for ALL matching resources)
-     * @param string|User       $user     ID of user removing links
+     * @param string|User|int   $user     ID or entity representing user
      * @param mixed             $list     ID of list to unlink (null for ALL matching
      * tags, 'none' for tags not in a list, true for tags only found in a list)
      * @param string|array|null $tag      ID or array of IDs of tag(s) to unlink (null
@@ -1015,17 +1015,14 @@ class TagService extends AbstractService implements LoggerAwareInterface
      * the returned list WILL NOT include tags attached to records that are not
      * saved in favorites lists.
      *
-     * @param string $userId     User ID to look up.
-     * @param string $resourceId Filter for tags tied to a specific resource (null
-     * for no filter).
-     * @param int    $listId     Filter for tags tied to a specific list (null for no
-     * filter).
-     * @param string $source     Filter for tags tied to a specific record source
-     * (null for no filter).
+     * @param User|int     $userId     User ID to look up.
+     * @param string       $resourceId Filter for tags tied to a specific resource (null for no filter).
+     * @param UserList|int $listId     Filter for tags tied to a specific list (null for no filter).
+     * @param string       $source     Filter for tags tied to a specific record source (null for no filter).
      *
      * @return array
      */
-    public function getListTagsForUser(
+    public function getUserTagsFromFavorites(
         $userId,
         $resourceId = null,
         $listId = null,
@@ -1062,12 +1059,12 @@ class TagService extends AbstractService implements LoggerAwareInterface
     /**
      * Get tags assigned to a user list.
      *
-     * @param int    $listId List ID
-     * @param string $userId User ID to look up (null for no filter).
+     * @param UserList|int $listId List ID or entity
+     * @param ?User|int    $user   User to look up (null for no filter).
      *
      * @return array
      */
-    public function getForList($listId, $userId = null)
+    public function getForList($listId, $user = null)
     {
         $tag = $this->caseSensitive ? 't.tag' : 'lower(t.tag)';
 
@@ -1076,9 +1073,9 @@ class TagService extends AbstractService implements LoggerAwareInterface
             . 'JOIN rt.tag t '
             . 'WHERE rt.list = :listId AND rt.resource IS NULL ';
         $parameters  = compact('listId');
-        if ($userId) {
+        if ($user) {
             $dql .= 'AND rt.user = :userId ';
-            $parameters['userId'] = $userId;
+            $parameters['userId'] = $user;
         }
 
         $dql .= 'GROUP BY t.tag ORDER BY LOWER(t.tag) ';

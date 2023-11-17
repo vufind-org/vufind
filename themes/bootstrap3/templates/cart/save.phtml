@@ -38,9 +38,10 @@
     <label class="control-label" for="save_list"><?=$this->transEsc('Choose a List') ?></label>
     <select id="save_list" name="list" class="form-control">
       <?php if (count($this->lists) > 0): ?>
-        <?php foreach ($this->lists as $list): ?>
-          <option value="<?=$this->escapeHtmlAttr($list['id']) ?>"<?php if ($list['id'] == $this->userlist()->lastUsed()): ?> selected="selected"<?php endif; ?>>
-            <?=$this->escapeHtml($list['title'])?><?php if ($list['public']):?> (<?=$this->transEsc('public_list_indicator')?>)<?php endif; ?>
+        <?php foreach ($this->lists as $current): ?>
+          <?php $list = $current[0] ?>
+          <option value="<?=$this->escapeHtmlAttr($list->getId()) ?>"<?php if ($list->getId() == $this->userlist()->lastUsed()): ?> selected="selected"<?php endif; ?>>
+            <?=$this->escapeHtml($list->getTitle())?><?php if ($list->isPublic()):?> (<?=$this->transEsc('public_list_indicator')?>)<?php endif; ?>
           </option>
         <?php endforeach; ?>
       <?php else: ?>

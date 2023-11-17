@@ -29,8 +29,6 @@
 
 namespace VuFind\Db\Row;
 
-use Laminas\Db\Sql\Expression;
-use Laminas\Db\Sql\Select;
 use VuFind\Db\Entity\UserCard;
 
 use function count;
@@ -251,7 +249,7 @@ class User extends RowGateway implements
     public function getTags($resourceId = null, $listId = null, $source = null)
     {
         return $this->getDbService(\VuFind\Db\Service\TagService::class)
-            ->getListTagsForUser($this->id, $resourceId, $listId, $source);
+            ->getUserTagsFromFavorites($this->id, $resourceId, $listId, $source);
     }
 
     /**
@@ -308,45 +306,6 @@ class User extends RowGateway implements
     }
 
     /**
-     * Get all of the lists associated with this user.
-     *
-     * @return \Laminas\Db\ResultSet\AbstractResultSet
-     */
-    public function getLists()
-    {
-        $userId = $this->id;
-        $callback = function ($select) use ($userId) {
-            $select->columns(
-                [
-                    Select::SQL_STAR,
-                    'cnt' => new Expression(
-                        'COUNT(DISTINCT(?))',
-                        ['ur.resource_id'],
-                        [Expression::TYPE_IDENTIFIER]
-                    ),
-                ]
-            );
-            $select->join(
-                ['ur' => 'user_resource'],
-                'user_list.id = ur.list_id',
-                [],
-                $select::JOIN_LEFT
-            );
-            $select->where->equalTo('user_list.user_id', $userId);
-            $select->group(
-                [
-                    'user_list.id', 'user_list.user_id', 'title', 'description',
-                    'created', 'public',
-                ]
-            );
-            $select->order(['title']);
-        };
-
-        $table = $this->getDbTable('UserList');
-        return $table->select($callback);
-    }
-
-    /**
      * Get information saved in a user's favorites for a particular record.
      *
      * @param string $resourceId ID of record being checked.
@@ -369,10 +328,8 @@ class User extends RowGateway implements
      * Add/update a resource in the user's account.
      *
      * @param \VuFind\Db\Row\Resource $resource        The resource to add/update
-     * @param \VuFind\Db\Row\UserList $list            The list to store the resource
-     * in.
-     * @param array                   $tagArray        An array of tags to associate
-     * with the resource.
+     * @param int                     $list            The list to store the resource in.
+     * @param array                   $tagArray        An array of tags to associate with the resource.
      * @param string                  $notes           User notes about the resource.
      * @param bool                    $replaceExisting Whether to replace all
      * existing tags (true) or append to the existing list (false).
@@ -389,17 +346,17 @@ class User extends RowGateway implements
         // Create the resource link if it doesn't exist and update the notes in any
         // case:
         $linkTable = $this->getDbTable('UserResource');
-        $linkTable->createOrUpdateLink($resource->id, $this->id, $list->id, $notes);
+        $linkTable->createOrUpdateLink($resource->id, $this->id, $list, $notes);
 
         // If we're replacing existing tags, delete the old ones before adding the
         // new ones:
         if ($replaceExisting) {
-            $resource->deleteTags($this, $list->id);
+            $resource->deleteTags($this, $list);
         }
 
         // Add the new tags:
         foreach ($tagArray as $tag) {
-            $resource->addTag($tag, $this, $list->id);
+            $resource->addTag($tag, $this, $list);
         }
     }
 
@@ -613,13 +570,10 @@ class User extends RowGateway implements
     public function delete($removeComments = true, $removeRatings = true)
     {
         // Remove all lists owned by the user:
-        $lists = $this->getLists();
-        $table = $this->getDbTable('UserList');
+        $listService = $this->getDbService(\VuFind\Db\Service\UserListService::class);
+        $lists = $listService->getListsForUser($this->id);
         foreach ($lists as $current) {
-            // The rows returned by getLists() are read-only, so we need to retrieve
-            // a new object for each row in order to perform a delete operation:
-            $list = $table->getExisting($current->id);
-            $list->delete($this, true);
+            $listService->delete($current[0], $this->id, true);
         }
         $tagService = $this->getDbService(\VuFind\Db\Service\TagService::class);
         $tagService->destroyResourceLinks(null, $this->id);

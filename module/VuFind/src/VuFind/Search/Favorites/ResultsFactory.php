@@ -68,10 +68,14 @@ class ResultsFactory extends \VuFind\Search\Results\ResultsFactory
             throw new \Exception('Unexpected options sent to factory!');
         }
         $tm = $container->get(\VuFind\Db\Table\PluginManager::class);
+        $sm = $container->get(\VuFind\Db\Service\PluginManager::class);
         $obj = parent::__invoke(
             $container,
             $requestedName,
-            [$tm->get('Resource'), $tm->get('UserList')]
+            [
+                $tm->get('Resource'),
+                $sm->get(\VuFind\Db\Service\UserListService::class),
+            ]
         );
         $init = new \LmcRbacMvc\Initializer\AuthorizationServiceInitializer();
         $init($container, $obj);

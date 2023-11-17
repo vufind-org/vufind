@@ -354,8 +354,8 @@ abstract class AbstractBase implements
      */
     public function getContainingLists($user_id = null)
     {
-        $table = $this->getDbTable('UserList');
-        return $table->getListsContainingResource(
+        $listService = $this->getDbService(\VuFind\Db\Service\UserListService::class);
+        return $listService->getListsContainingResource(
             $this->getUniqueId(),
             $this->getSourceIdentifier(),
             $user_id

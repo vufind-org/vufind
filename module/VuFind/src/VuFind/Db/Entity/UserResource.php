@@ -82,7 +82,7 @@ class UserResource implements EntityInterface
      *          nullable=false,
      *          options={"default"="CURRENT_TIMESTAMP"})
      */
-    protected $saved = 'CURRENT_TIMESTAMP';
+    protected $saved;
 
     /**
      * User ID.
@@ -124,6 +124,15 @@ class UserResource implements EntityInterface
     protected $list;
 
     /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        // Set the default value as a \DateTime object
+        $this->saved = new \DateTime();
+    }
+
+    /**
      * Notes setter
      *
      * @param string $notes Notes
@@ -144,5 +153,74 @@ class UserResource implements EntityInterface
     public function getNotes(): string
     {
         return $this->notes;
+    }
+
+    /**
+     * User setter
+     *
+     * @param User $user User
+     *
+     * @return UserResource
+     */
+    public function setUser(User $user): UserResource
+    {
+        $this->user = $user;
+        return $this;
+    }
+
+    /**
+     * User getter
+     *
+     * @return User
+     */
+    public function getUser(): User
+    {
+        return $this->user;
+    }
+
+    /**
+     * User List setter
+     *
+     * @param UserList $list User List
+     *
+     * @return UserResource
+     */
+    public function setList(UserList $list): UserResource
+    {
+        $this->list = $list;
+        return $this;
+    }
+
+    /**
+     * User List getter
+     *
+     * @return UserList
+     */
+    public function getlist(): UserList
+    {
+        return $this->list;
+    }
+
+    /**
+     * Resource setter
+     *
+     * @param Resource $resource Resource
+     *
+     * @return UserResource
+     */
+    public function setResource(Resource $resource): UserResource
+    {
+        $this->resource = $resource;
+        return $this;
+    }
+
+    /**
+     * Resource getter
+     *
+     * @return Resource
+     */
+    public function getResource(): Resource
+    {
+        return $this->resource;
     }
 }

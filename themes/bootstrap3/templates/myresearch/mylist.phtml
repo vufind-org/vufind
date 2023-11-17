@@ -3,7 +3,7 @@
   $list = $this->results->getListObject();
 
   // Set up page title:
-  $this->headTitle(isset($list) ? $list->title : $this->translate('Favorites'));
+  $this->headTitle(isset($list) ? $list->getTitle() : $this->translate('Favorites'));
 
   // Set up breadcrumbs:
   $currPage = isset($list) ? 'List' : 'Favorites';
@@ -30,9 +30,9 @@
 </a>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <h2><?=$list ? $this->escapeHtml($list->title) : $this->transEsc('Your Favorites')?></h2>
+  <h2><?=$list ? $this->escapeHtml($list->getTitle()) : $this->transEsc('Your Favorites')?></h2>
 
-  <?php if ($list && $user && $list->user_id === $user->id && $list->public): ?>
+  <?php if ($list && $user && $list->getUser()->getId() === $user->id && $list->isPublic()): ?>
     <strong>
       <?=$this->icon('user-public-list-indicator', 'user-list__public-icon') ?>
       <?=$this->transEscAttr('public_list_indicator') ?>
@@ -56,19 +56,19 @@
     </div>
     <div class="search-controls">
       <?php if (isset($list)): ?>
-        <?php if ($list->editAllowed($account->isLoggedIn())): ?>
-          <a href="<?=$this->url('editList', ['id' => $list->id]) ?>" class="btn btn-link icon-link">
+        <?php if ($list->editAllowed($account->isLoggedIn()->id)): ?>
+          <a href="<?=$this->url('editList', ['id' => $list->getId()]) ?>" class="btn btn-link icon-link">
             <?=$this->icon('user-list-edit', 'icon-link__icon') ?>
             <span class="icon-link__label"><?=$this->transEsc('edit_list')?></span>
           </a>
           <div class="btn-group">
-            <a class="btn btn-link dropdown-toggle icon-link" data-toggle="dropdown" href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>">
+            <a class="btn btn-link dropdown-toggle icon-link" data-toggle="dropdown" href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->getId())?>">
               <?=$this->icon('user-list-delete', 'icon-link__icon') ?>
               <span class="icon-link__label"><?=$this->transEsc('delete_list')?></span>
             </a>
             <ul class="dropdown-menu">
               <li class="dropdown-header"><?=$this->transEsc('confirm_delete') ?></li>
-              <li><a href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>&amp;confirm=1"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
+              <li><a href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->getId())?>&amp;confirm=1"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
               <li><a href="#"><?=$this->transEsc('confirm_dialog_no')?></a></li>
             </ul>
           </div>
@@ -80,8 +80,8 @@
       <?php endif; ?>
     </div>
   </nav>
-  <?php if ($list && !empty($list->description)): ?>
-    <p><?=$this->escapeHtml($list->description)?></p>
+  <?php if ($list && strlen($description = $list->getDescription() ?? '')): ?>
+    <p><?=$this->escapeHtml($description)?></p>
   <?php endif; ?>
   <?php if (!empty($listTags)): ?>
     <div><strong><?=$this->transEsc('Tags')?>:</strong> <span class="list-tags"><?=implode(', ', array_map([$this, 'escapeHtml'], $listTags))?></span></div>
@@ -102,7 +102,7 @@
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-  <?=$this->context($this)->renderInContext('myresearch/menu.phtml', ['active' => isset($list) ? 'list' . $list['id'] : 'favorites'])?>
+  <?=$this->context($this)->renderInContext('myresearch/menu.phtml', ['active' => isset($list) ? 'list' . $list->getId() : 'favorites'])?>
   <?php foreach ($this->results->getRecommendations('side') as $current): ?>
     <?=$this->recommend($current)?>
   <?php endforeach; ?>

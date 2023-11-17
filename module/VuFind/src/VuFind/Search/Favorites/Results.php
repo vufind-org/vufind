@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010-2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -31,8 +31,8 @@ namespace VuFind\Search\Favorites;
 
 use LmcRbacMvc\Service\AuthorizationServiceAwareInterface;
 use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
+use VuFind\Db\Service\UserListService as ListService;
 use VuFind\Db\Table\Resource as ResourceTable;
-use VuFind\Db\Table\UserList as ListTable;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Record\Cache;
 use VuFind\Record\Loader;
@@ -64,7 +64,7 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
     /**
      * Active user list (false if none).
      *
-     * @var \VuFind\Db\Row\UserList|bool
+     * @var \VuFind\Db\Entity\UserList|bool
      */
     protected $list = false;
 
@@ -76,11 +76,11 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
     protected $resourceTable;
 
     /**
-     * UserList table
+     * UserList database service
      *
-     * @var ListTable
+     * @var ListService
      */
-    protected $listTable;
+    protected $listService;
 
     /**
      * Facet list
@@ -97,18 +97,18 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
      * @param SearchService              $searchService Search service
      * @param Loader                     $recordLoader  Record loader
      * @param ResourceTable              $resourceTable Resource table
-     * @param ListTable                  $listTable     UserList table
+     * @param ListService                $listService   UserList service
      */
     public function __construct(
         \VuFind\Search\Base\Params $params,
         SearchService $searchService,
         Loader $recordLoader,
         ResourceTable $resourceTable,
-        ListTable $listTable
+        ListService $listService
     ) {
         parent::__construct($params, $searchService, $recordLoader);
         $this->resourceTable = $resourceTable;
-        $this->listTable = $listTable;
+        $this->listService = $listService;
     }
 
     /**
@@ -145,7 +145,7 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
                 switch ($field) {
                     case 'tags':
                         if ($this->list) {
-                            $tags = $this->list->getResourceTags();
+                            $tags = $this->listService->getResourceTags($this->list);
                         } else {
                             $tags = $this->user ? $this->user->getTags() : [];
                         }
@@ -189,8 +189,8 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
             );
         }
         if (
-            null !== $list && !$list->public
-            && (!$this->user || $list->user_id != $this->user->id)
+            null !== $list && !$list->isPublic()
+            && (!$this->user || $list->getUser()->getId() != $this->user->id)
         ) {
             throw new ListPermissionException(
                 $this->translate('list_access_denied')
@@ -198,8 +198,8 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
         }
 
         // How many results were there?
-        $userId = null === $list ? $this->user->id : $list->user_id;
-        $listId = null === $list ? null : $list->id;
+        $userId = null === $list ? $this->user->id : $list->getUser()->getId();
+        $listId = null === $list ? null : $list->getId();
         $rawResults = $this->resourceTable->getFavorites(
             $userId,
             $listId,
@@ -251,7 +251,7 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
      * Get the list object associated with the current search (null if no list
      * selected).
      *
-     * @return \VuFind\Db\Row\UserList|null
+     * @return \VuFind\Db\Entity\UserList|null
      */
     public function getListObject()
     {
@@ -262,7 +262,7 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
             $filters = $this->getParams()->getRawFilters();
             $listId = $filters['lists'][0] ?? null;
             $this->list = (null === $listId)
-                ? null : $this->listTable->getExisting($listId);
+                ? null : $this->listService->getExisting($listId);
         }
         return $this->list;
     }

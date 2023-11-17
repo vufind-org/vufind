@@ -35,6 +35,8 @@ use VuFind\Date\Converter as DateConverter;
 use VuFind\Date\DateException;
 use VuFind\Db\Entity\PluginManager as EntityPluginManager;
 use VuFind\Db\Entity\Resource;
+use VuFind\Db\Entity\User;
+use VuFind\Db\Entity\UserList;
 use VuFind\Exception\LoginRequired as LoginRequiredException;
 use VuFind\Log\LoggerAwareTrait;
 use VuFind\Record\Loader;
@@ -345,5 +347,50 @@ class ResourceService extends AbstractService implements \VuFind\Db\Service\Serv
             $orderByClause = ' ORDER BY ' . implode(', ', $order);
         }
         return $orderByClause;
+    }
+
+    /**
+     * Look up a rowset for a set of specified resources.
+     *
+     * @param array  $ids    Array of IDs
+     * @param string $source Source of records to look up
+     *
+     * @return array
+     */
+    public function findResources($ids, $source = DEFAULT_SEARCH_BACKEND)
+    {
+        $repo = $this->entityManager->getRepository($this->getEntityClass(Resource::class));
+        $criteria = [
+            'recordId' => $ids,
+            'source' => $source,
+        ];
+        return $repo->findBy($criteria);
+    }
+
+    /**
+     * Add a tag to the current resource.
+     *
+     * @param Resource|int $resource Resource associated.
+     * @param string       $tagText  The tag to save.
+     * @param User|int     $user     The user posting the tag.
+     * @param ?UserList    $list     The list associated with the tag
+     *                               (optional).
+     *
+     * @return void
+     */
+    public function addTag($resource, $tagText, $user, $list = null)
+    {
+        $tagText = trim($tagText);
+        if (!empty($tagText)) {
+            $tagService = $this->getDbService(\VuFind\Db\Service\TagService::class);
+            $tag = $tagService->getByText($tagText);
+
+            $tagService->createLink(
+                $tag,
+                $resource,
+                $user,
+                $list
+            );
+        }
     }
 }

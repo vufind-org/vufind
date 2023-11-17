@@ -1,11 +1,11 @@
 <?php
 
 /**
- * UserList table gateway factory.
+ * Database userlist service factory
  *
- * PHP version 8
+ * PHP version 7
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,29 +21,29 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Db_Table
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Database
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
-namespace VuFind\Db\Table;
+namespace VuFind\Db\Service;
 
+use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-use Psr\Container\ContainerExceptionInterface as ContainerException;
-use Psr\Container\ContainerInterface;
 
 /**
- * UserList table gateway factory.
+ * Database userlist service factory
  *
  * @category VuFind
- * @package  Db_Table
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Database
+ * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class UserListFactory extends GatewayFactory
+class UserListServiceFactory extends AbstractServiceFactory
 {
     /**
      * Create an object
@@ -69,6 +69,10 @@ class UserListFactory extends GatewayFactory
         }
         $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
         $session = new \Laminas\Session\Container('List', $sessionManager);
-        return parent::__invoke($container, $requestedName, [$session]);
+        return parent::__invoke(
+            $container,
+            $requestedName,
+            [$container->get(\VuFind\Tags::class), $session]
+        );
     }
 }

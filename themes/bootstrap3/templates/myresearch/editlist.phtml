@@ -20,14 +20,14 @@
 <h2><?=$this->transEsc($pageTitle); ?></h2>
 
 <form class="form-edit-list" method="post" name="<?=$this->newList ? 'newList' : 'editListForm'?>">
-  <input type="hidden" name="id" value="<?=empty($this->list->id) ? 'NEW' : $this->escapeHtmlAttr($this->list->id) ?>">
+  <input type="hidden" name="id" value="<?=empty($this->list->getId()) ? 'NEW' : $this->escapeHtmlAttr($this->list->getId()) ?>">
   <div class="form-group">
     <label class="control-label" for="list_title"><?=$this->transEsc('List'); ?>:</label>
-    <input id="list_title" class="form-control" type="text" name="title" value="<?=isset($this->list['title']) ? $this->escapeHtml($this->list['title']) : ''?>">
+    <input id="list_title" class="form-control" type="text" name="title" value="<?=$this->escapeHtml($this->list->getTitle() ?? '')?>">
   </div>
   <div class="form-group">
     <label class="control-label" for="list_desc"><?=$this->transEsc('Description') ?></label>
-    <textarea id="list_desc" class="form-control" name="desc" rows="3"><?=isset($this->list['description']) ? $this->escapeHtml($this->list['description']) : ''?></textarea>
+    <textarea id="list_desc" class="form-control" name="desc" rows="3"><?=$this->escapeHtml($this->list->getDescription() ?? '')?></textarea>
   </div>
   <?php if ($this->usertags()->getListMode() === 'enabled'): ?>
     <div class="form-group">
@@ -62,6 +62,6 @@
 <?php if ($this->auth()->isLoggedIn() && $this->layout()->getTemplate() !== 'layout/lightbox') :?>
   </div>
   <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-      <?=$this->context($this)->renderInContext('myresearch/menu.phtml', ['active' => empty($this->list->id) ? 'editlist/NEW' : 'list' . $this->list->id])?>
+      <?=$this->context($this)->renderInContext('myresearch/menu.phtml', ['active' => empty($this->list->getId()) ? 'editlist/NEW' : 'list' . $this->list->getId()])?>
   </div>
 <?php endif; ?>

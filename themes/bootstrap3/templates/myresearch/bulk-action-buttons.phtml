@@ -1,6 +1,6 @@
 <?php if (isset($list)): ?>
-  <input type="hidden" name="listID" value="<?=$this->escapeHtmlAttr($list->id)?>">
-  <input type="hidden" name="listName" value="<?=$this->escapeHtmlAttr($list->title)?>">
+  <input type="hidden" name="listID" value="<?=$this->escapeHtmlAttr($list->getId())?>">
+  <input type="hidden" name="listName" value="<?=$this->escapeHtmlAttr($list->getTitle())?>">
 <?php endif; ?>
 <?php $user = $this->auth()->isLoggedIn(); ?>
 <nav class="bulkActionButtons">
@@ -11,8 +11,8 @@
   <ul class="action-toolbar">
     <li><button class="toolbar-btn" type="submit" name="email" value="1" title="<?=$this->transEscAttr('email_selected')?>"><?=$this->icon('send-email') ?> <?=$this->transEsc('Email') ?></button>
     </li>
-    <?php if ((null !== $this->list && $this->list->editAllowed($user)) || null === $this->list && $user): ?>
-      <li><button class="toolbar-btn" id="<?=$this->idPrefix?>delete_list_items_<?=null !== $this->list ? $this->escapeHtmlAttr($this->list->id) : ''?>" type="submit" name="delete" value="1" title="<?=$this->transEscAttr('delete_selected')?>"><?=$this->icon('ui-delete') ?> <?=$this->transEsc('Delete') ?></button></li>
+    <?php if ((null !== $this->list && $this->list->editAllowed($user->id)) || null === $this->list && $user): ?>
+      <li><button class="toolbar-btn" id="<?=$this->idPrefix?>delete_list_items_<?=null !== $this->list ? $this->escapeHtmlAttr($this->list->getId()) : ''?>" type="submit" name="delete" value="1" title="<?=$this->transEscAttr('delete_selected')?>"><?=$this->icon('ui-delete') ?> <?=$this->transEsc('Delete') ?></button></li>
     <?php endif; ?>
     <?php $exportOptions = $this->export()->getActiveFormats('bulk'); ?>
     <?php if (count($exportOptions) > 0): ?>

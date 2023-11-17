@@ -485,12 +485,13 @@ class CartController extends AbstractBase
             $this->flashMessenger()->addMessage($message, 'success');
             return $this->redirect()->toUrl($listUrl);
         }
-
+        $listService = $this->serviceLocator->get(\VuFind\Db\Service\PluginManager::class)
+            ->get(\VuFind\Db\Service\UserListService::class);
         // Pass record and list information to view:
         return $this->createViewModel(
             [
                 'records' => $this->getRecordLoader()->loadBatch($ids),
-                'lists' => $user->getLists(),
+                'lists' => $listService->getListsForUser($user->id),
             ]
         );
     }
