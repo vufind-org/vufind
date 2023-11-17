@@ -113,7 +113,7 @@ class CartController extends AbstractBase
         // ignore that!
         $referer = $this->getRequest()->getServer()->get('HTTP_REFERER');
         $bulk = $this->url()->fromRoute('cart-searchresultsbulk');
-        if (substr($referer, -strlen($bulk)) != $bulk) {
+        if (!str_ends_with($referer, $bulk)) {
             $this->session->url = $referer;
         }
 

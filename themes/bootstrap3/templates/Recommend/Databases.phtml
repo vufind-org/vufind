@@ -1,0 +1,21 @@
+<div class="databases">
+  <?php $databases = $this->recommend->getResults(); ?>
+  <?php if (!empty($databases)): ?>
+    <h2><?=$this->transEsc('databases_recommend_heading')?></h2>
+    <?php if ($this->transEsc('databases_recommend_intro', [], '')): ?>
+      <p><?=$this->transEsc('databases_recommend_intro')?></p>
+    <?php endif; ?>
+    <div class="list-group">
+      <?php foreach ($databases as $name => $database): ?>
+        <div class="list-group-item">
+          <span>
+            <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($database['url']))?>" class="title icon-link" target="_blank">
+              <?=$this->icon('external-link', 'icon-link__icon') ?>
+              <span class="icon-link__label"><?=$this->escapeHtml($name)?></span>
+            </a>
+          </span>
+        </div>
+      <?php endforeach; ?>
+    </div>
+  <?php endif ?>
+</div>

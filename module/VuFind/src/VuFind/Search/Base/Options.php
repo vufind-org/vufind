@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  Search_Base
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -47,6 +48,7 @@ use function is_string;
  * @category VuFind
  * @package  Search_Base
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
@@ -122,7 +124,14 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @var bool
      */
-    protected $retainFiltersByDefault = true;
+    protected $retainFiltersByDefault;
+
+    /**
+     * Should we display a "Reset Filters" link regardless of retainFiltersByDefault?
+     *
+     * @var bool
+     */
+    protected $alwaysDisplayResetFilters;
 
     /**
      * Default filters to apply to new searches
@@ -321,6 +330,28 @@ abstract class Options implements TranslatorAwareInterface
     protected $firstlastNavigation = false;
 
     /**
+     * Should hierarchicalFacetFilters and hierarchicalExcludeFilters
+     * apply in advanced search
+     *
+     * @var bool
+     */
+    protected $filterHierarchicalFacetsInAdvanced = false;
+
+    /**
+     * Hierarchical exclude filters
+     *
+     * @var array
+     */
+    protected $hierarchicalExcludeFilters = [];
+
+    /**
+     * Hierarchical facet filters
+     *
+     * @var array
+     */
+    protected $hierarchicalFacetFilters = [];
+
+    /**
      * Top pagination control style (none, simple or full)
      *
      * @var string
@@ -349,8 +380,17 @@ abstract class Options implements TranslatorAwareInterface
                 }
             }
         }
+        $this->filterHierarchicalFacetsInAdvanced
+            = !empty($facetSettings->Advanced_Settings->enable_hierarchical_filters);
+        $this->hierarchicalExcludeFilters
+            = $facetSettings?->HierarchicalExcludeFilters?->toArray() ?? [];
+        $this->hierarchicalFacetFilters
+            = $facetSettings?->HierarchicalFacetFilters?->toArray() ?? [];
+
         $searchSettings = $configLoader->get($this->searchIni);
         $this->topPaginatorStyle = $searchSettings->General->top_paginator ?? false;
+        $this->retainFiltersByDefault = $searchSettings->General->retain_filters_by_default ?? true;
+        $this->alwaysDisplayResetFilters = $searchSettings->General->always_display_reset_filters ?? false;
     }
 
     /**
@@ -930,6 +970,16 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
+     * Should the "Reset Filters" button be displayed?
+     *
+     * @return bool
+     */
+    public function shouldDisplayResetFilters()
+    {
+        return $this->alwaysDisplayResetFilters || $this->getRetainFilterSetting();
+    }
+
+    /**
      * Get an associative array of available shards (key = internal VuFind ID for
      * this shard; value = details needed to connect to shard; empty for non-sharded
      * data sources).
@@ -1070,7 +1120,7 @@ abstract class Options implements TranslatorAwareInterface
         // Special case: if there's an unexpected number of parts, we may be testing
         // with a mock object; if so, that's okay, but anything else is unexpected.
         if (count($class) !== 4) {
-            if ('Mock_' === substr($className, 0, 5)) {
+            if (str_starts_with($className, 'Mock_')) {
                 return 'Mock';
             }
             throw new \Exception("Unexpected class name: {$className}");
@@ -1168,5 +1218,47 @@ abstract class Options implements TranslatorAwareInterface
         $delimiter = $facetSettings->Advanced_Settings->limitDelimiter ?? '::';
         $limitConf = $limits ? $limits->get($limit) : '';
         return array_map('trim', explode($delimiter, $limitConf ?? ''));
+    }
+
+    /**
+     * Are hierarchicalFacetFilters and hierarchicalExcludeFilters enabled in advanced search?
+     *
+     * @return bool
+     */
+    public function getFilterHierarchicalFacetsInAdvanced(): bool
+    {
+        return $this->filterHierarchicalFacetsInAdvanced;
+    }
+
+    /**
+     * Get hierarchical exclude filters.
+     *
+     * @param string|null $field Field to get or null for all values.
+     *                           Default is null.
+     *
+     * @return array
+     */
+    public function getHierarchicalExcludeFilters(?string $field = null): array
+    {
+        if ($field) {
+            return $this->hierarchicalExcludeFilters[$field] ?? [];
+        }
+        return $this->hierarchicalExcludeFilters;
+    }
+
+    /**
+     * Get hierarchical facet filters.
+     *
+     * @param string|null $field Field to get or null for all values.
+     *                           Default is null.
+     *
+     * @return array
+     */
+    public function getHierarchicalFacetFilters(?string $field = null): array
+    {
+        if ($field) {
+            return $this->hierarchicalFacetFilters[$field] ?? [];
+        }
+        return $this->hierarchicalFacetFilters;
     }
 }
