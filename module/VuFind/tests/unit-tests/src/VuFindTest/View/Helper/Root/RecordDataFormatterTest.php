@@ -216,6 +216,15 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
                 'pos' => 6000,
                 'enabled' => true,
             ],
+            'Field_ContextSensitive' => [
+                'enabled' => false,
+                'overrideContext' => [
+                    'core' => 'Core_ContextSensitive',
+                ],
+            ],
+            'Core_ContextSensitive' => [
+                'enabled' => true,
+            ],
         ]);
         $container->set(
             \VuFind\Config\PluginManager::class,
@@ -488,6 +497,11 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'separator' => '/',
             'pos' => 6004,
         ];
+        $spec['ContextSensitive'] = [
+            'dataMethod' => 'getContainerTitle',
+            'renderType' => 'Simple',
+            'pos' => 7000,
+        ];
         $expected = [
             'Building' => 'prefix_0',
             'Published in' => '0',
@@ -523,6 +537,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'Extra' => '0',
             'ConfiguredOptions' => 'New Title;Second New Title',
             'ConfiguredOverwriteOptions' => 'New Title;Second New Title',
+            'ContextSensitive' => '0',
         ];
 
         // Calling getDefaults again to apply changes from config

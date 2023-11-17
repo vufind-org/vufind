@@ -246,7 +246,7 @@ class RecordDataFormatter extends AbstractHelper
         }
         // Adding options from config
         foreach ($this->defaults[$key] as $field => $options) {
-            $this->defaults[$key][$field] = $this->addOptions($field, $options);
+            $this->defaults[$key][$field] = $this->addOptions($key, $field, $options);
         }
         // Send back array:
         return $this->defaults[$key];
@@ -272,12 +272,13 @@ class RecordDataFormatter extends AbstractHelper
     /**
      * Add global and configured options to options of a field.
      *
+     * @param string $context Context of the field.
      * @param string $field   Field
      * @param array  $options Options of a field.
      *
      * @return ?array
      */
-    protected function addOptions($field, $options)
+    protected function addOptions($context, $field, $options)
     {
         if ($globalOptions = ($this->config->Global ?? false)) {
             $options = array_merge($globalOptions->toArray(), $options);
@@ -286,6 +287,13 @@ class RecordDataFormatter extends AbstractHelper
         $section = 'Field_' . $field;
         if ($fieldOptions = ($this->config->$section ?? false)) {
             $options = array_merge($options, $fieldOptions->toArray());
+        }
+
+        $contextSection = $options['overrideContext'][$context] ?? false;
+        if (
+            $contextOptions = $this->config->$contextSection ?? false
+        ) {
+            $options = array_merge($options, $contextOptions->toArray());
         }
 
         return $options;
