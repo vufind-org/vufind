@@ -20,10 +20,8 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
   function _handleInputChange(input, triggerInputEvent = true) {
     _textInput.value = input;
     _textInput.setAttribute('value', input);
-    if (_textInput.value === '') {
-      _resetButton.classList.add('hidden');
-    } else {
-      _resetButton.classList.remove('hidden');
+    if (_resetButton) {
+      _resetButton.classList.toggle('hidden', _textInput.value === '');
     }
     if ( typeof _keyboard !== 'undefined') {
       _keyboard.setInput(input);
@@ -88,8 +86,9 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
     _KeyboardClass = window.SimpleKeyboard.default;
     _KeyboardLayoutClass = window.SimpleKeyboardLayouts.default;
 
-    $('.keyboard-selection-item').on("click", function updateLayoutOnClick(){
+    $('.keyboard-selection-item').on("click", function updateLayoutOnClick(ev) {
       _updateKeyboardLayout($(this).data("value"));
+      ev.preventDefault();
     });
 
     _textInput.addEventListener("focus", () => {
@@ -141,15 +140,22 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
 
   function init(){
     _textInput = document.getElementById('searchForm_lookfor');
+
+    if (!_textInput) {
+      return;
+    }
+
     _resetButton = document.getElementById('searchForm-reset');
 
     _textInput.addEventListener("input", function resetOnInput(event) {
       _handleInputChange(event.target.value, false);
     });
 
-    _resetButton.addEventListener('click', function resetOnClick() {
-      _handleInputChange('');
-    });
+    if (_resetButton) {
+      _resetButton.addEventListener('click', function resetOnClick() {
+        _handleInputChange('');
+      });
+    }
 
     if (typeof window.SimpleKeyboard !== 'undefined') {
       _initKeyboard();
