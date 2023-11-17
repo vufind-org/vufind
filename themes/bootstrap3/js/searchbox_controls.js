@@ -140,12 +140,13 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
 
   function init(){
     _textInput = document.getElementById('searchForm_lookfor');
-    _resetButton = document.getElementById('searchForm-reset');
 
     if (!_textInput) {
       return;
     }
-  
+
+    _resetButton = document.getElementById('searchForm-reset');
+
     _textInput.addEventListener("input", function resetOnInput(event) {
       _handleInputChange(event.target.value, false);
     });
@@ -155,7 +156,6 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
         _handleInputChange('');
       });
     }
-
 
     if (typeof window.SimpleKeyboard !== 'undefined') {
       _initKeyboard();
