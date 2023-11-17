@@ -71,14 +71,14 @@ class RecordDataFormatter extends AbstractHelper
      *
      * @var \Laminas\Config\Config
      */
-    protected $config = null;
+    protected $config;
 
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $config Config
+     * @param ?\Laminas\Config\Config $config Config
      */
-    public function __construct($config)
+    public function __construct($config = null)
     {
         $this->config = $config;
     }
