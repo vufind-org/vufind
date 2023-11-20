@@ -172,6 +172,13 @@ class MyResearchController extends AbstractBase
 
         // Not logged in?  Force user to log in:
         if (!$this->getAuthManager()->isLoggedIn()) {
+            if (
+                $this->followup()->retrieve('lightboxParent')
+                && $url = $this->getAndClearFollowupUrl(true)
+            ) {
+                return $this->redirect()->toUrl($url);
+            }
+
             // Allow bypassing of post-login redirect
             if ($this->params()->fromQuery('redirect', true)) {
                 $this->setFollowupUrlToReferer();
