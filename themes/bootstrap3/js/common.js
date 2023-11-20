@@ -585,14 +585,14 @@ function setupStickyElements() {
     return getInheritedBackgroundColor(el.parentElement);
   }
 
-  let stickyElements = $('.sticky-element').sort(sortStickyElements);
+  let stickyElements = Array.from(document.getElementsByClassName('sticky-element')).sort(sortStickyElements);
 
   function handleStickyElements() {
     let num = 0;
     let count = stickyElements.length;
     let currentOffset = 0;
-    stickyElements.each(
-      (i, stickyElement) => {
+    stickyElements.forEach(
+      (stickyElement) => {
         let stickyContainer = stickyElement.parentNode;
         let placeholder = stickyContainer.previousSibling;
         let gapFiller = stickyElement.previousSibling;
@@ -640,12 +640,22 @@ function setupStickyElements() {
       });
   }
 
-  stickyElements.each(
-    (i, stickyElement) => {
-      $('<div class="sticky-placeholder hidden"></div>').insertBefore(stickyElement);
-      $('<div class="sticky-container"></div>').insertBefore(stickyElement);
+  stickyElements.forEach(
+    (stickyElement) => {
+      let placeholder = document.createElement('div');
+      placeholder.classList.add('sticky-placeholder', 'hidden');
+      stickyElement.parentNode.insertBefore(placeholder, stickyElement);
+
+      let container = document.createElement('div');
+      container.classList.add('sticky-container');
+      stickyElement.parentNode.insertBefore(container, stickyElement);
+
       stickyElement.previousSibling.insertAdjacentElement('beforeEnd', stickyElement);
-      $('<div class="sticky-gap-filler hidden"></div>').insertBefore(stickyElement);
+
+      let gapFiller = document.createElement('div');
+      gapFiller.classList.add('sticky-gap-filler', 'hidden');
+      stickyElement.parentNode.insertBefore(gapFiller, stickyElement);
+
       setPlaceholderStyle(stickyElement);
       stickyElement.parentNode.style.backgroundColor = getInheritedBackgroundColor(stickyElement.parentNode);
       stickyElement.previousSibling.style.backgroundColor = getInheritedBackgroundColor(stickyElement);
@@ -654,8 +664,8 @@ function setupStickyElements() {
   handleStickyElements();
 
   window.addEventListener("resize", () => {
-    stickyElements.each(
-      (i, stickyElement) => {
+    stickyElements.forEach(
+      (stickyElement) => {
         setPlaceholderStyle(stickyElement);
       }
     );
