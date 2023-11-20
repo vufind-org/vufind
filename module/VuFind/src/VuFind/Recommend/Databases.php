@@ -332,6 +332,7 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
             $nameToDatabase = [];
             foreach ($databases as $database) {
                 $nameToDatabase[$database->name] = (array)$database;
+                // The alt_names field is single-valued free text
                 if ($this->useLibGuidesAlternateNames && ($database->alt_names ?? false)) {
                     $nameToDatabase[$database->alt_names] = (array)$database;
                 }
