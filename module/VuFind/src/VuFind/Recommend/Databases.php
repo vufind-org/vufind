@@ -74,14 +74,7 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
      *
      * @var int
      */
-    protected $limit;
-
-    /**
-     * Name of the configuration file for databases config (minus ".ini").
-     *
-     * @var string
-     */
-    protected $databasesConfigFile;
+    protected $limit = 5;
 
     /**
      * The result facet with the list of databases.  Each value in the
@@ -89,42 +82,42 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
      *
      * @var array
      */
-    protected $resultFacet;
+    protected $resultFacet = [];
 
     /**
      * For each database facet, the key to the database name.
      *
      * @var string
      */
-    protected $resultFacetNameKey;
+    protected $resultFacetNameKey = 'value';
 
     /**
      * Databases listed in configuration file
      *
      * @var array
      */
-    protected $configFileDatabases;
+    protected $configFileDatabases = [];
 
     /**
      * Configuration of whether to use the query string as a match point
      *
      * @var bool
      */
-    protected $useQuery;
+    protected $useQuery = true;
 
     /**
      * Minimum string length of a query to use as a match point
      *
      * @var bool
      */
-    protected $useQueryMinLength;
+    protected $useQueryMinLength = 3;
 
     /**
      * Configuration of whether to use LibGuides as a data source
      *
      * @var bool
      */
-    protected $useLibGuides;
+    protected $useLibGuides = false;
 
     /**
      * Configuration of whether to match on the alt_names field in LibGuides
@@ -132,7 +125,7 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
      *
      * @var bool
      */
-    protected $useLibGuidesAlternateNames;
+    protected $useLibGuidesAlternateNames = true;
 
     /**
      * Callable for LibGuides connector
@@ -167,17 +160,20 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
      */
     public function setConfig($settings)
     {
+        // Only change settings from current values if they are defined in $settings or .ini
+
         $settings = explode(':', $settings);
         $this->limit
             = (isset($settings[0]) && is_numeric($settings[0]) && $settings[0] > 0)
-            ? intval($settings[0]) : 5;
+            ? intval($settings[0]) : $this->limit;
         $databasesConfigFile = $settings[1] ?? 'EDS';
 
         $databasesConfig = $this->configManager->get($databasesConfigFile)->Databases;
         if (!$databasesConfig) {
             throw new \Exception("Databases config file $databasesConfigFile must have section 'Databases'.");
         }
-        $this->configFileDatabases = isset($databasesConfig->url) ? $databasesConfig->url->toArray() : [];
+        $this->configFileDatabases = isset($databasesConfig->url) ? $databasesConfig->url->toArray()
+            : $this->configFileDatabases;
         array_walk($this->configFileDatabases, function (&$value, $name) {
             $value = [
                 'name' => $name,
@@ -186,19 +182,22 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
         });
 
         $this->resultFacet = isset($databasesConfig->resultFacet)
-            ? $databasesConfig->resultFacet->toArray() : [];
-        $this->resultFacetNameKey = $databasesConfig->resultFacetNameKey ?? 'value';
+            ? $databasesConfig->resultFacet->toArray() : $this->resultFacet;
+        $this->resultFacetNameKey = $databasesConfig->resultFacetNameKey
+            ?? $this->resultFacetNameKey;
 
-        $this->useQuery = $databasesConfig->useQuery ?? true;
-        $this->useQueryMinLength = $databasesConfig->useQueryMinLength ?? 3;
+        $this->useQuery = $databasesConfig->useQuery ?? $this->useQuery;
+        $this->useQueryMinLength = $databasesConfig->useQueryMinLength
+            ?? $this->useQueryMinLength;
 
-        $this->useLibGuides = $databasesConfig->useLibGuides ?? false;
+        $this->useLibGuides = $databasesConfig->useLibGuides ?? $this->useLibGuides;
         if ($this->useLibGuides) {
             // Cache the data related to profiles for up to 10 minutes:
             $libGuidesApiConfig = $this->configManager->get('LibGuidesAPI');
             $this->cacheLifetime = intval($libGuidesApiConfig->GetAZ->cache_lifetime ?? 600);
 
-            $this->useLibGuidesAlternateNames = $databasesConfig->useLibGuidesAlternateNames ?? true;
+            $this->useLibGuidesAlternateNames = $databasesConfig->useLibGuidesAlternateNames
+                ?? $this->useLibGuidesAlternateNames;
         }
     }
 
