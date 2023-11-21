@@ -6,12 +6,12 @@
       <p><?=$this->transEsc('databases_recommend_intro')?></p>
     <?php endif; ?>
     <div class="list-group">
-      <?php foreach ($databases as $name => $database): ?>
+      <?php foreach ($databases as $database): ?>
         <div class="list-group-item">
           <span>
             <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($database['url']))?>" class="title icon-link" target="_blank">
               <?=$this->icon('external-link', 'icon-link__icon') ?>
-              <span class="icon-link__label"><?=$this->escapeHtml($name)?></span>
+              <span class="icon-link__label"><?=$this->escapeHtml($database['name'])?></span>
             </a>
           </span>
         </div>
