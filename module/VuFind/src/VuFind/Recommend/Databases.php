@@ -172,8 +172,8 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
         if (!$databasesConfig) {
             throw new \Exception("Databases config file $databasesConfigFile must have section 'Databases'.");
         }
-        $this->configFileDatabases = isset($databasesConfig->url) ? $databasesConfig->url->toArray()
-            : $this->configFileDatabases;
+        $this->configFileDatabases = $databasesConfig->url?->toArray()
+            ?? $this->configFileDatabases;
         array_walk($this->configFileDatabases, function (&$value, $name) {
             $value = [
                 'name' => $name,
@@ -181,8 +181,7 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
             ];
         });
 
-        $this->resultFacet = isset($databasesConfig->resultFacet)
-            ? $databasesConfig->resultFacet->toArray() : $this->resultFacet;
+        $this->resultFacet = $databasesConfig->resultFacet?->toArray() ?? $this->resultFacet;
         $this->resultFacetNameKey = $databasesConfig->resultFacetNameKey
             ?? $this->resultFacetNameKey;
 
