@@ -488,12 +488,6 @@ class Options extends \VuFind\Search\Base\Options
                 : (bool)$this->searchSettings->General->highlighting;
         }
 
-        // Load search preferences:
-        if (isset($this->searchSettings->General->retain_filters_by_default)) {
-            $this->retainFiltersByDefault
-                = $this->searchSettings->General->retain_filters_by_default;
-        }
-
         // View preferences
         if (isset($this->searchSettings->General->default_view)) {
             $this->defaultView
