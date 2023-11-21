@@ -340,7 +340,7 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals('Delete', $button->getText());
         $button->click();
         $this->waitForPageLoad($page);
-        $this->clickCss($page, '.mainbody .open .dropdown-menu li:nth-child(1) a');
+        $this->clickCss($page, $this->firstOpenDropdownMenuItemSelector);
         $this->waitForPageLoad($page);
 
         // Check for success message

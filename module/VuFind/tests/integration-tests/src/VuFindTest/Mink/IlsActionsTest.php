@@ -169,7 +169,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function clickButtonGroupLink(Element $page, string $text): void
     {
-        $link = $this->findCss($page, '.btn-group.open')->findLink($text);
+        $link = $this->findCss($page, $this->btnGroupDropdownMenuSelector)->findLink($text);
         $this->assertIsObject($link);
         $link->click();
     }

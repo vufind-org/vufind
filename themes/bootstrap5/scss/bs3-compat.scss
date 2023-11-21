@@ -158,7 +158,7 @@ $well-border:            darken($well-bg, 7%) !default;
 
 h1, .h1,
 h2, .h2,
-h3, .h3 {
+h3:not(.popover-header), .h3 {
   margin-top: $line-height-base * 1rem;
   margin-bottom: ($line-height-base / 2) * 1rem;
 }
@@ -181,7 +181,7 @@ h6, .h6 {
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 .navbar-collapse {

@@ -41,12 +41,25 @@ VuFind.register('bs3-compat', function cookie() {
     });
   }
 
+  function initPagination() {
+    document.querySelectorAll('.pagination li').forEach((el) => {
+      el.classList.add('page-item');
+      const linkEl = el.querySelector('a');
+      if (linkEl) {
+        linkEl.classList.add('page-link')
+      } else {
+        el.innerHTML = '<a href="#" class="page-link">' + el.innerHTML + '</a>';
+      }
+    });
+  }
+
   function init() {
     initNav();
     initNavbar();
     initFormElements();
     initBreadcrumbs();
     initCollapse();
+    initPagination();
   }
 
   return {

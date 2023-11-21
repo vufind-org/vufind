@@ -170,7 +170,7 @@ function initFacetTree(treeNode, inSidebar)
 {
   // Defer init if the facet is collapsed:
   let $collapse = treeNode.parents('.facet-group').find('.collapse');
-  if (!$collapse.hasClass('in')) {
+  if (!$collapse.hasClass('show')) {
     $collapse.on('show.bs.collapse', function onExpand() {
       loadFacetTree(treeNode, inSidebar);
     });
@@ -209,7 +209,7 @@ VuFind.register('sideFacets', function SideFacets() {
   function activateSingleAjaxFacetContainer() {
     var $container = $(this);
     var facetList = [];
-    var $facets = $container.find('div.collapse.in[data-facet], .checkbox-filter[data-facet]');
+    var $facets = $container.find('div.collapse.show[data-facet], .checkbox-filter[data-facet]');
     $facets.each(function addFacet() {
       if (!$(this).data('loaded')) {
         facetList.push($(this).data('facet'));
@@ -266,15 +266,11 @@ VuFind.register('sideFacets', function SideFacets() {
     $('.side-facets-container-ajax').each(activateSingleAjaxFacetContainer);
   }
 
-  function facetSessionStorage(e) {
+  function facetSessionStorage(e, data) {
     var source = $('#result0 .hiddenSource').val();
     var id = e.target.id;
     var key = 'sidefacet-' + source + id;
-    if (!sessionStorage.getItem(key)) {
-      sessionStorage.setItem(key, document.getElementById(id).className);
-    } else {
-      sessionStorage.removeItem(key);
-    }
+    sessionStorage.setItem(key, data);
   }
 
   function init() {
@@ -286,25 +282,19 @@ VuFind.register('sideFacets', function SideFacets() {
       var source = $('#result0 .hiddenSource').val();
       var storedItem = sessionStorage.getItem('sidefacet-' + source + item.id);
       if (storedItem) {
-        var saveTransition = $.support.transition;
-        try {
-          $.support.transition = false;
-          if ((' ' + storedItem + ' ').indexOf(' in ') > -1) {
-            $(item).collapse('show');
-          } else if (!$(item).data('forceIn')) {
-            $(item).collapse('hide');
-          }
-        } finally {
-          $.support.transition = saveTransition;
+        if ((' ' + storedItem + ' ').indexOf(' in ') > -1) {
+          $(item).collapse('show');
+        } else if (!$(item).data('forceIn')) {
+          $(item).collapse('hide');
         }
       }
     });
-    $('.facet-group').on('shown.bs.collapse', facetSessionStorage);
-    $('.facet-group').on('hidden.bs.collapse', facetSessionStorage);
+    $('.facet-group').on('shown.bs.collapse', (e) => facetSessionStorage(e, 'in'));
+    $('.facet-group').on('hidden.bs.collapse', (e) => facetSessionStorage(e, 'collapsed'));
 
     // Side facets loaded with AJAX
     $('.side-facets-container-ajax')
-      .find('div.collapse[data-facet]:not(.in)')
+      .find('div.collapse[data-facet]:not(.show)')
       .on('shown.bs.collapse', function expandFacet() {
         loadAjaxSideFacets();
       });

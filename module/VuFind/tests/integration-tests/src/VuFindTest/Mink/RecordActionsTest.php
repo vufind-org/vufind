@@ -118,7 +118,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCss($page, 'form.comment-form .btn.btn-primary')->getText()
         );
         $this->clickCss($page, 'form.comment-form .btn-primary');
-        $this->findCss($page, '.modal.in'); // Lightbox open
+        $this->findCss($page, $this->openModalSelector); // Lightbox open
         $this->findCss($page, '.modal [name="username"]');
         // Create new account
         $this->makeAccount($page, 'username1');
@@ -172,8 +172,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCss($page, 'form.comment-form .btn.btn-primary')->getText()
         );
         $this->clickCss($page, 'form.comment-form .btn-primary');
-        $this->findCss($page, '.modal.in'); // Lightbox open
-        $this->findCss($page, '.modal [name="username"]');
+        $this->findCss($page, $this->openModalSelector); // Lightbox open
+        $this->findCss($page, $this->openModalUsernameFieldSelector);
         // Log in to existing account
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->submitLoginForm($page);
@@ -253,7 +253,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Click to add tag
         $this->clickCss($page, '.tag-record');
         // Lightbox login open?
-        $this->findCss($page, '.modal.in [name="username"]');
+        $this->findCss($page, $this->openModalUsernameFieldSelector);
         // Make account
         $this->makeAccount($page, 'username2');
         // Add tag exists?
@@ -294,7 +294,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertNull($page->find('css', '.tagList .tag .tag-submit'));
         // Login with second account
         $this->clickCss($page, '#loginOptions a');
-        $this->findCss($page, '.modal.in [name="username"]');
+        $this->findCss($page, $this->openModalUsernameFieldSelector);
         $this->fillInLoginForm($page, 'username1', 'test');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->waitForPageLoad($page);
@@ -469,7 +469,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->gotoRecord();
         // Click email record without logging in
         $this->clickCss($page, '.mail-record');
-        $this->findCss($page, '.modal.in [name="username"]');
+        $this->findCss($page, $this->openModalUsernameFieldSelector);
         // Make account
         $this->makeAccount($page, 'emailmaniac');
         // Make sure Lightbox redirects to email view
@@ -491,7 +491,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->gotoRecord();
         // Click email record without logging in
         $this->clickCss($page, '.mail-record');
-        $this->findCss($page, '.modal.in [name="username"]');
+        $this->findCss($page, ' [name="username"]');
         // Login in Lightbox
         $this->fillInLoginForm($page, 'emailmaniac', 'test');
         $this->submitLoginForm($page);
@@ -660,9 +660,9 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Click to add rating
         $this->clickCss($page, $ratingLink);
         // Click login link in lightbox:
-        $this->clickCss($page, '.modal.in a.btn');
+        $this->clickCss($page, $this->openModalSelector . ' a.btn');
         // Lightbox login open?
-        $this->findCss($page, '.modal.in [name="username"]');
+        $this->findCss($page, $this->openModalUsernameFieldSelector);
         // Make account
         $this->makeAccount($page, 'username2');
         $this->waitForPageLoad($page);
@@ -672,7 +672,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Click rating link:
         $this->clickCss($page, $ratingLink);
         // Click login link in lightbox:
-        $this->clickCss($page, '.modal.in a.btn');
+        $this->clickCss($page, $this->openModalSelector . ' a.btn');
         $this->fillInLoginForm($page, 'username2', 'test');
         $this->submitLoginForm($page);
         // Click rating link again:
@@ -725,7 +725,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Login with second account
         $this->clickCss($page, '.logoutOptions a.logout');
         $this->clickCss($page, '#loginOptions a');
-        $this->findCss($page, '.modal.in [name="username"]');
+        $this->findCss($page, $this->openModalUsernameFieldSelector);
         $this->makeAccount($page, 'username3');
         $this->waitForPageLoad($page);
 
@@ -744,7 +744,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Login with third account
         $this->clickCss($page, '.logoutOptions a.logout');
         $this->clickCss($page, '#loginOptions a');
-        $this->findCss($page, '.modal.in [name="username"]');
+        $this->findCss($page, $this->openModalUsernameFieldSelector);
         $this->makeAccount($page, 'username4');
         $this->waitForPageLoad($page);
 

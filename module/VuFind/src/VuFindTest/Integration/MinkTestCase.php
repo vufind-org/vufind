@@ -98,6 +98,41 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Selector for an open button group dropdown menu
+     *
+     * @var string
+     */
+    protected $btnGroupDropdownMenuSelector = '.btn-group .dropdown-menu.show';
+
+    /**
+     * Selector for first item in a dropdown menu
+     *
+     * @var string
+     */
+    protected $firstOpenDropdownMenuItemSelector = '.mainbody .dropdown-menu.show li:nth-child(1) a';
+
+    /**
+     * Selector for popover content
+     *
+     * @var string
+     */
+    protected $popoverContentSelector = '.popover-body';
+
+    /**
+     * Selector for an open modal dialog
+     *
+     * @var string
+     */
+    protected $openModalSelector = '#modal.show';
+
+    /**
+     * Selector for a username field in open modal dialog
+     *
+     * @var string
+     */
+    protected $openModalUsernameFieldSelector = '#modal.show [name="username"]';
+
+    /**
      * Reconfigure VuFind for the current test.
      *
      * @param array $configs Array of settings to change. Top-level keys correspond
