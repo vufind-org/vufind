@@ -271,15 +271,17 @@ var VuFind = (function VuFind() {
   };
 
   function setupQRCodeLinks(_container) {
-    var container = _container || $('body');
-
-    container.find('a.qrcodeLink').on('click', function qrcodeToggle() {
-      var holder = $(this).next('.qrcode');
-      if (holder.find('img').length === 0) {
-        // We need to insert the QRCode image
-        var template = holder.find('.qrCodeImgTag').html();
-        holder.html(template);
-      }
+    var container = _container || document.body;
+    var qrcodeLinks = container.querySelectorAll('a.qrcodeLink');
+    qrcodeLinks.forEach((link) => {
+      link.addEventListener('click', function toggleQRCode() {
+        var holder = this.nextElementSibling;
+        if (holder.querySelectorAll('img').length === 0) {
+          // We need to insert the QRCode image
+          var template = holder.querySelector('.qrCodeImgTag').innerHTML;
+          holder.innerHTML = template;
+        }
+      });
     });
   }
 
@@ -309,7 +311,7 @@ var VuFind = (function VuFind() {
       this.embedded.init(jqContainer);
     }
     this.lightbox.bind(jqContainer);
-    setupQRCodeLinks(jqContainer);
+    setupQRCodeLinks(jqContainer[0]);
     if (typeof loadCovers === 'function') {
       loadCovers();
     }

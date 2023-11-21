@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Factory for instantiating recommendation modules with search runner.
+ * Factory for instantiating recommendation modules.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  Recommendations
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Maccabee Levine <msl321@lehigh.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -36,16 +37,16 @@ use Psr\Container\ContainerInterface;
 use VuFind\Search\SearchRunner;
 
 /**
- * Factory for instantiating recommendation modules with search runner.
+ * Factory for instantiating recommendation modules.
  *
- * @category   VuFind
- * @package    Recommendations
- * @author     Demian Katz <demian.katz@villanova.edu>
- * @license    http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link       https://vufind.org/wiki/development Wiki
- * @deprecated Use AbstractSearchObjectFactory
+ * @category VuFind
+ * @package  Recommendations
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Maccabee Levine <msl321@lehigh.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class InjectSearchRunnerFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+class AbstractSearchObjectFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -71,6 +72,10 @@ class InjectSearchRunnerFactory implements \Laminas\ServiceManager\Factory\Facto
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        return new $requestedName($container->get(SearchRunner::class));
+        $module = new $requestedName(
+            $container->get(SearchRunner::class),
+            $container->get(\VuFind\Config\PluginManager::class)
+        );
+        return $module;
     }
 }

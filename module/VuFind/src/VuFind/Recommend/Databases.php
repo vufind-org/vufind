@@ -35,6 +35,7 @@ use VuFind\Connection\LibGuides;
 
 use function count;
 use function intval;
+use function strlen;
 
 /**
  * Databases Recommendations Module
@@ -105,6 +106,20 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
     protected $configFileDatabases;
 
     /**
+     * Configuration of whether to use the query string as a match point
+     *
+     * @var bool
+     */
+    protected $useQuery;
+
+    /**
+     * Minimum string length of a query to use as a match point
+     *
+     * @var bool
+     */
+    protected $useQueryMinLength;
+
+    /**
      * Configuration of whether to use LibGuides as a data source
      *
      * @var bool
@@ -162,6 +177,9 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
         $this->resultFacet = isset($databasesConfig->resultFacet)
             ? $databasesConfig->resultFacet->toArray() : [];
         $this->resultFacetNameKey = $databasesConfig->resultFacetNameKey ?? 'value';
+
+        $this->useQuery = $databasesConfig->useQuery ?? true;
+        $this->useQueryMinLength = $databasesConfig->useQueryMinLength ?? 3;
 
         $this->useLibGuides = $databasesConfig->useLibGuides ?? false;
         if ($this->useLibGuides) {
@@ -230,6 +248,23 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
         }
         $nameToDatabase = $this->getDatabases();
         $databases = [];
+
+        // Add databases from search query
+        if ($this->useQuery) {
+            $query = strtolower($this->results->getParams()->getQuery()->getString());
+            if (strlen($query) >= $this->useQueryMinLength) {
+                foreach ($nameToDatabase as $name => $databaseInfo) {
+                    if (str_contains(strtolower($name), $query)) {
+                        $databases[$name] = $databaseInfo;
+                    }
+                    if (count($databases) >= $this->limit) {
+                        return $databases;
+                    }
+                }
+            }
+        }
+
+        // Add databases from result facets
         foreach ($resultDatabases as $resultDatabase) {
             try {
                 $name = $resultDatabase[$this->resultFacetNameKey];
@@ -242,9 +277,10 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
                 $databases[$name] = $databaseInfo;
             }
             if (count($databases) >= $this->limit) {
-                break;
+                return $databases;
             }
         }
+
         return $databases;
     }
 

@@ -37,12 +37,78 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
     "{lock}": "&#8681;",
   };
 
+  function _handleInputChange(input, triggerInputEvent = true) {
+    _textInput.value = input;
+    _textInput.setAttribute('value', input);
+    if (_resetButton) {
+      _resetButton.classList.toggle('hidden', _textInput.value === '');
+    }
+    if ( typeof _keyboard !== 'undefined') {
+      _keyboard.setInput(input);
+    }
+    if (triggerInputEvent) {
+      _textInput.dispatchEvent(new Event('input'));
+    }
+    _textInput.focus();
+  }
+
+  function _showKeyboard() {
+    if (_enabled) {
+      _keyboard.setOptions({
+        theme: `${_defaultTheme} show-keyboard`
+      });
+    }
+  }
+
+  function _hideKeyboard() {
+    _keyboard.setOptions({
+      theme: _defaultTheme
+    });
+  }
+
+  function _onChange(input){
+    _handleInputChange(input);
+  }
+
+  function _onKeyPress(button){
+    if (button === "{shift}" || button === "{lock}") {
+      let currentLayoutType = _keyboard.options.layoutName;
+      _keyboard.setOptions({
+        layoutName: currentLayoutType === "default" ? "shift" : "default"
+      });
+    }
+
+    if (button === "{enter}") {
+      document.getElementById("searchForm").submit();
+    }
+  }
+
+  function _updateKeyboardLayout(layoutName) {
+    $('.keyboard-selection-item').each(function deactivateItems() {
+      $(this).parent().removeClass("active");
+    });
+    $(".keyboard-selection-item[data-value='" + layoutName + "']").parent().addClass("active");
+    window.Cookies.set("keyboard", layoutName);
+    if (layoutName === "none") {
+      $("#keyboard-selection-button").removeClass("activated");
+      _enabled = false;
+      _hideKeyboard();
+    } else {
+      $("#keyboard-selection-button").addClass("activated");
+      _enabled = true;
+      const keyboardLayout = new _KeyboardLayoutClass().get(layoutName);
+      _keyboard.setOptions({layout: keyboardLayout.layout});
+      _showKeyboard();
+    }
+  }
+
   function _initKeyboard(){
     _KeyboardClass = window.SimpleKeyboard.default;
     _KeyboardLayoutClass = window.SimpleKeyboardLayouts.default;
 
-    $('.keyboard-selection-item').on("click", function updateLayoutOnClick(){
+    $('.keyboard-selection-item').on("click", function updateLayoutOnClick(ev) {
       _updateKeyboardLayout($(this).data("value"));
+      ev.preventDefault();
     });
 
     _textInput.addEventListener("focus", () => {
@@ -300,15 +366,22 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
     // Setup reset button
 
     _textInput = document.getElementById('searchForm_lookfor');
+
+    if (!_textInput) {
+      return;
+    }
+
     _resetButton = document.getElementById('searchForm-reset');
 
     _textInput.addEventListener("input", function resetOnInput(event) {
       _handleInputChange(event.target.value, false);
     });
 
-    _resetButton.addEventListener('click', function resetOnClick() {
-      _handleInputChange('');
-    });
+    if (_resetButton) {
+      _resetButton.addEventListener('click', function resetOnClick() {
+        _handleInputChange('');
+      });
+    }
 
     // Setup keyboard
 
