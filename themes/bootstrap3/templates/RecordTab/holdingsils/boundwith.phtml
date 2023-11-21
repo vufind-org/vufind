@@ -1,9 +1,10 @@
 <div class="bound-with-records">
     <h4>
-        <?=$this->transEsc(
-    $callNumberCount < 2 ? 'bound_with_heading_one_callnumber' : 'bound_with_heading_multiple_callnumbers',
-    ['%%callnumber%%' => $this->escapeHtml($callNumber)]
-)
+        <?=
+            $this->transEsc(
+                $callNumberCount < 2 ? 'bound_with_heading_one_callnumber' : 'bound_with_heading_multiple_callnumbers',
+                ['%%callnumber%%' => $this->escapeHtml($callNumber)]
+            )
         ?>
     </h4>
     <?php if ($this->translate('bound_with_intro', [], '')): ?>
