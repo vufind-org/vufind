@@ -51,4 +51,14 @@ class EDSResults extends AbstractSearchObject
     {
         return 'EDS';
     }
+
+    /**
+     * Get the default heading for this recommendation module.
+     *
+     * @return string
+     */
+    protected function getDefaultHeading()
+    {
+        return 'EDS Results';
+    }
 }

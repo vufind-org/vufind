@@ -112,20 +112,24 @@ if "!%3!"=="!1!" goto skipauth
 set args="%bib_index%" "%field%" "%auth_index%" "%browse%.tmp"
 :skipauth
 
-rem Extract lines from Solr
+rem Get the browse headings from Solr
 %JAVA% %jvmopts% -Dfile.encoding="UTF-8" -Dfield.preferred=heading -Dfield.insteadof=use_for -cp %CLASSPATH% PrintBrowseHeadings %args%
 
-rem Sort lines
+rem Sort the browse headings
 sort %browse%.tmp /o sorted-%browse%.tmp /rec 65535
 
 rem Remove duplicate lines
 php %VUFIND_HOME%\util\dedupe.php "sorted-%browse%.tmp" "unique-%browse%.tmp"
 
-rem Build database file
+rem Build the SQLite database
 %JAVA% -Dfile.encoding="UTF-8" -cp %CLASSPATH% CreateBrowseSQLite "unique-%browse%.tmp" "%browse%_browse.db"
 
+rem Clear up temp files
 del /q *.tmp > nul
 
+rem Move the new database to the index directory
 move "%browse%_browse.db" "%index_dir%\%browse%_browse.db-updated" > nul
+
+rem Indicate that the new database is ready for use
 echo OK > "%index_dir%\%browse%_browse.db-ready"
 :end

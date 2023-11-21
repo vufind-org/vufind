@@ -1,7 +1,7 @@
 <?php $data = $this->recommend->getResult(); ?>
 <?php if (is_array($data)): ?>
 <div class="sidegroup">
-  <h4>Open Library <?php /* Intentionally not translated -- this is a site name, not a phrase */ ?></h4>
+  <h2>Open Library <?php /* Intentionally not translated -- this is a site name, not a phrase */ ?></h2>
   <div><?=$this->transEsc('Results for')?> <?=$this->escapeHtmlAttr($data['subject'])?> ...</div>
   <ul class="similar">
     <?php foreach ($data['worksArray'] as $work): ?>

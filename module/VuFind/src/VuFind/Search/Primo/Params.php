@@ -71,6 +71,7 @@ class Params extends \VuFind\Search\Base\Params
         'reference_entrys' => 'Reference Entries',
         'newsletterarticle' => 'Newsletter Articles',
         'archival_material_manuscripts' => 'Archival Materials / Manuscripts',
+        'magazinearticle' => 'Magazine Articles',
     ];
 
     /**
