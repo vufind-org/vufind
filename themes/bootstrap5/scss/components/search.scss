@@ -63,6 +63,17 @@ $thumbnail-width-large:  160px;
 .searchForm {
   margin: 0;
   padding: 0;
+
+  .input-group .form-control:first-child {
+    border-top-right-radius: $input-border-radius;
+    border-bottom-right-radius: $input-border-radius;
+  }
+
+  @media (max-width: 767px) {
+    .input-group {
+      width: 100%;
+    }
+  }
 }
 
 header .container.navbar { margin-bottom: 0; }
@@ -683,13 +694,17 @@ table.search-history-table {
     padding-right: 28px;
   }
 
-  #searchForm-reset {
+  #searchForm_controls {
     position: absolute;
     right: 3px;
-    top: 3px;
+    top: 5px;
+    z-index: 4;
+    height: 2em;
+  }
+
+  #searchForm-reset {
     bottom: 0;
     width: 2em;
-    height: 2em;
     border: none;
     border-radius: 50%;
     background-color: $gray-lighter;
