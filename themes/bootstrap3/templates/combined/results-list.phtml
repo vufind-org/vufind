@@ -27,7 +27,7 @@
           const span = template.content.children[0];
 
           const combinedJumpLinks = document.querySelector('.combined-jump-links');
-          const link = combinedJumpLinks.querySelector('.$classId');
+          const link = combinedJumpLinks?.querySelector('.$classId');
           if (link) {
             link.append(span);
             link.style.display = "";
