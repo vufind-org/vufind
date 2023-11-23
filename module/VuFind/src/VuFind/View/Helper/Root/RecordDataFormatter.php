@@ -281,19 +281,28 @@ class RecordDataFormatter extends AbstractHelper
     protected function addOptions($context, $field, $options)
     {
         if ($globalOptions = ($this->config->Global ?? false)) {
+            $options = array_filter($options, function ($val) {
+                return $val !== null;
+            });
             $options = array_merge($globalOptions->toArray(), $options);
         }
 
         $section = 'Field_' . $field;
         if ($fieldOptions = ($this->config->$section ?? false)) {
-            $options = array_merge($options, $fieldOptions->toArray());
+            $fieldOptions = array_filter($fieldOptions->toArray(), function ($val) {
+                return $val !== null;
+            });
+            $options = array_merge($options, $fieldOptions);
         }
 
         $contextSection = $options['overrideContext'][$context] ?? false;
         if (
             $contextOptions = $this->config->$contextSection ?? false
         ) {
-            $options = array_merge($options, $contextOptions->toArray());
+            $contextOptions = array_filter($contextOptions->toArray(), function ($val) {
+                return $val !== null;
+            });
+            $options = array_merge($options, $contextOptions);
         }
 
         return $options;
