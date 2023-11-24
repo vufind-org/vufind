@@ -288,6 +288,13 @@ class SierraRest extends AbstractBase implements
     protected $apiBase = 'v5';
 
     /**
+     * Statistic group to use e.g. when renewing loans or placing holds
+     *
+     * @var ?int
+     */
+    protected $statGroup = null;
+
+    /**
      * Whether to sort items by enumchron. Default is true.
      *
      * @var array
@@ -467,6 +474,13 @@ class SierraRest extends AbstractBase implements
             // Default to API v5 unless a lower compatibility level is needed.
             if ($this->apiVersion < 5) {
                 $this->apiBase = 'v' . floor($this->apiVersion);
+            }
+        }
+        if ($statGroup = $this->config['Catalog']['statgroup'] ?? null) {
+            if ($this->apiVersion >= 6) {
+                $this->statGroup = (int)$statGroup;
+            } else {
+                $this->logWarning("Ignoring statgroup for API Version {$this->apiVersion}");
             }
         }
 
@@ -855,7 +869,9 @@ class SierraRest extends AbstractBase implements
                 [$this->apiBase, 'patrons', 'checkouts', $checkoutId, 'renewal'],
                 [],
                 'POST',
-                $patron
+                $patron,
+                false,
+                $this->statGroup ? ['statgroup' => $this->statGroup] : []
             );
             if (!empty($result['code'])) {
                 $msg = $this->formatErrorMessage(
@@ -1455,6 +1471,9 @@ class SierraRest extends AbstractBase implements
         if ($comment) {
             $request['note'] = $comment;
         }
+        if ($this->statGroup) {
+            $request['statgroup'] = $this->statGroup;
+        }
 
         $result = $this->makeRequest(
             [$this->apiBase, 'patrons', $patron['id'], 'holds', 'requests'],
@@ -1699,6 +1718,8 @@ class SierraRest extends AbstractBase implements
      * @param array  $patron       Patron information, if available
      * @param bool   $returnStatus Whether to return HTTP status code and response
      * as a keyed array instead of just the response
+     * @param array  $queryParams  Additional query params that are added to the URL
+     * regardless of request type
      *
      * @throws ILSException
      * @return mixed JSON response decoded to an associative array, an array of HTTP
@@ -1707,10 +1728,11 @@ class SierraRest extends AbstractBase implements
      */
     protected function makeRequest(
         $hierarchy,
-        $params = false,
+        $params = [],
         $method = 'GET',
         $patron = false,
-        $returnStatus = false
+        $returnStatus = false,
+        $queryParams = []
     ) {
         // Status logging callback:
         $statusCallback = function (
@@ -1769,6 +1791,8 @@ class SierraRest extends AbstractBase implements
      * @param array  $patron       Patron information, if available
      * @param bool   $returnStatus Whether to return HTTP status code and response
      * as a keyed array instead of just the response
+     * @param array  $queryParams  Additional query params that are added to the URL
+     * regardless of request type
      *
      * @throws ILSException
      * @return mixed JSON response decoded to an associative array, an array of HTTP
@@ -1777,10 +1801,11 @@ class SierraRest extends AbstractBase implements
      */
     protected function requestCallback(
         $hierarchy,
-        $params = false,
+        $params = [],
         $method = 'GET',
         $patron = false,
-        $returnStatus = false
+        $returnStatus = false,
+        $queryParams = []
     ) {
         // Clear current access token if it's not specific to the given patron
         if (
@@ -1799,6 +1824,11 @@ class SierraRest extends AbstractBase implements
 
         // Set up the request
         $apiUrl = $this->getApiUrlFromHierarchy($hierarchy);
+        // Add additional query parameters directly to the URL because they cannot be
+        // added with setParameterGet for POST request:
+        if ($queryParams) {
+            $apiUrl .= '?' . http_build_query($queryParams);
+        }
 
         // Create proxy request
         $client = $this->createHttpClient($apiUrl);
@@ -2994,8 +3024,7 @@ class SierraRest extends AbstractBase implements
     protected function extractBibId($id)
     {
         // If the .b prefix is found, strip it and the trailing checksum:
-        return substr($id, 0, 2) === '.b'
-            ? substr($id, 2, strlen($id) - 3) : $id;
+        return str_starts_with($id, '.b') ? substr($id, 2, -1) : $id;
     }
 
     /**
