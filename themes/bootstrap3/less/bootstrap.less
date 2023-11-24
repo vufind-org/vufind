@@ -464,20 +464,26 @@ ul.list-group {
     tr {
       display: block;
       margin-bottom: @line-height-computed;
-      background-color: @table-bg-accent;
       border-left: 1px solid @table-border-color;
       border-right: 1px solid @table-border-color;
       border-bottom: 4px solid @table-border-color;
     }
     td {
-      display: block;
+      display: flex;
+      align-items: first baseline;
+      background: #fff;
+      .history_limits_field {
+        flex-basis: 70%;
+      }
     }
     td:before {
-      display: block;
+      flex-basis: 30%;
+      flex-shrink: 1;
       font-weight: bold;
-      font-size: 110%;
-      width: 100%;
       content: attr(data-label);
+    }
+    td:nth-child(even) {
+      background-color: @table-bg-accent;
     }
   }
 }

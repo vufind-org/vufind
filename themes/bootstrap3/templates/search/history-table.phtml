@@ -25,23 +25,25 @@
           ?></a>
         </td>
         <td class="history_limits" data-label="<?=$this->transEscAttr('history_limits')?>">
-          <?php foreach ($info->getParams()->getFilterList(true) as $field => $filters): ?>
-            <?php foreach ($filters as $i => $filter): ?>
-              <?php
-                if ($filter['operator'] == 'NOT') {
-                  echo $this->transEsc('NOT') . ' ';
-                } elseif ($filter['operator'] == 'OR' && $i > 0) {
-                  echo $this->transEsc('OR') . ' ';
-                }
-              ?>
-              <strong><?=$this->transEsc($field)?></strong>: <?=$this->escapeHtml($filter['displayText'])?><br>
+          <span class="history_limits_field">
+            <?php foreach ($info->getParams()->getFilterList(true) as $field => $filters): ?>
+              <?php foreach ($filters as $i => $filter): ?>
+                <?php
+                  if ($filter['operator'] == 'NOT') {
+                    echo $this->transEsc('NOT') . ' ';
+                  } elseif ($filter['operator'] == 'OR' && $i > 0) {
+                    echo $this->transEsc('OR') . ' ';
+                  }
+                ?>
+                <strong><?=$this->transEsc($field)?></strong>: <?=$this->escapeHtml($filter['displayText'])?><br>
+              <?php endforeach; ?>
             <?php endforeach; ?>
-          <?php endforeach; ?>
-          <?php foreach ($info->getParams()->getCheckboxFacets() as $facet): ?>
-            <?php if ($facet['selected']): ?>
-              <strong><?=$this->transEsc($facet['desc'])?></strong><br>
-            <?php endif; ?>
-          <?php endforeach; ?>
+            <?php foreach ($info->getParams()->getCheckboxFacets() as $facet): ?>
+              <?php if ($facet['selected']): ?>
+                <strong><?=$this->transEsc($facet['desc'])?></strong><br>
+              <?php endif; ?>
+            <?php endforeach; ?>
+          </span>
         </td>
         <td class="history_results" data-label="<?=$this->transEscAttr('history_results')?>"><?=$this->escapeHtml($this->localizedNumber($info->getResultTotal()))?></td>
         <?php if ($scheduleSupported): ?>
@@ -62,7 +64,7 @@
           </td>
         <?php endif; ?>
         <?php if ($saveSupported): ?>
-          <td class="history_actions">
+          <td class="history_actions" data-label="<?=$this->transEscAttr($this->showSaved ? 'history_delete' : 'history_save')?>">
             <?php if ($this->showSaved): ?>
               <a class="icon-link text-danger" href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($info->getSearchId())?>&amp;mode=history">
                 <?=$this->icon('search-delete', 'icon-link__icon') ?>
