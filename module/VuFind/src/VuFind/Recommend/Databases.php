@@ -35,6 +35,7 @@ use VuFind\Connection\LibGuides;
 
 use function count;
 use function intval;
+use function strlen;
 
 /**
  * Databases Recommendations Module
@@ -73,14 +74,7 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
      *
      * @var int
      */
-    protected $limit;
-
-    /**
-     * Name of the configuration file for databases config (minus ".ini").
-     *
-     * @var string
-     */
-    protected $databasesConfigFile;
+    protected $limit = 5;
 
     /**
      * The result facet with the list of databases.  Each value in the
@@ -88,28 +82,50 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
      *
      * @var array
      */
-    protected $resultFacet;
+    protected $resultFacet = [];
 
     /**
      * For each database facet, the key to the database name.
      *
      * @var string
      */
-    protected $resultFacetNameKey;
+    protected $resultFacetNameKey = 'value';
 
     /**
      * Databases listed in configuration file
      *
      * @var array
      */
-    protected $configFileDatabases;
+    protected $configFileDatabases = [];
+
+    /**
+     * Configuration of whether to use the query string as a match point
+     *
+     * @var bool
+     */
+    protected $useQuery = true;
+
+    /**
+     * Minimum string length of a query to use as a match point
+     *
+     * @var bool
+     */
+    protected $useQueryMinLength = 3;
 
     /**
      * Configuration of whether to use LibGuides as a data source
      *
      * @var bool
      */
-    protected $useLibGuides;
+    protected $useLibGuides = false;
+
+    /**
+     * Configuration of whether to match on the alt_names field in LibGuides
+     * in addition to the primary name
+     *
+     * @var bool
+     */
+    protected $useLibGuidesAlternateNames = true;
 
     /**
      * Callable for LibGuides connector
@@ -144,30 +160,43 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
      */
     public function setConfig($settings)
     {
+        // Only change settings from current values if they are defined in $settings or .ini
+
         $settings = explode(':', $settings);
         $this->limit
             = (isset($settings[0]) && is_numeric($settings[0]) && $settings[0] > 0)
-            ? intval($settings[0]) : 5;
+            ? intval($settings[0]) : $this->limit;
         $databasesConfigFile = $settings[1] ?? 'EDS';
 
         $databasesConfig = $this->configManager->get($databasesConfigFile)->Databases;
         if (!$databasesConfig) {
             throw new \Exception("Databases config file $databasesConfigFile must have section 'Databases'.");
         }
-        $configUrls = isset($databasesConfig->url) ? $databasesConfig->url->toArray() : [];
-        $this->configFileDatabases = array_map(function ($url) {
-            return ['url' => $url];
-        }, $configUrls);
+        $this->configFileDatabases = $databasesConfig->url?->toArray()
+            ?? $this->configFileDatabases;
+        array_walk($this->configFileDatabases, function (&$value, $name) {
+            $value = [
+                'name' => $name,
+                'url' => $value,
+            ];
+        });
 
-        $this->resultFacet = isset($databasesConfig->resultFacet)
-            ? $databasesConfig->resultFacet->toArray() : [];
-        $this->resultFacetNameKey = $databasesConfig->resultFacetNameKey ?? 'value';
+        $this->resultFacet = $databasesConfig->resultFacet?->toArray() ?? $this->resultFacet;
+        $this->resultFacetNameKey = $databasesConfig->resultFacetNameKey
+            ?? $this->resultFacetNameKey;
 
-        $this->useLibGuides = $databasesConfig->useLibGuides ?? false;
+        $this->useQuery = $databasesConfig->useQuery ?? $this->useQuery;
+        $this->useQueryMinLength = $databasesConfig->useQueryMinLength
+            ?? $this->useQueryMinLength;
+
+        $this->useLibGuides = $databasesConfig->useLibGuides ?? $this->useLibGuides;
         if ($this->useLibGuides) {
             // Cache the data related to profiles for up to 10 minutes:
             $libGuidesApiConfig = $this->configManager->get('LibGuidesAPI');
             $this->cacheLifetime = intval($libGuidesApiConfig->GetAZ->cache_lifetime ?? 600);
+
+            $this->useLibGuidesAlternateNames = $databasesConfig->useLibGuidesAlternateNames
+                ?? $this->useLibGuidesAlternateNames;
         }
     }
 
@@ -229,7 +258,27 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
             return [];
         }
         $nameToDatabase = $this->getDatabases();
+
+        // Array of url => [name, url].  Key by URL so that the same database (under alternate
+        // names) is not duplicated.
         $databases = [];
+
+        // Add databases from search query
+        if ($this->useQuery) {
+            $query = strtolower($this->results->getParams()->getQuery()->getString());
+            if (strlen($query) >= $this->useQueryMinLength) {
+                foreach ($nameToDatabase as $name => $databaseInfo) {
+                    if (str_contains(strtolower($name), $query)) {
+                        $databases[$databaseInfo['url']] = $databaseInfo;
+                    }
+                    if (count($databases) >= $this->limit) {
+                        return $databases;
+                    }
+                }
+            }
+        }
+
+        // Add databases from result facets
         foreach ($resultDatabases as $resultDatabase) {
             try {
                 $name = $resultDatabase[$this->resultFacetNameKey];
@@ -239,12 +288,13 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
             }
             $databaseInfo = $nameToDatabase[$name] ?? null;
             if ($databaseInfo) {
-                $databases[$name] = $databaseInfo;
+                $databases[$databaseInfo['url']] = $databaseInfo;
             }
             if (count($databases) >= $this->limit) {
-                break;
+                return $databases;
             }
         }
+
         return $databases;
     }
 
@@ -280,6 +330,10 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
             $nameToDatabase = [];
             foreach ($databases as $database) {
                 $nameToDatabase[$database->name] = (array)$database;
+                // The alt_names field is single-valued free text
+                if ($this->useLibGuidesAlternateNames && ($database->alt_names ?? false)) {
+                    $nameToDatabase[$database->alt_names] = (array)$database;
+                }
             }
 
             $this->putCachedData('libGuidesAZ-nameToDatabase', $nameToDatabase);
