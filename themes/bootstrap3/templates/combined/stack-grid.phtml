@@ -27,7 +27,7 @@
       $columnIndex ++;
     ?>
     <?php // This empty div prevents margin collapse, as the otherwise unneeded div.combined-column does elsewhere. ?>
-    <div class="hide-if-empty">
+    <div class="js-hide-if-empty">
       <div id="<?=$this->escapeHtmlAttr($colParams['domId'])?>" class="combined-list">
         <?php $templateSuffix = ($colParams['ajax'] ?? false) ? 'ajax' : 'list'; ?>
         <?=$this->render('combined/results-' . $templateSuffix . '.phtml', $colParams)?>
