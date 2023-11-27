@@ -219,6 +219,10 @@
 }
 .holdings-tab .holdings-table {
   table-layout: auto;
+
+  th, td {
+    min-width: 10vw;
+  }
 }
 
 /* ------ OpenURL Links ------ */
