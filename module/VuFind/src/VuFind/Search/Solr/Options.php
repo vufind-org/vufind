@@ -151,6 +151,9 @@ class Options extends \VuFind\Search\Base\Options
                 'title' => 'sort_title'];
         }
 
+        // Load hidden sort preferences (or defaults if none in .ini file):
+        $this->hiddenSortOptions = $searchSettings?->HiddenSorting?->pattern?->toArray() ?? [];
+
         // Set up views
         $this->initViewOptions($searchSettings);
 
