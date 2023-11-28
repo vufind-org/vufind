@@ -378,7 +378,7 @@ VuFind.register('lightbox', function Lightbox() {
   }
 
   function retainFocus(event) {
-    var focusableNodes = getFocusableNodes(_modal.get(0));
+    var focusableNodes = getFocusableNodes(_modal);
 
     // no focusable nodes
     if (focusableNodes.length === 0) return;
@@ -392,7 +392,7 @@ VuFind.register('lightbox', function Lightbox() {
     });
 
     // if disableFocus is true
-    if (!_modal[0].contains(document.activeElement)) {
+    if (!_modal.contains(document.activeElement)) {
       focusableNodes[0].focus();
     } else {
       var focusedItemIndex = focusableNodes.indexOf(document.activeElement);
