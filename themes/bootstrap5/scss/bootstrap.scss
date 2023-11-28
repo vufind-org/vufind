@@ -7,50 +7,50 @@ $fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
 @import "vendor/font-awesome/v4-shims";
 
 // Include Bootstrap functions first (so you can manipulate colors, SVGs, calc, etc)
-@import "../../../vendor/twbs/bootstrap/scss/functions";
+@import "twbs/bootstrap/scss/functions";
 
 // Include any variable overrides here
 @import "variable-overrides";
 
 // Include remainder of required Bootstrap stylesheets (including any separate color mode stylesheets)
-@import "../../../vendor/twbs/bootstrap/scss/variables";
-@import "../../../vendor/twbs/bootstrap/scss/variables-dark";
+@import "twbs/bootstrap/scss/variables";
+@import "twbs/bootstrap/scss/variables-dark";
 
 // Include any map overrides here
 @import "map-overrides";
 
 // Include remainder of required parts
-@import "../../../vendor/twbs/bootstrap/scss/maps";
-@import "../../../vendor/twbs/bootstrap/scss/mixins";
-@import "../../../vendor/twbs/bootstrap/scss/root";
+@import "twbs/bootstrap/scss/maps";
+@import "twbs/bootstrap/scss/mixins";
+@import "twbs/bootstrap/scss/root";
 
 // Optionally include any other parts as needed
-@import "../../../vendor/twbs/bootstrap/scss/utilities";
-@import "../../../vendor/twbs/bootstrap/scss/reboot";
-@import "../../../vendor/twbs/bootstrap/scss/type";
-@import "../../../vendor/twbs/bootstrap/scss/images";
-@import "../../../vendor/twbs/bootstrap/scss/containers";
-@import "../../../vendor/twbs/bootstrap/scss/grid";
-@import "../../../vendor/twbs/bootstrap/scss/helpers";
-@import "../../../vendor/twbs/bootstrap/scss/buttons";
-@import "../../../vendor/twbs/bootstrap/scss/tables";
-@import "../../../vendor/twbs/bootstrap/scss/nav";
-@import "../../../vendor/twbs/bootstrap/scss/navbar";
-@import "../../../vendor/twbs/bootstrap/scss/accordion";
-@import "../../../vendor/twbs/bootstrap/scss/offcanvas";
-@import "../../../vendor/twbs/bootstrap/scss/dropdown";
-@import "../../../vendor/twbs/bootstrap/scss/transitions";
-@import "../../../vendor/twbs/bootstrap/scss/modal";
-@import "../../../vendor/twbs/bootstrap/scss/forms";
-@import "../../../vendor/twbs/bootstrap/scss/badge";
-@import "../../../vendor/twbs/bootstrap/scss/breadcrumb";
-@import "../../../vendor/twbs/bootstrap/scss/pagination";
-@import "../../../vendor/twbs/bootstrap/scss/tooltip";
-@import "../../../vendor/twbs/bootstrap/scss/card";
-@import "../../../vendor/twbs/bootstrap/scss/popover";
+@import "twbs/bootstrap/scss/utilities";
+@import "twbs/bootstrap/scss/reboot";
+@import "twbs/bootstrap/scss/type";
+@import "twbs/bootstrap/scss/images";
+@import "twbs/bootstrap/scss/containers";
+@import "twbs/bootstrap/scss/grid";
+@import "twbs/bootstrap/scss/helpers";
+@import "twbs/bootstrap/scss/buttons";
+@import "twbs/bootstrap/scss/tables";
+@import "twbs/bootstrap/scss/nav";
+@import "twbs/bootstrap/scss/navbar";
+@import "twbs/bootstrap/scss/accordion";
+@import "twbs/bootstrap/scss/offcanvas";
+@import "twbs/bootstrap/scss/dropdown";
+@import "twbs/bootstrap/scss/transitions";
+@import "twbs/bootstrap/scss/modal";
+@import "twbs/bootstrap/scss/forms";
+@import "twbs/bootstrap/scss/badge";
+@import "twbs/bootstrap/scss/breadcrumb";
+@import "twbs/bootstrap/scss/pagination";
+@import "twbs/bootstrap/scss/tooltip";
+@import "twbs/bootstrap/scss/card";
+@import "twbs/bootstrap/scss/popover";
 
 // Optionally include utilities API last to generate classes based on the Sass map in `_utilities.scss`
-@import "../../../vendor/twbs/bootstrap/scss/utilities/api";
+@import "twbs/bootstrap/scss/utilities/api";
 
 // Include variables
 @import "variables";
