@@ -865,7 +865,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             $seriesIssue = $issue % 4;
             $issue = $issue + 1;
             $status[$i]['enumchron'] = "volume $volume, issue $seriesIssue";
-            if (rand(0, 1)) {
+            if (rand(1, 100) <= ($this->config['Holdings']['boundWithProbability'] ?? 25)) {
                 $status[$i]['bound_with_records'] = [];
                 $boundWithCount = 3;
                 for ($j = 0; $j < $boundWithCount; $j++) {
