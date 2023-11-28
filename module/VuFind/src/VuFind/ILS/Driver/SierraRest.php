@@ -345,6 +345,13 @@ class SierraRest extends AbstractBase implements
     protected $bibCacheTTL = 300;
 
     /**
+     * Item cache entry life time in seconds
+     *
+     * @var int
+     */
+    protected $itemCacheTTL = 300;
+
+    /**
      * Life time in seconds for cached items of a bibliographic record
      *
      * It is recommended to keep this fairly short to ensure that any recent changes
@@ -378,6 +385,7 @@ class SierraRest extends AbstractBase implements
         'fixedFields',
         'varFields',
         'itemType',
+        'bibIds',
     ];
 
     /**
@@ -1071,6 +1079,27 @@ class SierraRest extends AbstractBase implements
         if (!isset($result['entries'])) {
             return [];
         }
+        // Collect all item and bib records to fetch:
+        $itemIds = [];
+        $bibIds = [];
+        foreach ($result['entries'] as $entry) {
+            $recordId = $this->extractId($entry['record']);
+            if ($entry['recordType'] === 'i') {
+                $itemIds[] = $recordId;
+            } elseif ($entry['recordType'] === 'b') {
+                $bibIds[] = $recordId;
+            }
+        }
+        // Fetch items in a batch and add any bib id's from them:
+        $items = $this->getItemRecords($itemIds, null, $patron);
+        foreach ($items as $item) {
+            if (!empty($item['bibIds'])) {
+                $bibIds[] = $item['bibIds'][0];
+            }
+        }
+        // Fetch bibs in a batch:
+        $bibs = $this->getBibRecords($bibIds, null, $patron);
+
         $holds = [];
         foreach ($result['entries'] as $entry) {
             $bibId = null;
@@ -1081,12 +1110,7 @@ class SierraRest extends AbstractBase implements
             if ($entry['recordType'] == 'i') {
                 $itemId = $this->extractId($entry['record']);
                 // Fetch bib ID from item
-                $item = $this->makeRequest(
-                    [$this->apiBase, 'items', $itemId],
-                    ['fields' => 'bibIds,varFields'],
-                    'GET',
-                    $patron
-                );
+                $item = $items[$itemId] ?? [];
                 if (!empty($item['bibIds'])) {
                     $bibId = $item['bibIds'][0];
                 }
@@ -1096,14 +1120,12 @@ class SierraRest extends AbstractBase implements
             }
             if (!empty($bibId)) {
                 // Fetch bib information
-                $bib = $this->getBibRecord($bibId, null, $patron);
+                $bib = $bibs[$bibId] ?? [];
                 $title = $bib['title'] ?? '';
                 $publicationYear = $bib['publishYear'] ?? '';
             }
-            $available
-                = in_array($entry['status']['code'], $this->holdAvailableCodes);
-            $inTransit
-                = in_array($entry['status']['code'], $this->holdInTransitCodes);
+            $available = in_array($entry['status']['code'], $this->holdAvailableCodes);
+            $inTransit = in_array($entry['status']['code'], $this->holdInTransitCodes);
             if ($entry['priority'] >= $entry['priorityQueueLength']) {
                 // This can happen, no idea why
                 $position = $entry['priorityQueueLength'] . ' / '
@@ -1515,6 +1537,25 @@ class SierraRest extends AbstractBase implements
         if (!isset($result['entries'])) {
             return [];
         }
+
+        // Collect all item records to fetch:
+        $itemIds = [];
+        foreach ($result['entries'] as $entry) {
+            if (!empty($entry['item'])) {
+                $itemIds[] = $this->extractId($entry['item']);
+            }
+        }
+        // Fetch items in a batch and list the bibs:
+        $items = $this->getItemRecords($itemIds, null, $patron);
+        $bibIds = [];
+        foreach ($items as $item) {
+            if (!empty($item['bibIds'])) {
+                $bibIds[] = $item['bibIds'][0];
+            }
+        }
+        // Fetch bibs in a batch:
+        $bibs = $this->getBibRecords($bibIds, null, $patron);
+
         $fines = [];
         foreach ($result['entries'] as $entry) {
             $amount = $entry['itemCharge'] + $entry['processingFee']
@@ -1526,16 +1567,11 @@ class SierraRest extends AbstractBase implements
             if (!empty($entry['item'])) {
                 $itemId = $this->extractId($entry['item']);
                 // Fetch bib ID from item
-                $item = $this->makeRequest(
-                    [$this->apiBase, 'items', $itemId],
-                    ['fields' => 'bibIds'],
-                    'GET',
-                    $patron
-                );
+                $item = $items[$itemId] ?? [];
                 if (!empty($item['bibIds'])) {
                     $bibId = $item['bibIds'][0];
                     // Fetch bib information
-                    $bib = $this->getBibRecord($bibId, null, $patron);
+                    $bib = $bibs[$bibId] ?? [];
                     $title = $bib['title'] ?? '';
                 }
             }
@@ -2955,6 +2991,104 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
+     * Fetch fields for records from Sierra
+     *
+     * Note: This method can return cached data
+     *
+     * @param array  $ids    Record ids
+     * @param string $type   Record type ('bib' or 'item')
+     * @param array  $fields Fields to request
+     * @param int    $ttl    Cache TTL
+     * @param ?array $patron Patron information, if available
+     *
+     * @return ?array
+     */
+    protected function getRecords(
+        array $ids,
+        string $type,
+        array $fields,
+        int $ttl,
+        ?array $patron = null
+    ): ?array {
+        $result = [];
+        $requiredFields = $fields;
+        foreach ($ids as &$id) {
+            $cached = $this->getCachedRecordData("$type|$id", $fields);
+            if ($cached['data']) {
+                // We already have all required fields cached:
+                $result[$id] = $cached['data'];
+                $id = null;
+            }
+            $requiredFields = array_unique(
+                [
+                    ...$requiredFields,
+                    ...$cached['fields'],
+                ]
+            );
+        }
+        // Unset reference:
+        unset($id);
+        $ids = array_filter($ids);
+        // Return if we had all records in cache:
+        if (!$ids) {
+            return $result;
+        }
+        // Fetch requested fields as well as any cached fields to keep everything in
+        // sync (note that Sierra has default limit of 50 that applies even if you
+        // fetch a list of id's, so we need to override that):
+        $records = $this->makeRequest(
+            [$this->apiBase, $type . 's'],
+            [
+                'id' => implode(',', $ids),
+                'fields' => implode(',', $requiredFields),
+                'limit' => count($ids),
+            ],
+            'GET',
+            $patron
+        );
+        foreach ($records['entries'] as $record) {
+            $id = $this->extractId($record['id']);
+            $this->putCachedRecordData("$type|$id", $requiredFields, $record, $ttl);
+            $result[$id] = $record;
+        }
+        return $result;
+    }
+
+    /**
+     * Fetch fields for bib records from Sierra
+     *
+     * Note: This method can return cached data
+     *
+     * @param array  $ids    Bib record ids
+     * @param ?array $fields Fields to request or null for defaults
+     * @param ?array $patron Patron information, if available
+     *
+     * @return ?array
+     */
+    protected function getBibRecords(array $ids, ?array $fields = null, ?array $patron = null): ?array
+    {
+        $fields ??= $this->defaultBibFields;
+        return $this->getRecords($ids, 'bib', $fields, $this->bibCacheTTL, $patron);
+    }
+
+    /**
+     * Fetch fields for item records from Sierra
+     *
+     * Note: This method can return cached data
+     *
+     * @param array  $ids    Item record ids
+     * @param ?array $fields Fields to request or null for defaults
+     * @param ?array $patron Patron information, if available
+     *
+     * @return ?array
+     */
+    protected function getItemRecords(array $ids, ?array $fields = null, ?array $patron = null): ?array
+    {
+        $fields ??= $this->defaultItemFields;
+        return $this->getRecords($ids, 'item', $fields, $this->itemCacheTTL, $patron);
+    }
+
+    /**
      * Get all items for a bib record
      *
      * Note: This method can return cached data
@@ -3298,38 +3432,16 @@ class SierraRest extends AbstractBase implements
                 $bibIdsToItems[$this->extractId($bibId)][$itemId] = true;
             }
         }
-        $itemsResult = $this->makeRequest(
-            [$this->apiBase, 'items'],
-            [
-                'id' => implode(',', $itemIds),
-                'fields' => 'bibIds,varFields',
-                'limit' => count($itemIds),
-            ],
-            'GET',
-            $patron
-        );
-        // Map items to an array and collect further bib id mappings:
-        $items = [];
-        foreach ($itemsResult['entries'] as $item) {
-            $itemId = (string)$item['id'];
-            $items[$itemId] = $item;
+        // Get items and collect further bib id mappings:
+        $items = $this->getItemRecords($itemIds, null, $patron);
+        foreach ($items as $itemId => $item) {
             if ($bibId = (string)($item['bibIds'][0] ?? '')) {
                 // Collect all item id's for each bib:
                 $bibIdsToItems[$bibId][$itemId] = true;
             }
         }
         // Fetch bibs for the items:
-        $bibsResult = $this->makeRequest(
-            [$this->apiBase, 'bibs'],
-            [
-                'id' => implode(',', array_keys($bibIdsToItems)),
-                'fields' => 'title,publishYear',
-                'limit' => count($bibIdsToItems),
-            ],
-            'GET',
-            $patron
-        );
-        foreach ($bibsResult['entries'] as $bib) {
+        foreach ($this->getBibRecords(array_keys($bibIdsToItems), null, $patron) as $bib) {
             // Add bib data to the items:
             foreach (array_keys($bibIdsToItems[(string)$bib['id']]) as $itemId) {
                 $items[$itemId]['bib'] = $bib;
