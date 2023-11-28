@@ -125,6 +125,7 @@ class Options extends \VuFind\Search\Base\Options
                 $this->sortOptions[$key] = $value;
             }
         }
+        $this->hiddenSortOptions = $searchSettings?->HiddenSorting?->pattern?->toArray() ?? [];
         if (isset($searchSettings->General->default_sort)) {
             $this->defaultSort = $searchSettings->General->default_sort;
         }

@@ -374,6 +374,9 @@ class Options extends \VuFind\Search\Base\Options
         // Sort preferences:
         $this->filterAndReorderProperty('Sorting', 'sortOptions');
 
+        // Hidden sort preferences:
+        $this->hiddenSortOptions = $this->searchSettings?->HiddenSorting?->pattern?->toArray() ?? [];
+
         // Apply overrides from configuration:
         $defaultMode = $this->searchSettings->General->default_mode ?? null;
         if (null !== $defaultMode && isset($this->modeOptions[$defaultMode])) {
