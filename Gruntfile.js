@@ -1,6 +1,9 @@
 module.exports = function(grunt) {
   const fs = require("fs");
 
+  // Load dart-sass
+  grunt.loadNpmTasks('grunt-dart-sass');
+
   // Local custom tasks
   if (fs.existsSync("./Gruntfile.local.js")) {
     require("./Gruntfile.local.js")(grunt);
@@ -72,15 +75,15 @@ module.exports = function(grunt) {
       }
     },
     // SASS compilation
-    scss: {
-      sass: {
+    'scss': {
+      'dart-sass': {
         options: {
-          outputStyle: 'compressed',
+          outputStyle: 'compressed'
         }
       }
     },
     'check:scss': {
-      sass: {
+      'dart-sass': {
       }
     },
 
@@ -207,13 +210,13 @@ module.exports = function(grunt) {
   });
 
   grunt.registerMultiTask('scss', function sassScan() {
-    grunt.config.set('sass', getSassConfig(this.data.options, false));
-    grunt.task.run('sass');
+    grunt.config.set('dart-sass', getSassConfig(this.data.options, false));
+    grunt.task.run('dart-sass');
   });
 
   grunt.registerMultiTask('check:scss', function sassCheck() {
-    grunt.config.set('sass', getSassConfig(this.data.options, true));
-    grunt.task.run('sass');
+    grunt.config.set('dart-sass', getSassConfig(this.data.options, true));
+    grunt.task.run('dart-sass');
   });
 
   grunt.registerTask('default', function help() {
@@ -240,9 +243,7 @@ module.exports = function(grunt) {
     for (var i in themeList) {
       if (Object.prototype.hasOwnProperty.call(themeList, i)) {
         var config = {
-          options: {
-            implementation: require("node-sass"),
-          },
+          options: {},
           files: [{
             expand: true,
             cwd: path.join('themes', themeList[i], 'scss'),
@@ -257,6 +258,7 @@ module.exports = function(grunt) {
           }
         }
         config.options.includePaths = getLoadPaths('themes/' + themeList[i] + '/scss/compiled.scss');
+        config.options.includePaths.push('vendor/');
 
         sassConfig[themeList[i]] = config;
       }
