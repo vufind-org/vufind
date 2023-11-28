@@ -1,7 +1,10 @@
-$fa-font-path: "../../bootstrap5/css/fonts";
+$fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
 
 // Include Font Awesome
-@import "vendor/font-awesome/font-awesome";
+@import "vendor/font-awesome/fontawesome";
+@import "vendor/font-awesome/regular";
+@import "vendor/font-awesome/solid";
+@import "vendor/font-awesome/v4-shims";
 
 // Include Bootstrap functions first (so you can manipulate colors, SVGs, calc, etc)
 @import "../../../vendor/twbs/bootstrap/scss/functions";
