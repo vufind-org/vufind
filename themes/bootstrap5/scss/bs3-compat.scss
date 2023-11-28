@@ -123,10 +123,16 @@ button.list-group-item {
   display: none;
 }
 
-.searchForm {
-  .form-control, .form-select {
-    display: inline-block;
-    width: initial;
+.navbar-form {
+
+  .form-control {
+    display: block;
+    width: 100%;
+
+    @media (min-width: $screen-md-min) {
+      display: inline-block;
+      width: auto;
+    }
   }
   .btn {
     vertical-align: baseline;
