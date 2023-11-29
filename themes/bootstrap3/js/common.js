@@ -430,17 +430,17 @@ function escapeHtmlAttr(str) {
 }
 
 function extractClassParams(el) {
-  const str = el.className;
+  var str = el.className;
 
   if (typeof str === "undefined") {
     return [];
   }
 
-  let params = {};
-  const classes = str.split(/\s+/);
-  for (let i = 0; i < classes.length; i++) {
+  var params = {};
+  var classes = str.split(/\s+/);
+  for (var i = 0; i < classes.length; i++) {
     if (classes[i].indexOf(':') > 0) {
-      const pair = classes[i].split(':');
+      var pair = classes[i].split(':');
       params[pair[0]] = pair[1];
     }
   }
