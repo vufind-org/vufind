@@ -36,6 +36,7 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindHttp\HttpServiceAwareInterface;
 
 use function call_user_func_array;
+use function count;
 use function func_get_args;
 use function in_array;
 use function intval;
@@ -3282,6 +3283,7 @@ class SierraRest extends AbstractBase implements
             [
                 'id' => implode(',', $itemIds),
                 'fields' => 'bibIds,varFields',
+                'limit' => count($itemIds),
             ],
             'GET',
             $patron
@@ -3302,6 +3304,7 @@ class SierraRest extends AbstractBase implements
             [
                 'id' => implode(',', array_keys($bibIdsToItems)),
                 'fields' => 'title,publishYear',
+                'limit' => count($bibIdsToItems),
             ],
             'GET',
             $patron
