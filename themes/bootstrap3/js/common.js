@@ -1,5 +1,5 @@
 /*global grecaptcha, isPhoneNumberValid, loadCovers */
-/*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
+/*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, extractClassParams, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
 
 var VuFind = (function VuFind() {
   var defaultSearchBackend = null;
@@ -427,6 +427,25 @@ function escapeHtmlAttr(str) {
 
     return `&#x${hex.padStart(2, 0)};`;
   });
+}
+
+function extractClassParams(el) {
+  const str = el.className;
+
+  if (typeof str === "undefined") {
+    return [];
+  }
+
+  let params = {};
+  const classes = str.split(/\s+/);
+  for (let i = 0; i < classes.length; i++) {
+    if (classes[i].indexOf(':') > 0) {
+      const pair = classes[i].split(':');
+      params[pair[0]] = pair[1];
+    }
+  }
+
+  return params;
 }
 
 // Turn GET string into array
