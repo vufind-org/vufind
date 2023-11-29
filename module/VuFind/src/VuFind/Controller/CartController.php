@@ -35,6 +35,7 @@ use Laminas\Session\Container;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
 
+use function count;
 use function is_array;
 use function strlen;
 
@@ -68,6 +69,7 @@ class CartController extends AbstractBase
      *
      * @param ServiceLocatorInterface $sm        Service manager
      * @param Container               $container Session container
+     * @param Config                  $config    VuFind configuration
      */
     public function __construct(ServiceLocatorInterface $sm, Container $container, Config $config)
     {
@@ -509,7 +511,6 @@ class CartController extends AbstractBase
         if (count($ids) > $actionLimit) {
             return $this->redirectToSource('error', 'bulk_limit_exceeded');
         }
-
 
         // Make sure user is logged in:
         if (!($user = $this->getUser())) {

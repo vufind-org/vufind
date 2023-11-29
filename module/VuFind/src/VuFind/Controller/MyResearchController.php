@@ -48,6 +48,7 @@ use VuFind\Mailer\Mailer;
 use VuFind\Search\RecommendListener;
 use VuFind\Validator\CsrfInterface;
 
+use function count;
 use function in_array;
 use function intval;
 use function is_array;
@@ -98,7 +99,8 @@ class MyResearchController extends AbstractBase
     /**
      * Constructor
      *
-     * @param ServiceLocatorInterface $sm Service locator
+     * @param ServiceLocatorInterface $sm     Service locator
+     * @param Config                  $config VuFind configuration
      */
     public function __construct(ServiceLocatorInterface $sm, Config $config)
     {
