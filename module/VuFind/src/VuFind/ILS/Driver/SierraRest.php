@@ -3282,6 +3282,7 @@ class SierraRest extends AbstractBase implements
             [
                 'id' => implode(',', $itemIds),
                 'fields' => 'bibIds,varFields',
+                'limit' => count($itemIds),
             ],
             'GET',
             $patron
@@ -3302,6 +3303,7 @@ class SierraRest extends AbstractBase implements
             [
                 'id' => implode(',', array_keys($bibIdsToItems)),
                 'fields' => 'title,publishYear',
+                'limit' => count($bibIdsToItems),
             ],
             'GET',
             $patron
