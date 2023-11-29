@@ -16,7 +16,7 @@
     'rows' => $this->facets_before_more,
     'btn-class' => 'facet',
     'wrapper-class' => false,
-    'wrapper-tagname' => 'div',
+    'wrapper-tagname' => 'li',
   ];
 ?>
 <ul class="facet-tree<?php if ($truncateSettings): ?> truncate-hierarchical-facets" data-truncate="<?=$this->htmlSafeJsonEncode($truncateSettings)?><?php endif; ?>">
