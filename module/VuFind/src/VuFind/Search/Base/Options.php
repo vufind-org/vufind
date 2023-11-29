@@ -398,6 +398,7 @@ abstract class Options implements TranslatorAwareInterface
         $this->topPaginatorStyle = $searchSettings->General->top_paginator ?? false;
         $this->retainFiltersByDefault = $searchSettings->General->retain_filters_by_default ?? true;
         $this->alwaysDisplayResetFilters = $searchSettings->General->always_display_reset_filters ?? false;
+        $this->hiddenSortOptions = $searchSettings?->HiddenSorting?->pattern?->toArray() ?? [];
     }
 
     /**
