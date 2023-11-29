@@ -29,6 +29,7 @@
 
 namespace VuFind\Controller;
 
+use Laminas\Config\Config;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container;
 use VuFind\Exception\Forbidden as ForbiddenException;
@@ -56,15 +57,23 @@ class CartController extends AbstractBase
     protected $session;
 
     /**
+     * VuFind configuration
+     *
+     * @param Config
+     */
+    protected $config;
+
+    /**
      * Constructor
      *
      * @param ServiceLocatorInterface $sm        Service manager
      * @param Container               $container Session container
      */
-    public function __construct(ServiceLocatorInterface $sm, Container $container)
+    public function __construct(ServiceLocatorInterface $sm, Container $container, Config $config)
     {
         parent::__construct($sm);
         $this->session = $container;
+        $this->config = $config;
     }
 
     /**
@@ -246,6 +255,12 @@ class CartController extends AbstractBase
             return $this->redirectToSource('error', 'bulk_noitems_advice');
         }
 
+        // Check if id limit is exceeded
+        $actionLimit = $this->config?->BulkActions?->limits?->email ?? 0;
+        if (count($ids) > $actionLimit) {
+            return $this->redirectToSource('error', 'bulk_limit_exceeded');
+        }
+
         // Force login if necessary:
         $config = $this->getConfig();
         if (
@@ -313,6 +328,13 @@ class CartController extends AbstractBase
         if (!is_array($ids) || empty($ids)) {
             return $this->redirectToSource('error', 'bulk_noitems_advice');
         }
+
+        // Check if id limit is exceeded
+        $actionLimit = $this->config?->BulkActions?->limits?->printcart ?? 0;
+        if (count($ids) > $actionLimit) {
+            return $this->redirectToSource('error', 'bulk_limit_exceeded');
+        }
+
         $callback = function ($i) {
             return 'id[]=' . urlencode($i);
         };
@@ -346,12 +368,26 @@ class CartController extends AbstractBase
             return $this->redirectToSource('error', 'bulk_noitems_advice');
         }
 
+        $format = $this->params()->fromPost('format');
+
+        // Check if id limit is exceeded
+        $actionLimit = $this->config?->BulkActions?->limits?->export ?? 0;
+        if (count($ids) > $actionLimit) {
+            return $this->redirectToSource('error', 'bulk_limit_exceeded');
+        }
+
         // Get export tools:
         $export = $this->getExport();
 
         // Process form submission if necessary:
         if ($this->formWasSubmitted('submit')) {
             $format = $this->params()->fromPost('format');
+
+            $exportLimit = $this->config?->BulkExport?->limits?->$format ?? 0;
+            if (count($ids) > $exportLimit) {
+                return $this->redirectToSource('error', 'bulk_limit_exceeded');
+            }
+
             $url = $export->getBulkUrl($this->getViewRenderer(), $format, $ids);
             if ($export->needsRedirect($format)) {
                 return $this->redirect()->toUrl($url);
@@ -419,6 +455,14 @@ class CartController extends AbstractBase
             return $this->redirectToSource('error', 'bulk_noitems_advice');
         }
 
+        // Check if id limit is exceeded
+        $actionLimit = $this->config?->BulkExport?->limits?->$format
+            ?? $this->config?->BulkActions?->limits?->export
+            ?? 0;
+        if (count($ids) > $actionLimit) {
+            return $this->redirectToSource('error', 'bulk_limit_exceeded');
+        }
+
         // Send appropriate HTTP headers for requested format:
         $response = $this->getResponse();
         $response->getHeaders()->addHeaders($this->getExport()->getHeaders($format));
@@ -459,6 +503,13 @@ class CartController extends AbstractBase
         if (!is_array($ids) || empty($ids)) {
             return $this->redirectToSource('error', 'bulk_noitems_advice');
         }
+
+        // Check if id limit is exceeded
+        $actionLimit = $this->config?->BulkActions?->limits?->save ?? 0;
+        if (count($ids) > $actionLimit) {
+            return $this->redirectToSource('error', 'bulk_limit_exceeded');
+        }
+
 
         // Make sure user is logged in:
         if (!($user = $this->getUser())) {

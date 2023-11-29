@@ -71,9 +71,11 @@ class CartControllerFactory extends AbstractBaseFactory
             'cart_followup',
             $container->get(\Laminas\Session\SessionManager::class)
         );
+        $config = $container->get(\VuFind\Config\PluginManager::class)
+            ->get('config');
         return $this->applyPermissions(
             $container,
-            new $requestedName($container, $session)
+            new $requestedName($container, $session, $config)
         );
     }
 }

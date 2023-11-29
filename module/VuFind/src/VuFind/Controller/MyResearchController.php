@@ -31,6 +31,8 @@
 
 namespace VuFind\Controller;
 
+use Laminas\Config\Config;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\View\Model\ViewModel;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
@@ -67,6 +69,13 @@ class MyResearchController extends AbstractBase
     use \VuFind\ILS\Logic\SummaryTrait;
 
     /**
+     * VuFind configuration
+     *
+     * @param Config
+     */
+    protected $config;
+
+    /**
      * Permission that must be granted to access this module (false for no
      * restriction, null to use configured default (which is usually the same
      * as false)).
@@ -85,6 +94,17 @@ class MyResearchController extends AbstractBase
      * @var PaginationHelper
      */
     protected $paginationHelper = null;
+
+    /**
+     * Constructor
+     *
+     * @param ServiceLocatorInterface $sm Service locator
+     */
+    public function __construct(ServiceLocatorInterface $sm, Config $config)
+    {
+        parent::__construct($sm);
+        $this->config = $config;
+    }
 
     /**
      * Process an authentication error.
@@ -792,6 +812,13 @@ class MyResearchController extends AbstractBase
             : $this->params()->fromPost('idsAll');
         if (!is_array($ids) || empty($ids)) {
             $this->flashMessenger()->addMessage('bulk_noitems_advice', 'error');
+            return $this->redirect()->toUrl($newUrl);
+        }
+
+        // Check if id limit is exceeded
+        $actionLimit = $this->config?->BulkActions?->limits?->delete ?? 0;
+        if (count($ids) > $actionLimit) {
+            $this->flashMessenger()->addMessage('bulk_limit_exceeded', 'error');
             return $this->redirect()->toUrl($newUrl);
         }
 
