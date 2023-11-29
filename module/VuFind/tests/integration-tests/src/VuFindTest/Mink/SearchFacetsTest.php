@@ -65,35 +65,35 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @var string
      */
-    protected $facetExpandSelector = '.facet__tree .facet__tree__toggle-expanded .facet__tree__expand';
+    protected $facetExpandSelector = '.facet-tree .facet-tree__toggle-expanded .facet-tree__expand';
 
     /**
      * CSS selector for finding the first expanded hierarchical facet
      *
      * @var string
      */
-    protected $facetExpandedSelector = '.facet__tree button[aria-expanded=true] ~ ul';
+    protected $facetExpandedSelector = '.facet-tree button[aria-expanded=true] ~ ul';
 
     /**
      * CSS selector for finding the first second level hierarchical facet
      *
      * @var string
      */
-    protected $facetSecondLevelLinkSelector = '.facet__tree button[aria-expanded=true] ~ ul a';
+    protected $facetSecondLevelLinkSelector = '.facet-tree button[aria-expanded=true] ~ ul a';
 
     /**
      * CSS selector for finding the first active second level hierarchical facet
      *
      * @var string
      */
-    protected $facetSecondLevelActiveLinkSelector = '.facet__tree button[aria-expanded=true] ~ ul a.active';
+    protected $facetSecondLevelActiveLinkSelector = '.facet-tree button[aria-expanded=true] ~ ul a.active';
 
     /**
      * CSS selector for finding the first second level hierarchical facet
      *
      * @var string
      */
-    protected $facetSecondLevelExcludeLinkSelector = '.facet__tree button[aria-expanded=true] ~ ul a.exclude';
+    protected $facetSecondLevelExcludeLinkSelector = '.facet-tree button[aria-expanded=true] ~ ul a.exclude';
 
     /**
      * Get filtered search

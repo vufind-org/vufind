@@ -197,7 +197,7 @@ h3.facet-title {
   .author-list { flex: 0 1 100%; }
 }
 
-.facet__tree {
+.facet-tree {
   padding-left: 0;
 
   // Constrain the width of lower levels to avoid overflow:
@@ -212,7 +212,7 @@ h3.facet-title {
     // Ensure that there is enough room for a button focus outline:
     padding-left: .2rem;
 
-    .facet__tree__toggle-expanded {
+    .facet-tree__toggle-expanded {
       flex: 1 1;
       border: 0;
       background: none;
@@ -224,19 +224,19 @@ h3.facet-title {
       }
 
       &[aria-expanded=false] {
-        .facet__tree__collapse {
+        .facet-tree__collapse {
           display: none;
         }
         & ~ ul {
           display: none;
         }
       }
-      &[aria-expanded=true] .facet__tree__expand {
+      &[aria-expanded=true] .facet-tree__expand {
         display: none;
       }
     }
 
-    .facet__tree__item-container {
+    .facet-tree__item-container {
       // Leave space for the open/close icon (see above):
       width: calc(100% - 1.5em);
 
