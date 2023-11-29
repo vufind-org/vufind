@@ -431,11 +431,9 @@ function escapeHtmlAttr(str) {
 
 function extractClassParams(el) {
   var str = el.className;
-
   if (typeof str === "undefined") {
     return [];
   }
-
   var params = {};
   var classes = str.split(/\s+/);
   for (var i = 0; i < classes.length; i++) {
@@ -444,7 +442,6 @@ function extractClassParams(el) {
       params[pair[0]] = pair[1];
     }
   }
-
   return params;
 }
 
