@@ -378,6 +378,7 @@ class AbstractRecord extends AbstractBase
      */
     public function ajaxtabAction()
     {
+        $this->disableSessionWrites();
         $this->loadRecord();
         // Set layout to render content only:
         $this->layout()->setTemplate('layout/lightbox');
