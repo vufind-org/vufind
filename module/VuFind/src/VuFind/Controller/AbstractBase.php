@@ -768,7 +768,7 @@ class AbstractBase extends AbstractActionController implements TranslatorAwareIn
      */
     protected function getAndClearFollowupUrl($checkRedirect = false)
     {
-        if ($url = $this->followup()->retrieveAndClear('url', '')) {
+        if ($url = $this->followup()->retrieveAndClear('url')) {
             $lightboxParent = $this->followup()->retrieveAndClear('lightboxParent');
             // If a user clicks on the "Your Account" link, we want to be sure
             // they get to their account rather than being redirected to an old
