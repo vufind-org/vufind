@@ -500,6 +500,20 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Assert that the "reset filters" button is present.
+     *
+     * @param \Behat\Mink\Element\Element $page Mink page object
+     *
+     * @return void
+     */
+    protected function assertResetFiltersButton($page)
+    {
+        $reset = $page->findAll('css', '.reset-filters-btn');
+        // The toggle bar has its own reset button, so we should have 2:
+        $this->assertCount(2, $reset);
+    }
+
+    /**
      * Assert that the "reset filters" button is not present.
      *
      * @param \Behat\Mink\Element\Element $page Mink page object
@@ -590,6 +604,56 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         // Re-click the search button and confirm that filters go away
         $this->clickCss($page, '#searchForm .btn.btn-primary');
         $this->assertNoFilters($page);
+    }
+
+    /**
+     * Test disabled "always display reset filters" configurable behavior
+     *
+     * @return void
+     */
+    public function testDisabledResetFiltersBehavior()
+    {
+        $this->changeConfigs(
+            [
+                'searches' => [
+                    'General' => [
+                        'retain_filters_by_default' => false,
+                        'always_display_reset_filters' => false,
+                    ],
+                ],
+            ]
+        );
+        $page = $this->getFilteredSearch();
+        $this->assertFilterIsStillThere($page);
+        // Confirm that there is no reset button:
+        $this->assertNoResetFiltersButton($page);
+    }
+
+    /**
+     * Test enabled "always display reset filters" configurable behavior
+     *
+     * @return void
+     */
+    public function testEnabledResetFiltersBehavior()
+    {
+        $this->changeConfigs(
+            [
+                'searches' => [
+                    'General' => [
+                        'retain_filters_by_default' => false,
+                        'always_display_reset_filters' => true,
+                    ],
+                ],
+            ]
+        );
+        $page = $this->getFilteredSearch();
+        $this->assertFilterIsStillThere($page);
+        // Confirm that there is a reset button:
+        $this->assertResetFiltersButton($page);
+        // Reset filters:
+        $this->clickCss($page, '.reset-filters-btn');
+        // Confirm that there is no reset button:
+        $this->assertNoResetFiltersButton($page);
     }
 
     /**

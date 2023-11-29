@@ -35,8 +35,7 @@ $thumbnail-width-large:  160px;
   padding-bottom: 0;
   .facet__tree__toggle-expanded {
     line-height: inherit;
-    padding-top: 0;
-    padding-bottom: 0;
+    padding: 0;
   }
 
   .facet {
@@ -61,6 +60,17 @@ $thumbnail-width-large:  160px;
 .searchForm {
   margin: 0;
   padding: 0;
+
+  .input-group .form-control:first-child {
+    border-top-right-radius: $input-border-radius;
+    border-bottom-right-radius: $input-border-radius;
+  }
+
+  @media (max-width: 767px) {
+    .input-group {
+      width: 100%;
+    }
+  }
 }
 
 header .container.navbar { margin-bottom: 0; }
@@ -425,6 +435,10 @@ body.rtl {
 .combined-search-container.grid {
   margin-left: 1rem;
   margin-right: 1rem;
+
+  .combined-list {
+    overflow-wrap: anywhere;
+  }
 }
 
 .combined-jump-links {
@@ -626,6 +640,7 @@ body.rtl {
   .btn {
     color: #fff;
     background: $list-group-active-bg;
+    font-weight: 600;
     vertical-align: baseline;
   }
   .btn::after {
@@ -680,13 +695,17 @@ table.search-history-table {
     padding-right: 28px;
   }
 
-  #searchForm-reset {
+  #searchForm_controls {
     position: absolute;
     right: 3px;
-    top: 3px;
+    top: 5px;
+    z-index: 4;
+    height: 2em;
+  }
+
+  #searchForm-reset {
     bottom: 0;
     width: 2em;
-    height: 2em;
     border: none;
     border-radius: 50%;
     background-color: $gray-lighter;

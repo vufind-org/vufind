@@ -52,7 +52,10 @@ class SimilarItemsCarouselTest extends \PHPUnit\Framework\TestCase
         $search = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $obj = new SimilarItemsCarousel($search);
+        $config = $this->getMockBuilder(\Laminas\Config\Config::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $obj = new SimilarItemsCarousel($search, $config);
         $expected = 'Similar Items';
         $this->assertSame($expected, $obj->getDescription());
     }
@@ -67,10 +70,13 @@ class SimilarItemsCarouselTest extends \PHPUnit\Framework\TestCase
         $service = $this->getMockBuilder(\VuFindSearch\Service::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $config = $this->getMockBuilder(\Laminas\Config\Config::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $rci = $this->getMockBuilder(
             \VuFindSearch\Response\RecordCollectionInterface::class
         )->getMock();
-        $obj = new SimilarItemsCarousel($service);
+        $obj = new SimilarItemsCarousel($service, $config);
         $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\AbstractBase::class)
             ->disableOriginalConstructor()
             ->getMock();

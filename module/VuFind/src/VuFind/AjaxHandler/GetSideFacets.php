@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  AJAX
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -46,6 +47,7 @@ use function is_callable;
  * @category VuFind
  * @package  AJAX
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -68,13 +70,6 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
     protected $searchRunner;
 
     /**
-     * Main facet configuration
-     *
-     * @var \Laminas\Config\Config
-     */
-    protected $facetConfig;
-
-    /**
      * View renderer
      *
      * @var RendererInterface
@@ -87,20 +82,17 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
      * @param SessionSettings        $ss       Session settings
      * @param RecommendPluginManager $rpm      Recommend plugin manager
      * @param SearchRunner           $sr       Search runner
-     * @param \Laminas\Config\Config $fc       Facet config
      * @param RendererInterface      $renderer View renderer
      */
     public function __construct(
         SessionSettings $ss,
         \VuFind\Recommend\PluginManager $rpm,
         SearchRunner $sr,
-        \Laminas\Config\Config $fc,
         RendererInterface $renderer
     ) {
         $this->sessionSettings = $ss;
         $this->recommendPluginManager = $rpm;
         $this->searchRunner = $sr;
-        $this->facetConfig = $fc;
         $this->renderer = $renderer;
     }
 

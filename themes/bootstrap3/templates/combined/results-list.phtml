@@ -27,7 +27,9 @@
           const span = template.content.children[0];
 
           const link = document.querySelector('.combined-jump-links .$classId');
-          link.append(span);
+          if (link) {
+            link.append(span);
+          }
         }
 
         if (document.readyState != 'loading') {
@@ -67,6 +69,38 @@
     <?php if ($recordTotal > 0): ?>
       <?php foreach (($top = $results->getRecommendations('top')) as $current): ?>
         <?=$this->recommend($current)?>
+      <?php endforeach; ?>
+      <?php foreach (($results->getRecommendations('side')) as $current):
+        $recommendationClass = str_replace('\\', '_', $current::class);
+        $recommendationJs = <<<JS
+            function addRecommendation_$recommendationClass() {
+              const recommendationContainer = document.querySelector('#search-sidebar .recommendation_container__$recommendationClass');
+              if (!recommendationContainer) {
+                console.error("Cannot find recommendation container for $recommendationClass");
+                return;
+              }
+
+              const recommendation = document.getElementById('recommendation__$recommendationClass');
+              if (!recommendation) {
+                console.error("Cannot find recommendation for $recommendationClass");
+                return;
+              }
+
+              recommendationContainer.append(recommendation);
+              recommendation.style.display = 'inherit';
+            }
+
+            if (document.readyState != 'loading') {
+              addRecommendation_$recommendationClass();
+            } else {
+              document.addEventListener('DOMContentLoaded', addRecommendation_$recommendationClass);
+            }
+            JS;
+        ?>
+        <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $recommendationJs, 'SET')?>
+        <div id="recommendation__<?=$recommendationClass?>" style="display: none;">
+          <?=$this->recommend($current)?>
+        </div>
       <?php endforeach; ?>
       <?=
         $this->context()->renderInContext(

@@ -23,14 +23,17 @@
  * @category VuFind
  * @package  Recommendations
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
 
 namespace VuFind\Recommend;
 
+use VuFind\Search\Solr\HierarchicalFacetHelper;
 use VuFind\Solr\Utils as SolrUtils;
 
+use function get_class;
 use function in_array;
 use function intval;
 use function is_array;
@@ -43,6 +46,7 @@ use function is_array;
  * @category VuFind
  * @package  Recommendations
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
@@ -134,6 +138,28 @@ class SideFacets extends AbstractFacets
     protected $hierarchicalFacetSortOptions = [];
 
     /**
+     * Hierarchical facet helper
+     *
+     * @var HierarchicalFacetHelper
+     */
+    protected $hierarchicalFacetHelper;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
+     * @param HierarchicalFacetHelper      $facetHelper  Helper for handling
+     * hierarchical facets
+     */
+    public function __construct(
+        \VuFind\Config\PluginManager $configLoader,
+        HierarchicalFacetHelper $facetHelper = null
+    ) {
+        parent::__construct($configLoader);
+        $this->hierarchicalFacetHelper = $facetHelper;
+    }
+
+    /**
      * Store the configuration of the recommendation module.
      *
      * @param string $settings Settings from searches.ini.
@@ -178,7 +204,7 @@ class SideFacets extends AbstractFacets
 
         // Checkbox facets:
         $flipCheckboxes = false;
-        if (substr($checkboxSection, 0, 1) == '~') {
+        if (str_starts_with($checkboxSection, '~')) {
             $checkboxSection = substr($checkboxSection, 1);
             $flipCheckboxes = true;
         }
@@ -272,7 +298,25 @@ class SideFacets extends AbstractFacets
      */
     public function getFacetSet()
     {
-        return $this->results->getFacetList($this->mainFacets);
+        $facetSet = $this->results->getFacetList($this->mainFacets);
+
+        foreach ($this->hierarchicalFacets as $hierarchicalFacet) {
+            if (isset($facetSet[$hierarchicalFacet])) {
+                if (!$this->hierarchicalFacetHelper) {
+                    throw new \Exception(
+                        get_class($this) . ': hierarchical facet helper unavailable'
+                    );
+                }
+
+                $facetSet[$hierarchicalFacet]['list'] = $this->hierarchicalFacetHelper->filterFacets(
+                    $hierarchicalFacet,
+                    $facetSet[$hierarchicalFacet]['list'],
+                    $this->results->getOptions()
+                );
+            }
+        }
+
+        return $facetSet;
     }
 
     /**

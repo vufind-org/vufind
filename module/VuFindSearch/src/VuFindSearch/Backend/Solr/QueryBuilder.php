@@ -422,8 +422,8 @@ class QueryBuilder implements QueryBuilderInterface
                 $searchString = trim($searchString);
                 if (
                     strlen($searchString) > 1
-                    && substr($searchString, 0, 1) == '"'
-                    && substr($searchString, -1, 1) == '"'
+                    && str_starts_with($searchString, '"')
+                    && str_ends_with($searchString, '"')
                 ) {
                     return $this->exactSpecs[$handler];
                 }
