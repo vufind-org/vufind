@@ -2969,25 +2969,8 @@ class SierraRest extends AbstractBase implements
      */
     protected function getBibRecord(string $id, ?array $fields = null, ?array $patron = null): ?array
     {
-        $fields ??= $this->defaultBibFields;
-        $cacheId = "bib|$id";
-        $cached = $this->getCachedRecordData($cacheId, $fields);
-        if ($cached['data']) {
-            // We already have all required fields cached:
-            return $cached['data'];
-        }
-        // Fetch requested fields as well as any cached fields to keep everything in
-        // sync:
-        $result = $this->makeRequest(
-            [$this->apiBase, 'bibs', $this->extractBibId($id)],
-            ['fields' => implode(',', $cached['fields'])],
-            'GET',
-            $patron
-        );
-        if (null !== $result) {
-            $this->putCachedRecordData($cacheId, $cached['fields'], $result, $this->bibCacheTTL);
-        }
-        return $result;
+        $result = $this->getBibRecords([$id], $fields, $patron);
+        return $result[$id] ?? null;
     }
 
     /**
@@ -3106,7 +3089,7 @@ class SierraRest extends AbstractBase implements
     ): array {
         $fields ??= $this->defaultItemFields;
 
-        $cacheId = "items|$id";
+        $cacheId = "bib-items|$id";
         $cached = $this->getCachedRecordData($cacheId, $fields);
         if ($cached['data']) {
             // We already have all required fields cached:
