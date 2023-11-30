@@ -150,7 +150,7 @@ class LibGuides implements
         }
 
         $result = $this->doGet(
-            $this->baseUrl . '/az'
+            $this->baseUrl . '/az?expand=az_props'
         );
 
         if (isset($result->errorCode)) {
