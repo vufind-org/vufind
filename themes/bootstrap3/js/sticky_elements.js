@@ -1,12 +1,7 @@
 /*global VuFind*/
 
 VuFind.register("sticky_elements", function StickyElements() {
-  function init($container = document) {
-    let stickyElements = Array.from(document.getElementsByClassName('sticky-element')).sort(sortStickyElements);
-    if (!stickyElements.length) {
-      return;
-    }
-
+  function init() {
     function sortStickyElements(a, b) {
       let posA = a.dataset.stickyPos;
       let posB = b.dataset.stickyPos;
@@ -14,6 +9,11 @@ VuFind.register("sticky_elements", function StickyElements() {
       if (posA === undefined) return 1;
       if (posB === undefined) return -1;
       return posA - posB;
+    }
+
+    let stickyElements = Array.from(document.getElementsByClassName('sticky-element')).sort(sortStickyElements);
+    if (!stickyElements.length) {
+      return;
     }
 
     function setPlaceholderStyle (stickyElement) {

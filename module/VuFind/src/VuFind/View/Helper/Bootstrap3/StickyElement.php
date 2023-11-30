@@ -64,7 +64,8 @@ class StickyElement extends \Laminas\View\Helper\AbstractHelper
      *
      * @return bool
      */
-    public function isEnabled() {
+    public function isEnabled()
+    {
         return !empty($this->stickyElements);
     }
 
@@ -77,7 +78,8 @@ class StickyElement extends \Laminas\View\Helper\AbstractHelper
      *
      * @return array
      */
-    public function getElementAttributes($elementName, $pos = null) {
+    public function getElementAttributes($elementName, $pos = null)
+    {
         $elementIsEnabled = in_array($elementName, $this->stickyElements);
         return [
             'class' => $elementIsEnabled ? 'sticky-element' : '',
