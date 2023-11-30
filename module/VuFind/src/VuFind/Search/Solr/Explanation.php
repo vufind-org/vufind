@@ -96,7 +96,7 @@ class Explanation extends \VuFind\Search\Base\Explanation
     /**
      * Describes the rest. It has restValue and the percentage from total value.
      *
-     * @var array
+     * @var ?array
      */
     protected $rest = null;
 
@@ -214,7 +214,7 @@ class Explanation extends \VuFind\Search\Base\Explanation
      */
     public function getDecimalPlaces()
     {
-        return $this->config['Explain']['decimal_places'] ?? 2;
+        return $this->config['Explain']['decimalPlaces'] ?? 2;
     }
 
     /**

@@ -53,7 +53,7 @@ class RawJsonSearchCommand extends \VuFindSearch\Command\CallMethodCommand
     /**
      * If json should be returned as an array instead an object
      *
-     * @var bool|null
+     * @var ?bool
      */
     protected $asArray = null;
 
@@ -65,7 +65,7 @@ class RawJsonSearchCommand extends \VuFindSearch\Command\CallMethodCommand
      * @param int           $offset    Search offset
      * @param int           $limit     Search limit
      * @param ?ParamBag     $params    Search backend parameters
-     * @param bool          $asArray   If json should be returned as an array instead an object
+     * @param ?bool         $asArray   If json should be returned as an array instead an object
      */
     public function __construct(
         string $backendId,
@@ -73,7 +73,7 @@ class RawJsonSearchCommand extends \VuFindSearch\Command\CallMethodCommand
         int $offset = 0,
         int $limit = 100,
         ParamBag $params = null,
-        bool $asArray = null
+        ?bool $asArray = null
     ) {
         $this->query = $query;
         $this->offset = $offset;
