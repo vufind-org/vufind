@@ -136,6 +136,7 @@
       ? 'list' : $params->getView();
     $viewParams = [
       'results' => $results,
+      'request' => $view->request,
       'params' => $params,
       'showCheckboxes' => $this->showCartControls || $this->showBulkOptions,
       'excludeResultIds' => true, // Don't add id attributes to results to avoid duplicates
