@@ -60,14 +60,28 @@ class StickyElement extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Checks if an elements shall be sticky.
+     * Checks if any sticky elements are configured.
+     *
+     * @return bool
+     */
+    public function isEnabled() {
+        return !empty($this->stickyElements);
+    }
+
+    /**
+     * Returns the sticky-element class if the element is configured and
+     * optionally adds the position attribute.
      *
      * @param string $elementName Name of the element
+     * @param int    $pos         Sticky position of the element
      *
-     * @return string CSS classes to apply
+     * @return array
      */
-    public function __invoke($elementName)
-    {
-        return in_array($elementName, $this->stickyElements) ? 'sticky-element' : '';
+    public function getElementAttributes($elementName, $pos = null) {
+        $elementIsEnabled = in_array($elementName, $this->stickyElements);
+        return [
+            'class' => $elementIsEnabled ? 'sticky-element' : '',
+            'posAttr' => $elementIsEnabled && $pos !== null ? 'data-sticky-pos="' . $pos . '"' : '',
+        ];
     }
 }
