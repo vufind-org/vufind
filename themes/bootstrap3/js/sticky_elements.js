@@ -42,7 +42,6 @@ VuFind.register("sticky_elements", function StickyElements() {
       return getInheritedBackgroundColor(el.parentElement);
     }
 
-
     function handleStickyElements() {
       let num = 0;
       let count = stickyElements.length;
