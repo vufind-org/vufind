@@ -3,53 +3,38 @@
     <?=$this->localizedNumber($explainElement['percent'], $decimalPlaces)?>%
   </td>
   <td>
-    <?php if (is_array($fieldName)): ?>
-      Synonym: [
-      <?php for ($i = 0; $i < count($fieldName); $i++): ?>
-        <?php
-        $name = $fieldName[$i];
-        $value = $fieldValue[$i] ?? '';
-        $exactMatch = $explainElement['exactMatch'][$i] ?? '';
-        if (!empty($name)) {
-          $description = $this->transEsc('IndexFieldDescription::' . $name);
-          $description = $name !== $description ? $description : '';
-        } else {
-          $description = '';
-        }
-        $exactMatchClass = ($exactMatch ?? 'unkown') . '-match';
-        ?>
-        <span class="<?=$exactMatchClass?>">"<?=$value?>"</span>
-        <?=$this->transEsc('in')?> <span class="field-name" title="<?=$this->escapeHtmlAttr($description)?>"><?=$name?></span><?=($i < count($fieldName) - 1) ? ', ' : ''?>
-      <?php endfor; ?>
-      <?php
-      $modifier = isset($explainElement['fieldModifier'])
-        ? ', ' . $this->transEsc(
-            'explain_modifier',
-            ['%%modifier%%' => $this->localizedNumber($explainElement['fieldModifier'], $decimalPlaces)]
-        )
-        : '';
-      ?>
-      ]<?=$modifier?>
-    <?php else: ?>
-      <?php
-      if (!empty($fieldName)) {
-        $fieldDescription = $this->transEsc('IndexFieldDescription::' . $fieldName);
-        $fieldDescription = $fieldName !== $fieldDescription ? ' (' . $fieldDescription . ')' : '';
-      } else {
-        $fieldDescription = '';
-      }
-      $modifier = isset($explainElement['fieldModifier'])
-        ? ', ' . $this->transEsc(
-            'explain_modifier',
-            ['%%modifier%%' => $this->localizedNumber($explainElement['fieldModifier'], $decimalPlaces)]
-        )
-        : '';
-      $exactMatchClass = ($explainElement['exactMatch'] ?? 'unkown') . '-match';
-      ?>
-      <?php if ($fieldValue): ?>
-        <span class="<?=$exactMatchClass?>">"<?=$fieldValue?>"</span>
-      <?php endif; ?>
-      <?=$this->transEsc('in')?> <span class="field-name"><?=$fieldName?></span><?=$fieldDescription?><?=$modifier?>
+    <?php if (!is_array($fieldName)): ?>
+    <?php
+      $fieldName = [$fieldName];
+      $fieldValue = [$fieldValue];
+      $explainElement['exactMatch'] = [$explainElement['exactMatch']];
+    ?>
     <?php endif; ?>
+    <?php if (count($fieldName) > 1):
+      echo $this->transEsc('Synonym') . ': [';
+    endif;
+    for ($i = 0; $i < count($fieldName); $i++):
+      $name = $fieldName[$i];
+      $value = $fieldValue[$i] ?? '';
+      $exactMatch = $explainElement['exactMatch'][$i] ?? '';
+      if (!empty($name)) {
+        $description = $this->transEsc('IndexFieldDescription::' . $name);
+        $description = $name !== $description ? $description : '';
+      } else {
+        $description = '';
+      }
+      $exactMatchClass = ($exactMatch ?? 'unkown') . '-match';
+      echo '<span class="' . $exactMatchClass . '">"' . $value . '"</span>' . ' ' . $this->transEsc('in');
+      echo ' <span class="field-name" title="' . $this->escapeHtmlAttr($description) . '">' . $name . '</span>';
+      echo ($i < count($fieldName) - 1) ? ', ' : '';
+    endfor;
+    $modifier = isset($explainElement['fieldModifier'])
+      ? ', ' . $this->transEsc(
+          'explain_modifier',
+          ['%%modifier%%' => $this->localizedNumber($explainElement['fieldModifier'], $decimalPlaces)]
+      )
+      : '';
+    echo(count($fieldName) > 1 ? ']' : '') . $modifier
+    ?>
   </td>
 </tr>

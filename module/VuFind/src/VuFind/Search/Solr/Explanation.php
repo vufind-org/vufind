@@ -520,20 +520,34 @@ class Explanation extends \VuFind\Search\Base\Explanation
             'fieldValue' => 'unknown',
             'exactMatch' => 'unknown',
         ];
-        $synonymPattern = '/weight\(Synonym\((?<synonyms>([^:]+:(\"([^\"]+\s?)+[^\"]+\"|\w+)\s?)+)\)(.+?(?= in))?/u';
-        $pattern = '/weight\((?<fieldName>[^:]+):(?<fieldValue>\"[^"]+\"|\w+)(.+?(?= in))?/u';
-        if (preg_match($synonymPattern, $description, $matches)) {
-            preg_match_all('/(?<fieldName>[^:\s]+):(?<fieldValue>\"[^"]+\"|\w+)/u', $matches['synonyms'], $matches);
+        if (
+            preg_match(
+                '/weight\(Synonym\((?<synonyms>([^:]+:(\"([^\"]+\s?)+[^\"]+\"|\w+)\s?)+)\)(.+?(?= in))?/u',
+                $description,
+                $matches
+            )
+        ) {
+            preg_match_all(
+                '/(?<fieldName>[^:\s]+):(?<fieldValue>\"[^"]+\"|\w+)/u',
+                $matches['synonyms'],
+                $synonymMatches
+            );
             $fieldValues = array_map(function ($fieldValue) {
                 return str_replace('"', '', $fieldValue);
-            }, $matches['fieldValue']);
-            $res['fieldName'] = $matches['fieldName'];
+            }, $synonymMatches['fieldValue']);
+            $res['fieldName'] = $synonymMatches['fieldName'];
             $res['fieldValue'] = $fieldValues;
             // extra space to only exact match whole words
             $res['exactMatch'] = array_map(function ($fieldValue) {
                 return str_contains($this->lookfor . ' ', $fieldValue . ' ') ? 'exact' : 'inexact';
             }, $fieldValues);
-        } elseif (preg_match($pattern, $description, $matches)) {
+        } elseif (
+            preg_match(
+                '/weight\((?<fieldName>[^:]+):(?<fieldValue>\"[^"]+\"|\w+)(.+?(?= in))?/u',
+                $description,
+                $matches
+            )
+        ) {
             $fieldValue = str_replace('"', '', $matches['fieldValue']);
             $res['fieldName'] = $matches['fieldName'];
             $res['fieldValue'] = $fieldValue;
