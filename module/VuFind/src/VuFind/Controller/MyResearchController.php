@@ -812,20 +812,19 @@ class MyResearchController extends AbstractBase
         $ids = null === $this->params()->fromPost('selectAll')
             ? $this->params()->fromPost('ids')
             : $this->params()->fromPost('idsAll');
+
+        $actionLimit = $this->config?->BulkActions?->limits?->delete ?? 0;
         if (!is_array($ids) || empty($ids)) {
             $this->flashMessenger()->addMessage('bulk_noitems_advice', 'error');
-            return $this->redirect()->toUrl($newUrl);
-        }
-
-        // Check if id limit is exceeded
-        $actionLimit = $this->config?->BulkActions?->limits?->delete ?? 0;
-        if (count($ids) > $actionLimit) {
+            if (!$this->inLightbox()) {
+                return $this->redirect()->toUrl($newUrl);
+            }
+        } elseif (count($ids) > $actionLimit) {
             $this->flashMessenger()->addMessage('bulk_limit_exceeded', 'error');
-            return $this->redirect()->toUrl($newUrl);
-        }
-
-        // Process the deletes if necessary:
-        if ($this->formWasSubmitted('submit')) {
+            if (!$this->inLightbox()) {
+                return $this->redirect()->toUrl($newUrl);
+            }
+        } elseif ($this->formWasSubmitted()) {
             $this->favorites()->delete($ids, $listID, $user);
             $this->flashMessenger()->addMessage('fav_delete_success', 'success');
             return $this->redirect()->toUrl($newUrl);

@@ -253,15 +253,6 @@ class CartController extends AbstractBase
         if (!is_array($ids) || empty($ids)) {
             $ids = $this->followup()->retrieveAndClear('cartIds');
         }
-        if (!is_array($ids) || empty($ids)) {
-            return $this->redirectToSource('error', 'bulk_noitems_advice');
-        }
-
-        // Check if id limit is exceeded
-        $actionLimit = $this->config?->BulkActions?->limits?->email ?? 0;
-        if (count($ids) > $actionLimit) {
-            return $this->redirectToSource('error', 'bulk_limit_exceeded');
-        }
 
         // Force login if necessary:
         $config = $this->getConfig();
@@ -283,8 +274,20 @@ class CartController extends AbstractBase
         // Set up Captcha
         $view->useCaptcha = $this->captcha()->active('email');
 
-        // Process form submission:
-        if ($this->formWasSubmitted('submit', $view->useCaptcha)) {
+        $actionLimit = $this->config?->BulkActions?->limits?->email ?? 0;
+        if (!is_array($ids) || empty($ids)) {
+            if ($this->inLightbox()) {
+                $this->flashMessenger()->addMessage('bulk_noitems_advice', 'error');
+            } else {
+                return $this->redirectToSource('error', 'bulk_noitems_advice');
+            }
+        } elseif (count($ids) > $actionLimit) {
+            if ($this->inLightbox()) {
+                $this->flashMessenger()->addMessage('bulk_limit_exceeded', 'error');
+            } else {
+                return $this->redirectToSource('error', 'bulk_limit_exceeded');
+            }
+        } elseif ($this->formWasSubmitted('submit', $view->useCaptcha)) {
             // Build the URL to share:
             $params = [];
             foreach ($ids as $current) {
@@ -366,30 +369,29 @@ class CartController extends AbstractBase
         $ids = null === $this->params()->fromPost('selectAll')
             ? $this->params()->fromPost('ids')
             : $this->params()->fromPost('idsAll');
-        if (!is_array($ids) || empty($ids)) {
-            return $this->redirectToSource('error', 'bulk_noitems_advice');
-        }
-
-        $format = $this->params()->fromPost('format');
-
-        // Check if id limit is exceeded
-        $actionLimit = $this->config?->BulkActions?->limits?->export ?? 0;
-        if (count($ids) > $actionLimit) {
-            return $this->redirectToSource('error', 'bulk_limit_exceeded');
-        }
 
         // Get export tools:
         $export = $this->getExport();
 
-        // Process form submission if necessary:
-        if ($this->formWasSubmitted('submit')) {
-            $format = $this->params()->fromPost('format');
+        // Get id limit
+        $format = $this->params()->fromPost('format');
+        $actionLimit = $this->config?->BulkExport?->limits?->$format
+            ?? $this->config?->BulkActions?->limits?->export
+            ?? 0;
 
-            $exportLimit = $this->config?->BulkExport?->limits?->$format ?? 0;
-            if (count($ids) > $exportLimit) {
+        if (!is_array($ids) || empty($ids)) {
+            if ($this->inLightbox()) {
+                $this->flashMessenger()->addMessage('bulk_noitems_advice', 'error');
+            } else {
+                return $this->redirectToSource('error', 'bulk_noitems_advice');
+            }
+        } elseif (count($ids) > $actionLimit) {
+            if ($this->inLightbox()) {
+                $this->flashMessenger()->addMessage('bulk_limit_exceeded', 'error');
+            } else {
                 return $this->redirectToSource('error', 'bulk_limit_exceeded');
             }
-
+        } elseif ($this->formWasSubmitted()) {
             $url = $export->getBulkUrl($this->getViewRenderer(), $format, $ids);
             if ($export->needsRedirect($format)) {
                 return $this->redirect()->toUrl($url);
@@ -502,15 +504,9 @@ class CartController extends AbstractBase
         if (!is_array($ids) || empty($ids)) {
             $ids = $this->followup()->retrieveAndClear('cartIds');
         }
-        if (!is_array($ids) || empty($ids)) {
-            return $this->redirectToSource('error', 'bulk_noitems_advice');
-        }
 
         // Check if id limit is exceeded
         $actionLimit = $this->config?->BulkActions?->limits?->save ?? 0;
-        if (count($ids) > $actionLimit) {
-            return $this->redirectToSource('error', 'bulk_limit_exceeded');
-        }
 
         // Make sure user is logged in:
         if (!($user = $this->getUser())) {
@@ -521,7 +517,19 @@ class CartController extends AbstractBase
         }
 
         // Process submission if necessary:
-        if ($this->formWasSubmitted('submit')) {
+        if (!is_array($ids) || empty($ids)) {
+            if ($this->inLightbox()) {
+                $this->flashMessenger()->addMessage('bulk_noitems_advice', 'error');
+            } else {
+                return $this->redirectToSource('error', 'bulk_noitems_advice');
+            }
+        } elseif (count($ids) > $actionLimit) {
+            if ($this->inLightbox()) {
+                $this->flashMessenger()->addMessage('bulk_limit_exceeded', 'error');
+            } else {
+                return $this->redirectToSource('error', 'bulk_limit_exceeded');
+            }
+        } elseif ($this->formWasSubmitted()) {
             $results = $this->favorites()
                 ->saveBulk($this->getRequest()->getPost()->toArray(), $user);
             $listUrl = $this->url()->fromRoute(
