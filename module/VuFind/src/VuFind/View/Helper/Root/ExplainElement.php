@@ -61,7 +61,7 @@ class ExplainElement extends \Laminas\View\Helper\AbstractHelper
         $fieldValue = $explainElement['fieldValue'] ?? false;
         $shortLabel = '';
         if (is_array($fieldName) && is_array($fieldValue) && count($fieldName) == count($fieldValue)) {
-            $shortLabel = $view->transEsc('Synonym') . '['
+            $shortLabel = $view->translate('Synonym') . '['
                 . implode(
                     ', ',
                     array_map(function ($name, $value) {
