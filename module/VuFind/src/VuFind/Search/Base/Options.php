@@ -64,6 +64,13 @@ abstract class Options implements TranslatorAwareInterface
     protected $sortOptions = [];
 
     /**
+     * Allowed hidden sort options
+     *
+     * @var array
+     */
+    protected $hiddenSortOptions = [];
+
+    /**
      * Available sort options for facets
      *
      * @var array
@@ -400,6 +407,7 @@ abstract class Options implements TranslatorAwareInterface
         $this->loadResultsWithJs = (bool)($searchSettings->General->load_results_with_js ?? true);
         $this->topPaginatorStyle = $searchSettings->General->top_paginator
             ?? ($this->loadResultsWithJs ? 'simple' : false);
+        $this->hiddenSortOptions = $searchSettings?->HiddenSorting?->pattern?->toArray() ?? [];
     }
 
     /**
@@ -578,6 +586,16 @@ abstract class Options implements TranslatorAwareInterface
     public function getSortOptions()
     {
         return $this->sortOptions;
+    }
+
+    /**
+     * Get an array of hidden sort options.
+     *
+     * @return array
+     */
+    public function getHiddenSortOptions()
+    {
+        return $this->hiddenSortOptions;
     }
 
     /**

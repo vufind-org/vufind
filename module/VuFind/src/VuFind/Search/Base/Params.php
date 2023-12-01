@@ -691,7 +691,15 @@ class Params
 
         // Validate and assign the sort value:
         $valid = array_keys($this->getOptions()->getSortOptions());
-        if (!empty($sort) && in_array($sort, $valid)) {
+
+        $matchedHiddenPatterns = array_filter(
+            $this->getOptions()->getHiddenSortOptions(),
+            function ($pattern) use ($sort) {
+                return preg_match('/' . $pattern . '/', $sort);
+            }
+        );
+
+        if (!empty($sort) && (in_array($sort, $valid) || count($matchedHiddenPatterns) > 0)) {
             $this->sort = $sort;
         } else {
             $this->sort = $this->getDefaultSort();
