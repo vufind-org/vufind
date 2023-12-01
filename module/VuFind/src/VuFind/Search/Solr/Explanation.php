@@ -516,9 +516,9 @@ class Explanation extends \VuFind\Search\Base\Explanation
         $res = [
             'value' => $value,
             'percent' => $percentage,
-            'fieldName' => 'unknown',
-            'fieldValue' => 'unknown',
-            'exactMatch' => 'unknown',
+            'fieldName' => ['unknown'],
+            'fieldValue' => ['unknown'],
+            'exactMatch' => ['unknown'],
         ];
         if (
             preg_match(
@@ -549,10 +549,10 @@ class Explanation extends \VuFind\Search\Base\Explanation
             )
         ) {
             $fieldValue = str_replace('"', '', $matches['fieldValue']);
-            $res['fieldName'] = $matches['fieldName'];
-            $res['fieldValue'] = $fieldValue;
+            $res['fieldName'] = [$matches['fieldName']];
+            $res['fieldValue'] = [$fieldValue];
             // extra space to only exact match whole words
-            $res['exactMatch'] = str_contains($this->lookfor . ' ', $fieldValue . ' ') ? 'exact' : 'inexact';
+            $res['exactMatch'] = [str_contains($this->lookfor . ' ', $fieldValue . ' ') ? 'exact' : 'inexact'];
         }
         if ($fieldModifier !== null) {
             $res['fieldModifier'] = $fieldModifier;

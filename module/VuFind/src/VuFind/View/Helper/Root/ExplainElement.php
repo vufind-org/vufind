@@ -31,7 +31,6 @@
 namespace VuFind\View\Helper\Root;
 
 use function count;
-use function is_array;
 
 /**
  * Explain element view helper
@@ -56,27 +55,24 @@ class ExplainElement extends \Laminas\View\Helper\AbstractHelper
     public function __invoke($explainElement, $decimalPlaces)
     {
         $view = $this->getView();
-        $fieldName = $explainElement['fieldName'] ?? '';
-        $fieldModifier = $explainElement['fieldModifier'] ?? false;
-        $fieldValue = $explainElement['fieldValue'] ?? false;
+        $fieldName = $explainElement['fieldName'] ?? [];
+        $fieldValue = $explainElement['fieldValue'] ?? [];
+        $fieldModifier = $explainElement['fieldModifier'] ?? [];
+
         $shortLabel = '';
-        if (is_array($fieldName) && is_array($fieldValue) && count($fieldName) == count($fieldValue)) {
-            $shortLabel = $view->translate('Synonym') . '['
-                . implode(
-                    ', ',
-                    array_map(function ($name, $value) {
-                        return $name . '(' . $value . ')';
-                    }, $fieldName, $fieldValue)
-                )
-                . ']';
-        } else {
-            if ($fieldName) {
-                $shortLabel .= $fieldName;
-            }
-            if ($fieldValue) {
-                $shortLabel .= ' (' . $explainElement['fieldValue'] . ')';
-            }
+        if (count($fieldName) > 1) {
+            $shortLabel .= $view->translate('Synonym') . '[';
         }
+        $shortLabel .= implode(
+            ', ',
+            array_map(function ($name, $value) {
+                return $name . '(' . $value . ')';
+            }, $fieldName, $fieldValue)
+        );
+        if (count($fieldName) > 1) {
+            $shortLabel .= ']';
+        }
+
         if ($fieldModifier) {
             $shortLabel .= '^' . $view->localizedNumber($fieldModifier, $decimalPlaces);
         }

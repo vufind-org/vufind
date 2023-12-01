@@ -4,12 +4,6 @@
   </td>
   <td>
     <?php
-    if (!is_array($fieldName)) {
-      $fieldName = [$fieldName];
-      $fieldValue = [$fieldValue];
-      $explainElement['exactMatch'] = [$explainElement['exactMatch']];
-    }
-
     if (count($fieldName) > 1) {
       echo $this->transEsc('Synonym') . ': [';
     }
