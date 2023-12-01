@@ -74,11 +74,11 @@ class StickyElement extends \Laminas\View\Helper\AbstractHelper
      * optionally adds the position attribute.
      *
      * @param string $elementName Name of the element
-     * @param int    $pos         Sticky position of the element
+     * @param ?int   $pos         Sticky position of the element
      *
      * @return array
      */
-    public function getElementAttributes($elementName, $pos = null)
+    public function getElementAttributes($elementName, ?int $pos = null)
     {
         $elementIsEnabled = in_array($elementName, $this->stickyElements);
         return [
