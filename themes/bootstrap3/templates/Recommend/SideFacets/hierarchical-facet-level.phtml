@@ -9,7 +9,7 @@
       'facet' => $item,
       'group' => $this->group,
       'url' => $this->url,
-      'urlBase' => '',
+      'urlBase' => $this->urlBase,
     ]);
 
     // Use facet text as button label so that a screen reader can read it as
@@ -50,6 +50,7 @@
           'facetList' => $item['children'],
           'group' => $this->group,
           'url' => $this->url,
+          'urlBase' => $this->urlBase,
           'parentNodeId' => $this->parentNodeId . '_' . $nodeId,
         ]) ?>
       </ul>

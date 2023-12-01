@@ -20,6 +20,7 @@
                 'facetList' => $details['list'],
                 'group' => $field,
                 'url' => $results->getUrlQuery(),
+                'urlBase' => $this->url($options->getSearchAction()),
               ]) ?>
             <?php else: ?>
               <?php
