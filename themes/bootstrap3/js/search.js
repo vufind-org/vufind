@@ -60,11 +60,26 @@ VuFind.register('search', function search() {
             // Build a URL from form action and fields and load results:
             let urlParts = form.getAttribute('action').split('?', 2);
             const query = new URLSearchParams(urlParts.length > 1 ? urlParts[1] : '');
-            Object.entries(form.elements).forEach(([, element]) => {
-              if (element.name.endsWith('[]')) {
-                query.append(element.name, element.value);
+
+            function _addToQuery(el) {
+              if ('radio' === el.type && !el.checked) {
+                return;
+              }
+              if (el.name.endsWith('[]')) {
+                query.append(el.name, el.value);
               } else {
-                query.set(element.name, element.value);
+                query.set(el.name, el.value);
+              }
+            }
+
+            Object.entries(form.elements).forEach(([, element]) => {
+              // Chrome represents multiple hidden 'filter[]' fields as a RadioNodeList:
+              if (element instanceof RadioNodeList) {
+                Object.entries(element).forEach(([, setElement]) => {
+                  _addToQuery(setElement);
+                });
+              } else {
+                _addToQuery(element);
               }
             });
             // Remove page so that any change resets it:
