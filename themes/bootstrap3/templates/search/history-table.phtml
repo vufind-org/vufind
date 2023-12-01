@@ -64,7 +64,7 @@
           </td>
         <?php endif; ?>
         <?php if ($saveSupported): ?>
-          <td class="history_actions" data-label="<?=$this->transEscAttr($this->showSaved ? 'history_delete' : 'history_save')?>">
+          <td class="history_actions">
             <?php if ($this->showSaved): ?>
               <a class="icon-link text-danger" href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($info->getSearchId())?>&amp;mode=history">
                 <?=$this->icon('search-delete', 'icon-link__icon') ?>
