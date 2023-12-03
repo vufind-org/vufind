@@ -685,7 +685,7 @@ table.search-history-table {
   table-layout: auto;
 
   @media screen and (min-width: 768px) {
-  tbody > tr > td { vertical-align: middle; }
+    tbody > tr > td { vertical-align: middle; }
     .history_time {
       width: 20%;
     }
