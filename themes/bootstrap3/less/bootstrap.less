@@ -472,17 +472,14 @@ ul.list-group {
       display: flex;
       align-items: first baseline;
       background: #fff;
-      .history_limits_field {
-        flex-basis: 70%;
+      &:before {
+        display: flex;
+        align-items: last baseline;
+        flex-basis: 30%;
+        flex-shrink: 0;
+        font-weight: bold;
+        content: attr(data-label);
       }
-    }
-    td:before {
-      display: flex;
-      align-items: last baseline;
-      flex-basis: 30%;
-      flex-shrink: 1;
-      font-weight: bold;
-      content: attr(data-label);
     }
     td:nth-child(even) {
       background-color: @table-bg-accent;
