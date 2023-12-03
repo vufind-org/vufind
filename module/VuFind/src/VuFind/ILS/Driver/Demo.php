@@ -865,6 +865,21 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             $seriesIssue = $issue % 4;
             $issue = $issue + 1;
             $status[$i]['enumchron'] = "volume $volume, issue $seriesIssue";
+            if (rand(1, 100) <= ($this->config['Holdings']['boundWithProbability'] ?? 25)) {
+                $status[$i]['bound_with_records'] = [];
+                $boundWithCount = 3;
+                for ($j = 0; $j < $boundWithCount; $j++) {
+                    $randomRecord = array_combine(['bibId', 'title'], $this->getRandomBibIdAndTitle());
+                    $status[$i]['bound_with_records'][] = $randomRecord;
+                }
+                $boundWithIndex = rand(0, $boundWithCount + 1);
+                array_splice($status[$i]['bound_with_records'], $boundWithIndex, 0, [
+                    [
+                        'title' => 'The Title on This Page',
+                        'bibId' => $id,
+                    ],
+                ]);
+            }
         }
 
         // Filter out electronic holdings from the normal holdings list:

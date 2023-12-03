@@ -7,7 +7,10 @@ if (isset($holdings) && !empty($holdings)): ?>
         if (!empty($holding)): ?>
           <li>
             <a href="<?=$this->escapeHtmlAttr($holding['URL'])?>"><?=$this->escapeHtml($holding['Name'])?></a>
-            <?=$this->escapeHtml($holding['CoverageStatement'])?>
+            <span class="coverage-statement"><?=$this->escapeHtml($holding['CoverageStatement'])?></span>
+            <?php if (!empty($holding['EmbargoDescription'])): ?>
+              <span class="embargo-description">(<?=$this->escapeHtml($holding['EmbargoDescription'])?>)</span>
+            <?php endif; ?>
           </li>
         <?php endif;
       endforeach; ?>

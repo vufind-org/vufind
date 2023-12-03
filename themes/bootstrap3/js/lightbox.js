@@ -1,5 +1,8 @@
 /*global VuFind, getFocusableNodes, recaptchaOnLoad, resetCaptcha */
 VuFind.register('lightbox', function Lightbox() {
+  var child = "";
+  var parent = "";
+
   // State
   var _originalUrl = false;
   var _currentUrl = false;
@@ -44,6 +47,18 @@ VuFind.register('lightbox', function Lightbox() {
       event.initCustomEvent(msg, true, true, details);
     }
     return document.dispatchEvent(event);
+  }
+
+  function _addQueryParameters(url, params) {
+    let fragmentSplit = url.split('#');
+    let paramsSplit = fragmentSplit[0].split('?');
+    let searchParams = new URLSearchParams(paramsSplit.length > 1 ? paramsSplit[1] : "");
+    for (const [key, value] of Object.entries(params)) {
+      searchParams.set(key, value);
+    }
+    let res = paramsSplit[0] + '?' + searchParams.toString();
+    res += fragmentSplit.length < 2 ? '' : '#' + fragmentSplit[1];
+    return res;
   }
 
   // Public: Present an alert
@@ -154,19 +169,17 @@ VuFind.register('lightbox', function Lightbox() {
     }
     // Add lightbox GET parameter
     if (!obj.url.match(/layout=lightbox/)) {
-      var parts = obj.url.split('#');
-      obj.url = parts[0].indexOf('?') < 0
-        ? parts[0] + '?'
-        : parts[0] + '&';
-      obj.url += 'layout=lightbox';
+      obj.url = _addQueryParameters(obj.url, {'layout': 'lightbox'});
       // Set referrer to current url if it isn't already set:
       if (_currentUrl && !_lbReferrerUrl) {
         _lbReferrerUrl = _currentUrl;
       }
       if (_lbReferrerUrl) {
-        obj.url += '&lbreferer=' + encodeURIComponent(_lbReferrerUrl);
+        obj.url = _addQueryParameters(obj.url, {'lbreferer': _lbReferrerUrl});
       }
-      obj.url += parts.length < 2 ? '' : '#' + parts[1];
+    }
+    if (VuFind.lightbox.parent) {
+      obj.url = _addQueryParameters(obj.url, {'lightboxParent': VuFind.lightbox.parent});
     }
     // Store original URL with the layout=lightbox parameter:
     if (_originalUrl === false) {
@@ -467,6 +480,26 @@ VuFind.register('lightbox', function Lightbox() {
       });
     });
   }
+
+  function loadConfiguredLightbox() {
+    if (VuFind.lightbox.child) {
+      // remove lightbox reference
+      let lightboxChild = VuFind.lightbox.child;
+      VuFind.lightbox.child = null;
+      let url = new URL(window.location.href);
+      url.searchParams.delete('lightboxChild');
+      window.history.replaceState({}, document.title, url.toString());
+
+      // load lightbox
+      _currentUrl = lightboxChild;
+      var obj = {
+        url: lightboxChild
+      };
+      ajax(obj);
+      VuFind.modal('show');
+    }
+  }
+
   // Element which to focus after modal is closed
   var _beforeOpenElement = null;
   function reset() {
@@ -512,12 +545,15 @@ VuFind.register('lightbox', function Lightbox() {
       }
     };
     bind();
+    loadConfiguredLightbox();
   }
 
   // Reveal
   return {
     // Properties
     refreshOnClose: refreshOnClose,
+    parent: parent,
+    child: child,
 
     // Methods
     ajax: ajax,
