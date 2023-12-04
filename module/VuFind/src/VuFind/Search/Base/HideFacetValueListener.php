@@ -34,6 +34,8 @@ use Laminas\EventManager\SharedEventManagerInterface;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Service;
 
+use function is_callable;
+
 /**
  * Hide single facet values from displaying.
  *
