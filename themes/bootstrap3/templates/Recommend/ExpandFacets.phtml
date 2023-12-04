@@ -6,7 +6,7 @@
 <?php if ($expandFacetSet): ?>
   <div class="sidegroup">
  <?php foreach ($expandFacetSet as $title => $cluster): ?>
-    <h4><?=$this->transEsc($cluster['label']) ?></h4>
+    <h2><?=$this->transEsc($cluster['label']) ?></h2>
     <div class="list-group">
       <?php foreach ($cluster['list'] as $thisFacet): ?>
         <a class="list-group-item" href="<?=$this->url('search-results') . $blankResults->getUrlQuery()->addFacet($title, $thisFacet['value'])?>"><?=$this->escapeHtml($thisFacet['displayText'])?></a>

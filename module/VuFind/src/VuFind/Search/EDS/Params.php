@@ -223,9 +223,9 @@ class Params extends AbstractEDSParams
     public function getFacetLabel($field, $value = null, $default = null)
     {
         // Also store Limiter/Search Mode IDs/Values in the config file
-        if (substr($field, 0, 6) == 'LIMIT|') {
+        if (str_starts_with($field, 'LIMIT|')) {
             $facetId = substr($field, 6);
-        } elseif (substr($field, 0, 11) == 'SEARCHMODE|') {
+        } elseif (str_starts_with($field, 'SEARCHMODE|')) {
             $facetId = substr($field, 11);
         } else {
             $facetId = $field;

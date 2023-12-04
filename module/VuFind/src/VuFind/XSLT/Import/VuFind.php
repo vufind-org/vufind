@@ -382,7 +382,7 @@ class VuFind
             : strtolower(trim($in));
 
         foreach ($articles as $a) {
-            if (substr($text, 0, strlen($a) + 1) == ($a . ' ')) {
+            if (str_starts_with($text, $a . ' ')) {
                 $text = substr($text, strlen($a) + 1);
                 break;
             }

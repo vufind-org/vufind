@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Factory for GetFacetData AJAX handler.
+ * Factory for instantiating recommendation modules.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,29 +21,32 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  AJAX
+ * @package  Recommendations
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Maccabee Levine <msl321@lehigh.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\AjaxHandler;
+namespace VuFind\Recommend;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Search\SearchRunner;
 
 /**
- * Factory for GetFacetData AJAX handler.
+ * Factory for instantiating recommendation modules.
  *
  * @category VuFind
- * @package  AJAX
+ * @package  Recommendations
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Maccabee Levine <msl321@lehigh.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class GetFacetDataFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+class AbstractSearchObjectFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -69,10 +72,10 @@ class GetFacetDataFactory implements \Laminas\ServiceManager\Factory\FactoryInte
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        return new $requestedName(
-            $container->get(\VuFind\Session\Settings::class),
-            $container->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class),
-            $container->get(\VuFind\Search\Results\PluginManager::class)
+        $module = new $requestedName(
+            $container->get(SearchRunner::class),
+            $container->get(\VuFind\Config\PluginManager::class)
         );
+        return $module;
     }
 }

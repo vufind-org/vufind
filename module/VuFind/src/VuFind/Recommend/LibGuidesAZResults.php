@@ -53,4 +53,14 @@ class LibGuidesAZResults extends AbstractSearchObject
     {
         return 'LibGuidesAZ';
     }
+
+    /**
+     * Get the default heading for this recommendation module.
+     *
+     * @return string
+     */
+    protected function getDefaultHeading()
+    {
+        return 'libguidesaz_recommendations';
+    }
 }

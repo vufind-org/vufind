@@ -110,7 +110,7 @@ class SetupThemeResources extends \Laminas\View\Helper\AbstractHelper
             $parts = $this->container->parseSetting($current);
             // Special case for media with paretheses
             // ie. (min-width: 768px)
-            if (count($parts) > 1 && substr($parts[1], 0, 1) == '(') {
+            if (count($parts) > 1 && str_starts_with($parts[1], '(')) {
                 $parts[1] .= ':' . $parts[2];
                 array_splice($parts, 2, 1);
             }
