@@ -30,6 +30,8 @@
 
 namespace VuFind\Recommend;
 
+use function is_callable;
+
 /**
  * FacetCloud Recommendations Module
  *

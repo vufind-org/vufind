@@ -34,6 +34,9 @@ use Laminas\Http\PhpEnvironment\Request;
 use VuFind\Db\Row\User;
 use VuFind\Exception\Auth as AuthException;
 
+use function get_class;
+use function in_array;
+
 /**
  * Abstract authentication base class
  *

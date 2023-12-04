@@ -36,6 +36,10 @@ use Laminas\View\Model\ViewModel;
 use VuFind\Search\RecommendListener;
 use VuFind\Solr\Utils as SolrUtils;
 
+use function count;
+use function in_array;
+use function intval;
+
 /**
  * VuFind Search Controller
  *
@@ -131,7 +135,7 @@ class AbstractSearch extends AbstractBase
         if (empty($search)) {
             // User is trying to view a saved search from another session
             // (deliberate or expired) or associated with another user.
-            throw new \Exception("Attempt to access invalid search ID");
+            throw new \Exception('Attempt to access invalid search ID');
         }
 
         // If we got this far, the user is allowed to view the search, so we can
@@ -468,8 +472,12 @@ class AbstractSearch extends AbstractBase
      */
     protected function processJumpToOnlyResult($results)
     {
+        // If jumpto is explicitly disabled (set to false, e.g. by combined search),
+        // we should NEVER jump to a result regardless of other factors.
+        $jumpto = $this->params()->fromQuery('jumpto', true);
         if (
-            ($this->getConfig()->Record->jump_to_single_search_result ?? false)
+            $jumpto
+            && ($this->getConfig()->Record->jump_to_single_search_result ?? false)
             && $results->getResultTotal() == 1
             && $recordList = $results->getResults()
         ) {

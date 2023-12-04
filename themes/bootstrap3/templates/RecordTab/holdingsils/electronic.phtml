@@ -1,4 +1,4 @@
-<h3><?=$this->transEsc('Electronic')?></h3>
+<h2><?=$this->transEsc('Electronic')?></h2>
 <table class="table table-striped">
   <?php foreach ($this->holdings as $item): ?>
     <tr>
@@ -24,7 +24,7 @@
         <?php endif; ?>
         <?php if (isset($item['item_notes'])): ?>
           <div class="item-notes">
-            <b><?=$this->transEsc("Item Notes")?>:</b>
+            <b><?=$this->transEsc('Item Notes')?>:</b>
             <ul>
               <?php foreach ($item['item_notes'] as $item_note): ?>
                 <li><?=$this->escapeHtml($item_note) ?></li>

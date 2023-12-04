@@ -34,6 +34,8 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFindSearch\Backend\Solr\Document\RawXMLDocument;
 use XSLTProcessor;
 
+use function is_array;
+
 /**
  * VuFind XSLT importer
  *
@@ -136,7 +138,7 @@ class Importer
         // Process and return the XML through the style sheet
         $result = $xsl->transformToXML($xml);
         if (!$result) {
-            throw new \Exception("Problem transforming XML.");
+            throw new \Exception('Problem transforming XML.');
         }
         return $result;
     }

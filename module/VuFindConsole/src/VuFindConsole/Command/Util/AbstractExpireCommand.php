@@ -36,6 +36,8 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Db\Table\Gateway;
 
+use function floatval;
+
 /**
  * Generic base class for expiration commands.
  *

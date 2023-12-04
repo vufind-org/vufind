@@ -46,6 +46,11 @@ use VuFind\Mailer\Mailer;
 use VuFind\Search\RecommendListener;
 use VuFind\Validator\CsrfInterface;
 
+use function in_array;
+use function intval;
+use function is_array;
+use function is_object;
+
 /**
  * Controller for the user account area.
  *
@@ -690,6 +695,14 @@ class MyResearchController extends AbstractBase
                     }
                 }
             }
+
+            // Add proxy details if available
+            if ($catalog->checkCapability('getProxiedUsers', [$patron])) {
+                $view->proxiedUsers = $catalog->getProxiedUsers($patron);
+            }
+            if ($catalog->checkCapability('getProxyingUsers', [$patron])) {
+                $view->proxyingUsers = $catalog->getProxyingUsers($patron);
+            }
         } else {
             $view->patronLoginView = $patron;
         }
@@ -1321,7 +1334,7 @@ class MyResearchController extends AbstractBase
             );
             if (
                 $cancelSRR
-                && $cancelSRR['function'] != "getCancelStorageRetrievalRequestLink"
+                && $cancelSRR['function'] != 'getCancelStorageRetrievalRequestLink'
                 && isset($current['cancel_details'])
             ) {
                 // Enable cancel form if necessary:
@@ -1394,7 +1407,7 @@ class MyResearchController extends AbstractBase
             );
             if (
                 $cancelStatus
-                && $cancelStatus['function'] != "getCancelILLRequestLink"
+                && $cancelStatus['function'] != 'getCancelILLRequestLink'
                 && isset($current['cancel_details'])
             ) {
                 // Enable cancel form if necessary:

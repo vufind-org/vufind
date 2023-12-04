@@ -29,6 +29,8 @@
 
 namespace VuFind\RecordDriver;
 
+use function count;
+
 /**
  * Model for Solr reserves records.
  *

@@ -35,6 +35,9 @@ namespace VuFind\I18n\Locale;
 
 use Laminas\Config\Config;
 
+use function array_key_exists;
+use function in_array;
+
 /**
  * VuFind Locale Settings
  *
